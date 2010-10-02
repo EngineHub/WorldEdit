@@ -3,8 +3,8 @@ Installation
 
 This plugin requires Hey0's server modification.
 
-Create a "plugins" folder in your Hey0's server mod folder and drop
-WorldEdit.jar into that folder. Add "WorldEdit" to "plugins" in your
+Create a "plugins" folder inside your Hey0's server mod folder and drop both
+WorldEdit.jar and js.jar into that folder. Add "WorldEdit" to "plugins" in your
 server.properties file, like so:
 
 plugins=WorldEdit
