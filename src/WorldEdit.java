@@ -265,8 +265,8 @@ public class WorldEdit extends Plugin {
         } else if (split[0].equalsIgnoreCase("/editfill")) {
             checkArgs(split, 1);
             int blockType = getItem(split[1]);
-            int radius = split.length > 2 ? Integer.parseInt(split[2]) : 50;
-            int depth = split.length > 3 ? Integer.parseInt(split[3]) : 1;
+            int radius = split.length > 2 ? Math.max(1, Integer.parseInt(split[2])) : 50;
+            int depth = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
 
             int cx = (int)Math.floor(player.getX());
             int cy = (int)Math.floor(player.getY());
@@ -285,7 +285,7 @@ public class WorldEdit extends Plugin {
 
         // Remove blocks above current position
         } else if (split[0].equalsIgnoreCase("/removeabove")) {
-            int size = split.length > 1 ? Integer.parseInt(split[1]) - 1 : 0;
+            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1]) - 1) : 0;
 
             int affected = 0;
             int cx = (int)Math.floor(player.getX());
