@@ -30,9 +30,20 @@ import com.sk89q.worldedit.*;
  * @author sk89q
  */
 public class WorldEdit extends Plugin {
+    private final static String DEFAULT_ALLOWED_BLOCKS =
+        "0,1,2,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,35,41,42,43," +
+        "44,45,47,48,49,52,53,54,56,57,58,60,61,62,67,73,78,79,80,81,82,85";
+
     private static Logger logger = Logger.getLogger("Minecraft");
     private HashMap<String,WorldEditSession> sessions = new HashMap<String,WorldEditSession>();
     private HashMap<String,String> commands = new HashMap<String,String>();
+
+    private PropertiesFile properties;
+    /**
+     * List of allowed blocks as a list of numbers as Strings. Not converted
+     * to a more usuable format.
+     */
+    private String[] allowedBlocks;
 
     public WorldEdit() {
         super();
@@ -58,6 +69,14 @@ public class WorldEdit extends Plugin {
      * Enables the plugin.
      */
     public void enable() {
+        if (properties == null) {
+            properties = new PropertiesFile("worldedit.properties");
+        } else {
+            properties.load();
+        }
+
+        allowedBlocks = properties.getString("allowed-blocks", DEFAULT_ALLOWED_BLOCKS).split(",");
+
         etc controller = etc.getInstance();
 
         for (Map.Entry<String,String> entry : commands.entrySet()) {
@@ -116,22 +135,18 @@ public class WorldEdit extends Plugin {
             }
         }
 
-        if ((foundID >= 0 && foundID <= 5) ||
-            (foundID >= 7 && foundID <= 20) ||
-            foundID == 35 ||
-            (foundID >= 41 && foundID <= 45) ||
-            (foundID >= 47 && foundID <= 49) ||
-            (foundID >= 52 && foundID <= 54) ||
-            (foundID >= 56 && foundID <= 58) ||
-            (foundID >= 60 && foundID <= 62) ||
-            foundID == 67 ||
-            foundID == 73 ||
-            (foundID >= 78 && foundID <= 82) ||
-            foundID == 85) {
+        // All items allowed
+        if (allowedBlocks[0].equals("")) {
             return foundID;
-        } else {
-            throw new DisallowedItemException();
         }
+
+        for (String s : allowedBlocks) {
+            if (s.equals(String.valueOf(foundID))) {
+                return foundID;
+            }
+        }
+
+        throw new DisallowedItemException();
     }
 
     /**
