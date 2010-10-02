@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import java.util.Map;
 import java.io.*;
 import org.mozilla.javascript.*;
+import com.sk89q.worldedit.*;
 
 /**
  *

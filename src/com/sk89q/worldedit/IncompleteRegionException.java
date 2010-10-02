@@ -1,3 +1,5 @@
+package com.sk89q.worldedit;
+
 // $Id$
 /*
  * WorldEdit
@@ -18,11 +20,10 @@
 */
 
 /**
+ * Raised when a region is not fully defined.
  *
- * @author sk89q
+ * @author Albert
  */
-public class InsufficientArgumentsException extends Exception {
-    public InsufficientArgumentsException(String error) {
-        super(error);
-    }
+public class IncompleteRegionException extends Exception {
+
 }

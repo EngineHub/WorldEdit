@@ -1,3 +1,5 @@
+package com.sk89q.worldedit;
+
 // $Id$
 /*
  * WorldEdit

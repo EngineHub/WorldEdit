@@ -1,3 +1,5 @@
+package com.sk89q.worldedit;
+
 // $Id$
 /*
  * WorldEdit
@@ -18,10 +20,9 @@
 */
 
 /**
- * Raised when a region is not fully defined.
  *
- * @author Albert
+ * @author sk89q
  */
-public class IncompleteRegionException extends Exception {
+public class DisallowedItemException extends Exception {
 
 }

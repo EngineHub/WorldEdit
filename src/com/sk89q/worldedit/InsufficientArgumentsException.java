@@ -1,3 +1,5 @@
+package com.sk89q.worldedit;
+
 // $Id$
 /*
  * WorldEdit
@@ -21,6 +23,8 @@
  *
  * @author sk89q
  */
-public class DisallowedItemException extends Exception {
-
+public class InsufficientArgumentsException extends Exception {
+    public InsufficientArgumentsException(String error) {
+        super(error);
+    }
 }
