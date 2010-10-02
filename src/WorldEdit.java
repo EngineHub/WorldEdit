@@ -46,6 +46,9 @@ public class WorldEdit extends Plugin {
         commands.put("/editreplace", "<ID> - Replace all existing blocks inside region");
         commands.put("/editoverlay", "<ID> - Overlay the area one layer");
         commands.put("/removeabove", "<Size> - Remove blocks above head");
+        commands.put("/editcopy", "Copies the currently selected region");
+        commands.put("/editpaste", "Pastes the clipboard");
+        commands.put("/editpasteair", "Pastes the clipboard (with air)");
         commands.put("/editfill", "<ID> <Radius> <Depth> - Fill a hole");
         commands.put("/editscript", "<Filename> [Args...] - Run an editscript");
     }
@@ -225,6 +228,24 @@ public class WorldEdit extends Plugin {
             } else {
                 player.sendMessage(Colors.Rose + "Nothing to redo.");
             }
+            return true;
+
+        // Paste
+        } else if (split[0].equalsIgnoreCase("/editpasteair") ||
+                   split[0].equalsIgnoreCase("/editpaste")) {
+            if (session.getClipboard() == null) {
+                player.sendMessage(Colors.Rose + "Nothing is in your clipboard.");
+            } else {
+                Point<Integer> pos = new Point<Integer>((int)Math.floor(player.getX()),
+                                                        (int)Math.floor(player.getY()),
+                                                        (int)Math.floor(player.getZ()));
+                session.getClipboard().paste(editSession, pos,
+                    split[0].equalsIgnoreCase("/editpaste"));
+                session.remember(editSession);
+                logger.log(Level.INFO, player.getName() + " used " + split[0]);
+                player.sendMessage(Colors.LightPurple + "Pasted.");
+            }
+
             return true;
 
         // Fill a hole
@@ -431,6 +452,23 @@ public class WorldEdit extends Plugin {
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been overlayed.");
 
             session.remember(editSession);
+
+            return true;
+
+        // Copy
+        } else if (split[0].equalsIgnoreCase("/editcopy")) {
+            Point<Integer> min = new Point<Integer>(lowerX, lowerY, lowerZ);
+            Point<Integer> max = new Point<Integer>(upperX, upperY, upperZ);
+            Point<Integer> pos = new Point<Integer>((int)Math.floor(player.getX()),
+                                                    (int)Math.floor(player.getY()),
+                                                    (int)Math.floor(player.getZ()));
+
+            RegionClipboard clipboard = new RegionClipboard(min, max, pos);
+            clipboard.copy(editSession);
+            session.setClipboard(clipboard);
+
+            logger.log(Level.INFO, player.getName() + " used /editcopy");
+            player.sendMessage(Colors.LightPurple + "Block(s) copied.");
 
             return true;
         }

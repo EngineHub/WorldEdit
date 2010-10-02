@@ -32,6 +32,7 @@ public class WorldEditSession {
     private boolean hasSetPos2 = false;
     private LinkedList<EditSession> history = new LinkedList<EditSession>();
     private int historyPointer = 0;
+    private RegionClipboard clipboard;
 
     /**
      * Get the edit session.
@@ -156,5 +157,19 @@ public class WorldEditSession {
         return (getUpperX() - getLowerX() + 1) *
                (getUpperY() - getLowerY() + 1) *
                (getUpperZ() - getLowerZ() + 1);
+    }
+
+    /**
+     * @return
+     */
+    public RegionClipboard getClipboard() {
+        return clipboard;
+    }
+
+    /**
+     * @param clipboard
+     */
+    public void setClipboard(RegionClipboard clipboard) {
+        this.clipboard = clipboard;
     }
 }
