@@ -25,10 +25,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  *
  * @author Albert
  */
-public final class Point {
-    private final double x, y, z;
+public final class Point<T> {
+    private final T x, y, z;
 
-    public Point(double x, double y, double z) {
+    public Point(T x, T y, T z) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -37,7 +37,7 @@ public final class Point {
     /**
      * @return the x
      */
-    public double getX() {
+    public T getX() {
         return x;
     }
 
@@ -45,14 +45,14 @@ public final class Point {
     /**
      * @return the y
      */
-    public double getY() {
+    public T getY() {
         return y;
     }
 
     /**
      * @return the z
      */
-    public double getZ() {
+    public T getZ() {
         return z;
     }
 

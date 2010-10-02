@@ -29,8 +29,8 @@ public class EditSession {
     /**
      * Stores the original blocks before modification.
      */
-    private HashMap<Point,Integer> original = new HashMap<Point,Integer>();
-    private HashMap<Point,Integer> current = new HashMap<Point,Integer>();
+    private HashMap<Point<Integer>,Integer> original = new HashMap<Point<Integer>,Integer>();
+    private HashMap<Point<Integer>,Integer> current = new HashMap<Point<Integer>,Integer>();
 
     /**
      * Sets a block without changing history.
@@ -55,7 +55,7 @@ public class EditSession {
      * @return Whether the block changed
      */
     public boolean setBlock(int x, int y, int z, int blockType) {
-        Point pt = new Point(x, y, z);
+        Point<Integer> pt = new Point<Integer>(x, y, z);
         if (!original.containsKey(pt)) {
             original.put(pt, getBlock(x, y, z));
         }
@@ -79,9 +79,9 @@ public class EditSession {
      * Restores all blocks to their initial state.
      */
     public void undo() {
-        for (Map.Entry<Point,Integer> entry : original.entrySet()) {
+        for (Map.Entry<Point<Integer>,Integer> entry : original.entrySet()) {
             Point pt = (Point)entry.getKey();
-            rawSetBlock((int)pt.getX(), (int)pt.getY(),(int)pt.getZ(),
+            rawSetBlock((Integer)pt.getX(), (Integer)pt.getY(),(Integer)pt.getZ(),
                         (int)entry.getValue());
         }
     }
@@ -90,9 +90,9 @@ public class EditSession {
      * Sets to new state.
      */
     public void redo() {
-        for (Map.Entry<Point,Integer> entry : current.entrySet()) {
+        for (Map.Entry<Point<Integer>,Integer> entry : current.entrySet()) {
             Point pt = (Point)entry.getKey();
-            rawSetBlock((int)pt.getX(), (int)pt.getY(),(int)pt.getZ(),
+            rawSetBlock((Integer)pt.getX(), (Integer)pt.getY(),(Integer)pt.getZ(),
                         (int)entry.getValue());
         }
     }
