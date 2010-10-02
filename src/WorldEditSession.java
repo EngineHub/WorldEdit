@@ -35,6 +35,14 @@ public class WorldEditSession {
     private RegionClipboard clipboard;
 
     /**
+     * Clear history.
+     */
+    public void clearHistory() {
+        history.clear();
+        historyPointer = 0;
+    }
+
+    /**
      * Get the edit session.
      *
      * @return

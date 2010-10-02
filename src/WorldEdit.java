@@ -41,6 +41,7 @@ public class WorldEdit extends Plugin {
         commands.put("/editpos2", "Set editing position #2");
         commands.put("/editundo", "Undo");
         commands.put("/editredo", "Redo");
+        commands.put("/clearhistory", "Clear history");
         commands.put("/editsize", "Get size of selected region");
         commands.put("/editset", "<Type> - Set all  blocks inside region");
         commands.put("/editreplace", "<ID> - Replace all existing blocks inside region");
@@ -228,6 +229,18 @@ public class WorldEdit extends Plugin {
             } else {
                 player.sendMessage(Colors.Rose + "Nothing to redo.");
             }
+            return true;
+
+        // Clear undo history
+        } else if (split[0].equalsIgnoreCase("/clearhistory")) {
+            session.clearHistory();
+            player.sendMessage(Colors.LightPurple + "History cleared.");;
+            return true;
+
+        // Clear clipboard
+        } else if (split[0].equalsIgnoreCase("/clearclipboard")) {
+            session.setClipboard(null);
+            player.sendMessage(Colors.LightPurple + "Clipboard cleared.");;
             return true;
 
         // Paste
