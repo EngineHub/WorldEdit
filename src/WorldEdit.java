@@ -55,14 +55,14 @@ public class WorldEdit extends Plugin {
         commands.put("/clearhistory", "Clear history");
         commands.put("/editsize", "Get size of selected region");
         commands.put("/editset", "<Type> - Set all  blocks inside region");
-        commands.put("/editreplace", "<ID> - Replace all existing blocks inside region");
+        commands.put("/editreplace", "<ID> <ToReplaceID> - Replace all existing blocks inside region");
         commands.put("/editoverlay", "<ID> - Overlay the area one layer");
         commands.put("/removeabove", "<Size> - Remove blocks above head");
         commands.put("/editcopy", "Copies the currently selected region");
         commands.put("/editpaste", "Pastes the clipboard");
         commands.put("/editpasteair", "Pastes the clipboard (with air)");
         commands.put("/editfill", "<ID> <Radius> <Depth> - Fill a hole");
-        commands.put("/editscript", "<Filename> [Args...] - Run an editscript");
+        commands.put("/editscript", "[Filename] <Args...> - Run an editscript");
     }
 
     /**
@@ -121,8 +121,8 @@ public class WorldEdit extends Plugin {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    private int getItem(String id) throws UnknownItemException,
-                                          DisallowedItemException {
+    private int getItem(String id, boolean allAllowed)
+            throws UnknownItemException, DisallowedItemException {
         int foundID;
 
         try {
@@ -136,7 +136,7 @@ public class WorldEdit extends Plugin {
         }
 
         // All items allowed
-        if (allowedBlocks[0].equals("")) {
+        if (allAllowed || allowedBlocks[0].equals("")) {
             return foundID;
         }
 
@@ -147,6 +147,19 @@ public class WorldEdit extends Plugin {
         }
 
         throw new DisallowedItemException();
+    }
+
+    /**
+     * Get an item ID from an item name or an item ID number.
+     *
+     * @param id
+     * @return
+     * @throws UnknownItemException
+     * @throws DisallowedItemException
+     */
+    private int getItem(String id) throws UnknownItemException,
+                                          DisallowedItemException {
+        return getItem(id, false);
     }
 
     /**
@@ -432,13 +445,15 @@ public class WorldEdit extends Plugin {
         } else if(split[0].equalsIgnoreCase("/editreplace")) {
             checkArgs(split, 1);
             int blockType = getItem(split[1]);
+            int replaceType = split.length > 2 ? getItem(split[2], true) : -1;
 
             int affected = 0;
 
             for (int x = lowerX; x <= upperX; x++) {
                 for (int y = lowerY; y <= upperY; y++) {
                     for (int z = lowerZ; z <= upperZ; z++) {
-                        if (editSession.getBlock(x, y, z) != 0) {
+                        if ((replaceType == -1 && editSession.getBlock(x, y, z) != 0) ||
+                            (editSession.getBlock(x, y, z) == replaceType)) {
                             editSession.setBlock(x, y, z, blockType);
                             affected++;
                         }
