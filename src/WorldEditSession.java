@@ -18,16 +18,71 @@
 */
 
 import com.sk89q.worldedit.*;
+import java.util.LinkedList;
 
 /**
  *
  * @author sk89q
  */
 public class WorldEditSession {
+    public static final int MAX_HISTORY_SIZE = 15;
     private int[] pos1 = new int[3];
     private int[] pos2 = new int[3];
     private boolean hasSetPos1 = false;
     private boolean hasSetPos2 = false;
+    private LinkedList<EditSession> history = new LinkedList<EditSession>();
+    private int historyPointer = 0;
+
+    /**
+     * Get the edit session.
+     *
+     * @return
+     */
+    public void remember(EditSession editSession) {
+        // Don't store anything if no changes were made
+        if (editSession.size() == 0) { return; }
+
+        // Destroy any sessions after this undo point
+        while (historyPointer < history.size()) {
+            history.remove(historyPointer);
+        }
+        history.add(editSession);
+        while (history.size() > MAX_HISTORY_SIZE) {
+            history.remove(0);
+        }
+        historyPointer = history.size();
+    }
+
+    /**
+     * Undo.
+     *
+     * @return whether anything was undoed
+     */
+    public boolean undo() {
+        historyPointer--;
+        if (historyPointer >= 0) {
+            history.get(historyPointer).undo();
+            return true;
+        } else {
+            historyPointer = 0;
+            return false;
+        }
+    }
+
+    /**
+     * Redo.
+     *
+     * @return whether anything was redoed
+     */
+    public boolean redo() {
+        if (historyPointer < history.size()) {
+            history.get(historyPointer).redo();
+            historyPointer++;
+            return true;
+        }
+
+        return false;
+    }
 
     private void checkPos1() throws IncompleteRegionException {
         if (!hasSetPos1) {

@@ -39,6 +39,8 @@ public class WorldEdit extends Plugin {
 
         commands.put("/editpos1", "Set editing position #1");
         commands.put("/editpos2", "Set editing position #2");
+        commands.put("/editundo", "Undo");
+        commands.put("/editredo", "Redo");
         commands.put("/editsize", "Get size of selected region");
         commands.put("/editset", "<Type> - Set all  blocks inside region");
         commands.put("/editreplace", "<ID> - Replace all existing blocks inside region");
@@ -129,31 +131,6 @@ public class WorldEdit extends Plugin {
     }
 
     /**
-     * Sets the block at position x, y, z with a block type.
-     *
-     * @param x
-     * @param y
-     * @param z
-     * @param blockType
-     * @return
-     */
-    private boolean setBlock(int x, int y, int z, int blockType) {
-        return etc.getMCServer().e.d(x, y, z, blockType);
-    }
-
-    /**
-     * Gets the block type at a position x, y, z.
-     *
-     * @param x
-     * @param y
-     * @param z
-     * @return
-     */
-    private int getBlock(int x, int y, int z) {
-        return etc.getMCServer().e.a(x, y, z);
-    }
-
-    /**
      *
      * @override
      * @param player
@@ -214,6 +191,7 @@ public class WorldEdit extends Plugin {
                    InsufficientArgumentsException, DisallowedItemException
     {
         WorldEditSession session = getSession(player);
+        EditSession editSession = new EditSession();
 
         // Set edit position #1
         if (split[0].equalsIgnoreCase("/editpos1")) {
@@ -231,6 +209,24 @@ public class WorldEdit extends Plugin {
             player.sendMessage(Colors.LightPurple + "Second edit position set.");
             return true;
 
+        // Undo
+        } else if (split[0].equalsIgnoreCase("/editundo")) {
+            if (session.undo()) {
+                player.sendMessage(Colors.LightPurple + "Undo successful.");
+            } else {
+                player.sendMessage(Colors.Rose + "Nothing to undo.");
+            }
+            return true;
+
+        // Redo
+        } else if (split[0].equalsIgnoreCase("/editredo")) {
+            if (session.redo()) {
+                player.sendMessage(Colors.LightPurple + "Redo successful.");
+            } else {
+                player.sendMessage(Colors.Rose + "Nothing to redo.");
+            }
+            return true;
+
         // Fill a hole
         } else if (split[0].equalsIgnoreCase("/editfill")) {
             checkArgs(split, 1);
@@ -243,10 +239,13 @@ public class WorldEdit extends Plugin {
             int cz = (int)Math.floor(player.getZ());
             int minY = Math.max(-128, cy - depth);
 
-            int affected = fill(cx, cz, cx, cy, cz, blockType, radius, minY);
+            int affected = fill(editSession, cx, cz, cx, cy, cz,
+                                blockType, radius, minY);
 
             logger.log(Level.INFO, player.getName() + " used /editfill");
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been created.");
+
+            session.remember(editSession);
 
             return true;
 
@@ -262,8 +261,8 @@ public class WorldEdit extends Plugin {
             for (int x = cx - size; x <= cx + size; x++) {
                 for (int z = cz - size; z <= cz + size; z++) {
                     for (int y = cy; y <= 127; y++) {
-                        if (getBlock(x, y, z) != 0) {
-                            setBlock(x, y, z, 0);
+                        if (editSession.getBlock(x, y, z) != 0) {
+                            editSession.setBlock(x, y, z, 0);
                             affected++;
                         }
                     }
@@ -272,6 +271,8 @@ public class WorldEdit extends Plugin {
 
             logger.log(Level.INFO, player.getName() + " used /removeabove");
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been removed.");
+
+            session.remember(editSession);
 
             return true;
 
@@ -321,7 +322,8 @@ public class WorldEdit extends Plugin {
                             Context.javaToJS(scriptPlayer, scope));
 
                         // Add Minecraft context
-                        EditScriptMinecraftContext minecraft = new EditScriptMinecraftContext();
+                        EditScriptMinecraftContext minecraft =
+                            new EditScriptMinecraftContext(editSession);
                         ScriptableObject.putProperty(scope, "minecraft",
                             Context.javaToJS(minecraft, scope));
 
@@ -332,6 +334,7 @@ public class WorldEdit extends Plugin {
                         re.printStackTrace();
                     } finally {
                         Context.exit();
+                        session.remember(editSession);
                     }
 
                     return true;
@@ -363,7 +366,7 @@ public class WorldEdit extends Plugin {
             for (int x = lowerX; x <= upperX; x++) {
                 for (int y = lowerY; y <= upperY; y++) {
                     for (int z = lowerZ; z <= upperZ; z++) {
-                        setBlock(x, y, z, blockType);
+                        editSession.setBlock(x, y, z, blockType);
                         affected++;
                     }
                 }
@@ -371,6 +374,8 @@ public class WorldEdit extends Plugin {
 
             logger.log(Level.INFO, player.getName() + " used /editset");
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been set.");
+
+            session.remember(editSession);
 
             return true;
 
@@ -384,8 +389,8 @@ public class WorldEdit extends Plugin {
             for (int x = lowerX; x <= upperX; x++) {
                 for (int y = lowerY; y <= upperY; y++) {
                     for (int z = lowerZ; z <= upperZ; z++) {
-                        if (getBlock(x, y, z) != 0) {
-                            setBlock(x, y, z, blockType);
+                        if (editSession.getBlock(x, y, z) != 0) {
+                            editSession.setBlock(x, y, z, blockType);
                             affected++;
                         }
                     }
@@ -394,6 +399,8 @@ public class WorldEdit extends Plugin {
 
             logger.log(Level.INFO, player.getName() + " used /editreplace");
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been replaced.");
+
+            session.remember(editSession);
 
             return true;
 
@@ -411,8 +418,8 @@ public class WorldEdit extends Plugin {
             for (int x = lowerX; x <= upperX; x++) {
                 for (int z = lowerZ; z <= upperZ; z++) {
                     for (int y = upperY; y >= lowerY; y--) {
-                        if (y + 1 <= 127 && getBlock(x, y, z) != 0 && getBlock(x, y + 1, z) == 0) {
-                            setBlock(x, y + 1, z, blockType);
+                        if (y + 1 <= 127 && editSession.getBlock(x, y, z) != 0 && editSession.getBlock(x, y + 1, z) == 0) {
+                            editSession.setBlock(x, y + 1, z, blockType);
                             affected++;
                             break;
                         }
@@ -423,13 +430,16 @@ public class WorldEdit extends Plugin {
             logger.log(Level.INFO, player.getName() + " used /editoverlay");
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been overlayed.");
 
+            session.remember(editSession);
+
             return true;
         }
 
         return false;
     }
 
-    private int fill(int x, int z, int cx, int cy, int cz, int blockType, int radius, int minY) {
+    private int fill(EditSession editSession, int x, int z, int cx, int cy,
+                     int cz, int blockType, int radius, int minY) {
         double dist = Math.sqrt(Math.pow(cx - x, 2) + Math.pow(cz - z, 2));
         int affected = 0;
         
@@ -437,26 +447,27 @@ public class WorldEdit extends Plugin {
             return 0;
         }
 
-        if (getBlock(x, cy, z) == 0) {
-            affected = fillY(x, cy, z, blockType, minY);
+        if (editSession.getBlock(x, cy, z) == 0) {
+            affected = fillY(editSession, x, cy, z, blockType, minY);
         } else {
             return 0;
         }
         
-        affected += fill(x + 1, z, cx, cy, cz, blockType, radius, minY);
-        affected += fill(x - 1, z, cx, cy, cz, blockType, radius, minY);
-        affected += fill(x, z + 1, cx, cy, cz, blockType, radius, minY);
-        affected += fill(x, z - 1, cx, cy, cz, blockType, radius, minY);
+        affected += fill(editSession, x + 1, z, cx, cy, cz, blockType, radius, minY);
+        affected += fill(editSession, x - 1, z, cx, cy, cz, blockType, radius, minY);
+        affected += fill(editSession, x, z + 1, cx, cy, cz, blockType, radius, minY);
+        affected += fill(editSession, x, z - 1, cx, cy, cz, blockType, radius, minY);
 
         return affected;
     }
 
-    private int fillY(int x, int cy, int z, int blockType, int minY) {
+    private int fillY(EditSession editSession, int x, int cy,
+                      int z, int blockType, int minY) {
         int affected = 0;
         
         for (int y = cy; y > minY; y--) {
-            if (getBlock(x, y, z) == 0) {
-                setBlock(x, y, z, blockType);
+            if (editSession.getBlock(x, y, z) == 0) {
+                editSession.setBlock(x, y, z, blockType);
                 affected++;
             } else {
                 break;

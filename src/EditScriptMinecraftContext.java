@@ -22,6 +22,17 @@
  * @author Albert
  */
 public class EditScriptMinecraftContext {
+    private EditSession editSession;
+
+    /**
+     * Construct this Minecraft object with an EditSession.
+     * 
+     * @param editSession
+     */
+    public EditScriptMinecraftContext(EditSession editSession) {
+        this.editSession = editSession;
+    }
+    
     /**
      * Sets the block at position x, y, z with a block type.
      *
@@ -32,7 +43,7 @@ public class EditScriptMinecraftContext {
      * @return
      */
     public boolean setBlock(int x, int y, int z, int blockType) {
-        return etc.getMCServer().e.d(x, y, z, blockType);
+        return editSession.setBlock(x, y, z, blockType);
     }
 
     /**
@@ -44,6 +55,6 @@ public class EditScriptMinecraftContext {
      * @return
      */
     public int getBlock(int x, int y, int z) {
-        return etc.getMCServer().e.a(x, y, z);
+        return editSession.getBlock(x, y, z);
     }
 }
