@@ -3,10 +3,9 @@ Installation
 
 This plugin requires Hey0's server modification.
 
-Create a "plugins" folder inside your Hey0's server mod folder and drop both
-WorldEdit.jar and js.jar into that folder. Add "WorldEdit" to "plugins" in your
-server.properties file, like so:
-
-plugins=WorldEdit
-
-If you have multiple plugins, separate plugin names with commas.
+(1) Create a "plugins" folder inside your "bin" folder.
+(2) Copy WorldEdit.jar, js.jar, and commons-lang3-3.0-beta.jar into plugins/.
+(3) Add "WorldEdit" to "plugins" in your server.properties file, like so:
+    plugins=WorldEdit
+    If you have multiple plugins, separate plugin names with commas:
+    plugins=AnotherPlugin,WorldEdit
