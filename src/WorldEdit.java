@@ -93,16 +93,37 @@ public class WorldEdit extends Plugin {
      * @param id
      * @return
      * @throws UnknownItemException
+     * @throws DisallowedItemException
      */
-    private int getItem(String id) throws UnknownItemException {
+    private int getItem(String id) throws UnknownItemException,
+                                          DisallowedItemException {
+        int foundID;
+
         try {
-            return Integer.parseInt(id);
+            foundID = Integer.parseInt(id);
         } catch (NumberFormatException e) {
             try {
-                return etc.getInstance().getDataSource().getItem(id);
+                foundID = etc.getInstance().getDataSource().getItem(id);
             } catch (NumberFormatException e2) {
                 throw new UnknownItemException();
             }
+        }
+
+        if ((foundID >= 0 && foundID <= 5) ||
+            (foundID >= 7 && foundID <= 20) ||
+            foundID == 35 ||
+            (foundID >= 41 && foundID <= 45) ||
+            (foundID >= 47 && foundID <= 49) ||
+            (foundID >= 52 && foundID <= 54) ||
+            (foundID >= 56 && foundID <= 58) ||
+            (foundID >= 60 && foundID <= 62) ||
+            foundID == 67 ||
+            foundID == 73 ||
+            (foundID >= 78 && foundID <= 82) ||
+            foundID == 85) {
+            return foundID;
+        } else {
+            throw new DisallowedItemException();
         }
     }
 
@@ -165,8 +186,11 @@ public class WorldEdit extends Plugin {
         } catch (UnknownItemException e3) {
             player.sendMessage(Colors.Rose + "Unknown item.");
             return true;
-        } catch (InsufficientArgumentsException e4) {
-            player.sendMessage(Colors.Rose + e4.getMessage());
+        } catch (DisallowedItemException e4) {
+            player.sendMessage(Colors.Rose + "Disallowed item.");
+            return true;
+        } catch (InsufficientArgumentsException e5) {
+            player.sendMessage(Colors.Rose + e5.getMessage());
             return true;
         }
     }
@@ -186,7 +210,7 @@ public class WorldEdit extends Plugin {
 
     private boolean handleEditCommand(Player player, String[] split)
             throws UnknownItemException, IncompleteRegionException,
-                   InsufficientArgumentsException
+                   InsufficientArgumentsException, DisallowedItemException
     {
         WorldEditSession session = getSession(player);
 
