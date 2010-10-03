@@ -61,6 +61,8 @@ public class WorldEdit extends Plugin {
         commands.put("/editcopy", "Copies the currently selected region");
         commands.put("/editpaste", "Pastes the clipboard");
         commands.put("/editpasteair", "Pastes the clipboard (with air)");
+        commands.put("/editload", "[Filename] - Load .schematic into clipboard");
+        commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
         commands.put("/editfill", "<ID> <Radius> <Depth> - Fill a hole");
         commands.put("/editscript", "[Filename] <Args...> - Run an editscript");
     }
@@ -336,6 +338,72 @@ public class WorldEdit extends Plugin {
 
             session.remember(editSession);
 
+            return true;
+
+        // Load .schematic to clipboard
+        } else if (split[0].equalsIgnoreCase("/editload")) {
+            checkArgs(split, 1);
+            String filename = split[1].replace("\0", "") + ".schematic";
+            File dir = new File("schematics");
+            File f = new File("schematics", filename);
+
+            try {
+                String filePath = f.getCanonicalPath();
+                String dirPath = dir.getCanonicalPath();
+
+                if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
+                    player.sendMessage(Colors.Rose + "Schematic could not read or it does not exist.");
+                } else {
+                    int cx = (int)Math.floor(player.getX());
+                    int cy = (int)Math.floor(player.getY());
+                    int cz = (int)Math.floor(player.getZ());
+                    Point<Integer> origin = new Point<Integer>(cx, cy, cz);
+                    session.setClipboard(RegionClipboard.loadSchematic(filePath, origin));
+                    logger.log(Level.INFO, player.getName() + " loaded " + filePath);
+                    player.sendMessage(Colors.LightPurple + filename + " loaded.");
+                }
+            } catch (SchematicLoadException e) {
+                player.sendMessage(Colors.Rose + "Load error: " + e.getMessage());
+            } catch (IOException e) {
+                player.sendMessage(Colors.Rose + "Schematic could not read or it does not exist.");
+            }
+
+            return true;
+
+        // Save clipboard to .schematic
+        } else if (split[0].equalsIgnoreCase("/editsave")) {
+            if (session.getClipboard() == null) {
+                player.sendMessage(Colors.Rose + "Nothing is in your clipboard.");
+                return true;
+            }
+            
+            checkArgs(split, 1);
+            String filename = split[1].replace("\0", "") + ".schematic";
+            File dir = new File("schematics");
+            File f = new File("schematics", filename);
+
+            if (!dir.exists()) {
+                if (!dir.mkdir()) {
+                    player.sendMessage(Colors.Rose + "A schematics/ folder could not be created.");
+                    return true;
+                }
+            }
+
+            try {
+                String filePath = f.getCanonicalPath();
+                String dirPath = dir.getCanonicalPath();
+
+                if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
+                    player.sendMessage(Colors.Rose + "Invalid path for Schematic.");
+                } else {
+                    session.getClipboard().saveSchematic(filePath);
+                    logger.log(Level.INFO, player.getName() + " saved " + filePath);
+                    player.sendMessage(Colors.LightPurple + filename + " saved.");
+                }
+            } catch (IOException e) {
+                player.sendMessage(Colors.Rose + "Schematic could not written.");
+            }
+            
             return true;
 
         // Run an editscript

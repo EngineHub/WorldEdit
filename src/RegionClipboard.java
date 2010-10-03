@@ -17,6 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import org.jnbt.*;
+import java.io.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 import com.sk89q.worldedit.*;
 
 /**
@@ -47,6 +52,33 @@ public class RegionClipboard {
     }
 
     /**
+     * Get the width (X-direction) of the clipboard.
+     *
+     * @return
+     */
+    public int getWidth() {
+        return max.getX() - min.getX() + 1;
+    }
+
+    /**
+     * Get the length (Z-direction) of the clipboard.
+     *
+     * @return
+     */
+    public int getLength() {
+        return max.getZ() - min.getZ() + 1;
+    }
+
+    /**
+     * Get the height (Y-direction) of the clipboard.
+     *
+     * @return
+     */
+    public int getHeight() {
+        return max.getY() - min.getY() + 1;
+    }
+
+    /**
      * Copy to the clipboard.
      *
      * @param editSession
@@ -70,16 +102,17 @@ public class RegionClipboard {
      * @param noAir True to not paste air
      */
     public void paste(EditSession editSession, Point<Integer> newOrigin, boolean noAir) {
-        int xs = max.getX() - min.getX();
-        int ys = max.getY() - min.getY();
-        int zs = max.getZ() - min.getZ();
+        int xs = getWidth();
+        int ys = getHeight();
+        int zs = getLength();
+
         int offsetX = min.getX() - origin.getX() + newOrigin.getX();
         int offsetY = min.getY() - origin.getY() + newOrigin.getY();
         int offsetZ = min.getZ() - origin.getZ() + newOrigin.getZ();
         
         for (int x = 0; x < xs; x++) {
-            for (int y = 0; y <= ys; y++) {
-                for (int z = 0; z <= zs; z++) {
+            for (int y = 0; y < ys; y++) {
+                for (int z = 0; z < zs; z++) {
                     if (noAir && data[x][y][z] == 0) { continue; }
                     
                     editSession.setBlock(x + offsetX, y + offsetY, z + offsetZ,
@@ -87,5 +120,116 @@ public class RegionClipboard {
                 }
             }
         }
+    }
+
+    /**
+     * Saves the clipboard data to a .schematic-format file.
+     *
+     * @param path
+     * @throws IOException
+     */
+    public void saveSchematic(String path) throws IOException {
+        int xs = getWidth();
+        int ys = getHeight();
+        int zs = getLength();
+
+        HashMap<String,Tag> schematic = new HashMap<String,Tag>();
+        schematic.put("Width", new ShortTag("Width", (short)xs));
+        schematic.put("Length", new ShortTag("Length", (short)zs));
+        schematic.put("Height", new ShortTag("Height", (short)ys));
+        schematic.put("Materials", new StringTag("Materials", "Alpha"));
+
+        // Copy blocks
+        byte[] blocks = new byte[xs * ys * zs];
+        for (int x = 0; x < xs; x++) {
+            for (int y = 0; y < ys; y++) {
+                for (int z = 0; z < zs; z++) {
+                    int index = y * xs * zs + z * xs + x;
+                    blocks[index] = (byte)data[x][y][z];
+                }
+            }
+        }
+        schematic.put("Blocks", new ByteArrayTag("Blocks", blocks));
+
+        // Current data is not supported
+        byte[] data = new byte[xs * ys * zs];
+        schematic.put("Data", new ByteArrayTag("Data", data));
+
+        // These are not stored either
+        schematic.put("Entities", new ListTag("Entities", CompoundTag.class, new ArrayList<Tag>()));
+        schematic.put("TileEntities", new ListTag("TileEntities", CompoundTag.class, new ArrayList<Tag>()));
+
+        // Build and output
+        CompoundTag schematicTag = new CompoundTag("Schematic", schematic);
+        NBTOutputStream stream = new NBTOutputStream(new FileOutputStream(path));
+        stream.writeTag(schematicTag);
+        stream.close();
+    }
+
+    /**
+     * Load a .schematic file into a clipboard.
+     * 
+     * @param path
+     * @param origin
+     * @return
+     * @throws SchematicLoadException
+     * @throws IOException
+     */
+    public static RegionClipboard loadSchematic(String path, Point<Integer> origin)
+            throws SchematicLoadException, IOException {
+        FileInputStream stream = new FileInputStream(path);
+        NBTInputStream nbtStream = new NBTInputStream(stream);
+        CompoundTag schematicTag = (CompoundTag)nbtStream.readTag();
+        if (!schematicTag.getName().equals("Schematic")) {
+            throw new SchematicLoadException("Tag \"Schematic\" does not exist or is not first");
+        }
+        Map<String,Tag> schematic = schematicTag.getValue();
+        if (!schematic.containsKey("Blocks")) {
+            throw new SchematicLoadException("Schematic file is missing a \"Blocks\" tag");
+        }
+        short xs = (Short)getChildTag(schematic, "Width", ShortTag.class).getValue();
+        short zs = (Short)getChildTag(schematic, "Length", ShortTag.class).getValue();
+        short ys = (Short)getChildTag(schematic, "Height", ShortTag.class).getValue();
+        String materials = (String)getChildTag(schematic, "Materials", StringTag.class).getValue();
+        if (!materials.equals("Alpha")) {
+            throw new SchematicLoadException("Schematic file is not an Alpha schematic");
+        }
+        byte[] blocks = (byte[])getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
+
+        Point<Integer> min = new Point<Integer>(
+                origin.getX(),
+                origin.getY(),
+                origin.getZ()
+                );
+        Point<Integer> max = new Point<Integer>(
+                origin.getX() + xs - 1,
+                origin.getY() + ys - 1,
+                origin.getZ() + zs - 1
+                );
+        RegionClipboard clipboard = new RegionClipboard(min, max, origin);
+
+        for (int x = 0; x < xs; x++) {
+            for (int y = 0; y < ys; y++) {
+                for (int z = 0; z < zs; z++) {
+                    int index = y * xs * zs + z * xs + x;
+                    clipboard.data[x][y][z] = blocks[index];
+                }
+            }
+        }
+
+        return clipboard;
+    }
+
+    private static Tag getChildTag(Map<String,Tag> items, String key, Class expected)
+            throws SchematicLoadException {
+        if (!items.containsKey(key)) {
+            throw new SchematicLoadException("Schematic file is missing a \"" + key + "\" tag");
+        }
+        Tag tag = items.get(key);
+        if (!expected.isInstance(tag)) {
+            throw new SchematicLoadException(
+                key + " tag is not of tag type " + expected.getName());
+        }
+        return tag;
     }
 }
