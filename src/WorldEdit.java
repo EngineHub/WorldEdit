@@ -53,6 +53,7 @@ public class WorldEdit extends Plugin {
         commands.put("/editundo", "Undo");
         commands.put("/editredo", "Redo");
         commands.put("/clearhistory", "Clear history");
+        commands.put("/clearclipboard", "Clear clipboard");
         commands.put("/editsize", "Get size of selected region");
         commands.put("/editset", "<Type> - Set all  blocks inside region");
         commands.put("/editreplace", "<ID> <ToReplaceID> - Replace all existing blocks inside region");
