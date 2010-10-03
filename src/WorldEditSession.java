@@ -33,6 +33,9 @@ public class WorldEditSession {
     private LinkedList<EditSession> history = new LinkedList<EditSession>();
     private int historyPointer = 0;
     private RegionClipboard clipboard;
+    private boolean toolControl = true;
+    private int[] lastToolPos1 = new int[3];
+    private long lastToolClick = 0;
 
     /**
      * Clear history.
@@ -127,8 +130,8 @@ public class WorldEditSession {
     }
 
     /**
-     * Sets postiion 1.
-     * 
+     * Sets position 1.
+     *
      * @param x
      * @param y
      * @param z
@@ -136,6 +139,18 @@ public class WorldEditSession {
     public void setPos1(int x, int y, int z) {
         hasSetPos1 = true;
         pos1 = new int[]{x, y, z};
+    }
+
+    /**
+     * Sets position 1.
+     *
+     * @param x
+     * @param y
+     * @param z
+     */
+    public void setPos1(int[] pos) {
+        hasSetPos1 = true;
+        pos1 = pos;
     }
 
     /**
@@ -151,7 +166,7 @@ public class WorldEditSession {
 
     /**
      * Sets position 2.
-     * 
+     *
      * @param x
      * @param y
      * @param z
@@ -159,6 +174,18 @@ public class WorldEditSession {
     public void setPos2(int x, int y, int z) {
         hasSetPos2 = true;
         pos2 = new int[]{x, y, z};
+    }
+
+    /**
+     * Sets position 2.
+     *
+     * @param x
+     * @param y
+     * @param z
+     */
+    public void setPos2(int[] pos) {
+        hasSetPos2 = true;
+        pos2 = pos;
     }
 
     /**
@@ -261,5 +288,53 @@ public class WorldEditSession {
      */
     public void setClipboard(RegionClipboard clipboard) {
         this.clipboard = clipboard;
+    }
+
+    /**
+     * See if tool control is enabled.
+     * 
+     * @return
+     */
+    public boolean isToolControlEnabled() {
+        return toolControl;
+    }
+
+    /**
+     * Change tool control setting.
+     * 
+     * @param
+     */
+    public void setToolControl(boolean toolControl) {
+        this.toolControl = toolControl;
+    }
+
+    /**
+     * @return the lastToolPos1
+     */
+    public int[] getLastToolPos1() {
+        return lastToolPos1;
+    }
+
+    /**
+     * @param lastToolPos1 the lastToolPos1 to set
+     */
+    public void setLastToolPos1(int[] lastToolPos1) {
+        this.lastToolPos1 = lastToolPos1;
+    }
+
+    /**
+     * Returns true if the tool has been double clicked.
+     * 
+     * @return
+     */
+    public boolean hasToolBeenDoubleClicked() {
+        return System.currentTimeMillis() - lastToolClick < 500;
+    }
+
+    /**
+     * Triggers a click of the tool.
+     */
+    public void triggerToolClick() {
+        lastToolClick = System.currentTimeMillis();
     }
 }

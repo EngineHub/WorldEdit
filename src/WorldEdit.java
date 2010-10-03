@@ -190,6 +190,60 @@ public class WorldEdit extends Plugin {
     }
 
     /**
+     * Called on right click.
+     *
+     * @param player
+     * @param blockPlaced
+     * @param blockClicked
+     * @param itemInHand
+     * @return false if you want the action to go through
+     */
+    @Override
+    public boolean onBlockCreate(Player player, Block blockPlaced,
+            Block blockClicked, int itemInHand) {
+        if (itemInHand == 271) { // Wooden axe
+            if (!etc.getInstance().canUseCommand(player.getName(), "/editpos1")
+                    || !etc.getInstance().canUseCommand(player.getName(), "/editpos2")) {
+                return false;
+            }
+            
+            WorldEditSession session = getSession(player);
+
+            int x = (int)Math.floor(blockClicked.getX());
+            int y = (int)Math.floor(blockClicked.getY());
+            int z = (int)Math.floor(blockClicked.getZ());
+
+            if (session.isToolControlEnabled()) {
+                try {
+                    if (session.hasToolBeenDoubleClicked()
+                            && x == session.getPos1()[0]
+                            && y == session.getPos1()[1]
+                            && z == session.getPos1()[2]) { // Pos 2
+                        session.setPos2(x, y, z);
+                        session.setPos1(session.getLastToolPos1());
+                        player.sendMessage(Colors.LightPurple + "Second edit position set; first one restored.");
+                    } else {
+                        // Have to remember the original position because on
+                        // double click, we are going to restore it
+                        try {
+                            session.setLastToolPos1(session.getPos1());
+                        } catch (IncompleteRegionException e) {}
+                        
+                        session.setPos1(x, y, z);
+                        player.sendMessage(Colors.LightPurple + "First edit position set.");
+                    }
+                } catch (IncompleteRegionException e) {}
+
+                session.triggerToolClick();
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * 
      * @param player
      * @param split
