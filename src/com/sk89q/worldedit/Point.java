@@ -28,6 +28,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 public final class Point<T> {
     private final T x, y, z;
 
+    /**
+     * Construct the Point object.
+     * 
+     * @param x
+     * @param y
+     * @param z
+     */
     public Point(T x, T y, T z) {
         this.x = x;
         this.y = y;
@@ -56,6 +63,13 @@ public final class Point<T> {
         return z;
     }
 
+    /**
+     * Checks if another object is equivalent.
+     * 
+     * @param obj
+     * @return
+     */
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Point)) {
             return false;
@@ -64,6 +78,12 @@ public final class Point<T> {
         return other.x == x && other.y == y && other.z == z;
     }
 
+    /**
+     * Gets the hash code.
+     * 
+     * @return
+     */
+    @Override
     public int hashCode() {
         return new HashCodeBuilder(451, 41).
             append(x).

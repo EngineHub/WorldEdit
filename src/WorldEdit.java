@@ -599,6 +599,20 @@ public class WorldEdit extends Plugin {
         return false;
     }
 
+    /**
+     * Fills an area recursively in the X/Z directions.
+     * 
+     * @param editSession
+     * @param x
+     * @param z
+     * @param cx
+     * @param cy
+     * @param cz
+     * @param blockType
+     * @param radius
+     * @param minY
+     * @return
+     */
     private int fill(EditSession editSession, int x, int z, int cx, int cy,
                      int cz, int blockType, int radius, int minY) {
         double dist = Math.sqrt(Math.pow(cx - x, 2) + Math.pow(cz - z, 2));
@@ -622,6 +636,17 @@ public class WorldEdit extends Plugin {
         return affected;
     }
 
+    /**
+     * Recursively fills a block and below until it hits another block.
+     * 
+     * @param editSession
+     * @param x
+     * @param cy
+     * @param z
+     * @param blockType
+     * @param minY
+     * @return
+     */
     private int fillY(EditSession editSession, int x, int cy,
                       int z, int blockType, int minY) {
         int affected = 0;

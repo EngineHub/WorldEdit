@@ -93,74 +93,152 @@ public class WorldEditSession {
         return false;
     }
 
+    /**
+     * Checks to make sure that position 1 is defined.
+     * 
+     * @throws IncompleteRegionException
+     */
     private void checkPos1() throws IncompleteRegionException {
         if (!hasSetPos1) {
             throw new IncompleteRegionException();
         }
     }
-
+    
+    /**
+     * Checks to make sure that position 2 is defined.
+     *
+     * @throws IncompleteRegionException
+     */
     private void checkPos2() throws IncompleteRegionException {
         if (!hasSetPos2) {
             throw new IncompleteRegionException();
         }
     }
 
+    /**
+     * Gets defined position 1.
+     * 
+     * @return
+     * @throws IncompleteRegionException
+     */
     public int[] getPos1() throws IncompleteRegionException {
         checkPos1();
         return pos1;
     }
 
+    /**
+     * Sets postiion 1.
+     * 
+     * @param x
+     * @param y
+     * @param z
+     */
     public void setPos1(int x, int y, int z) {
         hasSetPos1 = true;
         pos1 = new int[]{x, y, z};
     }
 
+    /**
+     * Gets position 2.
+     * 
+     * @return
+     * @throws IncompleteRegionException
+     */
     public int[] getPos2() throws IncompleteRegionException {
         checkPos2();
         return pos2;
     }
 
+    /**
+     * Sets position 2.
+     * 
+     * @param x
+     * @param y
+     * @param z
+     */
     public void setPos2(int x, int y, int z) {
         hasSetPos2 = true;
         pos2 = new int[]{x, y, z};
     }
 
+    /**
+     * Get lower X bound.
+     * 
+     * @return
+     * @throws IncompleteRegionException
+     */
     public int getLowerX() throws IncompleteRegionException {
         checkPos1();
         checkPos2();
         return Math.min(pos1[0], pos2[0]);
     }
 
+    /**
+     * Get upper X bound.
+     *
+     * @return
+     * @throws IncompleteRegionException
+     */
     public int getUpperX() throws IncompleteRegionException {
         checkPos1();
         checkPos2();
         return Math.max(pos1[0], pos2[0]);
     }
 
+    /**
+     * Get lower Y bound.
+     *
+     * @return
+     * @throws IncompleteRegionException
+     */
     public int getLowerY() throws IncompleteRegionException {
         checkPos1();
         checkPos2();
         return Math.min(pos1[1], pos2[1]);
     }
 
+    /**
+     * Get upper Y bound.
+     *
+     * @return
+     * @throws IncompleteRegionException
+     */
     public int getUpperY() throws IncompleteRegionException {
         checkPos1();
         checkPos2();
         return Math.max(pos1[1], pos2[1]);
     }
 
+    /**
+     * Get lower Z bound.
+     *
+     * @return
+     * @throws IncompleteRegionException
+     */
     public int getLowerZ() throws IncompleteRegionException {
         checkPos1();
         checkPos2();
         return Math.min(pos1[2], pos2[2]);
     }
 
+    /**
+     * Get upper Z bound.
+     *
+     * @return
+     * @throws IncompleteRegionException
+     */
     public int getUpperZ() throws IncompleteRegionException {
         checkPos1();
         checkPos2();
         return Math.max(pos1[2], pos2[2]);
     }
 
+    /**
+     * Gets the size of the region as the number of blocks.
+     * 
+     * @return
+     * @throws IncompleteRegionException
+     */
     public int getSize() throws IncompleteRegionException {
         return (getUpperX() - getLowerX() + 1) *
                (getUpperY() - getLowerY() + 1) *
@@ -168,6 +246,8 @@ public class WorldEditSession {
     }
 
     /**
+     * Gets the clipboard.
+     * 
      * @return
      */
     public RegionClipboard getClipboard() {
@@ -175,6 +255,8 @@ public class WorldEditSession {
     }
 
     /**
+     * Sets the clipboard.
+     * 
      * @param clipboard
      */
     public void setClipboard(RegionClipboard clipboard) {
