@@ -1,5 +1,3 @@
-package com.sk89q.worldedit;
-
 // $Id$
 /*
  * WorldEdit
@@ -18,6 +16,8 @@ package com.sk89q.worldedit;
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
+package com.sk89q.worldedit;
 
 /**
  * Thrown when no item exist by the ID.

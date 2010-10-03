@@ -20,10 +20,9 @@
 package com.sk89q.worldedit;
 
 /**
- * Raised when a region is not fully defined.
  *
  * @author Albert
  */
-public class IncompleteRegionException extends Exception {
+public class NoSuchScriptException extends Exception {
 
 }

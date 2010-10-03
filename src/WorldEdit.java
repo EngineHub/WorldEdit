@@ -41,6 +41,7 @@ public class WorldEdit extends Plugin {
 
     private PropertiesFile properties;
     private String[] allowedBlocks;
+    private boolean mapScriptCommands = false;
 
     /**
      * Construct an instance of the plugin.
@@ -65,7 +66,7 @@ public class WorldEdit extends Plugin {
         commands.put("/editload", "[Filename] - Load .schematic into clipboard");
         commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
         commands.put("/editfill", "<ID> <Radius> <Depth> - Fill a hole");
-        commands.put("/script", "[Filename] <Args...> - Run a WorldEdit script");
+        commands.put("/editscript", "[Filename] <Args...> - Run a WorldEdit script");
     }
 
     /**
@@ -166,6 +167,7 @@ public class WorldEdit extends Plugin {
         }
 
         allowedBlocks = properties.getString("allowed-blocks", DEFAULT_ALLOWED_BLOCKS).split(",");
+        mapScriptCommands = properties.getBoolean("map-script-commands", true);
 
         etc controller = etc.getInstance();
 
@@ -199,6 +201,21 @@ public class WorldEdit extends Plugin {
             if (commands.containsKey(split[0])) {
                 if (etc.getInstance().canUseCommand(player.getName(), split[0])) {
                     return handleEditCommand(player, split);
+                }
+            } else {
+                // See if there is a script by the same name
+                if (mapScriptCommands) {
+                    if (etc.getInstance().canUseCommand(player.getName(), "/editscript")) {
+                        String filename = split[0].substring(1) + ".js";
+                        String[] args = new String[split.length - 1];
+                        System.arraycopy(split, 1, args, 0, split.length - 1);
+                        try {
+                            return runScript(player, getSession(player), new EditSession(),
+                                    filename, args);
+                        } catch (NoSuchScriptException nse) {
+                            return false;
+                        }
+                    }
                 }
             }
 
@@ -418,13 +435,17 @@ public class WorldEdit extends Plugin {
             
             return true;
 
-        // Run an editscript
-        } else if (split[0].equalsIgnoreCase("/script")) {
+        // Run a script
+        } else if (split[0].equalsIgnoreCase("/editscript")) {
             checkArgs(split, 1);
             String filename = split[1].replace("\0", "") + ".js";
             String[] args = new String[split.length - 2];
             System.arraycopy(split, 2, args, 0, split.length - 2);
-            runScript(player, session, editSession, filename, args);
+            try {
+                runScript(player, session, editSession, filename, args);
+            } catch (NoSuchScriptException e) {
+                player.sendMessage(Colors.Rose + "Script file does not exist.");
+            }
             return true;
         }
 
@@ -612,7 +633,8 @@ public class WorldEdit extends Plugin {
      * @param args
      */
     private boolean runScript(Player player, WorldEditSession session,
-            EditSession editSession, String filename, String[] args) {
+            EditSession editSession, String filename, String[] args) throws
+            NoSuchScriptException {
         File dir = new File("editscripts");
         File f = new File("editscripts", filename);
 
@@ -621,9 +643,9 @@ public class WorldEdit extends Plugin {
             String dirPath = dir.getCanonicalPath();
 
             if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
-                player.sendMessage(Colors.Rose + "Script file does not exist.");
+                throw new NoSuchScriptException();
             } else if (!f.exists()) {
-                player.sendMessage(Colors.Rose + "Script file does not exist.");
+                throw new NoSuchScriptException();
             } else {
                 // Read file
                 StringBuffer buffer = new StringBuffer();
