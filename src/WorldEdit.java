@@ -631,6 +631,7 @@ public class WorldEdit extends Plugin {
      * @param player
      * @param filename
      * @param args
+     * @return Whether the file was attempted execution
      */
     private boolean runScript(Player player, WorldEditSession session,
             EditSession editSession, String filename, String[] args) throws
@@ -659,7 +660,8 @@ public class WorldEdit extends Plugin {
                 String code = buffer.toString();
 
                 // Evaluate
-                Context cx = Context.enter();
+                ScriptContextFactory factory = new ScriptContextFactory();
+                Context cx = factory.enterContext();
                 try {                    
                     ScriptableObject scope = cx.initStandardObjects();
 
@@ -682,18 +684,22 @@ public class WorldEdit extends Plugin {
                     ScriptableObject.putProperty(scope, "minecraft",
                         Context.javaToJS(minecraft, scope));
 
+                    logger.log(Level.INFO, player.getName() + ": executing " + filename + "...");
                     cx.evaluateString(scope, code, filename, 1, null);
+                    logger.log(Level.INFO, player.getName() + ": script " + filename + " executed successfully.");
                     player.sendMessage(Colors.LightPurple + filename + " executed successfully.");
-
-                    return true;
                 } catch (RhinoException re) {
-                    player.sendMessage(Colors.Rose + "JS error: " + re.getMessage());
+                    player.sendMessage(Colors.Rose + filename + ": JS error: " + re.getMessage());
                     re.printStackTrace();
+                } catch (Error err) {
+                    player.sendMessage(Colors.Rose + filename + ": execution error: " + err.getMessage());
                 } finally {
                     Context.exit();
                     session.remember(editSession);
                 }
             }
+
+            return true;
         } catch (IOException e) {
             player.sendMessage(Colors.Rose + "Script could not read or it does not exist.");
         }
