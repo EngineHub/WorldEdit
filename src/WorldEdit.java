@@ -26,6 +26,7 @@ import org.mozilla.javascript.*;
 import com.sk89q.worldedit.*;
 
 /**
+ * Plugin entry point for Hey0's mod.
  *
  * @author sk89q
  */
@@ -39,12 +40,11 @@ public class WorldEdit extends Plugin {
     private HashMap<String,String> commands = new HashMap<String,String>();
 
     private PropertiesFile properties;
-    /**
-     * List of allowed blocks as a list of numbers as Strings. Not converted
-     * to a more usuable format.
-     */
     private String[] allowedBlocks;
 
+    /**
+     * Construct an instance of the plugin.
+     */
     public WorldEdit() {
         super();
 
@@ -65,38 +65,6 @@ public class WorldEdit extends Plugin {
         commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
         commands.put("/editfill", "<ID> <Radius> <Depth> - Fill a hole");
         commands.put("/editscript", "[Filename] <Args...> - Run an editscript");
-    }
-
-    /**
-     * Enables the plugin.
-     */
-    public void enable() {
-        if (properties == null) {
-            properties = new PropertiesFile("worldedit.properties");
-        } else {
-            properties.load();
-        }
-
-        allowedBlocks = properties.getString("allowed-blocks", DEFAULT_ALLOWED_BLOCKS).split(",");
-
-        etc controller = etc.getInstance();
-
-        for (Map.Entry<String,String> entry : commands.entrySet()) {
-            controller.addCommand(entry.getKey(), entry.getValue());
-        }
-    }
-
-    /**
-     * Disables the plugin.
-     */
-    public void disable() {
-        etc controller = etc.getInstance();
-        
-        for (String key : commands.keySet()) {
-            controller.removeCommand(key);
-        }
-
-        sessions.clear();
     }
 
     /**
@@ -166,20 +134,65 @@ public class WorldEdit extends Plugin {
 
     /**
      *
-     * @override
      * @param player
      */
+    @Override
     public void onDisconnect(Player player) {
         sessions.remove(player.getName());
     }
 
     /**
+     * Checks to make sure that there are enough arguments.
+     *
+     * @param args
+     * @param min
+     * @throws InsufficientArgumentsException
+     */
+    private void checkArgs(String[] args, int min) throws InsufficientArgumentsException {
+        if (args.length <= min) {
+            throw new InsufficientArgumentsException(String.format("Min. %d arguments required", min));
+        }
+    }
+
+    /**
+     * Enables the plugin.
+     */
+    public void enable() {
+        if (properties == null) {
+            properties = new PropertiesFile("worldedit.properties");
+        } else {
+            properties.load();
+        }
+
+        allowedBlocks = properties.getString("allowed-blocks", DEFAULT_ALLOWED_BLOCKS).split(",");
+
+        etc controller = etc.getInstance();
+
+        for (Map.Entry<String,String> entry : commands.entrySet()) {
+            controller.addCommand(entry.getKey(), entry.getValue());
+        }
+    }
+
+    /**
+     * Disables the plugin.
+     */
+    public void disable() {
+        etc controller = etc.getInstance();
+
+        for (String key : commands.keySet()) {
+            controller.removeCommand(key);
+        }
+
+        sessions.clear();
+    }
+
+    /**
      * 
-     * @override
      * @param player
      * @param split
      * @return
      */
+    @Override
     public boolean onCommand(Player player, String[] split) {
         try {
             if (commands.containsKey(split[0])) {
@@ -208,18 +221,16 @@ public class WorldEdit extends Plugin {
     }
 
     /**
-     * Checks to make sure that there are enough arguments.
+     * The main meat of command processing.
      * 
-     * @param args
-     * @param min
+     * @param player
+     * @param split
+     * @return
+     * @throws UnknownItemException
+     * @throws IncompleteRegionException
      * @throws InsufficientArgumentsException
+     * @throws DisallowedItemException
      */
-    private void checkArgs(String[] args, int min) throws InsufficientArgumentsException {
-        if (args.length <= min) {
-            throw new InsufficientArgumentsException(String.format("Min. %d arguments required", min));
-        }
-    }
-
     private boolean handleEditCommand(Player player, String[] split)
             throws UnknownItemException, IncompleteRegionException,
                    InsufficientArgumentsException, DisallowedItemException
@@ -264,13 +275,13 @@ public class WorldEdit extends Plugin {
         // Clear undo history
         } else if (split[0].equalsIgnoreCase("/clearhistory")) {
             session.clearHistory();
-            player.sendMessage(Colors.LightPurple + "History cleared.");;
+            player.sendMessage(Colors.LightPurple + "History cleared.");
             return true;
 
         // Clear clipboard
         } else if (split[0].equalsIgnoreCase("/clearclipboard")) {
             session.setClipboard(null);
-            player.sendMessage(Colors.LightPurple + "Clipboard cleared.");;
+            player.sendMessage(Colors.LightPurple + "Clipboard cleared.");
             return true;
 
         // Paste
