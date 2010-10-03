@@ -65,7 +65,7 @@ public class WorldEdit extends Plugin {
         commands.put("/editload", "[Filename] - Load .schematic into clipboard");
         commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
         commands.put("/editfill", "<ID> <Radius> <Depth> - Fill a hole");
-        commands.put("/editscript", "[Filename] <Args...> - Run an editscript");
+        commands.put("/script", "[Filename] <Args...> - Run a WorldEdit script");
     }
 
     /**
@@ -419,71 +419,12 @@ public class WorldEdit extends Plugin {
             return true;
 
         // Run an editscript
-        } else if (split[0].equalsIgnoreCase("/editscript")) {
+        } else if (split[0].equalsIgnoreCase("/script")) {
             checkArgs(split, 1);
             String filename = split[1].replace("\0", "") + ".js";
-            File dir = new File("editscripts");
-            File f = new File("editscripts", filename);
-
-            try {
-                String filePath = f.getCanonicalPath();
-                String dirPath = dir.getCanonicalPath();
-
-                if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
-                    player.sendMessage(Colors.Rose + "Editscript file does not exist.");
-                } else {
-                    // Read file
-                    StringBuffer buffer = new StringBuffer();
-                    FileInputStream stream = new FileInputStream(f);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
-                    int c;
-                    while ((c = in.read()) > -1) {
-                        buffer.append((char)c);
-                    }
-                    in.close();
-                    String code = buffer.toString();
-
-                    // Evaluate
-                    Context cx = Context.enter();
-                    try {
-                        ScriptableObject scope = cx.initStandardObjects();
-
-                        // Add args
-                        String[] args = new String[split.length - 2];
-                        System.arraycopy(split, 2, args, 0, split.length - 2);
-                        ScriptableObject.putProperty(scope, "args",
-                            Context.javaToJS(args, scope));
-
-                        // Add context
-                        EditScriptPlayer scriptPlayer = new EditScriptPlayer(player);
-                        EditScriptContext context = new EditScriptContext(
-                            scriptPlayer);
-                        ScriptableObject.putProperty(scope, "context",
-                            Context.javaToJS(context, scope));
-                        ScriptableObject.putProperty(scope, "player",
-                            Context.javaToJS(scriptPlayer, scope));
-
-                        // Add Minecraft context
-                        EditScriptMinecraftContext minecraft =
-                            new EditScriptMinecraftContext(editSession);
-                        ScriptableObject.putProperty(scope, "minecraft",
-                            Context.javaToJS(minecraft, scope));
-
-                        cx.evaluateString(scope, code, filename, 1, null);
-                        player.sendMessage(Colors.LightPurple + filename + " executed successfully.");
-                    } catch (RhinoException re) {
-                        player.sendMessage(Colors.Rose + "JS error: " + re.getMessage());
-                        re.printStackTrace();
-                    } finally {
-                        Context.exit();
-                        session.remember(editSession);
-                    }
-
-                    return true;
-                }
-            } catch (IOException e) {
-                player.sendMessage(Colors.Rose + "Editscript could not read or it does not exist.");
-            }
+            String[] args = new String[split.length - 2];
+            System.arraycopy(split, 2, args, 0, split.length - 2);
+            runScript(player, session, editSession, filename, args);
             return true;
         }
 
@@ -661,5 +602,80 @@ public class WorldEdit extends Plugin {
         }
 
         return affected;
+    }
+
+    /**
+     * Execute a script.
+     *
+     * @param player
+     * @param filename
+     * @param args
+     */
+    private boolean runScript(Player player, WorldEditSession session,
+            EditSession editSession, String filename, String[] args) {
+        File dir = new File("editscripts");
+        File f = new File("editscripts", filename);
+
+        try {
+            String filePath = f.getCanonicalPath();
+            String dirPath = dir.getCanonicalPath();
+
+            if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
+                player.sendMessage(Colors.Rose + "Script file does not exist.");
+            } else if (!f.exists()) {
+                player.sendMessage(Colors.Rose + "Script file does not exist.");
+            } else {
+                // Read file
+                StringBuffer buffer = new StringBuffer();
+                FileInputStream stream = new FileInputStream(f);
+                BufferedReader in = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+                int c;
+                while ((c = in.read()) > -1) {
+                    buffer.append((char)c);
+                }
+                in.close();
+                String code = buffer.toString();
+
+                // Evaluate
+                Context cx = Context.enter();
+                try {                    
+                    ScriptableObject scope = cx.initStandardObjects();
+
+                    // Add args
+                    ScriptableObject.putProperty(scope, "args",
+                        Context.javaToJS(args, scope));
+
+                    // Add context
+                    ScriptPlayer scriptPlayer = new ScriptPlayer(player);
+                    ScriptContext context = new ScriptContext(
+                        scriptPlayer);
+                    ScriptableObject.putProperty(scope, "context",
+                        Context.javaToJS(context, scope));
+                    ScriptableObject.putProperty(scope, "player",
+                        Context.javaToJS(scriptPlayer, scope));
+
+                    // Add Minecraft context
+                    ScriptMinecraftContext minecraft =
+                        new ScriptMinecraftContext(editSession);
+                    ScriptableObject.putProperty(scope, "minecraft",
+                        Context.javaToJS(minecraft, scope));
+
+                    cx.evaluateString(scope, code, filename, 1, null);
+                    player.sendMessage(Colors.LightPurple + filename + " executed successfully.");
+
+                    return true;
+                } catch (RhinoException re) {
+                    player.sendMessage(Colors.Rose + "JS error: " + re.getMessage());
+                    re.printStackTrace();
+                } finally {
+                    Context.exit();
+                    session.remember(editSession);
+                }
+            }
+        } catch (IOException e) {
+            player.sendMessage(Colors.Rose + "Script could not read or it does not exist.");
+        }
+
+        return false;
     }
 }

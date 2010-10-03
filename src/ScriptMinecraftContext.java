@@ -19,35 +19,42 @@
 
 /**
  *
- * @author sk89q
+ * @author Albert
  */
-public class EditScriptContext {
-    public EditScriptPlayer player;
+public class ScriptMinecraftContext {
+    private EditSession editSession;
 
     /**
-     * Constructs the context. A player object has to be passed.
+     * Construct this Minecraft object with an EditSession.
      * 
-     * @param player
+     * @param editSession
      */
-    public EditScriptContext(EditScriptPlayer player) {
-        this.player = player;
+    public ScriptMinecraftContext(EditSession editSession) {
+        this.editSession = editSession;
     }
-
+    
     /**
-     * Prints a message to the player.
-     * 
-     * @param msg
-     */
-    public void print(String msg) {
-        player.print(msg);
-    }
-
-    /**
-     * Prints an error message to the player.
+     * Sets the block at position x, y, z with a block type.
      *
-     * @param msg
+     * @param x
+     * @param y
+     * @param z
+     * @param blockType
+     * @return
      */
-    public void error(String msg) {
-        player.error(msg);
+    public boolean setBlock(int x, int y, int z, int blockType) {
+        return editSession.setBlock(x, y, z, blockType);
+    }
+
+    /**
+     * Gets the block type at a position x, y, z.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
+    public int getBlock(int x, int y, int z) {
+        return editSession.getBlock(x, y, z);
     }
 }

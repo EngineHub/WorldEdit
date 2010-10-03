@@ -21,7 +21,7 @@
  *
  * @author Albert
  */
-public class EditScriptPlayer {
+public class ScriptPlayer {
     private Player player;
 
     public String name;
@@ -33,6 +33,24 @@ public class EditScriptPlayer {
     public int blockX;
     public int blockY;
     public int blockZ;
+
+    /**
+     * Constructs the player instance.
+     *
+     * @param player
+     */
+    public ScriptPlayer(Player player) {
+        this.player = player;
+        name = player.getName();
+        pitch = player.getPitch();
+        yaw = player.getRotation();
+        x = player.getX();
+        y = player.getY();
+        z = player.getZ();
+        blockX = (int)Math.floor(player.getX());
+        blockY = (int)Math.floor(player.getY());
+        blockZ = (int)Math.floor(player.getZ());
+    }
 
     /**
      * Prints a message to the player.
@@ -53,20 +71,38 @@ public class EditScriptPlayer {
     }
 
     /**
-     * Constructs the player instance.
-     * 
-     * @param player
+     * Teleport the player to a position.
+     *
+     * @param x
+     * @param y
+     * @param z
      */
-    public EditScriptPlayer(Player player) {
-        this.player = player;
-        name = player.getName();
-        pitch = player.getPitch();
-        yaw = player.getRotation();
-        x = player.getX();
-        y = player.getY();
-        z = player.getZ();
-        blockX = (int)Math.floor(player.getX());
-        blockY = (int)Math.floor(player.getY());
-        blockZ = (int)Math.floor(player.getZ());
+    public void teleporTo(double x, double y, double z) {
+        Location loc = new Location();
+        loc.x = x;
+        loc.y = y;
+        loc.z = z;
+        loc.rotX = player.getRotation();
+        loc.rotY = player.getPitch();
+        player.teleportTo(loc);
+    }
+
+    /**
+     * Teleport the player to a position with a certain rotation.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @param pitch
+     * @param yaw
+     */
+    public void teleporTo(double x, double y, double z, float pitch, float yaw) {
+        Location loc = new Location();
+        loc.x = x;
+        loc.y = y;
+        loc.z = z;
+        loc.rotX = yaw;
+        loc.rotY = pitch;
+        player.teleportTo(loc);
     }
 }
