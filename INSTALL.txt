@@ -9,3 +9,15 @@ This plugin requires Hey0's server modification.
     plugins=WorldEdit
     If you have multiple plugins, separate plugin names with commas:
     plugins=AnotherPlugin,WorldEdit
+
+You may also copy the editscripts/ folder into your bin/ folder so that you
+can use the provided example EditScripts.
+
+Configuration
+-------------
+
+A worldedit.properties will be created on first run that will let you configure
+settings for WorldEdit.
+
+Available settings:
+* allowed-blocks: List of allowed blocks that you can use
