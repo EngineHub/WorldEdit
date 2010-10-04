@@ -24,6 +24,6 @@ package com.sk89q.worldedit;
  *
  * @author Albert
  */
-public class IncompleteRegionException extends Exception {
+public class IncompleteRegionException extends WorldEditException {
 
 }

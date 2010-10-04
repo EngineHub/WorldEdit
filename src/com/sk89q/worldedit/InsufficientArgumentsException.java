@@ -23,7 +23,7 @@ package com.sk89q.worldedit;
  *
  * @author sk89q
  */
-public class InsufficientArgumentsException extends Exception {
+public class InsufficientArgumentsException extends WorldEditException {
     public InsufficientArgumentsException(String error) {
         super(error);
     }

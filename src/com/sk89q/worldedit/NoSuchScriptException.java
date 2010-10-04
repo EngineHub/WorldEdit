@@ -23,6 +23,6 @@ package com.sk89q.worldedit;
  *
  * @author Albert
  */
-public class NoSuchScriptException extends Exception {
+public class NoSuchScriptException extends WorldEditException {
 
 }

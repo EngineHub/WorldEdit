@@ -100,8 +100,10 @@ public class RegionClipboard {
      * @param editSession
      * @param origin Position to paste it from
      * @param noAir True to not paste air
+     * @throws MaxChangedBlocksException
      */
-    public void paste(EditSession editSession, Point<Integer> newOrigin, boolean noAir) {
+    public void paste(EditSession editSession, Point<Integer> newOrigin, boolean noAir)
+        throws MaxChangedBlocksException {
         int xs = getWidth();
         int ys = getHeight();
         int zs = getLength();

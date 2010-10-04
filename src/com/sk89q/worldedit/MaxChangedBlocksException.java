@@ -23,6 +23,14 @@ package com.sk89q.worldedit;
  *
  * @author sk89q
  */
-public class DisallowedItemException extends WorldEditException {
+public class MaxChangedBlocksException extends WorldEditException {
+    int maxBlocks;
 
+    public MaxChangedBlocksException(int maxBlocks) {
+        this.maxBlocks = maxBlocks;
+    }
+
+    public int getBlockLimit() {
+        return maxBlocks;
+    }
 }

@@ -21,8 +21,13 @@ package com.sk89q.worldedit;
 
 /**
  *
- * @author sk89q
+ * @author Albert
  */
-public class DisallowedItemException extends WorldEditException {
+public abstract class WorldEditException extends Exception {
+    protected WorldEditException() {
+    }
 
+    protected WorldEditException(String msg) {
+        super(msg);
+    }
 }

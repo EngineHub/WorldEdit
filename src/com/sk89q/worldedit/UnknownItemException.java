@@ -24,6 +24,6 @@ package com.sk89q.worldedit;
  *
  * @author sk89q
  */
-public class UnknownItemException extends Exception {
+public class UnknownItemException extends WorldEditException {
 
 }

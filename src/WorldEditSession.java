@@ -36,6 +36,7 @@ public class WorldEditSession {
     private boolean toolControl = true;
     private int[] lastToolPos1 = new int[3];
     private long lastToolClick = 0;
+    private int maxBlocksChanged = -1;
 
     /**
      * Clear history.
@@ -336,5 +337,22 @@ public class WorldEditSession {
      */
     public void triggerToolClick() {
         lastToolClick = System.currentTimeMillis();
+    }
+
+    /**
+     * Get the maximum number of blocks that can be changed in an edit session.
+     * @return
+     */
+    public int getBlockChangeLimit() {
+        return maxBlocksChanged;
+    }
+
+    /**
+     * Set the maximum number of blocks that can be changed.
+     * 
+     * @param maxBlocksChanged
+     */
+    public void setBlockChangeLimit(int maxBlocksChanged) {
+        this.maxBlocksChanged = maxBlocksChanged;
     }
 }

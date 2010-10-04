@@ -41,6 +41,7 @@ public class WorldEdit extends Plugin {
 
     private PropertiesFile properties;
     private String[] allowedBlocks;
+    private int defaultMaxBlocksChanged;
     private boolean mapScriptCommands = false;
 
     /**
@@ -68,6 +69,7 @@ public class WorldEdit extends Plugin {
         commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
         commands.put("/editfill", "<ID> <Radius> <Depth> - Fill a hole");
         commands.put("/editscript", "[Filename] <Args...> - Run a WorldEdit script");
+        commands.put("/setchangelimit", "<Num> - See documentation");
     }
 
     /**
@@ -81,6 +83,7 @@ public class WorldEdit extends Plugin {
             return sessions.get(player.getName());
         } else {
             WorldEditSession session = new WorldEditSession();
+            session.setBlockChangeLimit(defaultMaxBlocksChanged);
             sessions.put(player.getName(), session);
             return session;
         }
@@ -169,6 +172,8 @@ public class WorldEdit extends Plugin {
 
         allowedBlocks = properties.getString("allowed-blocks", DEFAULT_ALLOWED_BLOCKS).split(",");
         mapScriptCommands = properties.getBoolean("map-script-commands", true);
+        defaultMaxBlocksChanged = 
+                Math.max(-1, properties.getInt("max-blocks-changed", -1));
 
         etc controller = etc.getInstance();
 
@@ -255,21 +260,33 @@ public class WorldEdit extends Plugin {
         try {
             if (commands.containsKey(split[0])) {
                 if (player.canUseCommand(split[0])) {
-                    return handleEditCommand(player, split);
+                    WorldEditSession session = getSession(player);
+                    EditSession editSession =
+                            new EditSession(session.getBlockChangeLimit());
+                    
+                    try {
+                        return performCommand(player, session, editSession, split);
+                    } finally {
+                        session.remember(editSession);
+                    }
                 }
             } else {
                 // See if there is a script by the same name
-                if (mapScriptCommands) {
-                    if (player.canUseCommand("/editscript")) {
-                        String filename = split[0].substring(1) + ".js";
-                        String[] args = new String[split.length - 1];
-                        System.arraycopy(split, 1, args, 0, split.length - 1);
-                        try {
-                            return runScript(player, getSession(player), new EditSession(),
-                                    filename, args);
-                        } catch (NoSuchScriptException nse) {
-                            return false;
-                        }
+                if (mapScriptCommands && player.canUseCommand("/editscript")) {
+                    WorldEditSession session = getSession(player);
+                    EditSession editSession =
+                            new EditSession(session.getBlockChangeLimit());
+
+                    String filename = split[0].substring(1) + ".js";
+                    String[] args = new String[split.length - 1];
+                    System.arraycopy(split, 1, args, 0, split.length - 1);
+
+                    try {
+                        return runScript(player, session, editSession, filename, args);
+                    } catch (NoSuchScriptException nse) {
+                        return false;
+                    } finally {
+                        session.remember(editSession);
                     }
                 }
             }
@@ -277,26 +294,30 @@ public class WorldEdit extends Plugin {
             return false;
         } catch (NumberFormatException e) {
             player.sendMessage(Colors.Rose + "Number expected; string given.");
-            return true;
         } catch (IncompleteRegionException e2) {
             player.sendMessage(Colors.Rose + "The edit region has not been fully defined.");
-            return true;
         } catch (UnknownItemException e3) {
             player.sendMessage(Colors.Rose + "Unknown item.");
-            return true;
         } catch (DisallowedItemException e4) {
             player.sendMessage(Colors.Rose + "Disallowed item.");
-            return true;
-        } catch (InsufficientArgumentsException e5) {
-            player.sendMessage(Colors.Rose + e5.getMessage());
-            return true;
+        } catch (MaxChangedBlocksException e5) {
+            player.sendMessage(Colors.Rose + "The maximum number of blocks changed ("
+                    + e5.getBlockLimit() + ") in an instance was reached.");
+        } catch (InsufficientArgumentsException e6) {
+            player.sendMessage(Colors.Rose + e6.getMessage());
+        } catch (WorldEditException e7) {
+            player.sendMessage(Colors.Rose + e7.getMessage());
         }
+
+        return true;
     }
 
     /**
      * The main meat of command processing.
      * 
      * @param player
+     * @param session
+     * @param editSession
      * @param split
      * @return
      * @throws UnknownItemException
@@ -304,13 +325,10 @@ public class WorldEdit extends Plugin {
      * @throws InsufficientArgumentsException
      * @throws DisallowedItemException
      */
-    private boolean handleEditCommand(Player player, String[] split)
-            throws UnknownItemException, IncompleteRegionException,
-                   InsufficientArgumentsException, DisallowedItemException
+    private boolean performCommand(Player player, WorldEditSession session,
+            EditSession editSession, String[] split)
+            throws WorldEditException
     {
-        WorldEditSession session = getSession(player);
-        EditSession editSession = new EditSession();
-
         // Set edit position #1
         if (split[0].equalsIgnoreCase("/editpos1")) {
             session.setPos1((int)Math.floor(player.getX()),
@@ -325,6 +343,14 @@ public class WorldEdit extends Plugin {
                             (int)Math.floor(player.getY()),
                             (int)Math.floor(player.getZ()));
             player.sendMessage(Colors.LightPurple + "Second edit position set.");
+            return true;
+
+        // Set edit position #2
+        } else if (split[0].equalsIgnoreCase("/setchangelimit")) {
+            checkArgs(split, 1);
+            int limit = Math.max(-1, Integer.parseInt(split[1]));
+            session.setBlockChangeLimit(limit);
+            player.sendMessage(Colors.LightPurple + "Block change limit set.");
             return true;
 
         // Undo
@@ -368,7 +394,6 @@ public class WorldEdit extends Plugin {
                                                         (int)Math.floor(player.getZ()));
                 session.getClipboard().paste(editSession, pos,
                     split[0].equalsIgnoreCase("/editpaste"));
-                session.remember(editSession);
                 logger.log(Level.INFO, player.getName() + " used " + split[0]);
                 player.sendMessage(Colors.LightPurple + "Pasted.");
             }
@@ -392,8 +417,6 @@ public class WorldEdit extends Plugin {
 
             logger.log(Level.INFO, player.getName() + " used /editfill");
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been created.");
-
-            session.remember(editSession);
 
             return true;
 
@@ -419,8 +442,6 @@ public class WorldEdit extends Plugin {
 
             logger.log(Level.INFO, player.getName() + " used /removeabove");
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been removed.");
-
-            session.remember(editSession);
 
             return true;
 
@@ -534,8 +555,6 @@ public class WorldEdit extends Plugin {
             logger.log(Level.INFO, player.getName() + " used /editset");
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been set.");
 
-            session.remember(editSession);
-
             return true;
 
         // Set the outline of a region
@@ -571,8 +590,6 @@ public class WorldEdit extends Plugin {
             logger.log(Level.INFO, player.getName() + " used /editoutline");
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been set.");
 
-            session.remember(editSession);
-
             return true;
 
         // Replace all blocks in the region
@@ -597,8 +614,6 @@ public class WorldEdit extends Plugin {
 
             logger.log(Level.INFO, player.getName() + " used /editreplace");
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been replaced.");
-
-            session.remember(editSession);
 
             return true;
 
@@ -627,8 +642,6 @@ public class WorldEdit extends Plugin {
 
             logger.log(Level.INFO, player.getName() + " used /editoverlay");
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been overlayed.");
-
-            session.remember(editSession);
 
             return true;
 
@@ -668,7 +681,8 @@ public class WorldEdit extends Plugin {
      * @return
      */
     private int fill(EditSession editSession, int x, int z, int cx, int cy,
-                     int cz, int blockType, int radius, int minY) {
+            int cz, int blockType, int radius, int minY)
+            throws MaxChangedBlocksException {
         double dist = Math.sqrt(Math.pow(cx - x, 2) + Math.pow(cz - z, 2));
         int affected = 0;
         
@@ -699,10 +713,12 @@ public class WorldEdit extends Plugin {
      * @param z
      * @param blockType
      * @param minY
+     * @throws MaxChangedBlocksException
      * @return
      */
     private int fillY(EditSession editSession, int x, int cy,
-                      int z, int blockType, int minY) {
+        int z, int blockType, int minY)
+        throws MaxChangedBlocksException {
         int affected = 0;
         
         for (int y = cy; y > minY; y--) {
@@ -787,7 +803,6 @@ public class WorldEdit extends Plugin {
                     player.sendMessage(Colors.Rose + filename + ": execution error: " + err.getMessage());
                 } finally {
                     Context.exit();
-                    session.remember(editSession);
                 }
             }
 

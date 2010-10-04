@@ -30,7 +30,32 @@ public class EditSession {
      * Stores the original blocks before modification.
      */
     private HashMap<Point<Integer>,Integer> original = new HashMap<Point<Integer>,Integer>();
+    /**
+     * Stores the current blocks.
+     */
     private HashMap<Point<Integer>,Integer> current = new HashMap<Point<Integer>,Integer>();
+    /**
+     * The maximum number of blocks to change at a time. If this number is
+     * exceeded, a MaxChangedBlocksException exception will be
+     * raised. -1 indicates no limit.
+     */
+    private int maxBlocks = -1;
+
+    /**
+     * Default constructor. There is no maximum blocks limit.
+     */
+    public EditSession() {
+    }
+
+    /**
+     * Construct the object with a maximum number of blocks.
+     */
+    public EditSession(int maxBlocks) {
+        if (maxBlocks < -1) {
+            throw new IllegalArgumentException("Max blocks must be >= -1");
+        }
+        this.maxBlocks = maxBlocks;
+    }
 
     /**
      * Sets a block without changing history.
@@ -54,10 +79,15 @@ public class EditSession {
      * @param blockType
      * @return Whether the block changed
      */
-    public boolean setBlock(int x, int y, int z, int blockType) {
+    public boolean setBlock(int x, int y, int z, int blockType)
+        throws MaxChangedBlocksException {
         Point<Integer> pt = new Point<Integer>(x, y, z);
         if (!original.containsKey(pt)) {
             original.put(pt, getBlock(x, y, z));
+
+            if (maxBlocks != -1 && original.size() > maxBlocks) {
+                throw new MaxChangedBlocksException(maxBlocks);
+            }
         }
         current.put(pt, blockType);
         return rawSetBlock(x, y, z, blockType);
@@ -103,5 +133,27 @@ public class EditSession {
      */
     public int size() {
         return original.size();
+    }
+
+    /**
+     * Get the maximum number of blocks that can be changed. -1 will be
+     * returned if disabled.
+     *
+     * @return
+     */
+    public int getBlockChangeLimit() {
+        return maxBlocks;
+    }
+
+    /**
+     * Set the maximum number of blocks that can be changed.
+     * 
+     * @param maxBlocks -1 to disable
+     */
+    public void setBlockChangeLimit(int maxBlocks) {
+        if (maxBlocks < -1) {
+            throw new IllegalArgumentException("Max blocks must be >= -1");
+        }
+        this.maxBlocks = maxBlocks;
     }
 }

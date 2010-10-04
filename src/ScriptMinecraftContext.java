@@ -1,3 +1,6 @@
+
+import com.sk89q.worldedit.MaxChangedBlocksException;
+
 // $Id$
 /*
  * WorldEdit
@@ -40,9 +43,11 @@ public class ScriptMinecraftContext {
      * @param y
      * @param z
      * @param blockType
+     * @throws MaxChangedBlocksException
      * @return
      */
-    public boolean setBlock(int x, int y, int z, int blockType) {
+    public boolean setBlock(int x, int y, int z, int blockType)
+            throws MaxChangedBlocksException {
         return editSession.setBlock(x, y, z, blockType);
     }
 
