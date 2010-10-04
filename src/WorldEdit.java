@@ -203,8 +203,8 @@ public class WorldEdit extends Plugin {
     public boolean onBlockCreate(Player player, Block blockPlaced,
             Block blockClicked, int itemInHand) {
         if (itemInHand == 271) { // Wooden axe
-            if (!etc.getInstance().canUseCommand(player.getName(), "/editpos1")
-                    || !etc.getInstance().canUseCommand(player.getName(), "/editpos2")) {
+            if (!player.canUseCommand("/editpos1")
+                    || !player.canUseCommand("/editpos2")) {
                 return false;
             }
             
@@ -254,13 +254,13 @@ public class WorldEdit extends Plugin {
     public boolean onCommand(Player player, String[] split) {
         try {
             if (commands.containsKey(split[0])) {
-                if (etc.getInstance().canUseCommand(player.getName(), split[0])) {
+                if (player.canUseCommand(split[0])) {
                     return handleEditCommand(player, split);
                 }
             } else {
                 // See if there is a script by the same name
                 if (mapScriptCommands) {
-                    if (etc.getInstance().canUseCommand(player.getName(), "/editscript")) {
+                    if (player.canUseCommand("/editscript")) {
                         String filename = split[0].substring(1) + ".js";
                         String[] args = new String[split.length - 1];
                         System.arraycopy(split, 1, args, 0, split.length - 1);
