@@ -7,5 +7,7 @@ under the Apache License 2.0.
 This product includes JavaScript support provided by the Mozilla Rhino project
 (http://www.mozilla.org/rhino/), under Mozilla Public License, version 1.1.
 
+This product includes software from JNBT (http://jnbt.sourceforge.net/).
+
 This product includes software from WorldEdit
 (http://www.sk89q.com), under GNU Lesser General Public License, version 3.
