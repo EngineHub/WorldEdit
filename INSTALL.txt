@@ -21,4 +21,6 @@ A worldedit.properties will be created on first run that will let you configure
 settings for WorldEdit.
 
 Available settings:
-* allowed-blocks: List of allowed blocks that you can use
+* string allowed-blocks: List of allowed blocks that you can use
+* true/false map-script-commands: True to allow scripts in editscripts/ to be
+  run directly as a command (i.e. /forestgen -> /editscript forestgen)
