@@ -20,6 +20,7 @@
 package com.sk89q.worldedit;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 /**
  *
@@ -75,7 +76,12 @@ public final class Point<T> {
             return false;
         }
         Point other = (Point)obj;
-        return other.x == x && other.y == y && other.z == z;
+        return new EqualsBuilder()
+            .append(x, other.x)
+            .append(y, other.y)
+            .append(z, other.z)
+            .isEquals();
+
     }
 
     /**
