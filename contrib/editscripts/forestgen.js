@@ -72,6 +72,8 @@ function makeTree(x, y, z) {
             }
         }
     }
+    
+    minecraft.setBlock(x, y + height, z, 18);
 }
 
 for (var x = player.blockX - size; x <= player.blockX + size; x++) {
