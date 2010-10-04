@@ -56,7 +56,8 @@ public class WorldEdit extends Plugin {
         commands.put("/clearhistory", "Clear history");
         commands.put("/clearclipboard", "Clear clipboard");
         commands.put("/editsize", "Get size of selected region");
-        commands.put("/editset", "<Type> - Set all  blocks inside region");
+        commands.put("/editset", "<Type> - Set all blocks inside region");
+        commands.put("/editoutline", "<Type> - Outline the region with blocks");
         commands.put("/editreplace", "<ID> <ToReplaceID> - Replace all existing blocks inside region");
         commands.put("/editoverlay", "<ID> - Overlay the area one layer");
         commands.put("/removeabove", "<Size> - Remove blocks above head");
@@ -531,6 +532,43 @@ public class WorldEdit extends Plugin {
             }
 
             logger.log(Level.INFO, player.getName() + " used /editset");
+            player.sendMessage(Colors.LightPurple + affected + " block(s) have been set.");
+
+            session.remember(editSession);
+
+            return true;
+
+        // Set the outline of a region
+        } else if(split[0].equalsIgnoreCase("/editoutline")) {
+            checkArgs(split, 1);
+            int blockType = getItem(split[1]);
+            int affected = 0;
+
+            for (int x = lowerX; x <= upperX; x++) {
+                for (int y = lowerY; y <= upperY; y++) {
+                    editSession.setBlock(x, y, lowerZ, blockType);
+                    editSession.setBlock(x, y, upperZ, blockType);
+                    affected++;
+                }
+            }
+
+            for (int y = lowerY; y <= upperY; y++) {
+                for (int z = lowerZ; z <= upperZ; z++) {
+                    editSession.setBlock(lowerX, y, z, blockType);
+                    editSession.setBlock(upperX, y, z, blockType);
+                    affected++;
+                }
+            }
+
+            for (int z = lowerZ; z <= upperZ; z++) {
+                for (int x = lowerX; x <= upperX; x++) {
+                    editSession.setBlock(x, lowerY, z, blockType);
+                    editSession.setBlock(x, upperY, z, blockType);
+                    affected++;
+                }
+            }
+
+            logger.log(Level.INFO, player.getName() + " used /editoutline");
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been set.");
 
             session.remember(editSession);
