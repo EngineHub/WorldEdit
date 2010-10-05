@@ -35,7 +35,7 @@ public class WorldEdit extends Plugin {
         "0,1,2,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,35,41,42,43," +
         "44,45,47,48,49,52,53,54,56,57,58,60,61,62,67,73,78,79,80,81,82,85";
 
-    private static Logger logger = Logger.getLogger("Minecraft");
+    private static final Logger logger = Logger.getLogger("Minecraft");
     private HashMap<String,WorldEditSession> sessions = new HashMap<String,WorldEditSession>();
     private HashMap<String,String> commands = new HashMap<String,String>();
 
@@ -68,6 +68,7 @@ public class WorldEdit extends Plugin {
         commands.put("/editload", "[Filename] - Load .schematic into clipboard");
         commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
         commands.put("/editfill", "[ID] [Radius] <Depth> - Fill a hole");
+        commands.put("/editcyl", "[ID] [Radius] <Height> - Create cylinder");
         commands.put("/editscript", "[Filename] <Args...> - Run a WorldEdit script");
         commands.put("/editlimit", "[Num] - See documentation");
     }
@@ -456,6 +457,38 @@ public class WorldEdit extends Plugin {
 
             logger.log(Level.INFO, player.getName() + " used " + split[0]);
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been removed.");
+
+            return true;
+
+        // Make a cylinder
+        } else if (split[0].equalsIgnoreCase("/editcyl")) {
+            checkArgs(split, 2, 3, "/editcyl");
+            int blockType = getItem(split[1]);
+            int radius = Math.abs(Integer.parseInt(split[2]));
+            int height = split.length > 3 ? getItem(split[3], true) : 1;
+
+            // We don't want to pass beyond boundaries
+            int cx = (int)Math.floor(player.getX());
+            int cy = (int)Math.floor(player.getY());
+            int cz = (int)Math.floor(player.getZ());
+            int maxY = Math.min(127, cy + height);
+
+            int affected = 0;
+
+            for (int x = 0; x <= radius; x++) {
+                int z = (int)(Math.sqrt(radius - x * x) + 0.5);
+                for (int y = cy; y <= maxY; y++) {
+                    for (int x2 = cx - x; x2 <= cx + x; x2++) {
+                        editSession.setBlock(x2, y, cz + z, blockType);
+                        affected++;
+                    }
+                }
+            }
+
+            teleportToStandPosition(player);
+
+            logger.log(Level.INFO, player.getName() + " used " + split[0]);
+            player.sendMessage(Colors.LightPurple + affected + " block(s) have been set.");
 
             return true;
 
