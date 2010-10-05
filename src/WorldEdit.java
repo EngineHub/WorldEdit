@@ -105,7 +105,7 @@ public class WorldEdit extends Plugin {
             foundID = Integer.parseInt(id);
         } catch (NumberFormatException e) {
             try {
-                foundID = etc.getInstance().getDataSource().getItem(id);
+                foundID = etc.getDataSource().getItem(id);
             } catch (NumberFormatException e2) {
                 throw new UnknownItemException();
             }
