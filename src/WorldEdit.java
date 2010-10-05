@@ -407,6 +407,7 @@ public class WorldEdit extends Plugin {
                                                         (int)Math.floor(player.getZ()));
                 session.getClipboard().paste(editSession, pos,
                     split[0].equalsIgnoreCase("/editpaste"));
+                teleportToStandPosition(player);
                 logger.log(Level.INFO, player.getName() + " used " + split[0]);
                 player.sendMessage(Colors.LightPurple + "Pasted. Undo with /editundo");
             }
@@ -755,6 +756,46 @@ public class WorldEdit extends Plugin {
     }
 
     /**
+     * Find a position for the player to stand that is not inside a block.
+     * Blocks above the player will be iteratively tested until there is
+     * a series of two free blocks. The player will be teleported to
+     * that free position.
+     * 
+     * @param player
+     */
+    private void teleportToStandPosition(Player player) {
+        int x = (int)Math.floor(player.getX());
+        int y = (int)Math.floor(player.getY());
+        int origY = y;
+        int z = (int)Math.floor(player.getZ());
+        
+        byte free = 0;
+
+        while (y <= 129) {
+            if (getBlock(x, y, z) == 0) {
+                free++;
+            } else {
+                free = 0;
+            }
+
+            if (free == 2) {
+                if (y - 1 != origY) {
+                    Location loc = new Location();
+                    loc.x = x + 0.5;
+                    loc.y = y - 1;
+                    loc.z = z + 0.5;
+                    loc.rotX = player.getRotation();
+                    loc.rotY = player.getPitch();
+                    player.teleportTo(loc);
+                    return;
+                }
+            }
+
+            y++;
+        }
+    }
+
+    /**
      * Execute a script.
      *
      * @param player
@@ -833,5 +874,18 @@ public class WorldEdit extends Plugin {
         }
 
         return false;
+    }
+
+    /**
+     * Gets the block type at a position x, y, z. Use an instance of
+     * EditSession if possible.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return Block type
+     */
+    public int getBlock(int x, int y, int z) {
+        return etc.getMCServer().e.a(x, y, z);
     }
 }
