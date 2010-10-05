@@ -271,11 +271,13 @@ public class WorldEdit extends Plugin {
                     WorldEditSession session = getSession(player);
                     EditSession editSession =
                             new EditSession(session.getBlockChangeLimit());
+                    editSession.enableQueue();
                     
                     try {
                         return performCommand(player, session, editSession, split);
                     } finally {
                         session.remember(editSession);
+                        editSession.flushQueue();
                     }
                 }
             } else {
@@ -284,6 +286,7 @@ public class WorldEdit extends Plugin {
                     WorldEditSession session = getSession(player);
                     EditSession editSession =
                             new EditSession(session.getBlockChangeLimit());
+                    editSession.enableQueue();
 
                     String filename = split[0].substring(1) + ".js";
                     String[] args = new String[split.length - 1];
@@ -295,6 +298,7 @@ public class WorldEdit extends Plugin {
                         return false;
                     } finally {
                         session.remember(editSession);
+                        editSession.flushQueue();
                     }
                 }
             }
@@ -772,7 +776,7 @@ public class WorldEdit extends Plugin {
                 throw new NoSuchScriptException();
             } else if (!f.exists()) {
                 throw new NoSuchScriptException();
-            } else {
+            } else {                
                 // Read file
                 StringBuffer buffer = new StringBuffer();
                 FileInputStream stream = new FileInputStream(f);
