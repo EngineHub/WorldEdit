@@ -501,6 +501,12 @@ public class WorldEdit extends Plugin {
                 if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
                     player.sendMessage(Colors.Rose + "Invalid path for Schematic.");
                 } else {
+                    // Create parent directories
+                    File parent = f.getParentFile();
+                    if (parent != null && !parent.exists()) {
+                        parent.mkdirs();
+                    }
+
                     session.getClipboard().saveSchematic(filePath);
                     logger.log(Level.INFO, player.getName() + " saved " + filePath);
                     player.sendMessage(Colors.LightPurple + filename + " saved.");
