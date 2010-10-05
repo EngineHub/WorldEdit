@@ -274,6 +274,36 @@ public class WorldEditSession {
     }
 
     /**
+     * Get the width (X-direction) of the selected region.
+     *
+     * @return
+     * @throws IncompleteRegionException
+     */
+    public int getWidth() throws IncompleteRegionException {
+        return getUpperX() - getLowerX() + 1;
+    }
+
+    /**
+     * Get the length (Z-direction) of the selected region.
+     *
+     * @return
+     * @throws IncompleteRegionException
+     */
+    public int getLength() throws IncompleteRegionException {
+        return getUpperY() - getLowerY() + 1;
+    }
+
+    /**
+     * Get the height (Y-direction) of the selected region.
+     *
+     * @return
+     * @throws IncompleteRegionException
+     */
+    public int getHeight() throws IncompleteRegionException {
+        return getUpperZ() - getLowerZ() + 1;
+    }
+
+    /**
      * Gets the clipboard.
      * 
      * @return

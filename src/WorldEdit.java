@@ -65,6 +65,8 @@ public class WorldEdit extends Plugin {
         commands.put("/editcopy", "Copies the currently selected region");
         commands.put("/editpaste", "Pastes the clipboard");
         commands.put("/editpasteair", "Pastes the clipboard (with air)");
+        commands.put("/editstack [Dir] <Count>", "Stacks the clipboard");
+        commands.put("/editstackair [Dir] <Count>", "Stacks the clipboard (with air)");
         commands.put("/editload", "[Filename] - Load .schematic into clipboard");
         commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
         commands.put("/editfill", "[ID] [Radius] <Depth> - Fill a hole");
@@ -714,6 +716,74 @@ public class WorldEdit extends Plugin {
 
             logger.log(Level.INFO, player.getName() + " used " + split[0]);
             player.sendMessage(Colors.LightPurple + "Block(s) copied.");
+
+            return true;
+
+        // Stack
+        } else if (split[0].equalsIgnoreCase("/editstackair") ||
+                   split[0].equalsIgnoreCase("/editstack")) {
+            checkArgs(split, 1, 2, split[0]);
+            String dir = split[1];
+            int count = Math.max(1, Integer.parseInt(split[2]));
+            int xm = 0;
+            int ym = 0;
+            int zm = 0;
+            boolean copyAir = split[0].equalsIgnoreCase("/editstackair");
+
+            if (dir.equalsIgnoreCase("me")) {
+                dir = etc.getCompassPointForDirection(player.getRotation());
+            }
+
+            if (dir.equalsIgnoreCase("w")) {
+                zm += 1;
+            } else if (dir.equalsIgnoreCase("e")) {
+                zm -= 1;
+            } else if (dir.equalsIgnoreCase("s")) {
+                xm += 1;
+            } else if (dir.equalsIgnoreCase("n")) {
+                xm -= 1;
+            } else if (dir.equalsIgnoreCase("u")) {
+                ym += 1;
+            } else if (dir.equalsIgnoreCase("d")) {
+                ym -= 1;
+            } else {
+                player.sendMessage(Colors.Rose + "Unknown direction: " + dir);
+                return true;
+            }
+
+            int xs = session.getWidth();
+            int ys = session.getHeight();
+            int zs = session.getLength();
+
+            int affected = 0;
+            
+            for (int x = lowerX; x <= upperX; x++) {
+                for (int z = lowerZ; z <= upperZ; z++) {
+                    for (int y = lowerY; y <= lowerY; y++) {
+                        int blockType = editSession.getBlock(x, y, z);
+
+                        if (blockType != 0 || copyAir) {
+                            for (int i = 1; i <= count; i++) {
+                                editSession.setBlock(x + xs * xm * i, y + ys * ym * i,
+                                        z + zs * zm * i, blockType);
+                                affected++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            int shiftX = xs * xm * count;
+            int shiftY = ys * ym * count;
+            int shiftZ = zs * zm * count;
+
+            int[] pos1 = session.getPos1();
+            int[] pos2 = session.getPos2();
+            session.setPos1(pos1[0] + shiftX, pos1[1] + shiftY, pos1[2] + shiftZ);
+            session.setPos2(pos2[0] + shiftX, pos2[1] + shiftY, pos2[2] + shiftZ);
+
+            logger.log(Level.INFO, player.getName() + " used " + split[0]);
+            player.sendMessage(Colors.LightPurple + "Stacked. Undo with /editundo");
 
             return true;
         }

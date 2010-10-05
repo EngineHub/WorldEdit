@@ -103,24 +103,74 @@ public class RegionClipboard {
      * @throws MaxChangedBlocksException
      */
     public void paste(EditSession editSession, Point<Integer> newOrigin, boolean noAir)
-        throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException {
+        int offsetX = min.getX() - origin.getX() + newOrigin.getX();
+        int offsetY = min.getY() - origin.getY() + newOrigin.getY();
+        int offsetZ = min.getZ() - origin.getZ() + newOrigin.getZ();
+
+        place(editSession, offsetX, offsetY, offsetZ, noAir);
+    }
+
+    /**
+     * Places the blocks in a position from the minimum corner.
+     * 
+     * @param editSession
+     * @param offsetX
+     * @param offsetY
+     * @param offsetZ
+     * @param noAir
+     * @throws MaxChangedBlocksException
+     */
+    public void place(EditSession editSession, int offsetX,
+            int offsetY, int offsetZ, boolean noAir)
+            throws MaxChangedBlocksException {
         int xs = getWidth();
         int ys = getHeight();
         int zs = getLength();
 
-        int offsetX = min.getX() - origin.getX() + newOrigin.getX();
-        int offsetY = min.getY() - origin.getY() + newOrigin.getY();
-        int offsetZ = min.getZ() - origin.getZ() + newOrigin.getZ();
-        
         for (int x = 0; x < xs; x++) {
             for (int y = 0; y < ys; y++) {
                 for (int z = 0; z < zs; z++) {
                     if (noAir && data[x][y][z] == 0) { continue; }
-                    
+
                     editSession.setBlock(x + offsetX, y + offsetY, z + offsetZ,
                                          data[x][y][z]);
                 }
             }
+        }
+    }
+
+    /**
+     * Stack the clipboard in a certain direction a certain number of
+     * times.
+     *
+     * @param editSession
+     * @param xm
+     * @param ym
+     * @param zm
+     * @short count
+     * @param noAir
+     * @param moveOrigin move the origin
+     * @throws MaxChangedBlocksException
+     */
+    public void stack(EditSession editSession, int xm, int ym, int zm, short count,
+            boolean noAir, boolean moveOrigin) throws MaxChangedBlocksException {
+        int xs = getWidth();
+        int ys = getHeight();
+        int zs = getLength();
+        int offsetX = min.getX();
+        int offsetY = min.getY();
+        int offsetZ = min.getZ();
+
+        for (short i = 1; i <= count; i++) {
+            place(editSession, offsetX + xm * xs, offsetY + ym * ys,
+                    offsetZ + zm * zs, noAir);
+        }
+
+        if (moveOrigin) {
+            min = new Point<Integer>(offsetX + xm * count,
+                                     offsetY + ym * count,
+                                     offsetZ + zm * count);
         }
     }
 
