@@ -57,19 +57,19 @@ public class WorldEdit extends Plugin {
         commands.put("/clearhistory", "Clear history");
         commands.put("/clearclipboard", "Clear clipboard");
         commands.put("/editsize", "Get size of selected region");
-        commands.put("/editset", "<Type> - Set all blocks inside region");
-        commands.put("/editoutline", "<Type> - Outline the region with blocks");
-        commands.put("/editreplace", "<ID> <ToReplaceID> - Replace all existing blocks inside region");
-        commands.put("/editoverlay", "<ID> - Overlay the area one layer");
+        commands.put("/editset", "[ID] - Set all blocks inside region");
+        commands.put("/editoutline", "[ID] - Outline the region with blocks");
+        commands.put("/editreplace", "[ID] <ToReplaceID> - Replace all existing blocks inside region");
+        commands.put("/editoverlay", "[ID] - Overlay the area one layer");
         commands.put("/removeabove", "<Size> - Remove blocks above head");
         commands.put("/editcopy", "Copies the currently selected region");
         commands.put("/editpaste", "Pastes the clipboard");
         commands.put("/editpasteair", "Pastes the clipboard (with air)");
         commands.put("/editload", "[Filename] - Load .schematic into clipboard");
         commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
-        commands.put("/editfill", "<ID> <Radius> <Depth> - Fill a hole");
+        commands.put("/editfill", "[ID] [Radius] <Depth> - Fill a hole");
         commands.put("/editscript", "[Filename] <Args...> - Run a WorldEdit script");
-        commands.put("/setchangelimit", "<Num> - See documentation");
+        commands.put("/editlimit", "[Num] - See documentation");
     }
 
     /**
@@ -148,15 +148,23 @@ public class WorldEdit extends Plugin {
     }
 
     /**
-     * Checks to make sure that there are enough arguments.
+     * Checks to make sure that there are enough but not too many arguments.
      *
      * @param args
      * @param min
+     * @param max -1 for no maximum
+     * @param cmd command name
      * @throws InsufficientArgumentsException
      */
-    private void checkArgs(String[] args, int min) throws InsufficientArgumentsException {
-        if (args.length <= min) {
-            throw new InsufficientArgumentsException(String.format("Min. %d arguments required", min));
+    private void checkArgs(String[] args, int min, int max, String cmd)
+            throws InsufficientArgumentsException {
+        if (args.length <= min || (max != -1 && args.length - 1 > max)) {
+            if (commands.containsKey(cmd)) {
+                throw new InsufficientArgumentsException(cmd + " usage: " +
+                        commands.get(cmd));
+            } else {
+                throw new InsufficientArgumentsException("Invalid number of arguments");
+            }
         }
     }
 
@@ -345,12 +353,13 @@ public class WorldEdit extends Plugin {
             player.sendMessage(Colors.LightPurple + "Second edit position set.");
             return true;
 
-        // Set edit position #2
-        } else if (split[0].equalsIgnoreCase("/setchangelimit")) {
-            checkArgs(split, 1);
+        // Set max number of blocks to change at a time
+        } else if (split[0].equalsIgnoreCase("/editlimit")) {
+            checkArgs(split, 1, 1, "/editlimit");
             int limit = Math.max(-1, Integer.parseInt(split[1]));
             session.setBlockChangeLimit(limit);
-            player.sendMessage(Colors.LightPurple + "Block change limit set.");
+            player.sendMessage(Colors.LightPurple + "Block change limit set to "
+                    + limit + ".");
             return true;
 
         // Undo
@@ -395,16 +404,16 @@ public class WorldEdit extends Plugin {
                 session.getClipboard().paste(editSession, pos,
                     split[0].equalsIgnoreCase("/editpaste"));
                 logger.log(Level.INFO, player.getName() + " used " + split[0]);
-                player.sendMessage(Colors.LightPurple + "Pasted.");
+                player.sendMessage(Colors.LightPurple + "Pasted. Undo with /editundo");
             }
 
             return true;
 
         // Fill a hole
         } else if (split[0].equalsIgnoreCase("/editfill")) {
-            checkArgs(split, 1);
+            checkArgs(split, 2, 3, "/editfill");
             int blockType = getItem(split[1]);
-            int radius = split.length > 2 ? Math.max(1, Integer.parseInt(split[2])) : 50;
+            int radius = Math.max(1, Integer.parseInt(split[2]));
             int depth = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
 
             int cx = (int)Math.floor(player.getX());
@@ -415,7 +424,7 @@ public class WorldEdit extends Plugin {
             int affected = fill(editSession, cx, cz, cx, cy, cz,
                                 blockType, radius, minY);
 
-            logger.log(Level.INFO, player.getName() + " used /editfill");
+            logger.log(Level.INFO, player.getName() + " used " + split[0]);
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been created.");
 
             return true;
@@ -440,14 +449,14 @@ public class WorldEdit extends Plugin {
                 }
             }
 
-            logger.log(Level.INFO, player.getName() + " used /removeabove");
+            logger.log(Level.INFO, player.getName() + " used " + split[0]);
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been removed.");
 
             return true;
 
         // Load .schematic to clipboard
         } else if (split[0].equalsIgnoreCase("/editload")) {
-            checkArgs(split, 1);
+            checkArgs(split, 1, 1, "/editload");
             String filename = split[1].replace("\0", "") + ".schematic";
             File dir = new File("schematics");
             File f = new File("schematics", filename);
@@ -482,7 +491,7 @@ public class WorldEdit extends Plugin {
                 return true;
             }
             
-            checkArgs(split, 1);
+            checkArgs(split, 1, 1, "/editsave");
             String filename = split[1].replace("\0", "") + ".schematic";
             File dir = new File("schematics");
             File f = new File("schematics", filename);
@@ -521,7 +530,7 @@ public class WorldEdit extends Plugin {
 
         // Run a script
         } else if (split[0].equalsIgnoreCase("/editscript")) {
-            checkArgs(split, 1);
+            checkArgs(split, 1, -1, "/editscript");
             String filename = split[1].replace("\0", "") + ".js";
             String[] args = new String[split.length - 2];
             System.arraycopy(split, 2, args, 0, split.length - 2);
@@ -547,7 +556,7 @@ public class WorldEdit extends Plugin {
 
         // Replace all blocks in the region
         } else if(split[0].equalsIgnoreCase("/editset")) {
-            checkArgs(split, 1);
+            checkArgs(split, 1, 1, "/editset");
             int blockType = getItem(split[1]);
             int affected = 0;
 
@@ -560,14 +569,14 @@ public class WorldEdit extends Plugin {
                 }
             }
 
-            logger.log(Level.INFO, player.getName() + " used /editset");
+            logger.log(Level.INFO, player.getName() + " used " + split[0]);
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been set.");
 
             return true;
 
         // Set the outline of a region
         } else if(split[0].equalsIgnoreCase("/editoutline")) {
-            checkArgs(split, 1);
+            checkArgs(split, 1, 1, "/editoutline");
             int blockType = getItem(split[1]);
             int affected = 0;
 
@@ -595,14 +604,14 @@ public class WorldEdit extends Plugin {
                 }
             }
 
-            logger.log(Level.INFO, player.getName() + " used /editoutline");
+            logger.log(Level.INFO, player.getName() + " used " + split[0]);
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been set.");
 
             return true;
 
         // Replace all blocks in the region
         } else if(split[0].equalsIgnoreCase("/editreplace")) {
-            checkArgs(split, 1);
+            checkArgs(split, 1, 2, "/editreplace");
             int blockType = getItem(split[1]);
             int replaceType = split.length > 2 ? getItem(split[2], true) : -1;
 
@@ -620,14 +629,14 @@ public class WorldEdit extends Plugin {
                 }
             }
 
-            logger.log(Level.INFO, player.getName() + " used /editreplace");
+            logger.log(Level.INFO, player.getName() + " used " + split[0]);
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been replaced.");
 
             return true;
 
         // Lay blocks over an area
         } else if (split[0].equalsIgnoreCase("/editoverlay")) {
-            checkArgs(split, 1);
+            checkArgs(split, 1, 1, "/editoverlay");
             int blockType = getItem(split[1]);
 
             // We don't want to pass beyond boundaries
@@ -648,7 +657,7 @@ public class WorldEdit extends Plugin {
                 }
             }
 
-            logger.log(Level.INFO, player.getName() + " used /editoverlay");
+            logger.log(Level.INFO, player.getName() + " used " + split[0]);
             player.sendMessage(Colors.LightPurple + affected + " block(s) have been overlayed.");
 
             return true;
@@ -665,7 +674,7 @@ public class WorldEdit extends Plugin {
             clipboard.copy(editSession);
             session.setClipboard(clipboard);
 
-            logger.log(Level.INFO, player.getName() + " used /editcopy");
+            logger.log(Level.INFO, player.getName() + " used " + split[0]);
             player.sendMessage(Colors.LightPurple + "Block(s) copied.");
 
             return true;
