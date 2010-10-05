@@ -23,8 +23,8 @@ package com.sk89q.worldedit;
  *
  * @author Albert
  */
-public class SchematicLoadException extends WorldEditException {
-    public SchematicLoadException(String error) {
+public class SchematicException extends WorldEditException {
+    public SchematicException(String error) {
         super(error);
     }
 }

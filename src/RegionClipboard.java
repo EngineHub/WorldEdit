@@ -129,11 +129,22 @@ public class RegionClipboard {
      *
      * @param path
      * @throws IOException
+     * @throws SchematicException
      */
-    public void saveSchematic(String path) throws IOException {
+    public void saveSchematic(String path) throws IOException, SchematicException {
         int xs = getWidth();
         int ys = getHeight();
         int zs = getLength();
+
+        if (xs > 65535) {
+            throw new SchematicException("Width of region too large for a .schematic");
+        }
+        if (ys > 65535) {
+            throw new SchematicException("Height of region too large for a .schematic");
+        }
+        if (zs > 65535) {
+            throw new SchematicException("Length of region too large for a .schematic");
+        }
 
         HashMap<String,Tag> schematic = new HashMap<String,Tag>();
         schematic.put("Width", new ShortTag("Width", (short)xs));
@@ -174,27 +185,27 @@ public class RegionClipboard {
      * @param path
      * @param origin
      * @return
-     * @throws SchematicLoadException
+     * @throws SchematicException
      * @throws IOException
      */
     public static RegionClipboard loadSchematic(String path, Point<Integer> origin)
-            throws SchematicLoadException, IOException {
+            throws SchematicException, IOException {
         FileInputStream stream = new FileInputStream(path);
         NBTInputStream nbtStream = new NBTInputStream(stream);
         CompoundTag schematicTag = (CompoundTag)nbtStream.readTag();
         if (!schematicTag.getName().equals("Schematic")) {
-            throw new SchematicLoadException("Tag \"Schematic\" does not exist or is not first");
+            throw new SchematicException("Tag \"Schematic\" does not exist or is not first");
         }
         Map<String,Tag> schematic = schematicTag.getValue();
         if (!schematic.containsKey("Blocks")) {
-            throw new SchematicLoadException("Schematic file is missing a \"Blocks\" tag");
+            throw new SchematicException("Schematic file is missing a \"Blocks\" tag");
         }
         short xs = (Short)getChildTag(schematic, "Width", ShortTag.class).getValue();
         short zs = (Short)getChildTag(schematic, "Length", ShortTag.class).getValue();
         short ys = (Short)getChildTag(schematic, "Height", ShortTag.class).getValue();
         String materials = (String)getChildTag(schematic, "Materials", StringTag.class).getValue();
         if (!materials.equals("Alpha")) {
-            throw new SchematicLoadException("Schematic file is not an Alpha schematic");
+            throw new SchematicException("Schematic file is not an Alpha schematic");
         }
         byte[] blocks = (byte[])getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
 
@@ -223,13 +234,13 @@ public class RegionClipboard {
     }
 
     private static Tag getChildTag(Map<String,Tag> items, String key, Class expected)
-            throws SchematicLoadException {
+            throws SchematicException {
         if (!items.containsKey(key)) {
-            throw new SchematicLoadException("Schematic file is missing a \"" + key + "\" tag");
+            throw new SchematicException("Schematic file is missing a \"" + key + "\" tag");
         }
         Tag tag = items.get(key);
         if (!expected.isInstance(tag)) {
-            throw new SchematicLoadException(
+            throw new SchematicException(
                 key + " tag is not of tag type " + expected.getName());
         }
         return tag;

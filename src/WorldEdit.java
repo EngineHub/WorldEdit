@@ -467,7 +467,7 @@ public class WorldEdit extends Plugin {
                     logger.log(Level.INFO, player.getName() + " loaded " + filePath);
                     player.sendMessage(Colors.LightPurple + filename + " loaded.");
                 }
-            } catch (SchematicLoadException e) {
+            } catch (SchematicException e) {
                 player.sendMessage(Colors.Rose + "Load error: " + e.getMessage());
             } catch (IOException e) {
                 player.sendMessage(Colors.Rose + "Schematic could not read or it does not exist.");
@@ -505,6 +505,8 @@ public class WorldEdit extends Plugin {
                     logger.log(Level.INFO, player.getName() + " saved " + filePath);
                     player.sendMessage(Colors.LightPurple + filename + " saved.");
                 }
+            } catch (SchematicException se) {
+                player.sendMessage(Colors.Rose + "Save error: " + se.getMessage());
             } catch (IOException e) {
                 player.sendMessage(Colors.Rose + "Schematic could not written.");
             }
