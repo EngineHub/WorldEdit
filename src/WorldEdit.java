@@ -52,6 +52,7 @@ public class WorldEdit extends Plugin {
 
         commands.put("/editpos1", "Set editing position #1");
         commands.put("/editpos2", "Set editing position #2");
+        commands.put("/editwand", "Gives you the \"edit wand\"");
         commands.put("/editundo", "Undo");
         commands.put("/editredo", "Redo");
         commands.put("/clearhistory", "Clear history");
@@ -359,6 +360,12 @@ public class WorldEdit extends Plugin {
                             (int)Math.floor(player.getY()),
                             (int)Math.floor(player.getZ()));
             player.sendMessage(Colors.LightPurple + "Second edit position set.");
+            return true;
+
+        // Edit wand
+        } else if (split[0].equalsIgnoreCase("/editwand")) {
+            player.giveItem(271, 1);
+            player.sendMessage(Colors.LightPurple + "Right click = sel. pos 1; double right click = sel. pos 2");
             return true;
 
         // Set max number of blocks to change at a time
