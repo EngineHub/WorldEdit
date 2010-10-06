@@ -61,7 +61,8 @@ public class WorldEdit extends Plugin {
         commands.put("/editoutline", "[ID] - Outline the region with blocks");
         commands.put("/editreplace", "[ID] <ToReplaceID> - Replace all existing blocks inside region");
         commands.put("/editoverlay", "[ID] - Overlay the area one layer");
-        commands.put("/removeabove", "<Size> - Remove blocks above head");
+        commands.put("/removeabove", "<Size> <Height> - Remove blocks above head");
+        commands.put("/removebelow", "<Size> <Height> - Remove blocks below position");
         commands.put("/editcopy", "Copies the currently selected region");
         commands.put("/editpaste", "Pastes the clipboard");
         commands.put("/editpasteair", "Pastes the clipboard (with air)");
@@ -440,15 +441,44 @@ public class WorldEdit extends Plugin {
         // Remove blocks above current position
         } else if (split[0].equalsIgnoreCase("/removeabove")) {
             int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1]) - 1) : 0;
+            int height = split.length > 2 ? Math.max(1, Integer.parseInt(split[2])) : 127;
 
             int affected = 0;
             int cx = (int)Math.floor(player.getX());
             int cy = (int)Math.floor(player.getY());
             int cz = (int)Math.floor(player.getZ());
+            int maxY = Math.min(127, cy + height - 1);
 
             for (int x = cx - size; x <= cx + size; x++) {
                 for (int z = cz - size; z <= cz + size; z++) {
-                    for (int y = cy; y <= 127; y++) {
+                    for (int y = cy; y <= maxY; y++) {
+                        if (editSession.getBlock(x, y, z) != 0) {
+                            editSession.setBlock(x, y, z, 0);
+                            affected++;
+                        }
+                    }
+                }
+            }
+
+            logger.log(Level.INFO, player.getName() + " used " + split[0]);
+            player.sendMessage(Colors.LightPurple + affected + " block(s) have been removed.");
+
+            return true;
+
+        // Remove blocks below current position
+        } else if (split[0].equalsIgnoreCase("/removebelow")) {
+            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1]) - 1) : 0;
+            int height = split.length > 2 ? Math.max(1, Integer.parseInt(split[2])) : 127;
+
+            int affected = 0;
+            int cx = (int)Math.floor(player.getX());
+            int cy = (int)Math.floor(player.getY());
+            int cz = (int)Math.floor(player.getZ());
+            int minY = Math.max(0, cy - height + 1);
+
+            for (int x = cx - size; x <= cx + size; x++) {
+                for (int z = cz - size; z <= cz + size; z++) {
+                    for (int y = cy; y >= minY; y--) {
                         if (editSession.getBlock(x, y, z) != 0) {
                             editSession.setBlock(x, y, z, 0);
                             affected++;
