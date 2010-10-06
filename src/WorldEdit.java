@@ -72,7 +72,6 @@ public class WorldEdit extends Plugin {
         commands.put("/editload", "[Filename] - Load .schematic into clipboard");
         commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
         commands.put("/editfill", "[ID] [Radius] <Depth> - Fill a hole");
-        commands.put("/editcyl", "[ID] [Radius] <Height> - Create cylinder");
         commands.put("/editscript", "[Filename] <Args...> - Run a WorldEdit script");
         commands.put("/editlimit", "[Num] - See documentation");
     }
@@ -514,11 +513,11 @@ public class WorldEdit extends Plugin {
 
             int affected = 0;
 
-            for (int x = 0; x <= radius; x++) {
+            for (int x = -radius; x <= radius; x++) {
                 int z = (int)(Math.sqrt(radius - x * x) + 0.5);
                 for (int y = cy; y <= maxY; y++) {
-                    for (int x2 = cx - x; x2 <= cx + x; x2++) {
-                        editSession.setBlock(x2, y, cz + z, blockType);
+                    for (int z2 = cz - z; z2 <= cz + z; z2++) {
+                        editSession.setBlock(x + cx, y, z2, blockType);
                         affected++;
                     }
                 }
