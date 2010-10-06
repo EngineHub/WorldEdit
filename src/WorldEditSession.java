@@ -290,7 +290,7 @@ public class WorldEditSession {
      * @throws IncompleteRegionException
      */
     public int getLength() throws IncompleteRegionException {
-        return getUpperY() - getLowerY() + 1;
+        return getUpperZ() - getLowerZ() + 1;
     }
 
     /**
@@ -300,7 +300,7 @@ public class WorldEditSession {
      * @throws IncompleteRegionException
      */
     public int getHeight() throws IncompleteRegionException {
-        return getUpperZ() - getLowerZ() + 1;
+        return getUpperY() - getLowerY() + 1;
     }
 
     /**

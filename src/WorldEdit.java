@@ -66,8 +66,8 @@ public class WorldEdit extends Plugin {
         commands.put("/editcopy", "Copies the currently selected region");
         commands.put("/editpaste", "Pastes the clipboard");
         commands.put("/editpasteair", "Pastes the clipboard (with air)");
-        commands.put("/editstack [Dir] <Count>", "Stacks the clipboard");
-        commands.put("/editstackair [Dir] <Count>", "Stacks the clipboard (with air)");
+        commands.put("/editstack", "[Dir] <Count> - Stacks the clipboard");
+        commands.put("/editstackair", "[Dir] <Count> - Stacks the clipboard (with air)");
         commands.put("/editload", "[Filename] - Load .schematic into clipboard");
         commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
         commands.put("/editfill", "[ID] [Radius] <Depth> - Fill a hole");
@@ -752,16 +752,21 @@ public class WorldEdit extends Plugin {
         // Stack
         } else if (split[0].equalsIgnoreCase("/editstackair") ||
                    split[0].equalsIgnoreCase("/editstack")) {
-            checkArgs(split, 1, 2, split[0]);
-            String dir = split[1];
-            int count = Math.max(1, Integer.parseInt(split[2]));
+            checkArgs(split, 0, 2, split[0]);
+            String dir = split.length > 1 ? split[1] : "me";
+            int count = split.length > 2 ? Math.max(1, Integer.parseInt(split[2])) : 1;
             int xm = 0;
             int ym = 0;
             int zm = 0;
             boolean copyAir = split[0].equalsIgnoreCase("/editstackair");
 
             if (dir.equalsIgnoreCase("me")) {
-                dir = etc.getCompassPointForDirection(player.getRotation());
+                // From hey0's code
+                double rot = (player.getRotation() - 90) % 360;
+                if (rot < 0) {
+                    rot += 360.0;
+                }
+                dir = etc.getCompassPointForDirection(rot);
             }
 
             if (dir.equalsIgnoreCase("w")) {
@@ -789,7 +794,7 @@ public class WorldEdit extends Plugin {
             
             for (int x = lowerX; x <= upperX; x++) {
                 for (int z = lowerZ; z <= upperZ; z++) {
-                    for (int y = lowerY; y <= lowerY; y++) {
+                    for (int y = lowerY; y <= upperY; y++) {
                         int blockType = editSession.getBlock(x, y, z);
 
                         if (blockType != 0 || copyAir) {
@@ -803,14 +808,14 @@ public class WorldEdit extends Plugin {
                 }
             }
 
-            int shiftX = xs * xm * count;
+            /*int shiftX = xs * xm * count;
             int shiftY = ys * ym * count;
             int shiftZ = zs * zm * count;
 
             int[] pos1 = session.getPos1();
             int[] pos2 = session.getPos2();
             session.setPos1(pos1[0] + shiftX, pos1[1] + shiftY, pos1[2] + shiftZ);
-            session.setPos2(pos2[0] + shiftX, pos2[1] + shiftY, pos2[2] + shiftZ);
+            session.setPos2(pos2[0] + shiftX, pos2[1] + shiftY, pos2[2] + shiftZ);*/
 
             logger.log(Level.INFO, player.getName() + " used " + split[0]);
             player.sendMessage(Colors.LightPurple + "Stacked. Undo with /editundo");
