@@ -74,6 +74,7 @@ public class WorldEdit extends Plugin {
         commands.put("/editfill", "[ID] [Radius] <Depth> - Fill a hole");
         commands.put("/editscript", "[Filename] <Args...> - Run a WorldEdit script");
         commands.put("/editlimit", "[Num] - See documentation");
+        commands.put("/lift", "Go up to the first free spot");
     }
 
     /**
@@ -345,8 +346,14 @@ public class WorldEdit extends Plugin {
             EditSession editSession, String[] split)
             throws WorldEditException
     {
+        // Jump to the first free position
+        if (split[0].equalsIgnoreCase("/lift")) {
+            player.sendMessage(Colors.LightPurple + "There you go!");
+            teleportToStandPosition(player);
+            return true;
+
         // Set edit position #1
-        if (split[0].equalsIgnoreCase("/editpos1")) {
+        } else if (split[0].equalsIgnoreCase("/editpos1")) {
             session.setPos1((int)Math.floor(player.getX()),
                             (int)Math.floor(player.getY()),
                             (int)Math.floor(player.getZ()));
