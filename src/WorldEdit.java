@@ -22,7 +22,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Map;
 import java.io.*;
-import org.mozilla.javascript.*;
 import com.sk89q.worldedit.*;
 
 /**
@@ -43,7 +42,6 @@ public class WorldEdit extends Plugin {
     private PropertiesFile properties;
     private String[] allowedBlocks;
     private int defaultMaxBlocksChanged;
-    private boolean mapScriptCommands = false;
 
     /**
      * Construct an instance of the plugin.
@@ -74,7 +72,6 @@ public class WorldEdit extends Plugin {
         commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
         commands.put("/editfill", "[ID] [Radius] <Depth> - Fill a hole");
         commands.put("/editdrain", "[Radius] - Drain nearby water/lava pools");
-        commands.put("/editscript", "[Filename] <Args...> - Run a WorldEdit script");
         commands.put("/editlimit", "[Num] - See documentation");
         commands.put("/unstuck", "Go up to the first free spot");
     }
@@ -186,7 +183,6 @@ public class WorldEdit extends Plugin {
         }
 
         allowedBlocks = properties.getString("allowed-blocks", DEFAULT_ALLOWED_BLOCKS).split(",");
-        mapScriptCommands = properties.getBoolean("map-script-commands", true);
         defaultMaxBlocksChanged = 
                 Math.max(-1, properties.getInt("max-blocks-changed", -1));
 
@@ -282,28 +278,6 @@ public class WorldEdit extends Plugin {
                     
                     try {
                         return performCommand(player, session, editSession, split);
-                    } finally {
-                        session.remember(editSession);
-                        editSession.flushQueue();
-                    }
-                }
-            } else {
-                // See if there is a script by the same name
-                if (mapScriptCommands && modPlayer.canUseCommand("/editscript")) {
-                    WorldEditPlayer player = new WorldEditPlayer(modPlayer);
-                    WorldEditSession session = getSession(player);
-                    EditSession editSession =
-                            new EditSession(session.getBlockChangeLimit());
-                    editSession.enableQueue();
-
-                    String filename = split[0].substring(1) + ".js";
-                    String[] args = new String[split.length - 1];
-                    System.arraycopy(split, 1, args, 0, split.length - 1);
-
-                    try {
-                        return runScript(player, session, editSession, filename, args);
-                    } catch (NoSuchScriptException nse) {
-                        return false;
                     } finally {
                         session.remember(editSession);
                         editSession.flushQueue();
@@ -540,18 +514,7 @@ public class WorldEdit extends Plugin {
             
             return true;
 
-        // Run a script
-        } else if (split[0].equalsIgnoreCase("/editscript")) {
-            checkArgs(split, 1, -1, split[0]);
-            String filename = split[1].replace("\0", "") + ".js";
-            String[] args = new String[split.length - 2];
-            System.arraycopy(split, 2, args, 0, split.length - 2);
-            try {
-                runScript(player, session, editSession, filename, args);
-            } catch (NoSuchScriptException e) {
-                player.printError("Script file does not exist.");
-            }
-            return true;
+        // Get size
         } else if (split[0].equalsIgnoreCase("/editsize")) {
             player.print("# of blocks: " + session.getRegion().getSize());
             return true;
@@ -670,87 +633,6 @@ public class WorldEdit extends Plugin {
             player.print(affected + " blocks changed. Undo with /editundo");
 
             return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Execute a script.
-     *
-     * @param player
-     * @param filename
-     * @param args
-     * @return Whether the file was attempted execution
-     */
-    private boolean runScript(WorldEditPlayer player, WorldEditSession session,
-            EditSession editSession, String filename, String[] args) throws
-            NoSuchScriptException {
-        File dir = new File("editscripts");
-        File f = new File("editscripts", filename);
-
-        try {
-            String filePath = f.getCanonicalPath();
-            String dirPath = dir.getCanonicalPath();
-
-            if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
-                throw new NoSuchScriptException();
-            } else if (!f.exists()) {
-                throw new NoSuchScriptException();
-            } else {                
-                // Read file
-                StringBuffer buffer = new StringBuffer();
-                FileInputStream stream = new FileInputStream(f);
-                BufferedReader in = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
-                int c;
-                while ((c = in.read()) > -1) {
-                    buffer.append((char)c);
-                }
-                in.close();
-                String code = buffer.toString();
-
-                // Evaluate
-                ScriptContextFactory factory = new ScriptContextFactory();
-                Context cx = factory.enterContext();
-                try {                    
-                    ScriptableObject scope = cx.initStandardObjects();
-
-                    // Add args
-                    ScriptableObject.putProperty(scope, "args",
-                        Context.javaToJS(args, scope));
-
-                    // Add context
-                    ScriptPlayer scriptPlayer = new ScriptPlayer(player);
-                    ScriptContext context = new ScriptContext(
-                        scriptPlayer);
-                    ScriptableObject.putProperty(scope, "context",
-                        Context.javaToJS(context, scope));
-                    ScriptableObject.putProperty(scope, "player",
-                        Context.javaToJS(scriptPlayer, scope));
-
-                    // Add Minecraft context
-                    ScriptMinecraftContext minecraft =
-                        new ScriptMinecraftContext(editSession);
-                    ScriptableObject.putProperty(scope, "minecraft",
-                        Context.javaToJS(minecraft, scope));
-
-                    logger.log(Level.INFO, player.getName() + ": executing " + filename + "...");
-                    cx.evaluateString(scope, code, filename, 1, null);
-                    logger.log(Level.INFO, player.getName() + ": script " + filename + " executed successfully.");
-                    player.print(filename + " executed successfully.");
-                } catch (RhinoException re) {
-                    player.printError(filename + ": JS error: " + re.getMessage());
-                    re.printStackTrace();
-                } catch (Error err) {
-                    player.printError(filename + ": execution error: " + err.getMessage());
-                } finally {
-                    Context.exit();
-                }
-            }
-
-            return true;
-        } catch (IOException e) {
-            player.printError("Script could not read or it does not exist.");
         }
 
         return false;
