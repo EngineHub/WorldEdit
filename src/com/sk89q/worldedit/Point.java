@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 /**
  *
  * @author Albert
@@ -342,10 +340,8 @@ public final class Point {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(451, 41).
-            append(x).
-            append(y).
-            append(z).
-            toHashCode();
+        return ((new Double(x)).hashCode() >> 13) ^
+                ((new Double(y)).hashCode() >> 7) ^
+                (new Double(z)).hashCode();
     }
 }
