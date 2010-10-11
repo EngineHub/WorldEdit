@@ -579,6 +579,18 @@ public class EditSession {
         return affected;
     }
 
+    /**
+     * Stack a cuboid region.
+     * 
+     * @param region
+     * @param xm
+     * @param ym
+     * @param zm
+     * @param count
+     * @param copyAir
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
     public int stackCuboidRegion(Region region, int xm, int ym, int zm,
             int count, boolean copyAir)
             throws MaxChangedBlocksException {
