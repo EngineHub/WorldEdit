@@ -26,15 +26,12 @@ import java.util.LinkedList;
  */
 public class WorldEditSession {
     public static final int MAX_HISTORY_SIZE = 15;
-    private int[] pos1 = new int[3];
-    private int[] pos2 = new int[3];
-    private boolean hasSetPos1 = false;
-    private boolean hasSetPos2 = false;
+    private Point pos1, pos2;
     private LinkedList<EditSession> history = new LinkedList<EditSession>();
     private int historyPointer = 0;
-    private RegionClipboard clipboard;
+    private CuboidClipboard clipboard;
     private boolean toolControl = true;
-    private int[] lastToolPos1 = new int[3];
+    private Point lastToolPos1;
     private long lastToolClick = 0;
     private int maxBlocksChanged = -1;
 
@@ -69,7 +66,7 @@ public class WorldEditSession {
     /**
      * Undo.
      *
-     * @return whether anything was undoed
+     * @return whether anything was undone
      */
     public boolean undo() {
         historyPointer--;
@@ -85,7 +82,7 @@ public class WorldEditSession {
     /**
      * Redo.
      *
-     * @return whether anything was redoed
+     * @return whether anything was redone
      */
     public boolean redo() {
         if (historyPointer < history.size()) {
@@ -103,7 +100,7 @@ public class WorldEditSession {
      * @throws IncompleteRegionException
      */
     private void checkPos1() throws IncompleteRegionException {
-        if (!hasSetPos1) {
+        if (pos1 == null) {
             throw new IncompleteRegionException();
         }
     }
@@ -114,7 +111,7 @@ public class WorldEditSession {
      * @throws IncompleteRegionException
      */
     private void checkPos2() throws IncompleteRegionException {
-        if (!hasSetPos2) {
+        if (pos2 == null) {
             throw new IncompleteRegionException();
         }
     }
@@ -125,7 +122,7 @@ public class WorldEditSession {
      * @return
      * @throws IncompleteRegionException
      */
-    public int[] getPos1() throws IncompleteRegionException {
+    public Point getPos1() throws IncompleteRegionException {
         checkPos1();
         return pos1;
     }
@@ -133,25 +130,10 @@ public class WorldEditSession {
     /**
      * Sets position 1.
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param pt
      */
-    public void setPos1(int x, int y, int z) {
-        hasSetPos1 = true;
-        pos1 = new int[]{x, y, z};
-    }
-
-    /**
-     * Sets position 1.
-     *
-     * @param x
-     * @param y
-     * @param z
-     */
-    public void setPos1(int[] pos) {
-        hasSetPos1 = true;
-        pos1 = pos;
+    public void setPos1(Point pt) {
+        pos1 = pt;
     }
 
     /**
@@ -160,7 +142,7 @@ public class WorldEditSession {
      * @return
      * @throws IncompleteRegionException
      */
-    public int[] getPos2() throws IncompleteRegionException {
+    public Point getPos2() throws IncompleteRegionException {
         checkPos2();
         return pos2;
     }
@@ -168,139 +150,23 @@ public class WorldEditSession {
     /**
      * Sets position 2.
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param pt
      */
-    public void setPos2(int x, int y, int z) {
-        hasSetPos2 = true;
-        pos2 = new int[]{x, y, z};
+    public void setPos2(Point pt) {
+        pos2 = pt;
     }
 
     /**
-     * Sets position 2.
-     *
-     * @param x
-     * @param y
-     * @param z
-     */
-    public void setPos2(int[] pos) {
-        hasSetPos2 = true;
-        pos2 = pos;
-    }
-
-    /**
-     * Get lower X bound.
+     * Get the region.
      * 
      * @return
      * @throws IncompleteRegionException
      */
-    public int getLowerX() throws IncompleteRegionException {
+    public Region getRegion() throws IncompleteRegionException {
         checkPos1();
         checkPos2();
-        return Math.min(pos1[0], pos2[0]);
-    }
 
-    /**
-     * Get upper X bound.
-     *
-     * @return
-     * @throws IncompleteRegionException
-     */
-    public int getUpperX() throws IncompleteRegionException {
-        checkPos1();
-        checkPos2();
-        return Math.max(pos1[0], pos2[0]);
-    }
-
-    /**
-     * Get lower Y bound.
-     *
-     * @return
-     * @throws IncompleteRegionException
-     */
-    public int getLowerY() throws IncompleteRegionException {
-        checkPos1();
-        checkPos2();
-        return Math.min(pos1[1], pos2[1]);
-    }
-
-    /**
-     * Get upper Y bound.
-     *
-     * @return
-     * @throws IncompleteRegionException
-     */
-    public int getUpperY() throws IncompleteRegionException {
-        checkPos1();
-        checkPos2();
-        return Math.max(pos1[1], pos2[1]);
-    }
-
-    /**
-     * Get lower Z bound.
-     *
-     * @return
-     * @throws IncompleteRegionException
-     */
-    public int getLowerZ() throws IncompleteRegionException {
-        checkPos1();
-        checkPos2();
-        return Math.min(pos1[2], pos2[2]);
-    }
-
-    /**
-     * Get upper Z bound.
-     *
-     * @return
-     * @throws IncompleteRegionException
-     */
-    public int getUpperZ() throws IncompleteRegionException {
-        checkPos1();
-        checkPos2();
-        return Math.max(pos1[2], pos2[2]);
-    }
-
-    /**
-     * Gets the size of the region as the number of blocks.
-     * 
-     * @return
-     * @throws IncompleteRegionException
-     */
-    public int getSize() throws IncompleteRegionException {
-        return (getUpperX() - getLowerX() + 1) *
-               (getUpperY() - getLowerY() + 1) *
-               (getUpperZ() - getLowerZ() + 1);
-    }
-
-    /**
-     * Get the width (X-direction) of the selected region.
-     *
-     * @return
-     * @throws IncompleteRegionException
-     */
-    public int getWidth() throws IncompleteRegionException {
-        return getUpperX() - getLowerX() + 1;
-    }
-
-    /**
-     * Get the length (Z-direction) of the selected region.
-     *
-     * @return
-     * @throws IncompleteRegionException
-     */
-    public int getLength() throws IncompleteRegionException {
-        return getUpperZ() - getLowerZ() + 1;
-    }
-
-    /**
-     * Get the height (Y-direction) of the selected region.
-     *
-     * @return
-     * @throws IncompleteRegionException
-     */
-    public int getHeight() throws IncompleteRegionException {
-        return getUpperY() - getLowerY() + 1;
+        return new CuboidRegion(pos1, pos2);
     }
 
     /**
@@ -308,7 +174,7 @@ public class WorldEditSession {
      * 
      * @return
      */
-    public RegionClipboard getClipboard() {
+    public CuboidClipboard getClipboard() {
         return clipboard;
     }
 
@@ -317,7 +183,7 @@ public class WorldEditSession {
      * 
      * @param clipboard
      */
-    public void setClipboard(RegionClipboard clipboard) {
+    public void setClipboard(CuboidClipboard clipboard) {
         this.clipboard = clipboard;
     }
 
@@ -342,14 +208,14 @@ public class WorldEditSession {
     /**
      * @return the lastToolPos1
      */
-    public int[] getLastToolPos1() {
+    public Point getLastToolPos1() {
         return lastToolPos1;
     }
 
     /**
      * @param lastToolPos1 the lastToolPos1 to set
      */
-    public void setLastToolPos1(int[] lastToolPos1) {
+    public void setLastToolPos1(Point lastToolPos1) {
         this.lastToolPos1 = lastToolPos1;
     }
 

@@ -28,11 +28,11 @@ import com.sk89q.worldedit.*;
  *
  * @author Albert
  */
-public class RegionClipboard {
+public class CuboidClipboard {
     private int[][][] data;
-    private Point<Integer> min;
-    private Point<Integer> max;
-    private Point<Integer> origin;
+    private Point min;
+    private Point max;
+    private Point origin;
 
     /**
      * Constructs the region instance. The minimum and maximum points must be
@@ -42,13 +42,13 @@ public class RegionClipboard {
      * @param max
      * @param origin
      */
-    public RegionClipboard(Point<Integer> min, Point<Integer> max, Point<Integer> origin) {
+    public CuboidClipboard(Point min, Point max, Point origin) {
         this.min = min;
         this.max = max;
         this.origin = origin;
-        data = new int[(max.getX()) - min.getX() + 1]
-            [max.getY() - min.getY() + 1]
-            [max.getZ() - min.getZ() + 1];
+        data = new int[(int)((max.getX()) - min.getX() + 1)]
+            [(int)(max.getY() - min.getY() + 1)]
+            [(int)(max.getZ() - min.getZ() + 1)];
     }
 
     /**
@@ -57,7 +57,7 @@ public class RegionClipboard {
      * @return
      */
     public int getWidth() {
-        return max.getX() - min.getX() + 1;
+        return (int)(max.getX() - min.getX() + 1);
     }
 
     /**
@@ -66,7 +66,7 @@ public class RegionClipboard {
      * @return
      */
     public int getLength() {
-        return max.getZ() - min.getZ() + 1;
+        return (int)(max.getZ() - min.getZ() + 1);
     }
 
     /**
@@ -75,7 +75,7 @@ public class RegionClipboard {
      * @return
      */
     public int getHeight() {
-        return max.getY() - min.getY() + 1;
+        return (int)(max.getY() - min.getY() + 1);
     }
 
     /**
@@ -84,10 +84,10 @@ public class RegionClipboard {
      * @param editSession
      */
     public void copy(EditSession editSession) {
-        for (int x = min.getX(); x <= max.getX(); x++) {
-            for (int y = min.getY(); y <= max.getY(); y++) {
-                for (int z = min.getZ(); z <= max.getZ(); z++) {
-                    data[x - min.getX()][y - min.getY()][z - min.getZ()] =
+        for (int x = (int)min.getX(); x <= (int)max.getX(); x++) {
+            for (int y = (int)min.getY(); y <= (int)max.getY(); y++) {
+                for (int z = (int)min.getZ(); z <= (int)max.getZ(); z++) {
+                    data[x - (int)min.getX()][y - (int)min.getY()][z - (int)min.getZ()] =
                         editSession.getBlock(x, y, z);
                 }
             }
@@ -102,11 +102,11 @@ public class RegionClipboard {
      * @param noAir True to not paste air
      * @throws MaxChangedBlocksException
      */
-    public void paste(EditSession editSession, Point<Integer> newOrigin, boolean noAir)
+    public void paste(EditSession editSession, Point newOrigin, boolean noAir)
             throws MaxChangedBlocksException {
-        int offsetX = min.getX() - origin.getX() + newOrigin.getX();
-        int offsetY = min.getY() - origin.getY() + newOrigin.getY();
-        int offsetZ = min.getZ() - origin.getZ() + newOrigin.getZ();
+        int offsetX = (int)(min.getX() - origin.getX() + newOrigin.getX());
+        int offsetY = (int)(min.getY() - origin.getY() + newOrigin.getY());
+        int offsetZ = (int)(min.getZ() - origin.getZ() + newOrigin.getZ());
 
         place(editSession, offsetX, offsetY, offsetZ, noAir);
     }
@@ -158,9 +158,9 @@ public class RegionClipboard {
         int xs = getWidth();
         int ys = getHeight();
         int zs = getLength();
-        int offsetX = min.getX();
-        int offsetY = min.getY();
-        int offsetZ = min.getZ();
+        int offsetX = (int)min.getX();
+        int offsetY = (int)min.getY();
+        int offsetZ = (int)min.getZ();
 
         for (short i = 1; i <= count; i++) {
             place(editSession, offsetX + xm * xs, offsetY + ym * ys,
@@ -168,9 +168,9 @@ public class RegionClipboard {
         }
 
         if (moveOrigin) {
-            min = new Point<Integer>(offsetX + xm * count,
-                                     offsetY + ym * count,
-                                     offsetZ + zm * count);
+            min = new Point((int)offsetX + xm * count,
+                            (int)offsetY + ym * count,
+                            (int)offsetZ + zm * count);
         }
     }
 
@@ -238,7 +238,7 @@ public class RegionClipboard {
      * @throws SchematicException
      * @throws IOException
      */
-    public static RegionClipboard loadSchematic(String path, Point<Integer> origin)
+    public static CuboidClipboard loadSchematic(String path, Point origin)
             throws SchematicException, IOException {
         FileInputStream stream = new FileInputStream(path);
         NBTInputStream nbtStream = new NBTInputStream(stream);
@@ -259,17 +259,13 @@ public class RegionClipboard {
         }
         byte[] blocks = (byte[])getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
 
-        Point<Integer> min = new Point<Integer>(
-                origin.getX(),
-                origin.getY(),
-                origin.getZ()
-                );
-        Point<Integer> max = new Point<Integer>(
+        Point min = origin;
+        Point max = new Point(
                 origin.getX() + xs - 1,
                 origin.getY() + ys - 1,
                 origin.getZ() + zs - 1
                 );
-        RegionClipboard clipboard = new RegionClipboard(min, max, origin);
+        CuboidClipboard clipboard = new CuboidClipboard(min, max, origin);
 
         for (int x = 0; x < xs; x++) {
             for (int y = 0; y < ys; y++) {

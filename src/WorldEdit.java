@@ -36,7 +36,8 @@ public class WorldEdit extends Plugin {
         "44,45,47,48,49,52,53,54,56,57,58,60,61,62,67,73,78,79,80,81,82,85";
 
     private static final Logger logger = Logger.getLogger("Minecraft");
-    private HashMap<String,WorldEditSession> sessions = new HashMap<String,WorldEditSession>();
+    private HashMap<WorldEditPlayer,WorldEditSession> sessions =
+            new HashMap<WorldEditPlayer,WorldEditSession>();
     private HashMap<String,String> commands = new HashMap<String,String>();
 
     private PropertiesFile properties;
@@ -74,7 +75,7 @@ public class WorldEdit extends Plugin {
         commands.put("/editfill", "[ID] [Radius] <Depth> - Fill a hole");
         commands.put("/editscript", "[Filename] <Args...> - Run a WorldEdit script");
         commands.put("/editlimit", "[Num] - See documentation");
-        commands.put("/lift", "Go up to the first free spot");
+        commands.put("/unstuck", "Go up to the first free spot");
     }
 
     /**
@@ -83,13 +84,13 @@ public class WorldEdit extends Plugin {
      * @param player
      * @return
      */
-    private WorldEditSession getSession(Player player) {
-        if (sessions.containsKey(player.getName())) {
-            return sessions.get(player.getName());
+    private WorldEditSession getSession(WorldEditPlayer player) {
+        if (sessions.containsKey(player)) {
+            return sessions.get(player);
         } else {
             WorldEditSession session = new WorldEditSession();
             session.setBlockChangeLimit(defaultMaxBlocksChanged);
-            sessions.put(player.getName(), session);
+            sessions.put(player, session);
             return session;
         }
     }
@@ -218,29 +219,28 @@ public class WorldEdit extends Plugin {
      * @return false if you want the action to go through
      */
     @Override
-    public boolean onBlockCreate(Player player, Block blockPlaced,
+    public boolean onBlockCreate(Player modPlayer, Block blockPlaced,
             Block blockClicked, int itemInHand) {
         if (itemInHand == 271) { // Wooden axe
-            if (!player.canUseCommand("/editpos1")
-                    || !player.canUseCommand("/editpos2")) {
+            if (!modPlayer.canUseCommand("/editpos1")
+                    || !modPlayer.canUseCommand("/editpos2")) {
                 return false;
             }
-            
+
+            WorldEditPlayer player = new WorldEditPlayer(modPlayer);
             WorldEditSession session = getSession(player);
 
-            int x = (int)Math.floor(blockClicked.getX());
-            int y = (int)Math.floor(blockClicked.getY());
-            int z = (int)Math.floor(blockClicked.getZ());
-
             if (session.isToolControlEnabled()) {
+                Point cur = Point.toBlockPoint(blockClicked.getX(),
+                                               blockClicked.getY(),
+                                               blockClicked.getZ());
+                
                 try {
                     if (session.hasToolBeenDoubleClicked()
-                            && x == session.getPos1()[0]
-                            && y == session.getPos1()[1]
-                            && z == session.getPos1()[2]) { // Pos 2
-                        session.setPos2(x, y, z);
+                            && cur.equals(session.getPos1())) { // Pos 2
+                        session.setPos2(cur);
                         session.setPos1(session.getLastToolPos1());
-                        player.sendMessage(Colors.LightPurple + "Second edit position set; first one restored.");
+                        player.print("Second edit position set; first one restored.");
                     } else {
                         // Have to remember the original position because on
                         // double click, we are going to restore it
@@ -248,8 +248,8 @@ public class WorldEdit extends Plugin {
                             session.setLastToolPos1(session.getPos1());
                         } catch (IncompleteRegionException e) {}
                         
-                        session.setPos1(x, y, z);
-                        player.sendMessage(Colors.LightPurple + "First edit position set.");
+                        session.setPos1(cur);
+                        player.print("First edit position set.");
                     }
                 } catch (IncompleteRegionException e) {}
 
@@ -269,10 +269,11 @@ public class WorldEdit extends Plugin {
      * @return
      */
     @Override
-    public boolean onCommand(Player player, String[] split) {
-        try {
+    public boolean onCommand(Player modPlayer, String[] split) {
+        try {            
             if (commands.containsKey(split[0])) {
-                if (player.canUseCommand(split[0])) {
+                if (modPlayer.canUseCommand(split[0])) {
+                    WorldEditPlayer player = new WorldEditPlayer(modPlayer);
                     WorldEditSession session = getSession(player);
                     EditSession editSession =
                             new EditSession(session.getBlockChangeLimit());
@@ -287,7 +288,8 @@ public class WorldEdit extends Plugin {
                 }
             } else {
                 // See if there is a script by the same name
-                if (mapScriptCommands && player.canUseCommand("/editscript")) {
+                if (mapScriptCommands && modPlayer.canUseCommand("/editscript")) {
+                    WorldEditPlayer player = new WorldEditPlayer(modPlayer);
                     WorldEditSession session = getSession(player);
                     EditSession editSession =
                             new EditSession(session.getBlockChangeLimit());
@@ -310,20 +312,20 @@ public class WorldEdit extends Plugin {
 
             return false;
         } catch (NumberFormatException e) {
-            player.sendMessage(Colors.Rose + "Number expected; string given.");
+            modPlayer.sendMessage(Colors.Rose + "Number expected; string given.");
         } catch (IncompleteRegionException e2) {
-            player.sendMessage(Colors.Rose + "The edit region has not been fully defined.");
+            modPlayer.sendMessage(Colors.Rose + "The edit region has not been fully defined.");
         } catch (UnknownItemException e3) {
-            player.sendMessage(Colors.Rose + "Unknown item.");
+            modPlayer.sendMessage(Colors.Rose + "Unknown item.");
         } catch (DisallowedItemException e4) {
-            player.sendMessage(Colors.Rose + "Disallowed item.");
+            modPlayer.sendMessage(Colors.Rose + "Disallowed item.");
         } catch (MaxChangedBlocksException e5) {
-            player.sendMessage(Colors.Rose + "The maximum number of blocks changed ("
+            modPlayer.sendMessage(Colors.Rose + "The maximum number of blocks changed ("
                     + e5.getBlockLimit() + ") in an instance was reached.");
         } catch (InsufficientArgumentsException e6) {
-            player.sendMessage(Colors.Rose + e6.getMessage());
+            modPlayer.sendMessage(Colors.Rose + e6.getMessage());
         } catch (WorldEditException e7) {
-            player.sendMessage(Colors.Rose + e7.getMessage());
+            modPlayer.sendMessage(Colors.Rose + e7.getMessage());
         }
 
         return true;
@@ -333,6 +335,7 @@ public class WorldEdit extends Plugin {
      * The main meat of command processing.
      * 
      * @param player
+     * @param editPlayer
      * @param session
      * @param editSession
      * @param split
@@ -342,204 +345,132 @@ public class WorldEdit extends Plugin {
      * @throws InsufficientArgumentsException
      * @throws DisallowedItemException
      */
-    private boolean performCommand(Player player, WorldEditSession session,
-            EditSession editSession, String[] split)
+    private boolean performCommand(WorldEditPlayer player,
+            WorldEditSession session, EditSession editSession, String[] split)
             throws WorldEditException
     {
         // Jump to the first free position
-        if (split[0].equalsIgnoreCase("/lift")) {
-            player.sendMessage(Colors.LightPurple + "There you go!");
-            teleportToStandPosition(player);
+        if (split[0].equalsIgnoreCase("/unstuck")) {
+            checkArgs(split, 0, 0, split[0]);
+            player.print("There you go!");
+            player.findFreePosition();
             return true;
 
         // Set edit position #1
         } else if (split[0].equalsIgnoreCase("/editpos1")) {
-            session.setPos1((int)Math.floor(player.getX()),
-                            (int)Math.floor(player.getY()),
-                            (int)Math.floor(player.getZ()));
-            player.sendMessage(Colors.LightPurple + "First edit position set.");
+            checkArgs(split, 0, 0, split[0]);
+            session.setPos1(player.getBlockIn());
+            player.print("First edit position set.");
             return true;
 
         // Set edit position #2
         } else if (split[0].equalsIgnoreCase("/editpos2")) {
-            session.setPos2((int)Math.floor(player.getX()),
-                            (int)Math.floor(player.getY()),
-                            (int)Math.floor(player.getZ()));
-            player.sendMessage(Colors.LightPurple + "Second edit position set.");
+            checkArgs(split, 0, 0, split[0]);
+            session.setPos2(player.getBlockIn());
+            player.print("Second edit position set.");
             return true;
 
         // Edit wand
         } else if (split[0].equalsIgnoreCase("/editwand")) {
+            checkArgs(split, 0, 0, split[0]);
             player.giveItem(271, 1);
-            player.sendMessage(Colors.LightPurple + "Right click = sel. pos 1; double right click = sel. pos 2");
+            player.print("Right click = sel. pos 1; double right click = sel. pos 2");
             return true;
 
         // Set max number of blocks to change at a time
         } else if (split[0].equalsIgnoreCase("/editlimit")) {
-            checkArgs(split, 1, 1, "/editlimit");
+            checkArgs(split, 1, 1, split[0]);
             int limit = Math.max(-1, Integer.parseInt(split[1]));
             session.setBlockChangeLimit(limit);
-            player.sendMessage(Colors.LightPurple + "Block change limit set to "
-                    + limit + ".");
+            player.print("Block change limit set to " + limit + ".");
             return true;
 
         // Undo
         } else if (split[0].equalsIgnoreCase("/editundo")) {
+            checkArgs(split, 0, 0, split[0]);
             if (session.undo()) {
-                player.sendMessage(Colors.LightPurple + "Undo successful.");
+                player.print("Undo successful.");
             } else {
-                player.sendMessage(Colors.Rose + "Nothing to undo.");
+                player.printError("Nothing to undo.");
             }
             return true;
 
         // Redo
         } else if (split[0].equalsIgnoreCase("/editredo")) {
+            checkArgs(split, 0, 0, split[0]);
             if (session.redo()) {
-                player.sendMessage(Colors.LightPurple + "Redo successful.");
+                player.print("Redo successful.");
             } else {
-                player.sendMessage(Colors.Rose + "Nothing to redo.");
+                player.printError("Nothing to redo.");
             }
             return true;
 
         // Clear undo history
         } else if (split[0].equalsIgnoreCase("/clearhistory")) {
+            checkArgs(split, 0, 0, split[0]);
             session.clearHistory();
-            player.sendMessage(Colors.LightPurple + "History cleared.");
+            player.print("History cleared.");
             return true;
 
         // Clear clipboard
         } else if (split[0].equalsIgnoreCase("/clearclipboard")) {
+            checkArgs(split, 0, 0, split[0]);
             session.setClipboard(null);
-            player.sendMessage(Colors.LightPurple + "Clipboard cleared.");
+            player.print("Clipboard cleared.");
             return true;
 
         // Paste
         } else if (split[0].equalsIgnoreCase("/editpasteair") ||
                    split[0].equalsIgnoreCase("/editpaste")) {
             if (session.getClipboard() == null) {
-                player.sendMessage(Colors.Rose + "Nothing is in your clipboard.");
+                player.printError("Nothing is in your clipboard.");
             } else {
-                Point<Integer> pos = new Point<Integer>((int)Math.floor(player.getX()),
-                                                        (int)Math.floor(player.getY()),
-                                                        (int)Math.floor(player.getZ()));
+                Point pos = player.getBlockIn();
                 session.getClipboard().paste(editSession, pos,
                     split[0].equalsIgnoreCase("/editpaste"));
-                teleportToStandPosition(player);
-                logger.log(Level.INFO, player.getName() + " used " + split[0]);
-                player.sendMessage(Colors.LightPurple + "Pasted. Undo with /editundo");
+                player.findFreePosition();
+                player.print("Pasted. Undo with /editundo");
             }
 
             return true;
 
         // Fill a hole
         } else if (split[0].equalsIgnoreCase("/editfill")) {
-            checkArgs(split, 2, 3, "/editfill");
+            checkArgs(split, 2, 3, split[0]);
             int blockType = getItem(split[1]);
             int radius = Math.max(1, Integer.parseInt(split[2]));
             int depth = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
 
-            int cx = (int)Math.floor(player.getX());
-            int cy = (int)Math.floor(player.getY());
-            int cz = (int)Math.floor(player.getZ());
-            int minY = Math.max(-128, cy - depth);
-
-            int affected = fill(editSession, cx, cz, cx, cy, cz,
-                                blockType, radius, minY);
-
-            logger.log(Level.INFO, player.getName() + " used " + split[0]);
-            player.sendMessage(Colors.LightPurple + affected + " block(s) have been created.");
+            Point pos = player.getBlockIn();
+            int affected = editSession.fillXZ((int)pos.getX(), (int)pos.getZ(),
+                    pos, blockType, radius, depth);
+            player.print(affected + " block(s) have been created.");
 
             return true;
 
         // Remove blocks above current position
         } else if (split[0].equalsIgnoreCase("/removeabove")) {
-            int size = split.length > 1 ? Math.max(0, Integer.parseInt(split[1]) - 1) : 0;
-            int height = split.length > 2 ? Math.max(1, Integer.parseInt(split[2])) : 127;
+            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
+            int height = split.length > 2 ? Math.min(128, Integer.parseInt(split[2]) + 2) : 128;
 
-            int affected = 0;
-            int cx = (int)Math.floor(player.getX());
-            int cy = (int)Math.floor(player.getY());
-            int cz = (int)Math.floor(player.getZ());
-            int maxY = Math.min(127, cy + height - 1);
-
-            for (int x = cx - size; x <= cx + size; x++) {
-                for (int z = cz - size; z <= cz + size; z++) {
-                    for (int y = cy; y <= maxY; y++) {
-                        if (editSession.getBlock(x, y, z) != 0) {
-                            editSession.setBlock(x, y, z, 0);
-                            affected++;
-                        }
-                    }
-                }
-            }
-
-            logger.log(Level.INFO, player.getName() + " used " + split[0]);
-            player.sendMessage(Colors.LightPurple + affected + " block(s) have been removed.");
+            int affected = editSession.removeAbove(player.getBlockIn(), size, height);
+            player.print(affected + " block(s) have been removed.");
 
             return true;
 
         // Remove blocks below current position
         } else if (split[0].equalsIgnoreCase("/removebelow")) {
-            int size = split.length > 1 ? Math.max(0, Integer.parseInt(split[1]) - 1) : 0;
-            int height = split.length > 2 ? Math.max(1, Integer.parseInt(split[2])) : 127;
+            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
+            int height = split.length > 2 ? Math.max(1, Integer.parseInt(split[2])) : 128;
 
-            int affected = 0;
-            int cx = (int)Math.floor(player.getX());
-            int cy = (int)Math.floor(player.getY());
-            int cz = (int)Math.floor(player.getZ());
-            int minY = Math.max(0, cy - height);
-
-            for (int x = cx - size; x <= cx + size; x++) {
-                for (int z = cz - size; z <= cz + size; z++) {
-                    for (int y = cy; y >= minY; y--) {
-                        if (editSession.getBlock(x, y, z) != 0) {
-                            editSession.setBlock(x, y, z, 0);
-                            affected++;
-                        }
-                    }
-                }
-            }
-
-            logger.log(Level.INFO, player.getName() + " used " + split[0]);
-            player.sendMessage(Colors.LightPurple + affected + " block(s) have been removed.");
-
-            return true;
-
-        // Make a cylinder
-        } else if (split[0].equalsIgnoreCase("/editcyl")) {
-            checkArgs(split, 2, 3, "/editcyl");
-            int blockType = getItem(split[1]);
-            int radius = Math.abs(Integer.parseInt(split[2]));
-            int height = split.length > 3 ? getItem(split[3], true) : 1;
-
-            // We don't want to pass beyond boundaries
-            int cx = (int)Math.floor(player.getX());
-            int cy = (int)Math.floor(player.getY());
-            int cz = (int)Math.floor(player.getZ());
-            int maxY = Math.min(127, cy + height);
-
-            int affected = 0;
-
-            for (int x = -radius; x <= radius; x++) {
-                int z = (int)(Math.sqrt(radius - x * x) + 0.5);
-                for (int y = cy; y <= maxY; y++) {
-                    for (int z2 = cz - z; z2 <= cz + z; z2++) {
-                        editSession.setBlock(x + cx, y, z2, blockType);
-                        affected++;
-                    }
-                }
-            }
-
-            teleportToStandPosition(player);
-
-            logger.log(Level.INFO, player.getName() + " used " + split[0]);
-            player.sendMessage(Colors.LightPurple + affected + " block(s) have been set.");
+            int affected = editSession.removeBelow(player.getBlockIn(), size, height);
+            player.print(affected + " block(s) have been removed.");
 
             return true;
 
         // Load .schematic to clipboard
         } else if (split[0].equalsIgnoreCase("/editload")) {
-            checkArgs(split, 1, 1, "/editload");
+            checkArgs(split, 1, 1, split[0]);
             String filename = split[1].replace("\0", "") + ".schematic";
             File dir = new File("schematics");
             File f = new File("schematics", filename);
@@ -549,20 +480,17 @@ public class WorldEdit extends Plugin {
                 String dirPath = dir.getCanonicalPath();
 
                 if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
-                    player.sendMessage(Colors.Rose + "Schematic could not read or it does not exist.");
+                    player.printError("Schematic could not read or it does not exist.");
                 } else {
-                    int cx = (int)Math.floor(player.getX());
-                    int cy = (int)Math.floor(player.getY());
-                    int cz = (int)Math.floor(player.getZ());
-                    Point<Integer> origin = new Point<Integer>(cx, cy, cz);
-                    session.setClipboard(RegionClipboard.loadSchematic(filePath, origin));
+                    Point origin = player.getBlockIn();
+                    session.setClipboard(CuboidClipboard.loadSchematic(filePath, origin));
                     logger.log(Level.INFO, player.getName() + " loaded " + filePath);
-                    player.sendMessage(Colors.LightPurple + filename + " loaded.");
+                    player.print(filename + " loaded.");
                 }
-            } catch (SchematicException e) {
-                player.sendMessage(Colors.Rose + "Load error: " + e.getMessage());
+            /*} catch (SchematicException e) {
+                player.printError("Load error: " + e.getMessage());*/
             } catch (IOException e) {
-                player.sendMessage(Colors.Rose + "Schematic could not read or it does not exist.");
+                player.printError("Schematic could not read or it does not exist.");
             }
 
             return true;
@@ -570,18 +498,18 @@ public class WorldEdit extends Plugin {
         // Save clipboard to .schematic
         } else if (split[0].equalsIgnoreCase("/editsave")) {
             if (session.getClipboard() == null) {
-                player.sendMessage(Colors.Rose + "Nothing is in your clipboard.");
+                player.printError("Nothing is in your clipboard.");
                 return true;
             }
             
-            checkArgs(split, 1, 1, "/editsave");
+            checkArgs(split, 1, 1, split[0]);
             String filename = split[1].replace("\0", "") + ".schematic";
             File dir = new File("schematics");
             File f = new File("schematics", filename);
 
             if (!dir.exists()) {
                 if (!dir.mkdir()) {
-                    player.sendMessage(Colors.Rose + "A schematics/ folder could not be created.");
+                    player.printError("A schematics/ folder could not be created.");
                     return true;
                 }
             }
@@ -591,7 +519,7 @@ public class WorldEdit extends Plugin {
                 String dirPath = dir.getCanonicalPath();
 
                 if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
-                    player.sendMessage(Colors.Rose + "Invalid path for Schematic.");
+                    player.printError("Invalid path for Schematic.");
                 } else {
                     // Create parent directories
                     File parent = f.getParentFile();
@@ -601,164 +529,91 @@ public class WorldEdit extends Plugin {
 
                     session.getClipboard().saveSchematic(filePath);
                     logger.log(Level.INFO, player.getName() + " saved " + filePath);
-                    player.sendMessage(Colors.LightPurple + filename + " saved.");
+                    player.print(filename + " saved.");
                 }
             } catch (SchematicException se) {
-                player.sendMessage(Colors.Rose + "Save error: " + se.getMessage());
+                player.printError("Save error: " + se.getMessage());
             } catch (IOException e) {
-                player.sendMessage(Colors.Rose + "Schematic could not written.");
+                player.printError("Schematic could not written.");
             }
             
             return true;
 
         // Run a script
         } else if (split[0].equalsIgnoreCase("/editscript")) {
-            checkArgs(split, 1, -1, "/editscript");
+            checkArgs(split, 1, -1, split[0]);
             String filename = split[1].replace("\0", "") + ".js";
             String[] args = new String[split.length - 2];
             System.arraycopy(split, 2, args, 0, split.length - 2);
             try {
                 runScript(player, session, editSession, filename, args);
             } catch (NoSuchScriptException e) {
-                player.sendMessage(Colors.Rose + "Script file does not exist.");
+                player.printError("Script file does not exist.");
             }
             return true;
-        }
-
-        int lowerX = session.getLowerX();
-        int upperX = session.getUpperX();
-        int lowerY = session.getLowerY();
-        int upperY = session.getUpperY();
-        int lowerZ = session.getLowerZ();
-        int upperZ = session.getUpperZ();
-        
-        // Get size of area
-        if (split[0].equalsIgnoreCase("/editsize")) {
-            player.sendMessage(Colors.LightPurple + "# of blocks: " + getSession(player).getSize());
+        } else if (split[0].equalsIgnoreCase("/editsize")) {
+            player.print("# of blocks: " + session.getRegion().getSize());
             return true;
 
         // Replace all blocks in the region
         } else if(split[0].equalsIgnoreCase("/editset")) {
-            checkArgs(split, 1, 1, "/editset");
+            checkArgs(split, 1, 1, split[0]);
             int blockType = getItem(split[1]);
-            int affected = 0;
-
-            for (int x = lowerX; x <= upperX; x++) {
-                for (int y = lowerY; y <= upperY; y++) {
-                    for (int z = lowerZ; z <= upperZ; z++) {
-                        editSession.setBlock(x, y, z, blockType);
-                        affected++;
-                    }
-                }
-            }
-
-            logger.log(Level.INFO, player.getName() + " used " + split[0]);
-            player.sendMessage(Colors.LightPurple + affected + " block(s) have been set.");
+            int affected = editSession.setBlocks(session.getRegion(), blockType);
+            player.print(affected + " block(s) have been changed.");
 
             return true;
 
         // Set the outline of a region
         } else if(split[0].equalsIgnoreCase("/editoutline")) {
-            checkArgs(split, 1, 1, "/editoutline");
+            checkArgs(split, 1, 1, split[0]);
             int blockType = getItem(split[1]);
-            int affected = 0;
-
-            for (int x = lowerX; x <= upperX; x++) {
-                for (int y = lowerY; y <= upperY; y++) {
-                    editSession.setBlock(x, y, lowerZ, blockType);
-                    editSession.setBlock(x, y, upperZ, blockType);
-                    affected++;
-                }
-            }
-
-            for (int y = lowerY; y <= upperY; y++) {
-                for (int z = lowerZ; z <= upperZ; z++) {
-                    editSession.setBlock(lowerX, y, z, blockType);
-                    editSession.setBlock(upperX, y, z, blockType);
-                    affected++;
-                }
-            }
-
-            for (int z = lowerZ; z <= upperZ; z++) {
-                for (int x = lowerX; x <= upperX; x++) {
-                    editSession.setBlock(x, lowerY, z, blockType);
-                    editSession.setBlock(x, upperY, z, blockType);
-                    affected++;
-                }
-            }
-
-            logger.log(Level.INFO, player.getName() + " used " + split[0]);
-            player.sendMessage(Colors.LightPurple + affected + " block(s) have been set.");
+            int affected = editSession.makeCuboidFaces(session.getRegion(), blockType);
+            player.print(affected + " block(s) have been changed.");
 
             return true;
 
         // Replace all blocks in the region
         } else if(split[0].equalsIgnoreCase("/editreplace")) {
-            checkArgs(split, 1, 2, "/editreplace");
-            int blockType = getItem(split[1]);
-            int replaceType = split.length > 2 ? getItem(split[2], true) : -1;
-
-            int affected = 0;
-
-            for (int x = lowerX; x <= upperX; x++) {
-                for (int y = lowerY; y <= upperY; y++) {
-                    for (int z = lowerZ; z <= upperZ; z++) {
-                        if ((replaceType == -1 && editSession.getBlock(x, y, z) != 0) ||
-                            (editSession.getBlock(x, y, z) == replaceType)) {
-                            editSession.setBlock(x, y, z, blockType);
-                            affected++;
-                        }
-                    }
-                }
+            checkArgs(split, 1, 2, split[0]);
+            int from, to;
+            if (split.length == 2) {
+                from = -1;
+                to = getItem(split[1]);
+            } else {
+                from = getItem(split[1]);
+                to = getItem(split[2]);
             }
-
-            logger.log(Level.INFO, player.getName() + " used " + split[0]);
-            player.sendMessage(Colors.LightPurple + affected + " block(s) have been replaced.");
+            
+            int affected = editSession.replaceBlocks(session.getRegion(), from, to);
+            player.print(affected + " block(s) have been replaced.");
 
             return true;
 
         // Lay blocks over an area
         } else if (split[0].equalsIgnoreCase("/editoverlay")) {
-            checkArgs(split, 1, 1, "/editoverlay");
+            checkArgs(split, 1, 1, split[0]);
             int blockType = getItem(split[1]);
 
-            // We don't want to pass beyond boundaries
-            upperY = Math.min(127, upperY + 1);
-            lowerY = Math.max(-128, lowerY - 1);
-
-            int affected = 0;
-
-            for (int x = lowerX; x <= upperX; x++) {
-                for (int z = lowerZ; z <= upperZ; z++) {
-                    for (int y = upperY; y >= lowerY; y--) {
-                        if (y + 1 <= 127 && editSession.getBlock(x, y, z) != 0 && editSession.getBlock(x, y + 1, z) == 0) {
-                            editSession.setBlock(x, y + 1, z, blockType);
-                            affected++;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            logger.log(Level.INFO, player.getName() + " used " + split[0]);
-            player.sendMessage(Colors.LightPurple + affected + " block(s) have been overlayed.");
+            Region region = session.getRegion();
+            int affected = editSession.overlayCuboidBlocks(region, blockType);
+            player.print(affected + " block(s) have been overlayed.");
 
             return true;
 
         // Copy
         } else if (split[0].equalsIgnoreCase("/editcopy")) {
-            Point<Integer> min = new Point<Integer>(lowerX, lowerY, lowerZ);
-            Point<Integer> max = new Point<Integer>(upperX, upperY, upperZ);
-            Point<Integer> pos = new Point<Integer>((int)Math.floor(player.getX()),
-                                                    (int)Math.floor(player.getY()),
-                                                    (int)Math.floor(player.getZ()));
+            checkArgs(split, 0, 0, split[0]);
+            Region region = session.getRegion();
+            Point min = region.getMinimumPoint();
+            Point max = region.getMaximumPoint();
+            Point pos = player.getBlockIn();
 
-            RegionClipboard clipboard = new RegionClipboard(min, max, pos);
+            CuboidClipboard clipboard = new CuboidClipboard(min, max, pos);
             clipboard.copy(editSession);
             session.setClipboard(clipboard);
-
-            logger.log(Level.INFO, player.getName() + " used " + split[0]);
-            player.sendMessage(Colors.LightPurple + "Block(s) copied.");
+            
+            player.print("Block(s) copied.");
 
             return true;
 
@@ -766,184 +621,48 @@ public class WorldEdit extends Plugin {
         } else if (split[0].equalsIgnoreCase("/editstackair") ||
                    split[0].equalsIgnoreCase("/editstack")) {
             checkArgs(split, 0, 2, split[0]);
-            String dir = split.length > 1 ? split[1] : "me";
-            int count = split.length > 2 ? Math.max(1, Integer.parseInt(split[2])) : 1;
+            int count = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
+            String dir = split.length > 2 ? split[2].toLowerCase() : "me";
             int xm = 0;
             int ym = 0;
             int zm = 0;
             boolean copyAir = split[0].equalsIgnoreCase("/editstackair");
 
-            if (dir.equalsIgnoreCase("me")) {
+            if (dir.equals("me")) {
                 // From hey0's code
-                double rot = (player.getRotation() - 90) % 360;
+                double rot = (player.getYaw() - 90) % 360;
                 if (rot < 0) {
                     rot += 360.0;
                 }
-                dir = etc.getCompassPointForDirection(rot);
+                
+                dir = etc.getCompassPointForDirection(rot).toLowerCase();
             }
 
-            if (dir.equalsIgnoreCase("w")) {
+            if (dir.charAt(0) == 'w') {
                 zm += 1;
-            } else if (dir.equalsIgnoreCase("e")) {
+            } else if (dir.charAt(0) == 'e') {
                 zm -= 1;
-            } else if (dir.equalsIgnoreCase("s")) {
+            } else if (dir.charAt(0) == 's') {
                 xm += 1;
-            } else if (dir.equalsIgnoreCase("n")) {
+            } else if (dir.charAt(0) == 'n') {
                 xm -= 1;
-            } else if (dir.equalsIgnoreCase("u")) {
+            } else if (dir.charAt(0) == 'u') {
                 ym += 1;
-            } else if (dir.equalsIgnoreCase("d")) {
+            } else if (dir.charAt(0) == 'd') {
                 ym -= 1;
             } else {
-                player.sendMessage(Colors.Rose + "Unknown direction: " + dir);
+                player.printError("Unknown direction: " + dir);
                 return true;
             }
 
-            int xs = session.getWidth();
-            int ys = session.getHeight();
-            int zs = session.getLength();
-
-            int affected = 0;
-            
-            for (int x = lowerX; x <= upperX; x++) {
-                for (int z = lowerZ; z <= upperZ; z++) {
-                    for (int y = lowerY; y <= upperY; y++) {
-                        int blockType = editSession.getBlock(x, y, z);
-
-                        if (blockType != 0 || copyAir) {
-                            for (int i = 1; i <= count; i++) {
-                                editSession.setBlock(x + xs * xm * i, y + ys * ym * i,
-                                        z + zs * zm * i, blockType);
-                                affected++;
-                            }
-                        }
-                    }
-                }
-            }
-
-            /*int shiftX = xs * xm * count;
-            int shiftY = ys * ym * count;
-            int shiftZ = zs * zm * count;
-
-            int[] pos1 = session.getPos1();
-            int[] pos2 = session.getPos2();
-            session.setPos1(pos1[0] + shiftX, pos1[1] + shiftY, pos1[2] + shiftZ);
-            session.setPos2(pos2[0] + shiftX, pos2[1] + shiftY, pos2[2] + shiftZ);*/
-
-            logger.log(Level.INFO, player.getName() + " used " + split[0]);
-            player.sendMessage(Colors.LightPurple + "Stacked. Undo with /editundo");
+            int affected = editSession.stackCuboidRegion(session.getRegion(),
+                    xm, ym, zm, count, copyAir);
+            player.print(affected + " blocks changed. Undo with /editundo");
 
             return true;
         }
 
         return false;
-    }
-
-    /**
-     * Fills an area recursively in the X/Z directions.
-     * 
-     * @param editSession
-     * @param x
-     * @param z
-     * @param cx
-     * @param cy
-     * @param cz
-     * @param blockType
-     * @param radius
-     * @param minY
-     * @return
-     */
-    private int fill(EditSession editSession, int x, int z, int cx, int cy,
-            int cz, int blockType, int radius, int minY)
-            throws MaxChangedBlocksException {
-        double dist = Math.sqrt(Math.pow(cx - x, 2) + Math.pow(cz - z, 2));
-        int affected = 0;
-        
-        if (dist > radius) {
-            return 0;
-        }
-
-        if (editSession.getBlock(x, cy, z) == 0) {
-            affected = fillY(editSession, x, cy, z, blockType, minY);
-        } else {
-            return 0;
-        }
-        
-        affected += fill(editSession, x + 1, z, cx, cy, cz, blockType, radius, minY);
-        affected += fill(editSession, x - 1, z, cx, cy, cz, blockType, radius, minY);
-        affected += fill(editSession, x, z + 1, cx, cy, cz, blockType, radius, minY);
-        affected += fill(editSession, x, z - 1, cx, cy, cz, blockType, radius, minY);
-
-        return affected;
-    }
-
-    /**
-     * Recursively fills a block and below until it hits another block.
-     * 
-     * @param editSession
-     * @param x
-     * @param cy
-     * @param z
-     * @param blockType
-     * @param minY
-     * @throws MaxChangedBlocksException
-     * @return
-     */
-    private int fillY(EditSession editSession, int x, int cy,
-        int z, int blockType, int minY)
-        throws MaxChangedBlocksException {
-        int affected = 0;
-        
-        for (int y = cy; y > minY; y--) {
-            if (editSession.getBlock(x, y, z) == 0) {
-                editSession.setBlock(x, y, z, blockType);
-                affected++;
-            } else {
-                break;
-            }
-        }
-
-        return affected;
-    }
-
-    /**
-     * Find a position for the player to stand that is not inside a block.
-     * Blocks above the player will be iteratively tested until there is
-     * a series of two free blocks. The player will be teleported to
-     * that free position.
-     * 
-     * @param player
-     */
-    private void teleportToStandPosition(Player player) {
-        int x = (int)Math.floor(player.getX());
-        int y = (int)Math.floor(player.getY());
-        int origY = y;
-        int z = (int)Math.floor(player.getZ());
-        
-        byte free = 0;
-
-        while (y <= 129) {
-            if (getBlock(x, y, z) == 0) {
-                free++;
-            } else {
-                free = 0;
-            }
-
-            if (free == 2) {
-                if (y - 1 != origY) {
-                    Location loc = new Location();
-                    loc.x = x + 0.5;
-                    loc.y = y - 1;
-                    loc.z = z + 0.5;
-                    loc.rotX = player.getRotation();
-                    loc.rotY = player.getPitch();
-                    player.teleportTo(loc);
-                    return;
-                }
-            }
-
-            y++;
-        }
     }
 
     /**
@@ -954,7 +673,7 @@ public class WorldEdit extends Plugin {
      * @param args
      * @return Whether the file was attempted execution
      */
-    private boolean runScript(Player player, WorldEditSession session,
+    private boolean runScript(WorldEditPlayer player, WorldEditSession session,
             EditSession editSession, String filename, String[] args) throws
             NoSuchScriptException {
         File dir = new File("editscripts");
@@ -1008,12 +727,12 @@ public class WorldEdit extends Plugin {
                     logger.log(Level.INFO, player.getName() + ": executing " + filename + "...");
                     cx.evaluateString(scope, code, filename, 1, null);
                     logger.log(Level.INFO, player.getName() + ": script " + filename + " executed successfully.");
-                    player.sendMessage(Colors.LightPurple + filename + " executed successfully.");
+                    player.print(filename + " executed successfully.");
                 } catch (RhinoException re) {
-                    player.sendMessage(Colors.Rose + filename + ": JS error: " + re.getMessage());
+                    player.printError(filename + ": JS error: " + re.getMessage());
                     re.printStackTrace();
                 } catch (Error err) {
-                    player.sendMessage(Colors.Rose + filename + ": execution error: " + err.getMessage());
+                    player.printError(filename + ": execution error: " + err.getMessage());
                 } finally {
                     Context.exit();
                 }
@@ -1021,7 +740,7 @@ public class WorldEdit extends Plugin {
 
             return true;
         } catch (IOException e) {
-            player.sendMessage(Colors.Rose + "Script could not read or it does not exist.");
+            player.printError("Script could not read or it does not exist.");
         }
 
         return false;
