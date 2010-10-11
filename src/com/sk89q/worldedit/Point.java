@@ -377,4 +377,13 @@ public class Point {
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";
     }
+
+    /**
+     * Gets a BlockPoint version.
+     * 
+     * @return BlockPoint
+     */
+    public BlockPoint toBlockPoint() {
+        return new BlockPoint(this);
+    }
 }

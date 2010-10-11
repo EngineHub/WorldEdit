@@ -36,15 +36,15 @@ public class EditSession {
     /**
      * Stores the original blocks before modification.
      */
-    private HashMap<Point,Integer> original = new HashMap<Point,Integer>();
+    private HashMap<BlockPoint,Integer> original = new HashMap<BlockPoint,Integer>();
     /**
      * Stores the current blocks.
      */
-    private HashMap<Point,Integer> current = new HashMap<Point,Integer>();
+    private HashMap<BlockPoint,Integer> current = new HashMap<BlockPoint,Integer>();
     /**
      * Queue.
      */
-    private HashMap<Point,Integer> queue = new HashMap<Point,Integer>();
+    private HashMap<BlockPoint,Integer> queue = new HashMap<BlockPoint,Integer>();
     /**
      * The maximum number of blocks to change at a time. If this number is
      * exceeded, a MaxChangedBlocksException exception will be
@@ -130,14 +130,14 @@ public class EditSession {
     public boolean setBlock(Point pt, int blockType)
         throws MaxChangedBlocksException {
         if (!original.containsKey(pt)) {
-            original.put(pt, getBlock(pt));
+            original.put(pt.toBlockPoint(), getBlock(pt));
 
             if (maxBlocks != -1 && original.size() > maxBlocks) {
                 throw new MaxChangedBlocksException(maxBlocks);
             }
         }
 
-        current.put(pt, blockType);
+        current.put(pt.toBlockPoint(), blockType);
 
         return smartSetBlock(pt, blockType);
     }
@@ -153,7 +153,7 @@ public class EditSession {
         if (queued) {
             if (blockType != 0 && queuedBlocks.contains(blockType)
                     && rawGetBlock(pt.add(0, -1, 0)) == 0) {
-                queue.put(pt, blockType);
+                queue.put(pt.toBlockPoint(), blockType);
                 return getBlock(pt) != blockType;
             } else if (blockType == 0
                     && queuedBlocks.contains(rawGetBlock(pt.add(0, 1, 0)))) {
@@ -207,8 +207,8 @@ public class EditSession {
      * Restores all blocks to their initial state.
      */
     public void undo() {
-        for (Map.Entry<Point,Integer> entry : original.entrySet()) {
-            Point pt = (Point)entry.getKey();
+        for (Map.Entry<BlockPoint,Integer> entry : original.entrySet()) {
+            BlockPoint pt = (BlockPoint)entry.getKey();
             smartSetBlock(pt, (int)entry.getValue());
         }
         flushQueue();
@@ -218,8 +218,8 @@ public class EditSession {
      * Sets to new state.
      */
     public void redo() {
-        for (Map.Entry<Point,Integer> entry : current.entrySet()) {
-            Point pt = (Point)entry.getKey();
+        for (Map.Entry<BlockPoint,Integer> entry : current.entrySet()) {
+            BlockPoint pt = (BlockPoint)entry.getKey();
             smartSetBlock(pt, (int)entry.getValue());
         }
         flushQueue();
@@ -287,8 +287,8 @@ public class EditSession {
     public void flushQueue() {
         if (!queued) { return; }
         
-        for (Map.Entry<Point,Integer> entry : queue.entrySet()) {
-            Point pt = (Point)entry.getKey();
+        for (Map.Entry<BlockPoint,Integer> entry : queue.entrySet()) {
+            BlockPoint pt = (BlockPoint)entry.getKey();
             rawSetBlock(pt, (int)entry.getValue());
         }
     }
