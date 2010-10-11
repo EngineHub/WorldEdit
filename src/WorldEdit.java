@@ -68,8 +68,8 @@ public class WorldEdit extends Plugin {
         commands.put("/editcopy", "Copies the currently selected region");
         commands.put("/editpaste", "Pastes the clipboard");
         commands.put("/editpasteair", "Pastes the clipboard (with air)");
-        commands.put("/editstack", "[Dir] <Count> - Stacks the clipboard");
-        commands.put("/editstackair", "[Dir] <Count> - Stacks the clipboard (with air)");
+        commands.put("/editstack", "[Dir] <Count> - Stacks the selection");
+        commands.put("/editstackair", "[Dir] <Count> - Stacks the selection (with air)");
         commands.put("/editload", "[Filename] - Load .schematic into clipboard");
         commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
         commands.put("/editfill", "[ID] [Radius] <Depth> - Fill a hole");
