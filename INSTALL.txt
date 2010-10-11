@@ -4,8 +4,7 @@ Installation
 This plugin requires Hey0's server modification.
 
 (1) Create a "plugins" folder inside your "bin" folder.
-(2) Copy WorldEdit.jar, js.jar, jnbt.jar, and commons-lang3-3.0-beta.jar
-    into plugins/.
+(2) Copy WorldEdit.jar, smalljs.jar, and jnbt.jar into plugins/.
 (3) Add "WorldEdit" to "plugins" in your server.properties file, like so:
     plugins=WorldEdit
     If you have multiple plugins, separate plugin names with commas:
