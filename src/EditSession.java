@@ -20,6 +20,7 @@
 import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Stack;
 import com.sk89q.worldedit.*;
 
 /**
@@ -634,62 +635,53 @@ public class EditSession {
         int affected = 0;
 
         HashSet<BlockPoint> visited = new HashSet<BlockPoint>();
+        Stack<BlockPoint> queue = new Stack<BlockPoint>();
 
         for (int x = pos.getBlockX() - 1; x <= pos.getBlockX() + 1; x++) {
             for (int z = pos.getBlockZ() - 1; z <= pos.getBlockZ() + 1; z++) {
                 for (int y = pos.getBlockY() - 1; y <= pos.getBlockY() + 1; y++) {
-                    affected += drainPool(new Point(x, y, z), pos, radius, visited);
+                    queue.push(new BlockPoint(x, y, z));
                 }
             }
         }
 
-        return affected;
-    }
+        while (!queue.empty()) {
+            BlockPoint cur = queue.pop();
+            
+            int type = getBlock(cur);
 
-    /**
-     * Drains a water or lava block and any lava/water blocks next to it.
-     * 
-     * @param pos
-     * @param origin
-     * @param radius
-     * @param visited
-     * @return number of blocks affected
-     * @throws MaxChangedBlocksException
-     */
-    private int drainPool(Point pos, Point origin, int radius, HashSet<BlockPoint> visited)
-            throws MaxChangedBlocksException {
-        int type = getBlock(pos);
-        int affected = 0;
-        
-        if (type != 8 && type != 9 && type != 10 && type != 11) {
-            return 0;
-        }
+            // Check block type
+            if (type != 8 && type != 9 && type != 10 && type != 11) {
+                continue;
+            }
 
-        BlockPoint blockPos = new BlockPoint(pos);
+            // Don't want to revisit
+            if (visited.contains(cur)) {
+                continue;
+            }
+            
+            visited.add(cur);
 
-        if (visited.contains(blockPos)) {
-            return 0;
-        }
-        visited.add(blockPos);
+            // Check radius
+            if (pos.distance(cur) > radius) {
+                continue;
+            }
 
-        if (pos.distance(origin) > radius) {
-            return 0;
-        }
+            for (int x = cur.getBlockX() - 1; x <= cur.getBlockX() + 1; x++) {
+                for (int z = cur.getBlockZ() - 1; z <= cur.getBlockZ() + 1; z++) {
+                    for (int y = cur.getBlockY() - 1; y <= cur.getBlockY() + 1; y++) {
+                        BlockPoint newPos = new BlockPoint(x, y, z);
 
-        for (int x = pos.getBlockX() - 1; x <= pos.getBlockX() + 1; x++) {
-            for (int z = pos.getBlockZ() - 1; z <= pos.getBlockZ() + 1; z++) {
-                for (int y = pos.getBlockY() - 1; y <= pos.getBlockY() + 1; y++) {
-                    Point newPos = new Point(x, y, z);
-                    
-                    if (!pos.equals(newPos)) {
-                        affected += drainPool(newPos, origin, radius, visited);
+                        if (!cur.equals(newPos)) {
+                            queue.push(newPos);
+                        }
                     }
                 }
             }
-        }
 
-        if (setBlock(pos, 0)) {
-            affected++;
+            if (setBlock(cur, 0)) {
+                affected++;
+            }
         }
 
         return affected;

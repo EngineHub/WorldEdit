@@ -33,6 +33,33 @@ public class BlockPoint extends Point {
     public BlockPoint(Point pt) {
         super(pt);
     }
+
+    /**
+     * Construct the Point object.
+     *
+     * @param pt
+     */
+    public BlockPoint(int x, int y, int z) {
+        super(x, y, z);
+    }
+
+    /**
+     * Construct the Point object.
+     *
+     * @param pt
+     */
+    public BlockPoint(float x, float y, float z) {
+        super(x, y, z);
+    }
+
+    /**
+     * Construct the Point object.
+     *
+     * @param pt
+     */
+    public BlockPoint(double x, double y, double z) {
+        super(x, y, z);
+    }
     
     /**
      * Checks if another object is equivalent.
