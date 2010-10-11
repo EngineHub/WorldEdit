@@ -131,7 +131,9 @@ public final class Point {
     /**
      * Adds two points.
      *
-     * @param other
+     * @param x
+     * @param y
+     * @param z
      * @return New point
      */
     public Point add(double x, double y, double z) {
@@ -141,7 +143,9 @@ public final class Point {
     /**
      * Adds two points.
      *
-     * @param other
+     * @param x
+     * @param y
+     * @param z
      * @return New point
      */
     public Point add(int x, int y, int z) {
@@ -151,7 +155,7 @@ public final class Point {
     /**
      * Adds points.
      *
-     * @param other
+     * @param others
      * @return New point
      */
     public Point add(Point ... others) {
@@ -178,7 +182,9 @@ public final class Point {
     /**
      * Subtract two points.
      *
-     * @param other
+     * @param x
+     * @param y
+     * @param z
      * @return New point
      */
     public Point subtract(double x, double y, double z) {
@@ -188,7 +194,9 @@ public final class Point {
     /**
      * Subtract two points.
      *
-     * @param other
+     * @param x
+     * @param y
+     * @param z
      * @return New point
      */
     public Point subtract(int x, int y, int z) {
@@ -198,7 +206,7 @@ public final class Point {
     /**
      * Subtract points.
      *
-     * @param other
+     * @param others
      * @return New point
      */
     public Point subtract(Point ... others) {
@@ -225,7 +233,9 @@ public final class Point {
     /**
      * Multiply two points.
      *
-     * @param other
+     * @param x
+     * @param y
+     * @param z
      * @return New point
      */
     public Point multiply(double x, double y, double z) {
@@ -235,7 +245,9 @@ public final class Point {
     /**
      * Multiply two points.
      *
-     * @param other
+     * @param x
+     * @param y
+     * @param z
      * @return New point
      */
     public Point multiply(int x, int y, int z) {
@@ -245,7 +257,7 @@ public final class Point {
     /**
      * Multiply points.
      *
-     * @param other
+     * @param others
      * @return New point
      */
     public Point multiply(Point ... others) {
@@ -272,7 +284,9 @@ public final class Point {
     /**
      * Divide two points.
      *
-     * @param other
+     * @param x
+     * @param y
+     * @param z
      * @return New point
      */
     public Point divide(double x, double y, double z) {
@@ -282,7 +296,9 @@ public final class Point {
     /**
      * Divide two points.
      *
-     * @param other
+     * @param x
+     * @param y
+     * @param z
      * @return New point
      */
     public Point divide(int x, int y, int z) {
@@ -295,7 +311,7 @@ public final class Point {
      * @param x
      * @param y
      * @param z
-     * @return
+     * @return point
      */
     public static Point toBlockPoint(double x, double y, double z) {
         return new Point((int)Math.floor(x),
@@ -307,7 +323,7 @@ public final class Point {
      * Checks if another object is equivalent.
      * 
      * @param obj
-     * @return
+     * @return whether the other object is equivalent
      */
     @Override
     public boolean equals(Object obj) {
@@ -322,7 +338,7 @@ public final class Point {
     /**
      * Gets the hash code.
      * 
-     * @return
+     * @return hash code
      */
     @Override
     public int hashCode() {

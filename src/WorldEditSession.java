@@ -45,8 +45,6 @@ public class WorldEditSession {
 
     /**
      * Get the edit session.
-     *
-     * @return
      */
     public void remember(EditSession editSession) {
         // Don't store anything if no changes were made
@@ -119,7 +117,7 @@ public class WorldEditSession {
     /**
      * Gets defined position 1.
      * 
-     * @return
+     * @return position 1
      * @throws IncompleteRegionException
      */
     public Point getPos1() throws IncompleteRegionException {
@@ -139,7 +137,7 @@ public class WorldEditSession {
     /**
      * Gets position 2.
      * 
-     * @return
+     * @return position 2
      * @throws IncompleteRegionException
      */
     public Point getPos2() throws IncompleteRegionException {
@@ -159,7 +157,7 @@ public class WorldEditSession {
     /**
      * Get the region.
      * 
-     * @return
+     * @return region
      * @throws IncompleteRegionException
      */
     public Region getRegion() throws IncompleteRegionException {
@@ -172,7 +170,7 @@ public class WorldEditSession {
     /**
      * Gets the clipboard.
      * 
-     * @return
+     * @return clipboard, may be null
      */
     public CuboidClipboard getClipboard() {
         return clipboard;
@@ -190,7 +188,7 @@ public class WorldEditSession {
     /**
      * See if tool control is enabled.
      * 
-     * @return
+     * @return true if enabled
      */
     public boolean isToolControlEnabled() {
         return toolControl;
@@ -199,7 +197,7 @@ public class WorldEditSession {
     /**
      * Change tool control setting.
      * 
-     * @param
+     * @param toolControl
      */
     public void setToolControl(boolean toolControl) {
         this.toolControl = toolControl;
@@ -222,7 +220,7 @@ public class WorldEditSession {
     /**
      * Returns true if the tool has been double clicked.
      * 
-     * @return
+     * @return true if double clicked
      */
     public boolean hasToolBeenDoubleClicked() {
         return System.currentTimeMillis() - lastToolClick < 500;
@@ -237,7 +235,8 @@ public class WorldEditSession {
 
     /**
      * Get the maximum number of blocks that can be changed in an edit session.
-     * @return
+     *
+     * @return block change limit
      */
     public int getBlockChangeLimit() {
         return maxBlocksChanged;

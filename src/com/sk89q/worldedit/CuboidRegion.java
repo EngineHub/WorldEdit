@@ -49,7 +49,7 @@ public class CuboidRegion implements Region {
     /**
      * Get the lower point of the cuboid.
      *
-     * @return
+     * @return min point
      */
     @Override
     public Point getMinimumPoint() {
@@ -61,7 +61,7 @@ public class CuboidRegion implements Region {
     /**
      * Get the upper point of the cuboid.
      *
-     * @return
+     * @return max point
      */
     @Override
     public Point getMaximumPoint() {
@@ -73,7 +73,7 @@ public class CuboidRegion implements Region {
     /**
      * Get the number of blocks in the region.
      * 
-     * @return
+     * @return number of blocks
      */
     public int getSize() {
         Point min = getMinimumPoint();
@@ -87,7 +87,7 @@ public class CuboidRegion implements Region {
     /**
      * Get X-size.
      *
-     * @return
+     * @return width
      */
     public int getWidth() {
         Point min = getMinimumPoint();
@@ -99,7 +99,7 @@ public class CuboidRegion implements Region {
     /**
      * Get Y-size.
      *
-     * @return
+     * @return height
      */
     public int getHeight() {
         Point min = getMinimumPoint();
@@ -111,7 +111,7 @@ public class CuboidRegion implements Region {
     /**
      * Get Z-size.
      *
-     * @return
+     * @return length
      */
     public int getLength() {
         Point min = getMinimumPoint();
@@ -123,7 +123,7 @@ public class CuboidRegion implements Region {
     /**
      * Get the iterator.
      * 
-     * @return
+     * @return iterator of Points
      */
     public Iterator<Point> iterator() {
         throw new UnsupportedOperationException("Not implemented");

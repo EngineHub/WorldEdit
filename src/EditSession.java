@@ -237,7 +237,7 @@ public class EditSession {
      * Get the maximum number of blocks that can be changed. -1 will be
      * returned if disabled.
      *
-     * @return
+     * @return block change limit
      */
     public int getBlockChangeLimit() {
         return maxBlocks;
@@ -258,7 +258,7 @@ public class EditSession {
     /**
      * Returns queue status.
      * 
-     * @return
+     * @return whether the queue is enabled
      */
     public boolean isQueueEnabled() {
         return queued;
@@ -302,7 +302,7 @@ public class EditSession {
      * @param blockType
      * @param radius
      * @param depth
-     * @return
+     * @return number of blocks affected
      */
     public int fillXZ(int x, int z, Point origin, int blockType, int radius, int depth)
             throws MaxChangedBlocksException {
@@ -361,9 +361,9 @@ public class EditSession {
      * Remove blocks above.
      * 
      * @param pos
-     * @param size,
+     * @param size
      * @param height
-     * @return
+     * @return number of blocks affected
      */
     public int removeAbove(Point pos, int size, int height) throws
             MaxChangedBlocksException {
@@ -391,9 +391,9 @@ public class EditSession {
      * Remove blocks below.
      *
      * @param pos
-     * @param size,
+     * @param size
      * @param height
-     * @return
+     * @return number of blocks affected
      */
     public int removeBelow(Point pos, int size, int height) throws
             MaxChangedBlocksException {
@@ -422,7 +422,7 @@ public class EditSession {
      *
      * @param region
      * @param blockType
-     * @return
+     * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
     public int setBlocks(Region region, int blockType)
@@ -462,7 +462,7 @@ public class EditSession {
      * @param region
      * @param fromBlockType -1 for non-air
      * @param toBlockType
-     * @return
+     * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
     public int replaceBlocks(Region region, int fromBlockType, int toBlockType)
@@ -510,7 +510,7 @@ public class EditSession {
      * 
      * @param region
      * @param blockType
-     * @return
+     * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
     public int makeCuboidFaces(Region region, int blockType)
@@ -549,10 +549,8 @@ public class EditSession {
      * Overlays a layer of blocks over a cuboid area.
      * 
      * @param region
-     * @param upperY
-     * @param lowerY
      * @param blockType
-     * @return
+     * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
     public int overlayCuboidBlocks(Region region, int blockType)

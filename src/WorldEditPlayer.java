@@ -47,7 +47,7 @@ public class WorldEditPlayer {
     /**
      * Get the point of the block that is being stood upon.
      *
-     * @return
+     * @return point
      */
     public Point getBlockOn() {
         return Point.toBlockPoint(player.getX(), player.getY() - 1, player.getZ());
@@ -56,7 +56,7 @@ public class WorldEditPlayer {
     /**
      * Get the point of the block that is being stood in.
      * 
-     * @return
+     * @return point
      */
     public Point getBlockIn() {
         return Point.toBlockPoint(player.getX(), player.getY(), player.getZ());
@@ -65,7 +65,7 @@ public class WorldEditPlayer {
     /**
      * Get the player's position.
      * 
-     * @return
+     * @return point
      */
     public Point getPosition() {
         return new Point(player.getX(), player.getY(), player.getZ());
@@ -74,7 +74,7 @@ public class WorldEditPlayer {
     /**
      * Get the player's view pitch.
      *
-     * @return
+     * @return pitch
      */
     public double getPitch() {
         return player.getPitch();
@@ -83,7 +83,7 @@ public class WorldEditPlayer {
     /**
      * Get the player's view yaw.
      *
-     * @return
+     * @return yaw
      */
     public double getYaw() {
         return player.getRotation();
@@ -176,7 +176,7 @@ public class WorldEditPlayer {
      * Returns true if equal.
      * 
      * @param other
-     * @return
+     * @return whether the other object is equivalent
      */
     @Override
     public boolean equals(Object other) {
@@ -190,7 +190,7 @@ public class WorldEditPlayer {
     /**
      * Gets the hash code.
      *
-     * @return
+     * @return hash code
      */
     @Override
     public int hashCode() {

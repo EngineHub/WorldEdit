@@ -27,37 +27,37 @@ public interface Region extends Iterable<Point> {
     /**
      * Get the lower point of a region.
      * 
-     * @return
+     * @return min. point
      */
     public Point getMinimumPoint();
     /**
      * Get the upper point of a region.
      * 
-     * @return
+     * @return max. point
      */
     public Point getMaximumPoint();
     /**
      * Get the number of blocks in the region.
      * 
-     * @return
+     * @return number of blocks
      */
     public int getSize();
     /**
      * Get X-size.
      *
-     * @return
+     * @return width
      */
     public int getWidth();
     /**
      * Get Y-size.
      *
-     * @return
+     * @return height
      */
     public int getHeight();
     /**
      * Get Z-size.
      *
-     * @return
+     * @return length
      */
     public int getLength();
 }

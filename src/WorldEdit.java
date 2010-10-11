@@ -212,7 +212,7 @@ public class WorldEdit extends Plugin {
     /**
      * Called on right click.
      *
-     * @param player
+     * @param modPlayer
      * @param blockPlaced
      * @param blockClicked
      * @param itemInHand
@@ -264,9 +264,9 @@ public class WorldEdit extends Plugin {
 
     /**
      * 
-     * @param player
+     * @param modPlayer
      * @param split
-     * @return
+     * @return whether the command was processed
      */
     @Override
     public boolean onCommand(Player modPlayer, String[] split) {

@@ -54,7 +54,7 @@ public class CuboidClipboard {
     /**
      * Get the width (X-direction) of the clipboard.
      *
-     * @return
+     * @return width
      */
     public int getWidth() {
         return (int)(max.getX() - min.getX() + 1);
@@ -63,7 +63,7 @@ public class CuboidClipboard {
     /**
      * Get the length (Z-direction) of the clipboard.
      *
-     * @return
+     * @return length
      */
     public int getLength() {
         return (int)(max.getZ() - min.getZ() + 1);
@@ -72,7 +72,7 @@ public class CuboidClipboard {
     /**
      * Get the height (Y-direction) of the clipboard.
      *
-     * @return
+     * @return height
      */
     public int getHeight() {
         return (int)(max.getY() - min.getY() + 1);
@@ -98,7 +98,7 @@ public class CuboidClipboard {
      * Paste from the clipboard.
      *
      * @param editSession
-     * @param origin Position to paste it from
+     * @param newOrigin Position to paste it from
      * @param noAir True to not paste air
      * @throws MaxChangedBlocksException
      */
@@ -148,7 +148,7 @@ public class CuboidClipboard {
      * @param xm
      * @param ym
      * @param zm
-     * @short count
+     * @param count
      * @param noAir
      * @param moveOrigin move the origin
      * @throws MaxChangedBlocksException
@@ -234,7 +234,7 @@ public class CuboidClipboard {
      * 
      * @param path
      * @param origin
-     * @return
+     * @return clipboard
      * @throws SchematicException
      * @throws IOException
      */

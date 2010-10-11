@@ -44,7 +44,7 @@ public class ScriptMinecraftContext {
      * @param z
      * @param blockType
      * @throws MaxChangedBlocksException
-     * @return
+     * @return whether the block was changed
      */
     public boolean setBlock(int x, int y, int z, int blockType)
             throws MaxChangedBlocksException {
@@ -57,7 +57,7 @@ public class ScriptMinecraftContext {
      * @param x
      * @param y
      * @param z
-     * @return
+     * @return block type ID
      */
     public int getBlock(int x, int y, int z) {
         return editSession.getBlock(x, y, z);
