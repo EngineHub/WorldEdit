@@ -23,8 +23,8 @@ package com.sk89q.worldedit;
  *
  * @author Albert
  */
-public final class Point {
-    private final double x, y, z;
+public class Point {
+    protected final double x, y, z;
 
     /**
      * Construct the Point object.
@@ -63,6 +63,17 @@ public final class Point {
         this.x = (double)x;
         this.y = (double)y;
         this.z = (double)z;
+    }
+
+    /**
+     * Construct the Point object.
+     *
+     * @param pt
+     */
+    public Point(Point pt) {
+        this.x = pt.x;
+        this.y = pt.y;
+        this.z = pt.z;
     }
 
     /**
@@ -304,6 +315,18 @@ public final class Point {
     }
 
     /**
+     * Get the distance away from a point.
+     *
+     * @param pt
+     * @return distance
+     */
+    public double distance(Point pt) {
+        return Math.sqrt(Math.pow(pt.x - x, 2) +
+                Math.pow(pt.y - y, 2) +
+                Math.pow(pt.z - z, 2));
+    }
+
+    /**
      * Get a block point from a point.
      * 
      * @param x
@@ -343,5 +366,15 @@ public final class Point {
         return ((new Double(x)).hashCode() >> 13) ^
                 ((new Double(y)).hashCode() >> 7) ^
                 (new Double(z)).hashCode();
+    }
+
+    /**
+     * Returns string representation "(x, y, z)".
+     *
+     * @return string
+     */
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ", " + z + ")";
     }
 }

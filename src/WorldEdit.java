@@ -73,6 +73,7 @@ public class WorldEdit extends Plugin {
         commands.put("/editload", "[Filename] - Load .schematic into clipboard");
         commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
         commands.put("/editfill", "[ID] [Radius] <Depth> - Fill a hole");
+        commands.put("/editdrain", "[Radius] - Drain nearby water/lava pools");
         commands.put("/editscript", "[Filename] <Args...> - Run a WorldEdit script");
         commands.put("/editlimit", "[Num] - See documentation");
         commands.put("/unstuck", "Go up to the first free spot");
@@ -569,6 +570,15 @@ public class WorldEdit extends Plugin {
             checkArgs(split, 1, 1, split[0]);
             int blockType = getItem(split[1]);
             int affected = editSession.makeCuboidFaces(session.getRegion(), blockType);
+            player.print(affected + " block(s) have been changed.");
+
+            return true;
+
+        // Drain pools
+        } else if(split[0].equalsIgnoreCase("/editdrain")) {
+            checkArgs(split, 1, 1, split[0]);
+            int radius = Math.max(0, Integer.parseInt(split[1]));
+            int affected = editSession.drainArea(player.getBlockIn(), radius);
             player.print(affected + " block(s) have been changed.");
 
             return true;

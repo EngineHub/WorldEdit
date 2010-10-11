@@ -621,4 +621,77 @@ public class EditSession {
 
         return affected;
     }
+
+    /**
+     * Drain nearby pools of water or lava.
+     * 
+     * @param pos
+     * @param radius
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int drainArea(Point pos, int radius) throws MaxChangedBlocksException {
+        int affected = 0;
+
+        HashSet<BlockPoint> visited = new HashSet<BlockPoint>();
+
+        for (int x = pos.getBlockX() - 1; x <= pos.getBlockX() + 1; x++) {
+            for (int z = pos.getBlockZ() - 1; z <= pos.getBlockZ() + 1; z++) {
+                for (int y = pos.getBlockY() - 1; y <= pos.getBlockY() + 1; y++) {
+                    affected += drainPool(new Point(x, y, z), pos, radius, visited);
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Drains a water or lava block and any lava/water blocks next to it.
+     * 
+     * @param pos
+     * @param origin
+     * @param radius
+     * @param visited
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    private int drainPool(Point pos, Point origin, int radius, HashSet<BlockPoint> visited)
+            throws MaxChangedBlocksException {
+        int type = getBlock(pos);
+        int affected = 0;
+        
+        if (type != 8 && type != 9 && type != 10 && type != 11) {
+            return 0;
+        }
+
+        BlockPoint blockPos = new BlockPoint(pos);
+
+        if (visited.contains(blockPos)) {
+            return 0;
+        }
+        visited.add(blockPos);
+
+        if (pos.distance(origin) > radius) {
+            return 0;
+        }
+
+        for (int x = pos.getBlockX() - 1; x <= pos.getBlockX() + 1; x++) {
+            for (int z = pos.getBlockZ() - 1; z <= pos.getBlockZ() + 1; z++) {
+                for (int y = pos.getBlockY() - 1; y <= pos.getBlockY() + 1; y++) {
+                    Point newPos = new Point(x, y, z);
+                    
+                    if (!pos.equals(newPos)) {
+                        affected += drainPool(newPos, origin, radius, visited);
+                    }
+                }
+            }
+        }
+
+        if (setBlock(pos, 0)) {
+            affected++;
+        }
+
+        return affected;
+    }
 }
