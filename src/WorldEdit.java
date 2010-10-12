@@ -18,37 +18,55 @@
 */
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Map;
 import java.io.*;
 import com.sk89q.worldedit.*;
 
 /**
- * Plugin entry point for Hey0's mod.
+ * Plugin base.
  *
  * @author sk89q
  */
-public class WorldEdit extends Plugin {
-    private final static String DEFAULT_ALLOWED_BLOCKS =
-        "0,1,2,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,35,41,42,43," +
-        "44,45,47,48,49,52,53,54,56,57,58,60,61,62,67,73,78,79,80,81,82,85";
+public class WorldEdit {
+    /**
+     * List of default allowed blocks.
+     */
+    private final static Integer[] DEFAULT_ALLOWED_BLOCKS = {
+        0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+        20, 35, 41, 42, 43, 44, 45, 47, 48, 49, 52, 53, 54, 56, 57, 58, 60,
+        61, 62, 67, 73, 78, 79, 80, 81, 82, 85
+    };
 
+    /**
+     * Logger.
+     */
     private static final Logger logger = Logger.getLogger("Minecraft");
+    /**
+     * Stores the WorldEdit sessions of players.
+     */
     private HashMap<WorldEditPlayer,WorldEditSession> sessions =
             new HashMap<WorldEditPlayer,WorldEditSession>();
+    /**
+     * Stores the commands.
+     */
     private HashMap<String,String> commands = new HashMap<String,String>();
 
-    private PropertiesFile properties;
-    private String[] allowedBlocks;
-    private int defaultMaxBlocksChanged;
+    /**
+     * List of the blocks that can be used. If null, all blocks can be used.
+     */
+    private HashSet<Integer> allowedBlocks;
+    /**
+     * Default block change limit. -1 for no limit.
+     */
+    private int defaultChangeLimit = -1;
 
     /**
      * Construct an instance of the plugin.
      */
     public WorldEdit() {
-        super();
-
         commands.put("/editpos1", "Set editing position #1");
         commands.put("/editpos2", "Set editing position #2");
         commands.put("/editwand", "Gives you the \"edit wand\"");
@@ -82,12 +100,12 @@ public class WorldEdit extends Plugin {
      * @param player
      * @return
      */
-    private WorldEditSession getSession(WorldEditPlayer player) {
+    public WorldEditSession getSession(WorldEditPlayer player) {
         if (sessions.containsKey(player)) {
             return sessions.get(player);
         } else {
             WorldEditSession session = new WorldEditSession();
-            session.setBlockChangeLimit(defaultMaxBlocksChanged);
+            session.setBlockChangeLimit(getDefaultChangeLimit());
             sessions.put(player, session);
             return session;
         }
@@ -101,7 +119,7 @@ public class WorldEdit extends Plugin {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    private int getItem(String id, boolean allAllowed)
+    public int getItem(String id, boolean allAllowed)
             throws UnknownItemException, DisallowedItemException {
         int foundID;
 
@@ -115,15 +133,9 @@ public class WorldEdit extends Plugin {
             }
         }
 
-        // All items allowed
-        if (allAllowed || allowedBlocks[0].equals("")) {
+        // Check if the item is allowed
+        if (allAllowed || allowedBlocks.isEmpty() || allowedBlocks.contains(foundID)) {
             return foundID;
-        }
-
-        for (String s : allowedBlocks) {
-            if (s.equals(String.valueOf(foundID))) {
-                return foundID;
-            }
         }
 
         throw new DisallowedItemException();
@@ -137,18 +149,9 @@ public class WorldEdit extends Plugin {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    private int getItem(String id) throws UnknownItemException,
+    public int getItem(String id) throws UnknownItemException,
                                           DisallowedItemException {
         return getItem(id, false);
-    }
-
-    /**
-     *
-     * @param player
-     */
-    @Override
-    public void onDisconnect(Player player) {
-        sessions.remove(player.getName());
     }
 
     /**
@@ -173,140 +176,6 @@ public class WorldEdit extends Plugin {
     }
 
     /**
-     * Enables the plugin.
-     */
-    public void enable() {
-        if (properties == null) {
-            properties = new PropertiesFile("worldedit.properties");
-        } else {
-            properties.load();
-        }
-
-        allowedBlocks = properties.getString("allowed-blocks", DEFAULT_ALLOWED_BLOCKS).split(",");
-        defaultMaxBlocksChanged = 
-                Math.max(-1, properties.getInt("max-blocks-changed", -1));
-
-        etc controller = etc.getInstance();
-
-        for (Map.Entry<String,String> entry : commands.entrySet()) {
-            controller.addCommand(entry.getKey(), entry.getValue());
-        }
-    }
-
-    /**
-     * Disables the plugin.
-     */
-    public void disable() {
-        etc controller = etc.getInstance();
-
-        for (String key : commands.keySet()) {
-            controller.removeCommand(key);
-        }
-
-        sessions.clear();
-    }
-
-    /**
-     * Called on right click.
-     *
-     * @param modPlayer
-     * @param blockPlaced
-     * @param blockClicked
-     * @param itemInHand
-     * @return false if you want the action to go through
-     */
-    @Override
-    public boolean onBlockCreate(Player modPlayer, Block blockPlaced,
-            Block blockClicked, int itemInHand) {
-        if (itemInHand == 271) { // Wooden axe
-            if (!modPlayer.canUseCommand("/editpos1")
-                    || !modPlayer.canUseCommand("/editpos2")) {
-                return false;
-            }
-
-            WorldEditPlayer player = new WorldEditPlayer(modPlayer);
-            WorldEditSession session = getSession(player);
-
-            if (session.isToolControlEnabled()) {
-                Point cur = Point.toBlockPoint(blockClicked.getX(),
-                                               blockClicked.getY(),
-                                               blockClicked.getZ());
-                
-                try {
-                    if (session.hasToolBeenDoubleClicked()
-                            && cur.equals(session.getPos1())) { // Pos 2
-                        session.setPos2(cur);
-                        session.setPos1(session.getLastToolPos1());
-                        player.print("Second edit position set; first one restored.");
-                    } else {
-                        // Have to remember the original position because on
-                        // double click, we are going to restore it
-                        try {
-                            session.setLastToolPos1(session.getPos1());
-                        } catch (IncompleteRegionException e) {}
-                        
-                        session.setPos1(cur);
-                        player.print("First edit position set.");
-                    }
-                } catch (IncompleteRegionException e) {}
-
-                session.triggerToolClick();
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * 
-     * @param modPlayer
-     * @param split
-     * @return whether the command was processed
-     */
-    @Override
-    public boolean onCommand(Player modPlayer, String[] split) {
-        try {            
-            if (commands.containsKey(split[0])) {
-                if (modPlayer.canUseCommand(split[0])) {
-                    WorldEditPlayer player = new WorldEditPlayer(modPlayer);
-                    WorldEditSession session = getSession(player);
-                    EditSession editSession =
-                            new EditSession(session.getBlockChangeLimit());
-                    editSession.enableQueue();
-                    
-                    try {
-                        return performCommand(player, session, editSession, split);
-                    } finally {
-                        session.remember(editSession);
-                        editSession.flushQueue();
-                    }
-                }
-            }
-
-            return false;
-        } catch (NumberFormatException e) {
-            modPlayer.sendMessage(Colors.Rose + "Number expected; string given.");
-        } catch (IncompleteRegionException e2) {
-            modPlayer.sendMessage(Colors.Rose + "The edit region has not been fully defined.");
-        } catch (UnknownItemException e3) {
-            modPlayer.sendMessage(Colors.Rose + "Unknown item.");
-        } catch (DisallowedItemException e4) {
-            modPlayer.sendMessage(Colors.Rose + "Disallowed item.");
-        } catch (MaxChangedBlocksException e5) {
-            modPlayer.sendMessage(Colors.Rose + "The maximum number of blocks changed ("
-                    + e5.getBlockLimit() + ") in an instance was reached.");
-        } catch (InsufficientArgumentsException e6) {
-            modPlayer.sendMessage(Colors.Rose + e6.getMessage());
-        } catch (WorldEditException e7) {
-            modPlayer.sendMessage(Colors.Rose + e7.getMessage());
-        }
-
-        return true;
-    }
-
-    /**
      * The main meat of command processing.
      * 
      * @param player
@@ -320,7 +189,7 @@ public class WorldEdit extends Plugin {
      * @throws InsufficientArgumentsException
      * @throws DisallowedItemException
      */
-    private boolean performCommand(WorldEditPlayer player,
+    public boolean performCommand(WorldEditPlayer player,
             WorldEditSession session, EditSession editSession, String[] split)
             throws WorldEditException
     {
@@ -639,15 +508,67 @@ public class WorldEdit extends Plugin {
     }
 
     /**
-     * Gets the block type at a position x, y, z. Use an instance of
-     * EditSession if possible.
-     *
-     * @param x
-     * @param y
-     * @param z
-     * @return Block type
+     * Remove a session.
+     * 
+     * @param player
      */
-    public int getBlock(int x, int y, int z) {
-        return etc.getMCServer().e.a(x, y, z);
+    public void removeSession(WorldEditPlayer player) {
+        sessions.remove(player);
+    }
+
+    /**
+     * Remove all sessions.
+     */
+    public void clearSessions() {
+        sessions.clear();
+    }
+
+    /**
+     * Get the list of commands.
+     *
+     * @return List
+     */
+    public HashMap<String,String> getCommands() {
+        return commands;
+    }
+
+    /**
+     * Set the list of allowed blocks. Provided null to use the default list.
+     * 
+     * @param allowedBlocks
+     */
+    public void setAllowedBlocks(HashSet<Integer> allowedBlocks) {
+        this.allowedBlocks = allowedBlocks != null ? allowedBlocks
+                : new HashSet<Integer>(Arrays.asList(DEFAULT_ALLOWED_BLOCKS));
+    }
+
+    /**
+     * Get a comma-delimited list of the default allowed blocks.
+     * 
+     * @return comma-delimited list
+     */
+    public static String getDefaultAllowedBlocks() {
+        StringBuilder b = new StringBuilder();
+        for (Integer id : DEFAULT_ALLOWED_BLOCKS) {
+            b.append(id).append(",");
+        }
+        return b.substring(0, b.length() - 1);
+    }
+
+    /**
+     * @return the defaultChangeLimit
+     */
+    public int getDefaultChangeLimit() {
+        return defaultChangeLimit;
+    }
+
+    /**
+     * Set the default limit on the number of blocks that can be changed
+     * in one operation.
+     * 
+     * @param defaultChangeLimit the defaultChangeLimit to set
+     */
+    public void setDefaultChangeLimit(int defaultChangeLimit) {
+        this.defaultChangeLimit = defaultChangeLimit;
     }
 }

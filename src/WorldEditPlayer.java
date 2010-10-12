@@ -90,6 +90,15 @@ public class WorldEditPlayer {
     }
 
     /**
+     * Get the ID of the item that the player is holding.
+     * 
+     * @return
+     */
+    public int getItemInHand() {
+        return player.getItemInHand();
+    }
+
+    /**
      * Print a WorldEdit message.
      *
      * @param msg
