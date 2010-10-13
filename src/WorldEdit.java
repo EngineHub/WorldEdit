@@ -127,7 +127,7 @@ public class WorldEdit {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public int getItem(String id, boolean allAllowed)
+    public BaseBlock getBlock(String id, boolean allAllowed)
             throws UnknownItemException, DisallowedItemException {
         int foundID;
 
@@ -143,23 +143,23 @@ public class WorldEdit {
 
         // Check if the item is allowed
         if (allAllowed || allowedBlocks.isEmpty() || allowedBlocks.contains(foundID)) {
-            return foundID;
+            return new BaseBlock(foundID);
         }
 
         throw new DisallowedItemException();
     }
 
     /**
-     * Get an item ID from an item name or an item ID number.
+     * Get a block.
      *
      * @param id
      * @return
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public int getItem(String id) throws UnknownItemException,
+    public BaseBlock getBlock(String id) throws UnknownItemException,
                                           DisallowedItemException {
-        return getItem(id, false);
+        return getBlock(id, false);
     }
 
     /**
@@ -326,13 +326,13 @@ public class WorldEdit {
         // Fill a hole
         } else if (split[0].equalsIgnoreCase("/editfill")) {
             checkArgs(split, 2, 3, split[0]);
-            int blockType = getItem(split[1]);
+            BaseBlock block = getBlock(split[1]);
             int radius = Math.max(1, Integer.parseInt(split[2]));
             int depth = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
 
             Vector pos = player.getBlockIn();
             int affected = editSession.fillXZ((int)pos.getX(), (int)pos.getZ(),
-                    pos, blockType, radius, depth);
+                    pos, block, radius, depth);
             player.print(affected + " block(s) have been created.");
 
             return true;
@@ -430,8 +430,8 @@ public class WorldEdit {
         // Replace all blocks in the region
         } else if(split[0].equalsIgnoreCase("/editset")) {
             checkArgs(split, 1, 1, split[0]);
-            int blockType = getItem(split[1]);
-            int affected = editSession.setBlocks(session.getRegion(), blockType);
+            BaseBlock block = getBlock(split[1]);
+            int affected = editSession.setBlocks(session.getRegion(), block);
             player.print(affected + " block(s) have been changed.");
 
             return true;
@@ -439,8 +439,8 @@ public class WorldEdit {
         // Set the outline of a region
         } else if(split[0].equalsIgnoreCase("/editoutline")) {
             checkArgs(split, 1, 1, split[0]);
-            int blockType = getItem(split[1]);
-            int affected = editSession.makeCuboidFaces(session.getRegion(), blockType);
+            BaseBlock block = getBlock(split[1]);
+            int affected = editSession.makeCuboidFaces(session.getRegion(), block);
             player.print(affected + " block(s) have been changed.");
 
             return true;
@@ -457,13 +457,14 @@ public class WorldEdit {
         // Replace all blocks in the region
         } else if(split[0].equalsIgnoreCase("/editreplace")) {
             checkArgs(split, 1, 2, split[0]);
-            int from, to;
+            int from;
+            BaseBlock to;
             if (split.length == 2) {
                 from = -1;
-                to = getItem(split[1]);
+                to = getBlock(split[1]);
             } else {
-                from = getItem(split[1]);
-                to = getItem(split[2]);
+                from = getBlock(split[1]).getType();
+                to = getBlock(split[2]);
             }
             
             int affected = editSession.replaceBlocks(session.getRegion(), from, to);
@@ -474,10 +475,10 @@ public class WorldEdit {
         // Lay blocks over an area
         } else if (split[0].equalsIgnoreCase("/editoverlay")) {
             checkArgs(split, 1, 1, split[0]);
-            int blockType = getItem(split[1]);
+            BaseBlock block = getBlock(split[1]);
 
             Region region = session.getRegion();
-            int affected = editSession.overlayCuboidBlocks(region, blockType);
+            int affected = editSession.overlayCuboidBlocks(region, block);
             player.print(affected + " block(s) have been overlayed.");
 
             return true;

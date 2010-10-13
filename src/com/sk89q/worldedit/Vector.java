@@ -345,6 +345,36 @@ public class Vector {
     }
 
     /**
+     * Scalar division.
+     *
+     * @param n
+     * @return new point
+     */
+    public Vector divide(int n) {
+        return new Vector(x / n, y / n, z / n);
+    }
+
+    /**
+     * Scalar division.
+     *
+     * @param n
+     * @return new point
+     */
+    public Vector divide(double n) {
+        return new Vector(x / n, y / n, z / n);
+    }
+
+    /**
+     * Scalar division.
+     *
+     * @param n
+     * @return new point
+     */
+    public Vector divide(float n) {
+        return new Vector(x / n, y / n, z / n);
+    }
+
+    /**
      * Get the distance away from a point.
      *
      * @param pt

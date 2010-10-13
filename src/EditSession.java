@@ -37,15 +37,15 @@ public class EditSession {
     /**
      * Stores the original blocks before modification.
      */
-    private HashMap<BlockVector,Integer> original = new HashMap<BlockVector,Integer>();
+    private Map<BlockVector,BaseBlock> original = new HashMap<BlockVector,BaseBlock>();
     /**
      * Stores the current blocks.
      */
-    private HashMap<BlockVector,Integer> current = new HashMap<BlockVector,Integer>();
+    private Map<BlockVector,BaseBlock> current = new HashMap<BlockVector,BaseBlock>();
     /**
      * Queue.
      */
-    private HashMap<BlockVector,Integer> queue = new HashMap<BlockVector,Integer>();
+    private Map<BlockVector,BaseBlock> queue = new HashMap<BlockVector,BaseBlock>();
     /**
      * The maximum number of blocks to change at a time. If this number is
      * exceeded, a MaxChangedBlocksException exception will be
@@ -98,25 +98,12 @@ public class EditSession {
      * @param blockType
      * @return Whether the block changed
      */
-    private boolean rawSetBlock(Vector pt, int blockType) {
-        return etc.getMCServer().e.d(pt.getBlockX(), pt.getBlockY(),
-                pt.getBlockZ(), blockType);
-    }
-    
-    /**
-     * Sets the block at position x, y, z with a block type. If queue mode is
-     * enabled, blocks may not be actually set in world until flushQueue()
-     * is called.
-     *
-     * @param x
-     * @param y
-     * @param z
-     * @param blockType
-     * @return Whether the block changed -- not entirely dependable
-     */
-    public boolean setBlock(int x, int y, int z, int blockType)
-        throws MaxChangedBlocksException {
-        return setBlock(new Vector(x, y, z), blockType);
+    private boolean rawSetBlock(Vector pt, BaseBlock block) {
+        boolean result = etc.getMCServer().e.d(pt.getBlockX(), pt.getBlockY(),
+                pt.getBlockZ(), block.getType());
+        etc.getMCServer().e.c(pt.getBlockX(), pt.getBlockY(),
+                pt.getBlockZ(), block.getData());
+        return result;
     }
 
     /**
@@ -125,10 +112,10 @@ public class EditSession {
      * is called.
      *
      * @param pt
-     * @param blockType
+     * @param block
      * @return Whether the block changed -- not entirely dependable
      */
-    public boolean setBlock(Vector pt, int blockType)
+    public boolean setBlock(Vector pt, BaseBlock block)
         throws MaxChangedBlocksException {
         BlockVector blockPt = pt.toBlockVector();
         
@@ -140,25 +127,25 @@ public class EditSession {
             }
         }
 
-        current.put(pt.toBlockVector(), blockType);
+        current.put(pt.toBlockVector(), block);
 
-        return smartSetBlock(pt, blockType);
+        return smartSetBlock(pt, block);
     }
 
     /**
      * Set a block only if there's no block already there.
      * 
      * @param pt
-     * @param blockType
+     * @param block
      * @return if block was changed
      * @throws MaxChangedBlocksException
      */
-    public boolean setBlockIfAir(Vector pt, int blockType)
+    public boolean setBlockIfAir(Vector pt, BaseBlock block)
             throws MaxChangedBlocksException {
-        if (getBlock(pt) != 0) {
+        if (!getBlock(pt).isAir()) {
             return false;
         } else {
-            return setBlock(pt, blockType);
+            return setBlock(pt, block);
         }
     }
 
@@ -166,22 +153,22 @@ public class EditSession {
      * Actually set the block. Will use queue.
      * 
      * @param pt
-     * @param blockType
+     * @param block
      * @return
      */
-    private boolean smartSetBlock(Vector pt, int blockType) {
+    private boolean smartSetBlock(Vector pt, BaseBlock block) {
         if (queued) {
-            if (blockType != 0 && queuedBlocks.contains(blockType)
-                    && rawGetBlock(pt.add(0, -1, 0)) == 0) {
-                queue.put(pt.toBlockVector(), blockType);
-                return getBlock(pt) != blockType;
-            } else if (blockType == 0
-                    && queuedBlocks.contains(rawGetBlock(pt.add(0, 1, 0)))) {
-                rawSetBlock(pt.add(0, 1, 0), 0); // Prevent items from being dropped
+            if (!block.isAir() && queuedBlocks.contains(block.getType())
+                    && rawGetBlock(pt.add(0, -1, 0)).isAir()) {
+                queue.put(pt.toBlockVector(), block);
+                return getBlock(pt).getType() != block.getType();
+            } else if (block.isAir()
+                    && queuedBlocks.contains(rawGetBlock(pt.add(0, 1, 0)).getType())) {
+                rawSetBlock(pt.add(0, 1, 0), new BaseBlock(0)); // Prevent items from being dropped
             }
         }
 
-        return rawSetBlock(pt, blockType);
+        return rawSetBlock(pt, block);
     }
 
     /**
@@ -190,7 +177,7 @@ public class EditSession {
      * @param pt
      * @return Block type
      */
-    public int getBlock(Vector pt) {
+    public BaseBlock getBlock(Vector pt) {
         // In the case of the queue, the block may have not actually been
         // changed yet
         if (queued) {
@@ -200,38 +187,31 @@ public class EditSession {
                 return current.get(blockPt);
             }
         }
-        return etc.getMCServer().e.a(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-    }
-
-    /**
-     * Gets the block type at a position x, y, z.
-     *
-     * @param x
-     * @param y
-     * @param z
-     * @return Block type
-     */
-    public int getBlock(int x, int y, int z) {
-        return getBlock(new Vector(x, y, z));
+        return new BaseBlock(
+                (short)etc.getMCServer().e.a(pt.getBlockX(),
+                                             pt.getBlockY(),
+                                             pt.getBlockZ()));
     }
 
     /**
      * Gets the block type at a position x, y, z.
      *
      * @param pt
-     * @return Block type
+     * @return BaseBlock
      */
-    public int rawGetBlock(Vector pt) {
-        return etc.getMCServer().e.a(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+    public BaseBlock rawGetBlock(Vector pt) {
+        int type = etc.getMCServer().e.a(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        int data = etc.getMCServer().e.b(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        return new BaseBlock(type, data);
     }
 
     /**
      * Restores all blocks to their initial state.
      */
     public void undo() {
-        for (Map.Entry<BlockVector,Integer> entry : original.entrySet()) {
+        for (Map.Entry<BlockVector,BaseBlock> entry : original.entrySet()) {
             BlockVector pt = (BlockVector)entry.getKey();
-            smartSetBlock(pt, (int)entry.getValue());
+            smartSetBlock(pt, (BaseBlock)entry.getValue());
         }
         flushQueue();
     }
@@ -240,9 +220,9 @@ public class EditSession {
      * Sets to new state.
      */
     public void redo() {
-        for (Map.Entry<BlockVector,Integer> entry : current.entrySet()) {
+        for (Map.Entry<BlockVector,BaseBlock> entry : current.entrySet()) {
             BlockVector pt = (BlockVector)entry.getKey();
-            smartSetBlock(pt, (int)entry.getValue());
+            smartSetBlock(pt, (BaseBlock)entry.getValue());
         }
         flushQueue();
     }
@@ -309,9 +289,9 @@ public class EditSession {
     public void flushQueue() {
         if (!queued) { return; }
         
-        for (Map.Entry<BlockVector,Integer> entry : queue.entrySet()) {
+        for (Map.Entry<BlockVector,BaseBlock> entry : queue.entrySet()) {
             BlockVector pt = (BlockVector)entry.getKey();
-            rawSetBlock(pt, (int)entry.getValue());
+            rawSetBlock(pt, (BaseBlock)entry.getValue());
         }
     }
 
@@ -321,12 +301,12 @@ public class EditSession {
      * @param x
      * @param z
      * @param origin
-     * @param blockType
+     * @param block
      * @param radius
      * @param depth
      * @return number of blocks affected
      */
-    public int fillXZ(int x, int z, Vector origin, int blockType, int radius, int depth)
+    public int fillXZ(int x, int z, Vector origin, BaseBlock block, int radius, int depth)
             throws MaxChangedBlocksException {
         double dist = Math.sqrt(Math.pow(origin.getX() - x, 2) + Math.pow(origin.getZ() - z, 2));
         int minY = origin.getBlockY() - depth + 1;
@@ -336,16 +316,16 @@ public class EditSession {
             return 0;
         }
 
-        if (getBlock(new Vector(x, origin.getY(), z)) == 0) {
-            affected = fillY(x, (int)origin.getY(), z, blockType, minY);
+        if (getBlock(new Vector(x, origin.getY(), z)).isAir()) {
+            affected = fillY(x, (int)origin.getY(), z, block, minY);
         } else {
             return 0;
         }
 
-        affected += fillXZ(x + 1, z, origin, blockType, radius, depth);
-        affected += fillXZ(x - 1, z, origin, blockType, radius, depth);
-        affected += fillXZ(x, z + 1, origin, blockType, radius, depth);
-        affected += fillXZ(x, z - 1, origin, blockType, radius, depth);
+        affected += fillXZ(x + 1, z, origin, block, radius, depth);
+        affected += fillXZ(x - 1, z, origin, block, radius, depth);
+        affected += fillXZ(x, z + 1, origin, block, radius, depth);
+        affected += fillXZ(x, z - 1, origin, block, radius, depth);
 
         return affected;
     }
@@ -356,20 +336,20 @@ public class EditSession {
      * @param x
      * @param cy
      * @param z
-     * @param blockType
+     * @param block
      * @param minY
      * @throws MaxChangedBlocksException
      * @return
      */
-    private int fillY(int x, int cy, int z, int blockType, int minY)
+    private int fillY(int x, int cy, int z, BaseBlock block, int minY)
         throws MaxChangedBlocksException {
         int affected = 0;
 
         for (int y = cy; y >= minY; y--) {
             Vector pt = new Vector(x, y, z);
             
-            if (getBlock(pt) == 0) {
-                setBlock(pt, blockType);
+            if (getBlock(pt).isAir()) {
+                setBlock(pt, block);
                 affected++;
             } else {
                 break;
@@ -398,8 +378,8 @@ public class EditSession {
                 for (int y = (int)pos.getY(); y <= maxY; y++) {
                     Vector pt = new Vector(x, y, z);
 
-                    if (getBlock(pt) != 0) {
-                        setBlock(pt, 0);
+                    if (!getBlock(pt).isAir()) {
+                        setBlock(pt, new BaseBlock(0));
                         affected++;
                     }
                 }
@@ -428,8 +408,8 @@ public class EditSession {
                 for (int y = (int)pos.getY(); y >= minY; y--) {
                     Vector pt = new Vector(x, y, z);
 
-                    if (getBlock(pt) != 0) {
-                        setBlock(pt, 0);
+                    if (!getBlock(pt).isAir()) {
+                        setBlock(pt, new BaseBlock(0));
                         affected++;
                     }
                 }
@@ -443,11 +423,11 @@ public class EditSession {
      * Sets all the blocks inside a region to a certain block type.
      *
      * @param region
-     * @param blockType
+     * @param block
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int setBlocks(Region region, int blockType)
+    public int setBlocks(Region region, BaseBlock block)
             throws MaxChangedBlocksException {
         int affected = 0;
 
@@ -461,7 +441,7 @@ public class EditSession {
                     for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                         Vector pt = new Vector(x, y, z);
 
-                        if (setBlock(pt, blockType)) {
+                        if (setBlock(pt, block)) {
                             affected++;
                         }
                     }
@@ -469,7 +449,7 @@ public class EditSession {
             }
         } else {
             for (Vector pt : region) {
-                if (setBlock(pt, blockType)) {
+                if (setBlock(pt, block)) {
                     affected++;
                 }
             }
@@ -487,7 +467,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int replaceBlocks(Region region, int fromBlockType, int toBlockType)
+    public int replaceBlocks(Region region, int fromBlockType, BaseBlock toBlock)
             throws MaxChangedBlocksException {
         int affected = 0;
 
@@ -500,11 +480,11 @@ public class EditSession {
                 for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                     for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                         Vector pt = new Vector(x, y, z);
-                        int curBlockType = getBlock(pt);
+                        int curBlockType = getBlock(pt).getType();
 
                         if (fromBlockType == -1 && curBlockType != 0 ||
                                 curBlockType == fromBlockType) {
-                            if (setBlock(pt, toBlockType)) {
+                            if (setBlock(pt, toBlock)) {
                                 affected++;
                             }
                         }
@@ -513,11 +493,11 @@ public class EditSession {
             }
         } else {
             for (Vector pt : region) {
-                int curBlockType = getBlock(pt);
+                int curBlockType = getBlock(pt).getType();
 
                 if (fromBlockType == -1 && curBlockType != 0 ||
                         curBlockType == fromBlockType) {
-                    if (setBlock(pt, toBlockType)) {
+                    if (setBlock(pt, toBlock)) {
                         affected++;
                     }
                 }
@@ -531,11 +511,11 @@ public class EditSession {
      * Make faces of the region (as if it was a cuboid if it's not).
      * 
      * @param region
-     * @param blockType
+     * @param block
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeCuboidFaces(Region region, int blockType)
+    public int makeCuboidFaces(Region region, BaseBlock block)
             throws MaxChangedBlocksException {
         int affected = 0;
 
@@ -544,23 +524,23 @@ public class EditSession {
         
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-                if (setBlock(x, y, min.getBlockZ(), blockType)) { affected++; }
-                if (setBlock(x, y, max.getBlockZ(), blockType)) { affected++; }
+                if (setBlock(new Vector(x, y, min.getBlockZ()), block)) { affected++; }
+                if (setBlock(new Vector(x, y, max.getBlockZ()), block)) { affected++; }
                 affected++;
             }
         }
 
         for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
             for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                if (setBlock(min.getBlockX(), y, z, blockType)) { affected++; }
-                if (setBlock(max.getBlockX(), y, z, blockType)) { affected++; }
+                if (setBlock(new Vector(min.getBlockX(), y, z), block)) { affected++; }
+                if (setBlock(new Vector(max.getBlockX(), y, z), block)) { affected++; }
             }
         }
 
         for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
             for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-                if (setBlock(x, min.getBlockY(), z, blockType)) { affected++; }
-                if (setBlock(x, max.getBlockY(), z, blockType)) { affected++; }
+                if (setBlock(new Vector(x, min.getBlockY(), z), block)) { affected++; }
+                if (setBlock(new Vector(x, max.getBlockY(), z), block)) { affected++; }
             }
         }
 
@@ -571,11 +551,11 @@ public class EditSession {
      * Overlays a layer of blocks over a cuboid area.
      * 
      * @param region
-     * @param blockType
+     * @param block
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int overlayCuboidBlocks(Region region, int blockType)
+    public int overlayCuboidBlocks(Region region, BaseBlock block)
             throws MaxChangedBlocksException {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
@@ -588,8 +568,11 @@ public class EditSession {
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                 for (int y = upperY; y >= lowerY; y--) {
-                    if (y + 1 <= 127 && getBlock(x, y, z) != 0 && getBlock(x, y + 1, z) == 0) {
-                        if (setBlock(x, y + 1, z, blockType)) {
+                    Vector above = new Vector(x, y + 1, z);
+                    
+                    if (y + 1 <= 127 && !getBlock(new Vector(x, y, z)).isAir()
+                            && getBlock(above).isAir()) {
+                        if (setBlock(above, block)) {
                             affected++;
                         }
                         break;
@@ -625,12 +608,16 @@ public class EditSession {
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                 for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-                    int blockType = getBlock(new Vector(x, y, z));
+                    BaseBlock block = getBlock(new Vector(x, y, z));
 
-                    if (blockType != 0 || copyAir) {
+                    if (!block.isAir() || copyAir) {
                         for (int i = 1; i <= count; i++) {
-                            if (setBlock(x + xs * dir.getBlockX() * i, y + ys * dir.getBlockY() * i,
-                                    z + zs * dir.getBlockZ() * i, blockType)) {
+                            Vector pos = new Vector(
+                                    x + xs * dir.getBlockX() * i,
+                                    y + ys * dir.getBlockY() * i,
+                                    z + zs * dir.getBlockZ() * i);
+                            
+                            if (setBlock(pos, block)) {
                                 affected++;
                             }
                         }
@@ -667,7 +654,7 @@ public class EditSession {
         while (!queue.empty()) {
             BlockVector cur = queue.pop();
             
-            int type = getBlock(cur);
+            int type = getBlock(cur).getType();
 
             // Check block type
             if (type != 8 && type != 9 && type != 10 && type != 11) {
@@ -698,7 +685,7 @@ public class EditSession {
                 }
             }
 
-            if (setBlock(cur, 0)) {
+            if (setBlock(cur, new BaseBlock(0))) {
                 affected++;
             }
         }
@@ -711,14 +698,14 @@ public class EditSession {
      * Set a block by chance.
      * 
      * @param pos
-     * @param type
+     * @param block
      * @param c 0-1 chance
      * @return whether a block was changed
      */
-    private boolean setChanceBlockIfAir(Vector pos, int type, double c)
+    private boolean setChanceBlockIfAir(Vector pos, BaseBlock block, double c)
             throws MaxChangedBlocksException {
         if (Math.random() <= c) {
-            return setBlockIfAir(pos, type);
+            return setBlockIfAir(pos, block);
         }
         return false;
     }
@@ -733,9 +720,12 @@ public class EditSession {
         int trunkHeight = (int)Math.floor(Math.random() * 2) + 3;
         int height = (int)Math.floor(Math.random() * 5) + 8;
 
+        BaseBlock logBlock = new BaseBlock(17);
+        BaseBlock leavesBlock = new BaseBlock(18);
+
         // Create trunk
         for (int i = 0; i < trunkHeight; i++) {
-            if (!setBlockIfAir(basePos.add(0, i, 0), 17)) {
+            if (!setBlockIfAir(basePos.add(0, i, 0), logBlock)) {
                 return;
             }
         }
@@ -747,38 +737,38 @@ public class EditSession {
 
         // Create tree + leaves
         for (int i = 0; i < height; i++) {
-            setBlockIfAir(basePos.add(0, i, 0), 17);
+            setBlockIfAir(basePos.add(0, i, 0), logBlock);
 
             // Less leaves at these levels
             double chance = ((i == 0 || i == height - 1) ? 0.6 : 1);
 
             // Inner leaves
-            setChanceBlockIfAir(basePos.add(-1, i, 0), 18, chance);
-            setChanceBlockIfAir(basePos.add(1, i, 0), 18, chance);
-            setChanceBlockIfAir(basePos.add(0, i, -1), 18, chance);
-            setChanceBlockIfAir(basePos.add(0, i, 1), 18, chance);
-            setChanceBlockIfAir(basePos.add(1, i, 1), 18, chance);
-            setChanceBlockIfAir(basePos.add(-1, i, 1), 18, chance);
-            setChanceBlockIfAir(basePos.add(1, i, -1), 18, chance);
-            setChanceBlockIfAir(basePos.add(-1, i, -1), 18, chance);
+            setChanceBlockIfAir(basePos.add(-1, i, 0), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(1, i, 0), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(0, i, -1), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(0, i, 1), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(1, i, 1), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(-1, i, 1), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(1, i, -1), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(-1, i, -1), leavesBlock, chance);
 
             if (!(i == 0 || i == height - 1)) {
                 for (int j = -2; j <= 2; j++) {
-                    setChanceBlockIfAir(basePos.add(-2, i, j), 18, 0.6);
+                    setChanceBlockIfAir(basePos.add(-2, i, j), leavesBlock, 0.6);
                 }
                 for (int j = -2; j <= 2; j++) {
-                    setChanceBlockIfAir(basePos.add(2, i, j), 18, 0.6);
+                    setChanceBlockIfAir(basePos.add(2, i, j), leavesBlock, 0.6);
                 }
                 for (int j = -2; j <= 2; j++) {
-                    setChanceBlockIfAir(basePos.add(j, i, -2), 18, 0.6);
+                    setChanceBlockIfAir(basePos.add(j, i, -2), leavesBlock, 0.6);
                 }
                 for (int j = -2; j <= 2; j++) {
-                    setChanceBlockIfAir(basePos.add(j, i, 2), 18, 0.6);
+                    setChanceBlockIfAir(basePos.add(j, i, 2), leavesBlock, 0.6);
                 }
             }
         }
 
-        setBlockIfAir(basePos.add(0, height, 0), 18);
+        setBlockIfAir(basePos.add(0, height, 0), leavesBlock);
     }
 
     /**
@@ -795,13 +785,14 @@ public class EditSession {
         for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX() + size; x++) {
             for (int z = basePos.getBlockZ() - size; z <= basePos.getBlockZ() + size; z++) {
                 // Don't want to be in the ground
-                if (getBlock(new Vector(x, basePos.getBlockY(), z)) != 0) { continue; }
+                if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir())
+                    continue;
                 // The gods don't want a tree here
                 if (Math.random() < 0.95) { continue; }
 
                 for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; y--) {
                     // Check if we hit the ground
-                    int t = getBlock(new Vector(x, y, z));
+                    int t = getBlock(new Vector(x, y, z)).getType();
                     if (t == 2 || t == 3) {
                         makePineTree(new Vector(x, y + 1, z));
                         affected++;

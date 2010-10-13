@@ -30,7 +30,7 @@ import com.sk89q.worldedit.*;
  * @author sk89q
  */
 public class CuboidClipboard {
-    private int[][][] data;
+    private BaseBlock[][][] data;
     private Vector offset;
     private Vector origin;
     private Vector size;
@@ -42,7 +42,7 @@ public class CuboidClipboard {
      */
     public CuboidClipboard(Vector size) {
         this.size = size;
-        data = new int[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
+        data = new BaseBlock[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
         origin = new Vector();
         offset = new Vector();
     }
@@ -55,7 +55,7 @@ public class CuboidClipboard {
      */
     public CuboidClipboard(Vector size, Vector origin) {
         this.size = size;
-        data = new int[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
+        data = new BaseBlock[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
         this.origin = origin;
         offset = new Vector();
     }
@@ -68,7 +68,7 @@ public class CuboidClipboard {
      */
     public CuboidClipboard(Vector size, Vector origin, Vector offset) {
         this.size = size;
-        data = new int[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
+        data = new BaseBlock[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
         this.origin = origin;
         this.offset = offset;
     }
@@ -120,7 +120,7 @@ public class CuboidClipboard {
         int shiftX = sizeRotated.getX() < 0 ? newWidth - 1 : 0;
         int shiftZ = sizeRotated.getZ() < 0 ? newLength - 1: 0;
 
-        int newData[][][] = new int[newWidth][getHeight()][newLength];
+        BaseBlock newData[][][] = new BaseBlock[newWidth][getHeight()][newLength];
 
         for (int x = 0; x < width; x++) {
             for (int z = 0; z < length; z++) {
@@ -182,7 +182,8 @@ public class CuboidClipboard {
         for (int x = 0; x < size.getBlockX(); x++) {
             for (int y = 0; y < size.getBlockY(); y++) {
                 for (int z = 0; z < size.getBlockZ(); z++) {
-                    if (noAir && data[x][y][z] == 0) continue;
+                    if (noAir && data[x][y][z].isAir())
+                        continue;
                     
                     editSession.setBlock(new Vector(x, y, z).add(pos),
                             data[x][y][z]);
@@ -221,19 +222,18 @@ public class CuboidClipboard {
 
         // Copy blocks
         byte[] blocks = new byte[width * height * length];
+        byte[] blockData = new byte[width * height * length];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 for (int z = 0; z < length; z++) {
                     int index = y * width * length + z * width + x;
-                    blocks[index] = (byte)data[x][y][z];
+                    blocks[index] = (byte)data[x][y][z].getType();
+                    blockData[index] = (byte)data[x][y][z].getData();
                 }
             }
         }
         schematic.put("Blocks", new ByteArrayTag("Blocks", blocks));
-
-        // Current data is not supported
-        byte[] data = new byte[width * height * length];
-        schematic.put("Data", new ByteArrayTag("Data", data));
+        schematic.put("Data", new ByteArrayTag("Data", blockData));
 
         // These are not stored either
         schematic.put("Entities", new ListTag("Entities", CompoundTag.class, new ArrayList<Tag>()));
@@ -275,6 +275,7 @@ public class CuboidClipboard {
             throw new SchematicException("Schematic file is not an Alpha schematic");
         }
         byte[] blocks = (byte[])getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
+        byte[] blockData = (byte[])getChildTag(schematic, "Data", ByteArrayTag.class).getValue();
 
         Vector size = new Vector(width, height, length);
 
@@ -284,7 +285,8 @@ public class CuboidClipboard {
             for (int y = 0; y < height; y++) {
                 for (int z = 0; z < length; z++) {
                     int index = y * width * length + z * width + x;
-                    clipboard.data[x][y][z] = blocks[index];
+                    clipboard.data[x][y][z] =
+                            new BaseBlock(blocks[index], blockData[index]);
                 }
             }
         }
