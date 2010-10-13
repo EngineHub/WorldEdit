@@ -77,15 +77,15 @@ public class WorldEdit {
         commands.put("/editsize", "Get size of selected region");
         commands.put("/editset", "[ID] - Set all blocks inside region");
         commands.put("/editoutline", "[ID] - Outline the region with blocks");
-        commands.put("/editreplace", "[ID] <ToReplaceID> - Replace all existing blocks inside region");
+        commands.put("/editreplace", "<FromID> [ToID] - Replace all existing blocks inside region");
         commands.put("/editoverlay", "[ID] - Overlay the area one layer");
         commands.put("/removeabove", "<Size> <Height> - Remove blocks above head");
         commands.put("/removebelow", "<Size> <Height> - Remove blocks below position");
         commands.put("/editcopy", "Copies the currently selected region");
         commands.put("/editpaste", "Pastes the clipboard");
         commands.put("/editpasteair", "Pastes the clipboard (with air)");
-        commands.put("/editstack", "[Dir] <Count> - Stacks the selection");
-        commands.put("/editstackair", "[Dir] <Count> - Stacks the selection (with air)");
+        commands.put("/editstack", "<Count> <Dir> - Stacks the selection");
+        commands.put("/editstackair", "<Count> <Dir> - Stacks the selection (with air)");
         commands.put("/editload", "[Filename] - Load .schematic into clipboard");
         commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
         commands.put("/editfill", "[ID] [Radius] <Depth> - Fill a hole");
