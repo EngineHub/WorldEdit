@@ -99,6 +99,17 @@ public class WorldEditPlayer {
     }
 
     /**
+     * Returns true if the player is holding a pick axe.
+     *
+     * @return whether a pick axe is held
+     */
+    public boolean isHoldingPickAxe() {
+        int item = getItemInHand();
+        return item == 271 || item == 270 || item == 274 || item == 278
+                || item == 285;
+    }
+
+    /**
      * Get the player's cardinal direction (N, W, NW, etc.).
      * 
      * @return

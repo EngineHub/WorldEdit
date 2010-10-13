@@ -91,29 +91,35 @@ public class WorldEditSMListener extends PluginListener {
      */
     @Override
     public boolean onBlockDestroy(Player modPlayer, Block blockClicked) {
-        WorldEditPlayer player = new WorldEditPlayer(modPlayer);
-        
-        if (player.getItemInHand() != 271) { return false; }
-        if (!modPlayer.canUseCommand("/editpos1")) { return false; }
+        if (!modPlayer.canUseCommand("/editpos1")
+                && !modPlayer.canUseCommand("/.")) { return false; }
 
+        WorldEditPlayer player = new WorldEditPlayer(modPlayer);
         WorldEditSession session = worldEdit.getSession(player);
 
-        if (session.isToolControlEnabled()) {
-            Vector cur = Vector.toBlockPoint(blockClicked.getX(),
-                                           blockClicked.getY(),
-                                           blockClicked.getZ());
-
-            try {
-                if (session.getPos1().equals(cur)) {
-                    return false;
-                }
-            } catch (IncompleteRegionException e) {
+        if (player.isHoldingPickAxe()) {
+            if (session.hasSuperPickAxe()) {
+                return etc.getMCServer().e.d(blockClicked.getX(),
+                        blockClicked.getY(), blockClicked.getZ(), 0);
             }
+        } else if (player.getItemInHand() == 271) {
+            if (session.isToolControlEnabled()) {
+                Vector cur = Vector.toBlockPoint(blockClicked.getX(),
+                                               blockClicked.getY(),
+                                               blockClicked.getZ());
 
-            session.setPos1(cur);
-            player.print("First edit position set.");
+                try {
+                    if (session.getPos1().equals(cur)) {
+                        return false;
+                    }
+                } catch (IncompleteRegionException e) {
+                }
 
-            return true;
+                session.setPos1(cur);
+                player.print("First edit position set.");
+
+                return true;
+            }
         }
 
         return false;

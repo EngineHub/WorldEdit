@@ -32,6 +32,7 @@ public class WorldEditSession {
     private int historyPointer = 0;
     private CuboidClipboard clipboard;
     private boolean toolControl = true;
+    private boolean superPickAxe = false;
     private int maxBlocksChanged = -1;
 
     /**
@@ -241,5 +242,42 @@ public class WorldEditSession {
      */
     public void setBlockChangeLimit(int maxBlocksChanged) {
         this.maxBlocksChanged = maxBlocksChanged;
+    }
+
+    /**
+     * Checks whether the super pick axe is enabled.
+     * 
+     * @return status
+     */
+    public boolean hasSuperPickAxe() {
+        return superPickAxe;
+    }
+
+    /**
+     * Enable super pick axe.
+     *
+     * @param superPickAxe
+     */
+    public void enableSuperPickAxe() {
+        superPickAxe = true;
+    }
+
+    /**
+     * Disable super pick axe.
+     *
+     * @param superPickAxe
+     */
+    public void disableSuperPickAxe() {
+        superPickAxe = false;
+    }
+
+    /**
+     * Toggle the super pick axe.
+     *
+     * @return status
+     */
+    public boolean toggleSuperPickAxe() {
+        superPickAxe = !superPickAxe;
+        return superPickAxe;
     }
 }
