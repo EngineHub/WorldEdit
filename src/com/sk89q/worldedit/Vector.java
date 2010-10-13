@@ -281,6 +281,36 @@ public class Vector {
     }
 
     /**
+     * Scalar multiplication.
+     *
+     * @param n
+     * @return New point
+     */
+    public Vector multiply(double n) {
+        return new Vector(this.x * n, this.y * n, this.z * n);
+    }
+
+    /**
+     * Scalar multiplication.
+     *
+     * @param n
+     * @return New point
+     */
+    public Vector multiply(float n) {
+        return new Vector(this.x * n, this.y * n, this.z * n);
+    }
+
+    /**
+     * Scalar multiplication.
+     *
+     * @param n
+     * @return New point
+     */
+    public Vector multiply(int n) {
+        return new Vector(this.x * n, this.y * n, this.z * n);
+    }
+
+    /**
      * Divide two points.
      *
      * @param other

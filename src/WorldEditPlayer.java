@@ -99,6 +99,21 @@ public class WorldEditPlayer {
     }
 
     /**
+     * Get the player's cardinal direction (N, W, NW, etc.).
+     * 
+     * @return
+     */
+    public String getCardinalDirection() {
+        // From hey0's code
+        double rot = (getYaw() - 90) % 360;
+        if (rot < 0) {
+            rot += 360.0;
+        }
+
+        return etc.getCompassPointForDirection(rot).toLowerCase();
+    }
+
+    /**
      * Print a WorldEdit message.
      *
      * @param msg

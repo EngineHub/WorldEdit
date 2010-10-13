@@ -60,4 +60,16 @@ public interface Region extends Iterable<Vector> {
      * @return length
      */
     public int getLength();
+    /**
+     * Expand the region.
+     *
+     * @param change
+     */
+    public void expand(Vector change);
+    /**
+     * Contract the region.
+     *
+     * @param change
+     */
+    public void contract(Vector change);
 }

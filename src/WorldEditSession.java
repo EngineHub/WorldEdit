@@ -27,6 +27,7 @@ import java.util.LinkedList;
 public class WorldEditSession {
     public static final int MAX_HISTORY_SIZE = 15;
     private Vector pos1, pos2;
+    private Region region;
     private LinkedList<EditSession> history = new LinkedList<EditSession>();
     private int historyPointer = 0;
     private CuboidClipboard clipboard;
@@ -132,6 +133,9 @@ public class WorldEditSession {
      */
     public void setPos1(Vector pt) {
         pos1 = pt;
+        if (pos1 != null && pos2 != null) {
+            region = new CuboidRegion(pos1, pos2);
+        }
     }
 
     /**
@@ -152,19 +156,31 @@ public class WorldEditSession {
      */
     public void setPos2(Vector pt) {
         pos2 = pt;
+        if (pos1 != null && pos2 != null) {
+            region = new CuboidRegion(pos1, pos2);
+        }
     }
 
     /**
-     * Get the region.
+     * Update session position 1/2 based on the currently set region,
+     * provided that the region is of a cuboid.
+     */
+    public void learnRegionChanges() {
+        if (region instanceof CuboidRegion) {
+            CuboidRegion cuboidRegion = (CuboidRegion)region;
+            pos1 = cuboidRegion.getPos1();
+            pos2 = cuboidRegion.getPos2();
+        }
+    }
+
+    /**
+     * Get the region. May return null. If you change the region, you should
+     * call learnRegionChanges().
      * 
      * @return region
-     * @throws IncompleteRegionException
      */
-    public Region getRegion() throws IncompleteRegionException {
-        checkPos1();
-        checkPos2();
-
-        return new CuboidRegion(pos1, pos2);
+    public Region getRegion() {
+        return region;
     }
 
     /**

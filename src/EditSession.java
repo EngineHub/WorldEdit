@@ -584,15 +584,13 @@ public class EditSession {
      * Stack a cuboid region.
      * 
      * @param region
-     * @param xm
-     * @param ym
-     * @param zm
+     * @param dir
      * @param count
      * @param copyAir
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int stackCuboidRegion(Region region, int xm, int ym, int zm,
+    public int stackCuboidRegion(Region region, Vector dir,
             int count, boolean copyAir)
             throws MaxChangedBlocksException {
         int affected = 0;
@@ -610,8 +608,8 @@ public class EditSession {
 
                     if (blockType != 0 || copyAir) {
                         for (int i = 1; i <= count; i++) {
-                            if (setBlock(x + xs * xm * i, y + ys * ym * i,
-                                    z + zs * zm * i, blockType)) {
+                            if (setBlock(x + xs * dir.getBlockX() * i, y + ys * dir.getBlockY() * i,
+                                    z + zs * dir.getBlockZ() * i, blockType)) {
                                 affected++;
                             }
                         }

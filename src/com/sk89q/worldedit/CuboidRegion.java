@@ -121,6 +121,140 @@ public class CuboidRegion implements Region {
     }
 
     /**
+     * Expands the cuboid in a direction.
+     *
+     * @param change
+     */
+    public void expand(Vector change) {
+        if (change.getX() > 0) {
+            if (Math.max(pos1.getX(), pos2.getX()) == pos1.getX()) {
+                pos1 = pos1.add(new Vector(change.getX(), 0, 0));
+            } else {
+                pos2 = pos2.add(new Vector(change.getX(), 0, 0));
+            }
+        } else {
+            if (Math.min(pos1.getX(), pos2.getX()) == pos1.getX()) {
+                pos1 = pos1.add(new Vector(change.getX(), 0, 0));
+            } else {
+                pos2 = pos2.add(new Vector(change.getX(), 0, 0));
+            }
+        }
+
+        if (change.getY() > 0) {
+            if (Math.max(pos1.getY(), pos2.getY()) == pos1.getY()) {
+                pos1 = pos1.add(new Vector(0, change.getY(), 0));
+            } else {
+                pos2 = pos2.add(new Vector(0, change.getY(), 0));
+            }
+        } else {
+            if (Math.min(pos1.getY(), pos2.getY()) == pos1.getY()) {
+                pos1 = pos1.add(new Vector(0, change.getY(), 0));
+            } else {
+                pos2 = pos2.add(new Vector(0, change.getY(), 0));
+            }
+        }
+
+        if (change.getZ() > 0) {
+            if (Math.max(pos1.getZ(), pos2.getZ()) == pos1.getZ()) {
+                pos1 = pos1.add(new Vector(0, 0, change.getZ()));
+            } else {
+                pos2 = pos2.add(new Vector(0, 0, change.getZ()));
+            }
+        } else {
+            if (Math.min(pos1.getZ(), pos2.getZ()) == pos1.getZ()) {
+                pos1 = pos1.add(new Vector(0, 0, change.getZ()));
+            } else {
+                pos2 = pos2.add(new Vector(0, 0, change.getZ()));
+            }
+        }
+    }
+
+    /**
+     * Contracts the cuboid in a direction.
+     *
+     * @param change
+     */
+    public void contract(Vector change) {
+        if (change.getX() < 0) {
+            if (Math.max(pos1.getX(), pos2.getX()) == pos1.getX()) {
+                pos1 = pos1.add(new Vector(change.getX(), 0, 0));
+            } else {
+                pos2 = pos2.add(new Vector(change.getX(), 0, 0));
+            }
+        } else {
+            if (Math.min(pos1.getX(), pos2.getX()) == pos1.getX()) {
+                pos1 = pos1.add(new Vector(change.getX(), 0, 0));
+            } else {
+                pos2 = pos2.add(new Vector(change.getX(), 0, 0));
+            }
+        }
+
+        if (change.getY() < 0) {
+            if (Math.max(pos1.getY(), pos2.getY()) == pos1.getY()) {
+                pos1 = pos1.add(new Vector(0, change.getY(), 0));
+            } else {
+                pos2 = pos2.add(new Vector(0, change.getY(), 0));
+            }
+        } else {
+            if (Math.min(pos1.getY(), pos2.getY()) == pos1.getY()) {
+                pos1 = pos1.add(new Vector(0, change.getY(), 0));
+            } else {
+                pos2 = pos2.add(new Vector(0, change.getY(), 0));
+            }
+        }
+
+        if (change.getZ() < 0) {
+            if (Math.max(pos1.getZ(), pos2.getZ()) == pos1.getZ()) {
+                pos1 = pos1.add(new Vector(0, 0, change.getZ()));
+            } else {
+                pos2 = pos2.add(new Vector(0, 0, change.getZ()));
+            }
+        } else {
+            if (Math.min(pos1.getZ(), pos2.getZ()) == pos1.getZ()) {
+                pos1 = pos1.add(new Vector(0, 0, change.getZ()));
+            } else {
+                pos2 = pos2.add(new Vector(0, 0, change.getZ()));
+            }
+        }
+    }
+
+    /**
+     * Get position 1.
+     * 
+     * @return position 1
+     */
+    public Vector getPos1() {
+        return pos1;
+    }
+
+    /**
+     * Set position 1.
+     * 
+     * @param pos1
+     */
+    public void setPos1(Vector pos1) {
+        this.pos1 = pos1;
+    }
+
+    /**
+     * Get position 2.
+     * 
+     * @return position 2
+     */
+    public Vector getPos2() {
+        return pos2;
+    }
+
+    /**
+     * Set position 2.
+     *
+     * @param pos2
+     */
+    public void setPos2(Vector pos2) {
+        this.pos2 = pos2;
+    }
+
+    /**
      * Get the iterator.
      * 
      * @return iterator of Points

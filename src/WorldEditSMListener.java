@@ -157,6 +157,8 @@ public class WorldEditSMListener extends PluginListener {
         } catch (MaxChangedBlocksException e5) {
             modPlayer.sendMessage(Colors.Rose + "The maximum number of blocks changed ("
                     + e5.getBlockLimit() + ") in an instance was reached.");
+        } catch (UnknownDirectionException ue) {
+            modPlayer.sendMessage(Colors.Rose + "Unknown direction: " + ue.getDirection());
         } catch (InsufficientArgumentsException e6) {
             modPlayer.sendMessage(Colors.Rose + e6.getMessage());
         } catch (WorldEditException e7) {

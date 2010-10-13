@@ -91,6 +91,8 @@ public class WorldEdit {
         commands.put("/editfill", "[ID] [Radius] <Depth> - Fill a hole");
         commands.put("/editdrain", "[Radius] - Drain nearby water/lava pools");
         commands.put("/editlimit", "[Num] - See documentation");
+        commands.put("/editexpand", "<Dir> [Num] - Expands the selection");
+        commands.put("/editcontract", "<Dir> [Num] - Contracts the selection");
         commands.put("/unstuck", "Go up to the first free spot");
     }
 
@@ -464,47 +466,99 @@ public class WorldEdit {
                    split[0].equalsIgnoreCase("/editstack")) {
             checkArgs(split, 0, 2, split[0]);
             int count = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
-            String dir = split.length > 2 ? split[2].toLowerCase() : "me";
-            int xm = 0;
-            int ym = 0;
-            int zm = 0;
+            Vector dir = getDirection(player,
+                    split.length > 2 ? split[2].toLowerCase() : "me");
             boolean copyAir = split[0].equalsIgnoreCase("/editstackair");
 
-            if (dir.equals("me")) {
-                // From hey0's code
-                double rot = (player.getYaw() - 90) % 360;
-                if (rot < 0) {
-                    rot += 360.0;
-                }
-                
-                dir = etc.getCompassPointForDirection(rot).toLowerCase();
-            }
-
-            if (dir.charAt(0) == 'w') {
-                zm += 1;
-            } else if (dir.charAt(0) == 'e') {
-                zm -= 1;
-            } else if (dir.charAt(0) == 's') {
-                xm += 1;
-            } else if (dir.charAt(0) == 'n') {
-                xm -= 1;
-            } else if (dir.charAt(0) == 'u') {
-                ym += 1;
-            } else if (dir.charAt(0) == 'd') {
-                ym -= 1;
-            } else {
-                player.printError("Unknown direction: " + dir);
-                return true;
-            }
-
             int affected = editSession.stackCuboidRegion(session.getRegion(),
-                    xm, ym, zm, count, copyAir);
+                    dir, count, copyAir);
             player.print(affected + " blocks changed. Undo with /editundo");
+
+            return true;
+
+        // Expand
+        } else if (split[0].equalsIgnoreCase("/editexpand")) {
+            checkArgs(split, 1, 2, split[0]);
+            Vector dir;
+            int change;
+            if (split.length == 3) {
+                dir = getDirection(player, split[1].toLowerCase());
+                change = Integer.parseInt(split[2]);
+            } else {
+                dir = getDirection(player, "me");
+                change = Integer.parseInt(split[1]);
+            }
+
+            Region region = session.getRegion();
+            int oldSize = region.getSize();
+            region.expand(dir.multiply(change));
+            session.learnRegionChanges();
+            int newSize = region.getSize();
+            player.print("Region expanded " + (newSize - oldSize) + " blocks.");
+
+            return true;
+
+        // Expand
+        } else if (split[0].equalsIgnoreCase("/editcontract")) {
+            checkArgs(split, 1, 2, split[0]);
+            Vector dir;
+            int change;
+            if (split.length == 3) {
+                dir = getDirection(player, split[1].toLowerCase());
+                change = Integer.parseInt(split[2]);
+            } else {
+                dir = getDirection(player, "me");
+                change = Integer.parseInt(split[1]);
+            }
+
+            Region region = session.getRegion();
+            int oldSize = region.getSize();
+            region.contract(dir.multiply(change));
+            session.learnRegionChanges();
+            int newSize = region.getSize();
+            player.print("Region contracted " + (oldSize - newSize) + " blocks.");
 
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Get the direction vector for a player's direction. May return
+     * null if a direction could not be found.
+     * 
+     * @param player
+     * @param dir
+     * @return
+     */
+    public Vector getDirection(WorldEditPlayer player, String dir)
+            throws UnknownDirectionException {
+        int xm = 0;
+        int ym = 0;
+        int zm = 0;
+
+        if (dir.equals("me")) {
+            dir = player.getCardinalDirection();
+        }
+
+        if (dir.charAt(0) == 'w') {
+            zm += 1;
+        } else if (dir.charAt(0) == 'e') {
+            zm -= 1;
+        } else if (dir.charAt(0) == 's') {
+            xm += 1;
+        } else if (dir.charAt(0) == 'n') {
+            xm -= 1;
+        } else if (dir.charAt(0) == 'u') {
+            ym += 1;
+        } else if (dir.charAt(0) == 'd') {
+            ym -= 1;
+        } else {
+            throw new UnknownDirectionException(dir);
+        }
+
+        return new Vector(xm, ym, zm);
     }
 
     /**
