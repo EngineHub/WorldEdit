@@ -94,6 +94,7 @@ public class WorldEdit {
         commands.put("/editlimit", "[Num] - See documentation");
         commands.put("/editexpand", "<Dir> [Num] - Expands the selection");
         commands.put("/editcontract", "<Dir> [Num] - Contracts the selection");
+        commands.put("/editrotate", "[Angle] - Rotate the clipboard");
         commands.put("/forestgen", "<Size> - Make an ugly pine tree forest");
         commands.put("/unstuck", "Go up to the first free spot");
         commands.put("/ascend", "Go up one level");
@@ -303,15 +304,11 @@ public class WorldEdit {
         // Paste
         } else if (split[0].equalsIgnoreCase("/editpasteair") ||
                    split[0].equalsIgnoreCase("/editpaste")) {
-            if (session.getClipboard() == null) {
-                player.printError("Nothing is in your clipboard.");
-            } else {
-                Vector pos = player.getBlockIn();
-                session.getClipboard().paste(editSession, pos,
-                    split[0].equalsIgnoreCase("/editpaste"));
-                player.findFreePosition();
-                player.print("Pasted. Undo with /editundo");
-            }
+            Vector pos = player.getBlockIn();
+            session.getClipboard().paste(editSession, pos,
+                split[0].equalsIgnoreCase("/editpaste"));
+            player.findFreePosition();
+            player.print("Pasted. Undo with /editundo");
 
             return true;
 
@@ -363,8 +360,7 @@ public class WorldEdit {
                 if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
                     player.printError("Schematic could not read or it does not exist.");
                 } else {
-                    Vector origin = player.getBlockIn();
-                    session.setClipboard(CuboidClipboard.loadSchematic(filePath, origin));
+                    session.setClipboard(CuboidClipboard.loadSchematic(filePath));
                     logger.log(Level.INFO, player.getName() + " loaded " + filePath);
                     player.print(filename + " loaded.");
                 }
@@ -377,12 +373,7 @@ public class WorldEdit {
             return true;
 
         // Save clipboard to .schematic
-        } else if (split[0].equalsIgnoreCase("/editsave")) {
-            if (session.getClipboard() == null) {
-                player.printError("Nothing is in your clipboard.");
-                return true;
-            }
-            
+        } else if (split[0].equalsIgnoreCase("/editsave")) {            
             checkArgs(split, 1, 1, split[0]);
             String filename = split[1].replace("\0", "") + ".schematic";
             File dir = new File("schematics");
@@ -488,7 +479,9 @@ public class WorldEdit {
             Vector max = region.getMaximumPoint();
             Vector pos = player.getBlockIn();
 
-            CuboidClipboard clipboard = new CuboidClipboard(min, max, pos);
+            CuboidClipboard clipboard = new CuboidClipboard(
+                    max.subtract(min).add(new Vector(1, 1, 1)),
+                    min, min.subtract(pos));
             clipboard.copy(editSession);
             session.setClipboard(clipboard);
             
@@ -543,7 +536,7 @@ public class WorldEdit {
 
             return true;
 
-        // Expand
+        // Contract
         } else if (split[0].equalsIgnoreCase("/editcontract")) {
             checkArgs(split, 1, 2, split[0]);
             Vector dir;
@@ -562,6 +555,20 @@ public class WorldEdit {
             session.learnRegionChanges();
             int newSize = region.getSize();
             player.print("Region contracted " + (oldSize - newSize) + " blocks.");
+
+            return true;
+
+        // Rotate
+        } else if (split[0].equalsIgnoreCase("/editrotate")) {
+            checkArgs(split, 1, 1, split[0]);
+            int angle = Integer.parseInt(split[1]);
+            if (angle % 90 == 0) {
+                CuboidClipboard clipboard = session.getClipboard();
+                clipboard.rotate2D(angle);
+                player.print("Clipboard rotated by " + angle + " degrees.");
+            } else {
+                player.printError("Angles must be divisible by 90 degrees.");
+            }
 
             return true;
         }

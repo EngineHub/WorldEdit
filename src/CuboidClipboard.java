@@ -25,30 +25,52 @@ import java.util.ArrayList;
 import com.sk89q.worldedit.*;
 
 /**
+ * The clipboard remembers the state of a cuboid region.
  *
- * @author Albert
+ * @author sk89q
  */
 public class CuboidClipboard {
     private int[][][] data;
-    private Vector min;
-    private Vector max;
+    private Vector offset;
     private Vector origin;
+    private Vector size;
 
     /**
-     * Constructs the region instance. The minimum and maximum points must be
-     * the respective minimum and maximum numbers!
-     * 
-     * @param min
-     * @param max
+     * Constructs the clipboard.
+     *
+     * @param size
+     */
+    public CuboidClipboard(Vector size) {
+        this.size = size;
+        data = new int[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
+        origin = new Vector();
+        offset = new Vector();
+    }
+
+    /**
+     * Constructs the clipboard.
+     *
+     * @param size
      * @param origin
      */
-    public CuboidClipboard(Vector min, Vector max, Vector origin) {
-        this.min = min;
-        this.max = max;
+    public CuboidClipboard(Vector size, Vector origin) {
+        this.size = size;
+        data = new int[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
         this.origin = origin;
-        data = new int[(int)((max.getX()) - min.getX() + 1)]
-            [(int)(max.getY() - min.getY() + 1)]
-            [(int)(max.getZ() - min.getZ() + 1)];
+        offset = new Vector();
+    }
+
+    /**
+     * Constructs the clipboard.
+     *
+     * @param size
+     * @param origin
+     */
+    public CuboidClipboard(Vector size, Vector origin, Vector offset) {
+        this.size = size;
+        data = new int[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
+        this.origin = origin;
+        this.offset = offset;
     }
 
     /**
@@ -57,7 +79,7 @@ public class CuboidClipboard {
      * @return width
      */
     public int getWidth() {
-        return (int)(max.getX() - min.getX() + 1);
+        return size.getBlockX();
     }
 
     /**
@@ -66,7 +88,7 @@ public class CuboidClipboard {
      * @return length
      */
     public int getLength() {
-        return (int)(max.getZ() - min.getZ() + 1);
+        return size.getBlockZ();
     }
 
     /**
@@ -75,7 +97,47 @@ public class CuboidClipboard {
      * @return height
      */
     public int getHeight() {
-        return (int)(max.getY() - min.getY() + 1);
+        return size.getBlockY();
+    }
+
+    /**
+     * Rotate the clipboard in 2D. It can only rotate by angles divisible by 90.
+     * 
+     * @param angle in degrees
+     */
+    public void rotate2D(int angle) {
+        angle = angle % 360;
+        if (angle % 90 != 0) { // Can only rotate 90 degrees at the moment
+            return;
+        }
+
+        int width = getWidth();
+        int length = getLength();
+        int height = getHeight();
+        int newWidth = angle % 180 == 0 ? width : length;
+        int newLength = angle % 180 == 0 ? length : width;
+        Vector sizeRotated = size.transform2D(angle, 0, 0, 0, 0);
+        int shiftX = sizeRotated.getX() < 0 ? newWidth - 1 : 0;
+        int shiftZ = sizeRotated.getZ() < 0 ? newLength - 1: 0;
+
+        int newData[][][] = new int[newWidth][getHeight()][newLength];
+
+        for (int x = 0; x < width; x++) {
+            for (int z = 0; z < length; z++) {
+                int newX = (new Vector(x, 0, z)).transform2D(angle, 0, 0, 0, 0)
+                        .getBlockX();
+                int newZ = (new Vector(x, 0, z)).transform2D(angle, 0, 0, 0, 0)
+                        .getBlockZ();
+                for (int y = 0; y < height; y++) {
+                    newData[shiftX + newX][y][shiftZ + newZ] = data[x][y][z];
+                }
+            }
+        }
+
+        data = newData;
+        size = new Vector(newWidth, getHeight(), newLength);
+        offset = offset.transform2D(angle, 0, 0, 0, 0)
+                .subtract(shiftX, 0, shiftZ);
     }
 
     /**
@@ -84,11 +146,11 @@ public class CuboidClipboard {
      * @param editSession
      */
     public void copy(EditSession editSession) {
-        for (int x = (int)min.getX(); x <= (int)max.getX(); x++) {
-            for (int y = (int)min.getY(); y <= (int)max.getY(); y++) {
-                for (int z = (int)min.getZ(); z <= (int)max.getZ(); z++) {
-                    data[x - (int)min.getX()][y - (int)min.getY()][z - (int)min.getZ()] =
-                        editSession.getBlock(x, y, z);
+        for (int x = 0; x < size.getBlockX(); x++) {
+            for (int y = 0; y < size.getBlockY(); y++) {
+                for (int z = 0; z < size.getBlockZ(); z++) {
+                    data[x][y][z] =
+                        editSession.getBlock(new Vector(x, y, z).add(origin));
                 }
             }
         }
@@ -104,73 +166,28 @@ public class CuboidClipboard {
      */
     public void paste(EditSession editSession, Vector newOrigin, boolean noAir)
             throws MaxChangedBlocksException {
-        int offsetX = (int)(min.getX() - origin.getX() + newOrigin.getX());
-        int offsetY = (int)(min.getY() - origin.getY() + newOrigin.getY());
-        int offsetZ = (int)(min.getZ() - origin.getZ() + newOrigin.getZ());
-
-        place(editSession, offsetX, offsetY, offsetZ, noAir);
+        place(editSession, newOrigin.add(offset), noAir);
     }
 
     /**
      * Places the blocks in a position from the minimum corner.
      * 
      * @param editSession
-     * @param offsetX
-     * @param offsetY
-     * @param offsetZ
+     * @param pos
      * @param noAir
      * @throws MaxChangedBlocksException
      */
-    public void place(EditSession editSession, int offsetX,
-            int offsetY, int offsetZ, boolean noAir)
+    public void place(EditSession editSession, Vector pos, boolean noAir)
             throws MaxChangedBlocksException {
-        int xs = getWidth();
-        int ys = getHeight();
-        int zs = getLength();
-
-        for (int x = 0; x < xs; x++) {
-            for (int y = 0; y < ys; y++) {
-                for (int z = 0; z < zs; z++) {
-                    if (noAir && data[x][y][z] == 0) { continue; }
-
-                    editSession.setBlock(x + offsetX, y + offsetY, z + offsetZ,
-                                         data[x][y][z]);
+        for (int x = 0; x < size.getBlockX(); x++) {
+            for (int y = 0; y < size.getBlockY(); y++) {
+                for (int z = 0; z < size.getBlockZ(); z++) {
+                    if (noAir && data[x][y][z] == 0) continue;
+                    
+                    editSession.setBlock(new Vector(x, y, z).add(pos),
+                            data[x][y][z]);
                 }
             }
-        }
-    }
-
-    /**
-     * Stack the clipboard in a certain direction a certain number of
-     * times.
-     *
-     * @param editSession
-     * @param xm
-     * @param ym
-     * @param zm
-     * @param count
-     * @param noAir
-     * @param moveOrigin move the origin
-     * @throws MaxChangedBlocksException
-     */
-    public void stack(EditSession editSession, int xm, int ym, int zm, short count,
-            boolean noAir, boolean moveOrigin) throws MaxChangedBlocksException {
-        int xs = getWidth();
-        int ys = getHeight();
-        int zs = getLength();
-        int offsetX = (int)min.getX();
-        int offsetY = (int)min.getY();
-        int offsetZ = (int)min.getZ();
-
-        for (short i = 1; i <= count; i++) {
-            place(editSession, offsetX + xm * xs, offsetY + ym * ys,
-                    offsetZ + zm * zs, noAir);
-        }
-
-        if (moveOrigin) {
-            min = new Vector((int)offsetX + xm * count,
-                            (int)offsetY + ym * count,
-                            (int)offsetZ + zm * count);
         }
     }
 
@@ -182,32 +199,32 @@ public class CuboidClipboard {
      * @throws SchematicException
      */
     public void saveSchematic(String path) throws IOException, SchematicException {
-        int xs = getWidth();
-        int ys = getHeight();
-        int zs = getLength();
+        int width = getWidth();
+        int height = getHeight();
+        int length = getLength();
 
-        if (xs > 65535) {
+        if (width > 65535) {
             throw new SchematicException("Width of region too large for a .schematic");
         }
-        if (ys > 65535) {
+        if (height > 65535) {
             throw new SchematicException("Height of region too large for a .schematic");
         }
-        if (zs > 65535) {
+        if (length > 65535) {
             throw new SchematicException("Length of region too large for a .schematic");
         }
 
         HashMap<String,Tag> schematic = new HashMap<String,Tag>();
-        schematic.put("Width", new ShortTag("Width", (short)xs));
-        schematic.put("Length", new ShortTag("Length", (short)zs));
-        schematic.put("Height", new ShortTag("Height", (short)ys));
+        schematic.put("Width", new ShortTag("Width", (short)width));
+        schematic.put("Length", new ShortTag("Length", (short)length));
+        schematic.put("Height", new ShortTag("Height", (short)height));
         schematic.put("Materials", new StringTag("Materials", "Alpha"));
 
         // Copy blocks
-        byte[] blocks = new byte[xs * ys * zs];
-        for (int x = 0; x < xs; x++) {
-            for (int y = 0; y < ys; y++) {
-                for (int z = 0; z < zs; z++) {
-                    int index = y * xs * zs + z * xs + x;
+        byte[] blocks = new byte[width * height * length];
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                for (int z = 0; z < length; z++) {
+                    int index = y * width * length + z * width + x;
                     blocks[index] = (byte)data[x][y][z];
                 }
             }
@@ -215,7 +232,7 @@ public class CuboidClipboard {
         schematic.put("Blocks", new ByteArrayTag("Blocks", blocks));
 
         // Current data is not supported
-        byte[] data = new byte[xs * ys * zs];
+        byte[] data = new byte[width * height * length];
         schematic.put("Data", new ByteArrayTag("Data", data));
 
         // These are not stored either
@@ -238,7 +255,7 @@ public class CuboidClipboard {
      * @throws SchematicException
      * @throws IOException
      */
-    public static CuboidClipboard loadSchematic(String path, Vector origin)
+    public static CuboidClipboard loadSchematic(String path)
             throws SchematicException, IOException {
         FileInputStream stream = new FileInputStream(path);
         NBTInputStream nbtStream = new NBTInputStream(stream);
@@ -250,27 +267,23 @@ public class CuboidClipboard {
         if (!schematic.containsKey("Blocks")) {
             throw new SchematicException("Schematic file is missing a \"Blocks\" tag");
         }
-        short xs = (Short)getChildTag(schematic, "Width", ShortTag.class).getValue();
-        short zs = (Short)getChildTag(schematic, "Length", ShortTag.class).getValue();
-        short ys = (Short)getChildTag(schematic, "Height", ShortTag.class).getValue();
+        short width = (Short)getChildTag(schematic, "Width", ShortTag.class).getValue();
+        short length = (Short)getChildTag(schematic, "Length", ShortTag.class).getValue();
+        short height = (Short)getChildTag(schematic, "Height", ShortTag.class).getValue();
         String materials = (String)getChildTag(schematic, "Materials", StringTag.class).getValue();
         if (!materials.equals("Alpha")) {
             throw new SchematicException("Schematic file is not an Alpha schematic");
         }
         byte[] blocks = (byte[])getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
 
-        Vector min = origin;
-        Vector max = new Vector(
-                origin.getX() + xs - 1,
-                origin.getY() + ys - 1,
-                origin.getZ() + zs - 1
-                );
-        CuboidClipboard clipboard = new CuboidClipboard(min, max, origin);
+        Vector size = new Vector(width, height, length);
 
-        for (int x = 0; x < xs; x++) {
-            for (int y = 0; y < ys; y++) {
-                for (int z = 0; z < zs; z++) {
-                    int index = y * xs * zs + z * xs + x;
+        CuboidClipboard clipboard = new CuboidClipboard(size);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                for (int z = 0; z < length; z++) {
+                    int index = y * width * length + z * width + x;
                     clipboard.data[x][y][z] = blocks[index];
                 }
             }
@@ -279,6 +292,15 @@ public class CuboidClipboard {
         return clipboard;
     }
 
+    /**
+     * Get child tag of a NBT structure.
+     * 
+     * @param items
+     * @param key
+     * @param expected
+     * @return child tag
+     * @throws SchematicException
+     */
     private static Tag getChildTag(Map<String,Tag> items, String key, Class expected)
             throws SchematicException {
         if (!items.containsKey(key)) {

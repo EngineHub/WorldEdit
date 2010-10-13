@@ -161,6 +161,8 @@ public class WorldEditSMListener extends PluginListener {
             modPlayer.sendMessage(Colors.Rose + "Unknown direction: " + ue.getDirection());
         } catch (InsufficientArgumentsException e6) {
             modPlayer.sendMessage(Colors.Rose + e6.getMessage());
+        } catch (EmptyClipboardException ec) {
+            modPlayer.sendMessage(Colors.Rose + "Your clipboard is empty.");
         } catch (WorldEditException e7) {
             modPlayer.sendMessage(Colors.Rose + e7.getMessage());
         }

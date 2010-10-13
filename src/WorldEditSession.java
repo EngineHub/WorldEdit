@@ -172,12 +172,16 @@ public class WorldEditSession {
     }
 
     /**
-     * Get the region. May return null. If you change the region, you should
+     * Get the region. If you change the region, you should
      * call learnRegionChanges().
      * 
      * @return region
+     * @throws IncompleteRegionException
      */
-    public Region getRegion() {
+    public Region getRegion() throws IncompleteRegionException {
+        if (region == null) {
+            throw new IncompleteRegionException();
+        }
         return region;
     }
 
@@ -185,8 +189,12 @@ public class WorldEditSession {
      * Gets the clipboard.
      * 
      * @return clipboard, may be null
+     * @throws EmptyClipboardException
      */
-    public CuboidClipboard getClipboard() {
+    public CuboidClipboard getClipboard() throws EmptyClipboardException {
+        if (clipboard == null) {
+            throw new EmptyClipboardException();
+        }
         return clipboard;
     }
 
