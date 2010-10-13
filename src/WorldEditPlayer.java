@@ -133,7 +133,7 @@ public class WorldEditPlayer {
 
     /**
      * Move the player.
-     * 
+     *
      * @param pos
      * @param pitch
      * @param yaw
@@ -145,6 +145,21 @@ public class WorldEditPlayer {
         loc.z = pos.getZ();
         loc.rotX = (float)yaw;
         loc.rotY = (float)pitch;
+        player.teleportTo(loc);
+    }
+
+    /**
+     * Move the player.
+     *
+     * @param pos
+     */
+    public void setPosition(Vector pos) {
+        Location loc = new Location();
+        loc.x = pos.getX();
+        loc.y = pos.getY();
+        loc.z = pos.getZ();
+        loc.rotX = (float)getYaw();
+        loc.rotY = (float)getPitch();
         player.teleportTo(loc);
     }
 
@@ -184,6 +199,73 @@ public class WorldEditPlayer {
 
             y++;
         }
+    }
+
+    /**
+     * Go up one level to the next free space above.
+     *
+     * @return true if a spot was found
+     */
+    public boolean ascendLevel() {
+        int x = (int)Math.floor(player.getX());
+        int y = (int)Math.floor(player.getY());
+        int z = (int)Math.floor(player.getZ());
+
+        byte free = 0;
+        byte spots = 0;
+        boolean inFree = false;
+
+        while (y <= 129) {
+            if (etc.getServer().getBlockIdAt(x, y, z) == 0) {
+                free++;
+            } else {
+                free = 0;
+                inFree = false;
+            }
+
+            if (free == 2 && inFree == false) {
+                inFree = true;
+                spots++;
+                if (y >= 129 || spots == 2) {
+                    setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
+                    return true;
+                }
+            }
+
+            y++;
+        }
+
+        return false;
+    }
+
+    /**
+     * Go up one level to the next free space above.
+     *
+     * @return true if a spot was found
+     */
+    public boolean descendLevel() {
+        int x = (int)Math.floor(player.getX());
+        int y = (int)Math.floor(player.getY()) - 1;
+        int z = (int)Math.floor(player.getZ());
+
+        byte free = 0;
+
+        while (y >= 0) {
+            if (etc.getServer().getBlockIdAt(x, y, z) == 0) {
+                free++;
+            } else {
+                free = 0;
+            }
+
+            if (free == 2) {
+                setPosition(new Vector(x + 0.5, y, z + 0.5));
+                return true;
+            }
+
+            y--;
+        }
+
+        return false;
     }
 
     /**

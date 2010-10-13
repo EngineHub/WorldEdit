@@ -94,6 +94,8 @@ public class WorldEdit {
         commands.put("/editexpand", "<Dir> [Num] - Expands the selection");
         commands.put("/editcontract", "<Dir> [Num] - Contracts the selection");
         commands.put("/unstuck", "Go up to the first free spot");
+        commands.put("/ascend", "Go up one level");
+        commands.put("/descend", "Go dowm one level");
     }
 
     /**
@@ -200,6 +202,26 @@ public class WorldEdit {
             checkArgs(split, 0, 0, split[0]);
             player.print("There you go!");
             player.findFreePosition();
+            return true;
+
+        // Ascend a level
+        } else if(split[0].equalsIgnoreCase("/ascend")) {
+            checkArgs(split, 0, 0, split[0]);
+            if (player.ascendLevel()) {
+                player.print("Ascended a level.");
+            } else {
+                player.printError("No free spot above you found.");
+            }
+            return true;
+
+        // Descend a level
+        } else if(split[0].equalsIgnoreCase("/descend")) {
+            checkArgs(split, 0, 0, split[0]);
+            if (player.descendLevel()) {
+                player.print("Descended a level.");
+            } else {
+                player.printError("No free spot below you found.");
+            }
             return true;
 
         // Set edit position #1
