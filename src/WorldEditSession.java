@@ -32,8 +32,6 @@ public class WorldEditSession {
     private int historyPointer = 0;
     private CuboidClipboard clipboard;
     private boolean toolControl = true;
-    private Vector lastToolPos1;
-    private long lastToolClick = 0;
     private int maxBlocksChanged = -1;
 
     /**
@@ -217,36 +215,6 @@ public class WorldEditSession {
      */
     public void setToolControl(boolean toolControl) {
         this.toolControl = toolControl;
-    }
-
-    /**
-     * @return the lastToolPos1
-     */
-    public Vector getLastToolPos1() {
-        return lastToolPos1;
-    }
-
-    /**
-     * @param lastToolPos1 the lastToolPos1 to set
-     */
-    public void setLastToolPos1(Vector lastToolPos1) {
-        this.lastToolPos1 = lastToolPos1;
-    }
-
-    /**
-     * Returns true if the tool has been double clicked.
-     * 
-     * @return true if double clicked
-     */
-    public boolean hasToolBeenDoubleClicked() {
-        return System.currentTimeMillis() - lastToolClick < 500;
-    }
-
-    /**
-     * Triggers a click of the tool.
-     */
-    public void triggerToolClick() {
-        lastToolClick = System.currentTimeMillis();
     }
 
     /**

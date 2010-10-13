@@ -70,6 +70,7 @@ public class WorldEdit {
         commands.put("/editpos1", "Set editing position #1");
         commands.put("/editpos2", "Set editing position #2");
         commands.put("/editwand", "Gives you the \"edit wand\"");
+        commands.put("/toggleeditwand", "Toggles edit wand selection");
         commands.put("/editundo", "Undo");
         commands.put("/editredo", "Redo");
         commands.put("/clearhistory", "Clear history");
@@ -243,6 +244,17 @@ public class WorldEdit {
             checkArgs(split, 0, 0, split[0]);
             player.giveItem(271, 1);
             player.print("Right click = sel. pos 1; double right click = sel. pos 2");
+            return true;
+
+        // Toggle edit wand
+        } else if (split[0].equalsIgnoreCase("/toggleeditwand")) {
+            checkArgs(split, 0, 0, split[0]);
+            session.setToolControl(!session.isToolControlEnabled());
+            if (session.isToolControlEnabled()) {
+                player.print("Edit wand enabled.");
+            } else {
+                player.print("Edit wand disabled.");
+            }
             return true;
 
         // Set max number of blocks to change at a time
