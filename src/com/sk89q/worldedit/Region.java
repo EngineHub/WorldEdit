@@ -23,19 +23,19 @@ package com.sk89q.worldedit;
  *
  * @author Albert
  */
-public interface Region extends Iterable<Point> {
+public interface Region extends Iterable<Vector> {
     /**
      * Get the lower point of a region.
      * 
      * @return min. point
      */
-    public Point getMinimumPoint();
+    public Vector getMinimumPoint();
     /**
      * Get the upper point of a region.
      * 
      * @return max. point
      */
-    public Point getMaximumPoint();
+    public Vector getMaximumPoint();
     /**
      * Get the number of blocks in the region.
      * 

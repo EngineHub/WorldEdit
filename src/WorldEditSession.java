@@ -26,12 +26,12 @@ import java.util.LinkedList;
  */
 public class WorldEditSession {
     public static final int MAX_HISTORY_SIZE = 15;
-    private Point pos1, pos2;
+    private Vector pos1, pos2;
     private LinkedList<EditSession> history = new LinkedList<EditSession>();
     private int historyPointer = 0;
     private CuboidClipboard clipboard;
     private boolean toolControl = true;
-    private Point lastToolPos1;
+    private Vector lastToolPos1;
     private long lastToolClick = 0;
     private int maxBlocksChanged = -1;
 
@@ -120,7 +120,7 @@ public class WorldEditSession {
      * @return position 1
      * @throws IncompleteRegionException
      */
-    public Point getPos1() throws IncompleteRegionException {
+    public Vector getPos1() throws IncompleteRegionException {
         checkPos1();
         return pos1;
     }
@@ -130,7 +130,7 @@ public class WorldEditSession {
      *
      * @param pt
      */
-    public void setPos1(Point pt) {
+    public void setPos1(Vector pt) {
         pos1 = pt;
     }
 
@@ -140,7 +140,7 @@ public class WorldEditSession {
      * @return position 2
      * @throws IncompleteRegionException
      */
-    public Point getPos2() throws IncompleteRegionException {
+    public Vector getPos2() throws IncompleteRegionException {
         checkPos2();
         return pos2;
     }
@@ -150,7 +150,7 @@ public class WorldEditSession {
      *
      * @param pt
      */
-    public void setPos2(Point pt) {
+    public void setPos2(Vector pt) {
         pos2 = pt;
     }
 
@@ -206,14 +206,14 @@ public class WorldEditSession {
     /**
      * @return the lastToolPos1
      */
-    public Point getLastToolPos1() {
+    public Vector getLastToolPos1() {
         return lastToolPos1;
     }
 
     /**
      * @param lastToolPos1 the lastToolPos1 to set
      */
-    public void setLastToolPos1(Point lastToolPos1) {
+    public void setLastToolPos1(Vector lastToolPos1) {
         this.lastToolPos1 = lastToolPos1;
     }
 

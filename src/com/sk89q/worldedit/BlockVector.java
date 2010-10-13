@@ -20,44 +20,44 @@
 package com.sk89q.worldedit;
 
 /**
- * Extension of Point that supports being compared as ints (for accuracy).
+ * Extension of Vector that supports being compared as ints (for accuracy).
  *
  * @author sk89q
  */
-public class BlockPoint extends Point {
+public class BlockVector extends Vector {
     /**
-     * Construct the Point object.
+     * Construct the Vector object.
      *
      * @param pt
      */
-    public BlockPoint(Point pt) {
+    public BlockVector(Vector pt) {
         super(pt);
     }
 
     /**
-     * Construct the Point object.
+     * Construct the Vector object.
      *
      * @param pt
      */
-    public BlockPoint(int x, int y, int z) {
+    public BlockVector(int x, int y, int z) {
         super(x, y, z);
     }
 
     /**
-     * Construct the Point object.
+     * Construct the Vector object.
      *
      * @param pt
      */
-    public BlockPoint(float x, float y, float z) {
+    public BlockVector(float x, float y, float z) {
         super(x, y, z);
     }
 
     /**
-     * Construct the Point object.
+     * Construct the Vector object.
      *
      * @param pt
      */
-    public BlockPoint(double x, double y, double z) {
+    public BlockVector(double x, double y, double z) {
         super(x, y, z);
     }
     
@@ -69,10 +69,10 @@ public class BlockPoint extends Point {
      */
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Point)) {
+        if (!(obj instanceof Vector)) {
             return false;
         }
-        Point other = (Point)obj;
+        Vector other = (Vector)obj;
         return (int)other.x == (int)this.x && (int)other.y == (int)this.y
                 && (int)other.z == (int)this.z;
 

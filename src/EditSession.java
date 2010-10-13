@@ -37,15 +37,15 @@ public class EditSession {
     /**
      * Stores the original blocks before modification.
      */
-    private HashMap<BlockPoint,Integer> original = new HashMap<BlockPoint,Integer>();
+    private HashMap<BlockVector,Integer> original = new HashMap<BlockVector,Integer>();
     /**
      * Stores the current blocks.
      */
-    private HashMap<BlockPoint,Integer> current = new HashMap<BlockPoint,Integer>();
+    private HashMap<BlockVector,Integer> current = new HashMap<BlockVector,Integer>();
     /**
      * Queue.
      */
-    private HashMap<BlockPoint,Integer> queue = new HashMap<BlockPoint,Integer>();
+    private HashMap<BlockVector,Integer> queue = new HashMap<BlockVector,Integer>();
     /**
      * The maximum number of blocks to change at a time. If this number is
      * exceeded, a MaxChangedBlocksException exception will be
@@ -98,7 +98,7 @@ public class EditSession {
      * @param blockType
      * @return Whether the block changed
      */
-    private boolean rawSetBlock(Point pt, int blockType) {
+    private boolean rawSetBlock(Vector pt, int blockType) {
         return etc.getMCServer().e.d(pt.getBlockX(), pt.getBlockY(),
                 pt.getBlockZ(), blockType);
     }
@@ -116,7 +116,7 @@ public class EditSession {
      */
     public boolean setBlock(int x, int y, int z, int blockType)
         throws MaxChangedBlocksException {
-        return setBlock(new Point(x, y, z), blockType);
+        return setBlock(new Vector(x, y, z), blockType);
     }
 
     /**
@@ -128,7 +128,7 @@ public class EditSession {
      * @param blockType
      * @return Whether the block changed -- not entirely dependable
      */
-    public boolean setBlock(Point pt, int blockType)
+    public boolean setBlock(Vector pt, int blockType)
         throws MaxChangedBlocksException {
         if (!original.containsKey(pt)) {
             original.put(pt.toBlockPoint(), getBlock(pt));
@@ -150,7 +150,7 @@ public class EditSession {
      * @param blockType
      * @return
      */
-    private boolean smartSetBlock(Point pt, int blockType) {        
+    private boolean smartSetBlock(Vector pt, int blockType) {
         if (queued) {
             if (blockType != 0 && queuedBlocks.contains(blockType)
                     && rawGetBlock(pt.add(0, -1, 0)) == 0) {
@@ -171,7 +171,7 @@ public class EditSession {
      * @param pt
      * @return Block type
      */
-    public int getBlock(Point pt) {
+    public int getBlock(Vector pt) {
         // In the case of the queue, the block may have not actually been
         // changed yet
         if (queued) {
@@ -191,7 +191,7 @@ public class EditSession {
      * @return Block type
      */
     public int getBlock(int x, int y, int z) {
-        return getBlock(new Point(x, y, z));
+        return getBlock(new Vector(x, y, z));
     }
 
     /**
@@ -200,7 +200,7 @@ public class EditSession {
      * @param pt
      * @return Block type
      */
-    public int rawGetBlock(Point pt) {
+    public int rawGetBlock(Vector pt) {
         return etc.getMCServer().e.a(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
     }
 
@@ -208,8 +208,8 @@ public class EditSession {
      * Restores all blocks to their initial state.
      */
     public void undo() {
-        for (Map.Entry<BlockPoint,Integer> entry : original.entrySet()) {
-            BlockPoint pt = (BlockPoint)entry.getKey();
+        for (Map.Entry<BlockVector,Integer> entry : original.entrySet()) {
+            BlockVector pt = (BlockVector)entry.getKey();
             smartSetBlock(pt, (int)entry.getValue());
         }
         flushQueue();
@@ -219,8 +219,8 @@ public class EditSession {
      * Sets to new state.
      */
     public void redo() {
-        for (Map.Entry<BlockPoint,Integer> entry : current.entrySet()) {
-            BlockPoint pt = (BlockPoint)entry.getKey();
+        for (Map.Entry<BlockVector,Integer> entry : current.entrySet()) {
+            BlockVector pt = (BlockVector)entry.getKey();
             smartSetBlock(pt, (int)entry.getValue());
         }
         flushQueue();
@@ -288,8 +288,8 @@ public class EditSession {
     public void flushQueue() {
         if (!queued) { return; }
         
-        for (Map.Entry<BlockPoint,Integer> entry : queue.entrySet()) {
-            BlockPoint pt = (BlockPoint)entry.getKey();
+        for (Map.Entry<BlockVector,Integer> entry : queue.entrySet()) {
+            BlockVector pt = (BlockVector)entry.getKey();
             rawSetBlock(pt, (int)entry.getValue());
         }
     }
@@ -305,7 +305,7 @@ public class EditSession {
      * @param depth
      * @return number of blocks affected
      */
-    public int fillXZ(int x, int z, Point origin, int blockType, int radius, int depth)
+    public int fillXZ(int x, int z, Vector origin, int blockType, int radius, int depth)
             throws MaxChangedBlocksException {
         double dist = Math.sqrt(Math.pow(origin.getX() - x, 2) + Math.pow(origin.getZ() - z, 2));
         int minY = origin.getBlockY() - depth + 1;
@@ -315,7 +315,7 @@ public class EditSession {
             return 0;
         }
 
-        if (getBlock(new Point(x, origin.getY(), z)) == 0) {
+        if (getBlock(new Vector(x, origin.getY(), z)) == 0) {
             affected = fillY(x, (int)origin.getY(), z, blockType, minY);
         } else {
             return 0;
@@ -345,7 +345,7 @@ public class EditSession {
         int affected = 0;
 
         for (int y = cy; y >= minY; y--) {
-            Point pt = new Point(x, y, z);
+            Vector pt = new Vector(x, y, z);
             
             if (getBlock(pt) == 0) {
                 setBlock(pt, blockType);
@@ -366,7 +366,7 @@ public class EditSession {
      * @param height
      * @return number of blocks affected
      */
-    public int removeAbove(Point pos, int size, int height) throws
+    public int removeAbove(Vector pos, int size, int height) throws
             MaxChangedBlocksException {
         int maxY = Math.min(127, pos.getBlockY() + height - 1);
         size--;
@@ -375,7 +375,7 @@ public class EditSession {
         for (int x = (int)pos.getX() - size; x <= (int)pos.getX() + size; x++) {
             for (int z = (int)pos.getZ() - size; z <= (int)pos.getZ() + size; z++) {
                 for (int y = (int)pos.getY(); y <= maxY; y++) {
-                    Point pt = new Point(x, y, z);
+                    Vector pt = new Vector(x, y, z);
 
                     if (getBlock(pt) != 0) {
                         setBlock(pt, 0);
@@ -396,7 +396,7 @@ public class EditSession {
      * @param height
      * @return number of blocks affected
      */
-    public int removeBelow(Point pos, int size, int height) throws
+    public int removeBelow(Vector pos, int size, int height) throws
             MaxChangedBlocksException {
         int minY = Math.max(0, pos.getBlockY() - height);
         size--;
@@ -405,7 +405,7 @@ public class EditSession {
         for (int x = (int)pos.getX() - size; x <= (int)pos.getX() + size; x++) {
             for (int z = (int)pos.getZ() - size; z <= (int)pos.getZ() + size; z++) {
                 for (int y = (int)pos.getY(); y >= minY; y--) {
-                    Point pt = new Point(x, y, z);
+                    Vector pt = new Vector(x, y, z);
 
                     if (getBlock(pt) != 0) {
                         setBlock(pt, 0);
@@ -432,13 +432,13 @@ public class EditSession {
 
         if (region instanceof CuboidRegion) {
             // Doing this for speed
-            Point min = region.getMinimumPoint();
-            Point max = region.getMaximumPoint();
+            Vector min = region.getMinimumPoint();
+            Vector max = region.getMaximumPoint();
 
             for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
                 for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                     for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                        Point pt = new Point(x, y, z);
+                        Vector pt = new Vector(x, y, z);
 
                         if (setBlock(pt, blockType)) {
                             affected++;
@@ -447,7 +447,7 @@ public class EditSession {
                 }
             }
         } else {
-            for (Point pt : region) {
+            for (Vector pt : region) {
                 if (setBlock(pt, blockType)) {
                     affected++;
                 }
@@ -472,13 +472,13 @@ public class EditSession {
 
         if (region instanceof CuboidRegion) {
             // Doing this for speed
-            Point min = region.getMinimumPoint();
-            Point max = region.getMaximumPoint();
+            Vector min = region.getMinimumPoint();
+            Vector max = region.getMaximumPoint();
 
             for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
                 for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                     for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                        Point pt = new Point(x, y, z);
+                        Vector pt = new Vector(x, y, z);
                         int curBlockType = getBlock(pt);
 
                         if (fromBlockType == -1 && curBlockType != 0 ||
@@ -491,7 +491,7 @@ public class EditSession {
                 }
             }
         } else {
-            for (Point pt : region) {
+            for (Vector pt : region) {
                 int curBlockType = getBlock(pt);
 
                 if (fromBlockType == -1 && curBlockType != 0 ||
@@ -518,8 +518,8 @@ public class EditSession {
             throws MaxChangedBlocksException {
         int affected = 0;
 
-        Point min = region.getMinimumPoint();
-        Point max = region.getMaximumPoint();
+        Vector min = region.getMinimumPoint();
+        Vector max = region.getMaximumPoint();
         
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
@@ -556,8 +556,8 @@ public class EditSession {
      */
     public int overlayCuboidBlocks(Region region, int blockType)
             throws MaxChangedBlocksException {
-        Point min = region.getMinimumPoint();
-        Point max = region.getMaximumPoint();
+        Vector min = region.getMinimumPoint();
+        Vector max = region.getMaximumPoint();
         
         int upperY = Math.min(127, max.getBlockY() + 1);
         int lowerY = Math.max(0, min.getBlockY()- 1);
@@ -597,8 +597,8 @@ public class EditSession {
             throws MaxChangedBlocksException {
         int affected = 0;
 
-        Point min = region.getMinimumPoint();
-        Point max = region.getMaximumPoint();
+        Vector min = region.getMinimumPoint();
+        Vector max = region.getMaximumPoint();
         int xs = region.getWidth();
         int ys = region.getHeight();
         int zs = region.getLength();
@@ -606,7 +606,7 @@ public class EditSession {
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                 for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-                    int blockType = getBlock(new Point(x, y, z));
+                    int blockType = getBlock(new Vector(x, y, z));
 
                     if (blockType != 0 || copyAir) {
                         for (int i = 1; i <= count; i++) {
@@ -631,22 +631,22 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int drainArea(Point pos, int radius) throws MaxChangedBlocksException {
+    public int drainArea(Vector pos, int radius) throws MaxChangedBlocksException {
         int affected = 0;
 
-        HashSet<BlockPoint> visited = new HashSet<BlockPoint>();
-        Stack<BlockPoint> queue = new Stack<BlockPoint>();
+        HashSet<BlockVector> visited = new HashSet<BlockVector>();
+        Stack<BlockVector> queue = new Stack<BlockVector>();
 
         for (int x = pos.getBlockX() - 1; x <= pos.getBlockX() + 1; x++) {
             for (int z = pos.getBlockZ() - 1; z <= pos.getBlockZ() + 1; z++) {
                 for (int y = pos.getBlockY() - 1; y <= pos.getBlockY() + 1; y++) {
-                    queue.push(new BlockPoint(x, y, z));
+                    queue.push(new BlockVector(x, y, z));
                 }
             }
         }
 
         while (!queue.empty()) {
-            BlockPoint cur = queue.pop();
+            BlockVector cur = queue.pop();
             
             int type = getBlock(cur);
 
@@ -670,7 +670,7 @@ public class EditSession {
             for (int x = cur.getBlockX() - 1; x <= cur.getBlockX() + 1; x++) {
                 for (int z = cur.getBlockZ() - 1; z <= cur.getBlockZ() + 1; z++) {
                     for (int y = cur.getBlockY() - 1; y <= cur.getBlockY() + 1; y++) {
-                        BlockPoint newPos = new BlockPoint(x, y, z);
+                        BlockVector newPos = new BlockVector(x, y, z);
 
                         if (!cur.equals(newPos)) {
                             queue.push(newPos);

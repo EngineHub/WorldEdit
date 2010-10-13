@@ -269,7 +269,7 @@ public class WorldEdit {
             if (session.getClipboard() == null) {
                 player.printError("Nothing is in your clipboard.");
             } else {
-                Point pos = player.getBlockIn();
+                Vector pos = player.getBlockIn();
                 session.getClipboard().paste(editSession, pos,
                     split[0].equalsIgnoreCase("/editpaste"));
                 player.findFreePosition();
@@ -285,7 +285,7 @@ public class WorldEdit {
             int radius = Math.max(1, Integer.parseInt(split[2]));
             int depth = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
 
-            Point pos = player.getBlockIn();
+            Vector pos = player.getBlockIn();
             int affected = editSession.fillXZ((int)pos.getX(), (int)pos.getZ(),
                     pos, blockType, radius, depth);
             player.print(affected + " block(s) have been created.");
@@ -326,7 +326,7 @@ public class WorldEdit {
                 if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
                     player.printError("Schematic could not read or it does not exist.");
                 } else {
-                    Point origin = player.getBlockIn();
+                    Vector origin = player.getBlockIn();
                     session.setClipboard(CuboidClipboard.loadSchematic(filePath, origin));
                     logger.log(Level.INFO, player.getName() + " loaded " + filePath);
                     player.print(filename + " loaded.");
@@ -447,9 +447,9 @@ public class WorldEdit {
         } else if (split[0].equalsIgnoreCase("/editcopy")) {
             checkArgs(split, 0, 0, split[0]);
             Region region = session.getRegion();
-            Point min = region.getMinimumPoint();
-            Point max = region.getMaximumPoint();
-            Point pos = player.getBlockIn();
+            Vector min = region.getMinimumPoint();
+            Vector max = region.getMaximumPoint();
+            Vector pos = player.getBlockIn();
 
             CuboidClipboard clipboard = new CuboidClipboard(min, max, pos);
             clipboard.copy(editSession);

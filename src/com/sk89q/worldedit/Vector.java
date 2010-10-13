@@ -23,63 +23,63 @@ package com.sk89q.worldedit;
  *
  * @author Albert
  */
-public class Point {
+public class Vector {
     protected final double x, y, z;
 
     /**
-     * Construct the Point object.
+     * Construct the Vector object.
      *
      * @param x
      * @param y
      * @param z
      */
-    public Point(double x, double y, double z) {
+    public Vector(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
     /**
-     * Construct the Point object.
+     * Construct the Vector object.
      *
      * @param x
      * @param y
      * @param z
      */
-    public Point(int x, int y, int z) {
+    public Vector(int x, int y, int z) {
         this.x = (double)x;
         this.y = (double)y;
         this.z = (double)z;
     }
 
     /**
-     * Construct the Point object.
+     * Construct the Vector object.
      *
      * @param x
      * @param y
      * @param z
      */
-    public Point(float x, float y, float z) {
+    public Vector(float x, float y, float z) {
         this.x = (double)x;
         this.y = (double)y;
         this.z = (double)z;
     }
 
     /**
-     * Construct the Point object.
+     * Construct the Vector object.
      *
      * @param pt
      */
-    public Point(Point pt) {
+    public Vector(Vector pt) {
         this.x = pt.x;
         this.y = pt.y;
         this.z = pt.z;
     }
 
     /**
-     * Construct the Point object.
+     * Construct the Vector object.
      */
-    public Point() {
+    public Vector() {
         this.x = 0;
         this.y = 0;
         this.z = 0;
@@ -133,8 +133,8 @@ public class Point {
      * @param other
      * @return New point
      */
-    public Point add(Point other) {
-        return new Point(x + other.x, y + other.y, z + other.z);
+    public Vector add(Vector other) {
+        return new Vector(x + other.x, y + other.y, z + other.z);
     }
 
     /**
@@ -145,8 +145,8 @@ public class Point {
      * @param z
      * @return New point
      */
-    public Point add(double x, double y, double z) {
-        return new Point(this.x + x, this.y + y, this.z + z);
+    public Vector add(double x, double y, double z) {
+        return new Vector(this.x + x, this.y + y, this.z + z);
     }
 
     /**
@@ -157,8 +157,8 @@ public class Point {
      * @param z
      * @return New point
      */
-    public Point add(int x, int y, int z) {
-        return new Point(this.x + x, this.y + y, this.z + z);
+    public Vector add(int x, int y, int z) {
+        return new Vector(this.x + x, this.y + y, this.z + z);
     }
 
     /**
@@ -167,7 +167,7 @@ public class Point {
      * @param others
      * @return New point
      */
-    public Point add(Point ... others) {
+    public Vector add(Vector ... others) {
         double newX = x, newY = y, newZ = z;
 
         for (int i = 0; i < others.length; i++) {
@@ -175,7 +175,7 @@ public class Point {
             newY += others[i].y;
             newZ += others[i].z;
         }
-        return new Point(newX, newY, newZ);
+        return new Vector(newX, newY, newZ);
     }
 
     /**
@@ -184,8 +184,8 @@ public class Point {
      * @param other
      * @return New point
      */
-    public Point subtract(Point other) {
-        return new Point(x - other.x, y - other.y, z - other.z);
+    public Vector subtract(Vector other) {
+        return new Vector(x - other.x, y - other.y, z - other.z);
     }
 
     /**
@@ -196,8 +196,8 @@ public class Point {
      * @param z
      * @return New point
      */
-    public Point subtract(double x, double y, double z) {
-        return new Point(this.x - x, this.y - y, this.z - z);
+    public Vector subtract(double x, double y, double z) {
+        return new Vector(this.x - x, this.y - y, this.z - z);
     }
 
     /**
@@ -208,8 +208,8 @@ public class Point {
      * @param z
      * @return New point
      */
-    public Point subtract(int x, int y, int z) {
-        return new Point(this.x - x, this.y - y, this.z - z);
+    public Vector subtract(int x, int y, int z) {
+        return new Vector(this.x - x, this.y - y, this.z - z);
     }
 
     /**
@@ -218,7 +218,7 @@ public class Point {
      * @param others
      * @return New point
      */
-    public Point subtract(Point ... others) {
+    public Vector subtract(Vector ... others) {
         double newX = x, newY = y, newZ = z;
 
         for (int i = 0; i < others.length; i++) {
@@ -226,7 +226,7 @@ public class Point {
             newY -= others[i].y;
             newZ -= others[i].z;
         }
-        return new Point(newX, newY, newZ);
+        return new Vector(newX, newY, newZ);
     }
 
     /**
@@ -235,8 +235,8 @@ public class Point {
      * @param other
      * @return New point
      */
-    public Point multiply(Point other) {
-        return new Point(x * other.x, y * other.y, z * other.z);
+    public Vector multiply(Vector other) {
+        return new Vector(x * other.x, y * other.y, z * other.z);
     }
 
     /**
@@ -247,8 +247,8 @@ public class Point {
      * @param z
      * @return New point
      */
-    public Point multiply(double x, double y, double z) {
-        return new Point(this.x * x, this.y * y, this.z * z);
+    public Vector multiply(double x, double y, double z) {
+        return new Vector(this.x * x, this.y * y, this.z * z);
     }
 
     /**
@@ -259,8 +259,8 @@ public class Point {
      * @param z
      * @return New point
      */
-    public Point multiply(int x, int y, int z) {
-        return new Point(this.x * x, this.y * y, this.z * z);
+    public Vector multiply(int x, int y, int z) {
+        return new Vector(this.x * x, this.y * y, this.z * z);
     }
 
     /**
@@ -269,7 +269,7 @@ public class Point {
      * @param others
      * @return New point
      */
-    public Point multiply(Point ... others) {
+    public Vector multiply(Vector ... others) {
         double newX = x, newY = y, newZ = z;
 
         for (int i = 0; i < others.length; i++) {
@@ -277,7 +277,7 @@ public class Point {
             newY *= others[i].y;
             newZ *= others[i].z;
         }
-        return new Point(newX, newY, newZ);
+        return new Vector(newX, newY, newZ);
     }
 
     /**
@@ -286,8 +286,8 @@ public class Point {
      * @param other
      * @return New point
      */
-    public Point divide(Point other) {
-        return new Point(x / other.x, y / other.y, z / other.z);
+    public Vector divide(Vector other) {
+        return new Vector(x / other.x, y / other.y, z / other.z);
     }
 
     /**
@@ -298,8 +298,8 @@ public class Point {
      * @param z
      * @return New point
      */
-    public Point divide(double x, double y, double z) {
-        return new Point(this.x / x, this.y / y, this.z / z);
+    public Vector divide(double x, double y, double z) {
+        return new Vector(this.x / x, this.y / y, this.z / z);
     }
 
     /**
@@ -310,8 +310,8 @@ public class Point {
      * @param z
      * @return New point
      */
-    public Point divide(int x, int y, int z) {
-        return new Point(this.x / x, this.y / y, this.z / z);
+    public Vector divide(int x, int y, int z) {
+        return new Vector(this.x / x, this.y / y, this.z / z);
     }
 
     /**
@@ -320,7 +320,7 @@ public class Point {
      * @param pt
      * @return distance
      */
-    public double distance(Point pt) {
+    public double distance(Vector pt) {
         return Math.sqrt(Math.pow(pt.x - x, 2) +
                 Math.pow(pt.y - y, 2) +
                 Math.pow(pt.z - z, 2));
@@ -334,8 +334,8 @@ public class Point {
      * @param z
      * @return point
      */
-    public static Point toBlockPoint(double x, double y, double z) {
-        return new Point((int)Math.floor(x),
+    public static Vector toBlockPoint(double x, double y, double z) {
+        return new Vector((int)Math.floor(x),
                          (int)Math.floor(y),
                          (int)Math.floor(z));
     }
@@ -348,10 +348,10 @@ public class Point {
      */
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Point)) {
+        if (!(obj instanceof Vector)) {
             return false;
         }
-        Point other = (Point)obj;
+        Vector other = (Vector)obj;
         return other.x == this.x && other.y == this.y && other.z == this.z;
 
     }
@@ -379,11 +379,11 @@ public class Point {
     }
 
     /**
-     * Gets a BlockPoint version.
+     * Gets a BlockVector version.
      * 
-     * @return BlockPoint
+     * @return BlockVector
      */
-    public BlockPoint toBlockPoint() {
-        return new BlockPoint(this);
+    public BlockVector toBlockPoint() {
+        return new BlockVector(this);
     }
 }

@@ -30,9 +30,9 @@ import com.sk89q.worldedit.*;
  */
 public class CuboidClipboard {
     private int[][][] data;
-    private Point min;
-    private Point max;
-    private Point origin;
+    private Vector min;
+    private Vector max;
+    private Vector origin;
 
     /**
      * Constructs the region instance. The minimum and maximum points must be
@@ -42,7 +42,7 @@ public class CuboidClipboard {
      * @param max
      * @param origin
      */
-    public CuboidClipboard(Point min, Point max, Point origin) {
+    public CuboidClipboard(Vector min, Vector max, Vector origin) {
         this.min = min;
         this.max = max;
         this.origin = origin;
@@ -102,7 +102,7 @@ public class CuboidClipboard {
      * @param noAir True to not paste air
      * @throws MaxChangedBlocksException
      */
-    public void paste(EditSession editSession, Point newOrigin, boolean noAir)
+    public void paste(EditSession editSession, Vector newOrigin, boolean noAir)
             throws MaxChangedBlocksException {
         int offsetX = (int)(min.getX() - origin.getX() + newOrigin.getX());
         int offsetY = (int)(min.getY() - origin.getY() + newOrigin.getY());
@@ -168,7 +168,7 @@ public class CuboidClipboard {
         }
 
         if (moveOrigin) {
-            min = new Point((int)offsetX + xm * count,
+            min = new Vector((int)offsetX + xm * count,
                             (int)offsetY + ym * count,
                             (int)offsetZ + zm * count);
         }
@@ -238,7 +238,7 @@ public class CuboidClipboard {
      * @throws SchematicException
      * @throws IOException
      */
-    public static CuboidClipboard loadSchematic(String path, Point origin)
+    public static CuboidClipboard loadSchematic(String path, Vector origin)
             throws SchematicException, IOException {
         FileInputStream stream = new FileInputStream(path);
         NBTInputStream nbtStream = new NBTInputStream(stream);
@@ -259,8 +259,8 @@ public class CuboidClipboard {
         }
         byte[] blocks = (byte[])getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
 
-        Point min = origin;
-        Point max = new Point(
+        Vector min = origin;
+        Vector max = new Vector(
                 origin.getX() + xs - 1,
                 origin.getY() + ys - 1,
                 origin.getZ() + zs - 1

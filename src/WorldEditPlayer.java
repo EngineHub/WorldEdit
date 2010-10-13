@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import com.sk89q.worldedit.Point;
+import com.sk89q.worldedit.Vector;
 
 /**
  *
@@ -49,8 +49,8 @@ public class WorldEditPlayer {
      *
      * @return point
      */
-    public Point getBlockOn() {
-        return Point.toBlockPoint(player.getX(), player.getY() - 1, player.getZ());
+    public Vector getBlockOn() {
+        return Vector.toBlockPoint(player.getX(), player.getY() - 1, player.getZ());
     }
 
     /**
@@ -58,8 +58,8 @@ public class WorldEditPlayer {
      * 
      * @return point
      */
-    public Point getBlockIn() {
-        return Point.toBlockPoint(player.getX(), player.getY(), player.getZ());
+    public Vector getBlockIn() {
+        return Vector.toBlockPoint(player.getX(), player.getY(), player.getZ());
     }
 
     /**
@@ -67,8 +67,8 @@ public class WorldEditPlayer {
      * 
      * @return point
      */
-    public Point getPosition() {
-        return new Point(player.getX(), player.getY(), player.getZ());
+    public Vector getPosition() {
+        return new Vector(player.getX(), player.getY(), player.getZ());
     }
 
     /**
@@ -123,7 +123,7 @@ public class WorldEditPlayer {
      * @param pitch
      * @param yaw
      */
-    public void setPosition(Point pos, float pitch, float yaw) {
+    public void setPosition(Vector pos, float pitch, float yaw) {
         Location loc = new Location();
         loc.x = pos.getX();
         loc.y = pos.getY();

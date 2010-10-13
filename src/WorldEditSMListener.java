@@ -68,7 +68,7 @@ public class WorldEditSMListener extends PluginListener {
         WorldEditSession session = worldEdit.getSession(player);
 
         if (session.isToolControlEnabled()) {
-            Point cur = Point.toBlockPoint(blockClicked.getX(),
+            Vector cur = Vector.toBlockPoint(blockClicked.getX(),
                                            blockClicked.getY(),
                                            blockClicked.getZ());
 
@@ -99,7 +99,7 @@ public class WorldEditSMListener extends PluginListener {
         WorldEditSession session = worldEdit.getSession(player);
 
         if (session.isToolControlEnabled()) {
-            Point cur = Point.toBlockPoint(blockClicked.getX(),
+            Vector cur = Vector.toBlockPoint(blockClicked.getX(),
                                            blockClicked.getY(),
                                            blockClicked.getZ());
 
