@@ -413,7 +413,7 @@ public class Vector {
      * 
      * @return BlockVector
      */
-    public BlockVector toBlockPoint() {
+    public BlockVector toBlockVector() {
         return new BlockVector(this);
     }
 }

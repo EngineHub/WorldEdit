@@ -94,6 +94,7 @@ public class WorldEdit {
         commands.put("/editlimit", "[Num] - See documentation");
         commands.put("/editexpand", "<Dir> [Num] - Expands the selection");
         commands.put("/editcontract", "<Dir> [Num] - Contracts the selection");
+        commands.put("/forestgen", "<Size> - Make an ugly pine tree forest");
         commands.put("/unstuck", "Go up to the first free spot");
         commands.put("/ascend", "Go up one level");
         commands.put("/descend", "Go dowm one level");
@@ -492,6 +493,16 @@ public class WorldEdit {
             session.setClipboard(clipboard);
             
             player.print("Block(s) copied.");
+
+            return true;
+
+        // Make pine tree forest
+        } else if (split[0].equalsIgnoreCase("/forestgen")) {
+            checkArgs(split, 0, 1, split[0]);
+            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 10;
+
+            int affected = editSession.makePineTreeForest(player.getPosition(), size);
+            player.print(affected + " pine trees created.");
 
             return true;
 

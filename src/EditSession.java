@@ -130,17 +130,36 @@ public class EditSession {
      */
     public boolean setBlock(Vector pt, int blockType)
         throws MaxChangedBlocksException {
-        if (!original.containsKey(pt)) {
-            original.put(pt.toBlockPoint(), getBlock(pt));
+        BlockVector blockPt = pt.toBlockVector();
+        
+        if (!original.containsKey(blockPt)) {
+            original.put(blockPt, getBlock(pt));
 
             if (maxBlocks != -1 && original.size() > maxBlocks) {
                 throw new MaxChangedBlocksException(maxBlocks);
             }
         }
 
-        current.put(pt.toBlockPoint(), blockType);
+        current.put(pt.toBlockVector(), blockType);
 
         return smartSetBlock(pt, blockType);
+    }
+
+    /**
+     * Set a block only if there's no block already there.
+     * 
+     * @param pt
+     * @param blockType
+     * @return if block was changed
+     * @throws MaxChangedBlocksException
+     */
+    public boolean setBlockIfAir(Vector pt, int blockType)
+            throws MaxChangedBlocksException {
+        if (getBlock(pt) != 0) {
+            return false;
+        } else {
+            return setBlock(pt, blockType);
+        }
     }
 
     /**
@@ -154,7 +173,7 @@ public class EditSession {
         if (queued) {
             if (blockType != 0 && queuedBlocks.contains(blockType)
                     && rawGetBlock(pt.add(0, -1, 0)) == 0) {
-                queue.put(pt.toBlockPoint(), blockType);
+                queue.put(pt.toBlockVector(), blockType);
                 return getBlock(pt) != blockType;
             } else if (blockType == 0
                     && queuedBlocks.contains(rawGetBlock(pt.add(0, 1, 0)))) {
@@ -175,8 +194,10 @@ public class EditSession {
         // In the case of the queue, the block may have not actually been
         // changed yet
         if (queued) {
-            if (current.containsKey(pt)) {
-                return current.get(pt);
+            BlockVector blockPt = pt.toBlockVector();
+
+            if (current.containsKey(blockPt)) {
+                return current.get(blockPt);
             }
         }
         return etc.getMCServer().e.a(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
@@ -679,6 +700,116 @@ public class EditSession {
 
             if (setBlock(cur, 0)) {
                 affected++;
+            }
+        }
+
+        return affected;
+    }
+    
+    
+    /**
+     * Set a block by chance.
+     * 
+     * @param pos
+     * @param type
+     * @param c 0-1 chance
+     * @return whether a block was changed
+     */
+    private boolean setChanceBlockIfAir(Vector pos, int type, double c)
+            throws MaxChangedBlocksException {
+        if (Math.random() <= c) {
+            return setBlockIfAir(pos, type);
+        }
+        return false;
+    }
+
+    /**
+     * Makes a terrible looking pine tree.
+     *
+     * @param basePos
+     */
+    private void makePineTree(Vector basePos)
+            throws MaxChangedBlocksException {
+        int trunkHeight = (int)Math.floor(Math.random() * 2) + 3;
+        int height = (int)Math.floor(Math.random() * 5) + 8;
+
+        // Create trunk
+        for (int i = 0; i < trunkHeight; i++) {
+            if (!setBlockIfAir(basePos.add(0, i, 0), 17)) {
+                return;
+            }
+        }
+
+        // Move up
+        basePos = basePos.add(0, trunkHeight, 0);
+
+        int pos2[] = {-2, 2};
+
+        // Create tree + leaves
+        for (int i = 0; i < height; i++) {
+            setBlockIfAir(basePos.add(0, i, 0), 17);
+
+            // Less leaves at these levels
+            double chance = ((i == 0 || i == height - 1) ? 0.6 : 1);
+
+            // Inner leaves
+            setChanceBlockIfAir(basePos.add(-1, i, 0), 18, chance);
+            setChanceBlockIfAir(basePos.add(1, i, 0), 18, chance);
+            setChanceBlockIfAir(basePos.add(0, i, -1), 18, chance);
+            setChanceBlockIfAir(basePos.add(0, i, 1), 18, chance);
+            setChanceBlockIfAir(basePos.add(1, i, 1), 18, chance);
+            setChanceBlockIfAir(basePos.add(-1, i, 1), 18, chance);
+            setChanceBlockIfAir(basePos.add(1, i, -1), 18, chance);
+            setChanceBlockIfAir(basePos.add(-1, i, -1), 18, chance);
+
+            if (!(i == 0 || i == height - 1)) {
+                for (int j = -2; j <= 2; j++) {
+                    setChanceBlockIfAir(basePos.add(-2, i, j), 18, 0.6);
+                }
+                for (int j = -2; j <= 2; j++) {
+                    setChanceBlockIfAir(basePos.add(2, i, j), 18, 0.6);
+                }
+                for (int j = -2; j <= 2; j++) {
+                    setChanceBlockIfAir(basePos.add(j, i, -2), 18, 0.6);
+                }
+                for (int j = -2; j <= 2; j++) {
+                    setChanceBlockIfAir(basePos.add(j, i, 2), 18, 0.6);
+                }
+            }
+        }
+
+        setBlockIfAir(basePos.add(0, height, 0), 18);
+    }
+
+    /**
+     * Makes a terrible looking pine forest.
+     * 
+     * @param basePos
+     * @param size
+     * @return number of trees created
+     */
+    public int makePineTreeForest(Vector basePos, int size)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+        
+        for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX() + size; x++) {
+            for (int z = basePos.getBlockZ() - size; z <= basePos.getBlockZ() + size; z++) {
+                // Don't want to be in the ground
+                if (getBlock(new Vector(x, basePos.getBlockY(), z)) != 0) { continue; }
+                // The gods don't want a tree here
+                if (Math.random() < 0.95) { continue; }
+
+                for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; y--) {
+                    // Check if we hit the ground
+                    int t = getBlock(new Vector(x, y, z));
+                    if (t == 2 || t == 3) {
+                        makePineTree(new Vector(x, y + 1, z));
+                        affected++;
+                        break;
+                    } else if (t != 0) { // Trees won't grow on this!
+                        break;
+                    }
+                }
             }
         }
 
