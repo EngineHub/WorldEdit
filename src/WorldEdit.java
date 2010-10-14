@@ -73,7 +73,7 @@ public class WorldEdit {
         commands.put("/editpos2", "Set editing position #2");
         commands.put("/editwand", "Gives you the \"edit wand\"");
         commands.put("/toggleeditwand", "Toggles edit wand selection");
-        commands.put("/.", "Toggles super pick axe.");
+        commands.put("/,", "Toggles super pick axe.");
         commands.put("/editundo", "Undo");
         commands.put("/editredo", "Redo");
         commands.put("/clearhistory", "Clear history");
@@ -263,7 +263,7 @@ public class WorldEdit {
             return true;
 
         // Toggle super pick axe
-        } else if (split[0].equalsIgnoreCase("/.")) {
+        } else if (split[0].equalsIgnoreCase("/,")) {
             checkArgs(split, 0, 0, split[0]);
             if (session.toggleSuperPickAxe()) {
                 player.print("Super pick axe enabled.");
