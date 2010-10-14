@@ -28,6 +28,7 @@ import java.util.LinkedList;
  */
 public class WorldEditSession {
     public static final int MAX_HISTORY_SIZE = 15;
+    private boolean placeAtPos1 = false;
     private Vector pos1, pos2;
     private Region region;
     private LinkedList<EditSession> history = new LinkedList<EditSession>();
@@ -281,5 +282,27 @@ public class WorldEditSession {
     public boolean toggleSuperPickAxe() {
         superPickAxe = !superPickAxe;
         return superPickAxe;
+    }
+
+    /**
+     * @return position
+     * @throws IncompleteRegionException
+     */
+    public Vector getPlacementPosition(WorldEditPlayer player)
+            throws IncompleteRegionException {
+        if (!placeAtPos1) {
+            return player.getBlockIn();
+        }
+
+        checkPos1();
+        return pos1;
+    }
+
+    /**
+     * Toggle placement position;
+     */
+    public boolean togglePlacementPosition() {
+        placeAtPos1 = !placeAtPos1;
+        return placeAtPos1;
     }
 }

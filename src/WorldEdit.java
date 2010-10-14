@@ -71,6 +71,7 @@ public class WorldEdit {
     public WorldEdit() {
         commands.put("/editpos1", "Set editing position #1");
         commands.put("/editpos2", "Set editing position #2");
+        commands.put("/toggleplace", "Toggle placing at pos #1");
         commands.put("/editwand", "Gives you the \"edit wand\"");
         commands.put("/toggleeditwand", "Toggles edit wand selection");
         commands.put("/,", "Toggles super pick axe.");
@@ -251,6 +252,16 @@ public class WorldEdit {
             player.print("Right click = sel. pos 1; double right click = sel. pos 2");
             return true;
 
+        // Toggle placing at pos #1
+        } else if (split[0].equalsIgnoreCase("/toggleplace")) {
+            checkArgs(split, 0, 0, split[0]);
+            if (session.togglePlacementPosition()) {
+                player.print("Now placing at pos #1.");
+            } else {
+                player.print("Now placing at the block you stand in.");
+            }
+            return true;
+
         // Toggle edit wand
         } else if (split[0].equalsIgnoreCase("/toggleeditwand")) {
             checkArgs(split, 0, 0, split[0]);
@@ -317,7 +328,7 @@ public class WorldEdit {
         // Paste
         } else if (split[0].equalsIgnoreCase("/editpasteair") ||
                    split[0].equalsIgnoreCase("/editpaste")) {
-            Vector pos = player.getBlockIn();
+            Vector pos = session.getPlacementPosition(player);
             session.getClipboard().paste(editSession, pos,
                 split[0].equalsIgnoreCase("/editpaste"));
             player.findFreePosition();
@@ -332,7 +343,7 @@ public class WorldEdit {
             int radius = Math.max(1, Integer.parseInt(split[2]));
             int depth = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
 
-            Vector pos = player.getBlockIn();
+            Vector pos = session.getPlacementPosition(player);
             int affected = editSession.fillXZ((int)pos.getX(), (int)pos.getZ(),
                     pos, block, radius, depth);
             player.print(affected + " block(s) have been created.");
@@ -344,7 +355,8 @@ public class WorldEdit {
             int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
             int height = split.length > 2 ? Math.min(128, Integer.parseInt(split[2]) + 2) : 128;
 
-            int affected = editSession.removeAbove(player.getBlockIn(), size, height);
+            int affected = editSession.removeAbove(
+                    session.getPlacementPosition(player), size, height);
             player.print(affected + " block(s) have been removed.");
 
             return true;
@@ -354,7 +366,8 @@ public class WorldEdit {
             int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
             int height = split.length > 2 ? Math.max(1, Integer.parseInt(split[2])) : 128;
 
-            int affected = editSession.removeBelow(player.getBlockIn(), size, height);
+            int affected = editSession.removeBelow(
+                    session.getPlacementPosition(player), size, height);
             player.print(affected + " block(s) have been removed.");
 
             return true;
@@ -451,7 +464,8 @@ public class WorldEdit {
         } else if(split[0].equalsIgnoreCase("/editdrain")) {
             checkArgs(split, 1, 1, split[0]);
             int radius = Math.max(0, Integer.parseInt(split[1]));
-            int affected = editSession.drainArea(player.getBlockIn(), radius);
+            int affected = editSession.drainArea(
+                    session.getPlacementPosition(player), radius);
             player.print(affected + " block(s) have been changed.");
 
             return true;
