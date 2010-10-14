@@ -24,27 +24,14 @@ import com.sk89q.worldedit.*;
  *
  * @author sk89q
  */
-public class WorldEditSMListener extends PluginListener {
-    /**
-     * Stores a reference to the WorldEdit object.
-     */
-    private WorldEdit worldEdit;
-
-    /**
-     * Construct the listener with a reference to the WorldEdit object.
-     *
-     * @param worldEdit
-     */
-    public WorldEditSMListener(WorldEdit worldEdit) {
-        this.worldEdit = worldEdit;
-    }
-
+public class SMWorldEditListener extends PluginListener {
     /**
      *
      * @param player
      */
     @Override
     public void onDisconnect(Player player) {
+        WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.removeSession(new SMWorldEditPlayer(player));
     }
 
@@ -60,6 +47,7 @@ public class WorldEditSMListener extends PluginListener {
     @Override
     public boolean onBlockCreate(Player modPlayer, Block blockPlaced,
             Block blockClicked, int itemInHand) {
+        WorldEdit worldEdit = WorldEdit.getInstance();
         WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
         
         if (itemInHand != 271) { return false; }
@@ -94,6 +82,7 @@ public class WorldEditSMListener extends PluginListener {
         if (!modPlayer.canUseCommand("/editpos1")
                 && !modPlayer.canUseCommand("/.")) { return false; }
 
+        WorldEdit worldEdit = WorldEdit.getInstance();
         WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
         WorldEditSession session = worldEdit.getSession(player);
 
@@ -133,6 +122,8 @@ public class WorldEditSMListener extends PluginListener {
      */
     @Override
     public boolean onCommand(Player modPlayer, String[] split) {
+        WorldEdit worldEdit = WorldEdit.getInstance();
+        
         try {
             if (worldEdit.getCommands().containsKey(split[0])) {
                 if (modPlayer.canUseCommand(split[0])) {

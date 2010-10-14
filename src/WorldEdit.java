@@ -34,6 +34,15 @@ import com.sk89q.worldedit.*;
  */
 public class WorldEdit {
     /**
+     * WorldEdit instance.
+     */
+    private static WorldEdit instance;
+    /**
+     * Server interface.
+     */
+    private ServerInterface server;
+    
+    /**
      * List of default allowed blocks.
      */
     private final static Integer[] DEFAULT_ALLOWED_BLOCKS = {
@@ -66,9 +75,40 @@ public class WorldEdit {
     private int defaultChangeLimit = -1;
 
     /**
+     * Set up an instance.
+     * 
+     * @param server
+     * @return
+     */
+    public static WorldEdit setup(ServerInterface server) {
+        WorldEdit worldEdit = new WorldEdit();
+        worldEdit.server = server;
+        instance = worldEdit;
+        return worldEdit;
+    }
+
+    /**
+     * Get WorldEdit instance.
+     * 
+     * @return
+     */
+    public static WorldEdit getInstance() {
+        return instance;
+    }
+
+    /**
+     * Get server interface.
+     * 
+     * @return
+     */
+    public static ServerInterface getServer() {
+        return instance.server;
+    }
+
+    /**
      * Construct an instance of the plugin.
      */
-    public WorldEdit() {
+    private WorldEdit() {
         commands.put("/editpos1", "Set editing position #1");
         commands.put("/editpos2", "Set editing position #2");
         commands.put("/toggleplace", "Toggle placing at pos #1");

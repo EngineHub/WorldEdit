@@ -28,7 +28,14 @@ public abstract class WorldEditPlayer {
     /**
      * Server interface.
      */
-    public static ServerInterface server;
+    protected ServerInterface server;
+
+    /**
+     * Construct the player.
+     */
+    public WorldEditPlayer() {
+        server = WorldEdit.getServer();
+    }
     
     /**
      * Get the name of the player.

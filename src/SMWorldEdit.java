@@ -26,11 +26,21 @@ import com.sk89q.worldedit.ServerInterface;
  * 
  * @author sk89q
  */
-public class WorldEditSM extends Plugin {
+public class SMWorldEdit extends Plugin {
+    /**
+     * WorldEdit's properties file.
+     */
     private PropertiesFile properties;
-    private static final WorldEdit worldEdit = new WorldEdit();
-    private static final WorldEditSMListener listener =
-            new WorldEditSMListener(worldEdit);
+    /**
+     * WorldEdit instance.
+     */
+    private static final WorldEdit worldEdit =
+            WorldEdit.setup(new SMServerInterface());
+    /**
+     * Listener for the plugin system.
+     */
+    private static final SMWorldEditListener listener =
+            new SMWorldEditListener();
 
     /**
      * Initializes the plugin.
@@ -49,10 +59,6 @@ public class WorldEditSM extends Plugin {
                 PluginListener.Priority.MEDIUM);
         loader.addListener(PluginLoader.Hook.LOGIN, listener, this,
                 PluginListener.Priority.MEDIUM);
-
-        ServerInterface server = new SMServerInterface();
-        WorldEditPlayer.server = server;
-        EditSession.server = server;
     }
 
     /**

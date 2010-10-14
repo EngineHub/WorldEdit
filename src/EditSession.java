@@ -41,7 +41,7 @@ public class EditSession {
     /**
      * Server interface.
      */
-    public static ServerInterface server;
+    protected ServerInterface server;
     
     /**
      * Stores the original blocks before modification.
@@ -88,6 +88,7 @@ public class EditSession {
      * Default constructor. There is no maximum blocks limit.
      */
     public EditSession() {
+        server = WorldEdit.getServer();
     }
 
     /**
@@ -98,6 +99,8 @@ public class EditSession {
             throw new IllegalArgumentException("Max blocks must be >= -1");
         }
         this.maxBlocks = maxBlocks;
+
+        server = WorldEdit.getServer();
     }
 
     /**
