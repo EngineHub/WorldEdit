@@ -21,55 +21,51 @@ package com.sk89q.worldedit;
 
 /**
  *
- * @author Albert
+ * @author sk89q
  */
-public interface Region extends Iterable<Vector> {
+public interface ServerInterface {
     /**
-     * Get the lower point of a region.
+     * Set block type.
      * 
-     * @return min. point
+     * @param pt
+     * @param type
+     * @return
      */
-    public Vector getMinimumPoint();
+    public boolean setBlockType(Vector pt, int type);
     /**
-     * Get the upper point of a region.
+     * Get block type.
      * 
-     * @return max. point
+     * @param pt
+     * @return
      */
-    public Vector getMaximumPoint();
+    public int getBlockType(Vector pt);
     /**
-     * Get the number of blocks in the region.
+     * Set block data.
      * 
-     * @return number of blocks
+     * @param pt
+     * @param data
+     * @return
      */
-    public int getSize();
+    public void setBlockData(Vector pt, int data);
     /**
-     * Get X-size.
-     *
-     * @return width
+     * Get block data.
+     * 
+     * @param pt
+     * @return
      */
-    public int getWidth();
+    public int getBlockData(Vector pt);
     /**
-     * Get Y-size.
-     *
-     * @return height
+     * Set sign text.
+     * 
+     * @param pt
+     * @param text
      */
-    public int getHeight();
+    public void setSignText(Vector pt, String[] text);
     /**
-     * Get Z-size.
-     *
-     * @return length
+     * Get sign text.
+     * 
+     * @param pt
+     * @return
      */
-    public int getLength();
-    /**
-     * Expand the region.
-     *
-     * @param change
-     */
-    public void expand(Vector change);
-    /**
-     * Contract the region.
-     *
-     * @param change
-     */
-    public void contract(Vector change);
+    public String[] getSignText(Vector pt);
 }

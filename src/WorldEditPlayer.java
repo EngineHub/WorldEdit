@@ -18,85 +18,60 @@
 */
 
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.ServerInterface;
 
 /**
  *
  * @author sk89q
  */
-public class WorldEditPlayer {
-    private Player player;
-
+public abstract class WorldEditPlayer {
     /**
-     * Construct a WorldEditPlayer.
-     * 
-     * @param player
+     * Server interface.
      */
-    public WorldEditPlayer(Player player) {
-        this.player = player;
-    }
-
+    public static ServerInterface server;
+    
     /**
      * Get the name of the player.
      *
      * @return String
      */
-    public String getName() {
-        return player.getName();
-    }
-
+    public abstract String getName();
     /**
      * Get the point of the block that is being stood upon.
      *
      * @return point
      */
-    public Vector getBlockOn() {
-        return Vector.toBlockPoint(player.getX(), player.getY() - 1, player.getZ());
-    }
-
+    public abstract Vector getBlockOn();
     /**
      * Get the point of the block that is being stood in.
      * 
      * @return point
      */
-    public Vector getBlockIn() {
-        return Vector.toBlockPoint(player.getX(), player.getY(), player.getZ());
-    }
-
+    public abstract Vector getBlockIn();
     /**
      * Get the player's position.
      * 
      * @return point
      */
-    public Vector getPosition() {
-        return new Vector(player.getX(), player.getY(), player.getZ());
-    }
-
+    public abstract Vector getPosition();
     /**
      * Get the player's view pitch.
      *
      * @return pitch
      */
-    public double getPitch() {
-        return player.getPitch();
-    }
-
+    public abstract double getPitch();
     /**
      * Get the player's view yaw.
      *
      * @return yaw
      */
-    public double getYaw() {
-        return player.getRotation();
-    }
-
+    public abstract double getYaw();
     /**
      * Get the ID of the item that the player is holding.
      * 
      * @return
      */
-    public int getItemInHand() {
-        return player.getItemInHand();
-    }
+    public abstract int getItemInHand();
 
     /**
      * Returns true if the player is holding a pick axe.
@@ -114,33 +89,21 @@ public class WorldEditPlayer {
      * 
      * @return
      */
-    public String getCardinalDirection() {
-        // From hey0's code
-        double rot = (getYaw() - 90) % 360;
-        if (rot < 0) {
-            rot += 360.0;
-        }
-
-        return etc.getCompassPointForDirection(rot).toLowerCase();
-    }
+    public abstract String getCardinalDirection();
 
     /**
      * Print a WorldEdit message.
      *
      * @param msg
      */
-    public void print(String msg) {
-        player.sendMessage(Colors.LightPurple + msg);
-    }
+    public abstract void print(String msg);
 
     /**
      * Print a WorldEdit error.
      *
      * @param msg
      */
-    public void printError(String msg) {
-        player.sendMessage(Colors.Rose + msg);
-    }
+    public abstract void printError(String msg);
 
     /**
      * Move the player.
@@ -149,15 +112,7 @@ public class WorldEditPlayer {
      * @param pitch
      * @param yaw
      */
-    public void setPosition(Vector pos, float pitch, float yaw) {
-        Location loc = new Location();
-        loc.x = pos.getX();
-        loc.y = pos.getY();
-        loc.z = pos.getZ();
-        loc.rotX = (float)yaw;
-        loc.rotY = (float)pitch;
-        player.teleportTo(loc);
-    }
+    public abstract void setPosition(Vector pos, float pitch, float yaw);
 
     /**
      * Move the player.
@@ -165,13 +120,7 @@ public class WorldEditPlayer {
      * @param pos
      */
     public void setPosition(Vector pos) {
-        Location loc = new Location();
-        loc.x = pos.getX();
-        loc.y = pos.getY();
-        loc.z = pos.getZ();
-        loc.rotX = (float)getYaw();
-        loc.rotY = (float)getPitch();
-        player.teleportTo(loc);
+        setPosition(pos, (float)getPitch(), (float)getYaw());
     }
 
     /**
@@ -181,10 +130,11 @@ public class WorldEditPlayer {
      * that free position.
      */
     public void findFreePosition() {
-        int x = (int)Math.floor(player.getX());
-        int y = (int)Math.floor(player.getY());
+        Vector pos = getPosition();
+        int x = pos.getBlockX();
+        int y = pos.getBlockY();
         int origY = y;
-        int z = (int)Math.floor(player.getZ());
+        int z = pos.getBlockZ();
 
         byte free = 0;
 
@@ -197,13 +147,7 @@ public class WorldEditPlayer {
 
             if (free == 2) {
                 if (y - 1 != origY) {
-                    Location loc = new Location();
-                    loc.x = x + 0.5;
-                    loc.y = y - 1;
-                    loc.z = z + 0.5;
-                    loc.rotX = player.getRotation();
-                    loc.rotY = player.getPitch();
-                    player.teleportTo(loc);
+                    setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
                     return;
                 }
             }
@@ -218,16 +162,17 @@ public class WorldEditPlayer {
      * @return true if a spot was found
      */
     public boolean ascendLevel() {
-        int x = (int)Math.floor(player.getX());
-        int y = (int)Math.floor(player.getY());
-        int z = (int)Math.floor(player.getZ());
+        Vector pos = getPosition();
+        int x = pos.getBlockX();
+        int y = pos.getBlockY();
+        int z = pos.getBlockZ();
 
         byte free = 0;
         byte spots = 0;
         boolean inFree = false;
 
         while (y <= 129) {
-            if (etc.getServer().getBlockIdAt(x, y, z) == 0) {
+            if (server.getBlockType(new Vector(x, y, z)) == 0) {
                 free++;
             } else {
                 free = 0;
@@ -255,14 +200,15 @@ public class WorldEditPlayer {
      * @return true if a spot was found
      */
     public boolean descendLevel() {
-        int x = (int)Math.floor(player.getX());
-        int y = (int)Math.floor(player.getY()) - 1;
-        int z = (int)Math.floor(player.getZ());
+        Vector pos = getPosition();
+        int x = pos.getBlockX();
+        int y = pos.getBlockY() - 1;
+        int z = pos.getBlockZ();
 
         byte free = 0;
 
         while (y >= 0) {
-            if (etc.getServer().getBlockIdAt(x, y, z) == 0) {
+            if (server.getBlockType(new Vector(x, y, z)) == 0) {
                 free++;
             } else {
                 free = 0;
@@ -285,9 +231,7 @@ public class WorldEditPlayer {
      * @param type
      * @param amt
      */
-    public void giveItem(int type, int amt) {
-        player.giveItem(type, amt);
-    }
+    public abstract void giveItem(int type, int amt);
 
     /**
      * Returns true if equal.
@@ -301,7 +245,7 @@ public class WorldEditPlayer {
             return false;
         }
         WorldEditPlayer other2 = (WorldEditPlayer)other;
-        return other2.getName().equals(player.getName());
+        return other2.getName().equals(getName());
     }
 
     /**

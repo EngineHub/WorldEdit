@@ -17,11 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import com.sk89q.worldedit.blocks.TileEntityBlock;
+import com.sk89q.worldedit.blocks.SignBlock;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import org.jnbt.*;
 import java.io.*;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.List;
 import com.sk89q.worldedit.*;
 
 /**
@@ -220,24 +224,44 @@ public class CuboidClipboard {
         schematic.put("Height", new ShortTag("Height", (short)height));
         schematic.put("Materials", new StringTag("Materials", "Alpha"));
 
-        // Copy blocks
+        // Copy
         byte[] blocks = new byte[width * height * length];
         byte[] blockData = new byte[width * height * length];
+        ArrayList<Tag> tileEntities = new ArrayList<Tag>();
+
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 for (int z = 0; z < length; z++) {
                     int index = y * width * length + z * width + x;
                     blocks[index] = (byte)data[x][y][z].getType();
                     blockData[index] = (byte)data[x][y][z].getData();
+
+                    // Store TileEntity data
+                    if (data[x][y][z] instanceof TileEntityBlock) {
+                        TileEntityBlock tileEntityBlock =
+                                (TileEntityBlock)data[x][y][z];
+
+                        // Get the list of key/values from the block
+                        Map<String,Tag> values = tileEntityBlock.toTileEntityNBT();
+                        if (values != null) {
+                            values.put("id", new StringTag("id",
+                                    tileEntityBlock.getTileEntityID()));
+                            values.put("x", new IntTag("x", x));
+                            values.put("y", new IntTag("y", y));
+                            values.put("z", new IntTag("z", z));
+                            CompoundTag tileEntityTag =
+                                    new CompoundTag("TileEntity", values);
+                            tileEntities.add(tileEntityTag);
+                        }
+                    }
                 }
             }
         }
+        
         schematic.put("Blocks", new ByteArrayTag("Blocks", blocks));
         schematic.put("Data", new ByteArrayTag("Data", blockData));
-
-        // These are not stored either
         schematic.put("Entities", new ListTag("Entities", CompoundTag.class, new ArrayList<Tag>()));
-        schematic.put("TileEntities", new ListTag("TileEntities", CompoundTag.class, new ArrayList<Tag>()));
+        schematic.put("TileEntities", new ListTag("TileEntities", CompoundTag.class, tileEntities));
 
         // Build and output
         CompoundTag schematicTag = new CompoundTag("Schematic", schematic);
@@ -259,34 +283,92 @@ public class CuboidClipboard {
             throws SchematicException, IOException {
         FileInputStream stream = new FileInputStream(path);
         NBTInputStream nbtStream = new NBTInputStream(stream);
+
+        // Schematic tag
         CompoundTag schematicTag = (CompoundTag)nbtStream.readTag();
         if (!schematicTag.getName().equals("Schematic")) {
             throw new SchematicException("Tag \"Schematic\" does not exist or is not first");
         }
+
+        // Check
         Map<String,Tag> schematic = schematicTag.getValue();
         if (!schematic.containsKey("Blocks")) {
             throw new SchematicException("Schematic file is missing a \"Blocks\" tag");
         }
+
+        // Get information
         short width = (Short)getChildTag(schematic, "Width", ShortTag.class).getValue();
         short length = (Short)getChildTag(schematic, "Length", ShortTag.class).getValue();
         short height = (Short)getChildTag(schematic, "Height", ShortTag.class).getValue();
+
+        // Check type of Schematic
         String materials = (String)getChildTag(schematic, "Materials", StringTag.class).getValue();
         if (!materials.equals("Alpha")) {
             throw new SchematicException("Schematic file is not an Alpha schematic");
         }
+
+        // Get blocks
         byte[] blocks = (byte[])getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
         byte[] blockData = (byte[])getChildTag(schematic, "Data", ByteArrayTag.class).getValue();
 
-        Vector size = new Vector(width, height, length);
+        // Need to pull out tile entities
+        List<Tag> tileEntities = (List<Tag>)getChildTag(schematic, "TileEntities", ListTag.class).getValue();
+        Map<BlockVector,Map<String,Tag>> tileEntitiesMap =
+                new HashMap<BlockVector,Map<String,Tag>>();
 
+        for (Tag tag : tileEntities) {
+            if (!(tag instanceof CompoundTag)) continue;
+            CompoundTag t = (CompoundTag)tag;
+
+            int x = 0;
+            int y = 0;
+            int z = 0;
+
+            Map<String,Tag> values = new HashMap<String,Tag>();
+
+            for (Map.Entry<String,Tag> entry : t.getValue().entrySet()) {
+                if (entry.getKey().equals("x")) {
+                    if (entry.getValue() instanceof IntTag) {
+                        x = ((IntTag)entry.getValue()).getValue();
+                    }
+                } else if (entry.getKey().equals("y")) {
+                    if (entry.getValue() instanceof IntTag) {
+                        y = ((IntTag)entry.getValue()).getValue();
+                    }
+                } else if (entry.getKey().equals("z")) {
+                    if (entry.getValue() instanceof IntTag) {
+                        z = ((IntTag)entry.getValue()).getValue();
+                    }
+                }
+
+                values.put(entry.getKey(), entry.getValue());
+            }
+
+            BlockVector vec = new BlockVector(x, y, z);
+            tileEntitiesMap.put(vec, values);
+        }
+
+        Vector size = new Vector(width, height, length);
         CuboidClipboard clipboard = new CuboidClipboard(size);
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 for (int z = 0; z < length; z++) {
                     int index = y * width * length + z * width + x;
-                    clipboard.data[x][y][z] =
-                            new BaseBlock(blocks[index], blockData[index]);
+                    BlockVector pt = new BlockVector(x, y, z);
+                    BaseBlock block;
+                    
+                    if (blocks[index] == 63 || blocks[index] == 68) {
+                        block = new SignBlock(blocks[index], blockData[index]);
+                        if (tileEntitiesMap.containsKey(pt)) {
+                            ((TileEntityBlock)block).fromTileEntityNBT(
+                                    tileEntitiesMap.get(pt));
+                        }
+                    } else {
+                        block = new BaseBlock(blocks[index], blockData[index]);
+                    }
+
+                    clipboard.data[x][y][z] = block;
                 }
             }
         }

@@ -45,7 +45,7 @@ public class WorldEditSMListener extends PluginListener {
      */
     @Override
     public void onDisconnect(Player player) {
-        worldEdit.removeSession(new WorldEditPlayer(player));
+        worldEdit.removeSession(new SMWorldEditPlayer(player));
     }
 
     /**
@@ -60,7 +60,7 @@ public class WorldEditSMListener extends PluginListener {
     @Override
     public boolean onBlockCreate(Player modPlayer, Block blockPlaced,
             Block blockClicked, int itemInHand) {
-        WorldEditPlayer player = new WorldEditPlayer(modPlayer);
+        WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
         
         if (itemInHand != 271) { return false; }
         if (!modPlayer.canUseCommand("/editpos2")) { return false; }
@@ -94,7 +94,7 @@ public class WorldEditSMListener extends PluginListener {
         if (!modPlayer.canUseCommand("/editpos1")
                 && !modPlayer.canUseCommand("/.")) { return false; }
 
-        WorldEditPlayer player = new WorldEditPlayer(modPlayer);
+        WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
         WorldEditSession session = worldEdit.getSession(player);
 
         if (player.isHoldingPickAxe()) {
@@ -136,7 +136,7 @@ public class WorldEditSMListener extends PluginListener {
         try {
             if (worldEdit.getCommands().containsKey(split[0])) {
                 if (modPlayer.canUseCommand(split[0])) {
-                    WorldEditPlayer player = new WorldEditPlayer(modPlayer);
+                    WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
                     WorldEditSession session = worldEdit.getSession(player);
                     EditSession editSession =
                             new EditSession(session.getBlockChangeLimit());

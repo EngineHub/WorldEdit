@@ -19,6 +19,7 @@
 
 import java.util.Map;
 import java.util.HashSet;
+import com.sk89q.worldedit.ServerInterface;
 
 /**
  * Entry point for the plugin for hey0's mod.
@@ -48,6 +49,10 @@ public class WorldEditSM extends Plugin {
                 PluginListener.Priority.MEDIUM);
         loader.addListener(PluginLoader.Hook.LOGIN, listener, this,
                 PluginListener.Priority.MEDIUM);
+
+        ServerInterface server = new SMServerInterface();
+        WorldEditPlayer.server = server;
+        EditSession.server = server;
     }
 
     /**

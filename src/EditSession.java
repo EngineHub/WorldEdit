@@ -17,6 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.blocks.SignBlock;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +38,11 @@ import com.sk89q.worldedit.*;
  * @author sk89q
  */
 public class EditSession {
+    /**
+     * Server interface.
+     */
+    public static ServerInterface server;
+    
     /**
      * Stores the original blocks before modification.
      */
@@ -99,10 +108,15 @@ public class EditSession {
      * @return Whether the block changed
      */
     private boolean rawSetBlock(Vector pt, BaseBlock block) {
-        boolean result = etc.getMCServer().e.d(pt.getBlockX(), pt.getBlockY(),
-                pt.getBlockZ(), block.getType());
-        etc.getMCServer().e.c(pt.getBlockX(), pt.getBlockY(),
-                pt.getBlockZ(), block.getData());
+        boolean result = server.setBlockType(pt, block.getType());
+        server.setBlockData(pt, block.getData());
+
+        // Signs
+        if (block instanceof SignBlock) {
+            SignBlock signBlock = (SignBlock)block;
+            String[] text = signBlock.getText();
+            server.setSignText(pt, text);
+        }
         return result;
     }
 
@@ -187,10 +201,8 @@ public class EditSession {
                 return current.get(blockPt);
             }
         }
-        return new BaseBlock(
-                (short)etc.getMCServer().e.a(pt.getBlockX(),
-                                             pt.getBlockY(),
-                                             pt.getBlockZ()));
+        
+        return rawGetBlock(pt);
     }
 
     /**
@@ -200,9 +212,16 @@ public class EditSession {
      * @return BaseBlock
      */
     public BaseBlock rawGetBlock(Vector pt) {
-        int type = etc.getMCServer().e.a(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        int data = etc.getMCServer().e.b(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        return new BaseBlock(type, data);
+        int type = server.getBlockType(pt);
+        int data = server.getBlockData(pt);
+
+        // Sign
+        if (type == 63 || type == 68) {
+            String[] text = server.getSignText(pt);
+            return new SignBlock(type, data, text);
+        } else {
+            return new BaseBlock(type, data);
+        }
     }
 
     /**

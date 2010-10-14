@@ -17,6 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.*;
 import java.util.LinkedList;
 

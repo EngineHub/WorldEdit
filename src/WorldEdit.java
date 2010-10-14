@@ -17,6 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Arrays;
