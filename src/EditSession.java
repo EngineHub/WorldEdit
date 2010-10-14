@@ -23,6 +23,7 @@ import com.sk89q.worldedit.blocks.SignBlock;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.HashSet;
 import java.util.Stack;
 import com.sk89q.worldedit.*;
@@ -328,8 +329,37 @@ public class EditSession {
      * @param depth
      * @return number of blocks affected
      */
-    public int fillXZ(int x, int z, Vector origin, BaseBlock block, int radius, int depth)
+    public int fillXZ(int x, int z, Vector origin, BaseBlock block,
+            int radius, int depth)
             throws MaxChangedBlocksException {
+        return _fillXZ(x, z, origin, block, radius, depth,
+                new HashSet<BlockVector>());
+    }
+
+    /**
+     * Fills an area recursively in the X/Z directions.
+     *
+     * @param x
+     * @param z
+     * @param origin
+     * @param block
+     * @param radius
+     * @param depth
+     * @param visited
+     * @return
+     * @throws MaxChangedBlocksException
+     */
+    private int _fillXZ(int x, int z, Vector origin, BaseBlock block, int radius,
+            int depth, Set<BlockVector> visited)
+            throws MaxChangedBlocksException {
+        BlockVector pt = new BlockVector(x, 0, z);
+        
+        if (visited.contains(pt)) {
+            return 0;
+        }
+
+        visited.add(pt);
+        
         double dist = Math.sqrt(Math.pow(origin.getX() - x, 2) + Math.pow(origin.getZ() - z, 2));
         int minY = origin.getBlockY() - depth + 1;
         int affected = 0;
