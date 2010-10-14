@@ -97,12 +97,7 @@ public class WorldEditSMListener extends PluginListener {
         WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
         WorldEditSession session = worldEdit.getSession(player);
 
-        if (player.isHoldingPickAxe()) {
-            if (session.hasSuperPickAxe()) {
-                return etc.getMCServer().e.d(blockClicked.getX(),
-                        blockClicked.getY(), blockClicked.getZ(), 0);
-            }
-        } else if (player.getItemInHand() == 271) {
+        if (player.getItemInHand() == 271) {
             if (session.isToolControlEnabled()) {
                 Vector cur = Vector.toBlockPoint(blockClicked.getX(),
                                                blockClicked.getY(),
@@ -119,6 +114,11 @@ public class WorldEditSMListener extends PluginListener {
                 player.print("First edit position set.");
 
                 return true;
+            }
+        } else if (player.isHoldingPickAxe()) {
+            if (session.hasSuperPickAxe()) {
+                return etc.getMCServer().e.d(blockClicked.getX(),
+                        blockClicked.getY(), blockClicked.getZ(), 0);
             }
         }
 
