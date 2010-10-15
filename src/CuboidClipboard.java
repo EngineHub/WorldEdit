@@ -233,7 +233,7 @@ public class CuboidClipboard {
             for (int y = 0; y < height; y++) {
                 for (int z = 0; z < length; z++) {
                     int index = y * width * length + z * width + x;
-                    blocks[index] = (byte)data[x][y][z].getType();
+                    blocks[index] = (byte)data[x][y][z].getID();
                     blockData[index] = (byte)data[x][y][z].getData();
 
                     // Store TileEntity data

@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.*;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.*;
 
 /**
  * Plugin base.
@@ -166,28 +167,53 @@ public class WorldEdit {
     /**
      * Get an item ID from an item name or an item ID number.
      *
-     * @param id
+     * @param arg
      * @return
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public BaseBlock getBlock(String id, boolean allAllowed)
+    public BaseBlock getBlock(String arg, boolean allAllowed)
             throws UnknownItemException, DisallowedItemException {
-        int foundID;
+        BlockType blockType;
+        arg = arg.replace("_", " ");
+        String[] args0 = arg.split("\\|");
+        String[] args1 = args0[0].split(":", 2);
+        String testID = args1[0];
+        
+        int data;
+        
+        try {
+            data = args1.length > 1 ? Integer.parseInt(args1[1]) : 0;
+            if (data > 15 || data < 0) {
+                data = 0;
+            }
+        } catch (NumberFormatException e) {
+            data = 0;
+        }
 
         try {
-            foundID = Integer.parseInt(id);
+            blockType = BlockType.fromID(Integer.parseInt(testID));
         } catch (NumberFormatException e) {
-            try {
-                foundID = etc.getDataSource().getItem(id);
-            } catch (NumberFormatException e2) {
-                throw new UnknownItemException();
-            }
+            blockType = BlockType.lookup(testID);
+        }
+
+        if (blockType == null) {
+            throw new UnknownItemException();
         }
 
         // Check if the item is allowed
-        if (allAllowed || allowedBlocks.isEmpty() || allowedBlocks.contains(foundID)) {
-            return new BaseBlock(foundID);
+        if (allAllowed || allowedBlocks.isEmpty()
+                || allowedBlocks.contains(blockType.getID())) {
+            if (blockType == BlockType.SIGN_POST
+                    || blockType == BlockType.WALL_SIGN) {
+                String[] text = new String[4];
+                text[0] = args0.length > 1 ? args0[1] : "";
+                text[1] = args0.length > 2 ? args0[2] : "";
+                text[2] = args0.length > 3 ? args0[3] : "";
+                text[3] = args0.length > 4 ? args0[4] : "";
+                return new SignBlock(blockType.getID(), data, text);
+            }
+            return new BaseBlock(blockType.getID(), data);
         }
 
         throw new DisallowedItemException();
@@ -520,7 +546,7 @@ public class WorldEdit {
                 from = -1;
                 to = getBlock(split[1]);
             } else {
-                from = getBlock(split[1]).getType();
+                from = getBlock(split[1]).getID();
                 to = getBlock(split[2]);
             }
             

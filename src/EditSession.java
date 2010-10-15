@@ -112,7 +112,13 @@ public class EditSession {
      * @return Whether the block changed
      */
     private boolean rawSetBlock(Vector pt, BaseBlock block) {
-        boolean result = server.setBlockType(pt, block.getType());
+        boolean result = server.setBlockType(pt, block.getID());
+        // Changes in block data don't take effect if the block type doesn't
+        // change, so here's a hack!
+        if (!result && block.getID() != 0) {
+            server.setBlockType(pt, 0);
+            result = server.setBlockType(pt, block.getID());
+        }
         server.setBlockData(pt, block.getData());
 
         // Signs
@@ -176,12 +182,12 @@ public class EditSession {
      */
     private boolean smartSetBlock(Vector pt, BaseBlock block) {
         if (queued) {
-            if (!block.isAir() && queuedBlocks.contains(block.getType())
+            if (!block.isAir() && queuedBlocks.contains(block.getID())
                     && rawGetBlock(pt.add(0, -1, 0)).isAir()) {
                 queue.put(pt.toBlockVector(), block);
-                return getBlock(pt).getType() != block.getType();
+                return getBlock(pt).getID() != block.getID();
             } else if (block.isAir()
-                    && queuedBlocks.contains(rawGetBlock(pt.add(0, 1, 0)).getType())) {
+                    && queuedBlocks.contains(rawGetBlock(pt.add(0, 1, 0)).getID())) {
                 rawSetBlock(pt.add(0, 1, 0), new BaseBlock(0)); // Prevent items from being dropped
             }
         }
@@ -532,7 +538,7 @@ public class EditSession {
                 for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                     for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                         Vector pt = new Vector(x, y, z);
-                        int curBlockType = getBlock(pt).getType();
+                        int curBlockType = getBlock(pt).getID();
 
                         if (fromBlockType == -1 && curBlockType != 0 ||
                                 curBlockType == fromBlockType) {
@@ -545,7 +551,7 @@ public class EditSession {
             }
         } else {
             for (Vector pt : region) {
-                int curBlockType = getBlock(pt).getType();
+                int curBlockType = getBlock(pt).getID();
 
                 if (fromBlockType == -1 && curBlockType != 0 ||
                         curBlockType == fromBlockType) {
@@ -706,7 +712,7 @@ public class EditSession {
         while (!queue.empty()) {
             BlockVector cur = queue.pop();
             
-            int type = getBlock(cur).getType();
+            int type = getBlock(cur).getID();
 
             // Check block type
             if (type != 8 && type != 9 && type != 10 && type != 11) {
@@ -844,7 +850,7 @@ public class EditSession {
 
                 for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; y--) {
                     // Check if we hit the ground
-                    int t = getBlock(new Vector(x, y, z)).getType();
+                    int t = getBlock(new Vector(x, y, z)).getID();
                     if (t == 2 || t == 3) {
                         makePineTree(new Vector(x, y + 1, z));
                         affected++;
