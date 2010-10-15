@@ -110,37 +110,37 @@ public class WorldEdit {
      * Construct an instance of the plugin.
      */
     private WorldEdit() {
-        commands.put("/editpos1", "Set editing position #1");
-        commands.put("/editpos2", "Set editing position #2");
+        commands.put("//pos1", "Set editing position #1");
+        commands.put("//pos2", "Set editing position #2");
         commands.put("/toggleplace", "Toggle placing at pos #1");
-        commands.put("/editwand", "Gives you the \"edit wand\"");
+        commands.put("//wand", "Gives you the \"edit wand\"");
         commands.put("/toggleeditwand", "Toggles edit wand selection");
         commands.put("/,", "Toggles super pick axe.");
-        commands.put("/editundo", "Undo");
-        commands.put("/editredo", "Redo");
+        commands.put("//undo", "Undo");
+        commands.put("//redo", "Redo");
         commands.put("/clearhistory", "Clear history");
         commands.put("/clearclipboard", "Clear clipboard");
-        commands.put("/editsize", "Get size of selected region");
-        commands.put("/editset", "[ID] - Set all blocks inside region");
-        commands.put("/editoutline", "[ID] - Outline the region with blocks");
-        commands.put("/editreplace", "<FromID> [ToID] - Replace all existing blocks inside region");
-        commands.put("/editoverlay", "[ID] - Overlay the area one layer");
+        commands.put("//size", "Get size of selected region");
+        commands.put("//set", "[ID] - Set all blocks inside region");
+        commands.put("//outline", "[ID] - Outline the region with blocks");
+        commands.put("//replace", "<FromID> [ToID] - Replace all existing blocks inside region");
+        commands.put("//overlay", "[ID] - Overlay the area one layer");
         commands.put("/removeabove", "<Size> <Height> - Remove blocks above head");
         commands.put("/removebelow", "<Size> <Height> - Remove blocks below position");
-        commands.put("/editcopy", "Copies the currently selected region");
-        commands.put("/editcut", "Cuts the currently selected region");
-        commands.put("/editpaste", "Pastes the clipboard");
-        commands.put("/editpasteair", "Pastes the clipboard (with air)");
-        commands.put("/editstack", "<Count> <Dir> - Stacks the selection");
-        commands.put("/editstackair", "<Count> <Dir> - Stacks the selection (with air)");
-        commands.put("/editload", "[Filename] - Load .schematic into clipboard");
-        commands.put("/editsave", "[Filename] - Save clipboard to .schematic");
-        commands.put("/editfill", "[ID] [Radius] <Depth> - Fill a hole");
-        commands.put("/editdrain", "[Radius] - Drain nearby water/lava pools");
-        commands.put("/editlimit", "[Num] - See documentation");
-        commands.put("/editexpand", "<Dir> [Num] - Expands the selection");
-        commands.put("/editcontract", "<Dir> [Num] - Contracts the selection");
-        commands.put("/editrotate", "[Angle] - Rotate the clipboard");
+        commands.put("//copy", "Copies the currently selected region");
+        commands.put("//cut", "Cuts the currently selected region");
+        commands.put("//paste", "Pastes the clipboard");
+        commands.put("//pasteair", "Pastes the clipboard (with air)");
+        commands.put("//stack", "<Count> <Dir> - Stacks the selection");
+        commands.put("//stackair", "<Count> <Dir> - Stacks the selection (with air)");
+        commands.put("//load", "[Filename] - Load .schematic into clipboard");
+        commands.put("//save", "[Filename] - Save clipboard to .schematic");
+        commands.put("//fill", "[ID] [Radius] <Depth> - Fill a hole");
+        commands.put("//drain", "[Radius] - Drain nearby water/lava pools");
+        commands.put("//limit", "[Num] - See documentation");
+        commands.put("//expand", "<Dir> [Num] - Expands the selection");
+        commands.put("//contract", "<Dir> [Num] - Contracts the selection");
+        commands.put("//rotate", "[Angle] - Rotate the clipboard");
         commands.put("/forestgen", "<Size> - Make an ugly pine tree forest");
         commands.put("/unstuck", "Go up to the first free spot");
         commands.put("/ascend", "Go up one level");
@@ -299,21 +299,21 @@ public class WorldEdit {
             return true;
 
         // Set edit position #1
-        } else if (split[0].equalsIgnoreCase("/editpos1")) {
+        } else if (split[0].equalsIgnoreCase("//pos1")) {
             checkArgs(split, 0, 0, split[0]);
             session.setPos1(player.getBlockIn());
             player.print("First edit position set.");
             return true;
 
         // Set edit position #2
-        } else if (split[0].equalsIgnoreCase("/editpos2")) {
+        } else if (split[0].equalsIgnoreCase("//pos2")) {
             checkArgs(split, 0, 0, split[0]);
             session.setPos2(player.getBlockIn());
             player.print("Second edit position set.");
             return true;
 
         // Edit wand
-        } else if (split[0].equalsIgnoreCase("/editwand")) {
+        } else if (split[0].equalsIgnoreCase("//wand")) {
             checkArgs(split, 0, 0, split[0]);
             player.giveItem(271, 1);
             player.print("Right click = sel. pos 1; double right click = sel. pos 2");
@@ -351,7 +351,7 @@ public class WorldEdit {
             return true;
 
         // Set max number of blocks to change at a time
-        } else if (split[0].equalsIgnoreCase("/editlimit")) {
+        } else if (split[0].equalsIgnoreCase("//limit")) {
             checkArgs(split, 1, 1, split[0]);
             int limit = Math.max(-1, Integer.parseInt(split[1]));
             session.setBlockChangeLimit(limit);
@@ -359,7 +359,7 @@ public class WorldEdit {
             return true;
 
         // Undo
-        } else if (split[0].equalsIgnoreCase("/editundo")) {
+        } else if (split[0].equalsIgnoreCase("//undo")) {
             checkArgs(split, 0, 0, split[0]);
             if (session.undo()) {
                 player.print("Undo successful.");
@@ -369,7 +369,7 @@ public class WorldEdit {
             return true;
 
         // Redo
-        } else if (split[0].equalsIgnoreCase("/editredo")) {
+        } else if (split[0].equalsIgnoreCase("//redo")) {
             checkArgs(split, 0, 0, split[0]);
             if (session.redo()) {
                 player.print("Redo successful.");
@@ -393,18 +393,18 @@ public class WorldEdit {
             return true;
 
         // Paste
-        } else if (split[0].equalsIgnoreCase("/editpasteair") ||
-                   split[0].equalsIgnoreCase("/editpaste")) {
+        } else if (split[0].equalsIgnoreCase("//pasteair") ||
+                   split[0].equalsIgnoreCase("//paste")) {
             Vector pos = session.getPlacementPosition(player);
             session.getClipboard().paste(editSession, pos,
-                split[0].equalsIgnoreCase("/editpaste"));
+                split[0].equalsIgnoreCase("//paste"));
             player.findFreePosition();
-            player.print("Pasted. Undo with /editundo");
+            player.print("Pasted. Undo with //undo");
 
             return true;
 
         // Fill a hole
-        } else if (split[0].equalsIgnoreCase("/editfill")) {
+        } else if (split[0].equalsIgnoreCase("//fill")) {
             checkArgs(split, 2, 3, split[0]);
             BaseBlock block = getBlock(split[1]);
             int radius = Math.max(1, Integer.parseInt(split[2]));
@@ -440,7 +440,7 @@ public class WorldEdit {
             return true;
 
         // Load .schematic to clipboard
-        } else if (split[0].equalsIgnoreCase("/editload")) {
+        } else if (split[0].equalsIgnoreCase("//load")) {
             checkArgs(split, 1, 1, split[0]);
             String filename = split[1].replace("\0", "") + ".schematic";
             File dir = new File("schematics");
@@ -466,7 +466,7 @@ public class WorldEdit {
             return true;
 
         // Save clipboard to .schematic
-        } else if (split[0].equalsIgnoreCase("/editsave")) {            
+        } else if (split[0].equalsIgnoreCase("//save")) {
             checkArgs(split, 1, 1, split[0]);
             String filename = split[1].replace("\0", "") + ".schematic";
             File dir = new File("schematics");
@@ -505,12 +505,12 @@ public class WorldEdit {
             return true;
 
         // Get size
-        } else if (split[0].equalsIgnoreCase("/editsize")) {
+        } else if (split[0].equalsIgnoreCase("//size")) {
             player.print("# of blocks: " + session.getRegion().getSize());
             return true;
 
         // Replace all blocks in the region
-        } else if(split[0].equalsIgnoreCase("/editset")) {
+        } else if(split[0].equalsIgnoreCase("//set")) {
             checkArgs(split, 1, 1, split[0]);
             BaseBlock block = getBlock(split[1]);
             int affected = editSession.setBlocks(session.getRegion(), block);
@@ -519,7 +519,7 @@ public class WorldEdit {
             return true;
 
         // Set the outline of a region
-        } else if(split[0].equalsIgnoreCase("/editoutline")) {
+        } else if(split[0].equalsIgnoreCase("//outline")) {
             checkArgs(split, 1, 1, split[0]);
             BaseBlock block = getBlock(split[1]);
             int affected = editSession.makeCuboidFaces(session.getRegion(), block);
@@ -528,7 +528,7 @@ public class WorldEdit {
             return true;
 
         // Drain pools
-        } else if(split[0].equalsIgnoreCase("/editdrain")) {
+        } else if(split[0].equalsIgnoreCase("//drain")) {
             checkArgs(split, 1, 1, split[0]);
             int radius = Math.max(0, Integer.parseInt(split[1]));
             int affected = editSession.drainArea(
@@ -538,7 +538,7 @@ public class WorldEdit {
             return true;
 
         // Replace all blocks in the region
-        } else if(split[0].equalsIgnoreCase("/editreplace")) {
+        } else if(split[0].equalsIgnoreCase("//replace")) {
             checkArgs(split, 1, 2, split[0]);
             int from;
             BaseBlock to;
@@ -556,7 +556,7 @@ public class WorldEdit {
             return true;
 
         // Lay blocks over an area
-        } else if (split[0].equalsIgnoreCase("/editoverlay")) {
+        } else if (split[0].equalsIgnoreCase("//overlay")) {
             checkArgs(split, 1, 1, split[0]);
             BaseBlock block = getBlock(split[1]);
 
@@ -567,9 +567,9 @@ public class WorldEdit {
             return true;
 
         // Copy
-        } else if (split[0].equalsIgnoreCase("/editcopy")
-                || split[0].equalsIgnoreCase("/editcut")) {
-            boolean cut = split[0].equalsIgnoreCase("/editcut");
+        } else if (split[0].equalsIgnoreCase("//copy")
+                || split[0].equalsIgnoreCase("//cut")) {
+            boolean cut = split[0].equalsIgnoreCase("//cut");
             BaseBlock block = new BaseBlock(0);
 
             if (cut) {
@@ -612,22 +612,22 @@ public class WorldEdit {
             return true;
 
         // Stack
-        } else if (split[0].equalsIgnoreCase("/editstackair") ||
-                   split[0].equalsIgnoreCase("/editstack")) {
+        } else if (split[0].equalsIgnoreCase("//stackair") ||
+                   split[0].equalsIgnoreCase("//stack")) {
             checkArgs(split, 0, 2, split[0]);
             int count = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
             Vector dir = getDirection(player,
                     split.length > 2 ? split[2].toLowerCase() : "me");
-            boolean copyAir = split[0].equalsIgnoreCase("/editstackair");
+            boolean copyAir = split[0].equalsIgnoreCase("//stackair");
 
             int affected = editSession.stackCuboidRegion(session.getRegion(),
                     dir, count, copyAir);
-            player.print(affected + " blocks changed. Undo with /editundo");
+            player.print(affected + " blocks changed. Undo with //undo");
 
             return true;
 
         // Expand
-        } else if (split[0].equalsIgnoreCase("/editexpand")) {
+        } else if (split[0].equalsIgnoreCase("//expand")) {
             checkArgs(split, 1, 2, split[0]);
             Vector dir;
             int change;
@@ -649,7 +649,7 @@ public class WorldEdit {
             return true;
 
         // Contract
-        } else if (split[0].equalsIgnoreCase("/editcontract")) {
+        } else if (split[0].equalsIgnoreCase("//contract")) {
             checkArgs(split, 1, 2, split[0]);
             Vector dir;
             int change;
@@ -671,7 +671,7 @@ public class WorldEdit {
             return true;
 
         // Rotate
-        } else if (split[0].equalsIgnoreCase("/editrotate")) {
+        } else if (split[0].equalsIgnoreCase("//rotate")) {
             checkArgs(split, 1, 1, split[0]);
             int angle = Integer.parseInt(split[1]);
             if (angle % 90 == 0) {
