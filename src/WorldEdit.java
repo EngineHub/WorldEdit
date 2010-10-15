@@ -143,7 +143,7 @@ public class WorldEdit {
         commands.put("/forestgen", "<Size> - Make an ugly pine tree forest");
         commands.put("/unstuck", "Go up to the first free spot");
         commands.put("/ascend", "Go up one level");
-        commands.put("/descend", "Go dowm one level");
+        commands.put("/descend", "Go down one level");
     }
 
     /**
