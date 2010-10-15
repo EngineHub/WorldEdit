@@ -4,14 +4,11 @@ Installation
 This plugin requires Hey0's server modification.
 
 (1) Create a "plugins" folder inside your "bin" folder.
-(2) Copy WorldEdit.jar, smalljs.jar, and jnbt.jar into plugins/.
-(3) Add "WorldEdit" to "plugins" in your server.properties file, like so:
+(2) Copy SMWorldEdit.jar and jnbt.jar into plugins/.
+(3) Add "SMWorldEdit" to "plugins" in your server.properties file, like so:
     plugins=WorldEdit
     If you have multiple plugins, separate plugin names with commas:
-    plugins=AnotherPlugin,WorldEdit
-
-You may also copy the editscripts/ folder into your bin/ folder so that you
-can use the provided example EditScripts.
+    plugins=AnotherPlugin,SMWorldEdit
 
 Configuration
 -------------
@@ -21,5 +18,3 @@ settings for WorldEdit.
 
 Available settings:
 * string allowed-blocks: List of allowed blocks that you can use
-* true/false map-script-commands: True to allow scripts in editscripts/ to be
-  run directly as a command (i.e. /forestgen -> /editscript forestgen)

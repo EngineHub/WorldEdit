@@ -1,0 +1,77 @@
+0.8:
+- All operations now implicitly support working with block data, including
+    sign text. This applies to .schematic loading and saving.
+- Scripting support has been removed. It may return in the future, possibly
+    as an additional plugin.
+- /edit command prefix was changed to //.
+- Added //expand and //contract to expand and contract the selected region.
+- Fixed help for //stack and //stackair.
+- Added /ascend to ascend to the next level up.
+- Added /descend to descend down a level.
+- Added /toggleeditwand to toggle use of the toggle wand.
+- Re-implemented /forestgen in Java.
+- Added /editrotate to rotate the clipboard around the minimum position.
+- Added super-pick axe mode  with command /,
+- Added /toggleplace to switch to using position #1 instead of your feet.
+- Plugin for hey0's server mod has been renamed to SMWorldEdit.
+- //fill routine now keeps a track of visited blocks to prevent
+    infinite recursion caused by inconsistent states.
+- /editcut will both copy and remove.
+- All block name lookups now use WorldEdit's own list.
+- New syntax to specify block data when specifying block type. Examples:
+    //set crops:7
+    //set sign:4|Line1|Line2
+- Colored cloth blocks can no longer be created at all
+    (they crash clients).
+- Added /fixwater to level and correct water.
+
+0.7:
+- /editreplace now has reversed arguments. /editreplace [fromID] toID
+- /editstack(air) now has reversed arguments. /editstack count [direction]
+- /editstack(air) now can take longer direction names ('up' vs. just 'u').
+- Added /editdrain drains pools of lava and/or laval.
+- Fixed help for /editstack(air) incorrectly referring to the clipboard.
+- Removed the dependency on Apache commons and recompiled the JavaScript
+    engine to be smaller.
+
+0.6: 
+- Added a check that will warn you when the region you have selected is
+    larger than the .schematic format can support.
+- Implemented smart block queuing that will intelligently create or
+    destroy blocks so that certain blocks (torches, etc.) will spawn
+    correctly (though perhaps not in the right orientation) and will
+    remove correctly (without dropping an item).
+- When pasting, if you end up inside a block, you will now be put up top
+    of the paste.
+- Added /editstack and /editstackair for stacking/repeating regions a
+    certain number of times.
+- Added /removebelow.
+- Added height parameter to /removeabove.
+- Added /editwand to give you the wooden axe.
+- Added /editlimit to allow you to clamp the number of blocks that can
+    changed in one go at a time. A new "max-blocks-changed" setting
+    lets you configure a default limit.
+
+0.5:
+- You can now right click once with the wooden axe to select position 1
+    and double right click to select position 2.
+- /editoutline added to draw the faces of a region.
+- New /editload and /editsave that work with .schematic files.
+- /clearclipboard now works.
+- meteorshower.js added: drop burning resources around you.
+- Scripts can now be run directly as a command.
+- The forest generator now tops the trees with leaves.
+- Scripts will now be aborted if they take 3 seconds or longer to finish.
+- Fixed a bug in the undo function that prevented generated forests from
+    ndoing properly.
+- Added Teleport functions to the scripting interface.
+
+
+0.4
+- Added history with undo/redo up to 15 states.
+- /editreplace updated with the ability to replace only one type of block.
+- Added /editcopy and /editpaste.
+- New adjustable whitelist of usuable blocks.
+
+0.1
+- Initial release.
