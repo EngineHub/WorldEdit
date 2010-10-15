@@ -312,7 +312,8 @@ public class CuboidClipboard {
         byte[] blockData = (byte[])getChildTag(schematic, "Data", ByteArrayTag.class).getValue();
 
         // Need to pull out tile entities
-        List<Tag> tileEntities = (List<Tag>)getChildTag(schematic, "TileEntities", ListTag.class).getValue();
+        List<Tag> tileEntities = (List<Tag>)((ListTag)getChildTag(schematic, "TileEntities", ListTag.class))
+                .getValue();
         Map<BlockVector,Map<String,Tag>> tileEntitiesMap =
                 new HashMap<BlockVector,Map<String,Tag>>();
 
