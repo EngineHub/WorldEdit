@@ -127,6 +127,7 @@ public class WorldEdit {
         commands.put("/removeabove", "<Size> <Height> - Remove blocks above head");
         commands.put("/removebelow", "<Size> <Height> - Remove blocks below position");
         commands.put("/editcopy", "Copies the currently selected region");
+        commands.put("/editcut", "Cuts the currently selected region");
         commands.put("/editpaste", "Pastes the clipboard");
         commands.put("/editpasteair", "Pastes the clipboard (with air)");
         commands.put("/editstack", "<Count> <Dir> - Stacks the selection");
@@ -540,8 +541,20 @@ public class WorldEdit {
             return true;
 
         // Copy
-        } else if (split[0].equalsIgnoreCase("/editcopy")) {
-            checkArgs(split, 0, 0, split[0]);
+        } else if (split[0].equalsIgnoreCase("/editcopy")
+                || split[0].equalsIgnoreCase("/editcut")) {
+            boolean cut = split[0].equalsIgnoreCase("/editcut");
+            BaseBlock block = new BaseBlock(0);
+
+            if (cut) {
+                checkArgs(split, 0, 1, split[0]);
+                if (split.length > 1) {
+                    getBlock(split[1]);
+                }
+            } else {
+                checkArgs(split, 0, 0, split[0]);
+            }
+                
             Region region = session.getRegion();
             Vector min = region.getMinimumPoint();
             Vector max = region.getMaximumPoint();
@@ -552,8 +565,13 @@ public class WorldEdit {
                     min, min.subtract(pos));
             clipboard.copy(editSession);
             session.setClipboard(clipboard);
-            
-            player.print("Block(s) copied.");
+
+            if (cut) {
+                editSession.setBlocks(session.getRegion(), block);
+                player.print("Block(s) cut.");
+            } else {
+                player.print("Block(s) copied.");
+            }
 
             return true;
 
