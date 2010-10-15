@@ -689,7 +689,7 @@ public class EditSession {
 
     /**
      * Drain nearby pools of water or lava.
-     * 
+     *
      * @param pos
      * @param radius
      * @return number of blocks affected
@@ -711,7 +711,7 @@ public class EditSession {
 
         while (!queue.empty()) {
             BlockVector cur = queue.pop();
-            
+
             int type = getBlock(cur).getID();
 
             // Check block type
@@ -723,7 +723,7 @@ public class EditSession {
             if (visited.contains(cur)) {
                 continue;
             }
-            
+
             visited.add(cur);
 
             // Check radius
@@ -745,6 +745,75 @@ public class EditSession {
 
             if (setBlock(cur, new BaseBlock(0))) {
                 affected++;
+            }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Level water.
+     *
+     * @param pos
+     * @param radius
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int fixWater(Vector pos, int radius) throws MaxChangedBlocksException {
+        int affected = 0;
+
+        HashSet<BlockVector> visited = new HashSet<BlockVector>();
+        Stack<BlockVector> queue = new Stack<BlockVector>();
+
+        for (int x = pos.getBlockX() - 1; x <= pos.getBlockX() + 1; x++) {
+            for (int z = pos.getBlockZ() - 1; z <= pos.getBlockZ() + 1; z++) {
+                for (int y = pos.getBlockY() - 1; y <= pos.getBlockY() + 1; y++) {
+                    int type = getBlock(new Vector(x, y, z)).getID();
+
+                    // Check block type
+                    if (type == 8 || type == 9) {
+                        queue.push(new BlockVector(x, y, z));
+                    }
+                }
+            }
+        }
+
+        BaseBlock stationaryWater = new BaseBlock(9);
+
+        while (!queue.empty()) {
+            BlockVector cur = queue.pop();
+
+            int type = getBlock(cur).getID();
+
+            // Check block type
+            if (type != 8 && type != 9 && type != 0) {
+                continue;
+            }
+
+            // Don't want to revisit
+            if (visited.contains(cur)) {
+                continue;
+            }
+
+            visited.add(cur);
+
+            if (setBlock(cur, stationaryWater)) {
+                affected++;
+            }
+
+            // Check radius
+            if (pos.distance(cur) > radius) {
+                continue;
+            }
+
+            for (int x = cur.getBlockX() - 1; x <= cur.getBlockX() + 1; x++) {
+                for (int z = cur.getBlockZ() - 1; z <= cur.getBlockZ() + 1; z++) {
+                    BlockVector newPos = new BlockVector(x, cur.getBlockY(), z);
+
+                    if (!cur.equals(newPos)) {
+                        queue.push(newPos);
+                    }
+                }
             }
         }
 

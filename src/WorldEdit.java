@@ -141,6 +141,7 @@ public class WorldEdit {
         commands.put("//expand", "<Dir> [Num] - Expands the selection");
         commands.put("//contract", "<Dir> [Num] - Contracts the selection");
         commands.put("//rotate", "[Angle] - Rotate the clipboard");
+        commands.put("/fixwater", "[Radius] - Level nearby pools of water");
         commands.put("/forestgen", "<Size> - Make an ugly pine tree forest");
         commands.put("/unstuck", "Go up to the first free spot");
         commands.put("/ascend", "Go up one level");
@@ -532,6 +533,16 @@ public class WorldEdit {
             checkArgs(split, 1, 1, split[0]);
             int radius = Math.max(0, Integer.parseInt(split[1]));
             int affected = editSession.drainArea(
+                    session.getPlacementPosition(player), radius);
+            player.print(affected + " block(s) have been changed.");
+
+            return true;
+
+        // Fix water
+        } else if(split[0].equalsIgnoreCase("/fixwater")) {
+            checkArgs(split, 1, 1, split[0]);
+            int radius = Math.max(0, Integer.parseInt(split[1]));
+            int affected = editSession.fixWater(
                     session.getPlacementPosition(player), radius);
             player.print(affected + " block(s) have been changed.");
 
