@@ -32,6 +32,10 @@ public class SMServerInterface implements ServerInterface {
      * @return
      */
     public boolean setBlockType(Vector pt, int type) {
+        // Can't set colored cloth or crash
+        if ((type >= 21 && type <= 34) || type == 36) {
+            return false;
+        }
         return etc.getMCServer().e.d(pt.getBlockX(), pt.getBlockY(),
                 pt.getBlockZ(), type);
     }
