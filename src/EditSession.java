@@ -113,20 +113,23 @@ public class EditSession {
      */
     private boolean rawSetBlock(Vector pt, BaseBlock block) {
         boolean result = server.setBlockType(pt, block.getID());
-        // Changes in block data don't take effect if the block type doesn't
-        // change, so here's a hack!
-        if (!result && block.getID() != 0) {
-            server.setBlockType(pt, 0);
-            result = server.setBlockType(pt, block.getID());
-        }
-        server.setBlockData(pt, block.getData());
+        if (block.getID() != 0) {
+            // Changes in block data don't take effect if the block type doesn't
+            // change, so here's a hack!
+            if (!result) {
+                server.setBlockType(pt, 0);
+                result = server.setBlockType(pt, block.getID());
+            }
+            server.setBlockData(pt, block.getData());
 
-        // Signs
-        if (block instanceof SignBlock) {
-            SignBlock signBlock = (SignBlock)block;
-            String[] text = signBlock.getText();
-            server.setSignText(pt, text);
+            // Signs
+            if (block instanceof SignBlock) {
+                SignBlock signBlock = (SignBlock)block;
+                String[] text = signBlock.getText();
+                server.setSignText(pt, text);
+            }
         }
+        
         return result;
     }
 

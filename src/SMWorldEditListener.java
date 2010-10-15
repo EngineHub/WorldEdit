@@ -92,6 +92,12 @@ public class SMWorldEditListener extends PluginListener {
                                                blockClicked.getY(),
                                                blockClicked.getZ());
 
+                // Bug workaround
+                if (cur.getBlockX() == 0 && cur.getBlockY() == 0
+                        && cur.getBlockZ() == 0) {
+                    return false;
+                }
+
                 try {
                     if (session.getPos1().equals(cur)) {
                         return false;
