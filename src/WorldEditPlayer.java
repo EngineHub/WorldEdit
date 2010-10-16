@@ -169,27 +169,24 @@ public abstract class WorldEditPlayer {
      * @return true if a spot was found
      */
     public boolean ascendLevel() {
-        Vector pos = getPosition();
+        Vector pos = getBlockIn();
         int x = pos.getBlockX();
         int y = pos.getBlockY();
         int z = pos.getBlockZ();
 
         byte free = 0;
         byte spots = 0;
-        boolean inFree = false;
 
         while (y <= 129) {
             if (server.getBlockType(new Vector(x, y, z)) == 0) {
                 free++;
             } else {
                 free = 0;
-                inFree = false;
             }
 
-            if (free == 2 && inFree == false) {
-                inFree = true;
+            if (free == 2) {
                 spots++;
-                if (y >= 129 || spots == 2) {
+                if (spots == 2) {
                     setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
                     return true;
                 }
