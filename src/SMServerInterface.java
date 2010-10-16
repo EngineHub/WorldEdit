@@ -81,6 +81,9 @@ public class SMServerInterface implements ServerInterface {
     public void setSignText(Vector pt, String[] text) {
         Sign signData = (Sign)etc.getServer().getComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        if (signData == null) {
+            return;
+        }
         for (byte i = 0; i < 4; i++) {
             signData.setText(i, text[i]);
         }
@@ -96,6 +99,9 @@ public class SMServerInterface implements ServerInterface {
     public String[] getSignText(Vector pt) {
         Sign signData = (Sign)etc.getServer().getComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        if (signData == null) {
+            return new String[]{"", "", "", ""};
+        }
         String[] text = new String[4];
         for (byte i = 0; i < 4; i++) {
             text[i] = signData.getText(i);
