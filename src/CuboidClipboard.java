@@ -118,20 +118,20 @@ public class CuboidClipboard {
         int width = getWidth();
         int length = getLength();
         int height = getHeight();
-        int newWidth = angle % 180 == 0 ? width : length;
-        int newLength = angle % 180 == 0 ? length : width;
         Vector sizeRotated = size.transform2D(angle, 0, 0, 0, 0);
-        int shiftX = sizeRotated.getX() < 0 ? newWidth - 1 : 0;
-        int shiftZ = sizeRotated.getZ() < 0 ? newLength - 1: 0;
+        int shiftX = sizeRotated.getX() < 0 ? -sizeRotated.getBlockX() - 1 : 0;
+        int shiftZ = sizeRotated.getZ() < 0 ? -sizeRotated.getBlockZ() - 1 : 0;
 
-        BaseBlock newData[][][] = new BaseBlock[newWidth][getHeight()][newLength];
+        BaseBlock newData[][][] = new BaseBlock
+                [Math.abs(sizeRotated.getBlockX())]
+                [Math.abs(sizeRotated.getBlockY())]
+                [Math.abs(sizeRotated.getBlockZ())];
 
         for (int x = 0; x < width; x++) {
             for (int z = 0; z < length; z++) {
-                int newX = (new Vector(x, 0, z)).transform2D(angle, 0, 0, 0, 0)
-                        .getBlockX();
-                int newZ = (new Vector(x, 0, z)).transform2D(angle, 0, 0, 0, 0)
-                        .getBlockZ();
+                Vector v = (new Vector(x, 0, z)).transform2D(angle, 0, 0, 0, 0);
+                int newX = v.getBlockX();
+                int newZ = v.getBlockZ();
                 for (int y = 0; y < height; y++) {
                     newData[shiftX + newX][y][shiftZ + newZ] = data[x][y][z];
                 }
@@ -139,9 +139,11 @@ public class CuboidClipboard {
         }
 
         data = newData;
-        size = new Vector(newWidth, getHeight(), newLength);
+        size = new Vector(Math.abs(sizeRotated.getBlockX()),
+                          Math.abs(sizeRotated.getBlockY()),
+                          Math.abs(sizeRotated.getBlockZ()));
         offset = offset.transform2D(angle, 0, 0, 0, 0)
-                .subtract(shiftX, 0, shiftZ);
+                .subtract(shiftX, 0, shiftZ);;
     }
 
     /**
@@ -188,7 +190,7 @@ public class CuboidClipboard {
                 for (int z = 0; z < size.getBlockZ(); z++) {
                     if (noAir && data[x][y][z].isAir())
                         continue;
-                    
+
                     editSession.setBlock(new Vector(x, y, z).add(pos),
                             data[x][y][z]);
                 }
