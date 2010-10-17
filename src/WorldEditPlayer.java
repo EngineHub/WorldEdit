@@ -36,7 +36,7 @@ public abstract class WorldEditPlayer {
     public WorldEditPlayer() {
         server = WorldEdit.getServer();
     }
-    
+
     /**
      * Get the name of the player.
      *
@@ -51,13 +51,13 @@ public abstract class WorldEditPlayer {
     public abstract Vector getBlockOn();
     /**
      * Get the point of the block that is being stood in.
-     * 
+     *
      * @return point
      */
     public abstract Vector getBlockIn();
     /**
      * Get the player's position.
-     * 
+     *
      * @return point
      */
     public abstract Vector getPosition();
@@ -75,7 +75,7 @@ public abstract class WorldEditPlayer {
     public abstract double getYaw();
     /**
      * Get the ID of the item that the player is holding.
-     * 
+     *
      * @return
      */
     public abstract int getItemInHand();
@@ -93,7 +93,7 @@ public abstract class WorldEditPlayer {
 
     /**
      * Get the player's cardinal direction (N, W, NW, etc.).
-     * 
+     *
      * @return
      */
     public abstract String getCardinalDirection();
@@ -204,14 +204,14 @@ public abstract class WorldEditPlayer {
      * @return true if a spot was found
      */
     public boolean descendLevel() {
-        Vector pos = getPosition();
+        Vector pos = getBlockIn();
         int x = pos.getBlockX();
         int y = pos.getBlockY() - 1;
         int z = pos.getBlockZ();
 
         byte free = 0;
 
-        while (y >= 0) {
+        while (y >= 1) {
             if (server.getBlockType(new Vector(x, y, z)) == 0) {
                 free++;
             } else {
@@ -219,8 +219,20 @@ public abstract class WorldEditPlayer {
             }
 
             if (free == 2) {
-                setPosition(new Vector(x + 0.5, y, z + 0.5));
-                return true;
+                // So we've found a spot, but we have to drop the player
+                // lightly and also check to see if there's something to
+                // stand upon
+                while (y >= 0) {
+                    if (server.getBlockType(new Vector(x, y, z)) != 0) {
+                        // Found a block!
+                        setPosition(new Vector(x + 0.5, y + 1, z + 0.5));
+                        return true;
+                    }
+                    
+                    y--;
+                }
+
+                return false;
             }
 
             y--;
@@ -231,7 +243,7 @@ public abstract class WorldEditPlayer {
 
     /**
      * Gives the player an item.
-     * 
+     *
      * @param type
      * @param amt
      */
@@ -239,7 +251,7 @@ public abstract class WorldEditPlayer {
 
     /**
      * Returns true if equal.
-     * 
+     *
      * @param other
      * @return whether the other object is equivalent
      */
