@@ -137,7 +137,7 @@ public abstract class WorldEditPlayer {
      * that free position.
      */
     public void findFreePosition() {
-        Vector pos = getPosition();
+        Vector pos = getBlockIn();
         int x = pos.getBlockX();
         int y = pos.getBlockY();
         int origY = y;
@@ -187,6 +187,13 @@ public abstract class WorldEditPlayer {
             if (free == 2) {
                 spots++;
                 if (spots == 2) {
+                    int type = server.getBlockType(new Vector(x, y - 2, z));
+                    
+                    // Don't get put in lava!
+                    if (type == 10 || type == 11) {
+                        return false;
+                    }
+
                     setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
                     return true;
                 }
@@ -223,7 +230,10 @@ public abstract class WorldEditPlayer {
                 // lightly and also check to see if there's something to
                 // stand upon
                 while (y >= 0) {
-                    if (server.getBlockType(new Vector(x, y, z)) != 0) {
+                    int type = server.getBlockType(new Vector(x, y, z));
+
+                    // Don't want to end up in lava
+                    if (type != 0 && type != 10 && type != 11) {
                         // Found a block!
                         setPosition(new Vector(x + 0.5, y + 1, z + 0.5));
                         return true;
