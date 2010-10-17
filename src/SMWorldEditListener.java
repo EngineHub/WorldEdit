@@ -168,6 +168,10 @@ public class SMWorldEditListener extends PluginListener {
             modPlayer.sendMessage(Colors.Rose + "Your clipboard is empty.");
         } catch (WorldEditException e7) {
             modPlayer.sendMessage(Colors.Rose + e7.getMessage());
+        } catch (Throwable excp) {
+            modPlayer.sendMessage(Colors.Rose + "Please report this error: [See console]");
+            modPlayer.sendMessage(excp.getClass().getName() + ": " + excp.getMessage());
+            excp.printStackTrace();
         }
 
         return true;

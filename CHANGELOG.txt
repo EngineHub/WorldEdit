@@ -1,3 +1,17 @@
+0.8.3:
+- //rotate fixed.
+- Fixed some floating point inacurracy errors.
+- Exceptions are now caught when handling commands so that they can be
+  reported to the current user.
+
+0.8.2:
+- Signs that are not in a loaded chunk will no longer cause an exception.
+- -/unstuck, /ascend, and /descend are more accurate now. /descend also
+  won't drop you from 20 feet up and it won't drop you into the void anymore.
+
+0.8.1:
+- Added a workaround for the onBlockDestroy hook returning (0, 0, 0).
+
 0.8:
 - All operations now implicitly support working with block data, including
     sign text. This applies to .schematic loading and saving.
