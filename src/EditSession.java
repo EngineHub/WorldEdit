@@ -482,6 +482,36 @@ public class EditSession {
     }
 
     /**
+     * Remove nearby blocks of a type.
+     *
+     * @param pos
+     * @param blockType
+     * @param size
+     * @return number of blocks affected
+     */
+    public int removeNear(Vector pos, int blockType, int size) throws
+            MaxChangedBlocksException {
+        int affected = 0;
+        BaseBlock air = new BaseBlock(0);
+
+        for (int x = -size; x <= size; x++) {
+            for (int y = -size; y <= size; y++) {
+                for (int z = -size; z <= size; z++) {
+                    Vector p = pos.add(x, y, z);
+
+                    if (getBlock(p).getID() == blockType) {
+                        if (setBlock(p, air)) {
+                            affected++;
+                        }
+                    }
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
      * Sets all the blocks inside a region to a certain block type.
      *
      * @param region

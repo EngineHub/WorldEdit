@@ -130,6 +130,7 @@ public class WorldEdit {
         commands.put("//overlay", "[ID] - Overlay the area one layer");
         commands.put("/removeabove", "<Size> <Height> - Remove blocks above head");
         commands.put("/removebelow", "<Size> <Height> - Remove blocks below position");
+        commands.put("/removenear", "<ID> <Size> - Remove blocks near you");
         commands.put("//copy", "Copies the currently selected region");
         commands.put("//cut", "Cuts the currently selected region");
         commands.put("//paste", "Pastes the clipboard");
@@ -488,6 +489,18 @@ public class WorldEdit {
 
             int affected = editSession.removeBelow(
                     session.getPlacementPosition(player), size, height);
+            player.print(affected + " block(s) have been removed.");
+
+            return true;
+
+        // Remove blocks near
+        } else if (split[0].equalsIgnoreCase("/removenear")) {
+            checkArgs(split, 2, 2, split[0]);
+            BaseBlock block = getBlock(split[1]);
+            int size = Math.max(1, Integer.parseInt(split[2]));
+
+            int affected = editSession.removeNear(
+                    session.getPlacementPosition(player), block.getID(), size);
             player.print(affected + " block(s) have been removed.");
 
             return true;
