@@ -135,8 +135,8 @@ public class WorldEdit {
         commands.put("//cut", "Cuts the currently selected region");
         commands.put("//paste", "Pastes the clipboard");
         commands.put("//pasteair", "Pastes the clipboard (with air)");
-        commands.put("//move", "[Count> [Dir] [LeaveID] - Move the selection");
-        commands.put("//moveair", "[Count> [Dir] [LeaveID] - Move the selection (with air)");
+        commands.put("//move", "<Count> <Dir> <LeaveID> - Move the selection");
+        commands.put("//moveair", "<Count> <Dir> <LeaveID> - Move the selection (with air)");
         commands.put("//stack", "<Count> <Dir> - Stacks the selection");
         commands.put("//stackair", "<Count> <Dir> - Stacks the selection (with air)");
         commands.put("//load", "[Filename] - Load .schematic into clipboard");
@@ -149,8 +149,8 @@ public class WorldEdit {
         commands.put("//rotate", "[Angle] - Rotate the clipboard");
         commands.put("//hcyl", "[ID] [Radius] <Height> - Create a vertical hollow cylinder");
         commands.put("//cyl", "[ID] [Radius] <Height> - Create a vertical cylinder");
-        commands.put("//sphere", "[ID] [Radius] [Raised?] - Create a sphere");
-        commands.put("//hsphere", "[ID] [Radius] [Raised?] - Create a hollow sphere");
+        commands.put("//sphere", "[ID] [Radius] <Raised?> - Create a sphere");
+        commands.put("//hsphere", "[ID] [Radius] <Raised?> - Create a hollow sphere");
         commands.put("/fixwater", "[Radius] - Level nearby pools of water");
         commands.put("/forestgen", "<Size> - Make an ugly pine tree forest");
         commands.put("/unstuck", "Go up to the first free spot");
@@ -473,6 +473,7 @@ public class WorldEdit {
 
         // Remove blocks above current position
         } else if (split[0].equalsIgnoreCase("/removeabove")) {
+            checkArgs(split, 0, 2, split[0]);
             int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
             int height = split.length > 2 ? Math.min(128, Integer.parseInt(split[2]) + 2) : 128;
 
@@ -484,6 +485,7 @@ public class WorldEdit {
 
         // Remove blocks below current position
         } else if (split[0].equalsIgnoreCase("/removebelow")) {
+            checkArgs(split, 0, 2, split[0]);
             int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
             int height = split.length > 2 ? Math.max(1, Integer.parseInt(split[2])) : 128;
 
