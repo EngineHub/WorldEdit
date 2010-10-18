@@ -100,6 +100,26 @@ public class Vector {
     }
 
     /**
+     * Set X.
+     *
+     * @param x
+     * @return new vector
+     */
+    public Vector setX(double x) {
+        return new Vector(x, y, z);
+    }
+
+    /**
+     * Set X.
+     *
+     * @param x
+     * @return new vector
+     */
+    public Vector setX(int x) {
+        return new Vector(x, y, z);
+    }
+
+    /**
      * @return the y
      */
     public double getY() {
@@ -114,6 +134,26 @@ public class Vector {
     }
 
     /**
+     * Set Y.
+     *
+     * @param y
+     * @return new vector
+     */
+    public Vector setY(double y) {
+        return new Vector(x, y, z);
+    }
+
+    /**
+     * Set Y.
+     *
+     * @param y
+     * @return new vector
+     */
+    public Vector setY(int y) {
+        return new Vector(x, y, z);
+    }
+
+    /**
      * @return the z
      */
     public double getZ() {
@@ -125,6 +165,26 @@ public class Vector {
      */
     public int getBlockZ() {
         return (int)Math.round(z);
+    }
+
+    /**
+     * Set Z.
+     *
+     * @param z
+     * @return new vector
+     */
+    public Vector setZ(double z) {
+        return new Vector(x, y, z);
+    }
+
+    /**
+     * Set Z.
+     *
+     * @param z
+     * @return new vector
+     */
+    public Vector setZ(int z) {
+        return new Vector(x, y, z);
     }
 
     /**

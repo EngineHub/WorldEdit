@@ -887,6 +887,19 @@ public class EditSession {
         int d = (5 - radius * 4) / 4;
         int affected = 0;
 
+        if (height == 0) {
+            return 0;
+        } else if (height < 0) {
+            height = -height;
+            pos = pos.subtract(0, height, 0);
+        }
+
+        if (pos.getBlockY() - height - 1 < 0) {
+            height = pos.getBlockY() + 1;
+        } else if (pos.getBlockY() + height - 1 > 127) {
+            height = 127 - pos.getBlockY() + 1;
+        }
+
         affected += makeHCylinderPoints(pos, x, z, height, block);
 
         while (x < z) {
@@ -960,6 +973,19 @@ public class EditSession {
         int z = radius;
         int d = (5 - radius * 4) / 4;
         int affected = 0;
+
+        if (height == 0) {
+            return 0;
+        } else if (height < 0) {
+            height = -height;
+            pos = pos.subtract(0, height, 0);
+        }
+
+        if (pos.getBlockY() - height - 1 < 0) {
+            height = pos.getBlockY() + 1;
+        } else if (pos.getBlockY() + height - 1 > 127) {
+            height = 127 - pos.getBlockY() + 1;
+        }
 
         affected += makeCylinderPoints(pos, x, z, height, block);
 

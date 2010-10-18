@@ -411,7 +411,7 @@ public class WorldEdit {
             checkArgs(split, 2, 3, split[0]);
             BaseBlock block = getBlock(split[1]);
             int radius = Math.max(1, Integer.parseInt(split[2]));
-            int height = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
+            int height = split.length > 3 ? Integer.parseInt(split[3]) : 1;
 
             Vector pos = session.getPlacementPosition(player);
             int affected = editSession.makeHollowCylinder(pos, block, radius, height);
@@ -424,7 +424,7 @@ public class WorldEdit {
             checkArgs(split, 2, 3, split[0]);
             BaseBlock block = getBlock(split[1]);
             int radius = Math.max(1, Integer.parseInt(split[2]));
-            int height = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
+            int height = split.length > 3 ? Integer.parseInt(split[3]) : 1;
 
             Vector pos = session.getPlacementPosition(player);
             int affected = editSession.makeCylinder(pos, block, radius, height);
