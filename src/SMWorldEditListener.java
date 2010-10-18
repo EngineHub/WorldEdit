@@ -131,7 +131,12 @@ public class SMWorldEditListener extends PluginListener {
         WorldEdit worldEdit = WorldEdit.getInstance();
         
         try {
-            if (worldEdit.getCommands().containsKey(split[0])) {
+            // Legacy /, command
+            if (split[0].equals("/,")) {
+                split[0] = "//";
+            }
+            
+            if (worldEdit.getCommands().containsKey(split[0].toLowerCase())) {
                 if (canUseCommand(modPlayer, split[0])) {
                     WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
                     WorldEditSession session = worldEdit.getSession(player);
