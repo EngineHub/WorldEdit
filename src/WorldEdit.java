@@ -692,11 +692,7 @@ public class WorldEdit {
 
             // Replacement block argument
             if (split.length > 3) {
-                if (split[3].equalsIgnoreCase("displace")) {
-                    replace = null; // Displace
-                } else {
-                    replace = getBlock(split[3]);
-                }
+                replace = getBlock(split[3]);
             } else {
                 replace = new BaseBlock(0);
             }
