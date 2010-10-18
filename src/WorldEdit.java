@@ -409,28 +409,21 @@ public class WorldEdit {
             return true;
 
         // Draw a hollow cylinder
-        } else if (split[0].equalsIgnoreCase("//hcyl")) {
+        } else if (split[0].equalsIgnoreCase("//hcyl")
+                || split[0].equalsIgnoreCase("//cyl")) {
             checkArgs(split, 2, 3, split[0]);
             BaseBlock block = getBlock(split[1]);
             int radius = Math.max(1, Integer.parseInt(split[2]));
             int height = split.length > 3 ? Integer.parseInt(split[3]) : 1;
+            boolean filled = split[0].equalsIgnoreCase("//cyl");
 
             Vector pos = session.getPlacementPosition(player);
-            int affected = editSession.makeHollowCylinder(pos, block, radius, height);
-            player.print(affected + " block(s) have been created.");
-
-            return true;
-
-        // Draw a filled cylinder
-        } else if (split[0].equalsIgnoreCase("//cyl")) {
-            checkArgs(split, 2, 3, split[0]);
-            BaseBlock block = getBlock(split[1]);
-            int radius = Math.max(1, Integer.parseInt(split[2]));
-            int height = split.length > 3 ? Integer.parseInt(split[3]) : 1;
-
-            Vector pos = session.getPlacementPosition(player);
-            int affected = editSession.makeCylinder(pos, block, radius, height);
-            player.findFreePosition();
+            int affected;
+            if (filled) {
+                affected = editSession.makeCylinder(pos, block, radius, height);
+            } else {
+                affected = editSession.makeHollowCylinder(pos, block, radius, height);
+            }
             player.print(affected + " block(s) have been created.");
 
             return true;
