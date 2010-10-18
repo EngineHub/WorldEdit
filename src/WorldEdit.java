@@ -132,6 +132,8 @@ public class WorldEdit {
         commands.put("//cut", "Cuts the currently selected region");
         commands.put("//paste", "Pastes the clipboard");
         commands.put("//pasteair", "Pastes the clipboard (with air)");
+        commands.put("//move", "[Count> [Dir] [LeaveID] - Move the selection");
+        commands.put("//moveair", "[Count> [Dir] [LeaveID] - Move the selection (with air)");
         commands.put("//stack", "<Count> <Dir> - Stacks the selection");
         commands.put("//stackair", "<Count> <Dir> - Stacks the selection (with air)");
         commands.put("//load", "[Filename] - Load .schematic into clipboard");
@@ -676,6 +678,34 @@ public class WorldEdit {
 
             int affected = editSession.makePineTreeForest(player.getPosition(), size);
             player.print(affected + " pine trees created.");
+
+            return true;
+
+        // Move
+        } else if (split[0].equalsIgnoreCase("//moveair") ||
+                   split[0].equalsIgnoreCase("//move")) {
+            checkArgs(split, 0, 3, split[0]);
+            int count = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
+            Vector dir = getDirection(player,
+                    split.length > 2 ? split[2].toLowerCase() : "me");
+            BaseBlock replace;
+
+            // Replacement block argument
+            if (split.length > 3) {
+                if (split[3].equalsIgnoreCase("displace")) {
+                    replace = null; // Displace
+                } else {
+                    replace = getBlock(split[3]);
+                }
+            } else {
+                replace = new BaseBlock(0);
+            }
+            
+            boolean copyAir = split[0].equalsIgnoreCase("//moveair");
+
+            int affected = editSession.moveCuboidRegion(session.getRegion(),
+                    dir, count, copyAir, replace);
+            player.print(affected + " blocks moved.");
 
             return true;
 

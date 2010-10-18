@@ -447,6 +447,32 @@ public class Vector {
     }
 
     /**
+     * Checks to see if a vector is contained with another.
+     *
+     * @param min
+     * @param max
+     * @return
+     */
+    public boolean containedWithin(Vector min, Vector max) {
+        return x >= min.getX() && x <= max.getX()
+                && y >= min.getY() && z <= max.getY()
+                && z >= min.getZ() && z <= max.getY();
+    }
+
+    /**
+     * Checks to see if a vector is contained with another.
+     *
+     * @param min
+     * @param max
+     * @return
+     */
+    public boolean containedWithinBlock(Vector min, Vector max) {
+        return getBlockX() >= min.getBlockX() && getBlockX() <= max.getBlockX()
+                && getBlockY() >= min.getBlockY() && getBlockY() <= max.getBlockY()
+                && getBlockZ() >= min.getBlockZ() && getBlockZ() <= max.getBlockY();
+    }
+
+    /**
      * 2D transformation.
      * 
      * @param vec

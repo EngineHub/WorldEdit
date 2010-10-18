@@ -23,6 +23,7 @@ import com.sk89q.worldedit.blocks.SignBlock;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Stack;
@@ -718,6 +719,65 @@ public class EditSession {
                     }
                 }
             }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Move a cuboid region.
+     *
+     * @param region
+     * @param dir
+     * @param distance
+     * @param copyAir
+     * @param replace
+     * @return number of blocks moved
+     * @throws MaxChangedBlocksException
+     */
+    public int moveCuboidRegion(Region region, Vector dir,
+            int distance, boolean copyAir, BaseBlock replace)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+
+        Vector shift = dir.multiply(distance);
+        Vector min = region.getMinimumPoint();
+        Vector max = region.getMaximumPoint();
+        Vector newMin = min.add(shift);
+        Vector newMax = min.add(shift);
+        int xs = region.getWidth();
+        int ys = region.getHeight();
+        int zs = region.getLength();
+
+        Map<Vector,BaseBlock> delayed = new LinkedHashMap<Vector,BaseBlock>();
+
+        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+            for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+                    Vector pos = new Vector(x, y, z);
+                    BaseBlock block = getBlock(pos);
+
+                    if (!block.isAir() || copyAir) {
+                        Vector newPos = pos.add(shift);
+
+                        delayed.put(newPos, getBlock(pos));
+
+                        // Don't want to replace the old block if it's in
+                        // the new area
+                        if (x >= newMin.getBlockX() && x <= newMax.getBlockX()
+                                && y >= newMin.getBlockY() && y <= newMax.getBlockY()
+                                && z >= newMin.getBlockZ() && z <= newMax.getBlockZ()) {
+                        } else {
+                            setBlock(pos, replace);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (Map.Entry<Vector,BaseBlock> entry : delayed.entrySet()) {
+            setBlock(entry.getKey(), entry.getValue());
+            affected++;
         }
 
         return affected;
