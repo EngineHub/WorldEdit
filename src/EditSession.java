@@ -822,7 +822,163 @@ public class EditSession {
 
         return affected;
     }
-    
+
+    /**
+     * Helper method to draw the cylinder.
+     * 
+     * @param center
+     * @param x
+     * @param z
+     * @param height
+     * @param block
+     * @throws MaxChangedBlocksException
+     */
+    private int makeHCylinderPoints(Vector center, int x, int z,
+            int height, BaseBlock block) throws MaxChangedBlocksException {
+        int affected = 0;
+        
+        if (x == 0) {
+            for (int y = 0; y < height; y++) {
+                setBlock(center.add(0, y, z), block);
+                setBlock(center.add(0, y, -z), block);
+                setBlock(center.add(z, y, 0), block);
+                setBlock(center.add(-z, y, 0), block);
+                affected += 4;
+            }
+        } else if (x == z) {
+            for (int y = 0; y < height; y++) {
+                setBlock(center.add(x, y, z), block);
+                setBlock(center.add(-x, y, z), block);
+                setBlock(center.add(x, y, -z), block);
+                setBlock(center.add(-x, y, -z), block);
+                affected += 4;
+            }
+        } else if (x < z) {
+            for (int y = 0; y < height; y++) {
+                setBlock(center.add(x, y, z), block);
+                setBlock(center.add(-x, y, z), block);
+                setBlock(center.add(x, y, -z), block);
+                setBlock(center.add(-x, y, -z), block);
+                setBlock(center.add(z, y, x), block);
+                setBlock(center.add(-z, y, x), block);
+                setBlock(center.add(z, y, -x), block);
+                setBlock(center.add(-z, y, -x), block);
+                affected += 8;
+            }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Draw a hollow cylinder.
+     * 
+     * @param pos
+     * @param block
+     * @param radius
+     * @param height
+     * @return number of blocks set
+     * @throws MaxChangedBlocksException
+     */
+    public int makeHollowCylinder(Vector pos, BaseBlock block,
+            int radius, int height) throws MaxChangedBlocksException {
+        int x = 0;
+        int z = radius;
+        int d = (5 - radius * 4) / 4;
+        int affected = 0;
+
+        affected += makeHCylinderPoints(pos, x, z, height, block);
+
+        while (x < z) {
+            x++;
+            
+            if (d >= 0) {
+                z--;
+                d += 2 * (x - z) + 1;
+            } else {
+                d += 2 * x + 1;
+            }
+
+            affected += makeHCylinderPoints(pos, x, z, height, block);
+        }
+
+        return affected;
+    }
+
+    /**
+     * Helper method to draw the cylinder.
+     *
+     * @param center
+     * @param x
+     * @param z
+     * @param height
+     * @param block
+     * @throws MaxChangedBlocksException
+     */
+    private int makeCylinderPoints(Vector center, int x, int z,
+            int height, BaseBlock block) throws MaxChangedBlocksException {
+        int affected = 0;
+
+        if (x == z) {
+            for (int y = 0; y < height; y++) {
+                for (int z2 = -z; z2 <= z; z2++) {
+                    setBlock(center.add(x, y, z2), block);
+                    setBlock(center.add(-x, y, z2), block);
+                    affected += 2;
+                }
+            }
+        } else if (x < z) {
+            for (int y = 0; y < height; y++) {
+                for (int x2 = -x; x2 <= x; x2++) {
+                    for (int z2 = -z; z2 <= z; z2++) {
+                        setBlock(center.add(x2, y, z2), block);
+                        affected++;
+                    }
+                    setBlock(center.add(z, y, x2), block);
+                    setBlock(center.add(-z, y, x2), block);
+                    affected += 2;
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Draw a filled cylinder.
+     * 
+     * @param pos
+     * @param block
+     * @param radius
+     * @param height
+     * @return number of blocks set
+     * @throws MaxChangedBlocksException
+     */
+    public int makeCylinder(Vector pos, BaseBlock block,
+            int radius, int height) throws MaxChangedBlocksException {
+        int x = 0;
+        int z = radius;
+        int d = (5 - radius * 4) / 4;
+        int affected = 0;
+
+        affected += makeCylinderPoints(pos, x, z, height, block);
+
+        while (x < z) {
+            x++;
+
+            if (d >= 0) {
+                z--;
+                d += 2 * (x - z) + 1;
+            } else {
+                d += 2 * x + 1;
+            }
+
+            affected += makeCylinderPoints(pos, x, z, height, block);
+        }
+
+        return affected;
+    }
+
     
     /**
      * Set a block by chance.

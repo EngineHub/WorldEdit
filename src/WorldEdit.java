@@ -141,6 +141,8 @@ public class WorldEdit {
         commands.put("//expand", "<Dir> [Num] - Expands the selection");
         commands.put("//contract", "<Dir> [Num] - Contracts the selection");
         commands.put("//rotate", "[Angle] - Rotate the clipboard");
+        commands.put("//hcyl", "[ID] [Radius] <Height> - Create a vertical hollow cylinder");
+        commands.put("//cyl", "[ID] [Radius] <Height> - Create a vertical cylinder");
         commands.put("/fixwater", "[Radius] - Level nearby pools of water");
         commands.put("/forestgen", "<Size> - Make an ugly pine tree forest");
         commands.put("/unstuck", "Go up to the first free spot");
@@ -401,6 +403,33 @@ public class WorldEdit {
                 split[0].equalsIgnoreCase("//paste"));
             player.findFreePosition();
             player.print("Pasted. Undo with //undo");
+
+            return true;
+
+        // Draw a hollow cylinder
+        } else if (split[0].equalsIgnoreCase("//hcyl")) {
+            checkArgs(split, 2, 3, split[0]);
+            BaseBlock block = getBlock(split[1]);
+            int radius = Math.max(1, Integer.parseInt(split[2]));
+            int height = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
+
+            Vector pos = session.getPlacementPosition(player);
+            int affected = editSession.makeHollowCylinder(pos, block, radius, height);
+            player.print(affected + " block(s) have been created.");
+
+            return true;
+
+        // Draw a filled cylinder
+        } else if (split[0].equalsIgnoreCase("//cyl")) {
+            checkArgs(split, 2, 3, split[0]);
+            BaseBlock block = getBlock(split[1]);
+            int radius = Math.max(1, Integer.parseInt(split[2]));
+            int height = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
+
+            Vector pos = session.getPlacementPosition(player);
+            int affected = editSession.makeCylinder(pos, block, radius, height);
+            player.findFreePosition();
+            player.print(affected + " block(s) have been created.");
 
             return true;
 
