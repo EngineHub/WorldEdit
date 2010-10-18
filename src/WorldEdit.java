@@ -143,6 +143,8 @@ public class WorldEdit {
         commands.put("//rotate", "[Angle] - Rotate the clipboard");
         commands.put("//hcyl", "[ID] [Radius] <Height> - Create a vertical hollow cylinder");
         commands.put("//cyl", "[ID] [Radius] <Height> - Create a vertical cylinder");
+        commands.put("//sphere", "[ID] [Radius] [Raised?] - Create a sphere");
+        commands.put("//hsphere", "[ID] [Radius] [Raised?] - Create a hollow sphere");
         commands.put("/fixwater", "[Radius] - Level nearby pools of water");
         commands.put("/forestgen", "<Size> - Make an ugly pine tree forest");
         commands.put("/unstuck", "Go up to the first free spot");
@@ -428,6 +430,29 @@ public class WorldEdit {
 
             Vector pos = session.getPlacementPosition(player);
             int affected = editSession.makeCylinder(pos, block, radius, height);
+            player.findFreePosition();
+            player.print(affected + " block(s) have been created.");
+
+            return true;
+
+        // Draw a sphere
+        } else if (split[0].equalsIgnoreCase("//sphere")
+                || split[0].equalsIgnoreCase("//hsphere")) {
+            checkArgs(split, 2, 3, split[0]);
+            BaseBlock block = getBlock(split[1]);
+            int radius = Math.max(1, Integer.parseInt(split[2]));
+            boolean raised = split.length > 3
+                    ? (split[3].equalsIgnoreCase("true")
+                            || split[3].equalsIgnoreCase("yes"))
+                    : false;
+            boolean filled = split[0].equalsIgnoreCase("//sphere");
+
+            Vector pos = session.getPlacementPosition(player);
+            if (raised) {
+                pos = pos.add(0, radius, 0);
+            }
+
+            int affected = editSession.makeSphere(pos, block, radius, filled);
             player.findFreePosition();
             player.print(affected + " block(s) have been created.");
 

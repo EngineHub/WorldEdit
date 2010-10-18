@@ -1005,6 +1005,43 @@ public class EditSession {
         return affected;
     }
 
+    /**
+     * Makes a sphere.
+     *
+     * @param pos
+     * @param block
+     * @param radius
+     * @param filled
+     * @return number of blocks changed
+     * @throws MaxChangedBlocksException
+     */
+    public int makeSphere(Vector pos, BaseBlock block, int radius, boolean filled)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+        
+        for (int x = 0; x <= radius; x++) {
+            for (int y = 0; y <= radius; y++) {
+                for (int z = 0; z <= radius; z++) {
+                    Vector vec = pos.add(x, y, z);
+                    double d = vec.distance(pos);
+
+                    if (d <= radius + 0.5 && (filled || d >= radius - 0.5)) {
+                        if (setBlock(vec, block)) { affected++; }
+                        if (setBlock(pos.add(-x, y, z), block)) { affected++; }
+                        if (setBlock(pos.add(x, -y, z), block)) { affected++; }
+                        if (setBlock(pos.add(x, y, -z), block)) { affected++; }
+                        if (setBlock(pos.add(-x, -y, z), block)) { affected++; }
+                        if (setBlock(pos.add(x, -y, -z), block)) { affected++; }
+                        if (setBlock(pos.add(-x, y, -z), block)) { affected++; }
+                        if (setBlock(pos.add(-x, -y, -z), block)) { affected++; }
+                    }
+                }
+            }
+        }
+
+        return affected;
+    }
+
     
     /**
      * Set a block by chance.
