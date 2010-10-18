@@ -110,6 +110,8 @@ public class WorldEdit {
      * Construct an instance of the plugin.
      */
     private WorldEdit() {
+        // Note: Commands should only have the phrase 'air' at the end
+        // for now (see SMWorldEditListener.canUseCommand)
         commands.put("//pos1", "Set editing position #1");
         commands.put("//pos2", "Set editing position #2");
         commands.put("/toggleplace", "Toggle placing at pos #1");

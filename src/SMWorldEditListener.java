@@ -190,7 +190,7 @@ public class SMWorldEditListener extends PluginListener {
      * @return
      */
     private boolean canUseCommand(Player player, String command) {
-        return player.canUseCommand(command)
+        return player.canUseCommand(command.replace("air", ""))
                 || player.canUseCommand("/worldedit");
     }
 }
