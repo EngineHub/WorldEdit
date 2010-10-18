@@ -1,6 +1,6 @@
 0.8.3:
 - //rotate fixed.
-- Fixed some floating point inacurracy errors.
+- Fixed some floating point inaccurracy errors.
 - Exceptions are now caught when handling commands so that they can be
   reported to the current user.
 
