@@ -570,7 +570,7 @@ public class EditSession {
 
     /**
      * Make faces of the region (as if it was a cuboid if it's not).
-     * 
+     *
      * @param region
      * @param block
      * @return number of blocks affected
@@ -582,7 +582,7 @@ public class EditSession {
 
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
-        
+
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 if (setBlock(new Vector(x, y, min.getBlockZ()), block)) { affected++; }
@@ -602,6 +602,39 @@ public class EditSession {
             for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
                 if (setBlock(new Vector(x, min.getBlockY(), z), block)) { affected++; }
                 if (setBlock(new Vector(x, max.getBlockY(), z), block)) { affected++; }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Make walls of the region (as if it was a cuboid if it's not).
+     *
+     * @param region
+     * @param block
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int makeCuboidWalls(Region region, BaseBlock block)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+
+        Vector min = region.getMinimumPoint();
+        Vector max = region.getMaximumPoint();
+
+        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+            for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+                if (setBlock(new Vector(x, y, min.getBlockZ()), block)) { affected++; }
+                if (setBlock(new Vector(x, y, max.getBlockZ()), block)) { affected++; }
+                affected++;
+            }
+        }
+
+        for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+            for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                if (setBlock(new Vector(min.getBlockX(), y, z), block)) { affected++; }
+                if (setBlock(new Vector(max.getBlockX(), y, z), block)) { affected++; }
             }
         }
 

@@ -123,6 +123,7 @@ public class WorldEdit {
         commands.put("//size", "Get size of selected region");
         commands.put("//set", "[ID] - Set all blocks inside region");
         commands.put("//outline", "[ID] - Outline the region with blocks");
+        commands.put("//walls", "[ID] - Build walls");
         commands.put("//replace", "<FromID> [ToID] - Replace all existing blocks inside region");
         commands.put("//overlay", "[ID] - Overlay the area one layer");
         commands.put("/removeabove", "<Size> <Height> - Remove blocks above head");
@@ -571,6 +572,15 @@ public class WorldEdit {
             checkArgs(split, 1, 1, split[0]);
             BaseBlock block = getBlock(split[1]);
             int affected = editSession.makeCuboidFaces(session.getRegion(), block);
+            player.print(affected + " block(s) have been changed.");
+
+            return true;
+
+        // Set the walls of a region
+        } else if(split[0].equalsIgnoreCase("//walls")) {
+            checkArgs(split, 1, 1, split[0]);
+            BaseBlock block = getBlock(split[1]);
+            int affected = editSession.makeCuboidWalls(session.getRegion(), block);
             player.print(affected + " block(s) have been changed.");
 
             return true;
