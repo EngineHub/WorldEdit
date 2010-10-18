@@ -1,3 +1,19 @@
+0.9:
+- Giving permission to just /worldedit is now enough to have access to all
+  WorldEdit commands.
+- The super pickaxe toggle command has been changed to //, but the old "/,"
+  command will continue to work. When assigning permissions, give access to //
+- Added //move and //moveair to move the selection.
+- Fixed the help for //wand.
+- Fixed a bug that caused commands to be case sensitive.
+- Permissions for the non-air command (i.e. //stack vs //stackair) now
+  extend to the air command.
+- Added /removenear to remove nearby blocks of a type.
+- Fixed the incorrect help for some commands.
+- Added //cyl and //hcyl to generate filled and hollow circles and cylinders.
+- Added //sphere and //hsphere to generate filled and hollow spheres.
+- Added //walls to generate the sides of a cuboid region.
+
 0.8.3:
 - //rotate fixed.
 - Fixed some floating point inaccurracy errors.
