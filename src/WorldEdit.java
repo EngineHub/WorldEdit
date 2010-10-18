@@ -324,7 +324,7 @@ public class WorldEdit {
         } else if (split[0].equalsIgnoreCase("//wand")) {
             checkArgs(split, 0, 0, split[0]);
             player.giveItem(271, 1);
-            player.print("Right click = sel. pos 1; double right click = sel. pos 2");
+            player.print("Left click: select pos #1; Right click: select pos #2");
             return true;
 
         // Toggle placing at pos #1
