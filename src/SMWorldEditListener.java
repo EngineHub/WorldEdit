@@ -51,7 +51,7 @@ public class SMWorldEditListener extends PluginListener {
         WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
         
         if (itemInHand != 271) { return false; }
-        if (!modPlayer.canUseCommand("/editpos2")) { return false; }
+        if (!canUseCommand(modPlayer, "/editpos2")) { return false; }
 
         WorldEditSession session = worldEdit.getSession(player);
 
@@ -79,8 +79,8 @@ public class SMWorldEditListener extends PluginListener {
      */
     @Override
     public boolean onBlockDestroy(Player modPlayer, Block blockClicked) {
-        if (!modPlayer.canUseCommand("/editpos1")
-                && !modPlayer.canUseCommand("/.")) { return false; }
+        if (!canUseCommand(modPlayer, "/editpos1")
+                && !canUseCommand(modPlayer, "/.")) { return false; }
 
         WorldEdit worldEdit = WorldEdit.getInstance();
         WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
@@ -132,7 +132,7 @@ public class SMWorldEditListener extends PluginListener {
         
         try {
             if (worldEdit.getCommands().containsKey(split[0])) {
-                if (modPlayer.canUseCommand(split[0])) {
+                if (canUseCommand(modPlayer, split[0])) {
                     WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
                     WorldEditSession session = worldEdit.getSession(player);
                     EditSession editSession =
@@ -175,5 +175,17 @@ public class SMWorldEditListener extends PluginListener {
         }
 
         return true;
+    }
+
+    /**
+     * Checks to see if the player can use a command or /worldedit.
+     * 
+     * @param player
+     * @param command
+     * @return
+     */
+    private boolean canUseCommand(Player player, String command) {
+        return player.canUseCommand(command)
+                || player.canUseCommand("/worldedit");
     }
 }
