@@ -1,13 +1,27 @@
+0.10:
+- Issues with the permissions regarding the super pick axe mode and
+    the edit wand have been resolved.
+- For the super pick axe to destroy bedrock, permission must be given for
+    /worldeditbedrock.
+- Added /chunkinfo to tell you information about the chunk that you are in.
+- Added support for restoring regions from a backup. /listsnapshots, //use,
+    and //restore have been added.
+- Added //hpos1 and //hpos2 to set the corners of the cuboid to the block
+    that you are looking at.
+- Added /jumpto to go to the spot that you are looking at.
+- Added /thru to go through the wall in front of you.
+- Added /ceil to get to the ceiling of a room.
+
 0.9:
 - Giving permission to just /worldedit is now enough to have access to all
-  WorldEdit commands.
+    WorldEdit commands.
 - The super pickaxe toggle command has been changed to //, but the old "/,"
-  command will continue to work. When assigning permissions, give access to //
+    command will continue to work. When assigning permissions, give access to //
 - Added //move and //moveair to move the selection.
 - Fixed the help for //wand.
 - Fixed a bug that caused commands to be case sensitive.
 - Permissions for the non-air command (i.e. //stack vs //stackair) now
-  extend to the air command.
+    extend to the air command.
 - Added /removenear to remove nearby blocks of a type.
 - Fixed the incorrect help for some commands.
 - Added //cyl and //hcyl to generate filled and hollow circles and cylinders.
@@ -18,12 +32,12 @@
 - //rotate fixed.
 - Fixed some floating point inaccurracy errors.
 - Exceptions are now caught when handling commands so that they can be
-  reported to the current user.
+    reported to the current user.
 
 0.8.2:
 - Signs that are not in a loaded chunk will no longer cause an exception.
-- -/unstuck, /ascend, and /descend are more accurate now. /descend also
-  won't drop you from 20 feet up and it won't drop you into the void anymore.
+- /unstuck, /ascend, and /descend are more accurate now. /descend also
+    won't drop you from 20 feet up and it won't drop you into the void anymore.
 
 0.8.1:
 - Added a workaround for the onBlockDestroy hook returning (0, 0, 0).
