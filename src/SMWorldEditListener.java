@@ -51,7 +51,7 @@ public class SMWorldEditListener extends PluginListener {
         WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
         
         if (itemInHand != 271) { return false; }
-        if (!canUseCommand(modPlayer, "/editpos2")) { return false; }
+        if (!canUseCommand(modPlayer, "//pos2")) { return false; }
 
         WorldEditSession session = worldEdit.getSession(player);
 
@@ -79,7 +79,7 @@ public class SMWorldEditListener extends PluginListener {
      */
     @Override
     public boolean onBlockDestroy(Player modPlayer, Block blockClicked) {
-        if (!canUseCommand(modPlayer, "/editpos1")
+        if (!canUseCommand(modPlayer, "//pos1")
                 && !canUseCommand(modPlayer, "//")) { return false; }
 
         WorldEdit worldEdit = WorldEdit.getInstance();
