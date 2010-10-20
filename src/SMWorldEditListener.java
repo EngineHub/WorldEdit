@@ -80,8 +80,7 @@ public class SMWorldEditListener extends PluginListener {
     @Override
     public boolean onBlockDestroy(Player modPlayer, Block blockClicked) {
         if (!canUseCommand(modPlayer, "/editpos1")
-                && !canUseCommand(modPlayer, "//")
-                && !canUseCommand(modPlayer, "/worldedit")) { return false; }
+                && !canUseCommand(modPlayer, "//")) { return false; }
 
         WorldEdit worldEdit = WorldEdit.getInstance();
         WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
@@ -113,8 +112,16 @@ public class SMWorldEditListener extends PluginListener {
             }
         } else if (player.isHoldingPickAxe()) {
             if (session.hasSuperPickAxe()) {
-                return etc.getMCServer().e.d(blockClicked.getX(),
-                        blockClicked.getY(), blockClicked.getZ(), 0);
+                Vector pos = new Vector(blockClicked.getX(),
+                        blockClicked.getY(), blockClicked.getZ());
+                if (WorldEdit.getServer().getBlockType(pos) == 7
+                        && !canUseCommand(modPlayer, "//bedrock")) {
+                    return true;
+                }
+                
+                WorldEdit.getServer().setBlockType(pos, 0);
+
+                return true;
             }
         }
 
