@@ -161,6 +161,7 @@ public class WorldEdit {
         commands.put("/jumpto", "Jump to the block that you are looking at");
         commands.put("/thru", "Go through the wall that you are looking at");
         commands.put("/ceil", "<Clearance> - Get to the ceiling");
+        commands.put("/chunkinfo", "Get the filename of the chunk that you are in");
     }
 
     /**
@@ -341,7 +342,7 @@ public class WorldEdit {
             checkArgs(split, 0, 1, split[0]);
             int clearence = split.length > 1 ?
                 Math.max(0, Integer.parseInt(split[1])) : 0;
-            
+
             if (player.ascendToCeiling(clearence)) {
                 player.print("Whoosh!");
             } else {
@@ -858,9 +859,38 @@ public class WorldEdit {
             }
 
             return true;
+
+        // Get chunk filename
+        } else if (split[0].equalsIgnoreCase("/chunkinfo")) {
+            checkArgs(split, 0, 0, split[0]);
+
+            Vector pos = player.getBlockIn();
+            int chunkX = (int)Math.floor(pos.getBlockX() / 16.0);
+            int chunkZ = (int)Math.floor(pos.getBlockZ() / 16.0);
+
+            String folder1 = Integer.toString(divisorMod(chunkX, 64), 36);
+            String folder2 = Integer.toString(divisorMod(chunkZ, 64), 36);
+            String filename = "c." + Integer.toString(chunkX, 36)
+                    + "." + Integer.toString(chunkZ, 36) + ".dat";
+
+            player.print("Chunk: " + chunkX + ", " + chunkZ);
+            player.print(folder1 + "/" + folder2 + "/" + filename);
+
+            return true;
         }
 
         return false;
+    }
+
+    /**
+     * Modulus, divisor-style.
+     * 
+     * @param a
+     * @param n
+     * @return
+     */
+    private static int divisorMod(int a, int n) {
+        return (int)(a - n * Math.floor(Math.floor(a) / (double)n));
     }
 
     /**
