@@ -49,11 +49,11 @@ public abstract class ChunkStore {
      *
      * @param pos
      * @return tag
-     * @throws ChunkStoreException
+     * @throws DataException
      * @throws IOException
      */
     public abstract CompoundTag getChunkTag(Vector2D pos)
-            throws ChunkStoreException, IOException;
+            throws DataException, IOException;
 
     /**
      * Get a chunk at a location.

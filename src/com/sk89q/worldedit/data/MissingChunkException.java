@@ -19,16 +19,30 @@
 
 package com.sk89q.worldedit.data;
 
+import com.sk89q.worldedit.Vector2D;
+
 /**
  *
  * @author sk89q
  */
-public class ChunkStoreException extends DataException {
-    public ChunkStoreException(String msg) {
-        super(msg);
+public class MissingChunkException extends ChunkStoreException {
+    private Vector2D pos;
+
+    public MissingChunkException() {
+        super();
     }
 
-    public ChunkStoreException() {
+    public MissingChunkException(Vector2D pos) {
         super();
+        this.pos = pos;
+    }
+
+    /**
+     * Get chunk position in question. May be null if unknown.
+     * 
+     * @return
+     */
+    public Vector2D getChunkPosition() {
+        return pos;
     }
 }

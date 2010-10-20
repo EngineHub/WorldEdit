@@ -21,6 +21,7 @@ package com.sk89q.worldedit.data;
 
 import java.io.*;
 import java.util.zip.*;
+import java.util.Enumeration;
 
 /**
  * Represents the chunk store used by Minecraft alpha but zipped.
@@ -43,7 +44,8 @@ public class ZippedAlphaChunkStore extends NestedFileChunkStore {
 
     /**
      * Create an instance. The folder argument lets you choose a folder or
-     * path to look into in the ZIP for the files.
+     * path to look into in the ZIP for the files. Use a blank string for
+     * the folder to not look into a subdirectory.
      *
      * @param zipFile
      * @param folder
@@ -59,7 +61,8 @@ public class ZippedAlphaChunkStore extends NestedFileChunkStore {
     }
 
     /**
-     * Create an instance.
+     * Create an instance. The subfolder containing the chunk data will
+     * be detected.
      *
      * @param zipFile
      * @param folder
@@ -81,13 +84,46 @@ public class ZippedAlphaChunkStore extends NestedFileChunkStore {
      * @param name
      * @return
      * @throws IOException
+     * @throws DataException
      */
     protected InputStream getInputStream(String f1, String f2, String name)
-            throws IOException {
+            throws IOException, DataException {
         String file = f1 + "/" + f2 + "/" + name;
+
+        // Detect subfolder for the world's files
+        if (folder != null) {
+            if (!folder.equals("")) {
+                file = folder + "/" + file;
+            }
+        } else {
+            ZipEntry testEntry = zip.getEntry("level.dat");
+
+            // So, the data is not in the root directory
+            if (testEntry == null) {
+                // Let's try a world/ sub-directory
+                testEntry = zip.getEntry("world/level.dat");
+
+                // So not there either...
+                if (testEntry == null) {
+                    for (Enumeration e = zip.entries(); e.hasMoreElements(); ) {
+                        testEntry = (ZipEntry)e.nextElement();
+
+                        // Whoo, found level.dat!
+                        if (testEntry.getName().matches(".+/level\\.dat")) {
+                            file = testEntry.getName().replaceAll("level\\.dat$", "")
+                                    + file;
+                            break;
+                        }
+                    }
+                } else {
+                    file = "world/" + file;
+                }
+            }
+        }
+
         ZipEntry entry = zip.getEntry(file);
         if (entry == null) {
-            throw new IOException("ZIP doesn't contain chunk");
+            throw new MissingChunkException();
         }
         try {
             return zip.getInputStream(entry);

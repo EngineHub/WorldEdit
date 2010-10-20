@@ -28,4 +28,8 @@ public class DataException extends Exception {
     public DataException(String msg) {
         super(msg);
     }
+    
+    public DataException() {
+        super();
+    }
 }

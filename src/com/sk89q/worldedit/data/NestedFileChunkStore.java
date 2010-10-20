@@ -21,6 +21,7 @@ package com.sk89q.worldedit.data;
 
 import com.sk89q.worldedit.Vector2D;
 import java.io.*;
+import java.util.*;
 import org.jnbt.*;
 
 /**
@@ -36,9 +37,11 @@ public abstract class NestedFileChunkStore extends ChunkStore {
      *
      * @param pos
      * @return tag
+     * @throws DataException
+     * @throws IOException
      */
     public CompoundTag getChunkTag(Vector2D pos)
-            throws ChunkStoreException, IOException {
+            throws DataException, IOException {
         int x = pos.getBlockX();
         int z = pos.getBlockZ();
         
@@ -51,15 +54,37 @@ public abstract class NestedFileChunkStore extends ChunkStore {
         NBTInputStream nbt = new NBTInputStream(stream);
         Tag tag;
 
-        tag = nbt.readTag();
-        if (!(tag instanceof CompoundTag)) {
-            throw new ChunkStoreException("CompoundTag expected for chunk; got "
-                    + tag.getClass());
+        try {
+            tag = nbt.readTag();
+            if (!(tag instanceof CompoundTag)) {
+                throw new ChunkStoreException("CompoundTag expected for chunk; got "
+                        + tag.getClass().getName());
+            }
+
+            Map<String,Tag> children = (Map<String,Tag>)((CompoundTag)tag).getValue();
+            CompoundTag rootTag = null;
+
+            // Find Level tag
+            for (Map.Entry<String,Tag> entry : children.entrySet()) {
+                if (entry.getKey().equals("Level")) {
+                    if (entry.getValue() instanceof CompoundTag) {
+                        rootTag = (CompoundTag)entry.getValue();
+                        break;
+                    } else {
+                        throw new ChunkStoreException("CompoundTag expected for 'Level'; got "
+                                + entry.getValue().getClass().getName());
+                    }
+                }
+            }
+
+            if (rootTag == null) {
+                throw new ChunkStoreException("Missing root 'Level' tag");
+            }
+
+            return rootTag;
+        } finally {
+            stream.close();
         }
-
-        stream.close();
-
-        return (CompoundTag)tag;
     }
 
     /**
@@ -83,5 +108,5 @@ public abstract class NestedFileChunkStore extends ChunkStore {
      * @throws IOException
      */
     protected abstract InputStream getInputStream(String f1, String f2, String name)
-            throws IOException;
+            throws IOException, DataException;
 }

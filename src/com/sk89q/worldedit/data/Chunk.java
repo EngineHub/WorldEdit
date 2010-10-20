@@ -57,12 +57,14 @@ public class Chunk {
         rootZ = ((IntTag)getChildTag(
                 rootTag.getValue(), "zPos", IntTag.class)).getValue();
 
-        if (blocks.length != 16384) {
-            throw new InvalidFormatException("Chunk blocks byte array expected to contain 16,384 blocks");
+        if (blocks.length != 32768) {
+            throw new InvalidFormatException("Chunk blocks byte array expected "
+                    + "to be 32,768 bytes; found " + blocks.length);
         }
 
         if (data.length != 16384) {
-            throw new InvalidFormatException("Chunk block data byte array expected to contain 16,384 blocks");
+            throw new InvalidFormatException("Chunk block data byte array "
+                    + "expected to be 16,384 bytes; found " + data.length);
         }
     }
 
@@ -74,8 +76,10 @@ public class Chunk {
      * @throws DataException
      */
     public int getBlockID(Vector pos) throws DataException {
-        int index = pos.getBlockY() * 16 * 16
-                + (pos.getBlockZ() - rootZ) * 16 + (pos.getBlockX() - rootX);
+        int x = pos.getBlockX() - rootX * 16;
+        int y = pos.getBlockY();
+        int z = pos.getBlockZ() - rootZ * 16;
+        int index = y + (z * 128 + (x * 128 * 16));
 
         try {
             return blocks[index];
@@ -92,11 +96,19 @@ public class Chunk {
      * @throws DataException
      */
     public int getBlockData(Vector pos) throws DataException {
-        int index = pos.getBlockY() * 16 * 16
-                + (pos.getBlockZ() - rootZ) * 16 + (pos.getBlockX() - rootX);
+        int x = pos.getBlockX() - rootX * 16;
+        int y = pos.getBlockY();
+        int z = pos.getBlockZ() - rootZ * 16;
+        int index = y + (z * 128 + (x * 128 * 16));
+        boolean shift = index % 2 == 0;
+        index /= 2;
 
         try {
-            return data[index];
+            if (!shift) {
+                return (data[index] & 0xF0) >> 4;
+            } else {
+                return data[index] & 0xF;
+            }
         } catch (IndexOutOfBoundsException e) {
             throw new DataException("Chunk does not contain position " + pos);
         }

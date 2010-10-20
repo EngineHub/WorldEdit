@@ -49,11 +49,16 @@ public class AlphaChunkStore extends NestedFileChunkStore {
      * @param f2
      * @param name
      * @return
+     * @throws DataException
      * @throws IOException
      */
     protected InputStream getInputStream(String f1, String f2, String name)
-            throws IOException {
+            throws DataException, IOException {
         String file = f1 + File.separator + f2 + File.separator + name;
-        return new FileInputStream(new File(path, file));
+        try {
+            return new FileInputStream(new File(path, file));
+        } catch (FileNotFoundException e) {
+            throw new MissingChunkException();
+        }
     }
 }
