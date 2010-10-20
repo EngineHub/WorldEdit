@@ -287,11 +287,11 @@ public abstract class WorldEditPlayer {
     public boolean ascendToCeiling(int clearance) {
         Vector pos = getBlockIn();
         int x = pos.getBlockX();
+        int initialY = pos.getBlockY();
         int y = pos.getBlockY() + 2;
-        int initialY = y;
         int z = pos.getBlockZ();
         
-        // Nothing above
+        // No free space above
         if (server.getBlockType(new Vector(x, y, z)) != 0) {
             return false;
         }
@@ -299,10 +299,10 @@ public abstract class WorldEditPlayer {
         while (y <= 127) {
             // Found a ceiling!
             if (server.getBlockType(new Vector(x, y, z)) != 0) {
-                int platformY = Math.max(initialY, y - 3);
+                int platformY = Math.max(initialY, y - 3 - clearance);
                 server.setBlockType(new Vector(x, platformY, z),
                         BlockType.GLASS.getID());
-                setPosition(new Vector(x, platformY + 1, z));
+                setPosition(new Vector(x + 0.5, platformY + 1, z + 0.5));
                 return true;
             }
 
