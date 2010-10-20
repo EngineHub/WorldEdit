@@ -329,7 +329,7 @@ public class WorldEdit {
         // Go through a wall
         } else if (split[0].equalsIgnoreCase("/thru")) {
             checkArgs(split, 0, 0, split[0]);
-            if (player.passThroughForwardWall(300)) {
+            if (player.passThroughForwardWall(6)) {
                 player.print("Whoosh!");
             } else {
                 player.printError("No free spot ahead of you found.");

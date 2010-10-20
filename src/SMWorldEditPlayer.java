@@ -86,26 +86,30 @@ public class SMWorldEditPlayer extends WorldEditPlayer {
      * @return whether the player was pass through
      */
     public boolean passThroughForwardWall(int range) {
-        int free = 0;
-        int spots = 0;
+        boolean foundNext = false;
+        int searchDist = 0;
         
         HitBlox hitBlox = new HitBlox(player, range, 0.2);
         Block block;
 
-        free = hitBlox.getLastBlock().getType() == 0 ? 1 : 0;
         while ((block = hitBlox.getNextBlock()) != null) {
+            searchDist++;
+
+            if (searchDist > 20) {
+                return false;
+            }
+
             if (block.getType() == 0) {
-                free++;
-                if (spots >= 1) {
-                    Vector v = new Vector(block.getX(), block.getY() + 1, block.getZ());
+                if (foundNext) {
+                    Vector v = new Vector(block.getX(), block.getY() - 1, block.getZ());
+
                     if (server.getBlockType(v) == 0) {
-                        setPosition(v.subtract(0, 1, 0));
+                        setPosition(v.add(0.5, 0, 0.5));
                         return true;
                     }
                 }
             } else {
-                free = 0;
-                spots++;
+                foundNext = true;
             }
         }
 
