@@ -115,7 +115,7 @@ public class SMWorldEditListener extends PluginListener {
                 Vector pos = new Vector(blockClicked.getX(),
                         blockClicked.getY(), blockClicked.getZ());
                 if (WorldEdit.getServer().getBlockType(pos) == 7
-                        && !canUseCommand(modPlayer, "//bedrock")) {
+                        && !canUseCommand(modPlayer, "/worldeditbedrock")) {
                     return true;
                 }
                 
