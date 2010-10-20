@@ -80,7 +80,8 @@ public class SMWorldEditListener extends PluginListener {
     @Override
     public boolean onBlockDestroy(Player modPlayer, Block blockClicked) {
         if (!canUseCommand(modPlayer, "/editpos1")
-                && !canUseCommand(modPlayer, "/.")) { return false; }
+                && !canUseCommand(modPlayer, "//")
+                && !canUseCommand(modPlayer, "/wprldedit")) { return false; }
 
         WorldEdit worldEdit = WorldEdit.getInstance();
         WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
