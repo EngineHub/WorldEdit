@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.blocks;
 
-import com.sk89q.worldedit.SchematicException;
+import com.sk89q.worldedit.data.*;
 import java.util.Map;
 import java.util.HashMap;
 import org.jnbt.*;
@@ -81,10 +81,10 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
      * Store additional tile entity data. Returns true if the data is used.
      *
      * @return map of values
-     * @throws SchematicException
+     * @throws DataException
      */
     public Map<String,Tag> toTileEntityNBT()
-            throws SchematicException {
+            throws DataException {
         Map<String,Tag> values = new HashMap<String,Tag>();
         values.put("Text1", new StringTag("Text1", text[0]));
         values.put("Text2", new StringTag("Text2", text[1]));
@@ -97,10 +97,10 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
      * Get additional information from the title entity data.
      *
      * @param values
-     * @throws SchematicException
+     * @throws DataException
      */
     public void fromTileEntityNBT(Map<String,Tag> values)
-            throws SchematicException  {
+            throws DataException  {
         if (values == null) {
             return;
         }
@@ -111,7 +111,7 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
 
         t = values.get("id");
         if (!(t instanceof StringTag) || !((StringTag)t).getValue().equals("Sign")) {
-            throw new SchematicException("'Sign' tile entity expected");
+            throw new DataException("'Sign' tile entity expected");
         }
 
         t = values.get("Text1");

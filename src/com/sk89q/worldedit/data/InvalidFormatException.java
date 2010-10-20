@@ -17,14 +17,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.data;
 
 /**
  *
- * @author Albert
+ * @author sk89q
  */
-public class SchematicException extends WorldEditException {
-    public SchematicException(String error) {
-        super(error);
+public class InvalidFormatException extends DataException {
+    public InvalidFormatException(String msg) {
+        super(msg);
     }
 }

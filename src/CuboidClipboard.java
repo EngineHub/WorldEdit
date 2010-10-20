@@ -17,16 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import com.sk89q.worldedit.blocks.TileEntityBlock;
-import com.sk89q.worldedit.blocks.SignBlock;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.data.*;
 import org.jnbt.*;
 import java.io.*;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
-import com.sk89q.worldedit.*;
 
 /**
  * The clipboard remembers the state of a cuboid region.
@@ -203,21 +202,21 @@ public class CuboidClipboard {
      *
      * @param path
      * @throws IOException
-     * @throws SchematicException
+     * @throws DataException
      */
-    public void saveSchematic(String path) throws IOException, SchematicException {
+    public void saveSchematic(String path) throws IOException, DataException {
         int width = getWidth();
         int height = getHeight();
         int length = getLength();
 
         if (width > 65535) {
-            throw new SchematicException("Width of region too large for a .schematic");
+            throw new DataException("Width of region too large for a .schematic");
         }
         if (height > 65535) {
-            throw new SchematicException("Height of region too large for a .schematic");
+            throw new DataException("Height of region too large for a .schematic");
         }
         if (length > 65535) {
-            throw new SchematicException("Length of region too large for a .schematic");
+            throw new DataException("Length of region too large for a .schematic");
         }
 
         HashMap<String,Tag> schematic = new HashMap<String,Tag>();
@@ -278,24 +277,24 @@ public class CuboidClipboard {
      * @param path
      * @param origin
      * @return clipboard
-     * @throws SchematicException
+     * @throws DataException
      * @throws IOException
      */
     public static CuboidClipboard loadSchematic(String path)
-            throws SchematicException, IOException {
+            throws DataException, IOException {
         FileInputStream stream = new FileInputStream(path);
         NBTInputStream nbtStream = new NBTInputStream(stream);
 
         // Schematic tag
         CompoundTag schematicTag = (CompoundTag)nbtStream.readTag();
         if (!schematicTag.getName().equals("Schematic")) {
-            throw new SchematicException("Tag \"Schematic\" does not exist or is not first");
+            throw new DataException("Tag \"Schematic\" does not exist or is not first");
         }
 
         // Check
         Map<String,Tag> schematic = schematicTag.getValue();
         if (!schematic.containsKey("Blocks")) {
-            throw new SchematicException("Schematic file is missing a \"Blocks\" tag");
+            throw new DataException("Schematic file is missing a \"Blocks\" tag");
         }
 
         // Get information
@@ -306,7 +305,7 @@ public class CuboidClipboard {
         // Check type of Schematic
         String materials = (String)getChildTag(schematic, "Materials", StringTag.class).getValue();
         if (!materials.equals("Alpha")) {
-            throw new SchematicException("Schematic file is not an Alpha schematic");
+            throw new DataException("Schematic file is not an Alpha schematic");
         }
 
         // Get blocks
@@ -386,16 +385,16 @@ public class CuboidClipboard {
      * @param key
      * @param expected
      * @return child tag
-     * @throws SchematicException
+     * @throws DataException
      */
     private static Tag getChildTag(Map<String,Tag> items, String key, Class expected)
-            throws SchematicException {
+            throws DataException {
         if (!items.containsKey(key)) {
-            throw new SchematicException("Schematic file is missing a \"" + key + "\" tag");
+            throw new DataException("Schematic file is missing a \"" + key + "\" tag");
         }
         Tag tag = items.get(key);
         if (!expected.isInstance(tag)) {
-            throw new SchematicException(
+            throw new DataException(
                 key + " tag is not of tag type " + expected.getName());
         }
         return tag;

@@ -17,16 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.data.*;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.*;
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.*;
 
 /**
  * Plugin base.
@@ -590,8 +590,8 @@ public class WorldEdit {
                     logger.log(Level.INFO, player.getName() + " loaded " + filePath);
                     player.print(filename + " loaded.");
                 }
-            /*} catch (SchematicException e) {
-                player.printError("Load error: " + e.getMessage());*/
+            } catch (DataException e) {
+                player.printError("Load error: " + e.getMessage());
             } catch (IOException e) {
                 player.printError("Schematic could not read or it does not exist.");
             }
@@ -629,7 +629,7 @@ public class WorldEdit {
                     logger.log(Level.INFO, player.getName() + " saved " + filePath);
                     player.print(filename + " saved.");
                 }
-            } catch (SchematicException se) {
+            } catch (DataException se) {
                 player.printError("Save error: " + se.getMessage());
             } catch (IOException e) {
                 player.printError("Schematic could not written.");

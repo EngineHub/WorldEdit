@@ -17,38 +17,43 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.blocks;
+package com.sk89q.worldedit.data;
 
-import com.sk89q.worldedit.data.*;
-import java.util.Map;
-import org.jnbt.Tag;
+import java.io.*;
 
 /**
- * A class implementing this interface has extra TileEntityBlock data to store.
+ * Represents the chunk store used by Minecraft alpha.
  *
  * @author sk89q
  */
-public interface TileEntityBlock {
+public class AlphaChunkStore extends NestedFileChunkStore {
     /**
-     * Return the name of the title entity ID.
-     * 
-     * @return title entity ID
+     * Folder to read from.
      */
-    public String getTileEntityID();
+    private File path;
+
     /**
-     * Store additional tile entity data.
+     * Create an instance. The passed path is the folder to read the
+     * chunk files from.
+     * 
+     * @param path
+     */
+    public AlphaChunkStore(File path) {
+        this.path = path;
+    }
+
+    /**
+     * Get the input stream for a chunk file.
      *
-     * @return map of values
-     * @throws DataException
+     * @param f1
+     * @param f2
+     * @param name
+     * @return
+     * @throws IOException
      */
-    public Map<String,Tag> toTileEntityNBT()
-            throws DataException;
-    /**
-     * Get additional information from the title entity data.
-     * 
-     * @param values
-     * @throws DataException
-     */
-    public void fromTileEntityNBT(Map<String,Tag> values)
-            throws DataException;
+    protected InputStream getInputStream(String f1, String f2, String name)
+            throws IOException {
+        String file = f1 + File.separator + f2 + File.separator + name;
+        return new FileInputStream(new File(path, file));
+    }
 }

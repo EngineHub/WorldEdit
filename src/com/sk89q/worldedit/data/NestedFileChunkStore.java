@@ -1,0 +1,87 @@
+// $Id$
+/*
+ * WorldEdit
+ * Copyright (C) 2010 sk89q <http://www.sk89q.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+package com.sk89q.worldedit.data;
+
+import com.sk89q.worldedit.Vector2D;
+import java.io.*;
+import org.jnbt.*;
+
+/**
+ * Represents chunk stores that use Alpha's file format for storing chunks.
+ * The code to resolve the filename is already implemented in this class
+ * and an inheriting class merely needs to implement getInputStream().
+ *
+ * @author sk89q
+ */
+public abstract class NestedFileChunkStore extends ChunkStore {
+    /**
+     * Get the tag for a chunk.
+     *
+     * @param pos
+     * @return tag
+     */
+    public CompoundTag getChunkTag(Vector2D pos)
+            throws ChunkStoreException, IOException {
+        int x = pos.getBlockX();
+        int z = pos.getBlockZ();
+        
+        String folder1 = Integer.toString(divisorMod(x, 64), 36);
+        String folder2 = Integer.toString(divisorMod(z, 64), 36);
+        String filename = "c." + Integer.toString(x, 36)
+                + "." + Integer.toString(z, 36) + ".dat";
+
+        InputStream stream = getInputStream(folder1, folder2, filename);
+        NBTInputStream nbt = new NBTInputStream(stream);
+        Tag tag;
+
+        tag = nbt.readTag();
+        if (!(tag instanceof CompoundTag)) {
+            throw new ChunkStoreException("CompoundTag expected for chunk; got "
+                    + tag.getClass());
+        }
+
+        stream.close();
+
+        return (CompoundTag)tag;
+    }
+
+    /**
+     * Modulus, divisor-style.
+     *
+     * @param a
+     * @param n
+     * @return
+     */
+    private static int divisorMod(int a, int n) {
+        return (int)(a - n * Math.floor(Math.floor(a) / (double)n));
+    }
+
+    /**
+     * Get the input stream for a chunk file.
+     * 
+     * @param f1
+     * @param f2
+     * @param name
+     * @return
+     * @throws IOException
+     */
+    protected abstract InputStream getInputStream(String f1, String f2, String name)
+            throws IOException;
+}

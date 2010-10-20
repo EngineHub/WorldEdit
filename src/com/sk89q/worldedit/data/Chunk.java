@@ -1,0 +1,217 @@
+// $Id$
+/*
+ * WorldEdit
+ * Copyright (C) 2010 sk89q <http://www.sk89q.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+package com.sk89q.worldedit.data;
+
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.*;
+import org.jnbt.*;
+
+/**
+ * Represents a chunk.
+ *
+ * @author sk89q
+ */
+public class Chunk {
+    private CompoundTag rootTag;
+    private byte[] blocks;
+    private byte[] data;
+    private int rootX;
+    private int rootZ;
+    Map<BlockVector,Map<String,Tag>> tileEntities;
+
+    /**
+     * Construct the chunk with a compound tag.
+     * 
+     * @param rootTag
+     */
+    public Chunk(CompoundTag tag) throws DataException {
+        rootTag = tag;
+
+        blocks = ((ByteArrayTag)getChildTag(
+                rootTag.getValue(), "Blocks", ByteArrayTag.class)).getValue();
+        data = ((ByteArrayTag)getChildTag(
+                rootTag.getValue(), "Data", ByteArrayTag.class)).getValue();
+        rootX = ((IntTag)getChildTag(
+                rootTag.getValue(), "xPos", IntTag.class)).getValue();
+        rootZ = ((IntTag)getChildTag(
+                rootTag.getValue(), "zPos", IntTag.class)).getValue();
+
+        if (blocks.length != 16384) {
+            throw new InvalidFormatException("Chunk blocks byte array expected to contain 16,384 blocks");
+        }
+
+        if (data.length != 16384) {
+            throw new InvalidFormatException("Chunk block data byte array expected to contain 16,384 blocks");
+        }
+    }
+
+    /**
+     * Get the block ID of a block.
+     *
+     * @param pos
+     * @return
+     * @throws DataException
+     */
+    public int getBlockID(Vector pos) throws DataException {
+        int index = pos.getBlockY() * 16 * 16
+                + (pos.getBlockZ() - rootZ) * 16 + (pos.getBlockX() - rootX);
+
+        try {
+            return blocks[index];
+        } catch (IndexOutOfBoundsException e) {
+            throw new DataException("Chunk does not contain position " + pos);
+        }
+    }
+
+    /**
+     * Get the block data of a block.
+     *
+     * @param pos
+     * @return
+     * @throws DataException
+     */
+    public int getBlockData(Vector pos) throws DataException {
+        int index = pos.getBlockY() * 16 * 16
+                + (pos.getBlockZ() - rootZ) * 16 + (pos.getBlockX() - rootX);
+
+        try {
+            return data[index];
+        } catch (IndexOutOfBoundsException e) {
+            throw new DataException("Chunk does not contain position " + pos);
+        }
+    }
+
+    /**
+     * Used to load the tile entities.
+     * 
+     * @throws DataException
+     */
+    private void populateTileEntities() throws DataException {
+        List<Tag> tags = (List<Tag>)((ListTag)getChildTag(
+                rootTag.getValue(), "TileEntities", ListTag.class))
+                .getValue();
+
+        tileEntities = new HashMap<BlockVector,Map<String,Tag>>();
+
+        for (Tag tag : tags) {
+            if (!(tag instanceof CompoundTag)) {
+                throw new InvalidFormatException("CompoundTag expected in TileEntities");
+            }
+            
+            CompoundTag t = (CompoundTag)tag;
+
+            int x = 0;
+            int y = 0;
+            int z = 0;
+
+            Map<String,Tag> values = new HashMap<String,Tag>();
+
+            for (Map.Entry<String,Tag> entry : t.getValue().entrySet()) {
+                if (entry.getKey().equals("x")) {
+                    if (entry.getValue() instanceof IntTag) {
+                        x = ((IntTag)entry.getValue()).getValue();
+                    }
+                } else if (entry.getKey().equals("y")) {
+                    if (entry.getValue() instanceof IntTag) {
+                        y = ((IntTag)entry.getValue()).getValue();
+                    }
+                } else if (entry.getKey().equals("z")) {
+                    if (entry.getValue() instanceof IntTag) {
+                        z = ((IntTag)entry.getValue()).getValue();
+                    }
+                }
+
+                values.put(entry.getKey(), entry.getValue());
+            }
+
+            BlockVector vec = new BlockVector(x, y, z);
+            tileEntities.put(vec, values);
+        }
+    }
+
+    /**
+     * Get the map of tags keyed to strings for a block's tile entity data. May
+     * return null if there is no tile entity data. Not public yet because
+     * what this function returns isn't ideal for usage.
+     * 
+     * @param pos
+     * @return
+     * @throws DataException
+     */
+    private Map<String,Tag> getBlockTileEntity(Vector pos) throws DataException {
+        if (tileEntities == null)
+            populateTileEntities();
+
+        return tileEntities.get(new BlockVector(pos));
+    }
+
+    /**
+     * Get a block;
+     *
+     * @param pos
+     * @return block
+     * @throws DataException
+     */
+    public BaseBlock getBlock(Vector pos) throws DataException {
+        int id = getBlockID(pos);
+        int data = getBlockData(pos);
+
+        // Signs
+        if (id == 63 || id == 68) {
+            SignBlock block = new SignBlock(id, data);
+
+            Map<String,Tag> tileEntity = getBlockTileEntity(pos);
+
+            if (tileEntity != null) {
+                ((TileEntityBlock)block).fromTileEntityNBT(tileEntity);
+            }
+
+            return block;
+        } else {
+            return new BaseBlock(id, data);
+        }
+    }
+
+    /**
+     * Get child tag of a NBT structure.
+     *
+     * @param items
+     * @param key
+     * @param expected
+     * @return child tag
+     * @throws InvalidFormatException
+     */
+    private static Tag getChildTag(Map<String,Tag> items, String key, Class expected)
+            throws InvalidFormatException {
+        if (!items.containsKey(key)) {
+            throw new InvalidFormatException("Missing a \"" + key + "\" tag");
+        }
+        Tag tag = items.get(key);
+        if (!expected.isInstance(tag)) {
+            throw new InvalidFormatException(
+                key + " tag is not of tag type " + expected.getName());
+        }
+        return tag;
+    }
+}

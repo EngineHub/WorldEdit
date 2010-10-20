@@ -17,17 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.blocks.SignBlock;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.regions.*;
+import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.data.*;
+import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Stack;
-import com.sk89q.worldedit.*;
+import java.util.ArrayList;
 
 /**
  * This class can wrap all block editing operations into one "edit session" that
@@ -1277,5 +1278,64 @@ public class EditSession {
         }
 
         return affected;
+    }
+
+    /**
+     * Restores a region from a backup.
+     * 
+     * @param region
+     * @param chunkStore
+     */
+    public void restoreBackup(Region region, ChunkStore chunkStore)
+            throws MaxChangedBlocksException {
+        // TODO: Make this support non-cuboid regions
+        
+        Vector min = region.getMinimumPoint();
+        Vector max = region.getMaximumPoint();
+
+        Map<BlockVector2D,ArrayList<Vector>> neededChunks =
+                new LinkedHashMap<BlockVector2D,ArrayList<Vector>>();
+
+        // First, we need to group points by chunk so that we only need
+        // to keep one chunk in memory at any given moment
+        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+            for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                    Vector pos = new Vector(x, y, z);
+                    BlockVector2D chunkPos = ChunkStore.toChunk(pos);
+
+                    // Unidentified chunk
+                    if (!neededChunks.containsKey(chunkPos)) {
+                        neededChunks.put(chunkPos, new ArrayList<Vector>());
+                    }
+
+                    neededChunks.get(chunkPos).add(pos);
+                }
+            }
+        }
+
+        // Now let's start restoring!
+        for (Map.Entry<BlockVector2D,ArrayList<Vector>> entry :
+                neededChunks.entrySet()) {
+            BlockVector2D chunkPos = entry.getKey();
+            Chunk chunk;
+
+            try {
+                chunk = chunkStore.getChunk(chunkPos);
+                // Good, the chunk could be at least loaded
+
+                // Now just copy blocks!
+                for (Vector pos : entry.getValue()) {
+                    BaseBlock block = chunk.getBlock(pos);
+                    setBlock(pos, block);
+                }
+            } catch (DataException de) {
+                // TODO: Error handling
+                de.printStackTrace();
+            } catch (IOException ioe) {
+                // TODO: Error handling
+                ioe.printStackTrace();
+            }
+        }
     }
 }
