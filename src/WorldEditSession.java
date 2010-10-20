@@ -17,6 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import com.sk89q.worldedit.snapshots.Snapshot;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.*;
@@ -37,6 +38,7 @@ public class WorldEditSession {
     private boolean toolControl = true;
     private boolean superPickAxe = false;
     private int maxBlocksChanged = -1;
+    private Snapshot snapshot;
 
     /**
      * Clear history.
@@ -304,5 +306,19 @@ public class WorldEditSession {
     public boolean togglePlacementPosition() {
         placeAtPos1 = !placeAtPos1;
         return placeAtPos1;
+    }
+
+    /**
+     * @return the snapshotName
+     */
+    public Snapshot getSnapshot() {
+        return snapshot;
+    }
+
+    /**
+     * @param snapshot
+     */
+    public void setSnapshot(Snapshot snapshot) {
+        this.snapshot = snapshot;
     }
 }

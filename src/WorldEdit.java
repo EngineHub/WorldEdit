@@ -17,10 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import com.sk89q.worldedit.snapshots.SnapshotRepository;
+import com.sk89q.worldedit.snapshots.Snapshot;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.snapshots.InvalidSnapshotException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Arrays;
@@ -74,6 +77,10 @@ public class WorldEdit {
      * Default block change limit. -1 for no limit.
      */
     private int defaultChangeLimit = -1;
+    /**
+     * Stores the snapshot repository. May be null;
+     */
+    private SnapshotRepository snapshotRepo;
 
     /**
      * Set up an instance.
@@ -162,6 +169,9 @@ public class WorldEdit {
         commands.put("/thru", "Go through the wall that you are looking at");
         commands.put("/ceil", "<Clearance> - Get to the ceiling");
         commands.put("/chunkinfo", "Get the filename of the chunk that you are in");
+        commands.put("/listsnapshots", "List the 5 newest snapshots");
+        commands.put("//use", "[SnapshotID] - Use a particular snapshot");
+        commands.put("//restore", "Restore a particular snapshot");
     }
 
     /**
@@ -877,6 +887,109 @@ public class WorldEdit {
             player.print(folder1 + "/" + folder2 + "/" + filename);
 
             return true;
+
+        // List snapshots
+        } else if (split[0].equalsIgnoreCase("/listsnapshots")) {
+            checkArgs(split, 0, 0, split[0]);
+
+            if (snapshotRepo != null) {
+                Snapshot[] snapshots = snapshotRepo.getSnapshots();
+
+                if (snapshots.length > 0) {
+                    for (byte i = 0; i < Math.min(5, snapshots.length); i++) {
+                        player.print((i + 1) + ". " + snapshots[i].getName());
+                    }
+
+                    player.print("Use //use [snapshot] or //use latest to set the snapshot.");
+                } else {
+                    player.printError("No snapshots are available.");
+                }
+            } else {
+                player.printError("Snapshot/backup restore is not configured.");
+            }
+
+            return true;
+
+        // Use a certain snapshot
+        } else if (split[0].equalsIgnoreCase("//use")) {
+            checkArgs(split, 1, 1, split[0]);
+
+            if (snapshotRepo == null) {
+                player.printError("Snapshot/backup restore is not configured.");
+                return true;
+            }
+
+            String name = split[1];
+
+            // Want the latest snapshot?
+            if (name.equalsIgnoreCase("latest")) {
+                Snapshot snapshot = snapshotRepo.getDefaultSnapshot();
+
+                if (snapshot != null) {
+                    session.setSnapshot(null);
+                    player.print("Now using newest snapshot.");
+                } else {
+                    player.printError("No snapshots were found.");
+                }
+            } else {
+                try {
+                    session.setSnapshot(snapshotRepo.getSnapshot(name));
+                    player.print("Snapshot set to: " + name);
+                } catch (InvalidSnapshotException e) {
+                    player.printError("That snapshot does not exist or is not available.");
+                }
+            }
+
+            return true;
+
+        // Restore
+        } else if (split[0].equalsIgnoreCase("//restore")) {
+            checkArgs(split, 0, 0, split[0]);
+
+            if (snapshotRepo == null) {
+                player.printError("Snapshot/backup restore is not configured.");
+                return true;
+            }
+
+            Region region = session.getRegion();
+            Snapshot snapshot = session.getSnapshot();
+            ChunkStore chunkStore;
+
+            // No snapshot set?
+            if (snapshot == null) {
+                snapshot = snapshotRepo.getDefaultSnapshot();
+
+                if (snapshot == null) {
+                    player.printError("No snapshots were found.");
+                    return true;
+                }
+            }
+
+            // Load chunk store
+            try {
+                chunkStore = snapshot.getChunkStore();
+                player.print("Snapshot '" + snapshot.getName() + "' loaded; now restoring...");
+            } catch (IOException e) {
+                player.printError("Failed to load snapshot: " + e.getMessage());
+                return true;
+            }
+
+            // Restore snapshot
+            SnapshotRestore restore = new SnapshotRestore(chunkStore, region);
+            //player.print(restore.getChunksAffected() + " chunk(s) will be loaded.");
+
+            restore.restore(editSession);
+
+            if (restore.hadTotalFailure()) {
+                player.printError("No blocks could be restored. (Bad backup?)");
+            } else {
+                player.print(String.format("Restored; %d "
+                        + "missing chunks and %d other errors.",
+                        restore.getMissingChunks().size(),
+                        restore.getErrorChunks().size()));
+            }
+
+            return true;
         }
 
         return false;
@@ -993,5 +1106,19 @@ public class WorldEdit {
      */
     public void setDefaultChangeLimit(int defaultChangeLimit) {
         this.defaultChangeLimit = defaultChangeLimit;
+    }
+
+    /**
+     * @return the snapshotRepo
+     */
+    public SnapshotRepository getSnapshotRepo() {
+        return snapshotRepo;
+    }
+
+    /**
+     * @param snapshotRepo the snapshotRepo to set
+     */
+    public void setSnapshotRepository(SnapshotRepository snapshotRepo) {
+        this.snapshotRepo = snapshotRepo;
     }
 }

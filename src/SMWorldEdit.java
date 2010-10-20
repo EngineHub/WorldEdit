@@ -17,6 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import com.sk89q.worldedit.snapshots.SnapshotRepository;
 import java.util.Map;
 import java.util.HashSet;
 import com.sk89q.worldedit.ServerInterface;
@@ -85,6 +86,11 @@ public class SMWorldEdit extends Plugin {
         
         worldEdit.setDefaultChangeLimit(
                 Math.max(-1, properties.getInt("max-blocks-changed", -1)));
+
+        String snapshotsDir = properties.getString("snapshots-dir", "");
+        if (!snapshotsDir.trim().equals("")) {
+            worldEdit.setSnapshotRepository(new SnapshotRepository(snapshotsDir));
+        }
 
         for (Map.Entry<String,String> entry : worldEdit.getCommands().entrySet()) {
             etc.getInstance().addCommand(entry.getKey(), entry.getValue());
