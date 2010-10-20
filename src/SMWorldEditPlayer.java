@@ -65,6 +65,54 @@ public class SMWorldEditPlayer extends WorldEditPlayer {
     }
 
     /**
+     * Get the point of the block being looked at. May return null.
+     *
+     * @param range
+     * @return point
+     */
+    public Vector getBlockTrace(int range) {
+        HitBlox hitBlox = new HitBlox(player, range, 0.2);
+        Block block = hitBlox.getTargetBlock();
+        if (block == null) {
+            return null;
+        }
+        return new Vector(block.getX(), block.getY(), block.getZ());
+    }
+
+    /**
+     * Pass through the wall that you are looking at.
+     *
+     * @param range
+     * @return whether the player was pass through
+     */
+    public boolean passThroughForwardWall(int range) {
+        int free = 0;
+        int spots = 0;
+        
+        HitBlox hitBlox = new HitBlox(player, range, 0.2);
+        Block block;
+
+        free = hitBlox.getLastBlock().getType() == 0 ? 1 : 0;
+        while ((block = hitBlox.getNextBlock()) != null) {
+            if (block.getType() == 0) {
+                free++;
+                if (spots >= 1) {
+                    Vector v = new Vector(block.getX(), block.getY() + 1, block.getZ());
+                    if (server.getBlockType(v) == 0) {
+                        setPosition(v.subtract(0, 1, 0));
+                        return true;
+                    }
+                }
+            } else {
+                free = 0;
+                spots++;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get the player's position.
      *
      * @return point

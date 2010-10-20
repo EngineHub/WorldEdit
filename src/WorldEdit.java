@@ -114,6 +114,8 @@ public class WorldEdit {
         // for now (see SMWorldEditListener.canUseCommand)
         commands.put("//pos1", "Set editing position #1");
         commands.put("//pos2", "Set editing position #2");
+        commands.put("//hpos1", "Trace editing position #1");
+        commands.put("//hpos2", "Trace editing position #2");
         commands.put("/toggleplace", "Toggle placing at pos #1");
         commands.put("//wand", "Gives you the \"edit wand\"");
         commands.put("/toggleeditwand", "Toggles edit wand selection");
@@ -156,6 +158,9 @@ public class WorldEdit {
         commands.put("/unstuck", "Go up to the first free spot");
         commands.put("/ascend", "Go up one level");
         commands.put("/descend", "Go down one level");
+        commands.put("/jumpto", "Jump to the block that you are looking at");
+        commands.put("/thru", "Go through the wall that you are looking at");
+        commands.put("/ceil", "<Clearance> - Get to the ceiling");
     }
 
     /**
@@ -309,6 +314,41 @@ public class WorldEdit {
             }
             return true;
 
+        // Jump to the block in sight
+        } else if (split[0].equalsIgnoreCase("/jumpto")) {
+            checkArgs(split, 0, 0, split[0]);
+            Vector pos = player.getBlockTrace(300);
+            if (pos != null) {
+                player.findFreePosition(pos);
+                player.print("Poof!");
+            } else {
+                player.printError("No block in sight!");
+            }
+            return true;
+
+        // Go through a wall
+        } else if (split[0].equalsIgnoreCase("/thru")) {
+            checkArgs(split, 0, 0, split[0]);
+            if (player.passThroughForwardWall(300)) {
+                player.print("Whoosh!");
+            } else {
+                player.printError("No free spot ahead of you found.");
+            }
+            return true;
+
+        // Go to the ceiling
+        } else if (split[0].equalsIgnoreCase("/ceil")) {
+            checkArgs(split, 0, 1, split[0]);
+            int clearence = split.length > 1 ?
+                Math.max(0, Integer.parseInt(split[1])) : 0;
+            
+            if (player.ascendToCeiling(clearence)) {
+                player.print("Whoosh!");
+            } else {
+                player.printError("No free spot above you found.");
+            }
+            return true;
+
         // Set edit position #1
         } else if (split[0].equalsIgnoreCase("//pos1")) {
             checkArgs(split, 0, 0, split[0]);
@@ -321,6 +361,30 @@ public class WorldEdit {
             checkArgs(split, 0, 0, split[0]);
             session.setPos2(player.getBlockIn());
             player.print("Second edit position set.");
+            return true;
+
+        // Trace edit position #1
+        } else if (split[0].equalsIgnoreCase("//hpos1")) {
+            checkArgs(split, 0, 0, split[0]);
+            Vector pos = player.getBlockTrace(300);
+            if (pos != null) {
+                session.setPos1(pos);
+                player.print("First edit position set.");
+            } else {
+                player.printError("No block in sight!");
+            }
+            return true;
+
+        // Trace edit position #2
+        } else if (split[0].equalsIgnoreCase("//hpos2")) {
+            checkArgs(split, 0, 0, split[0]);
+            Vector pos = player.getBlockTrace(300);
+            if (pos != null) {
+                session.setPos2(pos);
+                player.print("Second edit position set.");
+            } else {
+                player.printError("No block in sight!");
+            }
             return true;
 
         // Edit wand

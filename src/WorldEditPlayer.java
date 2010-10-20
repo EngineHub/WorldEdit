@@ -19,6 +19,7 @@
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.blocks.BlockType;
 
 /**
  *
@@ -55,6 +56,13 @@ public abstract class WorldEditPlayer {
      * @return point
      */
     public abstract Vector getBlockIn();
+    /**
+     * Get the point of the block being looked at. May return null.
+     *
+     * @param range
+     * @return point
+     */
+    public abstract Vector getBlockTrace(int range);
     /**
      * Get the player's position.
      *
@@ -135,13 +143,14 @@ public abstract class WorldEditPlayer {
      * Blocks above the player will be iteratively tested until there is
      * a series of two free blocks. The player will be teleported to
      * that free position.
+     *
+     * @param searchPos search position
      */
-    public void findFreePosition() {
-        Vector pos = getBlockIn();
-        int x = pos.getBlockX();
-        int y = pos.getBlockY();
+    public void findFreePosition(Vector searchPos) {
+        int x = searchPos.getBlockX();
+        int y = searchPos.getBlockY();
         int origY = y;
-        int z = pos.getBlockZ();
+        int z = searchPos.getBlockZ();
 
         byte free = 0;
 
@@ -162,6 +171,24 @@ public abstract class WorldEditPlayer {
             y++;
         }
     }
+
+    /**
+     * Find a position for the player to stand that is not inside a block.
+     * Blocks above the player will be iteratively tested until there is
+     * a series of two free blocks. The player will be teleported to
+     * that free position.
+     */
+    public void findFreePosition() {
+        findFreePosition(getBlockIn());
+    }
+
+    /**
+     * Pass through the wall that you are looking at.
+     *
+     * @param range
+     * @return whether a wall was passed through
+     */
+    public abstract boolean passThroughForwardWall(int range);
 
     /**
      * Go up one level to the next free space above.
@@ -246,6 +273,40 @@ public abstract class WorldEditPlayer {
             }
 
             y--;
+        }
+
+        return false;
+    }
+
+    /**
+     * Ascend to the ceiling above.
+     * 
+     * @param clearance
+     * @return whether the player was moved
+     */
+    public boolean ascendToCeiling(int clearance) {
+        Vector pos = getBlockIn();
+        int x = pos.getBlockX();
+        int y = pos.getBlockY() + 2;
+        int initialY = y;
+        int z = pos.getBlockZ();
+        
+        // Nothing above
+        if (server.getBlockType(new Vector(x, y, z)) != 0) {
+            return false;
+        }
+
+        while (y <= 127) {
+            // Found a ceiling!
+            if (server.getBlockType(new Vector(x, y, z)) != 0) {
+                int platformY = Math.max(initialY, y - 3);
+                server.setBlockType(new Vector(x, platformY, z),
+                        BlockType.GLASS.getID());
+                setPosition(new Vector(x, platformY + 1, z));
+                return true;
+            }
+
+            y++;
         }
 
         return false;
