@@ -56,7 +56,11 @@ public class Snapshot {
      */
     public ChunkStore getChunkStore() throws IOException {
         if (file.getName().toLowerCase().endsWith(".zip")) {
-            return new ZippedAlphaChunkStore(file);
+            try {
+                return new TrueZipAlphaChunkStore(file);
+            } catch (NoClassDefFoundError e) {
+                return new ZippedAlphaChunkStore(file);
+            }
         } else {
             return new AlphaChunkStore(file);
         }

@@ -953,7 +953,7 @@ public class WorldEdit {
 
             Region region = session.getRegion();
             Snapshot snapshot = session.getSnapshot();
-            ChunkStore chunkStore;
+            ChunkStore chunkStore = null;
 
             // No snapshot set?
             if (snapshot == null) {
@@ -974,19 +974,26 @@ public class WorldEdit {
                 return true;
             }
 
-            // Restore snapshot
-            SnapshotRestore restore = new SnapshotRestore(chunkStore, region);
-            //player.print(restore.getChunksAffected() + " chunk(s) will be loaded.");
+            try {
+                // Restore snapshot
+                SnapshotRestore restore = new SnapshotRestore(chunkStore, region);
+                //player.print(restore.getChunksAffected() + " chunk(s) will be loaded.");
 
-            restore.restore(editSession);
+                restore.restore(editSession);
 
-            if (restore.hadTotalFailure()) {
-                player.printError("No blocks could be restored. (Bad backup?)");
-            } else {
-                player.print(String.format("Restored; %d "
-                        + "missing chunks and %d other errors.",
-                        restore.getMissingChunks().size(),
-                        restore.getErrorChunks().size()));
+                if (restore.hadTotalFailure()) {
+                    player.printError("No blocks could be restored. (Bad backup?)");
+                } else {
+                    player.print(String.format("Restored; %d "
+                            + "missing chunks and %d other errors.",
+                            restore.getMissingChunks().size(),
+                            restore.getErrorChunks().size()));
+                }
+            } finally {
+                try {
+                    chunkStore.close();
+                } catch (IOException e) {
+                }
             }
 
             return true;
