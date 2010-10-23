@@ -118,11 +118,11 @@ public class EditSession {
         if (block.getID() != 0) {
             // Changes in block data don't take effect if the block type doesn't
             // change, so here's a hack!
-            if (!result) {
+            /*if (!result) {
                 server.setBlockType(pt, 0);
                 result = server.setBlockType(pt, block.getID());
             }
-            server.setBlockData(pt, block.getData());
+            server.setBlockData(pt, block.getData());*/
 
             // Signs
             if (block instanceof SignBlock) {
