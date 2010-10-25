@@ -18,6 +18,9 @@
 */
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.BaseItem;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  *
@@ -107,5 +110,56 @@ public class SMServerInterface implements ServerInterface {
             text[i] = signData.getText(i);
         }
         return text;
+    }
+
+    /**
+     * Gets the contents of chests.
+     *
+     * @param pt
+     * @return
+     */
+    public Map<Byte,Countable<BaseItem>> getChestContents(Vector pt) {
+        ComplexBlock cblock = etc.getServer().getComplexBlock(
+                pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+
+        if (!(cblock instanceof Chest)) {
+            return null;
+        }
+
+        Chest chest = (Chest)cblock;
+        Map<Byte,Countable<BaseItem>> items =
+                new HashMap<Byte,Countable<BaseItem>>();
+
+        for (byte i = 0; i <= 26; i++) {
+            Item item = chest.getItemFromSlot(i);
+            if (item != null) {
+                items.put(i, new Countable(new BaseItem((short)item.getItemId()), item.getAmount()));
+            }
+        }
+
+        return items;
+    }
+
+    /**
+     * Sets a chest slot.
+     *
+     * @param pt
+     * @param slot
+     * @param item
+     * @param amount
+     * @return
+     */
+    public boolean setChestSlot(Vector pt, byte slot, BaseItem item, int amount) {
+        ComplexBlock cblock = etc.getServer().getComplexBlock(
+                pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+
+        if (!(cblock instanceof Chest)) {
+            return false;
+        }
+
+        Chest chest = (Chest)cblock;
+        chest.addItem(new Item(item.getID(), amount, slot));
+        chest.update();
+        return true;
     }
 }

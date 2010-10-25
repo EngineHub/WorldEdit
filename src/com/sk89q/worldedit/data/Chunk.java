@@ -200,6 +200,17 @@ public class Chunk {
             }
 
             return block;
+        // Chests
+        } else if (id == 54) {
+            ChestBlock block = new ChestBlock();
+
+            Map<String,Tag> tileEntity = getBlockTileEntity(pos);
+
+            if (tileEntity != null) {
+                ((TileEntityBlock)block).fromTileEntityNBT(tileEntity);
+            }
+
+            return block;
         } else {
             return new BaseBlock(id, data);
         }
@@ -214,7 +225,7 @@ public class Chunk {
      * @return child tag
      * @throws InvalidFormatException
      */
-    private static Tag getChildTag(Map<String,Tag> items, String key, Class expected)
+    public static Tag getChildTag(Map<String,Tag> items, String key, Class expected)
             throws InvalidFormatException {
         if (!items.containsKey(key)) {
             throw new InvalidFormatException("Missing a \"" + key + "\" tag");

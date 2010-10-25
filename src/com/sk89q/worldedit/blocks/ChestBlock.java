@@ -1,0 +1,164 @@
+// $Id$
+/*
+ * WorldEdit
+ * Copyright (C) 2010 sk89q <http://www.sk89q.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+package com.sk89q.worldedit.blocks;
+
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.data.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import org.jnbt.*;
+
+/**
+ * Represents chests.
+ *
+ * @author sk89q
+ */
+public class ChestBlock extends BaseBlock implements TileEntityBlock {
+    /**
+     * Store the list of items.
+     */
+    private Map<Byte,Countable<BaseItem>> items;
+
+    /**
+     * Construct the chest block.
+     */
+    public ChestBlock() {
+        super(54);
+        items = new HashMap<Byte,Countable<BaseItem>>();
+    }
+
+    /**
+     * Construct the chest block.
+     *
+     * @param data
+     */
+    public ChestBlock(int data) {
+        super(54, data);
+        items = new HashMap<Byte,Countable<BaseItem>>();
+    }
+
+    /**
+     * Construct the chest block.
+     *
+     * @param data
+     * @param items
+     */
+    public ChestBlock(int data, Map<Byte,Countable<BaseItem>> items) {
+        super(54, data);
+        this.items = items;
+    }
+
+    /**
+     * Get the list of items.
+     *
+     * @return
+     */
+    public Map<Byte,Countable<BaseItem>> getItems() {
+        return items;
+    }
+
+    /**
+     * Set the list of items.
+     *
+     * @return
+     */
+    public void setItems(Map<Byte,Countable<BaseItem>> items) {
+        this.items = items;
+    }
+
+    /**
+     * Get the tile entity ID.
+     * 
+     * @return
+     */
+    public String getTileEntityID() {
+        return "Chest";
+    }
+
+    /**
+     * Store additional tile entity data. Returns true if the data is used.
+     *
+     * @return map of values
+     * @throws DataException
+     */
+    public Map<String,Tag> toTileEntityNBT()
+            throws DataException {
+        List<Tag> itemsList = new ArrayList<Tag>();
+        for (Map.Entry<Byte,Countable<BaseItem>> entry : items.entrySet()) {
+            Map<String,Tag> data = new HashMap<String,Tag>();
+            CompoundTag item = new CompoundTag("Items", data);
+            BaseItem i = entry.getValue().getID();
+            data.put("id", new ShortTag("id", i.getID()));
+            data.put("Damage", new ShortTag("Damage", i.getDamage()));
+            data.put("Count", new ByteTag("Count", (byte)entry.getValue().getAmount()));
+            data.put("Slot", new ByteTag("Slot", entry.getKey()));
+            itemsList.add(item);
+        }
+        Map<String,Tag> values = new HashMap<String,Tag>();
+        values.put("Items", new ListTag("Items", CompoundTag.class, itemsList));
+        return values;
+    }
+
+    /**
+     * Get additional information from the title entity data.
+     *
+     * @param values
+     * @throws DataException
+     */
+    public void fromTileEntityNBT(Map<String,Tag> values)
+            throws DataException  {
+        if (values == null) {
+            return;
+        }
+
+        Map<Byte,Countable<BaseItem>> newItems = new HashMap<Byte,Countable<BaseItem>>();
+
+        Tag t = values.get("id");
+        if (!(t instanceof StringTag) || !((StringTag)t).getValue().equals("Chest")) {
+            throw new DataException("'Chest' tile entity expected");
+        }
+
+        ListTag items = (ListTag)Chunk.getChildTag(values, "Items", ListTag.class);
+
+        for (Tag tag : items.getValue()) {
+            if (!(tag instanceof CompoundTag)) {
+                throw new DataException("CompoundTag expected as child tag of Chest's Items");
+            }
+
+            CompoundTag item = (CompoundTag)tag;
+            Map<String,Tag> itemValues = item.getValue();
+
+            short id = (Short)((ShortTag)Chunk.getChildTag(itemValues, "id", ShortTag.class))
+                    .getValue();
+            short damage = (Short)((ShortTag)Chunk.getChildTag(itemValues, "Damage", ShortTag.class))
+                    .getValue();
+            byte count = (Byte)((ByteTag)Chunk.getChildTag(itemValues, "Count", ByteTag.class))
+                    .getValue();
+            byte slot = (Byte)((ByteTag)Chunk.getChildTag(itemValues, "Slot", ByteTag.class))
+                    .getValue();
+
+            newItems.put(slot, new Countable<BaseItem>(new BaseItem(id, damage), count));
+        }
+
+        this.items = newItems;
+    }
+}

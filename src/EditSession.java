@@ -116,19 +116,27 @@ public class EditSession {
     private boolean rawSetBlock(Vector pt, BaseBlock block) {
         boolean result = server.setBlockType(pt, block.getID());
         if (block.getID() != 0) {
-            // Changes in block data don't take effect if the block type doesn't
-            // change, so here's a hack!
-            /*if (!result) {
-                server.setBlockType(pt, 0);
-                result = server.setBlockType(pt, block.getID());
-            }
-            server.setBlockData(pt, block.getData());*/
+            server.setBlockData(pt, block.getData());
 
             // Signs
             if (block instanceof SignBlock) {
                 SignBlock signBlock = (SignBlock)block;
                 String[] text = signBlock.getText();
                 server.setSignText(pt, text);
+            // Chests
+            } else if (block instanceof ChestBlock) {
+                ChestBlock chestBlock = (ChestBlock)block;
+                BaseItem blankItem = new BaseItem((short)1);
+                Map<Byte,Countable<BaseItem>> items = chestBlock.getItems();
+                for (byte i = 0; i <= 26; i++) {
+                    Countable<BaseItem> item = items.get(i);
+                    if (item != null) {
+                        server.setChestSlot(pt, i, item.getID(),
+                                item.getAmount());
+                    } else {
+                        server.setChestSlot(pt, i, blankItem, 0);
+                    }
+                }
             }
         }
         
@@ -234,6 +242,10 @@ public class EditSession {
         if (type == 63 || type == 68) {
             String[] text = server.getSignText(pt);
             return new SignBlock(type, data, text);
+        // Chest
+        } else if (type == 54) {
+            Map<Byte,Countable<BaseItem>> items = server.getChestContents(pt);
+            return new ChestBlock(data, items);
         } else {
             return new BaseBlock(type, data);
         }

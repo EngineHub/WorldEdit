@@ -19,6 +19,10 @@
 
 package com.sk89q.worldedit;
 
+import java.util.Map;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.BaseItem;
+
 /**
  *
  * @author sk89q
@@ -68,4 +72,21 @@ public interface ServerInterface {
      * @return
      */
     public String[] getSignText(Vector pt);
+    /**
+     * Gets the contents of chests.
+     *
+     * @param pt
+     * @return
+     */
+    public Map<Byte,Countable<BaseItem>> getChestContents(Vector pt);
+    /**
+     * Sets a chest slot.
+     *
+     * @param pt
+     * @param slot
+     * @param item
+     * @param amount
+     * @return
+     */
+    public boolean setChestSlot(Vector pt, byte slot, BaseItem item, int amount);
 }

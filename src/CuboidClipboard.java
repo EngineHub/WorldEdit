@@ -359,9 +359,15 @@ public class CuboidClipboard {
                     int index = y * width * length + z * width + x;
                     BlockVector pt = new BlockVector(x, y, z);
                     BaseBlock block;
-                    
+
                     if (blocks[index] == 63 || blocks[index] == 68) {
                         block = new SignBlock(blocks[index], blockData[index]);
+                        if (tileEntitiesMap.containsKey(pt)) {
+                            ((TileEntityBlock)block).fromTileEntityNBT(
+                                    tileEntitiesMap.get(pt));
+                        }
+                    } else if(blocks[index] == 54) {
+                        block = new ChestBlock();
                         if (tileEntitiesMap.containsKey(pt)) {
                             ((TileEntityBlock)block).fromTileEntityNBT(
                                     tileEntitiesMap.get(pt));
