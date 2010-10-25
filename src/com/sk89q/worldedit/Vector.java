@@ -473,6 +473,17 @@ public class Vector {
     }
 
     /**
+     * Clamp the Y component.
+     * 
+     * @param min
+     * @param max
+     * @return
+     */
+    public Vector clampY(int min, int max) {
+        return new Vector(x, Math.max(min, Math.min(max, y)), z);
+    }
+
+    /**
      * 2D transformation.
      * 
      * @param vec

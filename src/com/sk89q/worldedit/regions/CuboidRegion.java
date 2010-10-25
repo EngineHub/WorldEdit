@@ -168,6 +168,9 @@ public class CuboidRegion implements Region {
                 pos2 = pos2.add(new Vector(0, 0, change.getZ()));
             }
         }
+
+        pos1 = pos1.clampY(0, 127);
+        pos2 = pos2.clampY(0, 127);
     }
 
     /**
@@ -217,6 +220,9 @@ public class CuboidRegion implements Region {
                 pos2 = pos2.add(new Vector(0, 0, change.getZ()));
             }
         }
+
+        pos1 = pos1.clampY(0, 127);
+        pos2 = pos2.clampY(0, 127);
     }
 
     /**
