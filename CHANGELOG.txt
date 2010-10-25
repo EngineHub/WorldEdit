@@ -1,3 +1,10 @@
+0.11:
+- New TrueZIP support.
+- Fixed the issue with certain blocks dropping items (torches, etc.).
+- Chests are partially supported. Double width chests don't paste too well yet.
+- //expand and //contract are now bounded on the Y-axis.
+- Cactus was removed from the list of allowed blocks.
+
 0.10:
 - Issues with the permissions regarding the super pick axe mode and
     the edit wand have been resolved.
