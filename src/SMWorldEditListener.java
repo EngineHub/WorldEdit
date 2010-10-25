@@ -167,9 +167,9 @@ public class SMWorldEditListener extends PluginListener {
         } catch (IncompleteRegionException e2) {
             modPlayer.sendMessage(Colors.Rose + "The edit region has not been fully defined.");
         } catch (UnknownItemException e3) {
-            modPlayer.sendMessage(Colors.Rose + "Unknown item.");
+            modPlayer.sendMessage(Colors.Rose + "Block name was not recognized.");
         } catch (DisallowedItemException e4) {
-            modPlayer.sendMessage(Colors.Rose + "Disallowed item.");
+            modPlayer.sendMessage(Colors.Rose + "Block not allowed (see WorldEdit configuration).");
         } catch (MaxChangedBlocksException e5) {
             modPlayer.sendMessage(Colors.Rose + "The maximum number of blocks changed ("
                     + e5.getBlockLimit() + ") in an instance was reached.");
