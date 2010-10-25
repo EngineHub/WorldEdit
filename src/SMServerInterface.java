@@ -61,7 +61,7 @@ public class SMServerInterface implements ServerInterface {
      * @return
      */
     public void setBlockData(Vector pt, int data) {
-        etc.getMCServer().e.c(pt.getBlockX(), pt.getBlockY(),
+        etc.getServer().setBlockData(pt.getBlockX(), pt.getBlockY(),
                         pt.getBlockZ(), data);
     }
 
