@@ -1,3 +1,7 @@
+0.12
+- Added /listchunks
+- Added /delchunks (creates a shell script).
+
 0.11:
 - New TrueZIP support.
 - Fixed the issue with certain blocks dropping items (torches, etc.).
