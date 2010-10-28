@@ -20,7 +20,11 @@
 package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.data.ChunkStore;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  *
@@ -259,6 +263,29 @@ public class CuboidRegion implements Region {
      */
     public void setPos2(Vector pos2) {
         this.pos2 = pos2;
+    }
+
+    /**
+     * Get a list of chunks that this region is within.
+     * 
+     * @return
+     */
+    public Set<Vector2D> getChunks() {
+        Set<Vector2D> chunks = new HashSet<Vector2D>();
+
+        Vector min = getMinimumPoint();
+        Vector max = getMaximumPoint();
+
+        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+            for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                    Vector pt = new Vector(x, y, z);
+                    chunks.add(ChunkStore.toChunk(pt));
+                }
+            }
+        }
+
+        return chunks;
     }
 
     /**

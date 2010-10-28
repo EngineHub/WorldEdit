@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.data;
 
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.*;
 import java.io.*;
-import java.util.*;
+import java.util.Map;
 import org.jnbt.*;
 
 /**
@@ -32,6 +32,37 @@ import org.jnbt.*;
  * @author sk89q
  */
 public abstract class NestedFileChunkStore extends ChunkStore {
+    /**
+     * Get the filename of a chunk.
+     * 
+     * @param pos
+     * @param separator
+     * @return
+     */
+    public static String getFilename(Vector2D pos, String separator) {
+        int x = pos.getBlockX();
+        int z = pos.getBlockZ();
+        
+        String folder1 = Integer.toString(divisorMod(x, 64), 36);
+        String folder2 = Integer.toString(divisorMod(z, 64), 36);
+        String filename = "c." + Integer.toString(x, 36)
+                + "." + Integer.toString(z, 36) + ".dat";
+
+        return folder1 + separator + folder2 + separator + filename;
+    }
+
+    /**
+     * Get the filename of a chunk, using the system's default path
+     * separator.
+     * 
+     * @param pos
+     * @param separator
+     * @return
+     */
+    public static String getFilename(Vector2D pos) {
+        return getFilename(pos, File.separator);
+    }
+
     /**
      * Get the tag for a chunk.
      *

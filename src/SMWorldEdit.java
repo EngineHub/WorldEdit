@@ -92,6 +92,9 @@ public class SMWorldEdit extends Plugin {
             worldEdit.setSnapshotRepository(new SnapshotRepository(snapshotsDir));
         }
 
+        String shellSaveType = properties.getString("shell-save-type", "").trim();
+        worldEdit.setShellSaveType(shellSaveType.equals("") ? null : shellSaveType);
+
         for (Map.Entry<String,String> entry : worldEdit.getCommands().entrySet()) {
             etc.getInstance().addCommand(entry.getKey(), entry.getValue());
         }

@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
+import java.util.Set;
 
 /**
  *
@@ -74,4 +76,10 @@ public interface Region extends Iterable<Vector> {
      * @param change
      */
     public void contract(Vector change);
+    /**
+     * Get a list of chunks.
+     * 
+     * @return
+     */
+    public Set<Vector2D> getChunks();
 }
