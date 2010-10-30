@@ -580,7 +580,7 @@ public class WorldEdit {
         // Remove blocks near
         } else if (split[0].equalsIgnoreCase("/removenear")) {
             checkArgs(split, 2, 2, split[0]);
-            BaseBlock block = getBlock(split[1]);
+            BaseBlock block = getBlock(split[1], true);
             int size = Math.max(1, Integer.parseInt(split[2]));
 
             int affected = editSession.removeNear(
@@ -713,7 +713,7 @@ public class WorldEdit {
             BaseBlock to;
             if (split.length == 2) {
                 from = -1;
-                to = getBlock(split[1]);
+                to = getBlock(split[1], true);
             } else {
                 from = getBlock(split[1]).getID();
                 to = getBlock(split[2]);
