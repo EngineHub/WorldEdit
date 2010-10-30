@@ -355,52 +355,47 @@ public class EditSession {
     public int fillXZ(int x, int z, Vector origin, BaseBlock block,
             int radius, int depth)
             throws MaxChangedBlocksException {
-        return _fillXZ(x, z, origin, block, radius, depth,
-                new HashSet<BlockVector>());
-    }
-
-    /**
-     * Fills an area recursively in the X/Z directions.
-     *
-     * @param x
-     * @param z
-     * @param origin
-     * @param block
-     * @param radius
-     * @param depth
-     * @param visited
-     * @return
-     * @throws MaxChangedBlocksException
-     */
-    private int _fillXZ(int x, int z, Vector origin, BaseBlock block, int radius,
-            int depth, Set<BlockVector> visited)
-            throws MaxChangedBlocksException {
-        BlockVector pt = new BlockVector(x, 0, z);
         
-        if (visited.contains(pt)) {
-            return 0;
-        }
-
-        visited.add(pt);
-        
-        double dist = Math.sqrt(Math.pow(origin.getX() - x, 2) + Math.pow(origin.getZ() - z, 2));
-        int minY = origin.getBlockY() - depth + 1;
         int affected = 0;
+        int originX = origin.getBlockX();
+        int originY = origin.getBlockY();
+        int originZ = origin.getBlockZ();
 
-        if (dist > radius) {
-            return 0;
+        HashSet<BlockVector> visited = new HashSet<BlockVector>();
+        Stack<BlockVector> queue = new Stack<BlockVector>();
+
+        queue.push(new BlockVector(x, 0, z));
+
+        while (!queue.empty()) {
+            BlockVector pt = queue.pop();
+            int cx = pt.getBlockX();
+            int cz = pt.getBlockZ();
+
+            if (visited.contains(pt)) {
+                continue;
+            }
+
+            visited.add(pt);
+
+            double dist = Math.sqrt(Math.pow(originX - cx, 2)
+                    + Math.pow(originZ - cz, 2));
+            int minY = originY - depth + 1;
+
+            if (dist > radius) {
+                continue;
+            }
+
+            if (getBlock(new Vector(cx, originY, cz)).isAir()) {
+                affected += fillY(cx, originY, cz, block, minY);
+            } else {
+                continue;
+            }
+
+            queue.push(new BlockVector(cx + 1, 0, cz));
+            queue.push(new BlockVector(cx - 1, 0, cz));
+            queue.push(new BlockVector(cx, 0, cz + 1));
+            queue.push(new BlockVector(cx, 0, cz - 1));
         }
-
-        if (getBlock(new Vector(x, origin.getY(), z)).isAir()) {
-            affected = fillY(x, (int)origin.getY(), z, block, minY);
-        } else {
-            return 0;
-        }
-
-        affected += fillXZ(x + 1, z, origin, block, radius, depth);
-        affected += fillXZ(x - 1, z, origin, block, radius, depth);
-        affected += fillXZ(x, z + 1, origin, block, radius, depth);
-        affected += fillXZ(x, z - 1, origin, block, radius, depth);
 
         return affected;
     }
