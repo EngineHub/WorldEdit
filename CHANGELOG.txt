@@ -1,3 +1,7 @@
+0.13.1:
+- Updated for b123.
+- New /pumpkins command. Happy Halloween!
+
 0.13
 - //fill now uses its own stack so that it doesn't cause stack overflow
     errors for overly large regions.
