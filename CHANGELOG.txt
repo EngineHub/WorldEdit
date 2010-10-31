@@ -1,3 +1,10 @@
+0.13
+- //fill now uses its own stack so that it doesn't cause stack overflow
+    errors for overly large regions.
+- For commands that look for a block ID (//replace, /removenear), it will no
+    longer check against the WorldEdit block restriction list.
+- Updated for the disappointing Halloween update.
+
 0.12
 - Added /listchunks
 - Added /delchunks (creates a shell script).
