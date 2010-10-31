@@ -95,12 +95,18 @@ public enum BlockType {
     STONE_BUTTON(77, "Stone Button", "stonebutton"),
     SNOW(78, "Snow", "snow"),
     ICE(79, "Ice", "ice"),
-    SNOW_BLOCK(80, "Snow Block", "snowblock"),
+    SNOW_BLOCK(80, "Snow block", "snowblock"),
     CACTUS(81, "Cactus", "cactus"),
     CLAY(82, "Clay", "clay"),
     REED(83, "Reed", "reed"),
     JUKEBOX(84, "Jukebox", "jukebox"),
-    FENCE(85, "Fence", "fence");
+    FENCE(85, "Fence", "fence"),
+    PUMPKIN(86, "Pumpkin", "pumpkin"),
+    RED_BLOCK(87, "Cobblestone (red mossy)", new String[]{"redmossycobblestone", "redcobblestone"}),
+    HELL_DIRT(88, "Mud", "mud"),
+    HELL_GOLD(89, "Brittle gold", "brittlegold"),
+    PORTAL(90, "Portal", "portal"),
+    LIGHTED_PUMPKIN(91, "Pumpkin (on)", new String[]{"pumpkinlighted", "pumpkinon", "litpumpkin"});
 
     /**
      * Stores a map of the IDs for fast access.
