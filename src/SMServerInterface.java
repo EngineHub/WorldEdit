@@ -39,8 +39,9 @@ public class SMServerInterface implements ServerInterface {
         if ((type >= 21 && type <= 34) || type == 36) {
             return false;
         }
-        return etc.getMCServer().e.d(pt.getBlockX(), pt.getBlockY(),
-                pt.getBlockZ(), type);
+        etc.getServer().setBlockAt(type, pt.getBlockX(), pt.getBlockY(),
+                pt.getBlockZ());
+        return true;
     }
     
     /**
@@ -50,7 +51,8 @@ public class SMServerInterface implements ServerInterface {
      * @return
      */
     public int getBlockType(Vector pt) {
-        return etc.getMCServer().e.a(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        return etc.getServer().getBlockIdAt(pt.getBlockX(), pt.getBlockY(),
+                pt.getBlockZ());
     }
 
     /**
@@ -72,7 +74,8 @@ public class SMServerInterface implements ServerInterface {
      * @return
      */
     public int getBlockData(Vector pt) {
-        return etc.getMCServer().e.b(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        return etc.getServer().getBlockData(pt.getBlockX(), pt.getBlockY(),
+                pt.getBlockZ());
     }
     
     /**
