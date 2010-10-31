@@ -167,6 +167,7 @@ public class WorldEdit {
         commands.put("//hsphere", "[ID] [Radius] <Raised?> - Create a hollow sphere");
         commands.put("/fixwater", "[Radius] - Level nearby pools of water");
         commands.put("/forestgen", "<Size> - Make an ugly pine tree forest");
+        commands.put("/pumpkins", "<Size> - Make a pumpkin forest");
         commands.put("/unstuck", "Go up to the first free spot");
         commands.put("/ascend", "Go up one level");
         commands.put("/descend", "Go down one level");
@@ -777,6 +778,16 @@ public class WorldEdit {
 
             int affected = editSession.makePineTreeForest(player.getPosition(), size);
             player.print(affected + " pine trees created.");
+
+            return true;
+
+        // Make pumpkin patches
+        } else if (split[0].equalsIgnoreCase("/pumpkins")) {
+            checkArgs(split, 0, 1, split[0]);
+            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 10;
+
+            int affected = editSession.makePumpkinPatches(player.getPosition(), size);
+            player.print(affected + " pumpkin patches created.");
 
             return true;
 

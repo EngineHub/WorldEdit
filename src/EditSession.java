@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Stack;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * This class can wrap all block editing operations into one "edit session" that
@@ -73,6 +74,10 @@ public class EditSession {
      * List of object types to queue.
      */
     private static final HashSet<Integer> queuedBlocks = new HashSet<Integer>();
+    /**
+     * Random number generator.
+     */
+    private static Random prng = new Random();
 
     static {
         queuedBlocks.add(50); // Torch
@@ -1249,6 +1254,105 @@ public class EditSession {
         }
 
         setBlockIfAir(basePos.add(0, height, 0), leavesBlock);
+    }
+
+    /**
+     * Makes a pumpkin patch.
+     *
+     * @param basePos
+     */
+    private void makePumpkinPatch(Vector basePos)
+            throws MaxChangedBlocksException {
+        BaseBlock logBlock = new BaseBlock(17);
+        BaseBlock leavesBlock = new BaseBlock(18);
+
+        setBlock(basePos.subtract(0, 1, 0), logBlock);
+        setBlockIfAir(basePos, leavesBlock);
+
+        makePumpkinPatchVine(basePos, basePos.add(0, 0, 1));
+        makePumpkinPatchVine(basePos, basePos.add(0, 0, -1));
+        makePumpkinPatchVine(basePos, basePos.add(1, 0, 0));
+        makePumpkinPatchVine(basePos, basePos.add(-1, 0, 0));
+    }
+
+    /**
+     * Make a pumpkin patch fine.
+     * 
+     * @param basePos
+     * @param pos
+     */
+    private void makePumpkinPatchVine(Vector basePos, Vector pos)
+            throws MaxChangedBlocksException {
+        if (pos.distance(basePos) > 4) return;
+        if (getBlock(pos).getID() != 0) return;
+
+        for (int i = -1; i > -3; i--) {
+            Vector testPos = pos.add(0, i, 0);
+            if (getBlock(testPos).getID() == 0) {
+                pos = testPos;
+            } else {
+                break;
+            }
+        }
+
+        setBlockIfAir(pos, new BaseBlock(18));
+
+        int t = prng.nextInt(4);
+        int h = prng.nextInt(3) - 1;
+
+        if (t == 0) {
+            if (prng.nextBoolean()) makePumpkinPatchVine(basePos, pos.add(1, 0, 0));
+            if (prng.nextBoolean()) setBlockIfAir(pos.add(1, h, -1), new BaseBlock(18));
+            setBlockIfAir(pos.add(0, 0, -1), new BaseBlock(86));
+        } else if (t == 1) {
+            if (prng.nextBoolean()) makePumpkinPatchVine(basePos, pos.add(0, 0, 1));
+            if (prng.nextBoolean()) setBlockIfAir(pos.add(1, h, 0), new BaseBlock(18));
+            setBlockIfAir(pos.add(1, 0, 1), new BaseBlock(86));
+        } else if (t == 2) {
+            if (prng.nextBoolean()) makePumpkinPatchVine(basePos, pos.add(0, 0, -1));
+            if (prng.nextBoolean()) setBlockIfAir(pos.add(-1, h, 0), new BaseBlock(18));
+            setBlockIfAir(pos.add(-1, 0, 1), new BaseBlock(86));
+        } else if (t == 3) {
+            if (prng.nextBoolean()) makePumpkinPatchVine(basePos, pos.add(-1, 0, 0));
+            if (prng.nextBoolean()) setBlockIfAir(pos.add(-1, h, -1), new BaseBlock(18));
+            setBlockIfAir(pos.add(-1, 0, -1), new BaseBlock(86));
+        }
+    }
+
+    /**
+     * Makes pumpkin patches.
+     *
+     * @param basePos
+     * @param size
+     * @return number of trees created
+     */
+    public int makePumpkinPatches(Vector basePos, int size)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+
+        for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX() + size; x++) {
+            for (int z = basePos.getBlockZ() - size; z <= basePos.getBlockZ() + size; z++) {
+                // Don't want to be in the ground
+                if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir())
+                    continue;
+                // The gods don't want a pumpkin patch here
+                if (Math.random() < 0.98) { continue; }
+
+                for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; y--) {
+                    // Check if we hit the ground
+                    int t = getBlock(new Vector(x, y, z)).getID();
+                    if (t == 2 || t == 3) {
+                        makePumpkinPatch(new Vector(x, y + 1, z));
+                        affected++;
+                        break;
+                    } else if (t != 0) { // Trees won't grow on this!
+                        break;
+                    }
+                }
+            }
+        }
+
+        return affected;
     }
 
     /**
