@@ -39,9 +39,8 @@ public class SMServerInterface implements ServerInterface {
         if ((type >= 21 && type <= 34) || type == 36) {
             return false;
         }
-        etc.getServer().setBlockAt(type, pt.getBlockX(), pt.getBlockY(),
+        return etc.getServer().setBlockAt(type, pt.getBlockX(), pt.getBlockY(),
                 pt.getBlockZ());
-        return true;
     }
     
     /**
