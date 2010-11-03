@@ -1,6 +1,6 @@
 // $Id$
 /*
- * WorldEdit
+ * WorldEditLibrary
  * Copyright (C) 2010 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -96,7 +96,7 @@ public class EditSession {
      * Default constructor. There is no maximum blocks limit.
      */
     public EditSession() {
-        server = WorldEdit.getServer();
+        server = WorldEditLibrary.getServer();
     }
 
     /**
@@ -108,7 +108,7 @@ public class EditSession {
         }
         this.maxBlocks = maxBlocks;
 
-        server = WorldEdit.getServer();
+        server = WorldEditLibrary.getServer();
     }
 
     /**

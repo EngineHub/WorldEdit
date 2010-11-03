@@ -24,7 +24,7 @@ import com.sk89q.worldedit.ServerInterface;
  *
  * @author sk89q
  */
-public class SMWorldEditPlayer extends WorldEditPlayer {
+public class HmodWorldEditPlayer extends WorldEditPlayer {
     private Player player;
 
     /**
@@ -32,7 +32,7 @@ public class SMWorldEditPlayer extends WorldEditPlayer {
      *
      * @param player
      */
-    public SMWorldEditPlayer(Player player) {
+    public HmodWorldEditPlayer(Player player) {
         super();
         this.player = player;
     }

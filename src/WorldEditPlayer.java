@@ -1,6 +1,6 @@
 // $Id$
 /*
- * WorldEdit
+ * WorldEditLibrary
  * Copyright (C) 2010 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ public abstract class WorldEditPlayer {
      * Construct the player.
      */
     public WorldEditPlayer() {
-        server = WorldEdit.getServer();
+        server = WorldEditLibrary.getServer();
     }
 
     /**
@@ -107,14 +107,14 @@ public abstract class WorldEditPlayer {
     public abstract String getCardinalDirection();
 
     /**
-     * Print a WorldEdit message.
+     * Print a WorldEditLibrary message.
      *
      * @param msg
      */
     public abstract void print(String msg);
 
     /**
-     * Print a WorldEdit error.
+     * Print a WorldEditLibrary error.
      *
      * @param msg
      */

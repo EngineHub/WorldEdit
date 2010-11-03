@@ -1,6 +1,6 @@
 // $Id$
 /*
- * WorldEdit
+ * WorldEditLibrary
  * Copyright (C) 2010 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,15 +24,15 @@ import com.sk89q.worldedit.*;
  *
  * @author sk89q
  */
-public class SMWorldEditListener extends PluginListener {
+public class HmodWorldEditListener extends PluginListener {
     /**
      *
      * @param player
      */
     @Override
     public void onDisconnect(Player player) {
-        WorldEdit worldEdit = WorldEdit.getInstance();
-        worldEdit.removeSession(new SMWorldEditPlayer(player));
+        WorldEditLibrary worldEdit = WorldEditLibrary.getInstance();
+        worldEdit.removeSession(new HmodWorldEditPlayer(player));
     }
 
     /**
@@ -47,8 +47,8 @@ public class SMWorldEditListener extends PluginListener {
     @Override
     public boolean onBlockCreate(Player modPlayer, Block blockPlaced,
             Block blockClicked, int itemInHand) {
-        WorldEdit worldEdit = WorldEdit.getInstance();
-        WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
+        WorldEditLibrary worldEdit = WorldEditLibrary.getInstance();
+        WorldEditPlayer player = new HmodWorldEditPlayer(modPlayer);
         
         if (itemInHand != 271) { return false; }
         if (!canUseCommand(modPlayer, "//pos2")) { return false; }
@@ -82,8 +82,8 @@ public class SMWorldEditListener extends PluginListener {
         if (!canUseCommand(modPlayer, "//pos1")
                 && !canUseCommand(modPlayer, "//")) { return false; }
 
-        WorldEdit worldEdit = WorldEdit.getInstance();
-        WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
+        WorldEditLibrary worldEdit = WorldEditLibrary.getInstance();
+        WorldEditPlayer player = new HmodWorldEditPlayer(modPlayer);
         WorldEditSession session = worldEdit.getSession(player);
 
         if (player.getItemInHand() == 271) {
@@ -114,12 +114,12 @@ public class SMWorldEditListener extends PluginListener {
             if (session.hasSuperPickAxe()) {
                 Vector pos = new Vector(blockClicked.getX(),
                         blockClicked.getY(), blockClicked.getZ());
-                if (WorldEdit.getServer().getBlockType(pos) == 7
+                if (WorldEditLibrary.getServer().getBlockType(pos) == 7
                         && !canUseCommand(modPlayer, "/worldeditbedrock")) {
                     return true;
                 }
                 
-                WorldEdit.getServer().setBlockType(pos, 0);
+                WorldEditLibrary.getServer().setBlockType(pos, 0);
 
                 return true;
             }
@@ -136,7 +136,7 @@ public class SMWorldEditListener extends PluginListener {
      */
     @Override
     public boolean onCommand(Player modPlayer, String[] split) {
-        WorldEdit worldEdit = WorldEdit.getInstance();
+        WorldEditLibrary worldEdit = WorldEditLibrary.getInstance();
         
         try {
             // Legacy /, command
@@ -146,7 +146,7 @@ public class SMWorldEditListener extends PluginListener {
             
             if (worldEdit.getCommands().containsKey(split[0].toLowerCase())) {
                 if (canUseCommand(modPlayer, split[0])) {
-                    WorldEditPlayer player = new SMWorldEditPlayer(modPlayer);
+                    WorldEditPlayer player = new HmodWorldEditPlayer(modPlayer);
                     WorldEditSession session = worldEdit.getSession(player);
                     EditSession editSession =
                             new EditSession(session.getBlockChangeLimit());

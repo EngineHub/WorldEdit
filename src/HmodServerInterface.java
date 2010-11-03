@@ -26,7 +26,7 @@ import java.util.HashMap;
  *
  * @author sk89q
  */
-public class SMServerInterface implements ServerInterface {
+public class HmodServerInterface implements ServerInterface {
     /**
      * Set block type.
      *
