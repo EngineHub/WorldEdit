@@ -20,7 +20,12 @@
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
 import java.util.Map;
 import java.util.HashSet;
-import com.sk89q.worldedit.ServerInterface;
+import java.util.jar.Manifest;
+import java.util.jar.Attributes;
+import java.net.URL;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Entry point for the plugin for hey0's mod.
@@ -28,6 +33,10 @@ import com.sk89q.worldedit.ServerInterface;
  * @author sk89q
  */
 public class WorldEdit extends Plugin {
+    /**
+     * Logger.
+     */
+    private static final Logger logger = Logger.getLogger("Minecraft");
     /**
      * WorldEditLibrary's properties file.
      */
@@ -60,6 +69,8 @@ public class WorldEdit extends Plugin {
                 PluginListener.Priority.MEDIUM);
         loader.addListener(PluginLoader.Hook.LOGIN, listener, this,
                 PluginListener.Priority.MEDIUM);
+
+        logger.log(Level.INFO, "WorldEdit version " + getWorldEditVersion() + " loaded.");
     }
 
     /**
@@ -110,5 +121,24 @@ public class WorldEdit extends Plugin {
         }
 
         worldEdit.clearSessions();
+    }
+
+    /**
+     * Get the WorldEdit version.
+     * 
+     * @return
+     */
+    private String getWorldEditVersion() {
+        try {
+            String classContainer = WorldEdit.class.getProtectionDomain()
+                    .getCodeSource().getLocation().toString();
+            URL manifestUrl = new URL("jar:" + classContainer + "!/META-INF/MANIFEST.MF");
+            Manifest manifest = new Manifest(manifestUrl.openStream());
+            Attributes attrib = manifest.getMainAttributes();
+            String ver = (String)attrib.getValue("WorldEdit-Version");
+            return ver != null ? ver : "(unavailable)";
+        } catch (IOException e) {
+            return "(unknown)";
+        }
     }
 }
