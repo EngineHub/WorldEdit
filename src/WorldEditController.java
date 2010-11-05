@@ -834,13 +834,11 @@ public class WorldEditController {
         } else if (split[0].equalsIgnoreCase("//expand")) {
             checkArgs(split, 1, 2, split[0]);
             Vector dir;
-            int change;
+            int change = Integer.parseInt(split[1]);
             if (split.length == 3) {
-                dir = getDirection(player, split[1].toLowerCase());
-                change = Integer.parseInt(split[2]);
+                dir = getDirection(player, split[2].toLowerCase());
             } else {
                 dir = getDirection(player, "me");
-                change = Integer.parseInt(split[1]);
             }
 
             Region region = session.getRegion();
@@ -856,13 +854,11 @@ public class WorldEditController {
         } else if (split[0].equalsIgnoreCase("//contract")) {
             checkArgs(split, 1, 2, split[0]);
             Vector dir;
-            int change;
+            int change = Integer.parseInt(split[1]);
             if (split.length == 3) {
-                dir = getDirection(player, split[1].toLowerCase());
-                change = Integer.parseInt(split[2]);
+                dir = getDirection(player, split[2].toLowerCase());
             } else {
                 dir = getDirection(player, "me");
-                change = Integer.parseInt(split[1]);
             }
 
             Region region = session.getRegion();
