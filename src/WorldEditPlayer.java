@@ -35,7 +35,7 @@ public abstract class WorldEditPlayer {
      * Construct the player.
      */
     public WorldEditPlayer() {
-        server = WorldEditLibrary.getServer();
+        server = WorldEditController.getServer();
     }
 
     /**

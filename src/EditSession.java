@@ -96,7 +96,7 @@ public class EditSession {
      * Default constructor. There is no maximum blocks limit.
      */
     public EditSession() {
-        server = WorldEditLibrary.getServer();
+        server = WorldEditController.getServer();
     }
 
     /**
@@ -108,7 +108,7 @@ public class EditSession {
         }
         this.maxBlocks = maxBlocks;
 
-        server = WorldEditLibrary.getServer();
+        server = WorldEditController.getServer();
     }
 
     /**

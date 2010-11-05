@@ -1,6 +1,6 @@
 // $Id$
 /*
- * WorldEditLibrary
+ * WorldEdit
  * Copyright (C) 2010 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ public class HmodWorldEditListener extends PluginListener {
      */
     @Override
     public void onDisconnect(Player player) {
-        WorldEditLibrary worldEdit = WorldEditLibrary.getInstance();
+        WorldEditController worldEdit = WorldEditController.getInstance();
         worldEdit.removeSession(new HmodWorldEditPlayer(player));
     }
 
@@ -47,7 +47,7 @@ public class HmodWorldEditListener extends PluginListener {
     @Override
     public boolean onBlockCreate(Player modPlayer, Block blockPlaced,
             Block blockClicked, int itemInHand) {
-        WorldEditLibrary worldEdit = WorldEditLibrary.getInstance();
+        WorldEditController worldEdit = WorldEditController.getInstance();
         WorldEditPlayer player = new HmodWorldEditPlayer(modPlayer);
         
         if (itemInHand != 271) { return false; }
@@ -82,7 +82,7 @@ public class HmodWorldEditListener extends PluginListener {
         if (!canUseCommand(modPlayer, "//pos1")
                 && !canUseCommand(modPlayer, "//")) { return false; }
 
-        WorldEditLibrary worldEdit = WorldEditLibrary.getInstance();
+        WorldEditController worldEdit = WorldEditController.getInstance();
         WorldEditPlayer player = new HmodWorldEditPlayer(modPlayer);
         WorldEditSession session = worldEdit.getSession(player);
 
@@ -114,12 +114,12 @@ public class HmodWorldEditListener extends PluginListener {
             if (session.hasSuperPickAxe()) {
                 Vector pos = new Vector(blockClicked.getX(),
                         blockClicked.getY(), blockClicked.getZ());
-                if (WorldEditLibrary.getServer().getBlockType(pos) == 7
+                if (WorldEditController.getServer().getBlockType(pos) == 7
                         && !canUseCommand(modPlayer, "/worldeditbedrock")) {
                     return true;
                 }
                 
-                WorldEditLibrary.getServer().setBlockType(pos, 0);
+                WorldEditController.getServer().setBlockType(pos, 0);
 
                 return true;
             }
@@ -136,7 +136,7 @@ public class HmodWorldEditListener extends PluginListener {
      */
     @Override
     public boolean onCommand(Player modPlayer, String[] split) {
-        WorldEditLibrary worldEdit = WorldEditLibrary.getInstance();
+        WorldEditController worldEdit = WorldEditController.getInstance();
         
         try {
             // Legacy /, command

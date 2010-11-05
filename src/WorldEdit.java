@@ -44,8 +44,8 @@ public class WorldEdit extends Plugin {
     /**
      * WorldEditLibrary instance.
      */
-    private static final WorldEditLibrary worldEdit =
-            WorldEditLibrary.setup(new HmodServerInterface());
+    private static final WorldEditController worldEdit =
+            WorldEditController.setup(new HmodServerInterface());
     /**
      * Listener for the plugin system.
      */
@@ -87,7 +87,7 @@ public class WorldEdit extends Plugin {
         // Get allowed blocks
         HashSet<Integer> allowedBlocks = new HashSet<Integer>();
         for (String b : properties.getString("allowed-blocks",
-                WorldEditLibrary.getDefaultAllowedBlocks()).split(",")) {
+                WorldEditController.getDefaultAllowedBlocks()).split(",")) {
             try {
                 allowedBlocks.add(Integer.parseInt(b));
             } catch (NumberFormatException e) {

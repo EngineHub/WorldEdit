@@ -1,6 +1,6 @@
 // $Id$
 /*
- * WorldEditLibrary
+ * WorldEdit
  * Copyright (C) 2010 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,11 +37,11 @@ import java.io.*;
  *
  * @author sk89q
  */
-public class WorldEditLibrary {
+public class WorldEditController {
     /**
      * WorldEditLibrary instance.
      */
-    private static WorldEditLibrary instance;
+    private static WorldEditController instance;
     /**
      * Server interface.
      */
@@ -93,8 +93,8 @@ public class WorldEditLibrary {
      * @param server
      * @return
      */
-    public static WorldEditLibrary setup(ServerInterface server) {
-        WorldEditLibrary worldEdit = new WorldEditLibrary();
+    public static WorldEditController setup(ServerInterface server) {
+        WorldEditController worldEdit = new WorldEditController();
         worldEdit.server = server;
         instance = worldEdit;
         return worldEdit;
@@ -105,7 +105,7 @@ public class WorldEditLibrary {
      * 
      * @return
      */
-    public static WorldEditLibrary getInstance() {
+    public static WorldEditController getInstance() {
         return instance;
     }
 
@@ -121,7 +121,7 @@ public class WorldEditLibrary {
     /**
      * Construct an instance of the plugin.
      */
-    private WorldEditLibrary() {
+    private WorldEditController() {
         // Note: Commands should only have the phrase 'air' at the end
         // for now (see SMWorldEditListener.canUseCommand)
         commands.put("//pos1", "Set editing position #1");
