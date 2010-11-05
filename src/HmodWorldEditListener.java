@@ -117,6 +117,8 @@ public class HmodWorldEditListener extends PluginListener {
                 if (WorldEditController.getServer().getBlockType(pos) == 7
                         && !canUseCommand(modPlayer, "/worldeditbedrock")) {
                     return true;
+                } else if (WorldEditController.getServer().getBlockType(pos) == 46) {
+                    return false;
                 }
                 
                 WorldEditController.getServer().setBlockType(pos, 0);
