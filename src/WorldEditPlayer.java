@@ -95,7 +95,7 @@ public abstract class WorldEditPlayer {
      */
     public boolean isHoldingPickAxe() {
         int item = getItemInHand();
-        return item == 271 || item == 270 || item == 274 || item == 278
+        return item == 257 || item == 270 || item == 274 || item == 278
                 || item == 285;
     }
 
