@@ -102,6 +102,11 @@ public class EditSession {
      * @return Whether the block changed
      */
     private boolean rawSetBlock(Vector pt, BaseBlock block) {
+        int y = pt.getBlockY();
+        if (y < 0 || y > 127) {
+            return false;
+        }
+        
         boolean result = server.setBlockType(pt, block.getID());
         if (block.getID() != 0) {
             server.setBlockData(pt, block.getData());
