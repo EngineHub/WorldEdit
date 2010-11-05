@@ -71,26 +71,9 @@ public class EditSession {
      */
     private boolean queued = false;
     /**
-     * List of object types to queue.
-     */
-    private static final HashSet<Integer> queuedBlocks = new HashSet<Integer>();
-    /**
      * Random number generator.
      */
     private static Random prng = new Random();
-
-    static {
-        queuedBlocks.add(50); // Torch
-        queuedBlocks.add(37); // Yellow flower
-        queuedBlocks.add(38); // Red rose
-        queuedBlocks.add(39); // Brown mushroom
-        queuedBlocks.add(40); // Red mushroom
-        queuedBlocks.add(59); // Crops
-        queuedBlocks.add(63); // Sign
-        queuedBlocks.add(75); // Redstone torch (off)
-        queuedBlocks.add(76); // Redstone torch (on)
-        queuedBlocks.add(84); // Reed
-    }
 
     /**
      * Default constructor. There is no maximum blocks limit.
@@ -200,12 +183,12 @@ public class EditSession {
      */
     private boolean smartSetBlock(Vector pt, BaseBlock block) {
         if (queued) {
-            if (!block.isAir() && queuedBlocks.contains(block.getID())
+            if (!block.isAir() && BlockType.shouldPlaceLast(block.getID())
                     && rawGetBlock(pt.add(0, -1, 0)).isAir()) {
                 queue.put(pt.toBlockVector(), block);
                 return getBlock(pt).getID() != block.getID();
             } else if (block.isAir()
-                    && queuedBlocks.contains(rawGetBlock(pt.add(0, 1, 0)).getID())) {
+                    && BlockType.shouldPlaceLast(rawGetBlock(pt.add(0, 1, 0)).getID())) {
                 rawSetBlock(pt.add(0, 1, 0), new BaseBlock(0)); // Prevent items from being dropped
             }
         }
