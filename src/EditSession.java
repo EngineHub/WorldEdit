@@ -43,11 +43,6 @@ import java.util.Random;
  */
 public class EditSession {
     /**
-     * Server interface.
-     */
-    protected ServerInterface server;
-    
-    /**
      * Stores the original blocks before modification.
      */
     private Map<BlockVector,BaseBlock> original = new HashMap<BlockVector,BaseBlock>();
@@ -76,13 +71,6 @@ public class EditSession {
     private static Random prng = new Random();
 
     /**
-     * Default constructor. There is no maximum blocks limit.
-     */
-    public EditSession() {
-        server = WorldEditController.getServer();
-    }
-
-    /**
      * Construct the object with a maximum number of blocks.
      */
     public EditSession(int maxBlocks) {
@@ -90,8 +78,6 @@ public class EditSession {
             throw new IllegalArgumentException("Max blocks must be >= -1");
         }
         this.maxBlocks = maxBlocks;
-
-        server = WorldEditController.getServer();
     }
 
     /**
@@ -107,15 +93,15 @@ public class EditSession {
             return false;
         }
         
-        boolean result = server.setBlockType(pt, block.getID());
+        boolean result = ServerInterface.setBlockType(pt, block.getID());
         if (block.getID() != 0) {
-            server.setBlockData(pt, block.getData());
+            ServerInterface.setBlockData(pt, block.getData());
 
             // Signs
             if (block instanceof SignBlock) {
                 SignBlock signBlock = (SignBlock)block;
                 String[] text = signBlock.getText();
-                server.setSignText(pt, text);
+                ServerInterface.setSignText(pt, text);
             // Chests
             } else if (block instanceof ChestBlock) {
                 ChestBlock chestBlock = (ChestBlock)block;
@@ -124,10 +110,10 @@ public class EditSession {
                 for (byte i = 0; i <= 26; i++) {
                     Countable<BaseItem> item = items.get(i);
                     if (item != null) {
-                        server.setChestSlot(pt, i, item.getID(),
+                        ServerInterface.setChestSlot(pt, i, item.getID(),
                                 item.getAmount());
                     } else {
-                        server.setChestSlot(pt, i, blankItem, 0);
+                        ServerInterface.setChestSlot(pt, i, blankItem, 0);
                     }
                 }
             }
@@ -228,16 +214,16 @@ public class EditSession {
      * @return BaseBlock
      */
     public BaseBlock rawGetBlock(Vector pt) {
-        int type = server.getBlockType(pt);
-        int data = server.getBlockData(pt);
+        int type = ServerInterface.getBlockType(pt);
+        int data = ServerInterface.getBlockData(pt);
 
         // Sign
         if (type == 63 || type == 68) {
-            String[] text = server.getSignText(pt);
+            String[] text = ServerInterface.getSignText(pt);
             return new SignBlock(type, data, text);
         // Chest
         } else if (type == 54) {
-            Map<Byte,Countable<BaseItem>> items = server.getChestContents(pt);
+            Map<Byte,Countable<BaseItem>> items = ServerInterface.getChestContents(pt);
             return new ChestBlock(data, items);
         } else {
             return new BaseBlock(type, data);

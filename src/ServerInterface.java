@@ -26,7 +26,7 @@ import java.util.HashMap;
  *
  * @author sk89q
  */
-public class HmodServerInterface implements ServerInterface {
+public class ServerInterface {
     /**
      * Set block type.
      *
@@ -34,7 +34,7 @@ public class HmodServerInterface implements ServerInterface {
      * @param type
      * @return
      */
-    public boolean setBlockType(Vector pt, int type) {
+    public static boolean setBlockType(Vector pt, int type) {
         // Can't set colored cloth or crash
         if ((type >= 21 && type <= 34) || type == 36) {
             return false;
@@ -49,7 +49,7 @@ public class HmodServerInterface implements ServerInterface {
      * @param pt
      * @return
      */
-    public int getBlockType(Vector pt) {
+    public static int getBlockType(Vector pt) {
         return etc.getServer().getBlockIdAt(pt.getBlockX(), pt.getBlockY(),
                 pt.getBlockZ());
     }
@@ -61,7 +61,7 @@ public class HmodServerInterface implements ServerInterface {
      * @param data
      * @return
      */
-    public void setBlockData(Vector pt, int data) {
+    public static void setBlockData(Vector pt, int data) {
         etc.getServer().setBlockData(pt.getBlockX(), pt.getBlockY(),
                         pt.getBlockZ(), data);
     }
@@ -72,7 +72,7 @@ public class HmodServerInterface implements ServerInterface {
      * @param pt
      * @return
      */
-    public int getBlockData(Vector pt) {
+    public static int getBlockData(Vector pt) {
         return etc.getServer().getBlockData(pt.getBlockX(), pt.getBlockY(),
                 pt.getBlockZ());
     }
@@ -83,7 +83,7 @@ public class HmodServerInterface implements ServerInterface {
      * @param pt
      * @param text
      */
-    public void setSignText(Vector pt, String[] text) {
+    public static void setSignText(Vector pt, String[] text) {
         Sign signData = (Sign)etc.getServer().getComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (signData == null) {
@@ -101,7 +101,7 @@ public class HmodServerInterface implements ServerInterface {
      * @param pt
      * @return
      */
-    public String[] getSignText(Vector pt) {
+    public static String[] getSignText(Vector pt) {
         Sign signData = (Sign)etc.getServer().getComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (signData == null) {
@@ -120,7 +120,7 @@ public class HmodServerInterface implements ServerInterface {
      * @param pt
      * @return
      */
-    public Map<Byte,Countable<BaseItem>> getChestContents(Vector pt) {
+    public static Map<Byte,Countable<BaseItem>> getChestContents(Vector pt) {
         ComplexBlock cblock = etc.getServer().getComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 
@@ -151,7 +151,7 @@ public class HmodServerInterface implements ServerInterface {
      * @param amount
      * @return
      */
-    public boolean setChestSlot(Vector pt, byte slot, BaseItem item, int amount) {
+    public static boolean setChestSlot(Vector pt, byte slot, BaseItem item, int amount) {
         ComplexBlock cblock = etc.getServer().getComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 

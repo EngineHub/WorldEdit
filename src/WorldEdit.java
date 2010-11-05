@@ -17,15 +17,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import com.sk89q.worldedit.snapshots.SnapshotRepository;
-import java.util.Map;
-import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
 import java.net.URL;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Entry point for the plugin for hey0's mod.
@@ -38,19 +35,9 @@ public class WorldEdit extends Plugin {
      */
     private static final Logger logger = Logger.getLogger("Minecraft");
     /**
-     * WorldEditLibrary's properties file.
-     */
-    private PropertiesFile properties;
-    /**
      * WorldEditLibrary instance.
      */
-    private static final WorldEditController worldEdit =
-            WorldEditController.setup(new HmodServerInterface());
-    /**
-     * Listener for the plugin system.
-     */
-    private static final HmodWorldEditListener listener =
-            new HmodWorldEditListener();
+    private static final WorldEditListener listener = new WorldEditListener();
 
     /**
      * Initializes the plugin.
@@ -70,7 +57,7 @@ public class WorldEdit extends Plugin {
         loader.addListener(PluginLoader.Hook.LOGIN, listener, this,
                 PluginListener.Priority.MEDIUM);
 
-        logger.log(Level.INFO, "WorldEdit version " + getWorldEditVersion() + " loaded.");
+        logger.log(Level.INFO, "WorldEdit version " + getVersion() + " loaded.");
     }
 
     /**
@@ -78,37 +65,8 @@ public class WorldEdit extends Plugin {
      */
     @Override
     public void enable() {
-        if (properties == null) {
-            properties = new PropertiesFile("worldedit.properties");
-        } else {
-            properties.load();
-        }
-
-        // Get allowed blocks
-        HashSet<Integer> allowedBlocks = new HashSet<Integer>();
-        for (String b : properties.getString("allowed-blocks",
-                WorldEditController.getDefaultAllowedBlocks()).split(",")) {
-            try {
-                allowedBlocks.add(Integer.parseInt(b));
-            } catch (NumberFormatException e) {
-            }
-        }
-        worldEdit.setAllowedBlocks(allowedBlocks);
-        
-        worldEdit.setDefaultChangeLimit(
-                Math.max(-1, properties.getInt("max-blocks-changed", -1)));
-
-        String snapshotsDir = properties.getString("snapshots-dir", "");
-        if (!snapshotsDir.trim().equals("")) {
-            worldEdit.setSnapshotRepository(new SnapshotRepository(snapshotsDir));
-        }
-
-        String shellSaveType = properties.getString("shell-save-type", "").trim();
-        worldEdit.setShellSaveType(shellSaveType.equals("") ? null : shellSaveType);
-
-        for (Map.Entry<String,String> entry : worldEdit.getCommands().entrySet()) {
-            etc.getInstance().addCommand(entry.getKey(), entry.getValue());
-        }
+        listener.loadConfiguration();
+        listener.registerCommands();
     }
 
     /**
@@ -116,11 +74,8 @@ public class WorldEdit extends Plugin {
      */
     @Override
     public void disable() {
-        for (String key : worldEdit.getCommands().keySet()) {
-            etc.getInstance().removeCommand(key);
-        }
-
-        worldEdit.clearSessions();
+        listener.deregisterCommands();
+        listener.clearSessions();
     }
 
     /**
@@ -128,7 +83,7 @@ public class WorldEdit extends Plugin {
      * 
      * @return
      */
-    private String getWorldEditVersion() {
+    private String getVersion() {
         try {
             String classContainer = WorldEdit.class.getProtectionDomain()
                     .getCodeSource().getLocation().toString();
