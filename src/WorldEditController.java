@@ -611,7 +611,7 @@ public class WorldEditController {
             } catch (DataException e) {
                 player.printError("Load error: " + e.getMessage());
             } catch (IOException e) {
-                player.printError("Schematic could not read or it does not exist.");
+                player.printError("Schematic could not read or it does not exist: " + e.getMessage());
             }
 
             return true;
@@ -650,7 +650,7 @@ public class WorldEditController {
             } catch (DataException se) {
                 player.printError("Save error: " + se.getMessage());
             } catch (IOException e) {
-                player.printError("Schematic could not written.");
+                player.printError("Schematic could not written: " + e.getMessage());
             }
             
             return true;
