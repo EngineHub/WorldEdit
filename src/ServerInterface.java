@@ -135,7 +135,8 @@ public class ServerInterface {
         for (byte i = 0; i <= 26; i++) {
             Item item = chest.getItemFromSlot(i);
             if (item != null) {
-                items.put(i, new Countable(new BaseItem((short)item.getItemId()), item.getAmount()));
+                items.put(i, new Countable<BaseItem>(new BaseItem((short)item.getItemId()),
+                        item.getAmount()));
             }
         }
 
