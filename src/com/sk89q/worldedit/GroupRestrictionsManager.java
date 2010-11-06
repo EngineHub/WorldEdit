@@ -54,7 +54,6 @@ public class GroupRestrictionsManager {
         
         for (String group : groups) {
             int changeLimit = getChangeLimit(group);
-            System.out.println("change limit for " + group + ": " + changeLimit);
             if (changeLimit == -1) {
                 return -1;
             } else if (changeLimit > highestLimit) {
