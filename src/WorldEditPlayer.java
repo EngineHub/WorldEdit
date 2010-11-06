@@ -69,7 +69,7 @@ public class WorldEditPlayer {
      */
     public void findFreePosition(Vector searchPos) {
         int x = searchPos.getBlockX();
-        int y = searchPos.getBlockY();
+        int y = Math.max(0, searchPos.getBlockY());
         int origY = y;
         int z = searchPos.getBlockZ();
 
@@ -111,7 +111,7 @@ public class WorldEditPlayer {
     public boolean ascendLevel() {
         Vector pos = getBlockIn();
         int x = pos.getBlockX();
-        int y = pos.getBlockY();
+        int y = Math.max(0, pos.getBlockY());
         int z = pos.getBlockZ();
 
         byte free = 0;
@@ -153,7 +153,7 @@ public class WorldEditPlayer {
     public boolean descendLevel() {
         Vector pos = getBlockIn();
         int x = pos.getBlockX();
-        int y = pos.getBlockY() - 1;
+        int y = Math.max(0, pos.getBlockY() - 1);
         int z = pos.getBlockZ();
 
         byte free = 0;
@@ -200,8 +200,8 @@ public class WorldEditPlayer {
     public boolean ascendToCeiling(int clearance) {
         Vector pos = getBlockIn();
         int x = pos.getBlockX();
-        int initialY = pos.getBlockY();
-        int y = pos.getBlockY() + 2;
+        int initialY = Math.max(0, pos.getBlockY());
+        int y = Math.max(0, pos.getBlockY() + 2);
         int z = pos.getBlockZ();
         
         // No free space above
