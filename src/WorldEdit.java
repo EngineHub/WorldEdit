@@ -96,4 +96,13 @@ public class WorldEdit extends Plugin {
             return "(unknown)";
         }
     }
+
+    /**
+     * Returns the listener.
+     *
+     * @return
+     */
+    public WorldEditListener getListener() {
+        return listener;
+    }
 }

@@ -1371,4 +1371,23 @@ public class WorldEditListener extends PluginListener {
             etc.getInstance().removeCommand(key);
         }
     }
+
+    /**
+     * Gets the WorldEditLibrary session for a player. Used for the bridge.
+     *
+     * @param player
+     * @return
+     */
+    public WorldEditSession _bridgeSession(Player pl) {
+        WorldEditPlayer player = new WorldEditPlayer(pl);
+
+        if (sessions.containsKey(player)) {
+            return sessions.get(player);
+        } else {
+            WorldEditSession session = new WorldEditSession();
+            session.setBlockChangeLimit(defaultChangeLimit);
+            sessions.put(player, session);
+            return session;
+        }
+    }
 }
