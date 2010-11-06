@@ -33,7 +33,7 @@ public class WorldEdit extends Plugin {
     /**
      * Logger.
      */
-    private static final Logger logger = Logger.getLogger("Minecraft");
+    private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     /**
      * WorldEditLibrary instance.
      */

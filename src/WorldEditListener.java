@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.Handler;
+import java.util.logging.FileHandler;
 import java.io.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.*;
@@ -39,7 +41,7 @@ public class WorldEditListener extends PluginListener {
     /**
      * Logger.
      */
-    private static final Logger logger = Logger.getLogger("Minecraft");
+    private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     
     /**
      * Default list of allowed block types.
@@ -90,6 +92,10 @@ public class WorldEditListener extends PluginListener {
      * Max radius for commands that use a radius.
      */
     private int maxRadius = -1;
+    /**
+     * Indicates whether commands should be logged to the console.
+     */
+    private boolean logComands = false;
 
     /**
      * Construct an instance of the plugin.
@@ -293,6 +299,11 @@ public class WorldEditListener extends PluginListener {
             WorldEditSession session, EditSession editSession, String[] split)
             throws WorldEditException
     {
+        if (logComands) {
+            logger.log(Level.INFO, "WorldEdit: " + player.getName() + ": "
+                    + joinString(split, " "));
+        }
+
         // Jump to the first free position
         if (split[0].equalsIgnoreCase("/unstuck")) {
             checkArgs(split, 0, 0, split[0]);
@@ -1405,6 +1416,24 @@ public class WorldEditListener extends PluginListener {
 
         String type = properties.getString("shell-save-type", "").trim();
         shellSaveType = type.equals("") ? null : type;
+
+        logComands = properties.getBoolean("log-commands", false);
+
+        String logFile = properties.getString("log-file", "");
+        if (!logFile.equals("")) {
+            try {
+                FileHandler handler = new FileHandler(logFile, true);
+                handler.setFormatter(new LogFormat());
+                logger.addHandler(handler);
+            } catch (IOException e) {
+                logger.log(Level.WARNING, "Could not use log file " + logFile + ": "
+                        + e.getMessage());
+            }
+        } else {
+            for (Handler handler : logger.getHandlers()) {
+                logger.removeHandler(handler);
+            }
+        }
     }
 
     /**
@@ -1442,5 +1471,23 @@ public class WorldEditListener extends PluginListener {
             sessions.put(player, session);
             return session;
         }
+    }
+
+    /**
+     * Joins a string from an array of strings.
+     *
+     * @param str
+     * @param delimiter
+     * @return
+     */
+    private static String joinString(String[] str, String delimiter) {
+        if (str.length == 0) {
+            return "";
+        }
+        StringBuilder buffer = new StringBuilder(str[0]);
+        for (int i = 1; i < str.length; i++) {
+            buffer.append(delimiter).append(str[i]);
+        }
+        return buffer.toString();
     }
 }
