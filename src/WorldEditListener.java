@@ -1403,6 +1403,16 @@ public class WorldEditListener extends PluginListener {
      * @return
      */
     private boolean canUseCommand(Player player, String command) {
+        // Allow the /worldeditselect permission
+        if (command.equalsIgnoreCase("//pos1")
+                || command.equalsIgnoreCase("//pos2")
+                || command.equalsIgnoreCase("//hpos1")
+                || command.equalsIgnoreCase("//hpos2")) {
+            return player.canUseCommand(command)
+                    || player.canUseCommand("/worldeditselect")
+                    || player.canUseCommand("/worldedit");
+        }
+        
         return player.canUseCommand(command.replace("air", ""))
                 || player.canUseCommand("/worldedit");
     }
