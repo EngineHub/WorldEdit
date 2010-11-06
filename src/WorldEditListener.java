@@ -86,6 +86,10 @@ public class WorldEditListener extends PluginListener {
      * if snapshot restoration is not configured.
      */
     private SnapshotRepository snapshotRepo;
+    /**
+     * Max radius for commands that use a radius.
+     */
+    private int maxRadius = -1;
 
     /**
      * Construct an instance of the plugin.
@@ -135,6 +139,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("//sphere", "[ID] [Radius] <Raised?> - Create a sphere");
         commands.put("//hsphere", "[ID] [Radius] <Raised?> - Create a hollow sphere");
         commands.put("/fixwater", "[Radius] - Level nearby pools of water");
+        commands.put("/fixlava", "[Radius] - Level nearby pools of lava");
         commands.put("/ex", "[Size] - Extinguish fires");
         commands.put("/forestgen", "<Size> - Make an ugly pine tree forest");
         commands.put("/pumpkins", "<Size> - Make a pumpkin forest");
@@ -255,6 +260,18 @@ public class WorldEditListener extends PluginListener {
             } else {
                 throw new InsufficientArgumentsException("Invalid number of arguments");
             }
+        }
+    }
+
+    /**
+     * Checks to see if the specified radius is within bounds.
+     *
+     * @param radius
+     * @throws MaxRadiusException
+     */
+    private void checkMaxRadius(int radius) throws MaxRadiusException {
+        if (maxRadius > 0 && radius > maxRadius) {
+            throw new MaxRadiusException();
         }
     }
 
@@ -515,6 +532,7 @@ public class WorldEditListener extends PluginListener {
             checkArgs(split, 2, 3, split[0]);
             BaseBlock block = getBlock(split[1]);
             int radius = Math.max(1, Integer.parseInt(split[2]));
+            checkMaxRadius(radius);
             int depth = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
 
             Vector pos = session.getPlacementPosition(player);
@@ -528,6 +546,7 @@ public class WorldEditListener extends PluginListener {
         } else if (split[0].equalsIgnoreCase("/removeabove")) {
             checkArgs(split, 0, 2, split[0]);
             int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
+            checkMaxRadius(size);
             int height = split.length > 2 ? Math.min(128, Integer.parseInt(split[2]) + 2) : 128;
 
             int affected = editSession.removeAbove(
@@ -540,6 +559,7 @@ public class WorldEditListener extends PluginListener {
         } else if (split[0].equalsIgnoreCase("/removebelow")) {
             checkArgs(split, 0, 2, split[0]);
             int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
+            checkMaxRadius(size);
             int height = split.length > 2 ? Math.max(1, Integer.parseInt(split[2])) : 128;
 
             int affected = editSession.removeBelow(
@@ -553,6 +573,7 @@ public class WorldEditListener extends PluginListener {
             checkArgs(split, 2, 2, split[0]);
             BaseBlock block = getBlock(split[1], true);
             int size = Math.max(1, Integer.parseInt(split[2]));
+            checkMaxRadius(size);
 
             int affected = editSession.removeNear(
                     session.getPlacementPosition(player), block.getID(), size);
@@ -563,7 +584,10 @@ public class WorldEditListener extends PluginListener {
         // Extinguish
         } else if (split[0].equalsIgnoreCase("/ex")) {
             checkArgs(split, 0, 1, split[0]);
-            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 40;
+            int defaultRadius = maxRadius != -1 ? Math.min(40, maxRadius) : 40;
+            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1]))
+                    : defaultRadius;
+            checkMaxRadius(size);
 
             int affected = editSession.removeNear(
                     session.getPlacementPosition(player), 51, size);
@@ -672,6 +696,7 @@ public class WorldEditListener extends PluginListener {
         } else if(split[0].equalsIgnoreCase("//drain")) {
             checkArgs(split, 1, 1, split[0]);
             int radius = Math.max(0, Integer.parseInt(split[1]));
+            checkMaxRadius(radius);
             int affected = editSession.drainArea(
                     session.getPlacementPosition(player), radius);
             player.print(affected + " block(s) have been changed.");
@@ -682,8 +707,20 @@ public class WorldEditListener extends PluginListener {
         } else if(split[0].equalsIgnoreCase("/fixwater")) {
             checkArgs(split, 1, 1, split[0]);
             int radius = Math.max(0, Integer.parseInt(split[1]));
-            int affected = editSession.fixWater(
-                    session.getPlacementPosition(player), radius);
+            checkMaxRadius(radius);
+            int affected = editSession.fixLiquid(
+                    session.getPlacementPosition(player), radius, 8, 9);
+            player.print(affected + " block(s) have been changed.");
+
+            return true;
+
+        // Fix lava
+        } else if(split[0].equalsIgnoreCase("/fixlava")) {
+            checkArgs(split, 1, 1, split[0]);
+            int radius = Math.max(0, Integer.parseInt(split[1]));
+            checkMaxRadius(radius);
+            int affected = editSession.fixLiquid(
+                    session.getPlacementPosition(player), radius, 10, 11);
             player.print(affected + " block(s) have been changed.");
 
             return true;
@@ -1304,6 +1341,8 @@ public class WorldEditListener extends PluginListener {
         } catch (MaxChangedBlocksException e5) {
             ply.sendMessage(Colors.Rose + "The maximum number of blocks changed ("
                     + e5.getBlockLimit() + ") in an instance was reached.");
+        } catch (MaxRadiusException e) {
+            ply.sendMessage(Colors.Rose + "Maximum radius: " + maxRadius);
         } catch (UnknownDirectionException ue) {
             ply.sendMessage(Colors.Rose + "Unknown direction: " + ue.getDirection());
         } catch (InsufficientArgumentsException e6) {
@@ -1354,6 +1393,8 @@ public class WorldEditListener extends PluginListener {
         }
 
         defaultChangeLimit = Math.max(-1, properties.getInt("max-blocks-changed", -1));
+
+        maxRadius = Math.max(-1, properties.getInt("max-radius", -1));
 
         String snapshotsDir = properties.getString("snapshots-dir", "");
         if (!snapshotsDir.trim().equals("")) {

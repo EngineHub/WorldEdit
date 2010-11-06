@@ -872,7 +872,8 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int fixWater(Vector pos, int radius) throws MaxChangedBlocksException {
+    public int fixLiquid(Vector pos, int radius, int moving, int stationary)
+            throws MaxChangedBlocksException {
         int affected = 0;
 
         HashSet<BlockVector> visited = new HashSet<BlockVector>();
@@ -884,14 +885,14 @@ public class EditSession {
                     int type = getBlock(new Vector(x, y, z)).getID();
 
                     // Check block type
-                    if (type == 8 || type == 9) {
+                    if (type == moving || type == stationary) {
                         queue.push(new BlockVector(x, y, z));
                     }
                 }
             }
         }
 
-        BaseBlock stationaryWater = new BaseBlock(9);
+        BaseBlock stationaryBlock = new BaseBlock(stationary);
 
         while (!queue.empty()) {
             BlockVector cur = queue.pop();
@@ -899,7 +900,7 @@ public class EditSession {
             int type = getBlock(cur).getID();
 
             // Check block type
-            if (type != 8 && type != 9 && type != 0) {
+            if (type != moving && type != stationary && type != 0) {
                 continue;
             }
 
@@ -910,7 +911,7 @@ public class EditSession {
 
             visited.add(cur);
 
-            if (setBlock(cur, stationaryWater)) {
+            if (setBlock(cur, stationaryBlock)) {
                 affected++;
             }
 
