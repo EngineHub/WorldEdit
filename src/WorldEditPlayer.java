@@ -438,4 +438,13 @@ public class WorldEditPlayer {
         loc.rotY = (float) pitch;
         player.teleportTo(loc);
     }
+
+    /**
+     * Get a player's list of groups.
+     * 
+     * @return
+     */
+    public String[] getGroups() {
+        return player.getGroups();
+    }
 }

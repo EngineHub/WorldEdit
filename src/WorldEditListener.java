@@ -72,6 +72,11 @@ public class WorldEditListener extends PluginListener {
     private HashMap<String,String> commands = new HashMap<String,String>();
 
     /**
+     * Group restrictions manager.
+     */
+    private GroupRestrictionsManager restrictions = new GroupRestrictionsManager();
+
+    /**
      * List of allowed blocks.
      */
     private HashSet<Integer> allowedBlocks;
@@ -174,7 +179,11 @@ public class WorldEditListener extends PluginListener {
             return sessions.get(player);
         } else {
             WorldEditSession session = new WorldEditSession();
-            session.setBlockChangeLimit(defaultChangeLimit);
+            int changeLimit = restrictions.getGreatestChangeLimit(player.getGroups());
+            if (changeLimit == -2) {
+                changeLimit = defaultChangeLimit;
+            }
+            session.setBlockChangeLimit(changeLimit);
             sessions.put(player, session);
             return session;
         }
@@ -446,8 +455,13 @@ public class WorldEditListener extends PluginListener {
         } else if (split[0].equalsIgnoreCase("//limit")) {
             checkArgs(split, 1, 1, split[0]);
             int limit = Math.max(-1, Integer.parseInt(split[1]));
-            session.setBlockChangeLimit(limit);
-            player.print("Block change limit set to " + limit + ".");
+            int allowableMax = restrictions.getGreatestChangeLimit(player.getGroups());
+            if (allowableMax >= 0 && (limit == -1 || limit > allowableMax)) {
+                player.printError("Your maximum allowable limit is " + allowableMax + ".");
+            } else {
+                session.setBlockChangeLimit(limit);
+                player.print("Block change limit set to " + limit + ".");
+            }
             return true;
 
         // Undo
@@ -1436,6 +1450,15 @@ public class WorldEditListener extends PluginListener {
             for (Handler handler : logger.getHandlers()) {
                 logger.removeHandler(handler);
             }
+        }
+
+        try {
+            restrictions.load("worldedit-restrictions.txt");
+            logger.log(Level.INFO, "WorldEdit group restrictions loaded");
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Could not load WorldEdit restrictions: "
+                    + e.getMessage());
         }
     }
 
