@@ -25,5 +25,13 @@ package com.sk89q.worldedit;
  * @author sk89q
  */
 public class UnknownItemException extends WorldEditException {
+    private String type;
 
+    public UnknownItemException(String type) {
+        this.type = type;
+    }
+
+    public String getID() {
+        return type;
+    }
 }

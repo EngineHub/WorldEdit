@@ -546,7 +546,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int replaceBlocks(Region region, int fromBlockType, BaseBlock toBlock)
+    public int replaceBlocks(Region region, Set<Integer> fromBlockTypes, BaseBlock toBlock)
             throws MaxChangedBlocksException {
         int affected = 0;
 
@@ -561,8 +561,8 @@ public class EditSession {
                         Vector pt = new Vector(x, y, z);
                         int curBlockType = getBlock(pt).getID();
 
-                        if (fromBlockType == -1 && curBlockType != 0 ||
-                                curBlockType == fromBlockType) {
+                        if (fromBlockTypes == null && curBlockType != 0 ||
+                                fromBlockTypes.contains(curBlockType)) {
                             if (setBlock(pt, toBlock)) {
                                 affected++;
                             }
@@ -574,8 +574,8 @@ public class EditSession {
             for (Vector pt : region) {
                 int curBlockType = getBlock(pt).getID();
 
-                if (fromBlockType == -1 && curBlockType != 0 ||
-                        curBlockType == fromBlockType) {
+                if (fromBlockTypes == null && curBlockType != 0 ||
+                        fromBlockTypes.contains(curBlockType)) {
                     if (setBlock(pt, toBlock)) {
                         affected++;
                     }

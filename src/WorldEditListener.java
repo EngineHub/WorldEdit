@@ -227,7 +227,7 @@ public class WorldEditListener extends PluginListener {
         }
 
         if (blockType == null) {
-            throw new UnknownItemException();
+            throw new UnknownItemException(arg);
         }
 
         // Check if the item is allowed
@@ -245,7 +245,7 @@ public class WorldEditListener extends PluginListener {
             return new BaseBlock(blockType.getID(), data);
         }
 
-        throw new DisallowedItemException();
+        throw new DisallowedItemException(arg);
     }
 
     /**
@@ -257,8 +257,21 @@ public class WorldEditListener extends PluginListener {
      * @throws DisallowedItemException
      */
     public BaseBlock getBlock(String id) throws UnknownItemException,
-                                          DisallowedItemException {
+                                                DisallowedItemException {
         return getBlock(id, false);
+    }
+
+    /**
+     * Get a list of blocks as a set.
+     */
+    public Set<Integer> getBlockIDs(String list) throws UnknownItemException,
+                                                      DisallowedItemException {
+        String[] items = list.split(",");
+        Set<Integer> blocks = new HashSet<Integer>();
+        for (String s : items) {
+            blocks.add(getBlock(s).getID());
+        }
+        return blocks;
     }
 
     /**
@@ -764,13 +777,13 @@ public class WorldEditListener extends PluginListener {
         // Replace all blocks in the region
         } else if(split[0].equalsIgnoreCase("//replace")) {
             checkArgs(split, 1, 2, split[0]);
-            int from;
+            Set<Integer> from;
             BaseBlock to;
             if (split.length == 2) {
-                from = -1;
+                from = null;
                 to = getBlock(split[1], true);
             } else {
-                from = getBlock(split[1]).getID();
+                from = getBlockIDs(split[1]);
                 to = getBlock(split[2]);
             }
             
@@ -1374,9 +1387,9 @@ public class WorldEditListener extends PluginListener {
         } catch (IncompleteRegionException e2) {
             ply.sendMessage(Colors.Rose + "The edit region has not been fully defined.");
         } catch (UnknownItemException e3) {
-            ply.sendMessage(Colors.Rose + "Block name was not recognized.");
+            ply.sendMessage(Colors.Rose + "Block name '" + e3.getID() + "' was not recognized.");
         } catch (DisallowedItemException e4) {
-            ply.sendMessage(Colors.Rose + "Block not allowed (see WorldEdit configuration).");
+            ply.sendMessage(Colors.Rose + "Block '" + e4.getID() + "' not allowed (see WorldEdit configuration).");
         } catch (MaxChangedBlocksException e5) {
             ply.sendMessage(Colors.Rose + "The maximum number of blocks changed ("
                     + e5.getBlockLimit() + ") in an instance was reached.");
