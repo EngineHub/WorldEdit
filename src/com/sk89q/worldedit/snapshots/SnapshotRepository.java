@@ -61,9 +61,7 @@ public class SnapshotRepository {
         FilenameFilter filter = new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 File f = new File(dir, name);
-                return (name.toLowerCase().endsWith(".zip")
-                        && f.isFile())
-                        || f.isDirectory();
+                return isValidSnapshot(f);
             }
         };
 
@@ -105,17 +103,30 @@ public class SnapshotRepository {
      * Check to see if a snapshot is valid.
      *
      * @param dir
-     * @param snapshot
      * @return whether it is a valid snapshot
      */
     public boolean isValidSnapshotName(String snapshot) {
-        if (!snapshot.matches("[A-Za-z0-9_\\-,.\\[\\]\\(\\) ]{1,50}")) {
+        return isValidSnapshot(new File(dir, snapshot));
+    }
+
+    /**
+     * Check to see if a snapshot is valid.
+     *
+     * @param f
+     * @return whether it is a valid snapshot
+     */
+    public boolean isValidSnapshot(File f) {
+        if (!f.getName().matches("[A-Za-z0-9_\\-,.\\[\\]\\(\\) ]{1,50}")) {
             return false;
         }
 
-        File f = new File(dir, snapshot);
         return (f.isDirectory() && (new File(f, "level.dat")).exists())
-                || (f.isFile() && f.getName().toLowerCase().endsWith((".zip")));
+                || (f.isFile() && (
+                    f.getName().toLowerCase().endsWith(".zip")
+                    || f.getName().toLowerCase().endsWith(".tar.bz2")
+                    || f.getName().toLowerCase().endsWith(".tar.gz")
+                    || f.getName().toLowerCase().endsWith(".tar")
+                    ));
     }
 
     /**

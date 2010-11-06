@@ -54,12 +54,20 @@ public class Snapshot {
      * @return
      * @throws IOException
      */
-    public ChunkStore getChunkStore() throws IOException {
+    public ChunkStore getChunkStore() throws IOException, DataException {
         if (file.getName().toLowerCase().endsWith(".zip")) {
             try {
                 return new TrueZipAlphaChunkStore(file);
             } catch (NoClassDefFoundError e) {
                 return new ZippedAlphaChunkStore(file);
+            }
+        } else if (file.getName().toLowerCase().endsWith(".tar.bz2")
+                || file.getName().toLowerCase().endsWith(".tar.gz")
+                || file.getName().toLowerCase().endsWith(".tar")) {
+            try {
+                return new TrueZipAlphaChunkStore(file);
+            } catch (NoClassDefFoundError e) {
+                throw new DataException("TrueZIP is required for .tar support");
             }
         } else {
             return new AlphaChunkStore(file);

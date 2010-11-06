@@ -1098,6 +1098,9 @@ public class WorldEditListener extends PluginListener {
             try {
                 chunkStore = snapshot.getChunkStore();
                 player.print("Snapshot '" + snapshot.getName() + "' loaded; now restoring...");
+            } catch (DataException e) {
+                player.printError("Failed to load snapshot: " + e.getMessage());
+                return true;
             } catch (IOException e) {
                 player.printError("Failed to load snapshot: " + e.getMessage());
                 return true;
