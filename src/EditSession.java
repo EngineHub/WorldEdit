@@ -423,9 +423,13 @@ public class EditSession {
         size--;
         int affected = 0;
 
-        for (int x = (int)pos.getX() - size; x <= (int)pos.getX() + size; x++) {
-            for (int z = (int)pos.getZ() - size; z <= (int)pos.getZ() + size; z++) {
-                for (int y = (int)pos.getY(); y <= maxY; y++) {
+        int oX = pos.getBlockX();
+        int oY = pos.getBlockY();
+        int oZ = pos.getBlockZ();
+
+        for (int x = oX - size; x <= oX + size; x++) {
+            for (int z = oZ - size; z <= oZ + size; z++) {
+                for (int y = oY; y <= maxY; y++) {
                     Vector pt = new Vector(x, y, z);
 
                     if (!getBlock(pt).isAir()) {
@@ -453,9 +457,13 @@ public class EditSession {
         size--;
         int affected = 0;
 
-        for (int x = (int)pos.getX() - size; x <= (int)pos.getX() + size; x++) {
-            for (int z = (int)pos.getZ() - size; z <= (int)pos.getZ() + size; z++) {
-                for (int y = (int)pos.getY(); y >= minY; y--) {
+        int oX = pos.getBlockX();
+        int oY = pos.getBlockY();
+        int oZ = pos.getBlockZ();
+
+        for (int x = oX - size; x <= oX + size; x++) {
+            for (int z = oZ - size; z <= oZ + size; z++) {
+                for (int y = oY; y >= minY; y--) {
                     Vector pt = new Vector(x, y, z);
 
                     if (!getBlock(pt).isAir()) {
@@ -562,9 +570,16 @@ public class EditSession {
             Vector min = region.getMinimumPoint();
             Vector max = region.getMaximumPoint();
 
-            for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-                for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-                    for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+            int minX = min.getBlockX();
+            int minY = min.getBlockY();
+            int minZ = min.getBlockZ();
+            int maxX = max.getBlockX();
+            int maxY = max.getBlockY();
+            int maxZ = max.getBlockZ();
+
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    for (int z = minZ; z <= maxZ; z++) {
                         Vector pt = new Vector(x, y, z);
 
                         if (setBlock(pt, pattern.next(pt))) {
@@ -602,9 +617,16 @@ public class EditSession {
             Vector min = region.getMinimumPoint();
             Vector max = region.getMaximumPoint();
 
-            for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-                for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-                    for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+            int minX = min.getBlockX();
+            int minY = min.getBlockY();
+            int minZ = min.getBlockZ();
+            int maxX = max.getBlockX();
+            int maxY = max.getBlockY();
+            int maxZ = max.getBlockZ();
+
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    for (int z = minZ; z <= maxZ; z++) {
                         Vector pt = new Vector(x, y, z);
                         int curBlockType = getBlock(pt).getID();
 
@@ -648,25 +670,32 @@ public class EditSession {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
 
-        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-            for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-                if (setBlock(new Vector(x, y, min.getBlockZ()), block)) { affected++; }
-                if (setBlock(new Vector(x, y, max.getBlockZ()), block)) { affected++; }
+        int minX = min.getBlockX();
+        int minY = min.getBlockY();
+        int minZ = min.getBlockZ();
+        int maxX = max.getBlockX();
+        int maxY = max.getBlockY();
+        int maxZ = max.getBlockZ();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                if (setBlock(new Vector(x, y, minZ), block)) { affected++; }
+                if (setBlock(new Vector(x, y, maxZ), block)) { affected++; }
                 affected++;
             }
         }
 
-        for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-            for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                if (setBlock(new Vector(min.getBlockX(), y, z), block)) { affected++; }
-                if (setBlock(new Vector(max.getBlockX(), y, z), block)) { affected++; }
+        for (int y = minY; y <= maxY; y++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                if (setBlock(new Vector(minX, y, z), block)) { affected++; }
+                if (setBlock(new Vector(maxX, y, z), block)) { affected++; }
             }
         }
 
-        for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-            for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-                if (setBlock(new Vector(x, min.getBlockY(), z), block)) { affected++; }
-                if (setBlock(new Vector(x, max.getBlockY(), z), block)) { affected++; }
+        for (int z = minZ; z <= maxZ; z++) {
+            for (int x = minX; x <= maxX; x++) {
+                if (setBlock(new Vector(x, minY, z), block)) { affected++; }
+                if (setBlock(new Vector(x, maxY, z), block)) { affected++; }
             }
         }
 
@@ -688,18 +717,25 @@ public class EditSession {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
 
-        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-            for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-                if (setBlock(new Vector(x, y, min.getBlockZ()), block)) { affected++; }
-                if (setBlock(new Vector(x, y, max.getBlockZ()), block)) { affected++; }
+        int minX = min.getBlockX();
+        int minY = min.getBlockY();
+        int minZ = min.getBlockZ();
+        int maxX = max.getBlockX();
+        int maxY = max.getBlockY();
+        int maxZ = max.getBlockZ();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                if (setBlock(new Vector(x, y, minZ), block)) { affected++; }
+                if (setBlock(new Vector(x, y, maxZ), block)) { affected++; }
                 affected++;
             }
         }
 
-        for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-            for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                if (setBlock(new Vector(min.getBlockX(), y, z), block)) { affected++; }
-                if (setBlock(new Vector(max.getBlockX(), y, z), block)) { affected++; }
+        for (int y = minY; y <= maxY; y++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                if (setBlock(new Vector(minX, y, z), block)) { affected++; }
+                if (setBlock(new Vector(maxX, y, z), block)) { affected++; }
             }
         }
 
@@ -724,8 +760,13 @@ public class EditSession {
 
         int affected = 0;
 
-        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-            for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+        int minX = min.getBlockX();
+        int minZ = min.getBlockZ();
+        int maxX = max.getBlockX();
+        int maxZ = max.getBlockZ();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
                 for (int y = upperY; y >= lowerY; y--) {
                     Vector above = new Vector(x, y + 1, z);
                     
@@ -760,13 +801,21 @@ public class EditSession {
 
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
+
+        int minX = min.getBlockX();
+        int minY = min.getBlockY();
+        int minZ = min.getBlockZ();
+        int maxX = max.getBlockX();
+        int maxY = max.getBlockY();
+        int maxZ = max.getBlockZ();
+        
         int xs = region.getWidth();
         int ys = region.getHeight();
         int zs = region.getLength();
 
-        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-            for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                for (int y = minY; y <= maxY; y++) {
                     BaseBlock block = getBlock(new Vector(x, y, z));
 
                     if (!block.isAir() || copyAir) {
@@ -807,17 +856,26 @@ public class EditSession {
         Vector shift = dir.multiply(distance);
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
+
+        int minX = min.getBlockX();
+        int minY = min.getBlockY();
+        int minZ = min.getBlockZ();
+        int maxX = max.getBlockX();
+        int maxY = max.getBlockY();
+        int maxZ = max.getBlockZ();
+
         Vector newMin = min.add(shift);
         Vector newMax = min.add(shift);
+        
         int xs = region.getWidth();
         int ys = region.getHeight();
         int zs = region.getLength();
 
         Map<Vector,BaseBlock> delayed = new LinkedHashMap<Vector,BaseBlock>();
 
-        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-            for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                for (int y = minY; y <= maxY; y++) {
                     Vector pos = new Vector(x, y, z);
                     BaseBlock block = getBlock(pos);
 
