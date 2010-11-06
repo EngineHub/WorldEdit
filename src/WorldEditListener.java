@@ -224,6 +224,12 @@ public class WorldEditListener extends PluginListener {
             blockType = BlockType.fromID(Integer.parseInt(testID));
         } catch (NumberFormatException e) {
             blockType = BlockType.lookup(testID);
+            if (blockType == null) {
+                int t = etc.getDataSource().getItem(testID);
+                if (t > 0 && t < 256) {
+                    blockType = BlockType.fromID(t);
+                }
+            }
         }
 
         if (blockType == null) {
