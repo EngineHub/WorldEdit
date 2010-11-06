@@ -135,6 +135,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("//sphere", "[ID] [Radius] <Raised?> - Create a sphere");
         commands.put("//hsphere", "[ID] [Radius] <Raised?> - Create a hollow sphere");
         commands.put("/fixwater", "[Radius] - Level nearby pools of water");
+        commands.put("/ex", "[Size] - Extinguish fires");
         commands.put("/forestgen", "<Size> - Make an ugly pine tree forest");
         commands.put("/pumpkins", "<Size> - Make a pumpkin forest");
         commands.put("/unstuck", "Go up to the first free spot");
@@ -555,6 +556,17 @@ public class WorldEditListener extends PluginListener {
 
             int affected = editSession.removeNear(
                     session.getPlacementPosition(player), block.getID(), size);
+            player.print(affected + " block(s) have been removed.");
+
+            return true;
+
+        // Extinguish
+        } else if (split[0].equalsIgnoreCase("/ex")) {
+            checkArgs(split, 0, 1, split[0]);
+            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 40;
+
+            int affected = editSession.removeNear(
+                    session.getPlacementPosition(player), 51, size);
             player.print(affected + " block(s) have been removed.");
 
             return true;
