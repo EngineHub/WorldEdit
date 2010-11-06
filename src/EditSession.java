@@ -21,6 +21,7 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.regions.*;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
+import com.sk89q.worldedit.patterns.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
@@ -515,9 +516,16 @@ public class EditSession {
             Vector min = region.getMinimumPoint();
             Vector max = region.getMaximumPoint();
 
-            for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-                for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-                    for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+            int minX = min.getBlockX();
+            int minY = min.getBlockY();
+            int minZ = min.getBlockZ();
+            int maxX = max.getBlockX();
+            int maxY = max.getBlockY();
+            int maxZ = max.getBlockZ();
+
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    for (int z = minZ; z <= maxZ; z++) {
                         Vector pt = new Vector(x, y, z);
 
                         if (setBlock(pt, block)) {
@@ -529,6 +537,45 @@ public class EditSession {
         } else {
             for (Vector pt : region) {
                 if (setBlock(pt, block)) {
+                    affected++;
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Sets all the blocks inside a region to a certain block type.
+     *
+     * @param region
+     * @param block
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int setBlocks(Region region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+
+        if (region instanceof CuboidRegion) {
+            // Doing this for speed
+            Vector min = region.getMinimumPoint();
+            Vector max = region.getMaximumPoint();
+
+            for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+                for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+                    for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                        Vector pt = new Vector(x, y, z);
+
+                        if (setBlock(pt, pattern.next(pt))) {
+                            affected++;
+                        }
+                    }
+                }
+            }
+        } else {
+            for (Vector pt : region) {
+                if (setBlock(pt, pattern.next(pt))) {
                     affected++;
                 }
             }

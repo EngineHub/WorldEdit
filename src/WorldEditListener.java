@@ -17,6 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
@@ -31,6 +33,7 @@ import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
 import com.sk89q.worldedit.snapshots.*;
 import com.sk89q.worldedit.regions.*;
+import com.sk89q.worldedit.patterns.*;
 
 /**
  * Plugin base.
@@ -268,7 +271,46 @@ public class WorldEditListener extends PluginListener {
     }
 
     /**
+     * Get a list of blocks as a set. This returns a Pattern.
+     *
+     * @param list
+     * @return pattern
+     */
+    public Pattern getBlockPattern(String list)
+            throws UnknownItemException, DisallowedItemException {
+
+        String[] items = list.split(",");
+
+        if (items.length == 1) {
+            return new SingleBlockPattern(getBlock(items[0]));
+        }
+
+        List<BlockChance> blockChances = new ArrayList<BlockChance>();
+
+        for (String s : items) {
+            BaseBlock block;
+            
+            double chance;
+            if (s.matches("[0-9]+(?:\\.(?:[0-9]+)?)?%.*")) {
+                String[] p = s.split("%");
+                chance = Double.parseDouble(p[0]);
+                block = getBlock(p[1]);
+            } else {
+                chance = 1;
+                block = getBlock(s);
+            }
+            
+            blockChances.add(new BlockChance(block, chance));
+        }
+
+        return new RandomFillPattern(blockChances);
+    }
+
+    /**
      * Get a list of blocks as a set.
+     *
+     * @param list
+     * @return set
      */
     public Set<Integer> getBlockIDs(String list) throws UnknownItemException,
                                                       DisallowedItemException {
@@ -723,8 +765,14 @@ public class WorldEditListener extends PluginListener {
         // Replace all blocks in the region
         } else if(split[0].equalsIgnoreCase("//set")) {
             checkArgs(split, 1, 1, split[0]);
-            BaseBlock block = getBlock(split[1]);
-            int affected = editSession.setBlocks(session.getRegion(), block);
+            Pattern pattern = getBlockPattern(split[1]);
+            int affected;
+            if (pattern instanceof SingleBlockPattern) {
+                affected = editSession.setBlocks(session.getRegion(),
+                        ((SingleBlockPattern)pattern).getBlock());
+            } else {
+                affected = editSession.setBlocks(session.getRegion(), pattern);
+            }
             player.print(affected + " block(s) have been changed.");
 
             return true;
