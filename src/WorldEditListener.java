@@ -379,14 +379,14 @@ public class WorldEditListener extends PluginListener {
         } else if (split[0].equalsIgnoreCase("//pos1")) {
             checkArgs(split, 0, 0, split[0]);
             session.setPos1(player.getBlockIn());
-            player.print("First edit position set.");
+            player.print("First position set to " + player.getBlockIn() + " .");
             return true;
 
         // Set edit position #2
         } else if (split[0].equalsIgnoreCase("//pos2")) {
             checkArgs(split, 0, 0, split[0]);
             session.setPos2(player.getBlockIn());
-            player.print("Second edit position set.");
+            player.print("Second position set to " + player.getBlockIn() + " .");
             return true;
 
         // Trace edit position #1
@@ -395,7 +395,7 @@ public class WorldEditListener extends PluginListener {
             Vector pos = player.getBlockTrace(300);
             if (pos != null) {
                 session.setPos1(pos);
-                player.print("First edit position set.");
+                player.print("First position set to " + pos.toString() + " .");
             } else {
                 player.printError("No block in sight!");
             }
@@ -407,7 +407,7 @@ public class WorldEditListener extends PluginListener {
             Vector pos = player.getBlockTrace(300);
             if (pos != null) {
                 session.setPos2(pos);
-                player.print("Second edit position set.");
+                player.print("Second position set to " + pos.toString() + " .");
             } else {
                 player.printError("No block in sight!");
             }
@@ -687,7 +687,14 @@ public class WorldEditListener extends PluginListener {
 
         // Get size
         } else if (split[0].equalsIgnoreCase("//size")) {
-            player.print("# of blocks: " + session.getRegion().getSize());
+            Region region = session.getRegion();
+            Vector size = region.getMaximumPoint()
+                    .subtract(region.getMinimumPoint())
+                    .add(1, 1, 1);
+            player.print("First position: " + session.getPos1());
+            player.print("Second position: " + session.getPos2());
+            player.print("Size: " + size);
+            player.print("# of blocks: " + region.getSize());
             return true;
 
         // Replace all blocks in the region
@@ -1258,7 +1265,7 @@ public class WorldEditListener extends PluginListener {
                                            blockClicked.getZ());
 
             session.setPos2(cur);
-            player.print("Second edit position set.");
+            player.print("Second position set to " + cur + ".");
 
             return true;
         }
@@ -1302,7 +1309,7 @@ public class WorldEditListener extends PluginListener {
                 }
 
                 session.setPos1(cur);
-                player.print("First edit position set.");
+                player.print("First position set to " + cur + ".");
 
                 return true;
             }
