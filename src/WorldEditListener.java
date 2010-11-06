@@ -101,6 +101,10 @@ public class WorldEditListener extends PluginListener {
      * Indicates whether commands should be logged to the console.
      */
     private boolean logComands = false;
+    /**
+     * True to register the commands with the help system.
+     */
+    private boolean registerHelp = true;
 
     /**
      * Construct an instance of the plugin.
@@ -1451,6 +1455,8 @@ public class WorldEditListener extends PluginListener {
         String type = properties.getString("shell-save-type", "").trim();
         shellSaveType = type.equals("") ? null : type;
 
+        registerHelp = properties.getBoolean("register-help", true);
+
         logComands = properties.getBoolean("log-commands", false);
 
         String logFile = properties.getString("log-file", "");
@@ -1483,8 +1489,10 @@ public class WorldEditListener extends PluginListener {
      * Register commands with help.
      */
     public void registerCommands() {
-        for (Map.Entry<String,String> entry : commands.entrySet()) {
-            etc.getInstance().addCommand(entry.getKey(), entry.getValue());
+        if (registerHelp) {
+            for (Map.Entry<String,String> entry : commands.entrySet()) {
+                etc.getInstance().addCommand(entry.getKey(), entry.getValue());
+            }
         }
     }
 
