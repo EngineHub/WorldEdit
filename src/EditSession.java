@@ -630,8 +630,9 @@ public class EditSession {
                         Vector pt = new Vector(x, y, z);
                         int curBlockType = getBlock(pt).getID();
 
-                        if (fromBlockTypes == null && curBlockType != 0 ||
-                                fromBlockTypes.contains(curBlockType)) {
+                        if ((fromBlockTypes == null && curBlockType != 0) ||
+                                (fromBlockTypes != null &&
+                                fromBlockTypes.contains(curBlockType))) {
                             if (setBlock(pt, toBlock)) {
                                 affected++;
                             }
