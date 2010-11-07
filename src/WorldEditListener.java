@@ -809,7 +809,7 @@ public class WorldEditListener extends PluginListener {
                 } else {
                     session.setClipboard(CuboidClipboard.loadSchematic(filePath));
                     logger.log(Level.INFO, player.getName() + " loaded " + filePath);
-                    player.print(filename + " loaded.");
+                    player.print(filename + " loaded. Paste it with //paste");
                 }
             } catch (DataException e) {
                 player.printError("Load error: " + e.getMessage());
