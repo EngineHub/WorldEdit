@@ -119,6 +119,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("//pos2", "Set editing position #2");
         commands.put("//hpos1", "Trace editing position #1");
         commands.put("//hpos2", "Trace editing position #2");
+        commands.put("//chunk", "Select the chunk that you are in");
         commands.put("/toggleplace", "Toggle placing at pos #1");
         commands.put("//wand", "Gives you the \"edit wand\"");
         commands.put("/toggleeditwand", "Toggles edit wand selection");
@@ -492,6 +493,22 @@ public class WorldEditListener extends PluginListener {
             } else {
                 player.printError("No block in sight!");
             }
+            return true;
+
+        // Select the chunk
+        } else if(split[0].equalsIgnoreCase("//chunk")) {
+            checkArgs(split, 0, 0, split[0]);
+
+            Vector2D min2D = ChunkStore.toChunk(player.getBlockIn());
+            Vector min = new Vector(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
+            Vector max = min.add(15, 127, 15);
+
+            session.setPos1(min);
+            session.setPos2(max);
+
+            player.print("Chunk selected: "
+                    + min2D.getBlockX() + ", " + min2D.getBlockZ());
+
             return true;
 
         // Edit wand
