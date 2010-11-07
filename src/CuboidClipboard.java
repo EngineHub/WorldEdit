@@ -155,7 +155,7 @@ public class CuboidClipboard {
             for (int y = 0; y < size.getBlockY(); y++) {
                 for (int z = 0; z < size.getBlockZ(); z++) {
                     data[x][y][z] =
-                        editSession.getBlock(new Vector(x, y, z).add(origin));
+                        editSession.getBlock(new Vector(x, y, z).add(getOrigin()));
                 }
             }
         }
@@ -224,6 +224,9 @@ public class CuboidClipboard {
         schematic.put("Length", new ShortTag("Length", (short)length));
         schematic.put("Height", new ShortTag("Height", (short)height));
         schematic.put("Materials", new StringTag("Materials", "Alpha"));
+        schematic.put("WEOriginX", new IntTag("WEOriginX", getOrigin().getBlockX()));
+        schematic.put("WEOriginY", new IntTag("WEOriginY", getOrigin().getBlockY()));
+        schematic.put("WEOriginZ", new IntTag("WEOriginZ", getOrigin().getBlockZ()));
 
         // Copy
         byte[] blocks = new byte[width * height * length];
@@ -285,6 +288,8 @@ public class CuboidClipboard {
         FileInputStream stream = new FileInputStream(path);
         NBTInputStream nbtStream = new NBTInputStream(stream);
 
+        Vector origin = new Vector();
+
         // Schematic tag
         CompoundTag schematicTag = (CompoundTag)nbtStream.readTag();
         if (!schematicTag.getName().equals("Schematic")) {
@@ -301,6 +306,15 @@ public class CuboidClipboard {
         short width = (Short)getChildTag(schematic, "Width", ShortTag.class).getValue();
         short length = (Short)getChildTag(schematic, "Length", ShortTag.class).getValue();
         short height = (Short)getChildTag(schematic, "Height", ShortTag.class).getValue();
+
+        try {
+            int originX = (Integer)getChildTag(schematic, "WEOriginX", IntTag.class).getValue();
+            int originY = (Integer)getChildTag(schematic, "WEOriginY", IntTag.class).getValue();
+            int originZ = (Integer)getChildTag(schematic, "WEOriginZ", IntTag.class).getValue();
+            origin = new Vector(originX, originY, originZ);
+        } catch (DataException e) {
+            // No origin data
+        }
 
         // Check type of Schematic
         String materials = (String)getChildTag(schematic, "Materials", StringTag.class).getValue();
@@ -352,6 +366,7 @@ public class CuboidClipboard {
 
         Vector size = new Vector(width, height, length);
         CuboidClipboard clipboard = new CuboidClipboard(size);
+        clipboard.setOrigin(origin);
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -404,5 +419,19 @@ public class CuboidClipboard {
                 key + " tag is not of tag type " + expected.getName());
         }
         return tag;
+    }
+
+    /**
+     * @return the origin
+     */
+    public Vector getOrigin() {
+        return origin;
+    }
+
+    /**
+     * @param origin the origin to set
+     */
+    public void setOrigin(Vector origin) {
+        this.origin = origin;
     }
 }

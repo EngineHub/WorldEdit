@@ -140,8 +140,8 @@ public class WorldEditListener extends PluginListener {
         commands.put("/removenear", "<ID> <Size> - Remove blocks near you");
         commands.put("//copy", "Copies the currently selected region");
         commands.put("//cut", "Cuts the currently selected region");
-        commands.put("//paste", "Pastes the clipboard");
-        commands.put("//pasteair", "Pastes the clipboard (with air)");
+        commands.put("//paste", "<AtOrigin?> - Pastes the clipboard");
+        commands.put("//pasteair", "<AtOrigin?> - Pastes the clipboard (with air)");
         commands.put("//move", "<Count> <Dir> <LeaveID> - Move the selection");
         commands.put("//moveair", "<Count> <Dir> <LeaveID> - Move the selection (with air)");
         commands.put("//stack", "<Count> <Dir> - Stacks the selection");
@@ -599,11 +599,24 @@ public class WorldEditListener extends PluginListener {
         // Paste
         } else if (split[0].equalsIgnoreCase("//pasteair") ||
                    split[0].equalsIgnoreCase("//paste")) {
-            Vector pos = session.getPlacementPosition(player);
-            session.getClipboard().paste(editSession, pos,
-                split[0].equalsIgnoreCase("//paste"));
-            player.findFreePosition();
-            player.print("Pasted. Undo with //undo");
+            checkArgs(split, 0, 1, split[0]);
+            boolean atOrigin = split.length > 1
+                    ? (split[1].equalsIgnoreCase("true")
+                            || split[1].equalsIgnoreCase("yes"))
+                    : false;
+            if (atOrigin) {
+                Vector pos = session.getClipboard().getOrigin();
+                session.getClipboard().place(editSession, pos,
+                    split[0].equalsIgnoreCase("//paste"));
+                player.findFreePosition();
+                player.print("Pasted to copy origin. Undo with //undo");
+            } else {
+                Vector pos = session.getPlacementPosition(player);
+                session.getClipboard().paste(editSession, pos,
+                    split[0].equalsIgnoreCase("//paste"));
+                player.findFreePosition();
+                player.print("Pasted relative to you. Undo with //undo");
+            }
 
             return true;
 
