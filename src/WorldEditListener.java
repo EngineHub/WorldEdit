@@ -159,7 +159,8 @@ public class WorldEditListener extends PluginListener {
         commands.put("/fixwater", "[Radius] - Level nearby pools of water");
         commands.put("/fixlava", "[Radius] - Level nearby pools of lava");
         commands.put("/ex", "[Size] - Extinguish fires");
-        commands.put("/forestgen", "<Size> - Make an ugly pine tree forest");
+        commands.put("/forestgen", "<Size> <Density> - Make Notch tree forest");
+        commands.put("/pinegen", "<Size> <Density> - Make an ugly pine tree forest");
         commands.put("/pumpkins", "<Size> - Make a pumpkin forest");
         commands.put("/unstuck", "Go up to the first free spot");
         commands.put("/ascend", "Go up one level");
@@ -892,12 +893,26 @@ public class WorldEditListener extends PluginListener {
 
             return true;
 
-        // Make pine tree forest
+        // Make tree forest
         } else if (split[0].equalsIgnoreCase("/forestgen")) {
+            checkArgs(split, 0, 2, split[0]);
+            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 10;
+            double density = split.length > 2 ? Double.parseDouble(split[2]) / 100 : 0.05;
+
+            int affected = editSession.makeForest(player.getPosition(),
+                    size, density, false);
+            player.print(affected + " trees created.");
+
+            return true;
+
+        // Make pine tree forest
+        } else if (split[0].equalsIgnoreCase("/pinegen")) {
             checkArgs(split, 0, 1, split[0]);
             int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 10;
+            double density = split.length > 2 ? Double.parseDouble(split[2]) / 100 : 0.05;
 
-            int affected = editSession.makePineTreeForest(player.getPosition(), size);
+            int affected = editSession.makeForest(player.getPosition(),
+                    size, density, true);
             player.print(affected + " pine trees created.");
 
             return true;

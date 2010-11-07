@@ -1276,67 +1276,6 @@ public class EditSession {
     }
 
     /**
-     * Makes a terrible looking pine tree.
-     *
-     * @param basePos
-     */
-    private void makePineTree(Vector basePos)
-            throws MaxChangedBlocksException {
-        int trunkHeight = (int)Math.floor(Math.random() * 2) + 3;
-        int height = (int)Math.floor(Math.random() * 5) + 8;
-
-        BaseBlock logBlock = new BaseBlock(17);
-        BaseBlock leavesBlock = new BaseBlock(18);
-
-        // Create trunk
-        for (int i = 0; i < trunkHeight; i++) {
-            if (!setBlockIfAir(basePos.add(0, i, 0), logBlock)) {
-                return;
-            }
-        }
-
-        // Move up
-        basePos = basePos.add(0, trunkHeight, 0);
-
-        int pos2[] = {-2, 2};
-
-        // Create tree + leaves
-        for (int i = 0; i < height; i++) {
-            setBlockIfAir(basePos.add(0, i, 0), logBlock);
-
-            // Less leaves at these levels
-            double chance = ((i == 0 || i == height - 1) ? 0.6 : 1);
-
-            // Inner leaves
-            setChanceBlockIfAir(basePos.add(-1, i, 0), leavesBlock, chance);
-            setChanceBlockIfAir(basePos.add(1, i, 0), leavesBlock, chance);
-            setChanceBlockIfAir(basePos.add(0, i, -1), leavesBlock, chance);
-            setChanceBlockIfAir(basePos.add(0, i, 1), leavesBlock, chance);
-            setChanceBlockIfAir(basePos.add(1, i, 1), leavesBlock, chance);
-            setChanceBlockIfAir(basePos.add(-1, i, 1), leavesBlock, chance);
-            setChanceBlockIfAir(basePos.add(1, i, -1), leavesBlock, chance);
-            setChanceBlockIfAir(basePos.add(-1, i, -1), leavesBlock, chance);
-
-            if (!(i == 0 || i == height - 1)) {
-                for (int j = -2; j <= 2; j++) {
-                    setChanceBlockIfAir(basePos.add(-2, i, j), leavesBlock, 0.6);
-                }
-                for (int j = -2; j <= 2; j++) {
-                    setChanceBlockIfAir(basePos.add(2, i, j), leavesBlock, 0.6);
-                }
-                for (int j = -2; j <= 2; j++) {
-                    setChanceBlockIfAir(basePos.add(j, i, -2), leavesBlock, 0.6);
-                }
-                for (int j = -2; j <= 2; j++) {
-                    setChanceBlockIfAir(basePos.add(j, i, 2), leavesBlock, 0.6);
-                }
-            }
-        }
-
-        setBlockIfAir(basePos.add(0, height, 0), leavesBlock);
-    }
-
-    /**
      * Makes a pumpkin patch.
      *
      * @param basePos
@@ -1436,14 +1375,16 @@ public class EditSession {
     }
 
     /**
-     * Makes a terrible looking pine forest.
+     * Makes a forest.
      * 
      * @param basePos
      * @param size
+     * @param density
+     * @param pineTree
      * @return number of trees created
      */
-    public int makePineTreeForest(Vector basePos, int size)
-            throws MaxChangedBlocksException {
+    public int makeForest(Vector basePos, int size, double density,
+            boolean pineTree) throws MaxChangedBlocksException {
         int affected = 0;
         
         for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX() + size; x++) {
@@ -1452,13 +1393,17 @@ public class EditSession {
                 if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir())
                     continue;
                 // The gods don't want a tree here
-                if (Math.random() < 0.95) { continue; }
+                if (Math.random() >= density) { continue; } // def 0.05
 
                 for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; y--) {
                     // Check if we hit the ground
                     int t = getBlock(new Vector(x, y, z)).getID();
                     if (t == 2 || t == 3) {
-                        makePineTree(new Vector(x, y + 1, z));
+                        if (pineTree) {
+                            makePineTree(new Vector(x, y + 1, z));
+                        } else {
+                            ServerInterface.generateTree(this, new Vector(x, y + 1, z));
+                        }
                         affected++;
                         break;
                     } else if (t != 0) { // Trees won't grow on this!
@@ -1469,5 +1414,66 @@ public class EditSession {
         }
 
         return affected;
+    }
+
+    /**
+     * Makes a terrible looking pine tree.
+     *
+     * @param basePos
+     */
+    private void makePineTree(Vector basePos)
+            throws MaxChangedBlocksException {
+        int trunkHeight = (int)Math.floor(Math.random() * 2) + 3;
+        int height = (int)Math.floor(Math.random() * 5) + 8;
+
+        BaseBlock logBlock = new BaseBlock(17);
+        BaseBlock leavesBlock = new BaseBlock(18);
+
+        // Create trunk
+        for (int i = 0; i < trunkHeight; i++) {
+            if (!setBlockIfAir(basePos.add(0, i, 0), logBlock)) {
+                return;
+            }
+        }
+
+        // Move up
+        basePos = basePos.add(0, trunkHeight, 0);
+
+        int pos2[] = {-2, 2};
+
+        // Create tree + leaves
+        for (int i = 0; i < height; i++) {
+            setBlockIfAir(basePos.add(0, i, 0), logBlock);
+
+            // Less leaves at these levels
+            double chance = ((i == 0 || i == height - 1) ? 0.6 : 1);
+
+            // Inner leaves
+            setChanceBlockIfAir(basePos.add(-1, i, 0), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(1, i, 0), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(0, i, -1), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(0, i, 1), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(1, i, 1), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(-1, i, 1), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(1, i, -1), leavesBlock, chance);
+            setChanceBlockIfAir(basePos.add(-1, i, -1), leavesBlock, chance);
+
+            if (!(i == 0 || i == height - 1)) {
+                for (int j = -2; j <= 2; j++) {
+                    setChanceBlockIfAir(basePos.add(-2, i, j), leavesBlock, 0.6);
+                }
+                for (int j = -2; j <= 2; j++) {
+                    setChanceBlockIfAir(basePos.add(2, i, j), leavesBlock, 0.6);
+                }
+                for (int j = -2; j <= 2; j++) {
+                    setChanceBlockIfAir(basePos.add(j, i, -2), leavesBlock, 0.6);
+                }
+                for (int j = -2; j <= 2; j++) {
+                    setChanceBlockIfAir(basePos.add(j, i, 2), leavesBlock, 0.6);
+                }
+            }
+        }
+
+        setBlockIfAir(basePos.add(0, height, 0), leavesBlock);
     }
 }

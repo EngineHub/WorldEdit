@@ -19,14 +19,32 @@
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseItem;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Random;
+import java.lang.reflect.Constructor;
+import sun.reflect.ReflectionFactory;
 
 /**
  *
  * @author sk89q
  */
 public class ServerInterface {
+    /**
+     * Logger.
+     */
+    private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+    /**
+     * Random generator.
+     */
+    private static Random random = new Random();
+    /**
+     * Proxy for the tree generator.
+     */
+    private static MinecraftSetBlockProxy proxy;
+    
     /**
      * Set block type.
      *
@@ -164,5 +182,49 @@ public class ServerInterface {
         chest.addItem(new Item(item.getID(), amount, slot));
         chest.update();
         return true;
+    }
+
+    /**
+     * Generate a tree at a location.
+     * 
+     * @param pt
+     * @return
+     */
+    public static boolean generateTree(EditSession editSession, Vector pt) {
+        if (proxy == null) {
+            try {
+                proxy = createNoConstructor(MinecraftSetBlockProxy.class);
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "setBlock() proxy class failed to construct",
+                        t);
+                return false;
+            }
+        }
+        proxy.setEditSession(editSession);
+
+        bg treeGen = new gy();
+        return treeGen.a(proxy, random,
+                pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+    }
+
+    /**
+     * Instantiate a class without calling its constructor.
+     *
+     * @param <T>
+     * @param clazz
+     * @return
+     * @throws Throwable
+     */
+    private static <T> T createNoConstructor(Class<T> clazz) throws Throwable {
+        try {
+            ReflectionFactory factory = ReflectionFactory.getReflectionFactory();
+            Constructor objectConstructor = Object.class.getDeclaredConstructor();
+            Constructor c = factory.newConstructorForSerialization(
+                clazz, objectConstructor
+            );
+            return clazz.cast(c.newInstance());
+        } catch (Throwable e) {
+            throw e;
+        }
     }
 }
