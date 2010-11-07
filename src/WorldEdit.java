@@ -57,7 +57,7 @@ public class WorldEdit extends Plugin {
         loader.addListener(PluginLoader.Hook.LOGIN, listener, this,
                 PluginListener.Priority.MEDIUM);
 
-        logger.log(Level.INFO, "WorldEdit version " + getVersion() + " loaded.");
+        logger.log(Level.INFO, "WorldEdit version " + getVersion() + " loaded");
     }
 
     /**
