@@ -101,6 +101,10 @@ public class WorldEditListener extends PluginListener {
      */
     private int maxRadius = -1;
     /**
+     * Max super pick axe size.
+     */
+    private int maxSuperPickaxeSize = 5;
+    /**
      * Indicates whether commands should be logged to the console.
      */
     private boolean logComands = false;
@@ -151,6 +155,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("//fill", "[ID] [Radius] <Depth> - Fill a hole");
         commands.put("//drain", "[Radius] - Drain nearby water/lava pools");
         commands.put("//limit", "[Num] - See documentation");
+        commands.put("//mode", "[Mode] <Size> - Set super pickaxe mode (single/recursive/area)");
         commands.put("//expand", "<Dir> [Num] - Expands the selection");
         commands.put("//contract", "<Dir> [Num] - Contracts the selection");
         commands.put("//rotate", "[Angle] - Rotate the clipboard");
@@ -559,6 +564,37 @@ public class WorldEditListener extends PluginListener {
             } else {
                 session.setBlockChangeLimit(limit);
                 player.print("Block change limit set to " + limit + ".");
+            }
+            return true;
+
+        // Set super pick axe mode
+        } else if (split[0].equalsIgnoreCase("//mode")) {
+            checkArgs(split, 1, 2, split[0]);
+
+            if (split[1].equalsIgnoreCase("single")) {
+                session.setSuperPickaxeMode(WorldEditSession.SuperPickaxeModes.SINGLE);
+                player.print("Mode set to single block.");
+            } else if (split[1].equalsIgnoreCase("recursive")
+                    || split[1].equalsIgnoreCase("area")) {
+                if (split.length == 3) {
+                    int size = Math.max(1, Integer.parseInt(split[2]));
+                    if (size <= maxSuperPickaxeSize) {
+                        WorldEditSession.SuperPickaxeModes mode =
+                                split[1].equalsIgnoreCase("recursive") ?
+                                    WorldEditSession.SuperPickaxeModes.SAME_TYPE_RECURSIVE :
+                                    WorldEditSession.SuperPickaxeModes.SAME_TYPE_AREA;
+                        session.setSuperPickaxeMode(mode);
+                        session.setSuperPickaxeRange(size);
+                        player.print("Mode set to " + split[1].toLowerCase() + ".");
+                    } else {
+                        player.printError("Max size is " + maxSuperPickaxeSize + ".");
+                    }
+                } else {
+                    player.printError("Size argument required for mode "
+                            + split[1].toLowerCase() + ".");
+                }
+            } else {
+                player.printError("Unknown super pick axe mode.");
             }
             return true;
 
@@ -1479,22 +1515,108 @@ public class WorldEditListener extends PluginListener {
             }
         } else if (player.isHoldingPickAxe()) {
             if (session.hasSuperPickAxe()) {
-                Vector pos = new Vector(blockClicked.getX(),
-                        blockClicked.getY(), blockClicked.getZ());
-                if (ServerInterface.getBlockType(pos) == 7
-                        && !canUseCommand(modPlayer, "/worldeditbedrock")) {
-                    return true;
-                } else if (ServerInterface.getBlockType(pos) == 46) {
-                    return false;
-                }
+                boolean canBedrock = canUseCommand(modPlayer, "/worldeditbedrock");
 
-                ServerInterface.setBlockType(pos, 0);
+                // Single block super pickaxe
+                if (session.getSuperPickaxeMode() ==
+                        WorldEditSession.SuperPickaxeModes.SINGLE) {
+                    Vector pos = new Vector(blockClicked.getX(),
+                            blockClicked.getY(), blockClicked.getZ());
+                    if (ServerInterface.getBlockType(pos) == 7 && canBedrock) {
+                        return true;
+                    } else if (ServerInterface.getBlockType(pos) == 46) {
+                        return false;
+                    }
+
+                    ServerInterface.setBlockType(pos, 0);
+
+                // Area super pickaxe
+                } else if (session.getSuperPickaxeMode() ==
+                        WorldEditSession.SuperPickaxeModes.SAME_TYPE_AREA) {
+                    Vector origin = new Vector(blockClicked.getX(),
+                            blockClicked.getY(), blockClicked.getZ());
+                    int ox = blockClicked.getX();
+                    int oy = blockClicked.getY();
+                    int oz = blockClicked.getZ();
+                    int size = session.getSuperPickaxeRange();
+                    int initialType = ServerInterface.getBlockType(origin);
+
+                    if (initialType == 7 && !canBedrock) {
+                        return true;
+                    }
+
+                    for (int x = ox - size; x <= ox + size; x++) {
+                        for (int y = oy - size; y <= oy + size; y++) {
+                            for (int z = oz - size; z <= oz + size; z++) {
+                                Vector pos = new Vector(x, y, z);
+                                if (ServerInterface.getBlockType(pos) == initialType) {
+                                    ServerInterface.setBlockType(pos, 0);
+                                }
+                            }
+                        }
+                    }
+
+                    return true;
+
+                // Area super pickaxe
+                } else if (session.getSuperPickaxeMode() ==
+                        WorldEditSession.SuperPickaxeModes.SAME_TYPE_RECURSIVE) {
+                    Vector origin = new Vector(blockClicked.getX(),
+                            blockClicked.getY(), blockClicked.getZ());
+                    int ox = blockClicked.getX();
+                    int oy = blockClicked.getY();
+                    int oz = blockClicked.getZ();
+                    int size = session.getSuperPickaxeRange();
+                    int initialType = ServerInterface.getBlockType(origin);
+
+                    if (initialType == 7 && !canBedrock) {
+                        return true;
+                    }
+
+                    recursiveSuperPickaxe(origin.toBlockVector(), origin, size,
+                            initialType, new HashSet<BlockVector>());
+
+                    return true;
+                }
 
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Helper method for the recursive super pickaxe.
+     * 
+     * @param pos
+     * @param canBedrock
+     * @return
+     */
+    private void recursiveSuperPickaxe(BlockVector pos, Vector origin,
+            int size, int initialType, Set<BlockVector> visited) {
+        if (origin.distance(pos) > size || visited.contains(pos)) {
+            return;
+        }
+
+        visited.add(pos);
+
+        if (ServerInterface.getBlockType(pos) == initialType) {
+            ServerInterface.setBlockType(pos, 0);
+        }
+
+        recursiveSuperPickaxe(pos.add(1, 0, 0).toBlockVector(), origin, size,
+                initialType, visited);
+        recursiveSuperPickaxe(pos.add(-1, 0, 0).toBlockVector(), origin, size,
+                initialType, visited);
+        recursiveSuperPickaxe(pos.add(0, 0, 1).toBlockVector(), origin, size,
+                initialType, visited);
+        recursiveSuperPickaxe(pos.add(0, 0, -1).toBlockVector(), origin, size,
+                initialType, visited);
+        recursiveSuperPickaxe(pos.add(0, 1, 0).toBlockVector(), origin, size,
+                initialType, visited);
+        recursiveSuperPickaxe(pos.add(0, -1, 0).toBlockVector(), origin, size,
+                initialType, visited);
     }
 
     /**
@@ -1604,6 +1726,8 @@ public class WorldEditListener extends PluginListener {
         defaultChangeLimit = Math.max(-1, properties.getInt("max-blocks-changed", -1));
 
         maxRadius = Math.max(-1, properties.getInt("max-radius", -1));
+
+        maxSuperPickaxeSize = Math.max(1, properties.getInt("max-super-pickaxe-size", 5));
 
         String snapshotsDir = properties.getString("snapshots-dir", "");
         if (!snapshotsDir.trim().equals("")) {

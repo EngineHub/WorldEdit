@@ -28,6 +28,43 @@ import java.util.LinkedList;
  * @author sk89q
  */
 public class WorldEditSession {
+
+    /**
+     * @return the superPickaxeMode
+     */
+    public SuperPickaxeModes getSuperPickaxeMode() {
+        return superPickaxeMode;
+    }
+
+    /**
+     * @param superPickaxeMode the superPickaxeMode to set
+     */
+    public void setSuperPickaxeMode(SuperPickaxeModes superPickaxeMode) {
+        this.superPickaxeMode = superPickaxeMode;
+    }
+
+    /**
+     * @return the superPickaxeRange
+     */
+    public int getSuperPickaxeRange() {
+        return superPickaxeRange;
+    }
+
+    /**
+     * @param superPickaxeRange the superPickaxeRange to set
+     */
+    public void setSuperPickaxeRange(int superPickaxeRange) {
+        this.superPickaxeRange = superPickaxeRange;
+    }
+    /**
+     * List of super pick axe modes.
+     */
+    public static enum SuperPickaxeModes {
+        SINGLE,
+        SAME_TYPE_RECURSIVE,
+        SAME_TYPE_AREA
+    };
+    
     public static final int MAX_HISTORY_SIZE = 15;
     private boolean placeAtPos1 = false;
     private Vector pos1, pos2;
@@ -37,6 +74,8 @@ public class WorldEditSession {
     private CuboidClipboard clipboard;
     private boolean toolControl = true;
     private boolean superPickAxe = false;
+    private SuperPickaxeModes superPickaxeMode = SuperPickaxeModes.SINGLE;
+    private int superPickaxeRange = 3;
     private int maxBlocksChanged = -1;
     private Snapshot snapshot;
 
