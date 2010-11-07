@@ -76,7 +76,7 @@ public class WorldEditPlayer {
         byte free = 0;
 
         while (y <= 129) {
-            if (etc.getServer().getBlockIdAt(x, y, z) == 0) {
+            if (BlockType.canPassThrough(etc.getServer().getBlockIdAt(x, y, z))) {
                 free++;
             } else {
                 free = 0;
@@ -118,7 +118,7 @@ public class WorldEditPlayer {
         byte spots = 0;
 
         while (y <= 129) {
-            if (ServerInterface.getBlockType(new Vector(x, y, z)) == 0) {
+            if (BlockType.canPassThrough(ServerInterface.getBlockType(new Vector(x, y, z)))) {
                 free++;
             } else {
                 free = 0;
@@ -159,7 +159,7 @@ public class WorldEditPlayer {
         byte free = 0;
 
         while (y >= 1) {
-            if (ServerInterface.getBlockType(new Vector(x, y, z)) == 0) {
+            if (BlockType.canPassThrough(ServerInterface.getBlockType(new Vector(x, y, z)))) {
                 free++;
             } else {
                 free = 0;
@@ -211,7 +211,7 @@ public class WorldEditPlayer {
 
         while (y <= 127) {
             // Found a ceiling!
-            if (ServerInterface.getBlockType(new Vector(x, y, z)) != 0) {
+            if (!BlockType.canPassThrough(ServerInterface.getBlockType(new Vector(x, y, z)))) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
                 ServerInterface.setBlockType(new Vector(x, platformY, z),
                         BlockType.GLASS.getID());
