@@ -1258,6 +1258,87 @@ public class EditSession {
         return affected;
     }
 
+    /**
+     * Make snow.
+     *
+     * @param pos
+     * @param radius
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int simulateSnow(Vector pos, int radius)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+
+        int ox = pos.getBlockX();
+        int oy = pos.getBlockY();
+        int oz = pos.getBlockZ();
+
+        BaseBlock ice = new BaseBlock(79);
+        BaseBlock snow = new BaseBlock(78);
+
+        for (int x = ox - radius; x <= ox + radius; x++) {
+            for (int z = oz - radius; z <= oz + radius; z++) {
+                if ((new Vector(x, oy, z)).distance(pos) > radius) {
+                    continue;
+                }
+                
+                for (int y = 127; y >= 1; y--) {
+                    Vector pt = new Vector(x, y, z);
+                    int id = getBlock(pt).getID();
+
+                    // Snow should not cover these blocks
+                    if (id == 6 // Saplings
+                            || id == 10 // Lava
+                            || id == 11 // Lava
+                            || id == 37 // Yellow flower
+                            || id == 38 // Red rose
+                            || id == 39 // Brown mushroom
+                            || id == 40 // Red mushroom
+                            || id == 44 // Step
+                            || id == 50 // Torch
+                            || id == 51 // Fire
+                            || id == 53 // Wood steps
+                            || id == 55 // Redstone wire
+                            || id == 59 // Crops
+                            || (id >= 63 && id <= 72)
+                            || id == 75 // Redstone torch
+                            || id == 76 // Redstone torch
+                            || id == 77 // Stone button
+                            || id == 78 // Snow
+                            || id == 79 // Ice
+                            || id == 81 // Cactus
+                            || id == 83 // Reed
+                            || id == 85 // Fence
+                            || id == 90) { // Portal
+                        break;
+                    }
+                    
+                    // Ice!
+                    if (id == 8 || id == 9) {
+                        if (setBlock(pt, ice)) {
+                            affected++;
+                        }
+                        break;
+                    }
+
+                    // Cover
+                    if (id != 0) {
+                        if (y == 127) { // Too high!
+                            break;
+                        }
+                        
+                        if (setBlock(pt.add(0, 1, 0), snow)) {
+                            affected++;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return affected;
+    }
     
     /**
      * Set a block by chance.

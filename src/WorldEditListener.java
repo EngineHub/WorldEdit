@@ -161,6 +161,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("/ex", "[Size] - Extinguish fires");
         commands.put("/forestgen", "<Size> <Density> - Make Notch tree forest");
         commands.put("/pinegen", "<Size> <Density> - Make an ugly pine tree forest");
+        commands.put("/snow", "<Radius> - Simulate snow cover");
         commands.put("/pumpkins", "<Size> - Make a pumpkin forest");
         commands.put("/unstuck", "Go up to the first free spot");
         commands.put("/ascend", "Go up one level");
@@ -914,6 +915,16 @@ public class WorldEditListener extends PluginListener {
             int affected = editSession.makeForest(player.getPosition(),
                     size, density, true);
             player.print(affected + " pine trees created.");
+
+            return true;
+
+        // Let it snow~
+        } else if (split[0].equalsIgnoreCase("/snow")) {
+            checkArgs(split, 0, 1, split[0]);
+            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 10;
+
+            int affected = editSession.simulateSnow(player.getBlockIn(), size);
+            player.print(affected + " surfaces covered. Let it snow~");
 
             return true;
 
