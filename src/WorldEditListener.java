@@ -132,6 +132,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("//outline", "[ID] - Outline the region with blocks");
         commands.put("//walls", "[ID] - Build walls");
         commands.put("//replace", "<FromID> [ToID] - Replace all existing blocks inside region");
+        commands.put("/replacenear", "<Size> <FromID> [ToID] - Replace all existing blocks nearby");
         commands.put("//overlay", "[ID] - Overlay the area one layer");
         commands.put("/removeabove", "<Size> <Height> - Remove blocks above head");
         commands.put("/removebelow", "<Size> <Height> - Remove blocks below position");
@@ -857,6 +858,29 @@ public class WorldEditListener extends PluginListener {
             }
             
             int affected = editSession.replaceBlocks(session.getRegion(), from, to);
+            player.print(affected + " block(s) have been replaced.");
+
+            return true;
+
+        // Replace all blocks in the region
+        } else if(split[0].equalsIgnoreCase("/replacenear")) {
+            checkArgs(split, 2, 3, split[0]);
+            int size = Math.max(1, Integer.parseInt(split[1]));
+            Set<Integer> from;
+            BaseBlock to;
+            if (split.length == 3) {
+                from = null;
+                to = getBlock(split[2], true);
+            } else {
+                from = getBlockIDs(split[2]);
+                to = getBlock(split[3]);
+            }
+
+            Vector min = player.getBlockIn().subtract(size, size, size);
+            Vector max = player.getBlockIn().add(size, size, size);
+            Region region = new CuboidRegion(min, max);
+
+            int affected = editSession.replaceBlocks(region, from, to);
             player.print(affected + " block(s) have been replaced.");
 
             return true;
