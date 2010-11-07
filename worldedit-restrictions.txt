@@ -1,7 +1,7 @@
 #
 # This file determines some group-based WorldEdit restrictions.
 # If a player is in two groups that are listed here, the group with the
-# more lenient  permissions will take precedence.
+# more lenient permissions will take precedence.
 #
 # Format:
 #   groupname:limit
