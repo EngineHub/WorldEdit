@@ -1363,10 +1363,10 @@ public class EditSession {
      */
     private void makePumpkinPatch(Vector basePos)
             throws MaxChangedBlocksException {
-        BaseBlock logBlock = new BaseBlock(17);
+        //BaseBlock logBlock = new BaseBlock(17);
         BaseBlock leavesBlock = new BaseBlock(18);
 
-        setBlock(basePos.subtract(0, 1, 0), logBlock);
+        //setBlock(basePos.subtract(0, 1, 0), logBlock);
         setBlockIfAir(basePos, leavesBlock);
 
         makePumpkinPatchVine(basePos, basePos.add(0, 0, 1));
