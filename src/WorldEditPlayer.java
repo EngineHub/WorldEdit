@@ -226,6 +226,38 @@ public class WorldEditPlayer {
     }
 
     /**
+     * Just go up.
+     *
+     * @param distance
+     * @return whether the player was moved
+     */
+    public boolean ascendUpwards(int distance) {
+        Vector pos = getBlockIn();
+        int x = pos.getBlockX();
+        int initialY = Math.max(0, pos.getBlockY());
+        int y = Math.max(0, pos.getBlockY() + 1);
+        int z = pos.getBlockZ();
+        int maxY = Math.min(128, initialY + distance);
+
+        while (y <= 129) {
+            if (!BlockType.canPassThrough(ServerInterface.getBlockType(new Vector(x, y, z)))) {
+                break; // Hit something
+            } else if (y > maxY + 1) {
+                break;
+            } else if (y == maxY + 1) {
+                ServerInterface.setBlockType(new Vector(x, y - 2, z),
+                        BlockType.GLASS.getID());
+                setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
+                return true;
+            }
+
+            y++;
+        }
+
+        return false;
+    }
+
+    /**
      * Returns true if equal.
      *
      * @param other

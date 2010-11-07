@@ -236,4 +236,36 @@ public enum BlockType {
                 || id == 83 // Reed
                 || id == 90; // Portal
     }
+
+    /**
+     * Checks whether a block can be passed through.
+     *
+     * @param id
+     * @return
+     */
+    public static boolean canPassThrough(int id) {
+        return id == 0 // Air
+                || id == 6 // Saplings
+                || id == 37 // Yellow flower
+                || id == 38 // Red flower
+                || id == 39 // Brown mushroom
+                || id == 40 // Red mush room
+                || id == 50 // Torch
+                || id == 51 // Fire
+                || id == 55 // Redstone wire
+                || id == 59 // Crops
+                || id == 63 // Sign post
+                || id == 65 // Ladder
+                || id == 66 // Minecart tracks
+                || id == 68 // Wall sign
+                || id == 69 // Lever
+                || id == 70 // Stone pressure plate
+                || id == 72 // Wooden pressure plate
+                || id == 75 // Redstone torch (off)
+                || id == 76 // Redstone torch (on)
+                || id == 77 // Stone button
+                || id == 78 // Snow
+                || id == 83 // Reed
+                || id == 90; // Portal
+    }
 }

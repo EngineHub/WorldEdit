@@ -169,6 +169,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("/jumpto", "Jump to the block that you are looking at");
         commands.put("/thru", "Go through the wall that you are looking at");
         commands.put("/ceil", "<Clearance> - Get to the ceiling");
+        commands.put("/up", "<Distance> - Go up some distance");
         commands.put("/chunkinfo", "Get the filename of the chunk that you are in");
         commands.put("/listchunks", "Print a list of used chunks");
         commands.put("/delchunks", "Generate a shell script to delete chunks");
@@ -439,6 +440,18 @@ public class WorldEditListener extends PluginListener {
                 player.print("Whoosh!");
             } else {
                 player.printError("No free spot above you found.");
+            }
+            return true;
+
+        // Go up
+        } else if (split[0].equalsIgnoreCase("/up")) {
+            checkArgs(split, 1, 1, split[0]);
+            int distance = Integer.parseInt(split[1]);
+
+            if (player.ascendUpwards(distance)) {
+                player.print("Whoosh!");
+            } else {
+                player.printError("You would hit something above you.");
             }
             return true;
 
