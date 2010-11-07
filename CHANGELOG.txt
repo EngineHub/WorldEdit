@@ -1,3 +1,57 @@
+2.0:
+- Added help message to //load telling users about //paste.
+- Added Notch tree planting tool mode with the right click of the pickaxe.
+    (Undo is supported!)
+- Added recursive super pickaxe mode that destroys blocks adjacent,
+    destroying only blocks of the same type as the block that you clicked on
+- Added area super pickaxe mode that destroys a cuboid area on use,
+    destroying only blocks of the same type as the block that you clicked on.
+- Added pasting at origin and saving origin to .schematics.
+- Added /chunk to select all the blocks inside the chunk that you are in.
+- Shortcut /replacenear lets you replace nearby blocks.
+    Example: /replacenear 50 rock glass
+- /ascend, /descend, and /unstuck now detect pass-through blocks better.
+- Added /up to go up some distance.
+- Added /snow command to overlay snowfall and freeze lakes in the area.
+- Both /pinegen and /forestgen (now) have a density argument. Values
+    between 0 and 100 are accepted.
+- Changed old forest generator command to /pinegen.
+- Changed /forestgen to generate forests using Notch's tree algorithm
+    (fully undoable).
+- Improved speed of commands that iterated over cuboids by 5-40%.
+- Support for setting random block content with //set.
+    Example: //set 5%diamondore,95%glass
+    Numbers don't have to add up to any particular number.
+- Block IDs are now resolved with hMod as well, should it fail to resolve
+    with WorldEdit.
+- Added support for replacing a list of blocks with //replace.
+- Added register-help configuration to prevent WorldEdit commands from
+    showing up in help.
+- /ascend, /descend, and /unstuck now clamp Y to >= 0.
+- Added /worldeditselect permission that will give users access to all
+    commands and functions that let you define selections.
+- Point selection functions now emit the coordinates.
+- //size now displays coordinate information.
+- Added per-group block change limit restrictions support.
+- Possibly added .tar.bz2/tar.gz support. Untested and highly
+    unrecommended.
+- Added command logging setting and logging to file.
+- Added max-radius configuration to clamp radii and sizes.
+- Added /fixlava.
+- New /ex area fire extinguisher command (shortcut to /removenear fire 40).
+- Added class to access WorldEdit selections from other plugins.
+- //contract and //expand argument orders swapped to go with the other
+    direction commands like //stack.
+- Super pickaxe now ignores TNT. (Before it caused ignition on client-side
+    only).
+- Y coordinates are now clamped between 0 and 127 when blocks are set
+    by WorldEdit. This fixes some exceptions.
+- Expanded the priority block list significantly to handle more block types.
+- .schematic load/save error messages are now more descriptive.
+- Fixed iron pick axe not working as a super pickaxe.
+- Plugin .jar renamed from SMWorldEdit to WorldEdit as it was confusing.
+- WorldEdit version is now printed on load.
+
 0.13.2:
 - Added support for the new block types from the Halloween update.
 
