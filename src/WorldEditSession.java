@@ -28,42 +28,21 @@ import java.util.LinkedList;
  * @author sk89q
  */
 public class WorldEditSession {
-
-    /**
-     * @return the superPickaxeMode
-     */
-    public SuperPickaxeModes getSuperPickaxeMode() {
-        return superPickaxeMode;
-    }
-
-    /**
-     * @param superPickaxeMode the superPickaxeMode to set
-     */
-    public void setSuperPickaxeMode(SuperPickaxeModes superPickaxeMode) {
-        this.superPickaxeMode = superPickaxeMode;
-    }
-
-    /**
-     * @return the superPickaxeRange
-     */
-    public int getSuperPickaxeRange() {
-        return superPickaxeRange;
-    }
-
-    /**
-     * @param superPickaxeRange the superPickaxeRange to set
-     */
-    public void setSuperPickaxeRange(int superPickaxeRange) {
-        this.superPickaxeRange = superPickaxeRange;
-    }
     /**
      * List of super pick axe modes.
      */
-    public static enum SuperPickaxeModes {
+    public static enum SuperPickaxeMode {
         SINGLE,
         SAME_TYPE_RECURSIVE,
         SAME_TYPE_AREA
     };
+    /**
+     * List of
+     */
+    public static enum Tool {
+        NONE,
+        TREE,
+    }
     
     public static final int MAX_HISTORY_SIZE = 15;
     private boolean placeAtPos1 = false;
@@ -74,7 +53,8 @@ public class WorldEditSession {
     private CuboidClipboard clipboard;
     private boolean toolControl = true;
     private boolean superPickAxe = false;
-    private SuperPickaxeModes superPickaxeMode = SuperPickaxeModes.SINGLE;
+    private SuperPickaxeMode superPickaxeMode = SuperPickaxeMode.SINGLE;
+    private Tool tool = Tool.NONE;
     private int superPickaxeRange = 3;
     private int maxBlocksChanged = -1;
     private Snapshot snapshot;
@@ -359,5 +339,47 @@ public class WorldEditSession {
      */
     public void setSnapshot(Snapshot snapshot) {
         this.snapshot = snapshot;
+    }
+
+    /**
+     * @return the superPickaxeMode
+     */
+    public SuperPickaxeMode getSuperPickaxeMode() {
+        return superPickaxeMode;
+    }
+
+    /**
+     * @param superPickaxeMode the superPickaxeMode to set
+     */
+    public void setSuperPickaxeMode(SuperPickaxeMode superPickaxeMode) {
+        this.superPickaxeMode = superPickaxeMode;
+    }
+
+    /**
+     * @return the superPickaxeRange
+     */
+    public int getSuperPickaxeRange() {
+        return superPickaxeRange;
+    }
+
+    /**
+     * @param superPickaxeRange the superPickaxeRange to set
+     */
+    public void setSuperPickaxeRange(int superPickaxeRange) {
+        this.superPickaxeRange = superPickaxeRange;
+    }
+
+    /**
+     * @return the tool
+     */
+    public Tool getTool() {
+        return tool;
+    }
+
+    /**
+     * @param tool the tool to set
+     */
+    public void setTool(Tool tool) {
+        this.tool = tool;
     }
 }

@@ -156,6 +156,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("//drain", "[Radius] - Drain nearby water/lava pools");
         commands.put("//limit", "[Num] - See documentation");
         commands.put("//mode", "[Mode] <Size> - Set super pickaxe mode (single/recursive/area)");
+        commands.put("//tool", "[Tool] - Set pickaxe tool (none/tree)");
         commands.put("//expand", "<Dir> [Num] - Expands the selection");
         commands.put("//contract", "<Dir> [Num] - Contracts the selection");
         commands.put("//rotate", "[Angle] - Rotate the clipboard");
@@ -204,6 +205,16 @@ public class WorldEditListener extends PluginListener {
             sessions.put(player, session);
             return session;
         }
+    }
+
+    /**
+     * Returns true if the player has a session.
+     * 
+     * @param player
+     * @return
+     */
+    public boolean hasSession(WorldEditPlayer player) {
+        return sessions.containsKey(player);
     }
 
     /**
@@ -572,17 +583,17 @@ public class WorldEditListener extends PluginListener {
             checkArgs(split, 1, 2, split[0]);
 
             if (split[1].equalsIgnoreCase("single")) {
-                session.setSuperPickaxeMode(WorldEditSession.SuperPickaxeModes.SINGLE);
+                session.setSuperPickaxeMode(WorldEditSession.SuperPickaxeMode.SINGLE);
                 player.print("Mode set to single block.");
             } else if (split[1].equalsIgnoreCase("recursive")
                     || split[1].equalsIgnoreCase("area")) {
                 if (split.length == 3) {
                     int size = Math.max(1, Integer.parseInt(split[2]));
                     if (size <= maxSuperPickaxeSize) {
-                        WorldEditSession.SuperPickaxeModes mode =
+                        WorldEditSession.SuperPickaxeMode mode =
                                 split[1].equalsIgnoreCase("recursive") ?
-                                    WorldEditSession.SuperPickaxeModes.SAME_TYPE_RECURSIVE :
-                                    WorldEditSession.SuperPickaxeModes.SAME_TYPE_AREA;
+                                    WorldEditSession.SuperPickaxeMode.SAME_TYPE_RECURSIVE :
+                                    WorldEditSession.SuperPickaxeMode.SAME_TYPE_AREA;
                         session.setSuperPickaxeMode(mode);
                         session.setSuperPickaxeRange(size);
                         player.print("Mode set to " + split[1].toLowerCase() + ".");
@@ -595,6 +606,21 @@ public class WorldEditListener extends PluginListener {
                 }
             } else {
                 player.printError("Unknown super pick axe mode.");
+            }
+            return true;
+
+        // Set tool
+        } else if (split[0].equalsIgnoreCase("//tool")) {
+            checkArgs(split, 1, 1, split[0]);
+
+            if (split[1].equalsIgnoreCase("none")) {
+                session.setTool(WorldEditSession.Tool.NONE);
+                player.print("No tool equipped. -3 XP, +10 Manliness");
+            } else if (split[1].equalsIgnoreCase("tree")) {
+                session.setTool(WorldEditSession.Tool.TREE);
+                player.print("Tree planting tool equipped. +5 XP");
+            } else {
+                player.printError("Unknown tool.");
             }
             return true;
 
@@ -1454,18 +1480,36 @@ public class WorldEditListener extends PluginListener {
             Block blockClicked, int itemInHand) {
         WorldEditPlayer player = new WorldEditPlayer(modPlayer);
 
-        if (itemInHand != 271) { return false; }
-        if (!canUseCommand(modPlayer, "//pos2")) { return false; }
+        // This prevents needless sessions from being created
+        if (!hasSession(player)) { return false; }
 
         WorldEditSession session = getSession(player);
 
-        if (session.isToolControlEnabled()) {
+        if (itemInHand == 271 && session.isToolControlEnabled()) {
             Vector cur = Vector.toBlockPoint(blockClicked.getX(),
                                            blockClicked.getY(),
                                            blockClicked.getZ());
 
             session.setPos2(cur);
             player.print("Second position set to " + cur + ".");
+
+            return true;
+        } else if (player.isHoldingPickAxe()
+                && session.getTool() == WorldEditSession.Tool.TREE) {
+            Vector pos = Vector.toBlockPoint(blockClicked.getX(),
+                                             blockClicked.getY() + 1,
+                                             blockClicked.getZ());
+            
+            EditSession editSession =
+                    new EditSession(session.getBlockChangeLimit());
+
+            try {
+                if (!ServerInterface.generateTree(editSession, pos)) {
+                    player.printError("Notch won't let you put a tree there.");
+                }
+            } finally {
+                session.remember(editSession);
+            }
 
             return true;
         }
@@ -1519,7 +1563,7 @@ public class WorldEditListener extends PluginListener {
 
                 // Single block super pickaxe
                 if (session.getSuperPickaxeMode() ==
-                        WorldEditSession.SuperPickaxeModes.SINGLE) {
+                        WorldEditSession.SuperPickaxeMode.SINGLE) {
                     Vector pos = new Vector(blockClicked.getX(),
                             blockClicked.getY(), blockClicked.getZ());
                     if (ServerInterface.getBlockType(pos) == 7 && canBedrock) {
@@ -1532,7 +1576,7 @@ public class WorldEditListener extends PluginListener {
 
                 // Area super pickaxe
                 } else if (session.getSuperPickaxeMode() ==
-                        WorldEditSession.SuperPickaxeModes.SAME_TYPE_AREA) {
+                        WorldEditSession.SuperPickaxeMode.SAME_TYPE_AREA) {
                     Vector origin = new Vector(blockClicked.getX(),
                             blockClicked.getY(), blockClicked.getZ());
                     int ox = blockClicked.getX();
@@ -1560,7 +1604,7 @@ public class WorldEditListener extends PluginListener {
 
                 // Area super pickaxe
                 } else if (session.getSuperPickaxeMode() ==
-                        WorldEditSession.SuperPickaxeModes.SAME_TYPE_RECURSIVE) {
+                        WorldEditSession.SuperPickaxeMode.SAME_TYPE_RECURSIVE) {
                     Vector origin = new Vector(blockClicked.getX(),
                             blockClicked.getY(), blockClicked.getZ());
                     int ox = blockClicked.getX();
