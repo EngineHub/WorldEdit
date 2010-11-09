@@ -181,9 +181,9 @@ public class WorldEditListener extends PluginListener {
         commands.put("/chunkinfo", "Get the filename of the chunk that you are in");
         commands.put("/listchunks", "Print a list of used chunks");
         commands.put("/delchunks", "Generate a shell script to delete chunks");
-        commands.put("/listsnapshots", "List the 5 newest snapshots");
+        commands.put("/listsnapshots <Num>", "List the 5 newest snapshots");
         commands.put("//use", "[SnapshotID] - Use a particular snapshot");
-        commands.put("//restore", "Restore a particular snapshot");
+        commands.put("//restore <Snapshot>", "Restore a particular snapshot");
     }
 
     /**
@@ -1266,13 +1266,16 @@ public class WorldEditListener extends PluginListener {
 
         // List snapshots
         } else if (split[0].equalsIgnoreCase("/listsnapshots")) {
-            checkArgs(split, 0, 0, split[0]);
+            checkArgs(split, 0, 1, split[0]);
+
+            int num = split.length > 1 ?
+                Math.min(40, Math.max(5, Integer.parseInt(split[1]))) : 5;
 
             if (snapshotRepo != null) {
                 Snapshot[] snapshots = snapshotRepo.getSnapshots();
 
                 if (snapshots.length > 0) {
-                    for (byte i = 0; i < Math.min(5, snapshots.length); i++) {
+                    for (byte i = 0; i < Math.min(num, snapshots.length); i++) {
                         player.print((i + 1) + ". " + snapshots[i].getName());
                     }
 
@@ -1320,7 +1323,7 @@ public class WorldEditListener extends PluginListener {
 
         // Restore
         } else if (split[0].equalsIgnoreCase("//restore")) {
-            checkArgs(split, 0, 0, split[0]);
+            checkArgs(split, 0, 1, split[0]);
 
             if (snapshotRepo == null) {
                 player.printError("Snapshot/backup restore is not configured.");
@@ -1328,7 +1331,19 @@ public class WorldEditListener extends PluginListener {
             }
 
             Region region = session.getRegion();
-            Snapshot snapshot = session.getSnapshot();
+            Snapshot snapshot;
+
+            if (split.length > 1) {
+                try {
+                    snapshot = snapshotRepo.getSnapshot(split[1]);
+                } catch (InvalidSnapshotException e) {
+                    player.printError("That snapshot does not exist or is not available.");
+                    return true;
+                }
+            } else {
+                snapshot = session.getSnapshot();
+            }
+            
             ChunkStore chunkStore = null;
 
             // No snapshot set?
