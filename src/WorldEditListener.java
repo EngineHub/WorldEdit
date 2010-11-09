@@ -1566,7 +1566,7 @@ public class WorldEditListener extends PluginListener {
                         WorldEditSession.SuperPickaxeMode.SINGLE) {
                     Vector pos = new Vector(blockClicked.getX(),
                             blockClicked.getY(), blockClicked.getZ());
-                    if (ServerInterface.getBlockType(pos) == 7 && canBedrock) {
+                    if (ServerInterface.getBlockType(pos) == 7 && !canBedrock) {
                         return true;
                     } else if (ServerInterface.getBlockType(pos) == 46) {
                         return false;
@@ -1647,6 +1647,8 @@ public class WorldEditListener extends PluginListener {
 
         if (ServerInterface.getBlockType(pos) == initialType) {
             ServerInterface.setBlockType(pos, 0);
+        } else {
+            return;
         }
 
         recursiveSuperPickaxe(pos.add(1, 0, 0).toBlockVector(), origin, size,
