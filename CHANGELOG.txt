@@ -1,3 +1,10 @@
+2.0.1:
+- Fixed the issue with the super pickaxe not working with bedrock.
+- Fixed an issue with the recursive super pickaxe not working properly.
+- Added an argument to /listsnapshots to show more snapshots.
+- Added an argument to //restore that lets you select a snapshot for
+    restoring without //use.
+
 2.0:
 - Added help message to //load telling users about //paste.
 - Added Notch tree planting tool mode with the right click of the pickaxe.
