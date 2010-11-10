@@ -1,3 +1,8 @@
+2.0.2:
+- Fixed issues with /listsnapshot and //restore not working.
+- Fixed help for //expand and //contract.
+- /jumpto should work reliably again.
+
 2.0.1:
 - Fixed the issue with the super pickaxe not working with bedrock.
 - Fixed an issue with the recursive super pickaxe not working properly.
