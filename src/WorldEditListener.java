@@ -157,8 +157,8 @@ public class WorldEditListener extends PluginListener {
         commands.put("//limit", "[Num] - See documentation");
         commands.put("//mode", "[Mode] <Size> - Set super pickaxe mode (single/recursive/area)");
         commands.put("//tool", "[Tool] - Set pickaxe tool (none/tree)");
-        commands.put("//expand", "<Dir> [Num] - Expands the selection");
-        commands.put("//contract", "<Dir> [Num] - Contracts the selection");
+        commands.put("//expand", "[Num] <Dir> - Expands the selection");
+        commands.put("//contract", "[Num] <Dir> - Contracts the selection");
         commands.put("//rotate", "[Angle] - Rotate the clipboard");
         commands.put("//hcyl", "[ID] [Radius] <Height> - Create a vertical hollow cylinder");
         commands.put("//cyl", "[ID] [Radius] <Height> - Create a vertical cylinder");
@@ -429,7 +429,7 @@ public class WorldEditListener extends PluginListener {
         // Jump to the block in sight
         } else if (split[0].equalsIgnoreCase("/jumpto")) {
             checkArgs(split, 0, 0, split[0]);
-            Vector pos = player.getBlockTrace(300);
+            Vector pos = player.getSolidBlockTrace(300);
             if (pos != null) {
                 player.findFreePosition(pos);
                 player.print("Poof!");

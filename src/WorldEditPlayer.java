@@ -316,6 +316,27 @@ public class WorldEditPlayer {
     }
 
     /**
+     * Get the point of the block being looked at. May return null.
+     *
+     * @param range
+     * @return point
+     */
+    public Vector getSolidBlockTrace(int range) {
+        HitBlox hitBlox = new HitBlox(player, range, 0.2);
+        Block block = null;
+
+        while (hitBlox.getNextBlock() != null
+                && BlockType.canPassThrough(hitBlox.getCurBlock().getType()));
+
+        block = hitBlox.getCurBlock();
+
+        if (block == null) {
+            return null;
+        }
+        return new Vector(block.getX(), block.getY(), block.getZ());
+    }
+
+    /**
      * Get the player's cardinal direction (N, W, NW, etc.).
      *
      * @return
