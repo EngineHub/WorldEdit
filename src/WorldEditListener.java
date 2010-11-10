@@ -181,9 +181,9 @@ public class WorldEditListener extends PluginListener {
         commands.put("/chunkinfo", "Get the filename of the chunk that you are in");
         commands.put("/listchunks", "Print a list of used chunks");
         commands.put("/delchunks", "Generate a shell script to delete chunks");
-        commands.put("/listsnapshots <Num>", "List the 5 newest snapshots");
+        commands.put("/listsnapshots", "<Num> - List the 5 newest snapshots");
         commands.put("//use", "[SnapshotID] - Use a particular snapshot");
-        commands.put("//restore <Snapshot>", "Restore a particular snapshot");
+        commands.put("//restore", "<SnapshotID> - Restore a particular snapshot");
     }
 
     /**
