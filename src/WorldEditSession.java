@@ -126,7 +126,7 @@ public class WorldEditSession {
             throw new IncompleteRegionException();
         }
     }
-    
+
     /**
      * Checks to make sure that position 2 is defined.
      *
@@ -136,6 +136,15 @@ public class WorldEditSession {
         if (pos2 == null) {
             throw new IncompleteRegionException();
         }
+    }
+
+    /**
+     * Returns true if the region is fully defined.
+     *
+     * @throws IncompleteRegionException
+     */
+    public boolean isRegionDefined() {
+        return pos1 != null && pos2 != null;
     }
 
     /**

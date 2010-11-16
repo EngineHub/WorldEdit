@@ -454,14 +454,24 @@ public class WorldEditListener extends PluginListener {
         } else if (split[0].equalsIgnoreCase("//pos1")) {
             checkArgs(split, 0, 0, split[0]);
             session.setPos1(player.getBlockIn());
-            player.print("First position set to " + player.getBlockIn() + " .");
+            if (session.isRegionDefined()) {
+                player.print("First position set to " + player.getBlockIn()
+                        + " (" + session.getRegion().getSize() + ").");
+            } else {
+                player.print("First position set to " + player.getBlockIn() + ".");
+            }
             return true;
 
         // Set edit position #2
         } else if (split[0].equalsIgnoreCase("//pos2")) {
             checkArgs(split, 0, 0, split[0]);
             session.setPos2(player.getBlockIn());
-            player.print("Second position set to " + player.getBlockIn() + " .");
+            if (session.isRegionDefined()) {
+                player.print("Second position set to " + player.getBlockIn()
+                        + " (" + session.getRegion().getSize() + ").");
+            } else {
+                player.print("Second position set to " + player.getBlockIn() + " .");
+            }
             return true;
 
         // Trace edit position #1
@@ -470,7 +480,12 @@ public class WorldEditListener extends PluginListener {
             Vector pos = player.getBlockTrace(300);
             if (pos != null) {
                 session.setPos1(pos);
-                player.print("First position set to " + pos.toString() + " .");
+                if (session.isRegionDefined()) {
+                    player.print("First position set to " + pos
+                            + " (" + session.getRegion().getSize() + ").");
+                } else {
+                    player.print("First position set to " + pos.toString() + " .");
+                }
             } else {
                 player.printError("No block in sight!");
             }
@@ -482,7 +497,12 @@ public class WorldEditListener extends PluginListener {
             Vector pos = player.getBlockTrace(300);
             if (pos != null) {
                 session.setPos2(pos);
-                player.print("Second position set to " + pos.toString() + " .");
+                if (session.isRegionDefined()) {
+                    player.print("First position set to " + pos
+                            + " (" + session.getRegion().getSize() + ").");
+                } else {
+                    player.print("Second position set to " + pos.toString() + " .");
+                }
             } else {
                 player.printError("No block in sight!");
             }
@@ -1479,17 +1499,24 @@ public class WorldEditListener extends PluginListener {
         WorldEditPlayer player = new WorldEditPlayer(modPlayer);
 
         // This prevents needless sessions from being created
-        if (!hasSession(player)) { return false; }
+        if (!hasSession(player) && !(itemInHand == wandItem &&
+                canUseCommand(modPlayer, "//pos2"))) { return false; }
 
         WorldEditSession session = getSession(player);
 
-        if (itemInHand == wandItem && session.isToolControlEnabled()) {
+        if (itemInHand == wandItem && session.isToolControlEnabled()
+                && canUseCommand(modPlayer, "//pos2")) {
             Vector cur = Vector.toBlockPoint(blockClicked.getX(),
                                            blockClicked.getY(),
                                            blockClicked.getZ());
 
             session.setPos2(cur);
-            player.print("Second position set to " + cur + ".");
+            try {
+                player.print("Second position set to " + cur
+                        + " (" + session.getRegion().getSize() + ").");
+            } catch (IncompleteRegionException e) {
+                player.print("Second position set to " + cur + ".");
+            }
 
             return true;
         } else if (player.isHoldingPickAxe()
@@ -1551,7 +1578,12 @@ public class WorldEditListener extends PluginListener {
                 }
 
                 session.setPos1(cur);
-                player.print("First position set to " + cur + ".");
+                try {
+                    player.print("First position set to " + cur
+                            + " (" + session.getRegion().getSize() + ").");
+                } catch (IncompleteRegionException e) {
+                    player.print("First position set to " + cur + ".");
+                }
 
                 return true;
             }
