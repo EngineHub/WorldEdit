@@ -79,43 +79,16 @@ public class WorldEditListener extends PluginListener {
      */
     private GroupRestrictionsManager restrictions = new GroupRestrictionsManager();
 
-    /**
-     * True to time operations.
-     */
     private boolean profile;
-    /**
-     * List of allowed blocks.
-     */
     private HashSet<Integer> allowedBlocks;
-    /**
-     * Default maximum number of blocks that can be changed in one operation.
-     */
     private int defaultChangeLimit = -1;
-    /**
-     * Shell script save type.
-     */
     private String shellSaveType;
-    /**
-     * Snapshot repository used for restoring from backups. This may be null
-     * if snapshot restoration is not configured.
-     */
     private SnapshotRepository snapshotRepo;
-    /**
-     * Max radius for commands that use a radius.
-     */
     private int maxRadius = -1;
-    /**
-     * Max super pick axe size.
-     */
     private int maxSuperPickaxeSize = 5;
-    /**
-     * Indicates whether commands should be logged to the console.
-     */
     private boolean logComands = false;
-    /**
-     * True to register the commands with the help system.
-     */
     private boolean registerHelp = true;
+    private int wandItem = 271;
 
     /**
      * Construct an instance of the plugin.
@@ -534,7 +507,7 @@ public class WorldEditListener extends PluginListener {
         // Edit wand
         } else if (split[0].equalsIgnoreCase("//wand")) {
             checkArgs(split, 0, 0, split[0]);
-            player.giveItem(271, 1);
+            player.giveItem(wandItem, 1);
             player.print("Left click: select pos #1; Right click: select pos #2");
             return true;
 
@@ -1504,7 +1477,7 @@ public class WorldEditListener extends PluginListener {
 
         WorldEditSession session = getSession(player);
 
-        if (itemInHand == 271 && session.isToolControlEnabled()) {
+        if (itemInHand == wandItem && session.isToolControlEnabled()) {
             Vector cur = Vector.toBlockPoint(blockClicked.getX(),
                                            blockClicked.getY(),
                                            blockClicked.getZ());
@@ -1552,7 +1525,7 @@ public class WorldEditListener extends PluginListener {
         WorldEditPlayer player = new WorldEditPlayer(modPlayer);
         WorldEditSession session = getSession(player);
 
-        if (player.getItemInHand() == 271) {
+        if (player.getItemInHand() == wandItem) {
             if (session.isToolControlEnabled()) {
                 Vector cur = Vector.toBlockPoint(blockClicked.getX(),
                                                blockClicked.getY(),
@@ -1786,6 +1759,8 @@ public class WorldEditListener extends PluginListener {
         }
 
         profile = properties.getBoolean("debug-profile", false);
+
+        wandItem = properties.getInt("wand-item", 271);
 
         // Get allowed blocks
         allowedBlocks = new HashSet<Integer>();
