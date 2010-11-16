@@ -1353,7 +1353,13 @@ public class WorldEditListener extends PluginListener {
                 restore.restore(editSession);
 
                 if (restore.hadTotalFailure()) {
-                    player.printError("No blocks could be restored. (Bad backup?)");
+                    String error = restore.getLastErrorMessage();
+                    if (error != null) {
+                        player.printError("Errors prevented any blocks from being restored.");
+                        player.printError("Last error: " + error);
+                    } else {
+                        player.printError("No chunks could be loaded. (Bad archive?)");
+                    }
                 } else {
                     player.print(String.format("Restored; %d "
                             + "missing chunks and %d other errors.",

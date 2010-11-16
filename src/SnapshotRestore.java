@@ -49,6 +49,10 @@ public class SnapshotRestore {
      * Count of the number of chunks that could be loaded for other reasons.
      */
     private ArrayList<Vector2D> errorChunks;
+    /**
+     * Last error message.
+     */
+    private String lastErrorMessage;
 
     /**
      * Construct the snapshot restore operation.
@@ -153,8 +157,10 @@ public class SnapshotRestore {
                 missingChunks.add(chunkPos);
             } catch (DataException de) {
                 errorChunks.add(chunkPos);
+                lastErrorMessage = de.getMessage();
             } catch (IOException ioe) {
                 errorChunks.add(chunkPos);
+                lastErrorMessage = ioe.getMessage();
             }
         }
     }
@@ -187,5 +193,12 @@ public class SnapshotRestore {
      */
     public boolean hadTotalFailure() {
         return missingChunks.size() + errorChunks.size() == getChunksAffected();
+    }
+
+    /**
+     * @return the lastErrorMessage
+     */
+    public String getLastErrorMessage() {
+        return lastErrorMessage;
     }
 }
