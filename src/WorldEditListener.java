@@ -308,14 +308,15 @@ public class WorldEditListener extends PluginListener {
      * Get a list of blocks as a set.
      *
      * @param list
+     * @params allBlocksAllowed
      * @return set
      */
-    public Set<Integer> getBlockIDs(String list) throws UnknownItemException,
-                                                      DisallowedItemException {
+    public Set<Integer> getBlockIDs(String list, boolean allBlocksAllowed)
+            throws UnknownItemException, DisallowedItemException {
         String[] items = list.split(",");
         Set<Integer> blocks = new HashSet<Integer>();
         for (String s : items) {
-            blocks.add(getBlock(s).getID());
+            blocks.add(getBlock(s, allBlocksAllowed).getID());
         }
         return blocks;
     }
@@ -725,14 +726,20 @@ public class WorldEditListener extends PluginListener {
         // Fill a hole
         } else if (split[0].equalsIgnoreCase("//fill")) {
             checkArgs(split, 2, 3, split[0]);
-            BaseBlock block = getBlock(split[1]);
+            Pattern pattern = getBlockPattern(split[1]);
             int radius = Math.max(1, Integer.parseInt(split[2]));
             checkMaxRadius(radius);
             int depth = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
 
             Vector pos = session.getPlacementPosition(player);
-            int affected = editSession.fillXZ((int)pos.getX(), (int)pos.getZ(),
-                    pos, block, radius, depth);
+            int affected = 0;
+            if (pattern instanceof SingleBlockPattern) {
+                affected = editSession.fillXZ((int)pos.getX(), (int)pos.getZ(),
+                    pos, ((SingleBlockPattern)pattern).getBlock(), radius, depth);
+            } else {
+                affected = editSession.fillXZ((int)pos.getX(), (int)pos.getZ(),
+                    pos, pattern, radius, depth);
+            }
             player.print(affected + " block(s) have been created.");
 
             return true;
@@ -936,17 +943,24 @@ public class WorldEditListener extends PluginListener {
         // Replace all blocks in the region
         } else if(split[0].equalsIgnoreCase("//replace")) {
             checkArgs(split, 1, 2, split[0]);
+
             Set<Integer> from;
-            BaseBlock to;
+            Pattern to;
             if (split.length == 2) {
                 from = null;
-                to = getBlock(split[1], true);
+                to = getBlockPattern(split[1]);
             } else {
-                from = getBlockIDs(split[1]);
-                to = getBlock(split[2]);
+                from = getBlockIDs(split[1], true);
+                to = getBlockPattern(split[2]);
             }
-            
-            int affected = editSession.replaceBlocks(session.getRegion(), from, to);
+
+            int affected = 0;
+            if (to instanceof SingleBlockPattern) {
+                affected = editSession.replaceBlocks(session.getRegion(), from,
+                        ((SingleBlockPattern)to).getBlock());
+            } else {
+                affected = editSession.replaceBlocks(session.getRegion(), from, to);
+            }
             player.print(affected + " block(s) have been replaced.");
 
             return true;
@@ -959,9 +973,9 @@ public class WorldEditListener extends PluginListener {
             BaseBlock to;
             if (split.length == 3) {
                 from = null;
-                to = getBlock(split[2], true);
+                to = getBlock(split[2]);
             } else {
-                from = getBlockIDs(split[2]);
+                from = getBlockIDs(split[2], true);
                 to = getBlock(split[3]);
             }
 

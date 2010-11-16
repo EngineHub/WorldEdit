@@ -415,6 +415,94 @@ public class EditSession {
     }
 
     /**
+     * Fills an area recursively in the X/Z directions.
+     *
+     * @param x
+     * @param z
+     * @param origin
+     * @param pattern
+     * @param radius
+     * @param depth
+     * @return number of blocks affected
+     */
+    public int fillXZ(int x, int z, Vector origin, Pattern pattern,
+            int radius, int depth)
+            throws MaxChangedBlocksException {
+
+        int affected = 0;
+        int originX = origin.getBlockX();
+        int originY = origin.getBlockY();
+        int originZ = origin.getBlockZ();
+
+        HashSet<BlockVector> visited = new HashSet<BlockVector>();
+        Stack<BlockVector> queue = new Stack<BlockVector>();
+
+        queue.push(new BlockVector(x, 0, z));
+
+        while (!queue.empty()) {
+            BlockVector pt = queue.pop();
+            int cx = pt.getBlockX();
+            int cz = pt.getBlockZ();
+
+            if (visited.contains(pt)) {
+                continue;
+            }
+
+            visited.add(pt);
+
+            double dist = Math.sqrt(Math.pow(originX - cx, 2)
+                    + Math.pow(originZ - cz, 2));
+            int minY = originY - depth + 1;
+
+            if (dist > radius) {
+                continue;
+            }
+
+            if (getBlock(new Vector(cx, originY, cz)).isAir()) {
+                affected += fillY(cx, originY, cz, pattern, minY);
+            } else {
+                continue;
+            }
+
+            queue.push(new BlockVector(cx + 1, 0, cz));
+            queue.push(new BlockVector(cx - 1, 0, cz));
+            queue.push(new BlockVector(cx, 0, cz + 1));
+            queue.push(new BlockVector(cx, 0, cz - 1));
+        }
+
+        return affected;
+    }
+
+    /**
+     * Recursively fills a block and below until it hits another block.
+     *
+     * @param x
+     * @param cy
+     * @param z
+     * @param pattern
+     * @param minY
+     * @throws MaxChangedBlocksException
+     * @return
+     */
+    private int fillY(int x, int cy, int z, Pattern pattern, int minY)
+        throws MaxChangedBlocksException {
+        int affected = 0;
+
+        for (int y = cy; y >= minY; y--) {
+            Vector pt = new Vector(x, y, z);
+
+            if (getBlock(pt).isAir()) {
+                setBlock(pt, pattern.next(pt));
+                affected++;
+            } else {
+                break;
+            }
+        }
+
+        return affected;
+    }
+
+    /**
      * Remove blocks above.
      * 
      * @param pos
@@ -652,6 +740,64 @@ public class EditSession {
                 if (fromBlockTypes == null && curBlockType != 0 ||
                         fromBlockTypes.contains(curBlockType)) {
                     if (setBlock(pt, toBlock)) {
+                        affected++;
+                    }
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Replaces all the blocks of a type inside a region to another block type.
+     *
+     * @param region
+     * @param fromBlockType -1 for non-air
+     * @param pattern
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int replaceBlocks(Region region, Set<Integer> fromBlockTypes,
+            Pattern pattern)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+
+        if (region instanceof CuboidRegion) {
+            // Doing this for speed
+            Vector min = region.getMinimumPoint();
+            Vector max = region.getMaximumPoint();
+
+            int minX = min.getBlockX();
+            int minY = min.getBlockY();
+            int minZ = min.getBlockZ();
+            int maxX = max.getBlockX();
+            int maxY = max.getBlockY();
+            int maxZ = max.getBlockZ();
+
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    for (int z = minZ; z <= maxZ; z++) {
+                        Vector pt = new Vector(x, y, z);
+                        int curBlockType = getBlock(pt).getID();
+
+                        if ((fromBlockTypes == null && curBlockType != 0) ||
+                                (fromBlockTypes != null &&
+                                fromBlockTypes.contains(curBlockType))) {
+                            if (setBlock(pt, pattern.next(pt))) {
+                                affected++;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            for (Vector pt : region) {
+                int curBlockType = getBlock(pt).getID();
+
+                if (fromBlockTypes == null && curBlockType != 0 ||
+                        fromBlockTypes.contains(curBlockType)) {
+                    if (setBlock(pt, pattern.next(pt))) {
                         affected++;
                     }
                 }
