@@ -80,6 +80,10 @@ public class WorldEditListener extends PluginListener {
     private GroupRestrictionsManager restrictions = new GroupRestrictionsManager();
 
     /**
+     * True to time operations.
+     */
+    private boolean profile;
+    /**
      * List of allowed blocks.
      */
     private HashSet<Integer> allowedBlocks;
@@ -1702,11 +1706,18 @@ public class WorldEditListener extends PluginListener {
                             new EditSession(session.getBlockChangeLimit());
                     editSession.enableQueue();
 
+                    long start = System.currentTimeMillis();
+
                     try {
                         return performCommand(player, session, editSession, split);
                     } finally {
                         session.remember(editSession);
                         editSession.flushQueue();
+
+                        if (profile) {
+                            long time = System.currentTimeMillis() - start;
+                            ply.sendMessage(Colors.Yellow + (time / 1000.0) + "s elapsed");
+                        }
                     }
                 }
             }
@@ -1773,6 +1784,8 @@ public class WorldEditListener extends PluginListener {
         } else {
             properties.load();
         }
+
+        profile = properties.getBoolean("debug-profile", false);
 
         // Get allowed blocks
         allowedBlocks = new HashSet<Integer>();

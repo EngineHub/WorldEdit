@@ -185,6 +185,32 @@ public class ServerInterface {
     }
 
     /**
+     * Clear a chest's contents.
+     * 
+     * @param pt
+     */
+    public static boolean clearChest(Vector pt) {
+        ComplexBlock cblock = etc.getServer().getComplexBlock(
+                pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+
+        if (!(cblock instanceof Chest)) {
+            return false;
+        }
+
+        Chest chest = (Chest)cblock;
+        hj[] itemArray = chest.getArray();
+
+        // Find an existing slot to put it into
+        for (int i = 0; itemArray.length > i; i++) {
+            itemArray[i] = null;
+        }
+
+        chest.update();
+
+        return true;
+    }
+
+    /**
      * Generate a tree at a location.
      * 
      * @param pt

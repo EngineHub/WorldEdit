@@ -93,6 +93,11 @@ public class EditSession {
         if (y < 0 || y > 127) {
             return false;
         }
+
+        // Clear the chest so that it doesn't drop items
+        if (ServerInterface.getBlockType(pt) == 54) {
+            ServerInterface.clearChest(pt);
+        }
         
         boolean result = ServerInterface.setBlockType(pt, block.getID());
         if (block.getID() != 0) {
