@@ -116,7 +116,7 @@ public class SnapshotRepository {
      * @return whether it is a valid snapshot
      */
     public boolean isValidSnapshot(File f) {
-        if (!f.getName().matches("[A-Za-z0-9_\\-,.\\[\\]\\(\\) ]{1,50}")) {
+        if (!f.getName().matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+$")) {
             return false;
         }
 
