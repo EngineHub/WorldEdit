@@ -130,6 +130,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("//load", "[Filename] - Load .schematic into clipboard");
         commands.put("//save", "[Filename] - Save clipboard to .schematic");
         commands.put("//fill", "[ID] [Radius] <Depth> - Fill a hole");
+        commands.put("//fillr", "[ID] [Radius] - Fill a hole fully recursively");
         commands.put("//drain", "[Radius] - Drain nearby water/lava pools");
         commands.put("//limit", "[Num] - See documentation");
         commands.put("//mode", "[Mode] <Size> - Set super pickaxe mode (single/recursive/area)");
@@ -724,8 +725,10 @@ public class WorldEditListener extends PluginListener {
             return true;
 
         // Fill a hole
-        } else if (split[0].equalsIgnoreCase("//fill")) {
-            checkArgs(split, 2, 3, split[0]);
+        } else if (split[0].equalsIgnoreCase("//fill")
+                || split[0].equalsIgnoreCase("//fillr")) {
+            boolean recursive = split[0].equalsIgnoreCase("//fillr");
+            checkArgs(split, 2, recursive ? 2 : 3, split[0]);
             Pattern pattern = getBlockPattern(split[1]);
             int radius = Math.max(1, Integer.parseInt(split[2]));
             checkMaxRadius(radius);
@@ -734,11 +737,11 @@ public class WorldEditListener extends PluginListener {
             Vector pos = session.getPlacementPosition(player);
             int affected = 0;
             if (pattern instanceof SingleBlockPattern) {
-                affected = editSession.fillXZ((int)pos.getX(), (int)pos.getZ(),
-                    pos, ((SingleBlockPattern)pattern).getBlock(), radius, depth);
+                affected = editSession.fillXZ(pos,
+                        ((SingleBlockPattern)pattern).getBlock(),
+                        radius, depth, recursive);
             } else {
-                affected = editSession.fillXZ((int)pos.getX(), (int)pos.getZ(),
-                    pos, pattern, radius, depth);
+                affected = editSession.fillXZ(pos, pattern, radius, depth, recursive);
             }
             player.print(affected + " block(s) have been created.");
 
