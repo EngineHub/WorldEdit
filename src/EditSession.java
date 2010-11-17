@@ -46,15 +46,15 @@ public class EditSession {
     /**
      * Stores the original blocks before modification.
      */
-    private Map<BlockVector,BaseBlock> original = new HashMap<BlockVector,BaseBlock>();
+    private DoubleArrayList<BlockVector,BaseBlock> original = new DoubleArrayList<BlockVector,BaseBlock>();
     /**
      * Stores the current blocks.
      */
-    private Map<BlockVector,BaseBlock> current = new HashMap<BlockVector,BaseBlock>();
+    private DoubleArrayList<BlockVector,BaseBlock> current = new DoubleArrayList<BlockVector,BaseBlock>();
     /**
      * Queue.
      */
-    private Map<BlockVector,BaseBlock> queue = new HashMap<BlockVector,BaseBlock>();
+    private DoubleArrayList<BlockVector,BaseBlock> queue = new DoubleArrayList<BlockVector,BaseBlock>();
     /**
      * The maximum number of blocks to change at a time. If this number is
      * exceeded, a MaxChangedBlocksException exception will be
@@ -149,13 +149,13 @@ public class EditSession {
         throws MaxChangedBlocksException {
         BlockVector blockPt = pt.toBlockVector();
         
-        if (!original.containsKey(blockPt)) {
+        //if (!original.containsKey(blockPt)) {
             original.put(blockPt, getBlock(pt));
 
             if (maxBlocks != -1 && original.size() > maxBlocks) {
                 throw new MaxChangedBlocksException(maxBlocks);
             }
-        }
+        //}
 
         current.put(pt.toBlockVector(), block);
 
@@ -213,9 +213,9 @@ public class EditSession {
         if (queued) {
             BlockVector blockPt = pt.toBlockVector();
 
-            if (current.containsKey(blockPt)) {
+            /*if (current.containsKey(blockPt)) {
                 return current.get(blockPt);
-            }
+            }*/
         }
         
         return rawGetBlock(pt);
@@ -248,7 +248,7 @@ public class EditSession {
      * Restores all blocks to their initial state.
      */
     public void undo() {
-        for (Map.Entry<BlockVector,BaseBlock> entry : original.entrySet()) {
+        for (Map.Entry<BlockVector,BaseBlock> entry : original) {
             BlockVector pt = (BlockVector)entry.getKey();
             smartSetBlock(pt, (BaseBlock)entry.getValue());
         }
@@ -259,7 +259,7 @@ public class EditSession {
      * Sets to new state.
      */
     public void redo() {
-        for (Map.Entry<BlockVector,BaseBlock> entry : current.entrySet()) {
+        for (Map.Entry<BlockVector,BaseBlock> entry : current) {
             BlockVector pt = (BlockVector)entry.getKey();
             smartSetBlock(pt, (BaseBlock)entry.getValue());
         }
@@ -328,7 +328,7 @@ public class EditSession {
     public void flushQueue() {
         if (!queued) { return; }
         
-        for (Map.Entry<BlockVector,BaseBlock> entry : queue.entrySet()) {
+        for (Map.Entry<BlockVector,BaseBlock> entry : queue) {
             BlockVector pt = (BlockVector)entry.getKey();
             rawSetBlock(pt, (BaseBlock)entry.getValue());
         }
