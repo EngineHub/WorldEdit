@@ -227,6 +227,9 @@ public class CuboidClipboard {
         schematic.put("WEOriginX", new IntTag("WEOriginX", getOrigin().getBlockX()));
         schematic.put("WEOriginY", new IntTag("WEOriginY", getOrigin().getBlockY()));
         schematic.put("WEOriginZ", new IntTag("WEOriginZ", getOrigin().getBlockZ()));
+        schematic.put("WEOffsetX", new IntTag("WEOffsetX", getOffset().getBlockX()));
+        schematic.put("WEOffsetY", new IntTag("WEOffsetY", getOffset().getBlockY()));
+        schematic.put("WEOffsetZ", new IntTag("WEOffsetZ", getOffset().getBlockZ()));
 
         // Copy
         byte[] blocks = new byte[width * height * length];
@@ -289,6 +292,7 @@ public class CuboidClipboard {
         NBTInputStream nbtStream = new NBTInputStream(stream);
 
         Vector origin = new Vector();
+        Vector offset = new Vector();
 
         // Schematic tag
         CompoundTag schematicTag = (CompoundTag)nbtStream.readTag();
@@ -314,6 +318,15 @@ public class CuboidClipboard {
             origin = new Vector(originX, originY, originZ);
         } catch (DataException e) {
             // No origin data
+        }
+
+        try {
+            int offsetX = (Integer)getChildTag(schematic, "WEOffsetX", IntTag.class).getValue();
+            int offsetY = (Integer)getChildTag(schematic, "WEOffsetY", IntTag.class).getValue();
+            int offsetZ = (Integer)getChildTag(schematic, "WEOffsetZ", IntTag.class).getValue();
+            offset = new Vector(offsetX, offsetY, offsetZ);
+        } catch (DataException e) {
+            // No offset data
         }
 
         // Check type of Schematic
@@ -367,6 +380,7 @@ public class CuboidClipboard {
         Vector size = new Vector(width, height, length);
         CuboidClipboard clipboard = new CuboidClipboard(size);
         clipboard.setOrigin(origin);
+        clipboard.setOffset(offset);
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -433,5 +447,19 @@ public class CuboidClipboard {
      */
     public void setOrigin(Vector origin) {
         this.origin = origin;
+    }
+
+    /**
+     * @return the offset
+     */
+    public Vector getOffset() {
+        return offset;
+    }
+
+    /**
+     * @param origin the offset to set
+     */
+    public void setOffset(Vector offset) {
+        this.offset = offset;
     }
 }
