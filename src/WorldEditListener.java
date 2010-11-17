@@ -162,6 +162,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("/listchunks", "Print a list of used chunks");
         commands.put("/delchunks", "Generate a shell script to delete chunks");
         commands.put("/listsnapshots", "<Num> - List the 5 newest snapshots");
+        commands.put("/butcher", "<Radius> - Kill nearby mobs");
         commands.put("//use", "[SnapshotID] - Use a particular snapshot");
         commands.put("//restore", "<SnapshotID> - Restore a particular snapshot");
     }
@@ -1218,6 +1219,29 @@ public class WorldEditListener extends PluginListener {
 
             return true;
 
+        // Kill mobs
+        } else if (split[0].equalsIgnoreCase("/butcher")) {
+            checkArgs(split, 0, 1, split[0]);
+
+            int radius = split.length > 1 ?
+                Math.max(1, Integer.parseInt(split[1])) : -1;
+
+            Vector origin = session.getPlacementPosition(player);
+            int killed = 0;
+
+            for (Mob mob : etc.getServer().getMobList()) {
+                Vector mobPos = new Vector(mob.getX(), mob.getY(), mob.getZ());
+                if (mob.getHealth() > 0
+                        && (radius == -1 || mobPos.distance(origin) <= radius)) {
+                    mob.setHealth(0);
+                    killed++;
+                }
+            }
+
+            player.print("Killed " + killed + " mobs.");
+
+            return true;
+
         // Get chunk filename
         } else if (split[0].equalsIgnoreCase("/chunkinfo")) {
             checkArgs(split, 0, 0, split[0]);
@@ -1543,6 +1567,45 @@ public class WorldEditListener extends PluginListener {
     @Override
     public void onDisconnect(Player player) {
         removeSession(new WorldEditPlayer(player));
+    }
+
+    /**
+     * Called on arm swing.
+     * 
+     * @param player
+     */
+    public void onArmSwing(Player modPlayer) {
+        if (!canUseCommand(modPlayer, "//")) { return; }
+
+        WorldEditPlayer player = new WorldEditPlayer(modPlayer);
+        WorldEditSession session = getSession(player);
+
+        if (player.isHoldingPickAxe()) {
+            if (session.hasSuperPickAxe()) {
+                HitBlox hitBlox = new HitBlox(modPlayer, 5, 0.2);
+                Block block = null;
+                Set<BlockVector> pathBlocks = new HashSet<BlockVector>();
+
+                // Get blocks along the way.
+                while (hitBlox.getNextBlock() != null
+                        && BlockType.canPassThrough(hitBlox.getCurBlock().getType())) {
+                    block = hitBlox.getCurBlock();
+                    pathBlocks.add(new BlockVector(block.getX(), block.getY(), block.getZ()));
+                }
+
+                if (pathBlocks.size() > 0) {
+                    // Loop through the list of mobs and find the ones to kill
+                    for (Mob mob : etc.getServer().getMobList()) {
+                        Vector mobPos = new BlockVector(mob.getX(), mob.getY(), mob.getZ());
+                        if (mob.getHealth() > 0 && pathBlocks.contains(mobPos.toBlockVector())
+                                || pathBlocks.contains(mobPos.add(0, 1, 0).toBlockVector())
+                                || pathBlocks.contains(mobPos.add(0, -1, 0).toBlockVector())) {
+                            mob.setHealth(0);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
