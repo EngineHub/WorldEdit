@@ -1,3 +1,21 @@
+2.1:
+- Switched usage of HashMaps to double ArrayLists in the history function,
+    increasing the speed of everything by up to 20x.
+- The data values of blocks that use them won't be set anymore, decreasing
+    the packet spam generated.
+- Added //fillr that recursively fills (it's //fill except it will
+    fill nooks and crannies).
+- Fixed /unstuck lifting you when you weren't stuck.
+- Added a filename character whitelist to schematic saving/loading
+    routines. (regex: ^[A-Za-z0-9_\- \./\\'\$@~!%\^\*\(\)\[\]\+\{\},\?]+$)
+- Expanded the character whitelist for snapshot names (to the same as the
+    one for schematic saving/loading).
+- .schematics now save original copy offset.
+- Added //count that counts the number of blocks in a region.
+- Added //distr that prints the distribution of blocks in a region.
+- Added /butcher to kill all/nearby mobs.
+- Added mob killing to the super pickaxe.
+
 2.0.2:
 - Fixed issues with /listsnapshot and //restore not working.
 - Fixed help for //expand and //contract.
