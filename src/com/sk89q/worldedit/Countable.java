@@ -23,7 +23,7 @@ package com.sk89q.worldedit;
  *
  * @author sk89q
  */
-public class Countable<T> {
+public class Countable<T> implements Comparable<Countable<T>> {
     /**
      * ID.
      */
@@ -70,5 +70,35 @@ public class Countable<T> {
      */
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    /**
+     * Decrement the amount.
+     */
+    public void decrement() {
+        this.amount--;
+    }
+
+    /**
+     * Increment the amount.
+     */
+    public void increment() {
+        this.amount++;
+    }
+
+    /**
+     * Comparison.
+     * 
+     * @param other
+     * @return
+     */
+    public int compareTo(Countable<T> other) {
+        if (amount > other.amount) {
+            return 1;
+        } else if (amount == other.amount) {
+            return 0;
+        } else {
+            return -1;
+        }
     }
 }

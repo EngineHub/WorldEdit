@@ -29,7 +29,9 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Stack;
+import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -1750,5 +1752,108 @@ public class EditSession {
         }
 
         setBlockIfAir(basePos.add(0, height, 0), leavesBlock);
+    }
+
+    /**
+     * Count the number of blocks of a list of types in a region.
+     *
+     * @param region
+     * @param searchIDs
+     * @return
+     */
+    public int countBlocks(Region region, Set<Integer> searchIDs) {
+        int count = 0;
+
+        if (region instanceof CuboidRegion) {
+            // Doing this for speed
+            Vector min = region.getMinimumPoint();
+            Vector max = region.getMaximumPoint();
+
+            int minX = min.getBlockX();
+            int minY = min.getBlockY();
+            int minZ = min.getBlockZ();
+            int maxX = max.getBlockX();
+            int maxY = max.getBlockY();
+            int maxZ = max.getBlockZ();
+
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    for (int z = minZ; z <= maxZ; z++) {
+                        Vector pt = new Vector(x, y, z);
+
+                        if (searchIDs.contains(getBlock(pt).getID())) {
+                            count++;
+                        }
+                    }
+                }
+            }
+        } else {
+            for (Vector pt : region) {
+                if (searchIDs.contains(getBlock(pt).getID())) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    /**
+     * Get the block distribution inside a region.
+     * 
+     * @param region
+     * @return
+     */
+    public List<Countable<Integer>> getBlockDistribution(Region region) {
+        List<Countable<Integer>> distribution
+                = new ArrayList<Countable<Integer>>();
+        Map<Integer,Countable> map = new HashMap<Integer,Countable>();
+
+        if (region instanceof CuboidRegion) {
+            // Doing this for speed
+            Vector min = region.getMinimumPoint();
+            Vector max = region.getMaximumPoint();
+
+            int minX = min.getBlockX();
+            int minY = min.getBlockY();
+            int minZ = min.getBlockZ();
+            int maxX = max.getBlockX();
+            int maxY = max.getBlockY();
+            int maxZ = max.getBlockZ();
+
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    for (int z = minZ; z <= maxZ; z++) {
+                        Vector pt = new Vector(x, y, z);
+
+                        int id = getBlock(pt).getID();
+
+                        if (map.containsKey(id)) {
+                            map.get(id).increment();
+                        } else {
+                            Countable<Integer> c = new Countable<Integer>(id, 1);
+                            map.put(id, c);
+                            distribution.add(c);
+                        }
+                    }
+                }
+            }
+        } else {
+            for (Vector pt : region) {
+                int id = getBlock(pt).getID();
+
+                if (map.containsKey(id)) {
+                    map.get(id).increment();
+                } else {
+                    Countable<Integer> c = new Countable<Integer>(id, 1);
+                    map.put(id, c);
+                }
+            }
+        }
+
+        Collections.sort(distribution);
+        //Collections.reverse(distribution);
+
+        return distribution;
     }
 }

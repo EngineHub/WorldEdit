@@ -110,6 +110,8 @@ public class WorldEditListener extends PluginListener {
         commands.put("/clearhistory", "Clear history");
         commands.put("/clearclipboard", "Clear clipboard");
         commands.put("//size", "Get size of selected region");
+        commands.put("//count", "[BlockIDs] - Count the number of blocks in the region");
+        commands.put("//distr", "Get the top block distribution");
         commands.put("//set", "[ID] - Set all blocks inside region");
         commands.put("//outline", "[ID] - Outline the region with blocks");
         commands.put("//walls", "[ID] - Build walls");
@@ -888,6 +890,35 @@ public class WorldEditListener extends PluginListener {
             player.print("Second position: " + session.getPos2());
             player.print("Size: " + size);
             player.print("# of blocks: " + region.getSize());
+            return true;
+
+        // Get count
+        } else if (split[0].equalsIgnoreCase("//count")) {
+            checkArgs(split, 1, 1, split[0]);
+            Set<Integer> searchIDs = getBlockIDs(split[1], true);
+            player.print("Counted: " +
+                    editSession.countBlocks(session.getRegion(), searchIDs));
+            return true;
+
+        // Get block distribution
+        } else if (split[0].equalsIgnoreCase("//distr")) {
+            checkArgs(split, 0, 0, split[0]);
+            List<Countable<Integer>> distribution =
+                    editSession.getBlockDistribution(session.getRegion());
+            if (distribution.size() > 0) { // *Should* always be true
+                int size = session.getRegion().getSize();
+
+                player.print("# total blocks: " + size);
+                
+                for (Countable<Integer> c : distribution) {
+                    player.print(String.format("%-7s (%.3f%%) %s",
+                            String.valueOf(c.getAmount()),
+                            c.getAmount() / (double)size * 100,
+                            BlockType.fromID(c.getID()).getName()));
+                }
+            } else {
+                player.printError("No blocks counted.");
+            }
             return true;
 
         // Replace all blocks in the region
