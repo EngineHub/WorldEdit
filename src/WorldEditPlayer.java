@@ -85,8 +85,9 @@ public class WorldEditPlayer {
             if (free == 2) {
                 if (y - 1 != origY) {
                     setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
-                    return;
                 }
+
+                return;
             }
 
             y++;
