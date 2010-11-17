@@ -807,6 +807,12 @@ public class WorldEditListener extends PluginListener {
             File dir = new File("schematics");
             File f = new File("schematics", filename);
 
+            if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+$")) {
+                player.printError("Valid characters: A-Z, a-z, 0-9, spaces, "
+                        + "./\'$@~!%^*()[]+{},?");
+                return true;
+            }
+
             try {
                 String filePath = f.getCanonicalPath();
                 String dirPath = dir.getCanonicalPath();
@@ -830,6 +836,13 @@ public class WorldEditListener extends PluginListener {
         } else if (split[0].equalsIgnoreCase("//save")) {
             checkArgs(split, 1, 1, split[0]);
             String filename = split[1].replace("\0", "") + ".schematic";
+
+            if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+$")) {
+                player.printError("Valid characters: A-Z, a-z, 0-9, spaces, "
+                        + "./\'$@~!%^*()[]+{},?");
+                return true;
+            }
+            
             File dir = new File("schematics");
             File f = new File("schematics", filename);
 
