@@ -70,6 +70,10 @@ public class EditSession {
      * Random number generator.
      */
     private static Random prng = new Random();
+    /**
+     * Total number of blocks set over time.
+     */
+    private int blockIndex = 0;
 
     /**
      * Construct the object with a maximum number of blocks.
@@ -98,10 +102,14 @@ public class EditSession {
         if (ServerInterface.getBlockType(pt) == 54) {
             ServerInterface.clearChest(pt);
         }
+
+        int id = block.getID();
         
-        boolean result = ServerInterface.setBlockType(pt, block.getID());
-        if (block.getID() != 0) {
-            ServerInterface.setBlockData(pt, block.getData());
+        boolean result = ServerInterface.setBlockType(pt, id);
+        if (id != 0) {
+            if (BlockType.usesData(id)) {
+                ServerInterface.setBlockData(pt, block.getData());
+            }
 
             // Signs
             if (block instanceof SignBlock) {

@@ -268,4 +268,37 @@ public enum BlockType {
                 || id == 83 // Reed
                 || id == 90; // Portal
     }
+
+    /**
+     * Returns true if the block uses its data value.
+     * 
+     * @param id
+     * @return
+     */
+    public static boolean usesData(int id) {
+        return id == 6 // Saplings
+                || id == 8 // Water
+                || id == 9 // Water
+                || id == 10 // Lava
+                || id == 11 // Lava
+                || id == 50 // Torch
+                || id == 53 // Wooden stairs
+                || id == 55 // Redstone wire
+                || id == 59 // Crops
+                || id == 60 // Soil
+                || id == 63 // Sign post
+                || id == 64 // Wooden door
+                || id == 65 // Ladder
+                || id == 66 // Minecart track
+                || id == 67 // Cobblestone stairs
+                || id == 68 // Wall sign
+                || id == 69 // Lever
+                || id == 70 // Stone pressure plate
+                || id == 71 // Iron door
+                || id == 72 // Wooden pressure plate
+                || id == 75 // Redstone torch (off)
+                || id == 76 // Redstone torch (on)
+                || id == 77 // Stone button
+                || id == 81; // Cactus
+    }
 }
