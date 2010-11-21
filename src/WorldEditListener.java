@@ -31,6 +31,7 @@ import java.io.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
+import com.sk89q.worldedit.filters.*;
 import com.sk89q.worldedit.snapshots.*;
 import com.sk89q.worldedit.regions.*;
 import com.sk89q.worldedit.patterns.*;
@@ -165,6 +166,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("/butcher", "<Radius> - Kill nearby mobs");
         commands.put("//use", "[SnapshotID] - Use a particular snapshot");
         commands.put("//restore", "<SnapshotID> - Restore a particular snapshot");
+        commands.put("//smooth", "<Iterations> <Sigma> - Smooth an area's heightmap");
     }
 
     /**
@@ -934,6 +936,21 @@ public class WorldEditListener extends PluginListener {
                 affected = editSession.setBlocks(session.getRegion(), pattern);
             }
             player.print(affected + " block(s) have been changed.");
+
+            return true;
+
+        // Smooth the heightmap of a region
+        } else if (split[0].equalsIgnoreCase("//smooth")) {
+            checkArgs(split, 0, 1, split[0]);
+
+            int iterations = 1;
+            if (split.length >= 2)
+                iterations = Integer.parseInt(split[1]);
+
+            HeightMap heightMap = new HeightMap(editSession, session.getRegion());
+            HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
+            int affected = heightMap.applyFilter(filter, iterations);
+            player.print("Terrain's heightmap has been smoothed. " + affected + " block(s) have been changed.");
 
             return true;
 

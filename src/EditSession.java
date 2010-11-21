@@ -1856,4 +1856,44 @@ public class EditSession {
 
         return distribution;
     }
+    
+    /**
+     * Returns the highest solid 'terrain' block which can occur naturally.
+     * Looks at: 1, 2, 3, 7, 12, 13, 14, 15, 16, 56, 73, 74, 87, 88, 89
+     * 
+     * @param x
+     * @param z
+     * @param minY minimal height
+     * @param maxY maximal height
+     * @return height of highest block found or 'minY'
+     */
+
+    public int getHighestTerrainBlock( int x , int z, int minY, int maxY) {
+        for (int y = maxY; y >= minY; y--) {
+            Vector pt = new Vector(x, y, z);
+            int id = getBlock(pt).getID();
+
+            if (id == 1 // stone
+                    || id == 2 // grass
+                    || id == 3 // dirt
+                    || id == 7 // bedrock
+                    || id == 12 // sand
+                    || id == 13 // gravel
+                    // hell
+                    || id == 87 // netherstone
+                    || id == 88 // slowsand
+                    || id == 89 // lightstone
+                    // ores
+                    || id == 14 // coal ore
+                    || id == 15 // iron ore
+                    || id == 16 // gold ore
+                    || id == 56 // diamond ore
+                    || id == 73 // redstone ore
+                    || id == 74 // redstone ore (active)
+            ) {
+                return y;
+            }
+        }
+        return minY;
+    }
 }
