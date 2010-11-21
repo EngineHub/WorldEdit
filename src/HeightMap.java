@@ -64,7 +64,6 @@ public class HeightMap {
                 data[z * width + x] = session.getHighestTerrainBlock(x + minX, z + minZ, minY, maxY);
             }
         }
-
     }
 
     /**
@@ -118,15 +117,12 @@ public class HeightMap {
                 int X = x + originX;
                 int Z = z + originZ;
 
-                // We are keeping the topmost blocks so take that in account for
-                // the scale
+                // We are keeping the topmost blocks so take that in account for the scale
                 double scale = (double) (curHeight - originY) / (double) (newHeight - originY);
 
-                // Depending on growing or shrinking we need to start at the
-                // bottom or top
+                // Depending on growing or shrinking we need to start at the bottom or top
                 if (newHeight > curHeight) {
-                    // Set the top block of the column to be the same type (this
-                    // might go wrong with rounding)
+                    // Set the top block of the column to be the same type (this might go wrong with rounding)
                     session.setBlock(new Vector(X, newHeight, Z), session.getBlock(new Vector(X, curHeight, Z)));
                     blocksChanged++;
 
@@ -144,8 +140,8 @@ public class HeightMap {
                         blocksChanged++;
                     }
 
-                    // Set the top block of the column to be the same type (this
-                    // might go wrong with rounding)
+                    // Set the top block of the column to be the same type
+                    // (this could otherwise go wrong with rounding)
                     session.setBlock(new Vector(X, newHeight, Z), session.getBlock(new Vector(X, curHeight, Z)));
                     blocksChanged++;
 
