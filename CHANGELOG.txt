@@ -1,3 +1,11 @@
+2.2:
+- Added Grum's //smooth command to smooth terrain. Select the entire area
+    and use //smooth on it, perhaps specifying a number of iterations,
+    with a larger number of iterations meaning a smoother terrain. Trees and
+    other blocks like fences currently do not drop.
+- Fixed output messages for //pos2 and //hpos2 when used.
+- Updated for server version 0.2.5.
+
 2.1:
 - Switched usage of HashMaps to double ArrayLists in the history function,
     increasing the speed of everything by up to 20x.
