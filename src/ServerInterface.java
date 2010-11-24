@@ -228,7 +228,7 @@ public class ServerInterface {
         }
         proxy.setEditSession(editSession);
 
-        bi treeGen = new ha();
+        bj treeGen = new hc();
         return treeGen.a(proxy, random,
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
     }
