@@ -166,7 +166,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("/butcher", "<Radius> - Kill nearby mobs");
         commands.put("//use", "[SnapshotID] - Use a particular snapshot");
         commands.put("//restore", "<SnapshotID> - Restore a particular snapshot");
-        commands.put("//smooth", "<Iterations> <Sigma> - Smooth an area's heightmap");
+        commands.put("//smooth", "<Iterations> - Smooth an area's heightmap");
     }
 
     /**
@@ -950,7 +950,7 @@ public class WorldEditListener extends PluginListener {
             HeightMap heightMap = new HeightMap(editSession, session.getRegion());
             HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
             int affected = heightMap.applyFilter(filter, iterations);
-            player.print("Terrain's heightmap has been smoothed. " + affected + " block(s) have been changed.");
+            player.print("Terrain's height map smoothed. " + affected + " block(s) changed.");
 
             return true;
 
