@@ -912,10 +912,10 @@ public class WorldEditListener extends PluginListener {
                 player.print("# total blocks: " + size);
                 
                 for (Countable<Integer> c : distribution) {
-                    player.print(String.format("%-7s (%.3f%%) %s",
+                    player.print(String.format("%-7s (%.3f%%) %s #%d",
                             String.valueOf(c.getAmount()),
                             c.getAmount() / (double)size * 100,
-                            BlockType.fromID(c.getID()).getName()));
+                            BlockType.fromID(c.getID()).getName(), c.getID()));
                 }
             } else {
                 player.printError("No blocks counted.");
