@@ -477,7 +477,7 @@ public class WorldEditListener extends PluginListener {
                 player.print("Second position set to " + player.getBlockIn()
                         + " (" + session.getRegion().getSize() + ").");
             } else {
-                player.print("Second position set to " + player.getBlockIn() + " .");
+                player.print("Second position set to " + player.getBlockIn() + ".");
             }
             return true;
 
@@ -505,7 +505,7 @@ public class WorldEditListener extends PluginListener {
             if (pos != null) {
                 session.setPos2(pos);
                 if (session.isRegionDefined()) {
-                    player.print("First position set to " + pos
+                    player.print("Second position set to " + pos
                             + " (" + session.getRegion().getSize() + ").");
                 } else {
                     player.print("Second position set to " + pos.toString() + " .");
