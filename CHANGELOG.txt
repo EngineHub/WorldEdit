@@ -1,3 +1,6 @@
+2.2.1:
+- Fixed compatibility with server v0.2.5.
+
 2.2:
 - Added Grum's //smooth command to smooth terrain. Select the entire area
     and use //smooth on it, perhaps specifying a number of iterations,
