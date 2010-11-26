@@ -1934,7 +1934,12 @@ public class WorldEditListener extends PluginListener {
         if (properties == null) {
             properties = new PropertiesFile("worldedit.properties");
         } else {
-            properties.load();
+            try {
+                properties.load();
+            } catch (IOException e) {
+                logger.warning("worldedit.properties could not be loaded: "
+                        + e.getMessage());
+            }
         }
 
         profile = properties.getBoolean("debug-profile", false);
