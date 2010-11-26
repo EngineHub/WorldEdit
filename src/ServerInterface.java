@@ -198,13 +198,7 @@ public class ServerInterface {
         }
 
         Chest chest = (Chest)cblock;
-        hl[] itemArray = chest.getArray();
-
-        // Find an existing slot to put it into
-        for (int i = 0; itemArray.length > i; i++) {
-            itemArray[i] = null;
-        }
-
+        chest.clearContents();
         chest.update();
 
         return true;
