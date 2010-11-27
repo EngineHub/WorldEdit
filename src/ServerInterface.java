@@ -24,7 +24,7 @@ import java.util.logging.Level;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Random;
-import java.lang.reflect.Constructor;
+import java.lang.reflect.*;
 import sun.reflect.ReflectionFactory;
 
 /**
@@ -202,6 +202,46 @@ public class ServerInterface {
         chest.update();
 
         return true;
+    }
+
+    /**
+     * Checks if a mob type is valid.
+     * 
+     * @param type
+     * @return
+     */
+    public static boolean isValidMobType(String type) {
+        return Mob.isValid(type);
+    }
+
+    /**
+     * Set mob spawner mob type.
+     *
+     * @param pt
+     * @param mobType
+     */
+    public static void setMobSpawnerType(Vector pt, String mobType) {
+        Block block = etc.getServer().getBlockAt(
+                pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        block.setSpawnData(mobType);
+    }
+
+    /**
+     * Get mob spawner mob type. May return an empty string.
+     *
+     * @param pt
+     * @param mobType
+     */
+    public static String getMobSpawnerType(Vector pt) {
+        ay o = etc.getMCServer().e.k(
+                pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        
+        if (o != null && o instanceof cf) {
+            String type = ((cf)o).f;
+            return type != null ? type : "";
+        }
+
+        return "";
     }
 
     /**

@@ -459,6 +459,15 @@ public class WorldEditPlayer {
     }
 
     /**
+     * Print a message.
+     *
+     * @param msg
+     */
+    public void printRaw(String msg) {
+        player.sendMessage(msg);
+    }
+
+    /**
      * Print a WorldEdit message.
      *
      * @param msg

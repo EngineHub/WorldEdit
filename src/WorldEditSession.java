@@ -37,10 +37,11 @@ public class WorldEditSession {
         SAME_TYPE_AREA
     };
     /**
-     * List of
+     * List of tools.
      */
     public static enum Tool {
         NONE,
+        INFO,
         TREE,
     }
     

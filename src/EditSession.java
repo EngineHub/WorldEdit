@@ -94,7 +94,7 @@ public class EditSession {
      * @param blockType
      * @return Whether the block changed
      */
-    private boolean rawSetBlock(Vector pt, BaseBlock block) {
+    private static boolean rawSetBlock(Vector pt, BaseBlock block) {
         int y = pt.getBlockY();
         if (y < 0 || y > 127) {
             return false;
@@ -132,6 +132,10 @@ public class EditSession {
                         ServerInterface.setChestSlot(pt, i, blankItem, 0);
                     }
                 }
+            // Mob spawners
+            } else if (block instanceof MobSpawnerBlock) {
+                MobSpawnerBlock mobSpawnerblock = (MobSpawnerBlock)block;
+                ServerInterface.setMobSpawnerType(pt, mobSpawnerblock.getMobType());
             }
         }
         
@@ -229,7 +233,7 @@ public class EditSession {
      * @param pt
      * @return BaseBlock
      */
-    public BaseBlock rawGetBlock(Vector pt) {
+    public static BaseBlock rawGetBlock(Vector pt) {
         int type = ServerInterface.getBlockType(pt);
         int data = ServerInterface.getBlockData(pt);
 
@@ -241,6 +245,9 @@ public class EditSession {
         } else if (type == 54) {
             Map<Byte,Countable<BaseItem>> items = ServerInterface.getChestContents(pt);
             return new ChestBlock(data, items);
+        // Mob spawner
+        } else if (type == 52) {
+            return new MobSpawnerBlock(data, ServerInterface.getMobSpawnerType(pt));
         } else {
             return new BaseBlock(type, data);
         }

@@ -254,7 +254,13 @@ public class WorldEditListener extends PluginListener {
                 text[2] = args0.length > 3 ? args0[3] : "";
                 text[3] = args0.length > 4 ? args0[4] : "";
                 return new SignBlock(blockType.getID(), data, text);
+            } else if (blockType == BlockType.MOB_SPAWNER) {
+                if (!ServerInterface.isValidMobType(args0[1])) {
+                    throw new InvalidItemException(arg, "Unknown mob type '" + args0[1] + "'");
+                }
+                return new MobSpawnerBlock(data, args0[1]);
             }
+
             return new BaseBlock(blockType.getID(), data);
         }
 
@@ -623,6 +629,9 @@ public class WorldEditListener extends PluginListener {
             } else if (split[1].equalsIgnoreCase("tree")) {
                 session.setTool(WorldEditSession.Tool.TREE);
                 player.print("Tree planting tool equipped. +5 XP");
+            } else if (split[1].equalsIgnoreCase("info")) {
+                session.setTool(WorldEditSession.Tool.INFO);
+                player.print("Block information tool equipped.");
             } else {
                 player.printError("Unknown tool.");
             }
@@ -1678,6 +1687,25 @@ public class WorldEditListener extends PluginListener {
             }
 
             return true;
+        } else if (player.isHoldingPickAxe()
+                && session.getTool() == WorldEditSession.Tool.INFO) {
+            Vector pos = Vector.toBlockPoint(blockClicked.getX(),
+                                             blockClicked.getY(),
+                                             blockClicked.getZ());
+
+            BaseBlock block = EditSession.rawGetBlock(pos);
+
+            player.printRaw(Colors.LightPurple + "@" + pos + ": " + Colors.Yellow
+                    + "Type: " + block.getID() + Colors.LightGray + " ("
+                    + BlockType.fromID(block.getID()).getName() + ") "
+                    + Colors.White
+                    + "[" + block.getData() + "]");
+
+            if (block instanceof MobSpawnerBlock) {
+                player.printRaw(Colors.Yellow + "Mob Type: " + ((MobSpawnerBlock)block).getMobType());
+            }
+
+            return true;
         }
 
         return false;
@@ -1881,6 +1909,8 @@ public class WorldEditListener extends PluginListener {
             ply.sendMessage(Colors.Rose + "The edit region has not been fully defined.");
         } catch (UnknownItemException e3) {
             ply.sendMessage(Colors.Rose + "Block name '" + e3.getID() + "' was not recognized.");
+        } catch (InvalidItemException e4) {
+            ply.sendMessage(Colors.Rose + e4.getMessage());
         } catch (DisallowedItemException e4) {
             ply.sendMessage(Colors.Rose + "Block '" + e4.getID() + "' not allowed (see WorldEdit configuration).");
         } catch (MaxChangedBlocksException e5) {

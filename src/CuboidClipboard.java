@@ -389,14 +389,20 @@ public class CuboidClipboard {
                     BlockVector pt = new BlockVector(x, y, z);
                     BaseBlock block;
 
-                    if (blocks[index] == 63 || blocks[index] == 68) {
+                    if (blocks[index] == 63 || blocks[index] == 68) { // Signs
                         block = new SignBlock(blocks[index], blockData[index]);
                         if (tileEntitiesMap.containsKey(pt)) {
                             ((TileEntityBlock)block).fromTileEntityNBT(
                                     tileEntitiesMap.get(pt));
                         }
-                    } else if(blocks[index] == 54) {
+                    } else if(blocks[index] == 54) { // Chest
                         block = new ChestBlock();
+                        if (tileEntitiesMap.containsKey(pt)) {
+                            ((TileEntityBlock)block).fromTileEntityNBT(
+                                    tileEntitiesMap.get(pt));
+                        }
+                    } else if(blocks[index] == 52) { // Mob spawner
+                        block = new MobSpawnerBlock();
                         if (tileEntitiesMap.containsKey(pt)) {
                             ((TileEntityBlock)block).fromTileEntityNBT(
                                     tileEntitiesMap.get(pt));

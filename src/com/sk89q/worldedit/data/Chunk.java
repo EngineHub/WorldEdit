@@ -211,6 +211,17 @@ public class Chunk {
             }
 
             return block;
+        // Mob spawners
+        } else if (id == 52) {
+            MobSpawnerBlock block = new MobSpawnerBlock();
+
+            Map<String,Tag> tileEntity = getBlockTileEntity(pos);
+
+            if (tileEntity != null) {
+                ((TileEntityBlock)block).fromTileEntityNBT(tileEntity);
+            }
+
+            return block;
         } else {
             return new BaseBlock(id, data);
         }

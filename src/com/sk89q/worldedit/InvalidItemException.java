@@ -23,19 +23,8 @@ package com.sk89q.worldedit;
  *
  * @author sk89q
  */
-public class DisallowedItemException extends WorldEditException {
-    private String type;
-
-    public DisallowedItemException(String type) {
-        this.type = type;
-    }
-
-    public DisallowedItemException(String type, String message) {
-        super(message);
-        this.type = type;
-    }
-
-    public String getID() {
-        return type;
+public class InvalidItemException extends DisallowedItemException {
+    public InvalidItemException(String type, String message) {
+        super(type, message);
     }
 }
