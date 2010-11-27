@@ -12,3 +12,5 @@ files, and much more.
 
 For usage help, see:
 http://github.com/sk89q/worldedit/wiki/Usage
+
+Thanks to grum for writing the terrain smoother.

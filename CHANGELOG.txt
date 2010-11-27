@@ -1,3 +1,23 @@
+2.3:
+- Blocks should now be set and removed correctly so that they don't
+    drop items.
+- /fixwater and /fixlava should no longer cross solely diagonally connected
+    pools.
+- Fixed //smooth lifting water upwards.
+- Added //shift to move the selection.
+- Added //flip to flip the clipboard.
+- ; instead of | can be used when specifying extra tile entity data
+    for blocks that support them.
+- Items are now dropped by the super pickaxe (configurable).
+- The info tool is governed by the permission /infotool and the tree tool
+    is now goverened by the /treetool permission.
+- New info tool (//tool info) that tells you information about the block
+    that you right click with a pickaxe on, including the type of mob
+    spawned by a mob spawner.
+- Mob spawners are now supported for all operations. To specify a mob type,
+    use syntax like //set mobspawner;Pig or //set mobspawner|Pig
+- Added a catch for the IOException now thrown by recent versions of hMod.
+
 2.2.1:
 - Fixed compatibility with server v0.2.5.
 
