@@ -48,15 +48,23 @@ public class EditSession {
     /**
      * Stores the original blocks before modification.
      */
-    private DoubleArrayList<BlockVector,BaseBlock> original = new DoubleArrayList<BlockVector,BaseBlock>();
+    private DoubleArrayList<BlockVector,BaseBlock> original =
+            new DoubleArrayList<BlockVector,BaseBlock>();
     /**
      * Stores the current blocks.
      */
-    private DoubleArrayList<BlockVector,BaseBlock> current = new DoubleArrayList<BlockVector,BaseBlock>();
+    private DoubleArrayList<BlockVector,BaseBlock> current =
+            new DoubleArrayList<BlockVector,BaseBlock>();
     /**
-     * Queue.
+     * Blocks that should be placed before last.
      */
-    private DoubleArrayList<BlockVector,BaseBlock> queue = new DoubleArrayList<BlockVector,BaseBlock>();
+    private DoubleArrayList<BlockVector,BaseBlock> queueAfter =
+            new DoubleArrayList<BlockVector,BaseBlock>();
+    /**
+     * Blocks that should be placed last.
+     */
+    private DoubleArrayList<BlockVector,BaseBlock> queueLast =
+            new DoubleArrayList<BlockVector,BaseBlock>();
     /**
      * The maximum number of blocks to change at a time. If this number is
      * exceeded, a MaxChangedBlocksException exception will be
@@ -194,13 +202,16 @@ public class EditSession {
      */
     private boolean smartSetBlock(Vector pt, BaseBlock block) {
         if (queued) {
-            if (!block.isAir() && BlockType.shouldPlaceLast(block.getID())
-                    && rawGetBlock(pt.add(0, -1, 0)).isAir()) {
-                queue.put(pt.toBlockVector(), block);
+            // Place torches, etc. last
+            if (BlockType.shouldPlaceLast(block.getID())) {
+                queueLast.put(pt.toBlockVector(), block);
                 return getBlock(pt).getID() != block.getID();
-            } else if (block.isAir()
-                    && BlockType.shouldPlaceLast(rawGetBlock(pt.add(0, 1, 0)).getID())) {
-                rawSetBlock(pt.add(0, 1, 0), new BaseBlock(0)); // Prevent items from being dropped
+            // Destroy torches, etc. first
+            } else if (BlockType.shouldPlaceLast(getBlock(pt).getID())) {
+                rawSetBlock(pt, new BaseBlock(0));
+            } else {
+                queueAfter.put(pt.toBlockVector(), block);
+                return getBlock(pt).getID() != block.getID();
             }
         }
 
@@ -336,11 +347,19 @@ public class EditSession {
      */
     public void flushQueue() {
         if (!queued) { return; }
-        
-        for (Map.Entry<BlockVector,BaseBlock> entry : queue) {
+
+        for (Map.Entry<BlockVector,BaseBlock> entry : queueAfter) {
             BlockVector pt = (BlockVector)entry.getKey();
             rawSetBlock(pt, (BaseBlock)entry.getValue());
         }
+        
+        for (Map.Entry<BlockVector,BaseBlock> entry : queueLast) {
+            BlockVector pt = (BlockVector)entry.getKey();
+            rawSetBlock(pt, (BaseBlock)entry.getValue());
+        }
+
+        queueAfter.clear();
+        queueLast.clear();
     }
 
     /**

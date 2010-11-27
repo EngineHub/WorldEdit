@@ -61,6 +61,14 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
     }
 
     /**
+     * Clear the list.
+     */
+    public void clear() {
+        listA.clear();
+        listB.clear();
+    }
+
+    /**
      * Get an entry set.
      *
      * @return
