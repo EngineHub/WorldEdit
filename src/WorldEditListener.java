@@ -257,10 +257,14 @@ public class WorldEditListener extends PluginListener {
                 text[3] = args0.length > 4 ? args0[4] : "";
                 return new SignBlock(blockType.getID(), data, text);
             } else if (blockType == BlockType.MOB_SPAWNER) {
-                if (!ServerInterface.isValidMobType(args0[1])) {
-                    throw new InvalidItemException(arg, "Unknown mob type '" + args0[1] + "'");
+                if (args0.length > 0) {
+                    if (!ServerInterface.isValidMobType(args0[1])) {
+                        throw new InvalidItemException(arg, "Unknown mob type '" + args0[1] + "'");
+                    }
+                    return new MobSpawnerBlock(data, args0[1]);
+                } else {
+                    return new MobSpawnerBlock(data, "Pig");
                 }
-                return new MobSpawnerBlock(data, args0[1]);
             }
 
             return new BaseBlock(blockType.getID(), data);
