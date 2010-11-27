@@ -142,6 +142,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("//tool", "[Tool] - Set pickaxe tool (none/tree/info)");
         commands.put("//expand", "[Num] <Dir> - Expands the selection");
         commands.put("//contract", "[Num] <Dir> - Contracts the selection");
+        commands.put("//shift", "[Num] <Dir> - Shift the selection");
         commands.put("//rotate", "[Angle] - Rotate the clipboard");
         commands.put("//flip", "<Dir> - Flip the clipboard");
         commands.put("//hcyl", "[ID] [Radius] <Height> - Create a vertical hollow cylinder");
@@ -1244,6 +1245,25 @@ public class WorldEditListener extends PluginListener {
             session.learnRegionChanges();
             int newSize = region.getSize();
             player.print("Region contracted " + (oldSize - newSize) + " blocks.");
+
+            return true;
+
+        // Shift
+        } else if (split[0].equalsIgnoreCase("//shift")) {
+            checkArgs(split, 1, 2, split[0]);
+            Vector dir;
+            int change = Integer.parseInt(split[1]);
+            if (split.length == 3) {
+                dir = getDirection(player, split[2].toLowerCase());
+            } else {
+                dir = getDirection(player, "me");
+            }
+
+            Region region = session.getRegion();
+            region.expand(dir.multiply(change));
+            region.contract(dir.multiply(change));
+            session.learnRegionChanges();
+            player.print("Region shifted.");
 
             return true;
 
