@@ -90,6 +90,8 @@ public class WorldEditListener extends PluginListener {
     private boolean logComands = false;
     private boolean registerHelp = true;
     private int wandItem = 271;
+    private boolean superPickaxeDrop = true;
+    private boolean superPickaxeManyDrop = true;
 
     /**
      * Construct an instance of the plugin.
@@ -1779,7 +1781,11 @@ public class WorldEditListener extends PluginListener {
                         return false;
                     }
 
-                    ServerInterface.setBlockType(pos, 0);
+                    if (superPickaxeDrop) {
+                        ServerInterface.simulateBlockMine(pos);
+                    } else {
+                        ServerInterface.setBlockType(pos, 0);
+                    }
 
                 // Area super pickaxe
                 } else if (session.getSuperPickaxeMode() ==
@@ -1801,7 +1807,11 @@ public class WorldEditListener extends PluginListener {
                             for (int z = oz - size; z <= oz + size; z++) {
                                 Vector pos = new Vector(x, y, z);
                                 if (ServerInterface.getBlockType(pos) == initialType) {
-                                    ServerInterface.setBlockType(pos, 0);
+                                    if (superPickaxeManyDrop) {
+                                        ServerInterface.simulateBlockMine(pos);
+                                    } else {
+                                        ServerInterface.setBlockType(pos, 0);
+                                    }
                                 }
                             }
                         }
@@ -1853,7 +1863,11 @@ public class WorldEditListener extends PluginListener {
         visited.add(pos);
 
         if (ServerInterface.getBlockType(pos) == initialType) {
-            ServerInterface.setBlockType(pos, 0);
+            if (superPickaxeManyDrop) {
+                ServerInterface.simulateBlockMine(pos);
+            } else {
+                ServerInterface.setBlockType(pos, 0);
+            }
         } else {
             return;
         }
@@ -1992,9 +2006,15 @@ public class WorldEditListener extends PluginListener {
         }
 
         profile = properties.getBoolean("debug-profile", false);
-
         wandItem = properties.getInt("wand-item", 271);
-
+        defaultChangeLimit = Math.max(-1, properties.getInt("max-blocks-changed", -1));
+        maxRadius = Math.max(-1, properties.getInt("max-radius", -1));
+        maxSuperPickaxeSize = Math.max(1, properties.getInt("max-super-pickaxe-size", 5));
+        registerHelp = properties.getBoolean("register-help", true);
+        logComands = properties.getBoolean("log-commands", false);
+        superPickaxeDrop = properties.getBoolean("super-pickaxe-drop-items", true);
+        superPickaxeManyDrop = properties.getBoolean("super-pickaxe-many-drop-items", false);
+        
         // Get allowed blocks
         allowedBlocks = new HashSet<Integer>();
         for (String b : properties.getString("allowed-blocks",
@@ -2005,11 +2025,6 @@ public class WorldEditListener extends PluginListener {
             }
         }
 
-        defaultChangeLimit = Math.max(-1, properties.getInt("max-blocks-changed", -1));
-
-        maxRadius = Math.max(-1, properties.getInt("max-radius", -1));
-
-        maxSuperPickaxeSize = Math.max(1, properties.getInt("max-super-pickaxe-size", 5));
 
         String snapshotsDir = properties.getString("snapshots-dir", "");
         if (!snapshotsDir.trim().equals("")) {
@@ -2020,10 +2035,6 @@ public class WorldEditListener extends PluginListener {
 
         String type = properties.getString("shell-save-type", "").trim();
         shellSaveType = type.equals("") ? null : type;
-
-        registerHelp = properties.getBoolean("register-help", true);
-
-        logComands = properties.getBoolean("log-commands", false);
 
         String logFile = properties.getString("log-file", "");
         if (!logFile.equals("")) {
