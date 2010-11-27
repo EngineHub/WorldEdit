@@ -1228,15 +1228,10 @@ public class EditSession {
                 continue;
             }
 
-            for (int x = cur.getBlockX() - 1; x <= cur.getBlockX() + 1; x++) {
-                for (int z = cur.getBlockZ() - 1; z <= cur.getBlockZ() + 1; z++) {
-                    BlockVector newPos = new BlockVector(x, cur.getBlockY(), z);
-
-                    if (!cur.equals(newPos)) {
-                        queue.push(newPos);
-                    }
-                }
-            }
+            queue.push(cur.add(1, 0, 0).toBlockVector());
+            queue.push(cur.add(-1, 0, 0).toBlockVector());
+            queue.push(cur.add(0, 0, 1).toBlockVector());
+            queue.push(cur.add(0, 0, -1).toBlockVector());
         }
 
         return affected;
