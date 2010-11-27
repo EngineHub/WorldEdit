@@ -33,6 +33,15 @@ import java.util.List;
  * @author sk89q
  */
 public class CuboidClipboard {
+    /**
+     * Flip direction.
+     */
+    public enum FlipDirection {
+        NORTH_SOUTH,
+        WEST_EAST,
+        UP_DOWN
+    }
+
     private BaseBlock[][][] data;
     private Vector offset;
     private Vector origin;
@@ -105,7 +114,7 @@ public class CuboidClipboard {
 
     /**
      * Rotate the clipboard in 2D. It can only rotate by angles divisible by 90.
-     * 
+     *
      * @param angle in degrees
      */
     public void rotate2D(int angle) {
@@ -143,6 +152,52 @@ public class CuboidClipboard {
                           Math.abs(sizeRotated.getBlockZ()));
         offset = offset.transform2D(angle, 0, 0, 0, 0)
                 .subtract(shiftX, 0, shiftZ);;
+    }
+
+    /**
+     * Flip the clipboard.
+     *
+     * @param dir
+     */
+    public void flip(FlipDirection dir) {
+        int width = getWidth();
+        int length = getLength();
+        int height = getHeight();
+
+        if (dir == FlipDirection.NORTH_SOUTH) {
+            int len = (int)Math.floor(width / 2);
+            for (int xs = 0; xs < len; xs++) {
+                for (int z = 0; z < length; z++) {
+                    for (int y = 0; y < height; y++) {
+                        BaseBlock old = data[xs][y][z];
+                        data[xs][y][z] = data[width - xs - 1][y][z];
+                        data[width - xs - 1][y][z] = old;
+                    }
+                }
+            }
+        } else if (dir == FlipDirection.WEST_EAST) {
+            int len = (int)Math.floor(length / 2);
+            for (int zs = 0; zs < len; zs++) {
+                for (int x = 0; x < width; x++) {
+                    for (int y = 0; y < height; y++) {
+                        BaseBlock old = data[x][y][zs];
+                        data[x][y][zs] = data[x][y][length - zs - 1];
+                        data[x][y][length - zs - 1] = old;
+                    }
+                }
+            }
+        } else if (dir == FlipDirection.UP_DOWN) {
+            int len = (int)Math.floor(height / 2);
+            for (int ys = 0; ys < len; ys++) {
+                for (int x = 0; x < width; x++) {
+                    for (int z = 0; z < length; z++) {
+                        BaseBlock old = data[x][ys][z];
+                        data[x][ys][z] = data[x][height - ys - 1][z];
+                        data[x][height - ys - 1][z] = old;
+                    }
+                }
+            }
+        }
     }
 
     /**

@@ -143,6 +143,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("//expand", "[Num] <Dir> - Expands the selection");
         commands.put("//contract", "[Num] <Dir> - Contracts the selection");
         commands.put("//rotate", "[Angle] - Rotate the clipboard");
+        commands.put("//flip", "<Dir> - Flip the clipboard");
         commands.put("//hcyl", "[ID] [Radius] <Height> - Create a vertical hollow cylinder");
         commands.put("//cyl", "[ID] [Radius] <Height> - Create a vertical cylinder");
         commands.put("//sphere", "[ID] [Radius] <Raised?> - Create a sphere");
@@ -1260,6 +1261,18 @@ public class WorldEditListener extends PluginListener {
 
             return true;
 
+        // Flip
+        } else if (split[0].equalsIgnoreCase("//flip")) {
+            checkArgs(split, 0, 1, split[0]);
+            CuboidClipboard.FlipDirection dir = getFlipDirection(player,
+                    split.length > 1 ? split[1].toLowerCase() : "me");
+
+            CuboidClipboard clipboard = session.getClipboard();
+            clipboard.flip(dir);
+            player.print("Clipboard flipped.");
+
+            return true;
+
         // Kill mobs
         } else if (split[0].equalsIgnoreCase("/butcher")) {
             checkArgs(split, 0, 1, split[0]);
@@ -1571,6 +1584,42 @@ public class WorldEditListener extends PluginListener {
         }
 
         return new Vector(xm, ym, zm);
+    }
+
+    /**
+     * Get the flip direction for a player's direction. May return
+     * null if a direction could not be found.
+     *
+     * @param player
+     * @param dir
+     * @return
+     */
+    public CuboidClipboard.FlipDirection getFlipDirection(
+            WorldEditPlayer player, String dir)
+            throws UnknownDirectionException {
+        int xm = 0;
+        int ym = 0;
+        int zm = 0;
+
+        if (dir.equals("me")) {
+            dir = player.getCardinalDirection();
+        }
+
+        if (dir.charAt(0) == 'w') {
+            return CuboidClipboard.FlipDirection.WEST_EAST;
+        } else if (dir.charAt(0) == 'e') {
+            return CuboidClipboard.FlipDirection.WEST_EAST;
+        } else if (dir.charAt(0) == 's') {
+            return CuboidClipboard.FlipDirection.NORTH_SOUTH;
+        } else if (dir.charAt(0) == 'n') {
+            return CuboidClipboard.FlipDirection.NORTH_SOUTH;
+        } else if (dir.charAt(0) == 'u') {
+            return CuboidClipboard.FlipDirection.UP_DOWN;
+        } else if (dir.charAt(0) == 'd') {
+            return CuboidClipboard.FlipDirection.UP_DOWN;
+        } else {
+            throw new UnknownDirectionException(dir);
+        }
     }
 
     /**
