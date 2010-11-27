@@ -123,14 +123,19 @@ public class HeightMap {
                 // Depending on growing or shrinking we need to start at the bottom or top
                 if (newHeight > curHeight) {
                     // Set the top block of the column to be the same type (this might go wrong with rounding)
-                    session.setBlock(new Vector(X, newHeight, Z), session.getBlock(new Vector(X, curHeight, Z)));
-                    blocksChanged++;
+                    BaseBlock existing = session.getBlock(new Vector(X, curHeight, Z));
 
-                    // Grow -- start from 1 below top replacing airblocks
-                    for (int y = newHeight - 1 - originY; y >= 0; y--) {
-                        int copyFrom = (int) (y * scale);
-                        session.setBlock(new Vector(X, originY + y, Z), session.getBlock(new Vector(X, originY + copyFrom, Z)));
+                    // Skip water/lava
+                    if (existing.getID() < 8 || existing.getID() > 11) {
+                        session.setBlock(new Vector(X, newHeight, Z), existing);
                         blocksChanged++;
+
+                        // Grow -- start from 1 below top replacing airblocks
+                        for (int y = newHeight - 1 - originY; y >= 0; y--) {
+                            int copyFrom = (int) (y * scale);
+                            session.setBlock(new Vector(X, originY + y, Z), session.getBlock(new Vector(X, originY + copyFrom, Z)));
+                            blocksChanged++;
+                        }
                     }
                 } else if (curHeight > newHeight) {
                     // Shrink -- start from bottom
