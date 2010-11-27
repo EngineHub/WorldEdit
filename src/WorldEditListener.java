@@ -214,6 +214,7 @@ public class WorldEditListener extends PluginListener {
             throws UnknownItemException, DisallowedItemException {
         BlockType blockType;
         arg = arg.replace("_", " ");
+        arg = arg.replace(";", "|");
         String[] args0 = arg.split("\\|");
         String[] args1 = args0[0].split(":", 2);
         String testID = args1[0];
