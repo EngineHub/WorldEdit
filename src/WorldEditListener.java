@@ -137,7 +137,7 @@ public class WorldEditListener extends PluginListener {
         commands.put("//drain", "[Radius] - Drain nearby water/lava pools");
         commands.put("//limit", "[Num] - See documentation");
         commands.put("//mode", "[Mode] <Size> - Set super pickaxe mode (single/recursive/area)");
-        commands.put("//tool", "[Tool] - Set pickaxe tool (none/tree)");
+        commands.put("//tool", "[Tool] - Set pickaxe tool (none/tree/info)");
         commands.put("//expand", "[Num] <Dir> - Expands the selection");
         commands.put("//contract", "[Num] <Dir> - Contracts the selection");
         commands.put("//rotate", "[Angle] - Rotate the clipboard");
@@ -627,9 +627,17 @@ public class WorldEditListener extends PluginListener {
                 session.setTool(WorldEditSession.Tool.NONE);
                 player.print("No tool equipped. -3 XP, +10 Manliness");
             } else if (split[1].equalsIgnoreCase("tree")) {
+                if (!canUseCommand(player, "/treetool")) {
+                    player.printError("You do not have the /treetool permission.");
+                    return true;
+                }
                 session.setTool(WorldEditSession.Tool.TREE);
                 player.print("Tree planting tool equipped. +5 XP");
             } else if (split[1].equalsIgnoreCase("info")) {
+                if (!canUseCommand(player, "/infotool")) {
+                    player.printError("You do not have the /infotool permission.");
+                    return true;
+                }
                 session.setTool(WorldEditSession.Tool.INFO);
                 player.print("Block information tool equipped.");
             } else {
@@ -1955,6 +1963,17 @@ public class WorldEditListener extends PluginListener {
         
         return player.canUseCommand(command.replace("air", ""))
                 || player.canUseCommand("/worldedit");
+    }
+
+    /**
+     * Checks to see if the player can use a command or /worldedit.
+     *
+     * @param player
+     * @param command
+     * @return
+     */
+    private boolean canUseCommand(WorldEditPlayer player, String command) {
+        return canUseCommand(player.getPlayerObject(), command);
     }
 
     /**

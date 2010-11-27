@@ -289,7 +289,7 @@ public class WorldEditPlayer {
      * @return point
      */
     public Vector getBlockIn() {
-        return Vector.toBlockPoint(player.getX(), player.getY(), player.getZ());
+        return Vector.toBlockPoint(getPlayer().getX(), getPlayer().getY(), getPlayer().getZ());
     }
 
     /**
@@ -298,7 +298,7 @@ public class WorldEditPlayer {
      * @return point
      */
     public Vector getBlockOn() {
-        return Vector.toBlockPoint(player.getX(), player.getY() - 1, player.getZ());
+        return Vector.toBlockPoint(getPlayer().getX(), getPlayer().getY() - 1, getPlayer().getZ());
     }
 
     /**
@@ -308,7 +308,7 @@ public class WorldEditPlayer {
      * @return point
      */
     public Vector getBlockTrace(int range) {
-        HitBlox hitBlox = new HitBlox(player, range, 0.2);
+        HitBlox hitBlox = new HitBlox(getPlayer(),range, 0.2);
         Block block = hitBlox.getTargetBlock();
         if (block == null) {
             return null;
@@ -323,7 +323,7 @@ public class WorldEditPlayer {
      * @return point
      */
     public Vector getSolidBlockTrace(int range) {
-        HitBlox hitBlox = new HitBlox(player, range, 0.2);
+        HitBlox hitBlox = new HitBlox(getPlayer(),range, 0.2);
         Block block = null;
 
         while (hitBlox.getNextBlock() != null
@@ -362,7 +362,7 @@ public class WorldEditPlayer {
      * @return
      */
     public int getItemInHand() {
-        return player.getItemInHand();
+        return getPlayer().getItemInHand();
     }
 
     /**
@@ -371,7 +371,7 @@ public class WorldEditPlayer {
      * @return String
      */
     public String getName() {
-        return player.getName();
+        return getPlayer().getName();
     }
 
     /**
@@ -385,7 +385,7 @@ public class WorldEditPlayer {
      * @return pitch
      */
     public double getPitch() {
-        return player.getPitch();
+        return getPlayer().getPitch();
     }
 
     /**
@@ -394,7 +394,7 @@ public class WorldEditPlayer {
      * @return point
      */
     public Vector getPosition() {
-        return new Vector(player.getX(), player.getY(), player.getZ());
+        return new Vector(getPlayer().getX(), getPlayer().getY(), getPlayer().getZ());
     }
 
     /**
@@ -408,7 +408,7 @@ public class WorldEditPlayer {
      * @return yaw
      */
     public double getYaw() {
-        return player.getRotation();
+        return getPlayer().getRotation();
     }
 
     /**
@@ -424,7 +424,7 @@ public class WorldEditPlayer {
      * @param amt
      */
     public void giveItem(int type, int amt) {
-        player.giveItem(type, amt);
+        getPlayer().giveItem(type, amt);
     }
 
     /**
@@ -436,7 +436,7 @@ public class WorldEditPlayer {
     public boolean passThroughForwardWall(int range) {
         boolean foundNext = false;
         int searchDist = 0;
-        HitBlox hitBlox = new HitBlox(player, range, 0.2);
+        HitBlox hitBlox = new HitBlox(getPlayer(),range, 0.2);
         Block block;
         while ((block = hitBlox.getNextBlock()) != null) {
             searchDist++;
@@ -464,7 +464,7 @@ public class WorldEditPlayer {
      * @param msg
      */
     public void printRaw(String msg) {
-        player.sendMessage(msg);
+        getPlayer().sendMessage(msg);
     }
 
     /**
@@ -473,7 +473,7 @@ public class WorldEditPlayer {
      * @param msg
      */
     public void print(String msg) {
-        player.sendMessage(Colors.LightPurple + msg);
+        getPlayer().sendMessage(Colors.LightPurple + msg);
     }
 
     /**
@@ -482,7 +482,7 @@ public class WorldEditPlayer {
      * @param msg
      */
     public void printError(String msg) {
-        player.sendMessage(Colors.Rose + msg);
+        getPlayer().sendMessage(Colors.Rose + msg);
     }
 
     /**
@@ -499,7 +499,7 @@ public class WorldEditPlayer {
         loc.z = pos.getZ();
         loc.rotX = (float) yaw;
         loc.rotY = (float) pitch;
-        player.teleportTo(loc);
+        getPlayer().teleportTo(loc);
     }
 
     /**
@@ -508,6 +508,13 @@ public class WorldEditPlayer {
      * @return
      */
     public String[] getGroups() {
-        return player.getGroups();
+        return getPlayer().getGroups();
+    }
+
+    /**
+     * @return the player
+     */
+    public Player getPlayerObject() {
+        return player;
     }
 }
