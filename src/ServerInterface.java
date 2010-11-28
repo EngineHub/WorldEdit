@@ -221,9 +221,16 @@ public class ServerInterface {
      * @param mobType
      */
     public static void setMobSpawnerType(Vector pt, String mobType) {
-        Block block = etc.getServer().getBlockAt(
+        ComplexBlock cblock = etc.getServer().getComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        block.setSpawnData(mobType);
+
+        if (!(cblock instanceof MobSpawner)) {
+            return;
+        }
+
+        MobSpawner mobSpawner = (MobSpawner)cblock;
+        mobSpawner.setSpawn(mobType);
+        mobSpawner.update();
     }
 
     /**
