@@ -1,3 +1,6 @@
+2.3.1:
+- Updated for b129+ and v0.2.6_02.
+
 2.3:
 - Blocks should now be set and removed correctly so that they don't
     drop items.
