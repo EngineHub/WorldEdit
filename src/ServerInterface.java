@@ -20,12 +20,9 @@
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseItem;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Random;
-import java.lang.reflect.*;
-import sun.reflect.ReflectionFactory;
 
 /**
  *
@@ -40,10 +37,6 @@ public class ServerInterface {
      * Random generator.
      */
     private static Random random = new Random();
-    /**
-     * Proxy for the tree generator.
-     */
-    private static MinecraftSetBlockProxy proxy;
     
     /**
      * Set block type.
@@ -258,20 +251,13 @@ public class ServerInterface {
      * @return
      */
     public static boolean generateTree(EditSession editSession, Vector pt) {
-        if (proxy == null) {
-            try {
-                proxy = createNoConstructor(MinecraftSetBlockProxy.class);
-            } catch (Throwable t) {
-                logger.log(Level.WARNING, "setBlock() proxy class failed to construct",
-                        t);
-                return false;
-            }
+        try {
+            return MinecraftServerInterface.generateTree(editSession, pt);
+        } catch (Throwable t) {
+            logger.severe("Failed to create tree (do you need to update WorldEdit due to a Minecraft update?): "
+                    + t.getMessage());
+            return false;
         }
-        proxy.setEditSession(editSession);
-
-        bj treeGen = new hc();
-        return treeGen.a(proxy, random,
-                pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
     }
 
     /**
@@ -359,27 +345,6 @@ public class ServerInterface {
         else if (type == 89) { dropItem(pt, 348); } // Lightstone
         else if (type != 0) {
             dropItem(pt, type);
-        }
-    }
-
-    /**
-     * Instantiate a class without calling its constructor.
-     *
-     * @param <T>
-     * @param clazz
-     * @return
-     * @throws Throwable
-     */
-    private static <T> T createNoConstructor(Class<T> clazz) throws Throwable {
-        try {
-            ReflectionFactory factory = ReflectionFactory.getReflectionFactory();
-            Constructor objectConstructor = Object.class.getDeclaredConstructor();
-            Constructor c = factory.newConstructorForSerialization(
-                clazz, objectConstructor
-            );
-            return clazz.cast(c.newInstance());
-        } catch (Throwable e) {
-            throw e;
         }
     }
 }
