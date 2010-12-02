@@ -49,22 +49,22 @@ public class EditSession {
      * Stores the original blocks before modification.
      */
     private DoubleArrayList<BlockVector,BaseBlock> original =
-            new DoubleArrayList<BlockVector,BaseBlock>();
+            new DoubleArrayList<BlockVector,BaseBlock>(true);
     /**
      * Stores the current blocks.
      */
     private DoubleArrayList<BlockVector,BaseBlock> current =
-            new DoubleArrayList<BlockVector,BaseBlock>();
+            new DoubleArrayList<BlockVector,BaseBlock>(false);
     /**
      * Blocks that should be placed before last.
      */
     private DoubleArrayList<BlockVector,BaseBlock> queueAfter =
-            new DoubleArrayList<BlockVector,BaseBlock>();
+            new DoubleArrayList<BlockVector,BaseBlock>(false);
     /**
      * Blocks that should be placed last.
      */
     private DoubleArrayList<BlockVector,BaseBlock> queueLast =
-            new DoubleArrayList<BlockVector,BaseBlock>();
+            new DoubleArrayList<BlockVector,BaseBlock>(false);
     /**
      * The maximum number of blocks to change at a time. If this number is
      * exceeded, a MaxChangedBlocksException exception will be

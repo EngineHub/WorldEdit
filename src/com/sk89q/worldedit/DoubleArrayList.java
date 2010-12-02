@@ -40,6 +40,19 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
      * Second list.
      */
     private List<B> listB = new ArrayList<B>();
+    /**
+     * Is reversed when iterating.
+     */
+    private boolean isReversed = false;
+
+    /**
+     * Construct the object.
+     * 
+     * @param isReversed
+     */
+    public DoubleArrayList(boolean isReversed) {
+        this.isReversed = isReversed;
+    }
 
     /**
      * Add an item.
@@ -74,9 +87,43 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
      * @return
      */
     public Iterator<Map.Entry<A,B>> iterator() {
-        return new EntryIterator<Map.Entry<A,B>>(
-                listA.listIterator(listA.size()),
-                listB.listIterator(listB.size()));
+        if (isReversed) {
+            return new ReverseEntryIterator<Map.Entry<A,B>>(
+                    listA.listIterator(listA.size()),
+                    listB.listIterator(listB.size()));
+        } else {
+            return new ForwardEntryIterator<Map.Entry<A,B>>(
+                    listA.iterator(),
+                    listB.iterator());
+        }
+    }
+
+    /**
+     * Entry iterator.
+     *
+     * @param <A>
+     * @param <B>
+     */
+    public class ForwardEntryIterator<T extends Map.Entry> implements Iterator<Map.Entry<A,B>> {
+        private Iterator<A> keyIterator;
+        private Iterator<B> valueIterator;
+
+        public ForwardEntryIterator(Iterator<A> keyIterator, Iterator<B> valueIterator) {
+            this.keyIterator = keyIterator;
+            this.valueIterator = valueIterator;
+        }
+
+        public boolean hasNext() {
+            return keyIterator.hasNext();
+        }
+
+        public Map.Entry<A,B> next() throws NoSuchElementException {
+            return new Entry<A,B>(keyIterator.next(), valueIterator.next());
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**
@@ -85,11 +132,11 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
      * @param <A>
      * @param <B>
      */
-    public class EntryIterator<T extends Map.Entry> implements Iterator<Map.Entry<A,B>> {
+    public class ReverseEntryIterator<T extends Map.Entry> implements Iterator<Map.Entry<A,B>> {
         private ListIterator<A> keyIterator;
         private ListIterator<B> valueIterator;
 
-        public EntryIterator(ListIterator<A> keyIterator, ListIterator<B> valueIterator) {
+        public ReverseEntryIterator(ListIterator<A> keyIterator, ListIterator<B> valueIterator) {
             this.keyIterator = keyIterator;
             this.valueIterator = valueIterator;
         }
