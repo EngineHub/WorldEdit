@@ -1,3 +1,7 @@
+2.3.2:
+- Fixed the history/queue array lists being iterated in the wrong direction.
+    //move should be fixed as a result.
+
 2.3.1:
 - Updated for b129+ and v0.2.6_02.
 
