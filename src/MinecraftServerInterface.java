@@ -60,7 +60,7 @@ public class MinecraftServerInterface {
         }
         proxy.setEditSession(editSession);
 
-        bj treeGen = new hd();
+        bj treeGen = new he();
         return treeGen.a(proxy, random,
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
     }
