@@ -1,3 +1,10 @@
+2.3.3
+- Updated for beta.
+- Fixed error caused by not specifying a mob spawner type when using mob
+    spawner blocks.
+- Improved version detection to be more reliable.
+- Fixed incorrect item drops for the super pickaxe.
+
 2.3.2:
 - Fixed the history/queue array lists being iterated in the wrong direction.
     //move should be fixed as a result.
