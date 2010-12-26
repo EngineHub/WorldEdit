@@ -1,0 +1,90 @@
+<project name="WorldEdit" default="dist" basedir=".">
+  <description>WorldEdit allows for editing the Minecraft SMP world
+    en-masse, de-griefing, and fixing issues.</description>
+  
+  <property name="src.dir" location="src"/>
+  <property name="build.dir" location="build"/>
+  <property name="dist.dir" location="dist"/>
+  <property name="release.dir" location="release"/>
+  <property name="lib.dir" location="lib"/>
+
+  <target name="init">
+    <mkdir dir="${build.dir}"/>
+  </target>
+
+  <!-- Compile the source files -->
+  <target name="compile" depends="init">
+    <javac srcdir="${src.dir}" deprecation="true" includeantruntime="true" destdir="${build.dir}" debug="true">
+      <classpath>
+        <fileset dir="${lib.dir}">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
+  </target>
+
+  <!-- Build the .jar -->
+  <target name="jar" depends="compile">
+    <mkdir dir="${dist.dir}"/>
+    <manifest file="manifest.mf" mode="replace">
+      <attribute name="Implementation-Title" value="WorldEdit"/>
+      <attribute name="Implementation-Version" value="${version}"/>
+      <attribute name="WorldEdit-Version" value="${version}"/>
+      <attribute name="Class-Path" value="jnbt.jar truezip.jar"/>
+    </manifest>
+    <jar jarfile="${dist.dir}/WorldEdit.jar" basedir="${build.dir}" manifest="manifest.mf"/>
+  </target>
+
+  <!-- Create the .jar -->
+  <target name="dist">
+    <property name="version" value="nightly"/>
+    <antcall target="jar"/>
+  </target>
+
+  <!-- Build a release -->
+  <target name="release">
+    <input message="Enter version:" addproperty="version"/>
+    <antcall target="jar"/>
+    <delete dir="${release.dir}"/>
+    <mkdir dir="${release.dir}"/>
+    <copy todir="${release.dir}">
+      <fileset dir="."/>
+      <globmapper from="*.txt" to="*.txt"/>
+    </copy>
+    <copy tofile="${release.dir}/WorldEdit.jar" file="${dist.dir}/WorldEdit.jar"/>
+    <copy todir="${release.dir}">
+      <fileset dir="lib">
+        <include name="jnbt.jar"/>
+      </fileset>
+    </copy>
+    <zip destfile="${release.dir}/worldedit-${version}.zip" basedir="${release.dir}" excludes="*.zip"/>
+    <mkdir dir="${release.dir}/src"/>
+    <copy todir="${release.dir}/src">
+      <fileset dir="${src.dir}"/>
+    </copy>
+    <zip destfile="${release.dir}/worldedit-${version}-source.zip" basedir="${release.dir}" excludes="*.zip"/>
+  </target>
+
+  <!-- Clean the output -->
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+    <delete dir="${release.dir}"/>
+  </target>
+  
+  <!--<target name="-get-version-git" if="git-revision">
+    <sequential>
+      <exec executable="git" failifexecutionfails="false" outputproperty="git-revision">
+        <arg value="rev-parse"/>
+        <arg value="HEAD"/>
+      </exec>
+      <exec executable="git" outputproperty="git-revision-dirty">
+        <arg value="diff"/>
+        <arg value="- -shortstat"/>
+      </exec>
+      <condition else="dev-${git-revision}-modified" property="version" value="dev-${git-revision}">
+        <equals arg1="" arg2="${git-revision-dirty}"/>
+      </condition>
+    </sequential>
+  </target>-->
+</project>
