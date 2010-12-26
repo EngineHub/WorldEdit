@@ -233,15 +233,13 @@ public class ServerInterface {
      * @param mobType
      */
     public static String getMobSpawnerType(Vector pt) {
-        ay o = etc.getMCServer().e.k(
-                pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        
-        if (o != null && o instanceof cf) {
-            String type = ((cf)o).f;
-            return type != null ? type : "";
+        try {
+            return MinecraftServerInterface.getMobSpawnerType(pt);
+        } catch (Throwable t) {
+            logger.severe("Failed to get mob spawner type (do you need to update WorldEdit due to a Minecraft update?): "
+                    + t.getMessage());
+            return "";
         }
-
-        return "";
     }
 
     /**

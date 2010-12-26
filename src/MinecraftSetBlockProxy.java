@@ -26,7 +26,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
  *
  * @author sk89q
  */
-public class MinecraftSetBlockProxy extends eq {
+public class MinecraftSetBlockProxy extends ff {
     /**
      * Edit session.
      */

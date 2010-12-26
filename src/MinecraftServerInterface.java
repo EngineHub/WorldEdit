@@ -60,9 +60,27 @@ public class MinecraftServerInterface {
         }
         proxy.setEditSession(editSession);
 
-        bj treeGen = new he();
+        bt treeGen = new ib();
         return treeGen.a(proxy, random,
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+    }
+
+    /**
+     * Get mob spawner mob type. May return an empty string.
+     *
+     * @param pt
+     * @param mobType
+     */
+    public static String getMobSpawnerType(Vector pt) {
+        bg o = etc.getMCServer().e.l(
+                pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        
+        if (o != null && o instanceof cq) {
+            String type = ((cq)o).f;
+            return type != null ? type : "";
+        }
+
+        return "";
     }
 
     /**
