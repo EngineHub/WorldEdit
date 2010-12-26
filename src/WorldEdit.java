@@ -38,6 +38,12 @@ public class WorldEdit extends Plugin {
      * WorldEditLibrary instance.
      */
     private static final WorldEditListener listener = new WorldEditListener();
+    
+    /**
+     * WorldEdit version, fetched from the .jar's manifest. Used to print the
+     * WorldEdit version in various places.
+     */
+    private String version;
 
     /**
      * Initializes the plugin.
@@ -81,22 +87,32 @@ public class WorldEdit extends Plugin {
     }
 
     /**
-     * Get the WorldEdit version.
-     * 
+     * Get the CraftBook version.
+     *
      * @return
      */
-    private String getVersion() {
-        try {
-            String classContainer = WorldEdit.class.getProtectionDomain()
-                    .getCodeSource().getLocation().toString();
-            URL manifestUrl = new URL("jar:" + classContainer + "!/META-INF/MANIFEST.MF");
-            Manifest manifest = new Manifest(manifestUrl.openStream());
-            Attributes attrib = manifest.getMainAttributes();
-            String ver = (String)attrib.getValue("WorldEdit-Version");
-            return ver != null ? ver : "(unavailable)";
-        } catch (IOException e) {
-            return "(unknown)";
+    public String getVersion() {
+        if (version != null) {
+            return version;
         }
+        
+        Package p = WorldEdit.class.getPackage();
+        
+        if (p == null) {
+            p = Package.getPackage("com.sk89q.worldedit");
+        }
+        
+        if (p == null) {
+            version = "(unknown)";
+        } else {
+            version = p.getImplementationVersion();
+            
+            if (version == null) {
+                version = "(unknown)";
+            }
+        }
+
+        return version;
     }
 
     /**
