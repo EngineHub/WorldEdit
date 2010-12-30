@@ -19,6 +19,8 @@
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseItem;
+import com.sk89q.worldedit.blocks.BlockType;
+
 import java.util.logging.Logger;
 import java.util.Map;
 import java.util.HashMap;
@@ -126,28 +128,34 @@ public class ServerInterface {
     }
 
     /**
-     * Gets the contents of chests.
+     * Gets the contents of chests. Will return null if the chest does not
+     * really exist or it is the second block for a double chest.
      *
      * @param pt
      * @return
      */
     public static Map<Byte,Countable<BaseItem>> getChestContents(Vector pt) {
-        ComplexBlock cblock = etc.getServer().getComplexBlock(
+        ComplexBlock cblock = etc.getServer().getOnlyComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 
-        if (!(cblock instanceof Chest)) {
+        Map<Byte,Countable<BaseItem>> items;
+        Item[] nativeItems;
+
+        if (cblock instanceof Chest) {
+            Chest chest = (Chest)cblock;
+            nativeItems = chest.getContents();
+        } else {
             return null;
         }
 
-        Chest chest = (Chest)cblock;
-        Map<Byte,Countable<BaseItem>> items =
-                new HashMap<Byte,Countable<BaseItem>>();
+        items = new HashMap<Byte,Countable<BaseItem>>();
 
-        for (byte i = 0; i <= 26; i++) {
-            Item item = chest.getItemFromSlot(i);
+        for (byte i = 0; i < nativeItems.length; i++) {
+            Item item = nativeItems[i];
             if (item != null) {
-                items.put(i, new Countable<BaseItem>(new BaseItem((short)item.getItemId()),
-                        item.getAmount()));
+                items.put(i, 
+                        new Countable<BaseItem>(
+                            new BaseItem((short)item.getItemId()), item.getAmount()));
             }
         }
 
@@ -158,23 +166,29 @@ public class ServerInterface {
      * Sets a chest slot.
      *
      * @param pt
-     * @param slot
-     * @param item
-     * @param amount
+     * @param contents
      * @return
      */
-    public static boolean setChestSlot(Vector pt, byte slot, BaseItem item, int amount) {
-        ComplexBlock cblock = etc.getServer().getComplexBlock(
+    public static boolean setChestContents(Vector pt,
+            Map<Byte,Countable<BaseItem>> contents) {
+        
+        ComplexBlock cblock = etc.getServer().getOnlyComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 
-        if (!(cblock instanceof Chest)) {
-            return false;
+        if (cblock instanceof Chest) {
+            Chest chest = (Chest)cblock;
+            Item[] nativeItems = new Item[contents.size()];
+            
+            for (Map.Entry<Byte,Countable<BaseItem>> entry : contents.entrySet()) {
+                nativeItems[entry.getKey()] =
+                        new Item(entry.getValue().getID().getID(),
+                            entry.getValue().getAmount());
+            }
+            
+            setContents(chest, nativeItems);
         }
 
-        Chest chest = (Chest)cblock;
-        chest.addItem(new Item(item.getID(), amount, slot));
-        chest.update();
-        return true;
+        return false;
     }
 
     /**
@@ -183,18 +197,36 @@ public class ServerInterface {
      * @param pt
      */
     public static boolean clearChest(Vector pt) {
-        ComplexBlock cblock = etc.getServer().getComplexBlock(
+        ComplexBlock cblock = etc.getServer().getOnlyComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 
-        if (!(cblock instanceof Chest)) {
-            return false;
+        if (cblock instanceof Chest) {
+            Chest chest = (Chest)cblock;
+            chest.clearContents();
+            chest.update();
+            return true;
         }
 
-        Chest chest = (Chest)cblock;
-        chest.clearContents();
-        chest.update();
 
-        return true;
+        return false;
+    }
+    
+    /**
+     * Set the contents of an ItemArray.
+     * 
+     * @param itemArray
+     * @param contents
+     */
+    private static void setContents(ItemArray<?> itemArray, Item[] contents) {
+        int size = contents.length;
+
+        for (int i = 0; i < size; i++) {
+            if (contents[i] == null) {
+                itemArray.removeItem(i);
+            } else {
+                itemArray.setSlot(contents[i], i);
+            }
+        }
     }
 
     /**

@@ -123,17 +123,7 @@ public class EditSession {
             // Chests
             } else if (block instanceof ChestBlock) {
                 ChestBlock chestBlock = (ChestBlock)block;
-                BaseItem blankItem = new BaseItem((short)1);
-                Map<Byte,Countable<BaseItem>> items = chestBlock.getItems();
-                for (byte i = 0; i <= 26; i++) {
-                    Countable<BaseItem> item = items.get(i);
-                    if (item != null) {
-                        ServerInterface.setChestSlot(pt, i, item.getID(),
-                                item.getAmount());
-                    } else {
-                        ServerInterface.setChestSlot(pt, i, blankItem, 0);
-                    }
-                }
+                ServerInterface.setChestContents(pt, chestBlock.getItems());
             // Mob spawners
             } else if (block instanceof MobSpawnerBlock) {
                 MobSpawnerBlock mobSpawnerblock = (MobSpawnerBlock)block;
@@ -248,7 +238,8 @@ public class EditSession {
             return new SignBlock(type, data, text);
         // Chest
         } else if (type == 54) {
-            Map<Byte,Countable<BaseItem>> items = ServerInterface.getChestContents(pt);
+            Map<Byte,Countable<BaseItem>> items =
+                ServerInterface.getChestContents(pt);
             return new ChestBlock(data, items);
         // Mob spawner
         } else if (type == 52) {
