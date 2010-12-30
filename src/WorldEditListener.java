@@ -92,6 +92,7 @@ public class WorldEditListener extends PluginListener {
     private int wandItem = 271;
     private boolean superPickaxeDrop = true;
     private boolean superPickaxeManyDrop = true;
+    private boolean noDoubleSlash = false;
 
     /**
      * Construct an instance of the plugin.
@@ -1967,8 +1968,15 @@ public class WorldEditListener extends PluginListener {
             if (split[0].equals("/,")) {
                 split[0] = "//";
             }
+            
+            String searchCmd = split[0].toLowerCase();
 
-            if (commands.containsKey(split[0].toLowerCase())) {
+            if (commands.containsKey(searchCmd)
+                    || (noDoubleSlash && commands.containsKey("/" + searchCmd))) {
+                if (noDoubleSlash && commands.containsKey("/" + searchCmd)) {
+                    split[0] = "/" + split[0];
+                }
+                
                 if (canUseCommand(ply, split[0])) {
                     WorldEditPlayer player = new WorldEditPlayer(ply);
                     WorldEditSession session = getSession(player);
@@ -2082,6 +2090,7 @@ public class WorldEditListener extends PluginListener {
         logComands = properties.getBoolean("log-commands", false);
         superPickaxeDrop = properties.getBoolean("super-pickaxe-drop-items", true);
         superPickaxeManyDrop = properties.getBoolean("super-pickaxe-many-drop-items", false);
+        noDoubleSlash = properties.getBoolean("no-double-slash", false);
         
         // Get allowed blocks
         allowedBlocks = new HashSet<Integer>();
