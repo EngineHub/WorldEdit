@@ -1617,10 +1617,6 @@ public class WorldEditListener extends PluginListener {
     public CuboidClipboard.FlipDirection getFlipDirection(
             WorldEditPlayer player, String dir)
             throws UnknownDirectionException {
-        int xm = 0;
-        int ym = 0;
-        int zm = 0;
-
         if (dir.equals("me")) {
             dir = player.getCardinalDirection();
         }
@@ -1728,6 +1724,7 @@ public class WorldEditListener extends PluginListener {
      * @return false if you want the action to go through
      */
     @Override
+    @SuppressWarnings("deprecation")
     public boolean onBlockCreate(Player modPlayer, Block blockPlaced,
             Block blockClicked, int itemInHand) {
         WorldEditPlayer player = new WorldEditPlayer(modPlayer);
@@ -1898,9 +1895,6 @@ public class WorldEditListener extends PluginListener {
                         WorldEditSession.SuperPickaxeMode.SAME_TYPE_RECURSIVE) {
                     Vector origin = new Vector(blockClicked.getX(),
                             blockClicked.getY(), blockClicked.getZ());
-                    int ox = blockClicked.getX();
-                    int oy = blockClicked.getY();
-                    int oz = blockClicked.getZ();
                     int size = session.getSuperPickaxeRange();
                     int initialType = ServerInterface.getBlockType(origin);
 

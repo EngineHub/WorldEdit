@@ -26,6 +26,8 @@ import com.sk89q.worldedit.Vector2D;
  * @author sk89q
  */
 public class MissingChunkException extends ChunkStoreException {
+    private static final long serialVersionUID = 8013715483709973489L;
+    
     private Vector2D pos;
 
     public MissingChunkException() {

@@ -22,7 +22,6 @@ package com.sk89q.worldedit.data;
 import de.schlichtherle.io.*;
 import de.schlichtherle.io.File;
 import de.schlichtherle.io.FileInputStream;
-import de.schlichtherle.io.FileOutputStream;
 import java.io.*;
 
 /**
@@ -150,7 +149,7 @@ public class TrueZipAlphaChunkStore extends NestedFileChunkStore {
     @Override
     public void close() throws IOException {
         try {
-            path.umount();
+            File.umount(new File(path));
         } catch (ArchiveException e) {
             throw new IOException(e);
         }

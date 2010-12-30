@@ -24,6 +24,8 @@ package com.sk89q.worldedit;
  * @author sk89q
  */
 public class UnknownDirectionException extends WorldEditException {
+    private static final long serialVersionUID = 5705931351293248358L;
+    
     private String dir;
     
     public UnknownDirectionException(String dir) {

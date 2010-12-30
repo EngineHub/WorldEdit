@@ -22,8 +22,9 @@ package com.sk89q.worldedit;
 /**
  * Raised when WorldEdit is not installed.
  *
- * @author Albert
+ * @author sk89q
  */
 public class WorldEditNotInstalled extends WorldEditException {
+    private static final long serialVersionUID = -4698408698930848121L;
 
 }

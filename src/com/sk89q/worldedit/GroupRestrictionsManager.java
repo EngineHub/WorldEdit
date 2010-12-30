@@ -7,7 +7,6 @@ package com.sk89q.worldedit;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.*;
 
@@ -109,7 +108,7 @@ public class GroupRestrictionsManager {
                     int changeLimit = parts.length > 1 ? Integer.parseInt(parts[1]) : -1;
                     changeLimits.put(groupID, changeLimit);
                 } catch (NumberFormatException e) {
-                    logger.log(Level.ALL.WARNING, "Integer expected in"
+                    logger.warning("Integer expected in"
                             + "WorldEdit group permissions line: " + line);
                 }
             }

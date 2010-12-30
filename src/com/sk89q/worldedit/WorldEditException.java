@@ -21,9 +21,11 @@ package com.sk89q.worldedit;
 
 /**
  *
- * @author Albert
+ * @author sk89q
  */
 public abstract class WorldEditException extends Exception {
+    private static final long serialVersionUID = 3201997990797993987L;
+
     protected WorldEditException() {
     }
 

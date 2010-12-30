@@ -91,6 +91,7 @@ public class MinecraftServerInterface {
      * @return
      * @throws Throwable
      */
+    @SuppressWarnings("rawtypes")
     private static <T> T createNoConstructor(Class<T> clazz) throws Throwable {
         try {
             ReflectionFactory factory = ReflectionFactory.getReflectionFactory();

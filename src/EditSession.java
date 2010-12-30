@@ -20,9 +20,7 @@
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.regions.*;
 import com.sk89q.worldedit.blocks.*;
-import com.sk89q.worldedit.data.*;
 import com.sk89q.worldedit.patterns.*;
-import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -80,10 +78,6 @@ public class EditSession {
      * Random number generator.
      */
     private static Random prng = new Random();
-    /**
-     * Total number of blocks set over time.
-     */
-    private int blockIndex = 0;
 
     /**
      * Construct the object with a maximum number of blocks.
@@ -228,9 +222,9 @@ public class EditSession {
         // In the case of the queue, the block may have not actually been
         // changed yet
         if (queued) {
-            BlockVector blockPt = pt.toBlockVector();
+            /*BlockVector blockPt = pt.toBlockVector();
 
-            /*if (current.containsKey(blockPt)) {
+            if (current.containsKey(blockPt)) {
                 return current.get(blockPt);
             }*/
         }
@@ -1088,10 +1082,6 @@ public class EditSession {
 
         Vector newMin = min.add(shift);
         Vector newMax = min.add(shift);
-        
-        int xs = region.getWidth();
-        int ys = region.getHeight();
-        int zs = region.getLength();
 
         Map<Vector,BaseBlock> delayed = new LinkedHashMap<Vector,BaseBlock>();
 
@@ -1737,8 +1727,6 @@ public class EditSession {
         // Move up
         basePos = basePos.add(0, trunkHeight, 0);
 
-        int pos2[] = {-2, 2};
-
         // Create tree + leaves
         for (int i = 0; i < height; i++) {
             setBlockIfAir(basePos.add(0, i, 0), logBlock);
@@ -1828,7 +1816,8 @@ public class EditSession {
     public List<Countable<Integer>> getBlockDistribution(Region region) {
         List<Countable<Integer>> distribution
                 = new ArrayList<Countable<Integer>>();
-        Map<Integer,Countable> map = new HashMap<Integer,Countable>();
+        Map<Integer,Countable<Integer>> map =
+                new HashMap<Integer,Countable<Integer>>();
 
         if (region instanceof CuboidRegion) {
             // Doing this for speed

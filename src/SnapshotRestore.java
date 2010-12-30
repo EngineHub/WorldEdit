@@ -171,7 +171,7 @@ public class SnapshotRestore {
      *
      * @return
      */
-    public List getMissingChunks() {
+    public List<Vector2D> getMissingChunks() {
         return missingChunks;
     }
 
@@ -181,7 +181,7 @@ public class SnapshotRestore {
      *
      * @return
      */
-    public List getErrorChunks() {
+    public List<Vector2D> getErrorChunks() {
         return errorChunks;
     }
 

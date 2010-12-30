@@ -236,7 +236,8 @@ public class Chunk {
      * @return child tag
      * @throws InvalidFormatException
      */
-    public static Tag getChildTag(Map<String,Tag> items, String key, Class expected)
+    public static Tag getChildTag(Map<String,Tag> items, String key,
+            Class<? extends Tag> expected)
             throws InvalidFormatException {
         if (!items.containsKey(key)) {
             throw new InvalidFormatException("Missing a \"" + key + "\" tag");

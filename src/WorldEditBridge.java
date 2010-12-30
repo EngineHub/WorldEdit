@@ -41,7 +41,7 @@ public class WorldEditBridge {
      * @throws NoSuchMethodException
      */
     private static Object invokeMethod(Object obj, String name, Object[] args,
-            Class ... types) throws InvocationTargetException, IllegalAccessException,
+            Class<?> ... types) throws InvocationTargetException, IllegalAccessException,
             NoSuchMethodException {
         Method method = obj.getClass().getDeclaredMethod(name, types);
         return method.invoke(obj, args);

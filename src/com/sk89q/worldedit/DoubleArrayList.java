@@ -104,7 +104,9 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
      * @param <A>
      * @param <B>
      */
-    public class ForwardEntryIterator<T extends Map.Entry> implements Iterator<Map.Entry<A,B>> {
+    public class ForwardEntryIterator<T extends Map.Entry<A,B>>
+            implements Iterator<Map.Entry<A,B>> {
+        
         private Iterator<A> keyIterator;
         private Iterator<B> valueIterator;
 
@@ -132,7 +134,9 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
      * @param <A>
      * @param <B>
      */
-    public class ReverseEntryIterator<T extends Map.Entry> implements Iterator<Map.Entry<A,B>> {
+    public class ReverseEntryIterator<T extends Map.Entry<A,B>>
+            implements Iterator<Map.Entry<A,B>> {
+        
         private ListIterator<A> keyIterator;
         private ListIterator<B> valueIterator;
 
@@ -160,7 +164,7 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
      * @param <A>
      * @param <B>
      */
-    public class Entry<A,B> implements Map.Entry<A,B> {
+    public class Entry<C,D> implements Map.Entry<A,B> {
         private A key;
         private B value;
 

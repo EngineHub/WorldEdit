@@ -19,10 +19,6 @@
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.jar.Manifest;
-import java.util.jar.Attributes;
-import java.net.URL;
-import java.io.IOException;
 
 /**
  * Entry point for the plugin for hey0's mod.

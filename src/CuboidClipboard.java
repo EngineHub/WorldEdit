@@ -483,8 +483,9 @@ public class CuboidClipboard {
      * @return child tag
      * @throws DataException
      */
-    private static Tag getChildTag(Map<String,Tag> items, String key, Class expected)
-            throws DataException {
+    private static Tag getChildTag(Map<String,Tag> items, String key,
+            Class<? extends Tag> expected) throws DataException {
+        
         if (!items.containsKey(key)) {
             throw new DataException("Schematic file is missing a \"" + key + "\" tag");
         }

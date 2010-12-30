@@ -32,6 +32,7 @@ public class ZippedAlphaChunkStore extends NestedFileChunkStore {
     /**
      * ZIP file.
      */
+    @SuppressWarnings("unused")
     private File zipFile;
     /**
      * Actual ZIP.
@@ -105,7 +106,9 @@ public class ZippedAlphaChunkStore extends NestedFileChunkStore {
 
                 // So not there either...
                 if (testEntry == null) {
-                    for (Enumeration e = zip.entries(); e.hasMoreElements(); ) {
+                    for (Enumeration<? extends ZipEntry> e = zip.entries();
+                            e.hasMoreElements(); ) {
+                        
                         testEntry = (ZipEntry)e.nextElement();
 
                         // Whoo, found level.dat!
