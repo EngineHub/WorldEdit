@@ -51,6 +51,8 @@
       <fileset dir="."/>
       <globmapper from="*.txt" to="*.txt"/>
     </copy>
+    <copy tofile="${release.dir}/worldedit.updatr" file="worldedit.updatr"/>
+    <replace file="${release.dir}/worldedit.updatr" token="%version%" value="${version}"/>
     <copy tofile="${release.dir}/WorldEdit.jar" file="${dist.dir}/WorldEdit.jar"/>
     <copy todir="${release.dir}">
       <fileset dir="lib">
