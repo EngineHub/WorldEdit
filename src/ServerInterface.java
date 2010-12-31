@@ -19,8 +19,8 @@
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseItem;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockType;
-
 import java.util.logging.Logger;
 import java.util.Map;
 import java.util.HashMap;
@@ -134,11 +134,11 @@ public class ServerInterface {
      * @param pt
      * @return
      */
-    public static Map<Byte,Countable<BaseItem>> getChestContents(Vector pt) {
+    public static BaseItemStack[] getChestContents(Vector pt) {
         ComplexBlock cblock = etc.getServer().getOnlyComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 
-        Map<Byte,Countable<BaseItem>> items;
+        BaseItemStack[] items;
         Item[] nativeItems;
 
         if (cblock instanceof Chest) {
@@ -148,14 +148,14 @@ public class ServerInterface {
             return null;
         }
 
-        items = new HashMap<Byte,Countable<BaseItem>>();
+        items = new BaseItemStack[nativeItems.length];
 
         for (byte i = 0; i < nativeItems.length; i++) {
             Item item = nativeItems[i];
+            
             if (item != null) {
-                items.put(i, 
-                        new Countable<BaseItem>(
-                            new BaseItem((short)item.getItemId()), item.getAmount()));
+                items[i] = new BaseItemStack((short)item.getItemId(),
+                        item.getAmount(), (short)item.getDamage());
             }
         }
 
@@ -170,19 +170,24 @@ public class ServerInterface {
      * @return
      */
     public static boolean setChestContents(Vector pt,
-            Map<Byte,Countable<BaseItem>> contents) {
+            BaseItemStack[] contents) {
         
         ComplexBlock cblock = etc.getServer().getOnlyComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 
         if (cblock instanceof Chest) {
             Chest chest = (Chest)cblock;
-            Item[] nativeItems = new Item[contents.size()];
+            Item[] nativeItems = new Item[contents.length];
             
-            for (Map.Entry<Byte,Countable<BaseItem>> entry : contents.entrySet()) {
-                nativeItems[entry.getKey()] =
-                        new Item(entry.getValue().getID().getID(),
-                            entry.getValue().getAmount());
+            for (int i = 0; i < contents.length; i++) {
+                BaseItemStack item = contents[i];
+                
+                if (item != null) {
+                    Item nativeItem =
+                        new Item(item.getID(), item.getAmount());
+                    nativeItem.setDamage(item.getDamage());
+                    nativeItems[i] = nativeItem;
+                }
             }
             
             setContents(chest, nativeItems);
@@ -224,7 +229,8 @@ public class ServerInterface {
             if (contents[i] == null) {
                 itemArray.removeItem(i);
             } else {
-                itemArray.setSlot(contents[i], i);
+                itemArray.setSlot(contents[i].getItemId(),
+                        contents[i].getAmount(), contents[i].getDamage(), i);
             }
         }
     }

@@ -36,14 +36,14 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock {
     /**
      * Store the list of items.
      */
-    private Map<Byte,Countable<BaseItem>> items;
+    private BaseItemStack[] items;
 
     /**
      * Construct the chest block.
      */
     public ChestBlock() {
         super(54);
-        items = new HashMap<Byte,Countable<BaseItem>>();
+        items = new BaseItemStack[27];
     }
 
     /**
@@ -53,7 +53,7 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock {
      */
     public ChestBlock(int data) {
         super(54, data);
-        items = new HashMap<Byte,Countable<BaseItem>>();
+        items = new BaseItemStack[27];
     }
 
     /**
@@ -62,7 +62,7 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock {
      * @param data
      * @param items
      */
-    public ChestBlock(int data, Map<Byte,Countable<BaseItem>> items) {
+    public ChestBlock(int data, BaseItemStack[] items) {
         super(54, data);
         this.items = items;
     }
@@ -72,7 +72,7 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock {
      *
      * @return
      */
-    public Map<Byte,Countable<BaseItem>> getItems() {
+    public BaseItemStack[] getItems() {
         return items;
     }
 
@@ -81,7 +81,7 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock {
      *
      * @return
      */
-    public void setItems(Map<Byte,Countable<BaseItem>> items) {
+    public void setItems(BaseItemStack[] items) {
         this.items = items;
     }
 
@@ -103,15 +103,15 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock {
     public Map<String,Tag> toTileEntityNBT()
             throws DataException {
         List<Tag> itemsList = new ArrayList<Tag>();
-        for (Map.Entry<Byte,Countable<BaseItem>> entry : items.entrySet()) {
+        for (int i = 0; i < items.length; i++) {
+            BaseItemStack item = items[i];
             Map<String,Tag> data = new HashMap<String,Tag>();
-            CompoundTag item = new CompoundTag("Items", data);
-            BaseItem i = entry.getValue().getID();
-            data.put("id", new ShortTag("id", i.getID()));
-            data.put("Damage", new ShortTag("Damage", i.getDamage()));
-            data.put("Count", new ByteTag("Count", (byte)entry.getValue().getAmount()));
-            data.put("Slot", new ByteTag("Slot", entry.getKey()));
-            itemsList.add(item);
+            CompoundTag itemTag = new CompoundTag("Items", data);
+            data.put("id", new ShortTag("id", item.getID()));
+            data.put("Damage", new ShortTag("Damage", item.getDamage()));
+            data.put("Count", new ByteTag("Count", (byte)item.getAmount()));
+            data.put("Slot", new ByteTag("Slot", (byte)i));
+            itemsList.add(itemTag);
         }
         Map<String,Tag> values = new HashMap<String,Tag>();
         values.put("Items", new ListTag("Items", CompoundTag.class, itemsList));
@@ -130,7 +130,6 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock {
             return;
         }
 
-        Map<Byte,Countable<BaseItem>> newItems = new HashMap<Byte,Countable<BaseItem>>();
 
         Tag t = values.get("id");
         if (!(t instanceof StringTag) || !((StringTag)t).getValue().equals("Chest")) {
@@ -138,6 +137,7 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock {
         }
 
         ListTag items = (ListTag)Chunk.getChildTag(values, "Items", ListTag.class);
+        BaseItemStack[] newItems = new BaseItemStack[27];
 
         for (Tag tag : items.getValue()) {
             if (!(tag instanceof CompoundTag)) {
@@ -156,7 +156,9 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock {
             byte slot = (Byte)((ByteTag)Chunk.getChildTag(itemValues, "Slot", ByteTag.class))
                     .getValue();
 
-            newItems.put(slot, new Countable<BaseItem>(new BaseItem(id, damage), count));
+            if (slot >= 0 && slot <= 26) {
+                newItems[slot] = new BaseItemStack(id, count, damage);
+            }
         }
 
         this.items = newItems;

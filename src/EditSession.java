@@ -238,7 +238,7 @@ public class EditSession {
             return new SignBlock(type, data, text);
         // Chest
         } else if (type == 54) {
-            Map<Byte,Countable<BaseItem>> items =
+            BaseItemStack[] items =
                 ServerInterface.getChestContents(pt);
             return new ChestBlock(data, items);
         // Mob spawner
