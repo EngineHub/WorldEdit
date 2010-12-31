@@ -76,14 +76,10 @@ public class WorldEditListener extends PluginListener {
      */
     private HashMap<String,String> commands = new HashMap<String,String>();
 
-    /**
-     * Group restrictions manager.
-     */
-    private GroupRestrictionsManager restrictions = new GroupRestrictionsManager();
-
     private boolean profile;
     private HashSet<Integer> allowedBlocks;
     private int defaultChangeLimit = -1;
+    private int maxChangeLimit = -1;
     private String shellSaveType;
     private SnapshotRepository snapshotRepo;
     private int maxRadius = -1;
@@ -188,11 +184,19 @@ public class WorldEditListener extends PluginListener {
             return sessions.get(player);
         } else {
             WorldEditSession session = new WorldEditSession();
-            int changeLimit = restrictions.getGreatestChangeLimit(player.getGroups());
-            if (changeLimit == -2) {
-                changeLimit = defaultChangeLimit;
+            if (!player.getPlayerObject().canUseCommand("/worldeditnomax")
+                    && maxChangeLimit > -1) {
+                if (defaultChangeLimit < 0) {
+                    // No infinite!
+                    session.setBlockChangeLimit(maxChangeLimit);
+                } else {
+                    // Bound
+                    session.setBlockChangeLimit(
+                            Math.min(defaultChangeLimit, maxChangeLimit));
+                }
+            } else {
+                session.setBlockChangeLimit(defaultChangeLimit);
             }
-            session.setBlockChangeLimit(changeLimit);
             session.setUseInventory(useInventory
                     && (!useInventoryOverride
                             || !player.getPlayerObject().canUseCommand("/worldeditunlimited")));
@@ -595,13 +599,17 @@ public class WorldEditListener extends PluginListener {
         } else if (split[0].equalsIgnoreCase("//limit")) {
             checkArgs(split, 1, 1, split[0]);
             int limit = Math.max(-1, Integer.parseInt(split[1]));
-            int allowableMax = restrictions.getGreatestChangeLimit(player.getGroups());
-            if (allowableMax >= 0 && (limit == -1 || limit > allowableMax)) {
-                player.printError("Your maximum allowable limit is " + allowableMax + ".");
-            } else {
-                session.setBlockChangeLimit(limit);
-                player.print("Block change limit set to " + limit + ".");
+            if (!player.getPlayerObject().canUseCommand("/worldeditnomax")
+                    && maxChangeLimit > -1) {
+                if (limit > maxChangeLimit) {
+                    player.printError("Your maximum allowable limit is " + maxChangeLimit + ".");
+                    return true;
+                }
             }
+            
+            session.setBlockChangeLimit(limit);
+            player.print("Block change limit set to " + limit + ".");
+            
             return true;
 
         // Set super pick axe mode
@@ -2030,8 +2038,8 @@ public class WorldEditListener extends PluginListener {
         } catch (DisallowedItemException e4) {
             ply.sendMessage(Colors.Rose + "Block '" + e4.getID() + "' not allowed (see WorldEdit configuration).");
         } catch (MaxChangedBlocksException e5) {
-            ply.sendMessage(Colors.Rose + "The maximum number of blocks changed ("
-                    + e5.getBlockLimit() + ") in an instance was reached.");
+            ply.sendMessage(Colors.Rose + "Max blocks changed in an operation reached ("
+                    + e5.getBlockLimit() + ").");
         } catch (MaxRadiusException e) {
             ply.sendMessage(Colors.Rose + "Maximum radius: " + maxRadius);
         } catch (UnknownDirectionException ue) {
@@ -2189,15 +2197,6 @@ public class WorldEditListener extends PluginListener {
             for (Handler handler : logger.getHandlers()) {
                 logger.removeHandler(handler);
             }
-        }
-
-        try {
-            restrictions.load("worldedit-restrictions.txt");
-            logger.log(Level.INFO, "WorldEdit group restrictions loaded");
-        } catch (FileNotFoundException e) {
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Could not load WorldEdit restrictions: "
-                    + e.getMessage());
         }
     }
 
