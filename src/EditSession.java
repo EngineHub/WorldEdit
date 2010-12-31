@@ -17,10 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.regions.*;
-import com.sk89q.worldedit.blocks.*;
-import com.sk89q.worldedit.patterns.*;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -31,6 +27,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.regions.*;
+import com.sk89q.worldedit.bags.*;
+import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.patterns.*;
 
 /**
  * This class can wrap all block editing operations into one "edit session" that
@@ -43,6 +44,11 @@ import java.util.Random;
  * @author sk89q
  */
 public class EditSession {
+    /**
+     * Random number generator.
+     */
+    private static Random prng = new Random();
+    
     /**
      * Stores the original blocks before modification.
      */
@@ -75,9 +81,13 @@ public class EditSession {
      */
     private boolean queued = false;
     /**
-     * Random number generator.
+     * Block bag to use for getting blocks.
      */
-    private static Random prng = new Random();
+    private BlockBag blockBag;
+    /**
+     * List of missing blocks;
+     */
+    private Set<Integer> missingBlocks = new HashSet<Integer>();
 
     /**
      * Construct the object with a maximum number of blocks.
@@ -90,24 +100,57 @@ public class EditSession {
     }
 
     /**
+     * Construct the object with a maximum number of blocks and a block bag.
+     */
+    public EditSession(int maxBlocks, BlockBag blockBag) {
+        if (maxBlocks < -1) {
+            throw new IllegalArgumentException("Max blocks must be >= -1");
+        }
+        this.maxBlocks = maxBlocks;
+        this.blockBag = blockBag;
+    }
+
+    /**
      * Sets a block without changing history.
      * 
      * @param pt
      * @param blockType
      * @return Whether the block changed
      */
-    private static boolean rawSetBlock(Vector pt, BaseBlock block) {
+    private boolean rawSetBlock(Vector pt, BaseBlock block) {
         int y = pt.getBlockY();
         if (y < 0 || y > 127) {
             return false;
         }
 
         // Clear the chest so that it doesn't drop items
-        if (ServerInterface.getBlockType(pt) == 54) {
+        if (ServerInterface.getBlockType(pt) == 54 && blockBag == null) {
             ServerInterface.clearChest(pt);
         }
 
         int id = block.getID();
+        
+        if (blockBag != null) {
+            int existing = ServerInterface.getBlockType(pt);
+            
+            if (id > 0) {
+                try {
+                    blockBag.fetchPlacedBlock(id);
+                } catch (UnplaceableBlockException e) {
+                    return false;
+                } catch (BlockBagException e) {
+                    missingBlocks.add(id);
+                    return false;
+                }
+            }
+
+            if (existing > 0) {
+                try {
+                    blockBag.storeDroppedBlock(existing);
+                } catch (BlockBagException e) {
+                }
+            }
+        }
         
         boolean result = ServerInterface.setBlockType(pt, id);
         if (id != 0) {
@@ -121,7 +164,7 @@ public class EditSession {
                 String[] text = signBlock.getText();
                 ServerInterface.setSignText(pt, text);
             // Chests
-            } else if (block instanceof ChestBlock) {
+            } else if (block instanceof ChestBlock && blockBag == null) {
                 ChestBlock chestBlock = (ChestBlock)block;
                 ServerInterface.setChestContents(pt, chestBlock.getItems());
             // Mob spawners
@@ -337,10 +380,14 @@ public class EditSession {
             BlockVector pt = (BlockVector)entry.getKey();
             rawSetBlock(pt, (BaseBlock)entry.getValue());
         }
-        
-        for (Map.Entry<BlockVector,BaseBlock> entry : queueLast) {
-            BlockVector pt = (BlockVector)entry.getKey();
-            rawSetBlock(pt, (BaseBlock)entry.getValue());
+
+        // We don't want to place these blocks if other blocks were missing
+        // because it might cause the items to drop
+        if (blockBag == null || missingBlocks.size() == 0) {
+            for (Map.Entry<BlockVector,BaseBlock> entry : queueLast) {
+                BlockVector pt = (BlockVector)entry.getKey();
+                rawSetBlock(pt, (BaseBlock)entry.getValue());
+            }
         }
 
         queueAfter.clear();
@@ -1896,5 +1943,31 @@ public class EditSession {
             }
         }
         return minY;
+    }
+    
+    /**
+     * Gets the list of missing blocks and clears the list for the next
+     * operation.
+     * 
+     * @return
+     */
+    public Set<Integer> popMissingBlocks() {
+        Set<Integer> missingBlocks = this.missingBlocks;
+        this.missingBlocks = new HashSet<Integer>();
+        return missingBlocks;
+    }
+
+    /**
+     * @return the blockBag
+     */
+    public BlockBag getBlockBag() {
+        return blockBag;
+    }
+
+    /**
+     * @param blockBag the blockBag to set
+     */
+    public void setBlockBag(BlockBag blockBag) {
+        this.blockBag = blockBag;
     }
 }

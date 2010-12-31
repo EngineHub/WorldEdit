@@ -109,6 +109,83 @@ public enum BlockType {
     LIGHTED_PUMPKIN(91, "Pumpkin (on)", new String[]{"pumpkinlighted", "pumpkinon", "litpumpkin"});
 
     /**
+     * Stores a list of dropped blocks for blocks.
+     */
+    private static final Map<Integer,Integer> blockDrops = new HashMap<Integer,Integer>();
+
+    /**
+     * Static constructor.
+     */
+    static {
+        blockDrops.put(1, 4);
+        blockDrops.put(2, 3);
+        blockDrops.put(3, 3);
+        blockDrops.put(4, 4);
+        blockDrops.put(5, 5);
+        blockDrops.put(6, 6);
+        blockDrops.put(7, -1);
+        blockDrops.put(12, 12);
+        blockDrops.put(13, 13);
+        blockDrops.put(14, 14);
+        blockDrops.put(15, 15);
+        blockDrops.put(16, 16);
+        blockDrops.put(17, 17);
+        blockDrops.put(18, 18);
+        blockDrops.put(19, 19);
+        blockDrops.put(20, 20); // Have to drop glass for //undo
+        blockDrops.put(35, 35);
+        blockDrops.put(37, 37);
+        blockDrops.put(38, 38);
+        blockDrops.put(39, 39);
+        blockDrops.put(40, 40);
+        blockDrops.put(41, 41);
+        blockDrops.put(42, 42);
+        blockDrops.put(43, 43);
+        blockDrops.put(44, 44);
+        blockDrops.put(45, 45);
+        blockDrops.put(47, 47);
+        blockDrops.put(48, 48);
+        blockDrops.put(49, 49);
+        blockDrops.put(50, 50);
+        blockDrops.put(53, 53);
+        blockDrops.put(54, 54);
+        blockDrops.put(55, 331);
+        blockDrops.put(56, 56);
+        blockDrops.put(57, 57);
+        blockDrops.put(58, 58);
+        blockDrops.put(59, 295);
+        blockDrops.put(60, 60);
+        blockDrops.put(61, 61);
+        blockDrops.put(62, 61);
+        blockDrops.put(63, 323);
+        blockDrops.put(64, 324);
+        blockDrops.put(65, 65);
+        blockDrops.put(66, 66);
+        blockDrops.put(67, 67);
+        blockDrops.put(68, 323);
+        blockDrops.put(69, 69);
+        blockDrops.put(70, 70);
+        blockDrops.put(71, 330);
+        blockDrops.put(72, 72);
+        blockDrops.put(73, 331);
+        blockDrops.put(74, 331);
+        blockDrops.put(75, 76);
+        blockDrops.put(76, 76);
+        blockDrops.put(77, 77);
+        blockDrops.put(80, 80);
+        blockDrops.put(81, 81);
+        blockDrops.put(82, 82);
+        blockDrops.put(83, 83);
+        blockDrops.put(84, 84);
+        blockDrops.put(85, 85);
+        blockDrops.put(86, 86);
+        blockDrops.put(87, 87);
+        blockDrops.put(88, 88);
+        blockDrops.put(89, 248);
+        blockDrops.put(91, 91);
+    }
+
+    /**
      * Stores a map of the IDs for fast access.
      */
     private static final Map<Integer,BlockType> ids = new HashMap<Integer,BlockType>();
@@ -300,5 +377,21 @@ public enum BlockType {
                 || id == 76 // Redstone torch (on)
                 || id == 77 // Stone button
                 || id == 81; // Cactus
+    }
+
+    /**
+     * Get the block or item that would have been dropped. If nothing is
+     * dropped, 0 will be returned. If the block should not be destroyed
+     * (i.e. bedrock), -1 will be returned.
+     * 
+     * @param id
+     * @return
+     */
+    public static int getDroppedBlock(int id) {
+        Integer dropped = blockDrops.get(id);
+        if (dropped == null) {
+            return 0;
+        }
+        return dropped;
     }
 }

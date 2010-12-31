@@ -18,6 +18,7 @@
 */
 
 import com.sk89q.worldedit.snapshots.Snapshot;
+import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.*;
@@ -58,6 +59,7 @@ public class WorldEditSession {
     private Tool tool = Tool.NONE;
     private int superPickaxeRange = 3;
     private int maxBlocksChanged = -1;
+    private boolean useInventory;
     private Snapshot snapshot;
 
     /**
@@ -91,14 +93,16 @@ public class WorldEditSession {
      *
      * @return whether anything was undone
      */
-    public boolean undo() {
+    public EditSession undo(BlockBag newBlockBag) {
         historyPointer--;
         if (historyPointer >= 0) {
-            history.get(historyPointer).undo();
-            return true;
+            EditSession editSession = history.get(historyPointer);
+            editSession.setBlockBag(newBlockBag);
+            editSession.undo();
+            return editSession;
         } else {
             historyPointer = 0;
-            return false;
+            return null;
         }
     }
 
@@ -107,14 +111,16 @@ public class WorldEditSession {
      *
      * @return whether anything was redone
      */
-    public boolean redo() {
+    public EditSession redo(BlockBag newBlockBag) {
         if (historyPointer < history.size()) {
-            history.get(historyPointer).redo();
+            EditSession editSession = history.get(historyPointer);
+            editSession.setBlockBag(newBlockBag);
+            editSession.redo();
             historyPointer++;
-            return true;
+            return editSession;
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -336,6 +342,19 @@ public class WorldEditSession {
         placeAtPos1 = !placeAtPos1;
         return placeAtPos1;
     }
+    
+    /**
+     * Get a block bag for a player.
+     * 
+     * @param player
+     * @return
+     */
+    public BlockBag getBlockBag(WorldEditPlayer player) {
+        if (!useInventory) {
+            return null;
+        }
+        return ServerInterface.getPlayerBlockBag(player);
+    }
 
     /**
      * @return the snapshotName
@@ -391,5 +410,19 @@ public class WorldEditSession {
      */
     public void setTool(Tool tool) {
         this.tool = tool;
+    }
+
+    /**
+     * @return the useInventory
+     */
+    public boolean isUsingInventory() {
+        return useInventory;
+    }
+
+    /**
+     * @param useInventory the useInventory to set
+     */
+    public void setUseInventory(boolean useInventory) {
+        this.useInventory = useInventory;
     }
 }

@@ -29,6 +29,7 @@ import java.util.logging.Handler;
 import java.util.logging.FileHandler;
 import java.io.*;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
 import com.sk89q.worldedit.filters.*;
@@ -93,6 +94,8 @@ public class WorldEditListener extends PluginListener {
     private boolean superPickaxeDrop = true;
     private boolean superPickaxeManyDrop = true;
     private boolean noDoubleSlash = false;
+    private boolean useInventory = false;
+    private boolean useInventoryOverride = false;
 
     /**
      * Construct an instance of the plugin.
@@ -190,6 +193,9 @@ public class WorldEditListener extends PluginListener {
                 changeLimit = defaultChangeLimit;
             }
             session.setBlockChangeLimit(changeLimit);
+            session.setUseInventory(useInventory
+                    && (!useInventoryOverride
+                            || !player.getPlayerObject().canUseCommand("/worldeditunlimited")));
             sessions.put(player, session);
             return session;
         }
@@ -658,8 +664,10 @@ public class WorldEditListener extends PluginListener {
         // Undo
         } else if (split[0].equalsIgnoreCase("//undo")) {
             checkArgs(split, 0, 0, split[0]);
-            if (session.undo()) {
+            EditSession undone = session.undo(session.getBlockBag(player));
+            if (undone != null) {
                 player.print("Undo successful.");
+                flushBlockBag(player, undone);
             } else {
                 player.printError("Nothing to undo.");
             }
@@ -668,8 +676,10 @@ public class WorldEditListener extends PluginListener {
         // Redo
         } else if (split[0].equalsIgnoreCase("//redo")) {
             checkArgs(split, 0, 0, split[0]);
-            if (session.redo()) {
+            EditSession redone = session.redo(session.getBlockBag(player));
+            if (redone != null) {
                 player.print("Redo successful.");
+                flushBlockBag(player, redone);
             } else {
                 player.printError("Nothing to redo.");
             }
@@ -1967,7 +1977,7 @@ public class WorldEditListener extends PluginListener {
             // Legacy /, command
             if (split[0].equals("/,")) {
                 split[0] = "//";
-            }
+            }   
             
             String searchCmd = split[0].toLowerCase();
 
@@ -1984,8 +1994,10 @@ public class WorldEditListener extends PluginListener {
                 if (canUseCommand(ply, split[0])) {
                     WorldEditPlayer player = new WorldEditPlayer(ply);
                     WorldEditSession session = getSession(player);
+                    BlockBag blockBag = session.getBlockBag(player);
+                    
                     EditSession editSession =
-                            new EditSession(session.getBlockChangeLimit());
+                            new EditSession(session.getBlockChangeLimit(), blockBag);
                     editSession.enableQueue();
 
                     long start = System.currentTimeMillis();
@@ -2000,6 +2012,8 @@ public class WorldEditListener extends PluginListener {
                             long time = System.currentTimeMillis() - start;
                             ply.sendMessage(Colors.Yellow + (time / 1000.0) + "s elapsed");
                         }
+                        
+                        flushBlockBag(player, editSession);
                     }
                 }
             }
@@ -2035,6 +2049,48 @@ public class WorldEditListener extends PluginListener {
         }
 
         return true;
+    }
+    
+    /**
+     * Flush a block bag's changes to a player.
+     * 
+     * @param player
+     * @param blockBag
+     * @param editSession
+     */
+    private static void flushBlockBag(WorldEditPlayer player,
+            EditSession editSession) {
+        
+        BlockBag blockBag = editSession.getBlockBag();
+        
+        if (blockBag != null) {
+            blockBag.flushChanges();
+        }
+        
+        Set<Integer> missingBlocks = editSession.popMissingBlocks();
+        
+        if (missingBlocks.size() > 0) {
+            StringBuilder str = new StringBuilder();
+            str.append("Missing these blocks: ");
+            int size = missingBlocks.size();
+            int i = 0;
+            
+            for (Integer id : missingBlocks) {
+                BlockType type = BlockType.fromID(id);
+                
+                str.append(type != null
+                        ? type.getName() + " (" + id + ")"
+                        : id.toString());
+                
+                i++;
+                
+                if (i != size) {
+                    str.append(", ");
+                }
+            }
+            
+            player.printError(str.toString());
+        }
     }
 
     /**
@@ -2095,6 +2151,8 @@ public class WorldEditListener extends PluginListener {
         superPickaxeDrop = properties.getBoolean("super-pickaxe-drop-items", true);
         superPickaxeManyDrop = properties.getBoolean("super-pickaxe-many-drop-items", false);
         noDoubleSlash = properties.getBoolean("no-double-slash", false);
+        useInventory = properties.getBoolean("use-inventory", false);
+        useInventoryOverride = properties.getBoolean("use-inventory-override", false);
         
         // Get allowed blocks
         allowedBlocks = new HashSet<Integer>();

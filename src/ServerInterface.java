@@ -18,12 +18,8 @@
 */
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockType;
 import java.util.logging.Logger;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -335,6 +331,15 @@ public class ServerInterface {
     public static void dropItem(Vector pt, int type) {
         etc.getServer().dropItem(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(),
                 type, 1);
+    }
+    
+    /**
+     * Get a block bag for a player.
+     * 
+     * @param player
+     */
+    public static PlayerInventoryBlockBag getPlayerBlockBag(WorldEditPlayer player) {
+        return new PlayerInventoryBlockBag(player.getPlayerObject());
     }
 
     /**
