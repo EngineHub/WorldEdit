@@ -105,13 +105,15 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock {
         List<Tag> itemsList = new ArrayList<Tag>();
         for (int i = 0; i < items.length; i++) {
             BaseItemStack item = items[i];
-            Map<String,Tag> data = new HashMap<String,Tag>();
-            CompoundTag itemTag = new CompoundTag("Items", data);
-            data.put("id", new ShortTag("id", item.getID()));
-            data.put("Damage", new ShortTag("Damage", item.getDamage()));
-            data.put("Count", new ByteTag("Count", (byte)item.getAmount()));
-            data.put("Slot", new ByteTag("Slot", (byte)i));
-            itemsList.add(itemTag);
+            if (item != null) {
+                Map<String,Tag> data = new HashMap<String,Tag>();
+                CompoundTag itemTag = new CompoundTag("Items", data);
+                data.put("id", new ShortTag("id", item.getID()));
+                data.put("Damage", new ShortTag("Damage", item.getDamage()));
+                data.put("Count", new ByteTag("Count", (byte)item.getAmount()));
+                data.put("Slot", new ByteTag("Slot", (byte)i));
+                itemsList.add(itemTag);
+            }
         }
         Map<String,Tag> values = new HashMap<String,Tag>();
         values.put("Items", new ListTag("Items", CompoundTag.class, itemsList));
