@@ -2151,7 +2151,8 @@ public class WorldEditListener extends PluginListener {
 
         profile = properties.getBoolean("debug-profile", false);
         wandItem = properties.getInt("wand-item", 271);
-        defaultChangeLimit = Math.max(-1, properties.getInt("max-blocks-changed", -1));
+        defaultChangeLimit = Math.max(-1, properties.getInt("default-max-blocks-changed", -1));
+        maxChangeLimit = Math.max(-1, properties.getInt("max-blocks-changed", -1));
         maxRadius = Math.max(-1, properties.getInt("max-radius", -1));
         maxSuperPickaxeSize = Math.max(1, properties.getInt("max-super-pickaxe-size", 5));
         registerHelp = properties.getBoolean("register-help", true);
