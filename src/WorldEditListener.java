@@ -1972,9 +1972,13 @@ public class WorldEditListener extends PluginListener {
             String searchCmd = split[0].toLowerCase();
 
             if (commands.containsKey(searchCmd)
-                    || (noDoubleSlash && commands.containsKey("/" + searchCmd))) {
+                    || (noDoubleSlash && commands.containsKey("/" + searchCmd))
+                    || ((searchCmd.length() < 3 || searchCmd.charAt(2) != '/')
+                            && commands.containsKey(searchCmd.substring(1)))) {
                 if (noDoubleSlash && commands.containsKey("/" + searchCmd)) {
                     split[0] = "/" + split[0];
+                } else if (commands.containsKey(searchCmd.substring(1))) {
+                    split[0] = split[0].substring(1);
                 }
                 
                 if (canUseCommand(ply, split[0])) {
