@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.data;
 
 import java.io.*;
+import java.util.regex.Pattern;
 import java.util.zip.*;
 import java.util.Enumeration;
 
@@ -102,7 +103,9 @@ public class ZippedAlphaChunkStore extends NestedFileChunkStore {
             // So, the data is not in the root directory
             if (testEntry == null) {
                 // Let's try a world/ sub-directory
-                testEntry = zip.getEntry("world/level.dat");
+                testEntry = getEntry("world/level.dat");
+                
+                Pattern pattern = Pattern.compile(".*[\\\\/]level\\.dat$");
 
                 // So not there either...
                 if (testEntry == null) {
@@ -112,7 +115,7 @@ public class ZippedAlphaChunkStore extends NestedFileChunkStore {
                         testEntry = (ZipEntry)e.nextElement();
 
                         // Whoo, found level.dat!
-                        if (testEntry.getName().matches(".+/level\\.dat")) {
+                        if (pattern.matcher(testEntry.getName()).matches()) {
                             file = testEntry.getName().replaceAll("level\\.dat$", "")
                                     + file;
                             break;
@@ -124,7 +127,7 @@ public class ZippedAlphaChunkStore extends NestedFileChunkStore {
             }
         }
 
-        ZipEntry entry = zip.getEntry(file);
+        ZipEntry entry = getEntry(file);
         if (entry == null) {
             throw new MissingChunkException();
         }
@@ -133,6 +136,20 @@ public class ZippedAlphaChunkStore extends NestedFileChunkStore {
         } catch (ZipException e) {
             throw new IOException("Failed to read " + file + " in ZIP");
         }
+    }
+    
+    /**
+     * Get an entry from the ZIP, trying both types of slashes.
+     * 
+     * @param file
+     * @return
+     */
+    private ZipEntry getEntry(String file) {
+        ZipEntry entry = zip.getEntry(file);
+        if (entry != null) {
+            return entry;
+        }
+        return zip.getEntry(file.replace("/", "\\"));
     }
 
     /**

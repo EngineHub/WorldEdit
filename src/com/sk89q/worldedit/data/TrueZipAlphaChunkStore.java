@@ -23,9 +23,11 @@ import de.schlichtherle.io.*;
 import de.schlichtherle.io.File;
 import de.schlichtherle.io.FileInputStream;
 import java.io.*;
+import java.util.regex.Pattern;
 
 /**
- * Represents the chunk store used by Minecraft alpha.
+ * Represents the chunk store used by Minecraft alpha. This driver uses
+ * TrueZip to read zip files, althoguh it currently does not work well.
  *
  * @author sk89q
  */
@@ -90,8 +92,9 @@ public class TrueZipAlphaChunkStore extends NestedFileChunkStore {
     protected InputStream getInputStream(String f1, String f2, String name)
             throws DataException, IOException {
         String file = f1 + File.separator + f2 + File.separator + name;
+        File f = new File(path, file);
         try {
-            return new FileInputStream(new File(path.getAbsolutePath(), file));
+            return new FileInputStream(f.getAbsolutePath());
         } catch (FileNotFoundException e) {
             throw new MissingChunkException();
         }
@@ -104,8 +107,10 @@ public class TrueZipAlphaChunkStore extends NestedFileChunkStore {
      * @return
      */
     private File findWorldPath(File path) {
-        if ((new File(path, "world")).exists()) {
-            return new File(path, "world");
+        File f = new File(path, "world");
+        
+        if (path.contains(f)) {
+            return f;
         }
 
         return searchForPath(path);
@@ -119,21 +124,15 @@ public class TrueZipAlphaChunkStore extends NestedFileChunkStore {
      */
     private File searchForPath(File path) {
         String[] children = path.list();
-        // listFiles() returns java.io.File[]
+        
+        Pattern pattern = Pattern.compile(".*[\\\\/]level\\.dat$");
 
         if (children == null) {
             return null;
         } else {
-            for (String child : children) {
-                File f = new File(path, child);
-                
-                if (f.isFile() && f.getName().equals("level.dat")) {
-                    return path;
-                } else if (f.isDirectory()) {
-                    File res = findWorldPath(f);
-                    if (res != null) {
-                        return res;
-                    }
+            for (String f : children) {
+                if (pattern.matcher(f).matches()) {
+                    return (File)(new File(path, f)).getParentFile();
                 }
             }
         }
