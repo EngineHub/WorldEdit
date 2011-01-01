@@ -20,6 +20,8 @@
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sk89q.worldedit.ServerInterface;
+
 /**
  * Entry point for the plugin for hey0's mod.
  * 
@@ -33,7 +35,7 @@ public class WorldEdit extends Plugin {
     /**
      * WorldEditLibrary instance.
      */
-    private static final WorldEditListener listener = new WorldEditListener();
+    private static final HMWorldEditListener listener = new HMWorldEditListener();
     
     /**
      * WorldEdit version, fetched from the .jar's manifest. Used to print the
@@ -60,6 +62,8 @@ public class WorldEdit extends Plugin {
                 PluginListener.Priority.MEDIUM);
         loader.addListener(PluginLoader.Hook.ARM_SWING, listener, this,
                 PluginListener.Priority.MEDIUM);
+        
+        ServerInterface.setup(new HMServerInterface());
 
         logger.log(Level.INFO, "WorldEdit version " + getVersion() + " loaded");
     }
@@ -116,7 +120,7 @@ public class WorldEdit extends Plugin {
      *
      * @return
      */
-    public WorldEditListener getListener() {
+    public HMWorldEditListener getListener() {
         return listener;
     }
 }

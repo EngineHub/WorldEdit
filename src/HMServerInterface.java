@@ -391,4 +391,36 @@ public class HMServerInterface extends ServerInterface {
             dropItem(pt, type);
         }
     }
+    
+    /**
+     * Resolves an item name to its ID.
+     * 
+     * @param name
+     * @return
+     */
+    public int resolveItem(String name) {
+        return etc.getDataSource().getItem(name);
+    }
+    
+    /**
+     * Kill mobs in an area.
+     * 
+     * @param origin
+     * @param radius
+     * @return
+     */
+    public int killMobs(Vector origin, int radius) {
+        int killed = 0;
+        
+        for (Mob mob : etc.getServer().getMobList()) {
+            Vector mobPos = new Vector(mob.getX(), mob.getY(), mob.getZ());
+            if (mob.getHealth() > 0
+                    && (radius == -1 || mobPos.distance(origin) <= radius)) {
+                mob.setHealth(0);
+                killed++;
+            }
+        }
+        
+        return killed;
+    }
 }

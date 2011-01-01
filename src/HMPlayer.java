@@ -261,7 +261,7 @@ public class HMPlayer extends WorldEditPlayer {
      * Get this player's block bag.
      */
     public BlockBag getInventoryBlockBag() {
-        return new PlayerInventoryBlockBag(player);
+        return new HMPlayerInventoryBlockBag(player);
     }
 
     /**

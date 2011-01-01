@@ -20,7 +20,7 @@
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bags.*;
 
-public class PlayerInventoryBlockBag extends BlockBag {
+public class HMPlayerInventoryBlockBag extends BlockBag {
     /**
      * Player instance.
      */
@@ -35,7 +35,7 @@ public class PlayerInventoryBlockBag extends BlockBag {
      * 
      * @param player
      */
-    public PlayerInventoryBlockBag(Player player) {
+    public HMPlayerInventoryBlockBag(Player player) {
         this.player = player;
     }
     

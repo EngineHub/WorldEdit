@@ -1,4 +1,3 @@
-package com.sk89q.worldedit;
 // $Id$
 /*
  * WorldEdit
@@ -18,7 +17,8 @@ package com.sk89q.worldedit;
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import com.sk89q.worldedit.bags.BlockBag;
+package com.sk89q.worldedit;
+
 import com.sk89q.worldedit.blocks.BaseItemStack;
 
 /**
@@ -191,4 +191,21 @@ public abstract class ServerInterface {
      * @param pt
      */
     public abstract void simulateBlockMine(Vector pt);
+    
+    /**
+     * Resolves an item name to its ID.
+     * 
+     * @param name
+     * @return
+     */
+    public abstract int resolveItem(String name);
+
+    /**
+     * Kill mobs in an area.
+     * 
+     * @param origin
+     * @param radius
+     * @return
+     */
+    public abstract int killMobs(Vector origin, int radius);
 }
