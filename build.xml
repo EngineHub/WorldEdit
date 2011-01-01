@@ -36,6 +36,7 @@
       <attribute name="WorldEdit-Version" value="${version}"/>
       <attribute name="Class-Path" value="jnbt.jar truezip.jar"/>
     </manifest>
+    <copy tofile="${build.dir}/plugin.yml" file="plugin.yml"/>
     <jar jarfile="${dist.dir}/WorldEdit.jar" basedir="${build.dir}" manifest="manifest.mf"/>
   </target>
 

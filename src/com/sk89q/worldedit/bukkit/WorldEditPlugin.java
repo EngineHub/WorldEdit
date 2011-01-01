@@ -42,12 +42,6 @@ public class WorldEditPlugin extends JavaPlugin {
             PluginDescriptionFile desc, File plugin, ClassLoader cLoader) {
         super(pluginLoader, instance, desc, plugin, cLoader);
 
-        registerEvents();
-    }
-
-    public void onEnable() {
-        //loadConfiguration();
-        
         ServerInterface.setup(new BukkitServerInterface(getServer()));
 
         controller.profile = true;
@@ -66,13 +60,19 @@ public class WorldEditPlugin extends JavaPlugin {
         controller.noDoubleSlash = true;
         controller.useInventory = false;
         controller.useInventoryOverride = false;
+
+        registerEvents();
+    }
+
+    public void onEnable() {
+        //loadConfiguration();
     }
 
     public void onDisable() {
         controller.clearSessions();
     }
 
-    private void registerEvents() {
+    private void registerEvents() {        
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT,
                 playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND,
