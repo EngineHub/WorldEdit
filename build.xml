@@ -7,7 +7,7 @@
   <property name="dist.dir" location="dist"/>
   <property name="release.dir" location="release"/>
   <property name="lib.dir" location="lib"/>
-
+  
   <target name="init">
     <mkdir dir="${build.dir}"/>
   </target>
@@ -17,7 +17,10 @@
     <javac srcdir="${src.dir}" deprecation="true" includeantruntime="true" destdir="${build.dir}" debug="true">
       <classpath>
         <fileset dir="${lib.dir}">
-          <include name="*.jar"/>
+          <include name="truezip.jar" />
+          <include name="jnbt.jar" />
+          <include name="Minecraft_Mod.jar" />
+          <include name="minecraft_server.jar" />
         </fileset>
       </classpath>
     </javac>
