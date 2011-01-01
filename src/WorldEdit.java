@@ -43,16 +43,17 @@ public class WorldEdit extends Plugin {
      */
     private String version;
 
+	public WorldEdit() {
+		ServerInterface.setup(new HMServerInterface());
+		listener = new HMWorldEditListener();
+	}
+
     /**
      * Initializes the plugin.
      */
     @Override
     public void initialize() {
         PluginLoader loader = etc.getLoader();
-
-		ServerInterface.setup(new HMServerInterface());
-
-		listener = new HMWorldEditListener();
 
         loader.addListener(PluginLoader.Hook.BLOCK_CREATED, listener, this,
                 PluginListener.Priority.MEDIUM);
