@@ -1,3 +1,22 @@
+2.4:
+- Added the ability to use (require) inventory with operations, preventing
+    people from setting blocks that they don't have.
+- Simplified the max blocks change limit to be binary (either you have it or
+    not). Also separated the 'max' limit and the 'default' limit in terms
+    of configuration. This means that the WorldEdit restrictions file is
+    no longer used.
+- A large part of the code was moved around (again) to make porting
+    WorldEdit to other modding APIs easier, but this means that something
+    may have broken.
+- Chest handling was rewritten for Minecraft beta, so it should be
+    reliable now and not cause exceptions.
+- Item damage is now managed by WorldEdit's chest handling APIs.
+- Worked around an issue with the java.util.zip implementation that
+    caused ZIP files containing backslashes to not work correctly.
+- Changed the TrueZip support to use the API for java.util.zip, meaning
+    some bugs should be fixed.
+- Made all commands support double forward slashes as the command prefix.
+
 2.3.4:
 - Fixed issues with chests.
 - Added configuration option that disables the "//" prefix and lets you use
