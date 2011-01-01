@@ -1,3 +1,4 @@
+package com.sk89q.worldedit.snapshots;
 // $Id$
 /*
  * WorldEdit

@@ -1,3 +1,4 @@
+package com.sk89q.worldedit;
 // $Id$
 /*
  * WorldEdit
@@ -22,6 +23,7 @@ import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.*;
+
 import java.util.LinkedList;
 
 /**
@@ -353,7 +355,7 @@ public class WorldEditSession {
         if (!useInventory) {
             return null;
         }
-        return ServerInterface.getPlayerBlockBag(player);
+        return player.getInventoryBlockBag();
     }
 
     /**

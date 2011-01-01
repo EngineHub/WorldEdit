@@ -1,6 +1,6 @@
 // $Id$
 /*
- * WorldEditLibrary
+ * WorldEdit
  * Copyright (C) 2010 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,28 +17,42 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import com.sk89q.worldedit.Vector;
+package com.sk89q.worldedit;
+
+import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BlockType;
 
 /**
  *
  * @author sk89q
  */
-public class WorldEditPlayer {
+public abstract class WorldEditPlayer {    
     /**
-     * Stores the player.
+     * Directions.
      */
-    private Player player;
+    public enum DIRECTION {
+        NORTH,
+        NORTH_EAST,
+        EAST,
+        SOUTH_EAST,
+        SOUTH,
+        SOUTH_WEST,
+        WEST,
+        NORTH_WEST
+    };
 
+    /**
+     * Server.
+     */
+    protected ServerInterface server;
+    
     /**
      * Construct the object.
-     * 
-     * @param player
      */
-    public WorldEditPlayer(Player player) {
-        this.player = player;
+    protected WorldEditPlayer() {
+        server = ServerInterface.getInstance();
     }
-
+    
     /**
      * Returns true if the player is holding a pick axe.
      *
@@ -48,15 +62,6 @@ public class WorldEditPlayer {
         int item = getItemInHand();
         return item == 257 || item == 270 || item == 274 || item == 278
                 || item == 285;
-    }
-
-    /**
-     * Move the player.
-     *
-     * @param pos
-     */
-    public void setPosition(Vector pos) {
-        setPosition(pos, (float)getPitch(), (float)getYaw());
     }
 
     /**
@@ -76,7 +81,7 @@ public class WorldEditPlayer {
         byte free = 0;
 
         while (y <= 129) {
-            if (BlockType.canPassThrough(etc.getServer().getBlockIdAt(x, y, z))) {
+            if (BlockType.canPassThrough(server.getBlockType(new Vector(x, y, z)))) {
                 free++;
             } else {
                 free = 0;
@@ -119,7 +124,7 @@ public class WorldEditPlayer {
         byte spots = 0;
 
         while (y <= 129) {
-            if (BlockType.canPassThrough(ServerInterface.getBlockType(new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(server.getBlockType(new Vector(x, y, z)))) {
                 free++;
             } else {
                 free = 0;
@@ -128,7 +133,7 @@ public class WorldEditPlayer {
             if (free == 2) {
                 spots++;
                 if (spots == 2) {
-                    int type = ServerInterface.getBlockType(new Vector(x, y - 2, z));
+                    int type = server.getBlockType(new Vector(x, y - 2, z));
                     
                     // Don't get put in lava!
                     if (type == 10 || type == 11) {
@@ -160,7 +165,7 @@ public class WorldEditPlayer {
         byte free = 0;
 
         while (y >= 1) {
-            if (BlockType.canPassThrough(ServerInterface.getBlockType(new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(server.getBlockType(new Vector(x, y, z)))) {
                 free++;
             } else {
                 free = 0;
@@ -171,7 +176,7 @@ public class WorldEditPlayer {
                 // lightly and also check to see if there's something to
                 // stand upon
                 while (y >= 0) {
-                    int type = ServerInterface.getBlockType(new Vector(x, y, z));
+                    int type = server.getBlockType(new Vector(x, y, z));
 
                     // Don't want to end up in lava
                     if (type != 0 && type != 10 && type != 11) {
@@ -206,15 +211,15 @@ public class WorldEditPlayer {
         int z = pos.getBlockZ();
         
         // No free space above
-        if (ServerInterface.getBlockType(new Vector(x, y, z)) != 0) {
+        if (server.getBlockType(new Vector(x, y, z)) != 0) {
             return false;
         }
 
         while (y <= 127) {
             // Found a ceiling!
-            if (!BlockType.canPassThrough(ServerInterface.getBlockType(new Vector(x, y, z)))) {
+            if (!BlockType.canPassThrough(server.getBlockType(new Vector(x, y, z)))) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
-                ServerInterface.setBlockType(new Vector(x, platformY, z),
+                server.setBlockType(new Vector(x, platformY, z),
                         BlockType.GLASS.getID());
                 setPosition(new Vector(x + 0.5, platformY + 1, z + 0.5));
                 return true;
@@ -241,12 +246,12 @@ public class WorldEditPlayer {
         int maxY = Math.min(128, initialY + distance);
 
         while (y <= 129) {
-            if (!BlockType.canPassThrough(ServerInterface.getBlockType(new Vector(x, y, z)))) {
+            if (!BlockType.canPassThrough(server.getBlockType(new Vector(x, y, z)))) {
                 break; // Hit something
             } else if (y > maxY + 1) {
                 break;
             } else if (y == maxY + 1) {
-                ServerInterface.setBlockType(new Vector(x, y - 2, z),
+                server.setBlockType(new Vector(x, y - 2, z),
                         BlockType.GLASS.getID());
                 setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
                 return true;
@@ -257,6 +262,206 @@ public class WorldEditPlayer {
 
         return false;
     }
+
+    /**
+     * Get the point of the block that is being stood in.
+     *
+     * @return point
+     */
+    public Vector getBlockIn() {
+        return getPosition().toBlockVector();
+    }
+
+    /**
+     * Get the point of the block that is being stood upon.
+     *
+     * @return point
+     */
+    public Vector getBlockOn() {
+        return getPosition().subtract(0, 1, 0).toBlockVector();
+    }
+
+    /**
+     * Get the point of the block being looked at. May return null.
+     *
+     * @param range
+     * @return point
+     */
+    public abstract Vector getBlockTrace(int range);
+
+    /**
+     * Get the point of the block being looked at. May return null.
+     *
+     * @param range
+     * @return point
+     */
+    public abstract Vector getSolidBlockTrace(int range);
+
+    /**
+     * Get the player's cardinal direction (N, W, NW, etc.). May return null.
+     *
+     * @return
+     */
+    public WorldEditPlayer.DIRECTION getCardinalDirection() {
+        // From hey0's code
+        double rot = (getYaw() - 90) % 360;
+        if (rot < 0) {
+            rot += 360.0;
+        }
+        return getDirection(rot);
+    }
+
+    /**
+     * Returns direction according to rotation. May return null.
+     * 
+     * @param rot
+     * @return
+     */
+    private static WorldEditPlayer.DIRECTION getDirection(double rot) {
+        if (0 <= rot && rot < 22.5) {
+            return WorldEditPlayer.DIRECTION.NORTH;
+        } else if (22.5 <= rot && rot < 67.5) {
+            return WorldEditPlayer.DIRECTION.NORTH_EAST;
+        } else if (67.5 <= rot && rot < 112.5) {
+            return WorldEditPlayer.DIRECTION.EAST;
+        } else if (112.5 <= rot && rot < 157.5) {
+            return WorldEditPlayer.DIRECTION.SOUTH_EAST;
+        } else if (157.5 <= rot && rot < 202.5) {
+            return WorldEditPlayer.DIRECTION.SOUTH;
+        } else if (202.5 <= rot && rot < 247.5) {
+            return WorldEditPlayer.DIRECTION.SOUTH_WEST;
+        } else if (247.5 <= rot && rot < 292.5) {
+            return WorldEditPlayer.DIRECTION.WEST;
+        } else if (292.5 <= rot && rot < 337.5) {
+            return WorldEditPlayer.DIRECTION.NORTH_WEST;
+        } else if (337.5 <= rot && rot < 360.0) {
+            return WorldEditPlayer.DIRECTION.NORTH;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the ID of the item that the player is holding.
+     *
+     * @return
+     */
+    public abstract int getItemInHand();
+
+    /**
+     * Get the name of the player.
+     *
+     * @return String
+     */
+    public abstract String getName();
+
+    /**
+     * Get the player's position.
+     *
+     * @return point
+     */
+    public abstract Vector getPosition();
+
+    /**
+     * Get the player's view pitch.
+     *
+     * @return pitch
+     */
+    /**
+     * Get the player's view pitch.
+     *
+     * @return pitch
+     */
+    public abstract double getPitch();
+
+    /**
+     * Get the player's view yaw.
+     *
+     * @return yaw
+     */
+    /**
+     * Get the player's view yaw.
+     *
+     * @return yaw
+     */
+    public abstract double getYaw();
+
+    /**
+     * Gives the player an item.
+     *
+     * @param type
+     * @param amt
+     */
+    public abstract void giveItem(int type, int amt);
+
+    /**
+     * Pass through the wall that you are looking at.
+     *
+     * @param range
+     * @return whether the player was pass through
+     */
+    public abstract boolean passThroughForwardWall(int range);
+
+    /**
+     * Print a message.
+     *
+     * @param msg
+     */
+    public abstract void printRaw(String msg);
+
+    /**
+     * Print a WorldEdit message.
+     *
+     * @param msg
+     */
+    public abstract void print(String msg);
+
+    /**
+     * Print a WorldEdit error.
+     *
+     * @param msg
+     */
+    public abstract void printError(String msg);
+
+    /**
+     * Move the player.
+     *
+     * @param pos
+     * @param pitch
+     * @param yaw
+     */
+    public abstract void setPosition(Vector pos, float pitch, float yaw);
+
+    /**
+     * Move the player.
+     *
+     * @param pos
+     */
+    public void setPosition(Vector pos) {
+        setPosition(pos, (float)getPitch(), (float)getYaw());
+    }
+
+    /**
+     * Get a player's list of groups.
+     * 
+     * @return
+     */
+    public abstract String[] getGroups();
+    
+    /**
+     * Get this player's block bag.
+     * 
+     * @return
+     */
+    public abstract BlockBag getInventoryBlockBag();
+    
+    /**
+     * Checks if a player has permission.
+     * 
+     * @param perm
+     * @return
+     */
+    public abstract boolean hasPermission(String perm);
 
     /**
      * Returns true if equal.
@@ -281,240 +486,5 @@ public class WorldEditPlayer {
     @Override
     public int hashCode() {
         return getName().hashCode();
-    }
-
-    /**
-     * Get the point of the block that is being stood in.
-     *
-     * @return point
-     */
-    public Vector getBlockIn() {
-        return Vector.toBlockPoint(player.getX(), player.getY(), player.getZ());
-    }
-
-    /**
-     * Get the point of the block that is being stood upon.
-     *
-     * @return point
-     */
-    public Vector getBlockOn() {
-        return Vector.toBlockPoint(player.getX(), player.getY() - 1, player.getZ());
-    }
-
-    /**
-     * Get the point of the block being looked at. May return null.
-     *
-     * @param range
-     * @return point
-     */
-    public Vector getBlockTrace(int range) {
-        HitBlox hitBlox = new HitBlox(player,range, 0.2);
-        Block block = hitBlox.getTargetBlock();
-        if (block == null) {
-            return null;
-        }
-        return new Vector(block.getX(), block.getY(), block.getZ());
-    }
-
-    /**
-     * Get the point of the block being looked at. May return null.
-     *
-     * @param range
-     * @return point
-     */
-    public Vector getSolidBlockTrace(int range) {
-        HitBlox hitBlox = new HitBlox(player,range, 0.2);
-        Block block = null;
-
-        while (hitBlox.getNextBlock() != null
-                && BlockType.canPassThrough(hitBlox.getCurBlock().getType()));
-
-        block = hitBlox.getCurBlock();
-
-        if (block == null) {
-            return null;
-        }
-        return new Vector(block.getX(), block.getY(), block.getZ());
-    }
-
-    /**
-     * Get the player's cardinal direction (N, W, NW, etc.).
-     *
-     * @return
-     */
-    public String getCardinalDirection() {
-        // From hey0's code
-        double rot = (getYaw() - 90) % 360;
-        if (rot < 0) {
-            rot += 360.0;
-        }
-        return etc.getCompassPointForDirection(rot).toLowerCase();
-    }
-
-    /**
-     * Get the ID of the item that the player is holding.
-     *
-     * @return
-     */
-    /**
-     * Get the ID of the item that the player is holding.
-     *
-     * @return
-     */
-    public int getItemInHand() {
-        return player.getItemInHand();
-    }
-
-    /**
-     * Get the name of the player.
-     *
-     * @return String
-     */
-    public String getName() {
-        return player.getName();
-    }
-
-    /**
-     * Get the player's view pitch.
-     *
-     * @return pitch
-     */
-    /**
-     * Get the player's view pitch.
-     *
-     * @return pitch
-     */
-    public double getPitch() {
-        return player.getPitch();
-    }
-
-    /**
-     * Get the player's position.
-     *
-     * @return point
-     */
-    public Vector getPosition() {
-        return new Vector(player.getX(), player.getY(), player.getZ());
-    }
-
-    /**
-     * Get the player's view yaw.
-     *
-     * @return yaw
-     */
-    /**
-     * Get the player's view yaw.
-     *
-     * @return yaw
-     */
-    public double getYaw() {
-        return player.getRotation();
-    }
-
-    /**
-     * Gives the player an item.
-     *
-     * @param type
-     * @param amt
-     */
-    /**
-     * Gives the player an item.
-     *
-     * @param type
-     * @param amt
-     */
-    public void giveItem(int type, int amt) {
-        player.giveItem(type, amt);
-    }
-
-    /**
-     * Pass through the wall that you are looking at.
-     *
-     * @param range
-     * @return whether the player was pass through
-     */
-    public boolean passThroughForwardWall(int range) {
-        boolean foundNext = false;
-        int searchDist = 0;
-        HitBlox hitBlox = new HitBlox(player,range, 0.2);
-        Block block;
-        while ((block = hitBlox.getNextBlock()) != null) {
-            searchDist++;
-            if (searchDist > 20) {
-                return false;
-            }
-            if (block.getType() == 0) {
-                if (foundNext) {
-                    Vector v = new Vector(block.getX(), block.getY() - 1, block.getZ());
-                    if (ServerInterface.getBlockType(v) == 0) {
-                        setPosition(v.add(0.5, 0, 0.5));
-                        return true;
-                    }
-                }
-            } else {
-                foundNext = true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Print a message.
-     *
-     * @param msg
-     */
-    public void printRaw(String msg) {
-        player.sendMessage(msg);
-    }
-
-    /**
-     * Print a WorldEdit message.
-     *
-     * @param msg
-     */
-    public void print(String msg) {
-        player.sendMessage(Colors.LightPurple + msg);
-    }
-
-    /**
-     * Print a WorldEdit error.
-     *
-     * @param msg
-     */
-    public void printError(String msg) {
-        player.sendMessage(Colors.Rose + msg);
-    }
-
-    /**
-     * Move the player.
-     *
-     * @param pos
-     * @param pitch
-     * @param yaw
-     */
-    public void setPosition(Vector pos, float pitch, float yaw) {
-        Location loc = new Location();
-        loc.x = pos.getX();
-        loc.y = pos.getY();
-        loc.z = pos.getZ();
-        loc.rotX = (float) yaw;
-        loc.rotY = (float) pitch;
-        player.teleportTo(loc);
-    }
-
-    /**
-     * Get a player's list of groups.
-     * 
-     * @return
-     */
-    public String[] getGroups() {
-        return player.getGroups();
-    }
-
-    /**
-     * @return the player
-     */
-    public Player getPlayerObject() {
-        return player;
     }
 }

@@ -56,6 +56,12 @@ public class WorldEditListener extends PluginListener {
         20, 35, 41, 42, 43, 44, 45, 47, 48, 49, 52, 53, 54, 56, 57, 58, 60,
         61, 62, 67, 73, 78, 79, 80, 82, 85, 86, 87, 88, 89, 91
     };
+    
+    /**
+     * Server interface.
+     */
+    private ServerInterface server;
+    
     /**
      * WorldEditLibrary's properties file.
      */
@@ -97,6 +103,8 @@ public class WorldEditListener extends PluginListener {
      * Construct an instance of the plugin.
      */
     public WorldEditListener() {
+        server = ServerInterface.getInstance();
+        
         // Note: Commands should only have the phrase 'air' at the end
         // for now (see SMWorldEditListener.canUseCommand)
         commands.put("//pos1", "Set editing position #1");
@@ -184,7 +192,7 @@ public class WorldEditListener extends PluginListener {
             return sessions.get(player);
         } else {
             WorldEditSession session = new WorldEditSession();
-            if (!player.getPlayerObject().canUseCommand("/worldeditnomax")
+            if (!player.hasPermission("/worldeditnomax")
                     && maxChangeLimit > -1) {
                 if (defaultChangeLimit < 0) {
                     // No infinite!
@@ -199,7 +207,7 @@ public class WorldEditListener extends PluginListener {
             }
             session.setUseInventory(useInventory
                     && (!useInventoryOverride
-                            || !player.getPlayerObject().canUseCommand("/worldeditunlimited")));
+                            || !player.hasPermission("/worldeditunlimited")));
             sessions.put(player, session);
             return session;
         }
@@ -272,7 +280,7 @@ public class WorldEditListener extends PluginListener {
                 return new SignBlock(blockType.getID(), data, text);
             } else if (blockType == BlockType.MOB_SPAWNER) {
                 if (args0.length > 1) {
-                    if (!ServerInterface.isValidMobType(args0[1])) {
+                    if (!server.isValidMobType(args0[1])) {
                         throw new InvalidItemException(arg, "Unknown mob type '" + args0[1] + "'");
                     }
                     return new MobSpawnerBlock(data, args0[1]);
@@ -599,7 +607,7 @@ public class WorldEditListener extends PluginListener {
         } else if (split[0].equalsIgnoreCase("//limit")) {
             checkArgs(split, 1, 1, split[0]);
             int limit = Math.max(-1, Integer.parseInt(split[1]));
-            if (!player.getPlayerObject().canUseCommand("/worldeditnomax")
+            if (!player.hasPermission("/worldeditnomax")
                     && maxChangeLimit > -1) {
                 if (limit > maxChangeLimit) {
                     player.printError("Your maximum allowable limit is " + maxChangeLimit + ".");
@@ -1596,30 +1604,32 @@ public class WorldEditListener extends PluginListener {
      * @param dir
      * @return
      */
-    public Vector getDirection(WorldEditPlayer player, String dir)
+    public Vector getDirection(WorldEditPlayer player, String dirStr)
             throws UnknownDirectionException {
         int xm = 0;
         int ym = 0;
         int zm = 0;
+        
+        WorldEditPlayer.DIRECTION dir = null;
 
-        if (dir.equals("me")) {
+        if (dirStr.equals("me")) {
             dir = player.getCardinalDirection();
         }
 
-        if (dir.charAt(0) == 'w') {
+        if (dirStr.charAt(0) == 'u' || dir == WorldEditPlayer.DIRECTION.WEST) {
             zm += 1;
-        } else if (dir.charAt(0) == 'e') {
+        } else if (dirStr.charAt(0) == 'e' || dir == WorldEditPlayer.DIRECTION.EAST) {
             zm -= 1;
-        } else if (dir.charAt(0) == 's') {
+        } else if (dirStr.charAt(0) == 's' || dir == WorldEditPlayer.DIRECTION.SOUTH) {
             xm += 1;
-        } else if (dir.charAt(0) == 'n') {
+        } else if (dirStr.charAt(0) == 'n' || dir == WorldEditPlayer.DIRECTION.NORTH) {
             xm -= 1;
-        } else if (dir.charAt(0) == 'u') {
+        } else if (dirStr.charAt(0) == 'u') {
             ym += 1;
-        } else if (dir.charAt(0) == 'd') {
+        } else if (dirStr.charAt(0) == 'd') {
             ym -= 1;
         } else {
-            throw new UnknownDirectionException(dir);
+            throw new UnknownDirectionException(dirStr);
         }
 
         return new Vector(xm, ym, zm);
@@ -1634,26 +1644,28 @@ public class WorldEditListener extends PluginListener {
      * @return
      */
     public CuboidClipboard.FlipDirection getFlipDirection(
-            WorldEditPlayer player, String dir)
+            WorldEditPlayer player, String dirStr)
             throws UnknownDirectionException {
-        if (dir.equals("me")) {
+        WorldEditPlayer.DIRECTION dir = null;
+        
+        if (dirStr.equals("me")) {
             dir = player.getCardinalDirection();
         }
 
-        if (dir.charAt(0) == 'w') {
+        if (dirStr.charAt(0) == 'w' || dir == WorldEditPlayer.DIRECTION.EAST) {
             return CuboidClipboard.FlipDirection.WEST_EAST;
-        } else if (dir.charAt(0) == 'e') {
+        } else if (dirStr.charAt(0) == 'e' || dir == WorldEditPlayer.DIRECTION.EAST) {
             return CuboidClipboard.FlipDirection.WEST_EAST;
-        } else if (dir.charAt(0) == 's') {
+        } else if (dirStr.charAt(0) == 's' || dir == WorldEditPlayer.DIRECTION.SOUTH) {
             return CuboidClipboard.FlipDirection.NORTH_SOUTH;
-        } else if (dir.charAt(0) == 'n') {
+        } else if (dirStr.charAt(0) == 'n' || dir == WorldEditPlayer.DIRECTION.SOUTH) {
             return CuboidClipboard.FlipDirection.NORTH_SOUTH;
-        } else if (dir.charAt(0) == 'u') {
+        } else if (dirStr.charAt(0) == 'u') {
             return CuboidClipboard.FlipDirection.UP_DOWN;
-        } else if (dir.charAt(0) == 'd') {
+        } else if (dirStr.charAt(0) == 'd') {
             return CuboidClipboard.FlipDirection.UP_DOWN;
         } else {
-            throw new UnknownDirectionException(dir);
+            throw new UnknownDirectionException(dirStr);
         }
     }
 
@@ -1691,7 +1703,7 @@ public class WorldEditListener extends PluginListener {
      */
     @Override
     public void onDisconnect(Player player) {
-        removeSession(new WorldEditPlayer(player));
+        removeSession(new HMPlayer(player));
     }
 
     /**
@@ -1700,9 +1712,10 @@ public class WorldEditListener extends PluginListener {
      * @param player
      */
     public void onArmSwing(Player modPlayer) {
-        if (!canUseCommand(modPlayer, "//")) { return; }
+        WorldEditPlayer player = new HMPlayer(modPlayer);
 
-        WorldEditPlayer player = new WorldEditPlayer(modPlayer);
+        if (!canUseCommand(player, "//")) { return; }
+
         WorldEditSession session = getSession(player);
 
         if (player.isHoldingPickAxe()) {
@@ -1746,16 +1759,16 @@ public class WorldEditListener extends PluginListener {
     @SuppressWarnings("deprecation")
     public boolean onBlockCreate(Player modPlayer, Block blockPlaced,
             Block blockClicked, int itemInHand) {
-        WorldEditPlayer player = new WorldEditPlayer(modPlayer);
+        WorldEditPlayer player = new HMPlayer(modPlayer);
 
         // This prevents needless sessions from being created
         if (!hasSession(player) && !(itemInHand == wandItem &&
-                canUseCommand(modPlayer, "//pos2"))) { return false; }
+                canUseCommand(player, "//pos2"))) { return false; }
 
         WorldEditSession session = getSession(player);
 
         if (itemInHand == wandItem && session.isToolControlEnabled()
-                && canUseCommand(modPlayer, "//pos2")) {
+                && canUseCommand(player, "//pos2")) {
             Vector cur = Vector.toBlockPoint(blockClicked.getX(),
                                            blockClicked.getY(),
                                            blockClicked.getZ());
@@ -1779,7 +1792,7 @@ public class WorldEditListener extends PluginListener {
                     new EditSession(session.getBlockChangeLimit());
 
             try {
-                if (!ServerInterface.generateTree(editSession, pos)) {
+                if (!server.generateTree(editSession, pos)) {
                     player.printError("Notch won't let you put a tree there.");
                 }
             } finally {
@@ -1793,7 +1806,7 @@ public class WorldEditListener extends PluginListener {
                                              blockClicked.getY(),
                                              blockClicked.getZ());
 
-            BaseBlock block = EditSession.rawGetBlock(pos);
+            BaseBlock block = (new EditSession(0)).rawGetBlock(pos);
 
             player.printRaw(Colors.LightPurple + "@" + pos + ": " + Colors.Yellow
                     + "Type: " + block.getID() + Colors.LightGray + " ("
@@ -1821,10 +1834,11 @@ public class WorldEditListener extends PluginListener {
      */
     @Override
     public boolean onBlockDestroy(Player modPlayer, Block blockClicked) {
-        if (!canUseCommand(modPlayer, "//pos1")
-                && !canUseCommand(modPlayer, "//")) { return false; }
+        WorldEditPlayer player = new HMPlayer(modPlayer);
 
-        WorldEditPlayer player = new WorldEditPlayer(modPlayer);
+        if (!canUseCommand(player, "//pos1")
+                && !canUseCommand(player, "//")) { return false; }
+        
         WorldEditSession session = getSession(player);
 
         if (player.getItemInHand() == wandItem) {
@@ -1858,23 +1872,23 @@ public class WorldEditListener extends PluginListener {
             }
         } else if (player.isHoldingPickAxe()) {
             if (session.hasSuperPickAxe()) {
-                boolean canBedrock = canUseCommand(modPlayer, "/worldeditbedrock");
+                boolean canBedrock = canUseCommand(player, "/worldeditbedrock");
 
                 // Single block super pickaxe
                 if (session.getSuperPickaxeMode() ==
                         WorldEditSession.SuperPickaxeMode.SINGLE) {
                     Vector pos = new Vector(blockClicked.getX(),
                             blockClicked.getY(), blockClicked.getZ());
-                    if (ServerInterface.getBlockType(pos) == 7 && !canBedrock) {
+                    if (server.getBlockType(pos) == 7 && !canBedrock) {
                         return true;
-                    } else if (ServerInterface.getBlockType(pos) == 46) {
+                    } else if (server.getBlockType(pos) == 46) {
                         return false;
                     }
 
                     if (superPickaxeDrop) {
-                        ServerInterface.simulateBlockMine(pos);
+                        server.simulateBlockMine(pos);
                     } else {
-                        ServerInterface.setBlockType(pos, 0);
+                        server.setBlockType(pos, 0);
                     }
 
                 // Area super pickaxe
@@ -1886,7 +1900,7 @@ public class WorldEditListener extends PluginListener {
                     int oy = blockClicked.getY();
                     int oz = blockClicked.getZ();
                     int size = session.getSuperPickaxeRange();
-                    int initialType = ServerInterface.getBlockType(origin);
+                    int initialType = server.getBlockType(origin);
 
                     if (initialType == 7 && !canBedrock) {
                         return true;
@@ -1896,11 +1910,11 @@ public class WorldEditListener extends PluginListener {
                         for (int y = oy - size; y <= oy + size; y++) {
                             for (int z = oz - size; z <= oz + size; z++) {
                                 Vector pos = new Vector(x, y, z);
-                                if (ServerInterface.getBlockType(pos) == initialType) {
+                                if (server.getBlockType(pos) == initialType) {
                                     if (superPickaxeManyDrop) {
-                                        ServerInterface.simulateBlockMine(pos);
+                                        server.simulateBlockMine(pos);
                                     } else {
-                                        ServerInterface.setBlockType(pos, 0);
+                                        server.setBlockType(pos, 0);
                                     }
                                 }
                             }
@@ -1915,7 +1929,7 @@ public class WorldEditListener extends PluginListener {
                     Vector origin = new Vector(blockClicked.getX(),
                             blockClicked.getY(), blockClicked.getZ());
                     int size = session.getSuperPickaxeRange();
-                    int initialType = ServerInterface.getBlockType(origin);
+                    int initialType = server.getBlockType(origin);
 
                     if (initialType == 7 && !canBedrock) {
                         return true;
@@ -1949,11 +1963,11 @@ public class WorldEditListener extends PluginListener {
 
         visited.add(pos);
 
-        if (ServerInterface.getBlockType(pos) == initialType) {
+        if (server.getBlockType(pos) == initialType) {
             if (superPickaxeManyDrop) {
-                ServerInterface.simulateBlockMine(pos);
+                server.simulateBlockMine(pos);
             } else {
-                ServerInterface.setBlockType(pos, 0);
+                server.setBlockType(pos, 0);
             }
         } else {
             return;
@@ -1998,9 +2012,10 @@ public class WorldEditListener extends PluginListener {
                 } else if (commands.containsKey(searchCmd.substring(1))) {
                     split[0] = split[0].substring(1);
                 }
+
+                WorldEditPlayer player = new HMPlayer(ply);
                 
-                if (canUseCommand(ply, split[0])) {
-                    WorldEditPlayer player = new WorldEditPlayer(ply);
+                if (canUseCommand(player, split[0])) {
                     WorldEditSession session = getSession(player);
                     BlockBag blockBag = session.getBlockBag(player);
                     
@@ -2108,30 +2123,19 @@ public class WorldEditListener extends PluginListener {
      * @param command
      * @return
      */
-    private boolean canUseCommand(Player player, String command) {
+    private boolean canUseCommand(WorldEditPlayer player, String command) {
         // Allow the /worldeditselect permission
         if (command.equalsIgnoreCase("//pos1")
                 || command.equalsIgnoreCase("//pos2")
                 || command.equalsIgnoreCase("//hpos1")
                 || command.equalsIgnoreCase("//hpos2")) {
-            return player.canUseCommand(command)
-                    || player.canUseCommand("/worldeditselect")
-                    || player.canUseCommand("/worldedit");
+            return player.hasPermission(command)
+                    || player.hasPermission("/worldeditselect")
+                    || player.hasPermission("/worldedit");
         }
         
-        return player.canUseCommand(command.replace("air", ""))
-                || player.canUseCommand("/worldedit");
-    }
-
-    /**
-     * Checks to see if the player can use a command or /worldedit.
-     *
-     * @param player
-     * @param command
-     * @return
-     */
-    private boolean canUseCommand(WorldEditPlayer player, String command) {
-        return canUseCommand(player.getPlayerObject(), command);
+        return player.hasPermission(command.replace("air", ""))
+                || player.hasPermission("/worldedit");
     }
 
     /**
@@ -2228,7 +2232,7 @@ public class WorldEditListener extends PluginListener {
      * @return
      */
     public WorldEditSession _bridgeSession(Player pl) {
-        WorldEditPlayer player = new WorldEditPlayer(pl);
+        WorldEditPlayer player = new HMPlayer(pl);
 
         if (sessions.containsKey(player)) {
             return sessions.get(player);

@@ -17,6 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+package com.sk89q.worldedit;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -48,6 +50,11 @@ public class EditSession {
      * Random number generator.
      */
     private static Random prng = new Random();
+    
+    /**
+     * Server interface.
+     */
+    private ServerInterface server;
     
     /**
      * Stores the original blocks before modification.
@@ -97,6 +104,7 @@ public class EditSession {
             throw new IllegalArgumentException("Max blocks must be >= -1");
         }
         this.maxBlocks = maxBlocks;
+        server = ServerInterface.getInstance();
     }
 
     /**
@@ -108,6 +116,7 @@ public class EditSession {
         }
         this.maxBlocks = maxBlocks;
         this.blockBag = blockBag;
+        server = ServerInterface.getInstance();
     }
 
     /**
@@ -124,14 +133,14 @@ public class EditSession {
         }
 
         // Clear the chest so that it doesn't drop items
-        if (ServerInterface.getBlockType(pt) == 54 && blockBag == null) {
-            ServerInterface.clearChest(pt);
+        if (server.getBlockType(pt) == 54 && blockBag == null) {
+            server.clearChest(pt);
         }
 
         int id = block.getID();
         
         if (blockBag != null) {
-            int existing = ServerInterface.getBlockType(pt);
+            int existing = server.getBlockType(pt);
             
             if (id > 0) {
                 try {
@@ -152,25 +161,25 @@ public class EditSession {
             }
         }
         
-        boolean result = ServerInterface.setBlockType(pt, id);
+        boolean result = server.setBlockType(pt, id);
         if (id != 0) {
             if (BlockType.usesData(id)) {
-                ServerInterface.setBlockData(pt, block.getData());
+                server.setBlockData(pt, block.getData());
             }
 
             // Signs
             if (block instanceof SignBlock) {
                 SignBlock signBlock = (SignBlock)block;
                 String[] text = signBlock.getText();
-                ServerInterface.setSignText(pt, text);
+                server.setSignText(pt, text);
             // Chests
             } else if (block instanceof ChestBlock && blockBag == null) {
                 ChestBlock chestBlock = (ChestBlock)block;
-                ServerInterface.setChestContents(pt, chestBlock.getItems());
+                server.setChestContents(pt, chestBlock.getItems());
             // Mob spawners
             } else if (block instanceof MobSpawnerBlock) {
                 MobSpawnerBlock mobSpawnerblock = (MobSpawnerBlock)block;
-                ServerInterface.setMobSpawnerType(pt, mobSpawnerblock.getMobType());
+                server.setMobSpawnerType(pt, mobSpawnerblock.getMobType());
             }
         }
         
@@ -271,22 +280,22 @@ public class EditSession {
      * @param pt
      * @return BaseBlock
      */
-    public static BaseBlock rawGetBlock(Vector pt) {
-        int type = ServerInterface.getBlockType(pt);
-        int data = ServerInterface.getBlockData(pt);
+    public BaseBlock rawGetBlock(Vector pt) {
+        int type = server.getBlockType(pt);
+        int data = server.getBlockData(pt);
 
         // Sign
         if (type == 63 || type == 68) {
-            String[] text = ServerInterface.getSignText(pt);
+            String[] text = server.getSignText(pt);
             return new SignBlock(type, data, text);
         // Chest
         } else if (type == 54) {
             BaseItemStack[] items =
-                ServerInterface.getChestContents(pt);
+                server.getChestContents(pt);
             return new ChestBlock(data, items);
         // Mob spawner
         } else if (type == 52) {
-            return new MobSpawnerBlock(data, ServerInterface.getMobSpawnerType(pt));
+            return new MobSpawnerBlock(data, server.getMobSpawnerType(pt));
         } else {
             return new BaseBlock(type, data);
         }
@@ -1728,7 +1737,7 @@ public class EditSession {
                         if (pineTree) {
                             makePineTree(new Vector(x, y + 1, z));
                         } else {
-                            ServerInterface.generateTree(this, new Vector(x, y + 1, z));
+                            server.generateTree(this, new Vector(x, y + 1, z));
                         }
                         affected++;
                         break;
