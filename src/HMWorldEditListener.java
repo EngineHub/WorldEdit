@@ -224,11 +224,11 @@ public class HMWorldEditListener extends PluginListener {
      * @param player
      * @return
      */
-    public WorldEditSession _bridgeSession(Player player) {
+    public LocalSession _bridgeSession(Player player) {
         return controller.getBridgeSession(wrapPlayer(player));
     }
     
-    private WorldEditPlayer wrapPlayer(Player player) {
+    private LocalPlayer wrapPlayer(Player player) {
         return new HMPlayer(server, player);
     }
 }

@@ -26,7 +26,7 @@ import com.sk89q.worldedit.blocks.BlockType;
  *
  * @author sk89q
  */
-public abstract class WorldEditPlayer {    
+public abstract class LocalPlayer {    
     /**
      * Directions.
      */
@@ -51,7 +51,7 @@ public abstract class WorldEditPlayer {
      * 
      * @param server
      */
-    protected WorldEditPlayer(ServerInterface server) {
+    protected LocalPlayer(ServerInterface server) {
         this.server = server;
     }
     
@@ -310,7 +310,7 @@ public abstract class WorldEditPlayer {
      *
      * @return
      */
-    public WorldEditPlayer.DIRECTION getCardinalDirection() {
+    public LocalPlayer.DIRECTION getCardinalDirection() {
         // From hey0's code
         double rot = (getYaw() - 90) % 360;
         if (rot < 0) {
@@ -325,25 +325,25 @@ public abstract class WorldEditPlayer {
      * @param rot
      * @return
      */
-    private static WorldEditPlayer.DIRECTION getDirection(double rot) {
+    private static LocalPlayer.DIRECTION getDirection(double rot) {
         if (0 <= rot && rot < 22.5) {
-            return WorldEditPlayer.DIRECTION.NORTH;
+            return LocalPlayer.DIRECTION.NORTH;
         } else if (22.5 <= rot && rot < 67.5) {
-            return WorldEditPlayer.DIRECTION.NORTH_EAST;
+            return LocalPlayer.DIRECTION.NORTH_EAST;
         } else if (67.5 <= rot && rot < 112.5) {
-            return WorldEditPlayer.DIRECTION.EAST;
+            return LocalPlayer.DIRECTION.EAST;
         } else if (112.5 <= rot && rot < 157.5) {
-            return WorldEditPlayer.DIRECTION.SOUTH_EAST;
+            return LocalPlayer.DIRECTION.SOUTH_EAST;
         } else if (157.5 <= rot && rot < 202.5) {
-            return WorldEditPlayer.DIRECTION.SOUTH;
+            return LocalPlayer.DIRECTION.SOUTH;
         } else if (202.5 <= rot && rot < 247.5) {
-            return WorldEditPlayer.DIRECTION.SOUTH_WEST;
+            return LocalPlayer.DIRECTION.SOUTH_WEST;
         } else if (247.5 <= rot && rot < 292.5) {
-            return WorldEditPlayer.DIRECTION.WEST;
+            return LocalPlayer.DIRECTION.WEST;
         } else if (292.5 <= rot && rot < 337.5) {
-            return WorldEditPlayer.DIRECTION.NORTH_WEST;
+            return LocalPlayer.DIRECTION.NORTH_WEST;
         } else if (337.5 <= rot && rot < 360.0) {
-            return WorldEditPlayer.DIRECTION.NORTH;
+            return LocalPlayer.DIRECTION.NORTH;
         } else {
             return null;
         }
@@ -486,10 +486,10 @@ public abstract class WorldEditPlayer {
      */
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof WorldEditPlayer)) {
+        if (!(other instanceof LocalPlayer)) {
             return false;
         }
-        WorldEditPlayer other2 = (WorldEditPlayer)other;
+        LocalPlayer other2 = (LocalPlayer)other;
         return other2.getName().equals(getName());
     }
 

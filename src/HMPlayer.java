@@ -20,7 +20,7 @@
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditPlayer;
+import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BlockType;
@@ -29,7 +29,7 @@ import com.sk89q.worldedit.blocks.BlockType;
  *
  * @author sk89q
  */
-public class HMPlayer extends WorldEditPlayer {
+public class HMPlayer extends LocalPlayer {
     /**
      * Stores the player.
      */

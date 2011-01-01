@@ -67,8 +67,8 @@ public class WorldEditController {
      * without any WorldEdit abilities or never use WorldEdit in a session will
      * not have a session object generated for them.
      */
-    private HashMap<WorldEditPlayer,WorldEditSession> sessions =
-            new HashMap<WorldEditPlayer,WorldEditSession>();
+    private HashMap<LocalPlayer,LocalSession> sessions =
+            new HashMap<LocalPlayer,LocalSession>();
     
     /**
      * List of commands. These are checked when onCommand() is called, so
@@ -184,11 +184,11 @@ public class WorldEditController {
      * @param player
      * @return
      */
-    public WorldEditSession getSession(WorldEditPlayer player) {
+    public LocalSession getSession(LocalPlayer player) {
         if (sessions.containsKey(player)) {
             return sessions.get(player);
         } else {
-            WorldEditSession session = new WorldEditSession();
+            LocalSession session = new LocalSession();
             if (!player.hasPermission("/worldeditnomax")
                     && maxChangeLimit > -1) {
                 if (defaultChangeLimit < 0) {
@@ -216,7 +216,7 @@ public class WorldEditController {
      * @param player
      * @return
      */
-    public boolean hasSession(WorldEditPlayer player) {
+    public boolean hasSession(LocalPlayer player) {
         return sessions.containsKey(player);
     }
 
@@ -405,8 +405,8 @@ public class WorldEditController {
      * @throws InsufficientArgumentsException
      * @throws DisallowedItemException
      */
-    public boolean performCommand(WorldEditPlayer player,
-            WorldEditSession session, EditSession editSession, String[] split)
+    public boolean performCommand(LocalPlayer player,
+            LocalSession session, EditSession editSession, String[] split)
             throws WorldEditException
     {
         if (logComands) {
@@ -622,17 +622,17 @@ public class WorldEditController {
             checkArgs(split, 1, 2, split[0]);
 
             if (split[1].equalsIgnoreCase("single")) {
-                session.setSuperPickaxeMode(WorldEditSession.SuperPickaxeMode.SINGLE);
+                session.setSuperPickaxeMode(LocalSession.SuperPickaxeMode.SINGLE);
                 player.print("Mode set to single block.");
             } else if (split[1].equalsIgnoreCase("recursive")
                     || split[1].equalsIgnoreCase("area")) {
                 if (split.length == 3) {
                     int size = Math.max(1, Integer.parseInt(split[2]));
                     if (size <= maxSuperPickaxeSize) {
-                        WorldEditSession.SuperPickaxeMode mode =
+                        LocalSession.SuperPickaxeMode mode =
                                 split[1].equalsIgnoreCase("recursive") ?
-                                    WorldEditSession.SuperPickaxeMode.SAME_TYPE_RECURSIVE :
-                                    WorldEditSession.SuperPickaxeMode.SAME_TYPE_AREA;
+                                    LocalSession.SuperPickaxeMode.SAME_TYPE_RECURSIVE :
+                                    LocalSession.SuperPickaxeMode.SAME_TYPE_AREA;
                         session.setSuperPickaxeMode(mode);
                         session.setSuperPickaxeRange(size);
                         player.print("Mode set to " + split[1].toLowerCase() + ".");
@@ -653,21 +653,21 @@ public class WorldEditController {
             checkArgs(split, 1, 1, split[0]);
 
             if (split[1].equalsIgnoreCase("none")) {
-                session.setTool(WorldEditSession.Tool.NONE);
+                session.setTool(LocalSession.Tool.NONE);
                 player.print("No tool equipped. -3 XP, +10 Manliness");
             } else if (split[1].equalsIgnoreCase("tree")) {
                 if (!canUseCommand(player, "/treetool")) {
                     player.printError("You do not have the /treetool permission.");
                     return true;
                 }
-                session.setTool(WorldEditSession.Tool.TREE);
+                session.setTool(LocalSession.Tool.TREE);
                 player.print("Tree planting tool equipped. +5 XP");
             } else if (split[1].equalsIgnoreCase("info")) {
                 if (!canUseCommand(player, "/infotool")) {
                     player.printError("You do not have the /infotool permission.");
                     return true;
                 }
-                session.setTool(WorldEditSession.Tool.INFO);
+                session.setTool(LocalSession.Tool.INFO);
                 player.print("Block information tool equipped.");
             } else {
                 player.printError("Unknown tool.");
@@ -1591,25 +1591,25 @@ public class WorldEditController {
      * @param dir
      * @return
      */
-    public Vector getDirection(WorldEditPlayer player, String dirStr)
+    public Vector getDirection(LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
         int xm = 0;
         int ym = 0;
         int zm = 0;
         
-        WorldEditPlayer.DIRECTION dir = null;
+        LocalPlayer.DIRECTION dir = null;
 
         if (dirStr.equals("me")) {
             dir = player.getCardinalDirection();
         }
 
-        if (dirStr.charAt(0) == 'u' || dir == WorldEditPlayer.DIRECTION.WEST) {
+        if (dirStr.charAt(0) == 'u' || dir == LocalPlayer.DIRECTION.WEST) {
             zm += 1;
-        } else if (dirStr.charAt(0) == 'e' || dir == WorldEditPlayer.DIRECTION.EAST) {
+        } else if (dirStr.charAt(0) == 'e' || dir == LocalPlayer.DIRECTION.EAST) {
             zm -= 1;
-        } else if (dirStr.charAt(0) == 's' || dir == WorldEditPlayer.DIRECTION.SOUTH) {
+        } else if (dirStr.charAt(0) == 's' || dir == LocalPlayer.DIRECTION.SOUTH) {
             xm += 1;
-        } else if (dirStr.charAt(0) == 'n' || dir == WorldEditPlayer.DIRECTION.NORTH) {
+        } else if (dirStr.charAt(0) == 'n' || dir == LocalPlayer.DIRECTION.NORTH) {
             xm -= 1;
         } else if (dirStr.charAt(0) == 'u') {
             ym += 1;
@@ -1631,21 +1631,21 @@ public class WorldEditController {
      * @return
      */
     public CuboidClipboard.FlipDirection getFlipDirection(
-            WorldEditPlayer player, String dirStr)
+            LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
-        WorldEditPlayer.DIRECTION dir = null;
+        LocalPlayer.DIRECTION dir = null;
         
         if (dirStr.equals("me")) {
             dir = player.getCardinalDirection();
         }
 
-        if (dirStr.charAt(0) == 'w' || dir == WorldEditPlayer.DIRECTION.EAST) {
+        if (dirStr.charAt(0) == 'w' || dir == LocalPlayer.DIRECTION.EAST) {
             return CuboidClipboard.FlipDirection.WEST_EAST;
-        } else if (dirStr.charAt(0) == 'e' || dir == WorldEditPlayer.DIRECTION.EAST) {
+        } else if (dirStr.charAt(0) == 'e' || dir == LocalPlayer.DIRECTION.EAST) {
             return CuboidClipboard.FlipDirection.WEST_EAST;
-        } else if (dirStr.charAt(0) == 's' || dir == WorldEditPlayer.DIRECTION.SOUTH) {
+        } else if (dirStr.charAt(0) == 's' || dir == LocalPlayer.DIRECTION.SOUTH) {
             return CuboidClipboard.FlipDirection.NORTH_SOUTH;
-        } else if (dirStr.charAt(0) == 'n' || dir == WorldEditPlayer.DIRECTION.SOUTH) {
+        } else if (dirStr.charAt(0) == 'n' || dir == LocalPlayer.DIRECTION.SOUTH) {
             return CuboidClipboard.FlipDirection.NORTH_SOUTH;
         } else if (dirStr.charAt(0) == 'u') {
             return CuboidClipboard.FlipDirection.UP_DOWN;
@@ -1661,7 +1661,7 @@ public class WorldEditController {
      * 
      * @param player
      */
-    public void removeSession(WorldEditPlayer player) {
+    public void removeSession(LocalPlayer player) {
         sessions.remove(player);
     }
 
@@ -1689,7 +1689,7 @@ public class WorldEditController {
      *
      * @param player
      */
-    public void handleDisconnect(WorldEditPlayer player) {
+    public void handleDisconnect(LocalPlayer player) {
         removeSession(player);
     }
 
@@ -1698,7 +1698,7 @@ public class WorldEditController {
      * 
      * @param player
      */
-    public void handleArmSwing(WorldEditPlayer player) {
+    public void handleArmSwing(LocalPlayer player) {
         if (!canUseCommand(player, "//"))
             return;
     }
@@ -1711,14 +1711,14 @@ public class WorldEditController {
      * @return false if you want the action to go through
      */
     @SuppressWarnings("deprecation")
-    public boolean handleBlockRightClick(WorldEditPlayer player, Vector clicked) {
+    public boolean handleBlockRightClick(LocalPlayer player, Vector clicked) {
         int itemInHand = player.getItemInHand();
         
         // This prevents needless sessions from being created
         if (!hasSession(player) && !(itemInHand == wandItem &&
                 canUseCommand(player, "//pos2"))) { return false; }
 
-        WorldEditSession session = getSession(player);
+        LocalSession session = getSession(player);
 
         if (itemInHand == wandItem && session.isToolControlEnabled()
                 && canUseCommand(player, "//pos2")) {
@@ -1732,7 +1732,7 @@ public class WorldEditController {
 
             return true;
         } else if (player.isHoldingPickAxe()
-                && session.getTool() == WorldEditSession.Tool.TREE) {            
+                && session.getTool() == LocalSession.Tool.TREE) {            
             EditSession editSession =
                     new EditSession(server, player.getWorld(), session.getBlockChangeLimit());
 
@@ -1746,7 +1746,7 @@ public class WorldEditController {
 
             return true;
         } else if (player.isHoldingPickAxe()
-                && session.getTool() == WorldEditSession.Tool.INFO) {
+                && session.getTool() == LocalSession.Tool.INFO) {
             BaseBlock block = (new EditSession(server, player.getWorld(), 0)).rawGetBlock(clicked);
 
             player.print("\u00A79@" + clicked + ": " + "\u00A7e"
@@ -1773,11 +1773,11 @@ public class WorldEditController {
      * @param clicked
      * @return false if you want the action to go through
      */
-    public boolean handleBlockLeftClick(WorldEditPlayer player, Vector clicked) {
+    public boolean handleBlockLeftClick(LocalPlayer player, Vector clicked) {
         if (!canUseCommand(player, "//pos1")
                 && !canUseCommand(player, "//")) { return false; }
         
-        WorldEditSession session = getSession(player);
+        LocalSession session = getSession(player);
 
         if (player.getItemInHand() == wandItem) {
             if (session.isToolControlEnabled()) {
@@ -1812,7 +1812,7 @@ public class WorldEditController {
 
                 // Single block super pickaxe
                 if (session.getSuperPickaxeMode() ==
-                        WorldEditSession.SuperPickaxeMode.SINGLE) {
+                        LocalSession.SuperPickaxeMode.SINGLE) {
                     if (server.getBlockType(world, clicked) == 7 && !canBedrock) {
                         return true;
                     } else if (server.getBlockType(world, clicked) == 46) {
@@ -1827,7 +1827,7 @@ public class WorldEditController {
 
                 // Area super pickaxe
                 } else if (session.getSuperPickaxeMode() ==
-                        WorldEditSession.SuperPickaxeMode.SAME_TYPE_AREA) {
+                        LocalSession.SuperPickaxeMode.SAME_TYPE_AREA) {
                     int ox = clicked.getBlockX();
                     int oy = clicked.getBlockY();
                     int oz = clicked.getBlockZ();
@@ -1857,7 +1857,7 @@ public class WorldEditController {
 
                 // Area super pickaxe
                 } else if (session.getSuperPickaxeMode() ==
-                        WorldEditSession.SuperPickaxeMode.SAME_TYPE_RECURSIVE) {
+                        LocalSession.SuperPickaxeMode.SAME_TYPE_RECURSIVE) {
                     int size = session.getSuperPickaxeRange();
                     int initialType = server.getBlockType(world, clicked);
 
@@ -1923,7 +1923,7 @@ public class WorldEditController {
      * @param split
      * @return whether the command was processed
      */
-    public boolean handleCommand(WorldEditPlayer player, String[] split) {
+    public boolean handleCommand(LocalPlayer player, String[] split) {
         try {
             // Legacy /, command
             if (split[0].equals("/,")) {
@@ -1943,7 +1943,7 @@ public class WorldEditController {
                 }
                 
                 if (canUseCommand(player, split[0])) {
-                    WorldEditSession session = getSession(player);
+                    LocalSession session = getSession(player);
                     BlockBag blockBag = session.getBlockBag(player);
                     
                     EditSession editSession =
@@ -2009,7 +2009,7 @@ public class WorldEditController {
      * @param blockBag
      * @param editSession
      */
-    private static void flushBlockBag(WorldEditPlayer player,
+    private static void flushBlockBag(LocalPlayer player,
             EditSession editSession) {
         
         BlockBag blockBag = editSession.getBlockBag();
@@ -2051,7 +2051,7 @@ public class WorldEditController {
      * @param command
      * @return
      */
-    private boolean canUseCommand(WorldEditPlayer player, String command) {
+    private boolean canUseCommand(LocalPlayer player, String command) {
         // Allow the /worldeditselect permission
         if (command.equalsIgnoreCase("//pos1")
                 || command.equalsIgnoreCase("//pos2")
@@ -2097,11 +2097,11 @@ public class WorldEditController {
      * @param player
      * @return
      */
-    public WorldEditSession getBridgeSession(WorldEditPlayer player) {
+    public LocalSession getBridgeSession(LocalPlayer player) {
         if (sessions.containsKey(player)) {
             return sessions.get(player);
         } else {
-            WorldEditSession session = new WorldEditSession();
+            LocalSession session = new LocalSession();
             session.setBlockChangeLimit(defaultChangeLimit);
             sessions.put(player, session);
             return session;

@@ -29,7 +29,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
  *
  * @author sk89q
  */
-public class WorldEditSession {
+public class LocalSession {
     /**
      * List of super pick axe modes.
      */
@@ -326,7 +326,7 @@ public class WorldEditSession {
      * @return position
      * @throws IncompleteRegionException
      */
-    public Vector getPlacementPosition(WorldEditPlayer player)
+    public Vector getPlacementPosition(LocalPlayer player)
             throws IncompleteRegionException {
         if (!placeAtPos1) {
             return player.getBlockIn();
@@ -350,7 +350,7 @@ public class WorldEditSession {
      * @param player
      * @return
      */
-    public BlockBag getBlockBag(WorldEditPlayer player) {
+    public BlockBag getBlockBag(LocalPlayer player) {
         if (!useInventory) {
             return null;
         }
