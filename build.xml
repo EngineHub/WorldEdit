@@ -21,6 +21,7 @@
           <include name="jnbt.jar" />
           <include name="Minecraft_Mod.jar" />
           <include name="minecraft_server.jar" />
+          <include name="Bukkit.jar" />
         </fileset>
       </classpath>
     </javac>
