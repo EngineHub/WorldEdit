@@ -95,11 +95,6 @@ public class HMPlayer extends LocalPlayer {
      *
      * @return
      */
-    /**
-     * Get the ID of the item that the player is holding.
-     *
-     * @return
-     */
     public int getItemInHand() {
         return player.getItemInHand();
     }
@@ -113,11 +108,6 @@ public class HMPlayer extends LocalPlayer {
         return player.getName();
     }
 
-    /**
-     * Get the player's view pitch.
-     *
-     * @return pitch
-     */
     /**
      * Get the player's view pitch.
      *
@@ -150,21 +140,10 @@ public class HMPlayer extends LocalPlayer {
      *
      * @return yaw
      */
-    /**
-     * Get the player's view yaw.
-     *
-     * @return yaw
-     */
     public double getYaw() {
         return player.getRotation();
     }
 
-    /**
-     * Gives the player an item.
-     *
-     * @param type
-     * @param amt
-     */
     /**
      * Gives the player an item.
      *
