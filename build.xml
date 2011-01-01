@@ -67,7 +67,7 @@
     <copy todir="${release.dir}/src">
       <fileset dir="${src.dir}"/>
     </copy>
-    <zip destfile="${release.dir}/worldedit-${version}-source.zip" basedir="${release.dir}" excludes="*.zip"/>
+    <zip destfile="${release.dir}/worldedit-${version}-src.zip" basedir="${release.dir}" excludes="*.zip"/>
   </target>
 
   <!-- Clean the output -->
