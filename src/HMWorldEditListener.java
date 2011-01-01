@@ -17,11 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,16 +25,10 @@ import java.util.logging.Handler;
 import java.util.logging.FileHandler;
 import java.io.*;
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.*;
-import com.sk89q.worldedit.data.*;
-import com.sk89q.worldedit.filters.*;
 import com.sk89q.worldedit.snapshots.*;
-import com.sk89q.worldedit.regions.*;
-import com.sk89q.worldedit.patterns.*;
 
 /**
- * Plugin base.
+ * The event listener for WorldEdit in hMod.
  *
  * @author sk89q
  */
@@ -47,23 +37,36 @@ public class HMWorldEditListener extends PluginListener {
      * Logger.
      */
     private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
-    
     /**
-     * WorldEditLibrary's properties file.
+     * Properties file.
      */
     private PropertiesFile properties;
-    
     /**
      * Main WorldEdit controller.
      */
-    private WorldEditController controller = new WorldEditController();
+    private WorldEditController controller;
+    /**
+     * A copy of the server instance. This is where all world<->WorldEdit calls
+     * will go through.
+     */
+    private ServerInterface server;
+    
+    /**
+     * Constructs an instance.
+     * 
+     * @param server
+     */
+    public HMWorldEditListener(ServerInterface server) {
+        this.server = server;
+    }
+    
     /**
      *
      * @param player
      */
     @Override
     public void onDisconnect(Player player) {
-        controller.handleDisconnect(new HMPlayer(player));
+        controller.handleDisconnect(wrapPlayer(player));
     }
 
     /**
@@ -72,7 +75,7 @@ public class HMWorldEditListener extends PluginListener {
      * @param player
      */
     public void onArmSwing(Player player) {
-        controller.handleArmSwing(new HMPlayer(player));
+        controller.handleArmSwing(wrapPlayer(player));
     }
 
     /**
@@ -91,7 +94,7 @@ public class HMWorldEditListener extends PluginListener {
         Vector pos = new Vector(blockClicked.getX(),
                 blockClicked.getY(),
                 blockClicked.getZ());
-        return controller.handleBlockRightClick(new HMPlayer(player), pos);
+        return controller.handleBlockRightClick(wrapPlayer(player), pos);
     }
 
     /**
@@ -107,7 +110,7 @@ public class HMWorldEditListener extends PluginListener {
         Vector pos = new Vector(blockClicked.getX(),
                 blockClicked.getY(),
                 blockClicked.getZ());
-        return controller.handleBlockLeftClick(new HMPlayer(player), pos);
+        return controller.handleBlockLeftClick(wrapPlayer(player), pos);
     }
 
     /**
@@ -118,7 +121,7 @@ public class HMWorldEditListener extends PluginListener {
      */
     @Override
     public boolean onCommand(Player player, String[] split) {
-        return controller.handleCommand(new HMPlayer(player), split);
+        return controller.handleCommand(wrapPlayer(player), split);
     }
 
     /**
@@ -222,6 +225,10 @@ public class HMWorldEditListener extends PluginListener {
      * @return
      */
     public WorldEditSession _bridgeSession(Player player) {
-        return controller.getBridgeSession(new HMPlayer(player));
+        return controller.getBridgeSession(wrapPlayer(player));
+    }
+    
+    private WorldEditPlayer wrapPlayer(Player player) {
+        return new HMPlayer(server, player);
     }
 }

@@ -95,10 +95,12 @@ public class WorldEditController {
     public boolean useInventoryOverride = false;
 
     /**
-     * Construct an instance of the plugin.
+     * Construct an instance of the plugin
+     * 
+     * @param server
      */
-    public WorldEditController() {
-        server = ServerInterface.getInstance();
+    public WorldEditController(ServerInterface server) {
+        this.server = server;
         
         // Note: Commands should only have the phrase 'air' at the end
         // for now (see SMWorldEditListener.canUseCommand)
@@ -442,9 +444,9 @@ public class WorldEditController {
         // Jump to the block in sight
         } else if (split[0].equalsIgnoreCase("/jumpto")) {
             checkArgs(split, 0, 0, split[0]);
-            Vector pos = player.getSolidBlockTrace(300);
+            WorldVector pos = player.getSolidBlockTrace(300);
             if (pos != null) {
-                player.findFreePosition(pos);
+                player.findFreePosition(pos.getWorld(), pos);
                 player.print("Poof!");
             } else {
                 player.printError("No block in sight!");
@@ -1323,7 +1325,7 @@ public class WorldEditController {
                 Math.max(1, Integer.parseInt(split[1])) : -1;
 
             Vector origin = session.getPlacementPosition(player);
-            int killed = server.killMobs(origin, radius);
+            int killed = server.killMobs(player.getWorld(), origin, radius);
             player.print("Killed " + killed + " mobs.");
 
             return true;
@@ -1732,10 +1734,10 @@ public class WorldEditController {
         } else if (player.isHoldingPickAxe()
                 && session.getTool() == WorldEditSession.Tool.TREE) {            
             EditSession editSession =
-                    new EditSession(session.getBlockChangeLimit());
+                    new EditSession(server, player.getWorld(), session.getBlockChangeLimit());
 
             try {
-                if (!server.generateTree(editSession, clicked)) {
+                if (!server.generateTree(editSession, player.getWorld(), clicked)) {
                     player.printError("Notch won't let you put a tree there.");
                 }
             } finally {
@@ -1745,7 +1747,7 @@ public class WorldEditController {
             return true;
         } else if (player.isHoldingPickAxe()
                 && session.getTool() == WorldEditSession.Tool.INFO) {
-            BaseBlock block = (new EditSession(0)).rawGetBlock(clicked);
+            BaseBlock block = (new EditSession(server, player.getWorld(), 0)).rawGetBlock(clicked);
 
             player.print("\u00A79@" + clicked + ": " + "\u00A7e"
                     + "Type: " + block.getID() + "\u00A77" + " ("
@@ -1805,20 +1807,22 @@ public class WorldEditController {
         } else if (player.isHoldingPickAxe()) {
             if (session.hasSuperPickAxe()) {
                 boolean canBedrock = canUseCommand(player, "/worldeditbedrock");
+                
+                LocalWorld world = player.getWorld();
 
                 // Single block super pickaxe
                 if (session.getSuperPickaxeMode() ==
                         WorldEditSession.SuperPickaxeMode.SINGLE) {
-                    if (server.getBlockType(clicked) == 7 && !canBedrock) {
+                    if (server.getBlockType(world, clicked) == 7 && !canBedrock) {
                         return true;
-                    } else if (server.getBlockType(clicked) == 46) {
+                    } else if (server.getBlockType(world, clicked) == 46) {
                         return false;
                     }
 
                     if (superPickaxeDrop) {
-                        server.simulateBlockMine(clicked);
+                        server.simulateBlockMine(world, clicked);
                     } else {
-                        server.setBlockType(clicked, 0);
+                        server.setBlockType(world, clicked, 0);
                     }
 
                 // Area super pickaxe
@@ -1828,7 +1832,7 @@ public class WorldEditController {
                     int oy = clicked.getBlockY();
                     int oz = clicked.getBlockZ();
                     int size = session.getSuperPickaxeRange();
-                    int initialType = server.getBlockType(clicked);
+                    int initialType = server.getBlockType(world, clicked);
 
                     if (initialType == 7 && !canBedrock) {
                         return true;
@@ -1838,11 +1842,11 @@ public class WorldEditController {
                         for (int y = oy - size; y <= oy + size; y++) {
                             for (int z = oz - size; z <= oz + size; z++) {
                                 Vector pos = new Vector(x, y, z);
-                                if (server.getBlockType(pos) == initialType) {
+                                if (server.getBlockType(world, pos) == initialType) {
                                     if (superPickaxeManyDrop) {
-                                        server.simulateBlockMine(pos);
+                                        server.simulateBlockMine(world, pos);
                                     } else {
-                                        server.setBlockType(pos, 0);
+                                        server.setBlockType(world, pos, 0);
                                     }
                                 }
                             }
@@ -1855,13 +1859,13 @@ public class WorldEditController {
                 } else if (session.getSuperPickaxeMode() ==
                         WorldEditSession.SuperPickaxeMode.SAME_TYPE_RECURSIVE) {
                     int size = session.getSuperPickaxeRange();
-                    int initialType = server.getBlockType(clicked);
+                    int initialType = server.getBlockType(world, clicked);
 
                     if (initialType == 7 && !canBedrock) {
                         return true;
                     }
 
-                    recursiveSuperPickaxe(clicked.toBlockVector(), clicked, size,
+                    recursiveSuperPickaxe(world, clicked.toBlockVector(), clicked, size,
                             initialType, new HashSet<BlockVector>());
 
                     return true;
@@ -1881,7 +1885,7 @@ public class WorldEditController {
      * @param canBedrock
      * @return
      */
-    private void recursiveSuperPickaxe(BlockVector pos, Vector origin,
+    private void recursiveSuperPickaxe(LocalWorld world, BlockVector pos, Vector origin,
             int size, int initialType, Set<BlockVector> visited) {
         if (origin.distance(pos) > size || visited.contains(pos)) {
             return;
@@ -1889,27 +1893,27 @@ public class WorldEditController {
 
         visited.add(pos);
 
-        if (server.getBlockType(pos) == initialType) {
+        if (server.getBlockType(world, pos) == initialType) {
             if (superPickaxeManyDrop) {
-                server.simulateBlockMine(pos);
+                server.simulateBlockMine(world, pos);
             } else {
-                server.setBlockType(pos, 0);
+                server.setBlockType(world, pos, 0);
             }
         } else {
             return;
         }
 
-        recursiveSuperPickaxe(pos.add(1, 0, 0).toBlockVector(), origin, size,
+        recursiveSuperPickaxe(world, pos.add(1, 0, 0).toBlockVector(), origin, size,
                 initialType, visited);
-        recursiveSuperPickaxe(pos.add(-1, 0, 0).toBlockVector(), origin, size,
+        recursiveSuperPickaxe(world, pos.add(-1, 0, 0).toBlockVector(), origin, size,
                 initialType, visited);
-        recursiveSuperPickaxe(pos.add(0, 0, 1).toBlockVector(), origin, size,
+        recursiveSuperPickaxe(world, pos.add(0, 0, 1).toBlockVector(), origin, size,
                 initialType, visited);
-        recursiveSuperPickaxe(pos.add(0, 0, -1).toBlockVector(), origin, size,
+        recursiveSuperPickaxe(world, pos.add(0, 0, -1).toBlockVector(), origin, size,
                 initialType, visited);
-        recursiveSuperPickaxe(pos.add(0, 1, 0).toBlockVector(), origin, size,
+        recursiveSuperPickaxe(world, pos.add(0, 1, 0).toBlockVector(), origin, size,
                 initialType, visited);
-        recursiveSuperPickaxe(pos.add(0, -1, 0).toBlockVector(), origin, size,
+        recursiveSuperPickaxe(world, pos.add(0, -1, 0).toBlockVector(), origin, size,
                 initialType, visited);
     }
 
@@ -1943,7 +1947,8 @@ public class WorldEditController {
                     BlockBag blockBag = session.getBlockBag(player);
                     
                     EditSession editSession =
-                            new EditSession(session.getBlockChangeLimit(), blockBag);
+                            new EditSession(server, player.getWorld(),
+                                    session.getBlockChangeLimit(), blockBag);
                     editSession.enableQueue();
 
                     long start = System.currentTimeMillis();

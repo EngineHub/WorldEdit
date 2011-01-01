@@ -43,7 +43,7 @@ public class HMServerInterface extends ServerInterface {
      * @param type
      * @return
      */
-    public boolean setBlockType(Vector pt, int type) {
+    public boolean setBlockType(LocalWorld world, Vector pt, int type) {
         // Can't set colored cloth or crash
         if ((type >= 21 && type <= 34) || type == 36) {
             return false;
@@ -58,7 +58,7 @@ public class HMServerInterface extends ServerInterface {
      * @param pt
      * @return
      */
-    public int getBlockType(Vector pt) {
+    public int getBlockType(LocalWorld world, Vector pt) {
         return etc.getServer().getBlockIdAt(pt.getBlockX(), pt.getBlockY(),
                 pt.getBlockZ());
     }
@@ -70,7 +70,7 @@ public class HMServerInterface extends ServerInterface {
      * @param data
      * @return
      */
-    public void setBlockData(Vector pt, int data) {
+    public void setBlockData(LocalWorld world, Vector pt, int data) {
         etc.getServer().setBlockData(pt.getBlockX(), pt.getBlockY(),
                         pt.getBlockZ(), data);
     }
@@ -81,7 +81,7 @@ public class HMServerInterface extends ServerInterface {
      * @param pt
      * @return
      */
-    public int getBlockData(Vector pt) {
+    public int getBlockData(LocalWorld world, Vector pt) {
         return etc.getServer().getBlockData(pt.getBlockX(), pt.getBlockY(),
                 pt.getBlockZ());
     }
@@ -92,7 +92,7 @@ public class HMServerInterface extends ServerInterface {
      * @param pt
      * @param text
      */
-    public void setSignText(Vector pt, String[] text) {
+    public void setSignText(LocalWorld world, Vector pt, String[] text) {
         Sign signData = (Sign)etc.getServer().getComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (signData == null) {
@@ -110,7 +110,7 @@ public class HMServerInterface extends ServerInterface {
      * @param pt
      * @return
      */
-    public String[] getSignText(Vector pt) {
+    public String[] getSignText(LocalWorld world, Vector pt) {
         Sign signData = (Sign)etc.getServer().getComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (signData == null) {
@@ -130,7 +130,7 @@ public class HMServerInterface extends ServerInterface {
      * @param pt
      * @return
      */
-    public BaseItemStack[] getChestContents(Vector pt) {
+    public BaseItemStack[] getChestContents(LocalWorld world, Vector pt) {
         ComplexBlock cblock = etc.getServer().getOnlyComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 
@@ -165,7 +165,7 @@ public class HMServerInterface extends ServerInterface {
      * @param contents
      * @return
      */
-    public boolean setChestContents(Vector pt,
+    public boolean setChestContents(LocalWorld world, Vector pt,
             BaseItemStack[] contents) {
         
         ComplexBlock cblock = etc.getServer().getOnlyComplexBlock(
@@ -197,7 +197,7 @@ public class HMServerInterface extends ServerInterface {
      * 
      * @param pt
      */
-    public boolean clearChest(Vector pt) {
+    public boolean clearChest(LocalWorld world, Vector pt) {
         ComplexBlock cblock = etc.getServer().getOnlyComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 
@@ -247,7 +247,7 @@ public class HMServerInterface extends ServerInterface {
      * @param pt
      * @param mobType
      */
-    public void setMobSpawnerType(Vector pt, String mobType) {
+    public void setMobSpawnerType(LocalWorld world, Vector pt, String mobType) {
         ComplexBlock cblock = etc.getServer().getComplexBlock(
                 pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 
@@ -266,7 +266,7 @@ public class HMServerInterface extends ServerInterface {
      * @param pt
      * @param mobType
      */
-    public String getMobSpawnerType(Vector pt) {
+    public String getMobSpawnerType(LocalWorld world, Vector pt) {
         try {
             return MinecraftServerInterface.getMobSpawnerType(pt);
         } catch (Throwable t) {
@@ -282,7 +282,7 @@ public class HMServerInterface extends ServerInterface {
      * @param pt
      * @return
      */
-    public boolean generateTree(EditSession editSession, Vector pt) {
+    public boolean generateTree(EditSession editSession, LocalWorld world, Vector pt) {
         try {
             return MinecraftServerInterface.generateTree(editSession, pt);
         } catch (Throwable t) {
@@ -300,7 +300,7 @@ public class HMServerInterface extends ServerInterface {
      * @param count
      * @param times
      */
-    public void dropItem(Vector pt, int type, int count, int times) {
+    public void dropItem(LocalWorld world, Vector pt, int type, int count, int times) {
         for (int i = 0; i < times; i++) {
             etc.getServer().dropItem(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(),
                     type, count);
@@ -315,7 +315,7 @@ public class HMServerInterface extends ServerInterface {
      * @param count
      * @param times
      */
-    public void dropItem(Vector pt, int type, int count) {
+    public void dropItem(LocalWorld world, Vector pt, int type, int count) {
         etc.getServer().dropItem(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(),
                 type, count);
     }
@@ -328,7 +328,7 @@ public class HMServerInterface extends ServerInterface {
      * @param count
      * @param times
      */
-    public void dropItem(Vector pt, int type) {
+    public void dropItem(LocalWorld world, Vector pt, int type) {
         etc.getServer().dropItem(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(),
                 type, 1);
     }
@@ -338,57 +338,57 @@ public class HMServerInterface extends ServerInterface {
      * 
      * @param pt
      */
-    public void simulateBlockMine(Vector pt) {
-        int type = getBlockType(pt);
-        setBlockType(pt, 0);
+    public void simulateBlockMine(LocalWorld world, Vector pt) {
+        int type = getBlockType(world, pt);
+        setBlockType(world, pt, 0);
 
-        if (type == 1) { dropItem(pt, 4); } // Stone
-        else if (type == 2) { dropItem(pt, 3); } // Grass
+        if (type == 1) { dropItem(world, pt, 4); } // Stone
+        else if (type == 2) { dropItem(world, pt, 3); } // Grass
         else if (type == 7) { } // Bedrock
         else if (type == 8) { } // Water
         else if (type == 9) { } // Water
         else if (type == 10) { } // Lava
         else if (type == 11) { } // Lava
         else if (type == 13) { // Gravel
-            dropItem(pt, type);
+            dropItem(world, pt, type);
 
             if (random.nextDouble() >= 0.9) {
-                dropItem(pt, 318);
+                dropItem(world, pt, 318);
             }
         }
-        else if (type == 16) { dropItem(pt, 263); } // Coal ore
+        else if (type == 16) { dropItem(world, pt, 263); } // Coal ore
         else if (type == 18) { // Leaves
             if (random.nextDouble() > 0.95) {
-                dropItem(pt, 6);
+                dropItem(world, pt, 6);
             }
         }
         else if (type == 20) { } // Glass
-        else if (type == 43) { dropItem(pt, 44); } // Double step
+        else if (type == 43) { dropItem(world, pt, 44); } // Double step
         else if (type == 47) { } // Bookshelves
         else if (type == 51) { } // Fire
         else if (type == 52) { } // Mob spawner
-        else if (type == 53) { dropItem(pt, 5); } // Wooden stairs
-        else if (type == 55) { dropItem(pt, 331); } // Redstone wire
-        else if (type == 56) { dropItem(pt, 264); } // Diamond ore
-        else if (type == 59) { dropItem(pt, 295); } // Crops
-        else if (type == 60) { dropItem(pt, 3); } // Soil
-        else if (type == 62) { dropItem(pt, 61); } // Furnace
-        else if (type == 63) { dropItem(pt, 323); } // Sign post
-        else if (type == 64) { dropItem(pt, 324); } // Wood door
-        else if (type == 67) { dropItem(pt, 4); } // Cobblestone stairs
-        else if (type == 68) { dropItem(pt, 323); } // Wall sign
-        else if (type == 71) { dropItem(pt, 330); } // Iron door
-        else if (type == 73) { dropItem(pt, 331, 1, 4); } // Redstone ore
-        else if (type == 74) { dropItem(pt, 331, 1, 4); } // Glowing redstone ore
-        else if (type == 75) { dropItem(pt, 76); } // Redstone torch
+        else if (type == 53) { dropItem(world, pt, 5); } // Wooden stairs
+        else if (type == 55) { dropItem(world, pt, 331); } // Redstone wire
+        else if (type == 56) { dropItem(world, pt, 264); } // Diamond ore
+        else if (type == 59) { dropItem(world, pt, 295); } // Crops
+        else if (type == 60) { dropItem(world, pt, 3); } // Soil
+        else if (type == 62) { dropItem(world, pt, 61); } // Furnace
+        else if (type == 63) { dropItem(world, pt, 323); } // Sign post
+        else if (type == 64) { dropItem(world, pt, 324); } // Wood door
+        else if (type == 67) { dropItem(world, pt, 4); } // Cobblestone stairs
+        else if (type == 68) { dropItem(world, pt, 323); } // Wall sign
+        else if (type == 71) { dropItem(world, pt, 330); } // Iron door
+        else if (type == 73) { dropItem(world, pt, 331, 1, 4); } // Redstone ore
+        else if (type == 74) { dropItem(world, pt, 331, 1, 4); } // Glowing redstone ore
+        else if (type == 75) { dropItem(world, pt, 76); } // Redstone torch
         else if (type == 78) { } // Snow
         else if (type == 79) { } // Ice
-        else if (type == 82) { dropItem(pt, 337, 1, 4); } // Clay
-        else if (type == 83) { dropItem(pt, 338); } // Reed
-        else if (type == 89) { dropItem(pt, 348); } // Lightstone
+        else if (type == 82) { dropItem(world, pt, 337, 1, 4); } // Clay
+        else if (type == 83) { dropItem(world, pt, 338); } // Reed
+        else if (type == 89) { dropItem(world, pt, 348); } // Lightstone
         else if (type == 90) { } // Portal
         else if (type != 0) {
-            dropItem(pt, type);
+            dropItem(world, pt, type);
         }
     }
     
@@ -409,7 +409,7 @@ public class HMServerInterface extends ServerInterface {
      * @param radius
      * @return
      */
-    public int killMobs(Vector origin, int radius) {
+    public int killMobs(LocalWorld world, Vector origin, int radius) {
         int killed = 0;
         
         for (Mob mob : etc.getServer().getMobList()) {

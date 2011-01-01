@@ -17,9 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditPlayer;
+import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BlockType;
 
@@ -38,8 +40,8 @@ public class HMPlayer extends WorldEditPlayer {
      * 
      * @param player
      */
-    public HMPlayer(Player player) {
-        super();
+    public HMPlayer(ServerInterface server, Player player) {
+        super(server);
         this.player = player;
     }
 
@@ -58,13 +60,13 @@ public class HMPlayer extends WorldEditPlayer {
      * @param range
      * @return point
      */
-    public Vector getBlockTrace(int range) {
+    public WorldVector getBlockTrace(int range) {
         HitBlox hitBlox = new HitBlox(player,range, 0.2);
         Block block = hitBlox.getTargetBlock();
         if (block == null) {
             return null;
         }
-        return new Vector(block.getX(), block.getY(), block.getZ());
+        return new WorldVector(null, block.getX(), block.getY(), block.getZ());
     }
 
     /**
@@ -73,7 +75,7 @@ public class HMPlayer extends WorldEditPlayer {
      * @param range
      * @return point
      */
-    public Vector getSolidBlockTrace(int range) {
+    public WorldVector getSolidBlockTrace(int range) {
         HitBlox hitBlox = new HitBlox(player,range, 0.2);
         Block block = null;
 
@@ -85,7 +87,7 @@ public class HMPlayer extends WorldEditPlayer {
         if (block == null) {
             return null;
         }
-        return new Vector(block.getX(), block.getY(), block.getZ());
+        return new WorldVector(null, block.getX(), block.getY(), block.getZ());
     }
 
     /**
@@ -130,8 +132,17 @@ public class HMPlayer extends WorldEditPlayer {
      *
      * @return point
      */
-    public Vector getPosition() {
-        return new Vector(player.getX(), player.getY(), player.getZ());
+    public WorldVector getPosition() {
+        return new WorldVector(null, player.getX(), player.getY(), player.getZ());
+    }
+
+    /**
+     * Get the player's world.
+     *
+     * @return point
+     */
+    public LocalWorld getWorld() {
+        return null;
     }
 
     /**
@@ -174,6 +185,7 @@ public class HMPlayer extends WorldEditPlayer {
         boolean foundNext = false;
         int searchDist = 0;
         HitBlox hitBlox = new HitBlox(player,range, 0.2);
+        LocalWorld world = getPosition().getWorld();
         Block block;
         while ((block = hitBlox.getNextBlock()) != null) {
             searchDist++;
@@ -183,7 +195,7 @@ public class HMPlayer extends WorldEditPlayer {
             if (block.getType() == 0) {
                 if (foundNext) {
                     Vector v = new Vector(block.getX(), block.getY() - 1, block.getZ());
-                    if (server.getBlockType(v) == 0) {
+                    if (server.getBlockType(world, v) == 0) {
                         setPosition(v.add(0.5, 0, 0.5));
                         return true;
                     }

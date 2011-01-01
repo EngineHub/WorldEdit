@@ -21,7 +21,7 @@ package com.sk89q.worldedit;
 
 /**
  *
- * @author Albert
+ * @author sk89q
  */
 public class Vector {
     protected final double x, y, z;
