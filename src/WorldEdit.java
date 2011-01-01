@@ -35,7 +35,7 @@ public class WorldEdit extends Plugin {
     /**
      * WorldEditLibrary instance.
      */
-    private static final HMWorldEditListener listener = new HMWorldEditListener();
+    private static HMWorldEditListener listener;
     
     /**
      * WorldEdit version, fetched from the .jar's manifest. Used to print the
@@ -50,6 +50,10 @@ public class WorldEdit extends Plugin {
     public void initialize() {
         PluginLoader loader = etc.getLoader();
 
+		ServerInterface.setup(new HMServerInterface());
+
+		listener = new HMWorldEditListener();
+
         loader.addListener(PluginLoader.Hook.BLOCK_CREATED, listener, this,
                 PluginListener.Priority.MEDIUM);
         loader.addListener(PluginLoader.Hook.BLOCK_DESTROYED, listener, this,
@@ -62,8 +66,6 @@ public class WorldEdit extends Plugin {
                 PluginListener.Priority.MEDIUM);
         loader.addListener(PluginLoader.Hook.ARM_SWING, listener, this,
                 PluginListener.Priority.MEDIUM);
-        
-        ServerInterface.setup(new HMServerInterface());
 
         logger.log(Level.INFO, "WorldEdit version " + getVersion() + " loaded");
     }
