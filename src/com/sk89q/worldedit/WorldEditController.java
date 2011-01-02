@@ -32,6 +32,7 @@ import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
 import com.sk89q.worldedit.filters.*;
 import com.sk89q.worldedit.snapshots.*;
+import com.sk89q.worldedit.superpickaxe.*;
 import com.sk89q.worldedit.regions.*;
 import com.sk89q.worldedit.patterns.*;
 
@@ -59,6 +60,10 @@ public class WorldEditController {
      * Server interface.
      */
     private ServerInterface server;
+    /**
+     * WorldEdit configuration.
+     */
+    private LocalConfiguration config;
     
     /**
      * Stores a list of WorldEdit sessions, keyed by players' names. Sessions
@@ -76,31 +81,16 @@ public class WorldEditController {
      * will be loaded into help. On unload, they will be removed.
      */
     private HashMap<String,String> commands = new HashMap<String,String>();
-
-    public boolean profile;
-    public HashSet<Integer> allowedBlocks;
-    public int defaultChangeLimit = -1;
-    public int maxChangeLimit = -1;
-    public String shellSaveType;
-    public SnapshotRepository snapshotRepo;
-    public int maxRadius = -1;
-    public int maxSuperPickaxeSize = 5;
-    public boolean logComands = false;
-    public boolean registerHelp = true;
-    public int wandItem = 271;
-    public boolean superPickaxeDrop = true;
-    public boolean superPickaxeManyDrop = true;
-    public boolean noDoubleSlash = false;
-    public boolean useInventory = false;
-    public boolean useInventoryOverride = false;
-
+    
     /**
      * Construct an instance of the plugin
      * 
      * @param server
+     * @param config
      */
-    public WorldEditController(ServerInterface server) {
+    public WorldEditController(ServerInterface server, LocalConfiguration config) {
         this.server = server;
+        this.config = config;
         
         // Note: Commands should only have the phrase 'air' at the end
         // for now (see SMWorldEditListener.canUseCommand)
@@ -143,8 +133,12 @@ public class WorldEditController {
         commands.put("//fillr", "[ID] [Radius] - Fill a hole fully recursively");
         commands.put("//drain", "[Radius] - Drain nearby water/lava pools");
         commands.put("//limit", "[Num] - See documentation");
-        commands.put("//mode", "[Mode] <Size> - Set super pickaxe mode (single/recursive/area)");
-        commands.put("//tool", "[Tool] - Set pickaxe tool (none/tree/info)");
+        commands.put("/single", "Switch to single block super pickaxe mode");
+        commands.put("/area", "[Range] - Switch to area super pickaxe mode");
+        commands.put("/recur", "[Range] - Switch to recursive super pickaxe mode");
+        commands.put("/none", "Switch to no tool");
+        commands.put("/info", "Switch to the info tool");
+        commands.put("/tree", "Switch to the tree tool");
         commands.put("//expand", "[Num] <Dir> - Expands the selection");
         commands.put("//contract", "[Num] <Dir> - Contracts the selection");
         commands.put("//shift", "[Num] <Dir> - Shift the selection");
@@ -179,7 +173,7 @@ public class WorldEditController {
     }
 
     /**
-     * Gets the WorldEditLibrary session for a player.
+     * Gets the WorldEdit session for a player.
      *
      * @param player
      * @return
@@ -187,27 +181,41 @@ public class WorldEditController {
     public LocalSession getSession(LocalPlayer player) {
         if (sessions.containsKey(player)) {
             return sessions.get(player);
-        } else {
-            LocalSession session = new LocalSession();
-            if (!player.hasPermission("/worldeditnomax")
-                    && maxChangeLimit > -1) {
-                if (defaultChangeLimit < 0) {
-                    // No infinite!
-                    session.setBlockChangeLimit(maxChangeLimit);
-                } else {
-                    // Bound
-                    session.setBlockChangeLimit(
-                            Math.min(defaultChangeLimit, maxChangeLimit));
-                }
-            } else {
-                session.setBlockChangeLimit(defaultChangeLimit);
-            }
-            session.setUseInventory(useInventory
-                    && (!useInventoryOverride
-                            || !player.hasPermission("/worldeditunlimited")));
-            sessions.put(player, session);
-            return session;
         }
+        
+        LocalSession session = new LocalSession();
+        
+        // Set the limit on the number of blocks that an operation can
+        // change at once, or don't if the player has an override or there
+        // is no limit. There is also a default limit
+        if (!player.hasPermission("worldeditnomax")
+                && config.maxChangeLimit > -1) {
+            
+            // If the default limit is infinite but there is a maximum
+            // limit, make sure to not have it be overridden
+            if (config.defaultChangeLimit < 0) {
+                session.setBlockChangeLimit(config.maxChangeLimit);
+            } else {
+                // Bound the change limit
+                int limit = Math.min(config.defaultChangeLimit,
+                        config.maxChangeLimit);
+                session.setBlockChangeLimit(limit);
+            }
+        } else {
+            // No change limit or override
+            session.setBlockChangeLimit(config.defaultChangeLimit);
+        }
+        
+        // Have the session use inventory if it's enabled and the player
+        // doesn't have an override
+        session.setUseInventory(config.useInventory
+                && (!config.useInventoryOverride
+                        || !player.hasPermission("worldeditunlimited")));
+        
+        // Remember the session
+        sessions.put(player, session);
+        
+        return session;
     }
 
     /**
@@ -223,12 +231,14 @@ public class WorldEditController {
     /**
      * Get an item ID from an item name or an item ID number.
      *
+     * @param player
      * @param arg
+     * @param allAllowed true to ignore blacklists
      * @return
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public BaseBlock getBlock(String arg, boolean allAllowed)
+    public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed)
             throws UnknownItemException, DisallowedItemException {
         BlockType blockType;
         arg = arg.replace("_", " ");
@@ -239,6 +249,7 @@ public class WorldEditController {
         
         int data;
         
+        // Parse the block data (optional)
         try {
             data = args1.length > 1 ? Integer.parseInt(args1[1]) : 0;
             if (data > 15 || data < 0) {
@@ -248,6 +259,8 @@ public class WorldEditController {
             data = 0;
         }
 
+        // Attempt to parse the item ID or otherwise resolve an item/block
+        // name to its numeric ID
         try {
             blockType = BlockType.fromID(Integer.parseInt(testID));
         } catch (NumberFormatException e) {
@@ -265,8 +278,10 @@ public class WorldEditController {
         }
 
         // Check if the item is allowed
-        if (allAllowed || allowedBlocks.isEmpty()
-                || allowedBlocks.contains(blockType.getID())) {
+        if (allAllowed || player.hasPermission("worldeditanyblock")
+                || !config.disallowedBlocks.contains(blockType.getID())) {
+            
+            // Allow special sign text syntax
             if (blockType == BlockType.SIGN_POST
                     || blockType == BlockType.WALL_SIGN) {
                 String[] text = new String[4];
@@ -275,6 +290,8 @@ public class WorldEditController {
                 text[2] = args0.length > 3 ? args0[3] : "";
                 text[3] = args0.length > 4 ? args0[4] : "";
                 return new SignBlock(blockType.getID(), data, text);
+            
+            // Alow setting mob spawn type
             } else if (blockType == BlockType.MOB_SPAWNER) {
                 if (args0.length > 1) {
                     if (!server.isValidMobType(args0[1])) {
@@ -295,29 +312,31 @@ public class WorldEditController {
     /**
      * Get a block.
      *
+     * @param player
      * @param id
      * @return
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public BaseBlock getBlock(String id) throws UnknownItemException,
-                                                DisallowedItemException {
-        return getBlock(id, false);
+    public BaseBlock getBlock(LocalPlayer player, String id)
+            throws UnknownItemException, DisallowedItemException {
+        return getBlock(player, id, false);
     }
 
     /**
      * Get a list of blocks as a set. This returns a Pattern.
      *
+     * @param player
      * @param list
      * @return pattern
      */
-    public Pattern getBlockPattern(String list)
+    public Pattern getBlockPattern(LocalPlayer player, String list)
             throws UnknownItemException, DisallowedItemException {
 
         String[] items = list.split(",");
 
         if (items.length == 1) {
-            return new SingleBlockPattern(getBlock(items[0]));
+            return new SingleBlockPattern(getBlock(player, items[0]));
         }
 
         List<BlockChance> blockChances = new ArrayList<BlockChance>();
@@ -329,10 +348,10 @@ public class WorldEditController {
             if (s.matches("[0-9]+(?:\\.(?:[0-9]+)?)?%.*")) {
                 String[] p = s.split("%");
                 chance = Double.parseDouble(p[0]);
-                block = getBlock(p[1]);
+                block = getBlock(player, p[1]);
             } else {
                 chance = 1;
-                block = getBlock(s);
+                block = getBlock(player, s);
             }
             
             blockChances.add(new BlockChance(block, chance));
@@ -344,16 +363,19 @@ public class WorldEditController {
     /**
      * Get a list of blocks as a set.
      *
+     *@param player
      * @param list
-     * @params allBlocksAllowed
+     * @param allBlocksAllowed
      * @return set
      */
-    public Set<Integer> getBlockIDs(String list, boolean allBlocksAllowed)
+    public Set<Integer> getBlockIDs(LocalPlayer player,
+            String list, boolean allBlocksAllowed)
             throws UnknownItemException, DisallowedItemException {
+        
         String[] items = list.split(",");
         Set<Integer> blocks = new HashSet<Integer>();
         for (String s : items) {
-            blocks.add(getBlock(s, allBlocksAllowed).getID());
+            blocks.add(getBlock(player, s, allBlocksAllowed).getID());
         }
         return blocks;
     }
@@ -386,7 +408,7 @@ public class WorldEditController {
      * @throws MaxRadiusException
      */
     private void checkMaxRadius(int radius) throws MaxRadiusException {
-        if (maxRadius > 0 && radius > maxRadius) {
+        if (config.maxRadius > 0 && radius > config.maxRadius) {
             throw new MaxRadiusException();
         }
     }
@@ -409,7 +431,7 @@ public class WorldEditController {
             LocalSession session, EditSession editSession, String[] split)
             throws WorldEditException
     {
-        if (logComands) {
+        if (config.logComands) {
             logger.log(Level.INFO, "WorldEdit: " + player.getName() + ": "
                     + joinString(split, " "));
         }
@@ -565,7 +587,7 @@ public class WorldEditController {
         // Edit wand
         } else if (split[0].equalsIgnoreCase("//wand")) {
             checkArgs(split, 0, 0, split[0]);
-            player.giveItem(wandItem, 1);
+            player.giveItem(config.wandItem, 1);
             player.print("Left click: select pos #1; Right click: select pos #2");
             return true;
 
@@ -604,10 +626,11 @@ public class WorldEditController {
         } else if (split[0].equalsIgnoreCase("//limit")) {
             checkArgs(split, 1, 1, split[0]);
             int limit = Math.max(-1, Integer.parseInt(split[1]));
-            if (!player.hasPermission("/worldeditnomax")
-                    && maxChangeLimit > -1) {
-                if (limit > maxChangeLimit) {
-                    player.printError("Your maximum allowable limit is " + maxChangeLimit + ".");
+            if (!player.hasPermission("worldeditnomax")
+                    && config.maxChangeLimit > -1) {
+                if (limit > config.maxChangeLimit) {
+                    player.printError("Your maximum allowable limit is "
+                            + config.maxChangeLimit + ".");
                     return true;
                 }
             }
@@ -617,61 +640,63 @@ public class WorldEditController {
             
             return true;
 
-        // Set super pick axe mode
-        } else if (split[0].equalsIgnoreCase("//mode")) {
-            checkArgs(split, 1, 2, split[0]);
-
-            if (split[1].equalsIgnoreCase("single")) {
-                session.setSuperPickaxeMode(LocalSession.SuperPickaxeMode.SINGLE);
-                player.print("Mode set to single block.");
-            } else if (split[1].equalsIgnoreCase("recursive")
-                    || split[1].equalsIgnoreCase("area")) {
-                if (split.length == 3) {
-                    int size = Math.max(1, Integer.parseInt(split[2]));
-                    if (size <= maxSuperPickaxeSize) {
-                        LocalSession.SuperPickaxeMode mode =
-                                split[1].equalsIgnoreCase("recursive") ?
-                                    LocalSession.SuperPickaxeMode.SAME_TYPE_RECURSIVE :
-                                    LocalSession.SuperPickaxeMode.SAME_TYPE_AREA;
-                        session.setSuperPickaxeMode(mode);
-                        session.setSuperPickaxeRange(size);
-                        player.print("Mode set to " + split[1].toLowerCase() + ".");
-                    } else {
-                        player.printError("Max size is " + maxSuperPickaxeSize + ".");
-                    }
-                } else {
-                    player.printError("Size argument required for mode "
-                            + split[1].toLowerCase() + ".");
-                }
-            } else {
-                player.printError("Unknown super pick axe mode.");
+        // Single super pickaxe mode
+        } else if (split[0].equalsIgnoreCase("/single")) {
+            if (!canUseCommand(player, "//")) {
+                player.printError("You don't have permission for super pickaxe usage.");
+                return true;
             }
+            
+            checkArgs(split, 0, 0, split[0]);
+            session.setSuperPickaxeMode(new SinglePickaxe());
+            session.enableSuperPickAxe();
+            player.print("Mode changed. Left click with a pickaxe. // to disable.");
             return true;
 
-        // Set tool
-        } else if (split[0].equalsIgnoreCase("//tool")) {
-            checkArgs(split, 1, 1, split[0]);
-
-            if (split[1].equalsIgnoreCase("none")) {
-                session.setTool(LocalSession.Tool.NONE);
-                player.print("No tool equipped. -3 XP, +10 Manliness");
-            } else if (split[1].equalsIgnoreCase("tree")) {
-                if (!canUseCommand(player, "/treetool")) {
-                    player.printError("You do not have the /treetool permission.");
-                    return true;
-                }
-                session.setTool(LocalSession.Tool.TREE);
-                player.print("Tree planting tool equipped. +5 XP");
-            } else if (split[1].equalsIgnoreCase("info")) {
-                if (!canUseCommand(player, "/infotool")) {
-                    player.printError("You do not have the /infotool permission.");
-                    return true;
-                }
-                session.setTool(LocalSession.Tool.INFO);
-                player.print("Block information tool equipped.");
-            } else {
-                player.printError("Unknown tool.");
+        // Area/recursive super pickaxe mode
+        } else if (split[0].equalsIgnoreCase("/area")
+                || split[0].equalsIgnoreCase("/recur")) {
+            
+            if (!canUseCommand(player, "//")) {
+                player.printError("You don't have permission for super pickaxe usage.");
+                return true;
             }
+            
+            checkArgs(split, 1, 1, split[0]);
+            
+            boolean recur = split[0].equalsIgnoreCase("/recur");
+            int range = Integer.parseInt(split[1]);
+            
+            if (range > config.maxSuperPickaxeSize) {
+                player.printError("Maximum range: " + config.maxSuperPickaxeSize);
+                return true;
+            }
+            
+            session.setSuperPickaxeMode(
+                    recur ? new RecursivePickaxe(range) : new AreaPickaxe(range));
+            session.enableSuperPickAxe();
+            player.print("Mode changed. Left click with a pickaxe. // to disable.");
+            return true;
+
+        // Tree tool
+        } else if (split[0].equalsIgnoreCase("/tree")) {
+            checkArgs(split, 0, 0, split[0]);
+            session.setTool(new TreePlanter());
+            player.print("Tree tool equipped. Right click with a pickaxe.");
+            return true;
+
+        // Info tool
+        } else if (split[0].equalsIgnoreCase("/info")) {
+            checkArgs(split, 0, 0, split[0]);
+            session.setTool(new QueryTool());
+            player.print("Info tool equipped. Right click with a pickaxe.");
+            return true;
+
+        // Info tool
+        } else if (split[0].equalsIgnoreCase("/none")) {
+            checkArgs(split, 0, 0, split[0]);
+            session.setTool(null);
+            player.print("Now no longer equipping a tool.");
             return true;
 
         // Undo
@@ -740,7 +765,7 @@ public class WorldEditController {
         } else if (split[0].equalsIgnoreCase("//hcyl")
                 || split[0].equalsIgnoreCase("//cyl")) {
             checkArgs(split, 2, 3, split[0]);
-            BaseBlock block = getBlock(split[1]);
+            BaseBlock block = getBlock(player, split[1]);
             int radius = Math.max(1, Integer.parseInt(split[2]));
             int height = split.length > 3 ? Integer.parseInt(split[3]) : 1;
             boolean filled = split[0].equalsIgnoreCase("//cyl");
@@ -760,7 +785,7 @@ public class WorldEditController {
         } else if (split[0].equalsIgnoreCase("//sphere")
                 || split[0].equalsIgnoreCase("//hsphere")) {
             checkArgs(split, 2, 3, split[0]);
-            BaseBlock block = getBlock(split[1]);
+            BaseBlock block = getBlock(player, split[1]);
             int radius = Math.max(1, Integer.parseInt(split[2]));
             boolean raised = split.length > 3
                     ? (split[3].equalsIgnoreCase("true")
@@ -784,7 +809,7 @@ public class WorldEditController {
                 || split[0].equalsIgnoreCase("//fillr")) {
             boolean recursive = split[0].equalsIgnoreCase("//fillr");
             checkArgs(split, 2, recursive ? 2 : 3, split[0]);
-            Pattern pattern = getBlockPattern(split[1]);
+            Pattern pattern = getBlockPattern(player, split[1]);
             int radius = Math.max(1, Integer.parseInt(split[2]));
             checkMaxRadius(radius);
             int depth = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
@@ -831,7 +856,7 @@ public class WorldEditController {
         // Remove blocks near
         } else if (split[0].equalsIgnoreCase("/removenear")) {
             checkArgs(split, 2, 2, split[0]);
-            BaseBlock block = getBlock(split[1], true);
+            BaseBlock block = getBlock(player, split[1], true);
             int size = Math.max(1, Integer.parseInt(split[2]));
             checkMaxRadius(size);
 
@@ -844,7 +869,7 @@ public class WorldEditController {
         // Extinguish
         } else if (split[0].equalsIgnoreCase("/ex")) {
             checkArgs(split, 0, 1, split[0]);
-            int defaultRadius = maxRadius != -1 ? Math.min(40, maxRadius) : 40;
+            int defaultRadius = config.maxRadius != -1 ? Math.min(40, config.maxRadius) : 40;
             int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1]))
                     : defaultRadius;
             checkMaxRadius(size);
@@ -948,7 +973,7 @@ public class WorldEditController {
         // Get count
         } else if (split[0].equalsIgnoreCase("//count")) {
             checkArgs(split, 1, 1, split[0]);
-            Set<Integer> searchIDs = getBlockIDs(split[1], true);
+            Set<Integer> searchIDs = getBlockIDs(player, split[1], true);
             player.print("Counted: " +
                     editSession.countBlocks(session.getRegion(), searchIDs));
             return true;
@@ -977,7 +1002,7 @@ public class WorldEditController {
         // Replace all blocks in the region
         } else if(split[0].equalsIgnoreCase("//set")) {
             checkArgs(split, 1, 1, split[0]);
-            Pattern pattern = getBlockPattern(split[1]);
+            Pattern pattern = getBlockPattern(player, split[1]);
             int affected;
             if (pattern instanceof SingleBlockPattern) {
                 affected = editSession.setBlocks(session.getRegion(),
@@ -1007,7 +1032,7 @@ public class WorldEditController {
         // Set the outline of a region
         } else if(split[0].equalsIgnoreCase("//outline")) {
             checkArgs(split, 1, 1, split[0]);
-            BaseBlock block = getBlock(split[1]);
+            BaseBlock block = getBlock(player, split[1]);
             int affected = editSession.makeCuboidFaces(session.getRegion(), block);
             player.print(affected + " block(s) have been changed.");
 
@@ -1016,7 +1041,7 @@ public class WorldEditController {
         // Set the walls of a region
         } else if(split[0].equalsIgnoreCase("//walls")) {
             checkArgs(split, 1, 1, split[0]);
-            BaseBlock block = getBlock(split[1]);
+            BaseBlock block = getBlock(player, split[1]);
             int affected = editSession.makeCuboidWalls(session.getRegion(), block);
             player.print(affected + " block(s) have been changed.");
 
@@ -1063,10 +1088,10 @@ public class WorldEditController {
             Pattern to;
             if (split.length == 2) {
                 from = null;
-                to = getBlockPattern(split[1]);
+                to = getBlockPattern(player, split[1]);
             } else {
-                from = getBlockIDs(split[1], true);
-                to = getBlockPattern(split[2]);
+                from = getBlockIDs(player, split[1], true);
+                to = getBlockPattern(player, split[2]);
             }
 
             int affected = 0;
@@ -1088,10 +1113,10 @@ public class WorldEditController {
             BaseBlock to;
             if (split.length == 3) {
                 from = null;
-                to = getBlock(split[2]);
+                to = getBlock(player, split[2]);
             } else {
-                from = getBlockIDs(split[2], true);
-                to = getBlock(split[3]);
+                from = getBlockIDs(player, split[2], true);
+                to = getBlock(player, split[3]);
             }
 
             Vector min = player.getBlockIn().subtract(size, size, size);
@@ -1106,7 +1131,7 @@ public class WorldEditController {
         // Lay blocks over an area
         } else if (split[0].equalsIgnoreCase("//overlay")) {
             checkArgs(split, 1, 1, split[0]);
-            BaseBlock block = getBlock(split[1]);
+            BaseBlock block = getBlock(player, split[1]);
 
             Region region = session.getRegion();
             int affected = editSession.overlayCuboidBlocks(region, block);
@@ -1123,7 +1148,7 @@ public class WorldEditController {
             if (cut) {
                 checkArgs(split, 0, 1, split[0]);
                 if (split.length > 1) {
-                    getBlock(split[1]);
+                    getBlock(player, split[1]);
                 }
             } else {
                 checkArgs(split, 0, 0, split[0]);
@@ -1204,7 +1229,7 @@ public class WorldEditController {
 
             // Replacement block argument
             if (split.length > 3) {
-                replace = getBlock(split[3]);
+                replace = getBlock(player, split[3]);
             } else {
                 replace = new BaseBlock(0);
             }
@@ -1367,9 +1392,9 @@ public class WorldEditController {
             Set<Vector2D> chunks = session.getRegion().getChunks();
             FileOutputStream out = null;
 
-            if (shellSaveType == null) {
+            if (config.shellSaveType == null) {
                 player.printError("shell-save-type has to be configured in worldedit.properties");
-            } else if (shellSaveType.equalsIgnoreCase("bat")) {
+            } else if (config.shellSaveType.equalsIgnoreCase("bat")) {
                 try {
                     out = new FileOutputStream("worldedit-delchunks.bat");
                     OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
@@ -1398,7 +1423,7 @@ public class WorldEditController {
                         try { out.close(); } catch (IOException ie) {}
                     }
                 }
-            } else if (shellSaveType.equalsIgnoreCase("bash")) {
+            } else if (config.shellSaveType.equalsIgnoreCase("bash")) {
                 try {
                     out = new FileOutputStream("worldedit-delchunks.sh");
                     OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
@@ -1441,8 +1466,8 @@ public class WorldEditController {
             int num = split.length > 1 ?
                 Math.min(40, Math.max(5, Integer.parseInt(split[1]))) : 5;
 
-            if (snapshotRepo != null) {
-                Snapshot[] snapshots = snapshotRepo.getSnapshots();
+            if (config.snapshotRepo != null) {
+                Snapshot[] snapshots = config.snapshotRepo.getSnapshots();
 
                 if (snapshots.length > 0) {
                     for (byte i = 0; i < Math.min(num, snapshots.length); i++) {
@@ -1463,7 +1488,7 @@ public class WorldEditController {
         } else if (split[0].equalsIgnoreCase("//use")) {
             checkArgs(split, 1, 1, split[0]);
 
-            if (snapshotRepo == null) {
+            if (config.snapshotRepo == null) {
                 player.printError("Snapshot/backup restore is not configured.");
                 return true;
             }
@@ -1472,7 +1497,7 @@ public class WorldEditController {
 
             // Want the latest snapshot?
             if (name.equalsIgnoreCase("latest")) {
-                Snapshot snapshot = snapshotRepo.getDefaultSnapshot();
+                Snapshot snapshot = config.snapshotRepo.getDefaultSnapshot();
 
                 if (snapshot != null) {
                     session.setSnapshot(null);
@@ -1482,7 +1507,7 @@ public class WorldEditController {
                 }
             } else {
                 try {
-                    session.setSnapshot(snapshotRepo.getSnapshot(name));
+                    session.setSnapshot(config.snapshotRepo.getSnapshot(name));
                     player.print("Snapshot set to: " + name);
                 } catch (InvalidSnapshotException e) {
                     player.printError("That snapshot does not exist or is not available.");
@@ -1495,7 +1520,7 @@ public class WorldEditController {
         } else if (split[0].equalsIgnoreCase("//restore")) {
             checkArgs(split, 0, 1, split[0]);
 
-            if (snapshotRepo == null) {
+            if (config.snapshotRepo == null) {
                 player.printError("Snapshot/backup restore is not configured.");
                 return true;
             }
@@ -1505,7 +1530,7 @@ public class WorldEditController {
 
             if (split.length > 1) {
                 try {
-                    snapshot = snapshotRepo.getSnapshot(split[1]);
+                    snapshot = config.snapshotRepo.getSnapshot(split[1]);
                 } catch (InvalidSnapshotException e) {
                     player.printError("That snapshot does not exist or is not available.");
                     return true;
@@ -1518,7 +1543,7 @@ public class WorldEditController {
 
             // No snapshot set?
             if (snapshot == null) {
-                snapshot = snapshotRepo.getDefaultSnapshot();
+                snapshot = config.snapshotRepo.getDefaultSnapshot();
 
                 if (snapshot == null) {
                     player.printError("No snapshots were found.");
@@ -1707,20 +1732,21 @@ public class WorldEditController {
      * Called on right click.
      *
      * @param player
+     * @param world
      * @param clicked
      * @return false if you want the action to go through
      */
-    @SuppressWarnings("deprecation")
-    public boolean handleBlockRightClick(LocalPlayer player, Vector clicked) {
+    public boolean handleBlockRightClick(LocalPlayer player, LocalWorld world,
+            Vector clicked) {
         int itemInHand = player.getItemInHand();
         
         // This prevents needless sessions from being created
-        if (!hasSession(player) && !(itemInHand == wandItem &&
+        if (!hasSession(player) && !(itemInHand == config.wandItem &&
                 canUseCommand(player, "//pos2"))) { return false; }
 
         LocalSession session = getSession(player);
 
-        if (itemInHand == wandItem && session.isToolControlEnabled()
+        if (itemInHand == config.wandItem && session.isToolControlEnabled()
                 && canUseCommand(player, "//pos2")) {
             session.setPos2(clicked);
             try {
@@ -1731,36 +1757,9 @@ public class WorldEditController {
             }
 
             return true;
-        } else if (player.isHoldingPickAxe()
-                && session.getTool() == LocalSession.Tool.TREE) {            
-            EditSession editSession =
-                    new EditSession(server, player.getWorld(), session.getBlockChangeLimit());
-
-            try {
-                if (!server.generateTree(editSession, player.getWorld(), clicked)) {
-                    player.printError("Notch won't let you put a tree there.");
-                }
-            } finally {
-                session.remember(editSession);
-            }
-
-            return true;
-        } else if (player.isHoldingPickAxe()
-                && session.getTool() == LocalSession.Tool.INFO) {
-            BaseBlock block = (new EditSession(server, player.getWorld(), 0)).rawGetBlock(clicked);
-
-            player.print("\u00A79@" + clicked + ": " + "\u00A7e"
-                    + "Type: " + block.getID() + "\u00A77" + " ("
-                    + BlockType.fromID(block.getID()).getName() + ") "
-                    + "\u00A7f"
-                    + "[" + block.getData() + "]");
-
-            if (block instanceof MobSpawnerBlock) {
-                player.printRaw("\u00A7e" + "Mob Type: "
-                        + ((MobSpawnerBlock)block).getMobType());
-            }
-
-            return true;
+        } else if (player.isHoldingPickAxe() && session.getTool() != null) {
+            return session.getTool().act(server, config, player, session,
+                    world, clicked);
         }
 
         return false;
@@ -1770,16 +1769,19 @@ public class WorldEditController {
      * Called on left click.
      *
      * @param player
+     * @param world
      * @param clicked
      * @return false if you want the action to go through
      */
-    public boolean handleBlockLeftClick(LocalPlayer player, Vector clicked) {
+    public boolean handleBlockLeftClick(LocalPlayer player,
+            LocalWorld world, Vector clicked) {
+        
         if (!canUseCommand(player, "//pos1")
                 && !canUseCommand(player, "//")) { return false; }
         
         LocalSession session = getSession(player);
 
-        if (player.getItemInHand() == wandItem) {
+        if (player.getItemInHand() == config.wandItem) {
             if (session.isToolControlEnabled()) {
                 // Bug workaround
                 if (clicked.getBlockX() == 0 && clicked.getBlockY() == 0
@@ -1804,117 +1806,14 @@ public class WorldEditController {
 
                 return true;
             }
-        } else if (player.isHoldingPickAxe()) {
-            if (session.hasSuperPickAxe()) {
-                boolean canBedrock = canUseCommand(player, "/worldeditbedrock");
-                
-                LocalWorld world = player.getWorld();
-
-                // Single block super pickaxe
-                if (session.getSuperPickaxeMode() ==
-                        LocalSession.SuperPickaxeMode.SINGLE) {
-                    if (server.getBlockType(world, clicked) == 7 && !canBedrock) {
-                        return true;
-                    } else if (server.getBlockType(world, clicked) == 46) {
-                        return false;
-                    }
-
-                    if (superPickaxeDrop) {
-                        server.simulateBlockMine(world, clicked);
-                    } else {
-                        server.setBlockType(world, clicked, 0);
-                    }
-
-                // Area super pickaxe
-                } else if (session.getSuperPickaxeMode() ==
-                        LocalSession.SuperPickaxeMode.SAME_TYPE_AREA) {
-                    int ox = clicked.getBlockX();
-                    int oy = clicked.getBlockY();
-                    int oz = clicked.getBlockZ();
-                    int size = session.getSuperPickaxeRange();
-                    int initialType = server.getBlockType(world, clicked);
-
-                    if (initialType == 7 && !canBedrock) {
-                        return true;
-                    }
-
-                    for (int x = ox - size; x <= ox + size; x++) {
-                        for (int y = oy - size; y <= oy + size; y++) {
-                            for (int z = oz - size; z <= oz + size; z++) {
-                                Vector pos = new Vector(x, y, z);
-                                if (server.getBlockType(world, pos) == initialType) {
-                                    if (superPickaxeManyDrop) {
-                                        server.simulateBlockMine(world, pos);
-                                    } else {
-                                        server.setBlockType(world, pos, 0);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    return true;
-
-                // Area super pickaxe
-                } else if (session.getSuperPickaxeMode() ==
-                        LocalSession.SuperPickaxeMode.SAME_TYPE_RECURSIVE) {
-                    int size = session.getSuperPickaxeRange();
-                    int initialType = server.getBlockType(world, clicked);
-
-                    if (initialType == 7 && !canBedrock) {
-                        return true;
-                    }
-
-                    recursiveSuperPickaxe(world, clicked.toBlockVector(), clicked, size,
-                            initialType, new HashSet<BlockVector>());
-
-                    return true;
-                }
-
-                return true;
+        } else if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
+            if (session.getSuperPickaxeMode() != null) {
+                return session.getSuperPickaxeMode().act(server, config,
+                        player, session, world, clicked);
             }
         }
 
         return false;
-    }
-
-    /**
-     * Helper method for the recursive super pickaxe.
-     * 
-     * @param pos
-     * @param canBedrock
-     * @return
-     */
-    private void recursiveSuperPickaxe(LocalWorld world, BlockVector pos, Vector origin,
-            int size, int initialType, Set<BlockVector> visited) {
-        if (origin.distance(pos) > size || visited.contains(pos)) {
-            return;
-        }
-
-        visited.add(pos);
-
-        if (server.getBlockType(world, pos) == initialType) {
-            if (superPickaxeManyDrop) {
-                server.simulateBlockMine(world, pos);
-            } else {
-                server.setBlockType(world, pos, 0);
-            }
-        } else {
-            return;
-        }
-
-        recursiveSuperPickaxe(world, pos.add(1, 0, 0).toBlockVector(), origin, size,
-                initialType, visited);
-        recursiveSuperPickaxe(world, pos.add(-1, 0, 0).toBlockVector(), origin, size,
-                initialType, visited);
-        recursiveSuperPickaxe(world, pos.add(0, 0, 1).toBlockVector(), origin, size,
-                initialType, visited);
-        recursiveSuperPickaxe(world, pos.add(0, 0, -1).toBlockVector(), origin, size,
-                initialType, visited);
-        recursiveSuperPickaxe(world, pos.add(0, 1, 0).toBlockVector(), origin, size,
-                initialType, visited);
-        recursiveSuperPickaxe(world, pos.add(0, -1, 0).toBlockVector(), origin, size,
-                initialType, visited);
     }
 
     /**
@@ -1933,10 +1832,10 @@ public class WorldEditController {
             String searchCmd = split[0].toLowerCase();
 
             if (commands.containsKey(searchCmd)
-                    || (noDoubleSlash && commands.containsKey("/" + searchCmd))
+                    || (config.noDoubleSlash && commands.containsKey("/" + searchCmd))
                     || ((searchCmd.length() < 3 || searchCmd.charAt(2) != '/')
                             && commands.containsKey(searchCmd.substring(1)))) {
-                if (noDoubleSlash && commands.containsKey("/" + searchCmd)) {
+                if (config.noDoubleSlash && commands.containsKey("/" + searchCmd)) {
                     split[0] = "/" + split[0];
                 } else if (commands.containsKey(searchCmd.substring(1))) {
                     split[0] = split[0].substring(1);
@@ -1959,9 +1858,9 @@ public class WorldEditController {
                         session.remember(editSession);
                         editSession.flushQueue();
 
-                        if (profile) {
+                        if (config.profile) {
                             long time = System.currentTimeMillis() - start;
-                            player.print((      time / 1000.0) + "s elapsed");
+                            player.print((time / 1000.0) + "s elapsed");
                         }
                         
                         flushBlockBag(player, editSession);
@@ -1984,7 +1883,7 @@ public class WorldEditController {
             player.printError("Max blocks changed in an operation reached ("
                     + e5.getBlockLimit() + ").");
         } catch (MaxRadiusException e) {
-            player.printError("Maximum radius: " + maxRadius);
+            player.printError("Maximum radius: " + config.maxRadius);
         } catch (UnknownDirectionException ue) {
             player.printError("Unknown direction: " + ue.getDirection());
         } catch (InsufficientArgumentsException e6) {
@@ -2058,12 +1957,12 @@ public class WorldEditController {
                 || command.equalsIgnoreCase("//hpos1")
                 || command.equalsIgnoreCase("//hpos2")) {
             return player.hasPermission(command)
-                    || player.hasPermission("/worldeditselect")
-                    || player.hasPermission("/worldedit");
+                    || player.hasPermission("worldeditselect")
+                    || player.hasPermission("worldedit");
         }
         
         return player.hasPermission(command.replace("air", ""))
-                || player.hasPermission("/worldedit");
+                || player.hasPermission("worldedit");
     }
 
     /**
@@ -2102,7 +2001,7 @@ public class WorldEditController {
             return sessions.get(player);
         } else {
             LocalSession session = new LocalSession();
-            session.setBlockChangeLimit(defaultChangeLimit);
+            session.setBlockChangeLimit(config.defaultChangeLimit);
             sessions.put(player, session);
             return session;
         }

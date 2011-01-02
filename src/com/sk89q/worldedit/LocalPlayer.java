@@ -477,6 +477,15 @@ public abstract class LocalPlayer {
      * @return
      */
     public abstract boolean hasPermission(String perm);
+    
+    /**
+     * Returns true if the player can destroy bedrock.
+     * 
+     * @return
+     */
+    public boolean canDestroyBedrock() {
+        return hasPermission("worldeditbedrock");
+    }
 
     /**
      * Returns true if equal.

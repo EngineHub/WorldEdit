@@ -340,7 +340,7 @@ public class HMServerInterface extends ServerInterface {
      */
     public void simulateBlockMine(LocalWorld world, Vector pt) {
         int type = getBlockType(world, pt);
-        setBlockType(world, pt, 0);
+        //setBlockType(world, pt, 0);
 
         if (type == 1) { dropItem(world, pt, 4); } // Stone
         else if (type == 2) { dropItem(world, pt, 3); } // Grass

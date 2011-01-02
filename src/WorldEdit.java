@@ -20,8 +20,6 @@
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sk89q.worldedit.ServerInterface;
-
 /**
  * Entry point for the plugin for hey0's mod.
  * 
