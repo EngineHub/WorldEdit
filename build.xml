@@ -18,7 +18,6 @@
       <classpath>
         <fileset dir="${lib.dir}">
           <include name="truezip.jar" />
-          <include name="jnbt.jar" />
           <include name="Minecraft_Mod.jar" />
           <include name="minecraft_server.jar" />
         </fileset>
@@ -33,7 +32,7 @@
       <attribute name="Implementation-Title" value="WorldEdit"/>
       <attribute name="Implementation-Version" value="${version}"/>
       <attribute name="WorldEdit-Version" value="${version}"/>
-      <attribute name="Class-Path" value="jnbt.jar truezip.jar"/>
+      <attribute name="Class-Path" value="truezip.jar"/>
     </manifest>
     <jar jarfile="${dist.dir}/WorldEdit.jar" basedir="${build.dir}" manifest="manifest.mf"/>
   </target>

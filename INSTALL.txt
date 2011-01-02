@@ -5,7 +5,7 @@ This plugin requires Hey0's server modification.
 
   1. Create a "plugins" folder inside your "bin" folder.
 
-  2. Copy WorldEdit.jar and jnbt.jar into "plugins".
+  2. Copy WorldEdit.jar into "plugins".
 
   3. Add "WorldEdit" to the "plugins" line of your server.properties file.
      If it's not already there, add the line. The line should look like this:
