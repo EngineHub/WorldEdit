@@ -139,6 +139,7 @@ public class WorldEditController {
         commands.put("/none", "Switch to no tool");
         commands.put("/info", "Switch to the info tool");
         commands.put("/tree", "Switch to the tree tool");
+        commands.put("/repl", "[ID] - Switch to the block replacer tool");
         commands.put("//expand", "[Num] <Dir> - Expands the selection");
         commands.put("//contract", "[Num] <Dir> - Contracts the selection");
         commands.put("//shift", "[Num] <Dir> - Shift the selection");
@@ -692,7 +693,15 @@ public class WorldEditController {
             player.print("Info tool equipped. Right click with a pickaxe.");
             return true;
 
-        // Info tool
+        // Replace block tool
+        } else if (split[0].equalsIgnoreCase("/repl")) {
+            checkArgs(split, 1, 1, split[0]);
+            BaseBlock targetBlock = getBlock(player, split[1]);
+            session.setTool(new BlockReplacer(targetBlock));
+            player.print("Block replacer tool equipped. Right click with a pickaxe.");
+            return true;
+
+        // No tool
         } else if (split[0].equalsIgnoreCase("/none")) {
             checkArgs(split, 0, 0, split[0]);
             session.setTool(null);
