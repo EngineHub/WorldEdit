@@ -56,7 +56,6 @@ public class CuboidRegion implements Region {
      *
      * @return min point
      */
-    @Override
     public Vector getMinimumPoint() {
         return new Vector(Math.min(pos1.getX(), pos2.getX()),
                          Math.min(pos1.getY(), pos2.getY()),
@@ -68,7 +67,6 @@ public class CuboidRegion implements Region {
      *
      * @return max point
      */
-    @Override
     public Vector getMaximumPoint() {
         return new Vector(Math.max(pos1.getX(), pos2.getX()),
                          Math.max(pos1.getY(), pos2.getY()),

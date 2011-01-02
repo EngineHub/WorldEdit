@@ -187,7 +187,7 @@ public class WorldEditController {
             return sessions.get(player);
         } else {
             WorldEditSession session = new WorldEditSession();
-            if (!player.hasPermission("/worldeditnomax")
+            if (!player.hasPermission("worldeditnomax")
                     && maxChangeLimit > -1) {
                 if (defaultChangeLimit < 0) {
                     // No infinite!
@@ -202,7 +202,7 @@ public class WorldEditController {
             }
             session.setUseInventory(useInventory
                     && (!useInventoryOverride
-                            || !player.hasPermission("/worldeditunlimited")));
+                            || !player.hasPermission("worldeditunlimited")));
             sessions.put(player, session);
             return session;
         }
@@ -602,7 +602,7 @@ public class WorldEditController {
         } else if (split[0].equalsIgnoreCase("//limit")) {
             checkArgs(split, 1, 1, split[0]);
             int limit = Math.max(-1, Integer.parseInt(split[1]));
-            if (!player.hasPermission("/worldeditnomax")
+            if (!player.hasPermission("worldeditnomax")
                     && maxChangeLimit > -1) {
                 if (limit > maxChangeLimit) {
                     player.printError("Your maximum allowable limit is " + maxChangeLimit + ".");
@@ -2052,13 +2052,13 @@ public class WorldEditController {
                 || command.equalsIgnoreCase("//pos2")
                 || command.equalsIgnoreCase("//hpos1")
                 || command.equalsIgnoreCase("//hpos2")) {
-            return player.hasPermission(command)
-                    || player.hasPermission("/worldeditselect")
-                    || player.hasPermission("/worldedit");
+            return player.hasPermission(command.substring(1))
+                    || player.hasPermission("worldeditselect")
+                    || player.hasPermission("worldedit");
         }
         
         return player.hasPermission(command.replace("air", ""))
-                || player.hasPermission("/worldedit");
+                || player.hasPermission("worldedit");
     }
 
     /**
