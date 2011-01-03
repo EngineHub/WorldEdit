@@ -1,3 +1,13 @@
+2.5:
+- Fixed issues with permissions not being read correctly.
+- WorldEdit is now world-aware (not that the Minecraft server is).
+- Abstracted super pickaxe mode/tools and changed commands to /tree, /info,
+    /none, /single, /area, and /recur.
+- New /repl super pickaxe tool.
+- Now bundling JNBT.
+- Add a very rudimentary command line program that will check the integrity
+    (a very basic integrity check) of a world.
+
 2.4:
 - Added the ability to use (require) inventory with operations, preventing
     people from setting blocks that they don't have.
