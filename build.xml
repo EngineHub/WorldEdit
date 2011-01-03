@@ -18,7 +18,6 @@
       <classpath>
         <fileset dir="${lib.dir}">
           <include name="truezip.jar" />
-          <include name="jnbt.jar" />
           <include name="Minecraft_Mod.jar" />
           <include name="minecraft_server.jar" />
           <include name="Bukkit.jar" />
@@ -34,7 +33,8 @@
       <attribute name="Implementation-Title" value="WorldEdit"/>
       <attribute name="Implementation-Version" value="${version}"/>
       <attribute name="WorldEdit-Version" value="${version}"/>
-      <attribute name="Class-Path" value="jnbt.jar truezip.jar"/>
+      <attribute name="Class-Path" value="truezip.jar"/>
+      <attribute name="Main-Class" value="com.sk89q.worldedit.cli.Main"/>
     </manifest>
     <copy tofile="${build.dir}/plugin.yml" file="plugin.yml"/>
     <jar jarfile="${dist.dir}/WorldEdit.jar" basedir="${build.dir}" manifest="manifest.mf"/>
@@ -59,17 +59,12 @@
     <copy tofile="${release.dir}/worldedit.updatr" file="worldedit.updatr"/>
     <replace file="${release.dir}/worldedit.updatr" token="%version%" value="${version}"/>
     <copy tofile="${release.dir}/WorldEdit.jar" file="${dist.dir}/WorldEdit.jar"/>
-    <copy todir="${release.dir}">
-      <fileset dir="lib">
-        <include name="jnbt.jar"/>
-      </fileset>
-    </copy>
     <zip destfile="${release.dir}/worldedit-${version}.zip" basedir="${release.dir}" excludes="*.zip"/>
     <mkdir dir="${release.dir}/src"/>
     <copy todir="${release.dir}/src">
       <fileset dir="${src.dir}"/>
     </copy>
-    <zip destfile="${release.dir}/worldedit-${version}-source.zip" basedir="${release.dir}" excludes="*.zip"/>
+    <zip destfile="${release.dir}/worldedit-${version}-src.zip" basedir="${release.dir}" excludes="*.zip"/>
   </target>
 
   <!-- Clean the output -->

@@ -21,6 +21,8 @@ package com.sk89q.worldedit;
 
 import java.util.LinkedList;
 import com.sk89q.worldedit.snapshots.Snapshot;
+import com.sk89q.worldedit.superpickaxe.SinglePickaxe;
+import com.sk89q.worldedit.superpickaxe.SuperPickaxeMode;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -29,25 +31,9 @@ import com.sk89q.worldedit.regions.CuboidRegion;
  *
  * @author sk89q
  */
-public class WorldEditSession {
-    /**
-     * List of super pick axe modes.
-     */
-    public static enum SuperPickaxeMode {
-        SINGLE,
-        SAME_TYPE_RECURSIVE,
-        SAME_TYPE_AREA
-    };
-    /**
-     * List of tools.
-     */
-    public static enum Tool {
-        NONE,
-        INFO,
-        TREE,
-    }
-    
+public class LocalSession {
     public static final int MAX_HISTORY_SIZE = 15;
+    
     private boolean placeAtPos1 = false;
     private Vector pos1, pos2;
     private Region region;
@@ -55,10 +41,9 @@ public class WorldEditSession {
     private int historyPointer = 0;
     private CuboidClipboard clipboard;
     private boolean toolControl = true;
-    private boolean superPickAxe = false;
-    private SuperPickaxeMode superPickaxeMode = SuperPickaxeMode.SINGLE;
-    private Tool tool = Tool.NONE;
-    private int superPickaxeRange = 3;
+    private boolean superPickaxe = false;
+    private SuperPickaxeMode superPickaxeMode = new SinglePickaxe();
+    private SuperPickaxeMode tool;
     private int maxBlocksChanged = -1;
     private boolean useInventory;
     private Snapshot snapshot;
@@ -291,25 +276,25 @@ public class WorldEditSession {
      * @return status
      */
     public boolean hasSuperPickAxe() {
-        return superPickAxe;
+        return superPickaxe;
     }
 
     /**
      * Enable super pick axe.
      *
-     * @param superPickAxe
+     * @param superPickaxe
      */
     public void enableSuperPickAxe() {
-        superPickAxe = true;
+        superPickaxe = true;
     }
 
     /**
      * Disable super pick axe.
      *
-     * @param superPickAxe
+     * @param superPickaxe
      */
     public void disableSuperPickAxe() {
-        superPickAxe = false;
+        superPickaxe = false;
     }
 
     /**
@@ -318,15 +303,15 @@ public class WorldEditSession {
      * @return status
      */
     public boolean toggleSuperPickAxe() {
-        superPickAxe = !superPickAxe;
-        return superPickAxe;
+        superPickaxe = !superPickaxe;
+        return superPickaxe;
     }
 
     /**
      * @return position
      * @throws IncompleteRegionException
      */
-    public Vector getPlacementPosition(WorldEditPlayer player)
+    public Vector getPlacementPosition(LocalPlayer player)
             throws IncompleteRegionException {
         if (!placeAtPos1) {
             return player.getBlockIn();
@@ -350,7 +335,7 @@ public class WorldEditSession {
      * @param player
      * @return
      */
-    public BlockBag getBlockBag(WorldEditPlayer player) {
+    public BlockBag getBlockBag(LocalPlayer player) {
         if (!useInventory) {
             return null;
         }
@@ -386,30 +371,16 @@ public class WorldEditSession {
     }
 
     /**
-     * @return the superPickaxeRange
-     */
-    public int getSuperPickaxeRange() {
-        return superPickaxeRange;
-    }
-
-    /**
-     * @param superPickaxeRange the superPickaxeRange to set
-     */
-    public void setSuperPickaxeRange(int superPickaxeRange) {
-        this.superPickaxeRange = superPickaxeRange;
-    }
-
-    /**
      * @return the tool
      */
-    public Tool getTool() {
+    public SuperPickaxeMode getTool() {
         return tool;
     }
 
     /**
      * @param tool the tool to set
      */
-    public void setTool(Tool tool) {
+    public void setTool(SuperPickaxeMode tool) {
         this.tool = tool;
     }
 

@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.worldedit;
 
@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
-import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.regions.*;
 import com.sk89q.worldedit.bags.*;
 import com.sk89q.worldedit.blocks.*;
@@ -37,12 +36,12 @@ import com.sk89q.worldedit.patterns.*;
 
 /**
  * This class can wrap all block editing operations into one "edit session" that
- * stores the state of the blocks before modification. This allows for easy
- * undo or redo. In addition to that, this class can use a "queue mode" that
- * will know how to handle some special types of items such as signs and
- * torches. For example, torches must be placed only after there is already
- * a block below it, otherwise the torch will be placed as an item.
- *
+ * stores the state of the blocks before modification. This allows for easy undo
+ * or redo. In addition to that, this class can use a "queue mode" that will
+ * know how to handle some special types of items such as signs and torches. For
+ * example, torches must be placed only after there is already a block below it,
+ * otherwise the torch will be placed as an item.
+ * 
  * @author sk89q
  */
 public class EditSession {
@@ -50,36 +49,40 @@ public class EditSession {
      * Random number generator.
      */
     private static Random prng = new Random();
-    
+
     /**
      * Server interface.
      */
     private ServerInterface server;
-    
+    /**
+     * World.
+     */
+    private LocalWorld world;
+
     /**
      * Stores the original blocks before modification.
      */
-    private DoubleArrayList<BlockVector,BaseBlock> original =
-            new DoubleArrayList<BlockVector,BaseBlock>(true);
+    private DoubleArrayList<BlockVector, BaseBlock> original = new DoubleArrayList<BlockVector, BaseBlock>(
+            true);
     /**
      * Stores the current blocks.
      */
-    private DoubleArrayList<BlockVector,BaseBlock> current =
-            new DoubleArrayList<BlockVector,BaseBlock>(false);
+    private DoubleArrayList<BlockVector, BaseBlock> current = new DoubleArrayList<BlockVector, BaseBlock>(
+            false);
     /**
      * Blocks that should be placed before last.
      */
-    private DoubleArrayList<BlockVector,BaseBlock> queueAfter =
-            new DoubleArrayList<BlockVector,BaseBlock>(false);
+    private DoubleArrayList<BlockVector, BaseBlock> queueAfter = new DoubleArrayList<BlockVector, BaseBlock>(
+            false);
     /**
      * Blocks that should be placed last.
      */
-    private DoubleArrayList<BlockVector,BaseBlock> queueLast =
-            new DoubleArrayList<BlockVector,BaseBlock>(false);
+    private DoubleArrayList<BlockVector, BaseBlock> queueLast = new DoubleArrayList<BlockVector, BaseBlock>(
+            false);
     /**
      * The maximum number of blocks to change at a time. If this number is
-     * exceeded, a MaxChangedBlocksException exception will be
-     * raised. -1 indicates no limit.
+     * exceeded, a MaxChangedBlocksException exception will be raised. -1
+     * indicates no limit.
      */
     private int maxBlocks = -1;
     /**
@@ -98,25 +101,38 @@ public class EditSession {
 
     /**
      * Construct the object with a maximum number of blocks.
+     * 
+     * @param server
+     * @param world
+     * @param maxBlocks
      */
-    public EditSession(int maxBlocks) {
+    public EditSession(ServerInterface server, LocalWorld world, int maxBlocks) {
         if (maxBlocks < -1) {
             throw new IllegalArgumentException("Max blocks must be >= -1");
         }
+
         this.maxBlocks = maxBlocks;
-        server = ServerInterface.getInstance();
+        this.server = server;
+        this.world = world;
     }
 
     /**
      * Construct the object with a maximum number of blocks and a block bag.
+     * 
+     * @param server
+     * @param maxBlocks
+     * @blockBag
      */
-    public EditSession(int maxBlocks, BlockBag blockBag) {
+    public EditSession(ServerInterface server, LocalWorld world, int maxBlocks,
+            BlockBag blockBag) {
         if (maxBlocks < -1) {
             throw new IllegalArgumentException("Max blocks must be >= -1");
         }
+
         this.maxBlocks = maxBlocks;
         this.blockBag = blockBag;
-        server = ServerInterface.getInstance();
+        this.server = server;
+        this.world = world;
     }
 
     /**
@@ -133,15 +149,15 @@ public class EditSession {
         }
 
         // Clear the chest so that it doesn't drop items
-        if (server.getBlockType(pt) == 54 && blockBag == null) {
-            server.clearChest(pt);
+        if (server.getBlockType(world, pt) == 54 && blockBag == null) {
+            server.clearChest(world, pt);
         }
 
         int id = block.getID();
-        
+
         if (blockBag != null) {
-            int existing = server.getBlockType(pt);
-            
+            int existing = server.getBlockType(world, pt);
+
             if (id > 0) {
                 try {
                     blockBag.fetchPlacedBlock(id);
@@ -160,52 +176,52 @@ public class EditSession {
                 }
             }
         }
-        
-        boolean result = server.setBlockType(pt, id);
+
+        boolean result = server.setBlockType(world, pt, id);
         if (id != 0) {
             if (BlockType.usesData(id)) {
-                server.setBlockData(pt, block.getData());
+                server.setBlockData(world, pt, block.getData());
             }
 
             // Signs
             if (block instanceof SignBlock) {
-                SignBlock signBlock = (SignBlock)block;
+                SignBlock signBlock = (SignBlock) block;
                 String[] text = signBlock.getText();
-                server.setSignText(pt, text);
-            // Chests
+                server.setSignText(world, pt, text);
+                // Chests
             } else if (block instanceof ChestBlock && blockBag == null) {
-                ChestBlock chestBlock = (ChestBlock)block;
-                server.setChestContents(pt, chestBlock.getItems());
-            // Mob spawners
+                ChestBlock chestBlock = (ChestBlock) block;
+                server.setChestContents(world, pt, chestBlock.getItems());
+                // Mob spawners
             } else if (block instanceof MobSpawnerBlock) {
-                MobSpawnerBlock mobSpawnerblock = (MobSpawnerBlock)block;
-                server.setMobSpawnerType(pt, mobSpawnerblock.getMobType());
+                MobSpawnerBlock mobSpawnerblock = (MobSpawnerBlock) block;
+                server.setMobSpawnerType(world, pt, mobSpawnerblock.getMobType());
             }
         }
-        
+
         return result;
     }
 
     /**
      * Sets the block at position x, y, z with a block type. If queue mode is
-     * enabled, blocks may not be actually set in world until flushQueue()
-     * is called.
-     *
+     * enabled, blocks may not be actually set in world until flushQueue() is
+     * called.
+     * 
      * @param pt
      * @param block
      * @return Whether the block changed -- not entirely dependable
      */
     public boolean setBlock(Vector pt, BaseBlock block)
-        throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException {
         BlockVector blockPt = pt.toBlockVector();
-        
-        //if (!original.containsKey(blockPt)) {
-            original.put(blockPt, getBlock(pt));
 
-            if (maxBlocks != -1 && original.size() > maxBlocks) {
-                throw new MaxChangedBlocksException(maxBlocks);
-            }
-        //}
+        // if (!original.containsKey(blockPt)) {
+        original.put(blockPt, getBlock(pt));
+
+        if (maxBlocks != -1 && original.size() > maxBlocks) {
+            throw new MaxChangedBlocksException(maxBlocks);
+        }
+        // }
 
         current.put(pt.toBlockVector(), block);
 
@@ -242,7 +258,7 @@ public class EditSession {
             if (BlockType.shouldPlaceLast(block.getID())) {
                 queueLast.put(pt.toBlockVector(), block);
                 return getBlock(pt).getID() != block.getID();
-            // Destroy torches, etc. first
+                // Destroy torches, etc. first
             } else if (BlockType.shouldPlaceLast(getBlock(pt).getID())) {
                 rawSetBlock(pt, new BaseBlock(0));
             } else {
@@ -256,7 +272,7 @@ public class EditSession {
 
     /**
      * Gets the block type at a position x, y, z.
-     *
+     * 
      * @param pt
      * @return Block type
      */
@@ -264,38 +280,39 @@ public class EditSession {
         // In the case of the queue, the block may have not actually been
         // changed yet
         if (queued) {
-            /*BlockVector blockPt = pt.toBlockVector();
-
-            if (current.containsKey(blockPt)) {
-                return current.get(blockPt);
-            }*/
+            /*
+             * BlockVector blockPt = pt.toBlockVector();
+             * 
+             * if (current.containsKey(blockPt)) { return current.get(blockPt);
+             * }
+             */
         }
-        
+
         return rawGetBlock(pt);
     }
 
     /**
      * Gets the block type at a position x, y, z.
-     *
+     * 
      * @param pt
      * @return BaseBlock
      */
     public BaseBlock rawGetBlock(Vector pt) {
-        int type = server.getBlockType(pt);
-        int data = server.getBlockData(pt);
+        int type = server.getBlockType(world, pt);
+        int data = server.getBlockData(world, pt);
 
         // Sign
         if (type == 63 || type == 68) {
-            String[] text = server.getSignText(pt);
+            String[] text = server.getSignText(world, pt);
             return new SignBlock(type, data, text);
-        // Chest
+            // Chest
         } else if (type == 54) {
-            BaseItemStack[] items =
-                server.getChestContents(pt);
+            BaseItemStack[] items = server.getChestContents(world, pt);
             return new ChestBlock(data, items);
-        // Mob spawner
+            // Mob spawner
         } else if (type == 52) {
-            return new MobSpawnerBlock(data, server.getMobSpawnerType(pt));
+            return new MobSpawnerBlock(data,
+                    server.getMobSpawnerType(world, pt));
         } else {
             return new BaseBlock(type, data);
         }
@@ -305,9 +322,9 @@ public class EditSession {
      * Restores all blocks to their initial state.
      */
     public void undo() {
-        for (Map.Entry<BlockVector,BaseBlock> entry : original) {
-            BlockVector pt = (BlockVector)entry.getKey();
-            smartSetBlock(pt, (BaseBlock)entry.getValue());
+        for (Map.Entry<BlockVector, BaseBlock> entry : original) {
+            BlockVector pt = (BlockVector) entry.getKey();
+            smartSetBlock(pt, (BaseBlock) entry.getValue());
         }
         flushQueue();
     }
@@ -316,9 +333,9 @@ public class EditSession {
      * Sets to new state.
      */
     public void redo() {
-        for (Map.Entry<BlockVector,BaseBlock> entry : current) {
-            BlockVector pt = (BlockVector)entry.getKey();
-            smartSetBlock(pt, (BaseBlock)entry.getValue());
+        for (Map.Entry<BlockVector, BaseBlock> entry : current) {
+            BlockVector pt = (BlockVector) entry.getKey();
+            smartSetBlock(pt, (BaseBlock) entry.getValue());
         }
         flushQueue();
     }
@@ -332,9 +349,9 @@ public class EditSession {
     }
 
     /**
-     * Get the maximum number of blocks that can be changed. -1 will be
-     * returned if disabled.
-     *
+     * Get the maximum number of blocks that can be changed. -1 will be returned
+     * if disabled.
+     * 
      * @return block change limit
      */
     public int getBlockChangeLimit() {
@@ -344,7 +361,8 @@ public class EditSession {
     /**
      * Set the maximum number of blocks that can be changed.
      * 
-     * @param maxBlocks -1 to disable
+     * @param maxBlocks
+     *            -1 to disable
      */
     public void setBlockChangeLimit(int maxBlocks) {
         if (maxBlocks < -1) {
@@ -383,19 +401,21 @@ public class EditSession {
      * Finish off the queue.
      */
     public void flushQueue() {
-        if (!queued) { return; }
+        if (!queued) {
+            return;
+        }
 
-        for (Map.Entry<BlockVector,BaseBlock> entry : queueAfter) {
-            BlockVector pt = (BlockVector)entry.getKey();
-            rawSetBlock(pt, (BaseBlock)entry.getValue());
+        for (Map.Entry<BlockVector, BaseBlock> entry : queueAfter) {
+            BlockVector pt = (BlockVector) entry.getKey();
+            rawSetBlock(pt, (BaseBlock) entry.getValue());
         }
 
         // We don't want to place these blocks if other blocks were missing
         // because it might cause the items to drop
         if (blockBag == null || missingBlocks.size() == 0) {
-            for (Map.Entry<BlockVector,BaseBlock> entry : queueLast) {
-                BlockVector pt = (BlockVector)entry.getKey();
-                rawSetBlock(pt, (BaseBlock)entry.getValue());
+            for (Map.Entry<BlockVector, BaseBlock> entry : queueLast) {
+                BlockVector pt = (BlockVector) entry.getKey();
+                rawSetBlock(pt, (BaseBlock) entry.getValue());
             }
         }
 
@@ -405,7 +425,7 @@ public class EditSession {
 
     /**
      * Fills an area recursively in the X/Z directions.
-     *
+     * 
      * @param origin
      * @param block
      * @param radius
@@ -413,10 +433,9 @@ public class EditSession {
      * @param recursive
      * @return number of blocks affected
      */
-    public int fillXZ(Vector origin, BaseBlock block,
-            int radius, int depth, boolean recursive)
-            throws MaxChangedBlocksException {
-        
+    public int fillXZ(Vector origin, BaseBlock block, int radius, int depth,
+            boolean recursive) throws MaxChangedBlocksException {
+
         int affected = 0;
         int originX = origin.getBlockX();
         int originY = origin.getBlockY();
@@ -481,7 +500,7 @@ public class EditSession {
 
     /**
      * Recursively fills a block and below until it hits another block.
-     *
+     * 
      * @param x
      * @param cy
      * @param z
@@ -491,12 +510,12 @@ public class EditSession {
      * @return
      */
     private int fillY(int x, int cy, int z, BaseBlock block, int minY)
-        throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException {
         int affected = 0;
 
         for (int y = cy; y >= minY; y--) {
             Vector pt = new Vector(x, y, z);
-            
+
             if (getBlock(pt).isAir()) {
                 setBlock(pt, block);
                 affected++;
@@ -510,7 +529,7 @@ public class EditSession {
 
     /**
      * Fills an area recursively in the X/Z directions.
-     *
+     * 
      * @param origin
      * @param pattern
      * @param radius
@@ -518,9 +537,8 @@ public class EditSession {
      * @param recursive
      * @return number of blocks affected
      */
-    public int fillXZ(Vector origin, Pattern pattern,
-            int radius, int depth, boolean recursive)
-            throws MaxChangedBlocksException {
+    public int fillXZ(Vector origin, Pattern pattern, int radius, int depth,
+            boolean recursive) throws MaxChangedBlocksException {
 
         int affected = 0;
         int originX = origin.getBlockX();
@@ -586,7 +604,7 @@ public class EditSession {
 
     /**
      * Recursively fills a block and below until it hits another block.
-     *
+     * 
      * @param x
      * @param cy
      * @param z
@@ -596,7 +614,7 @@ public class EditSession {
      * @return
      */
     private int fillY(int x, int cy, int z, Pattern pattern, int minY)
-        throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException {
         int affected = 0;
 
         for (int y = cy; y >= minY; y--) {
@@ -621,8 +639,8 @@ public class EditSession {
      * @param height
      * @return number of blocks affected
      */
-    public int removeAbove(Vector pos, int size, int height) throws
-            MaxChangedBlocksException {
+    public int removeAbove(Vector pos, int size, int height)
+            throws MaxChangedBlocksException {
         int maxY = Math.min(127, pos.getBlockY() + height - 1);
         size--;
         int affected = 0;
@@ -649,14 +667,14 @@ public class EditSession {
 
     /**
      * Remove blocks below.
-     *
+     * 
      * @param pos
      * @param size
      * @param height
      * @return number of blocks affected
      */
-    public int removeBelow(Vector pos, int size, int height) throws
-            MaxChangedBlocksException {
+    public int removeBelow(Vector pos, int size, int height)
+            throws MaxChangedBlocksException {
         int minY = Math.max(0, pos.getBlockY() - height);
         size--;
         int affected = 0;
@@ -683,14 +701,14 @@ public class EditSession {
 
     /**
      * Remove nearby blocks of a type.
-     *
+     * 
      * @param pos
      * @param blockType
      * @param size
      * @return number of blocks affected
      */
-    public int removeNear(Vector pos, int blockType, int size) throws
-            MaxChangedBlocksException {
+    public int removeNear(Vector pos, int blockType, int size)
+            throws MaxChangedBlocksException {
         int affected = 0;
         BaseBlock air = new BaseBlock(0);
 
@@ -713,7 +731,7 @@ public class EditSession {
 
     /**
      * Sets all the blocks inside a region to a certain block type.
-     *
+     * 
      * @param region
      * @param block
      * @return number of blocks affected
@@ -759,7 +777,7 @@ public class EditSession {
 
     /**
      * Sets all the blocks inside a region to a certain block type.
-     *
+     * 
      * @param region
      * @param block
      * @return number of blocks affected
@@ -805,15 +823,16 @@ public class EditSession {
 
     /**
      * Replaces all the blocks of a type inside a region to another block type.
-     *
+     * 
      * @param region
-     * @param fromBlockType -1 for non-air
+     * @param fromBlockType
+     *            -1 for non-air
      * @param toBlockType
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int replaceBlocks(Region region, Set<Integer> fromBlockTypes, BaseBlock toBlock)
-            throws MaxChangedBlocksException {
+    public int replaceBlocks(Region region, Set<Integer> fromBlockTypes,
+            BaseBlock toBlock) throws MaxChangedBlocksException {
         int affected = 0;
 
         if (region instanceof CuboidRegion) {
@@ -834,9 +853,9 @@ public class EditSession {
                         Vector pt = new Vector(x, y, z);
                         int curBlockType = getBlock(pt).getID();
 
-                        if ((fromBlockTypes == null && curBlockType != 0) ||
-                                (fromBlockTypes != null &&
-                                fromBlockTypes.contains(curBlockType))) {
+                        if ((fromBlockTypes == null && curBlockType != 0)
+                                || (fromBlockTypes != null && fromBlockTypes
+                                        .contains(curBlockType))) {
                             if (setBlock(pt, toBlock)) {
                                 affected++;
                             }
@@ -848,8 +867,8 @@ public class EditSession {
             for (Vector pt : region) {
                 int curBlockType = getBlock(pt).getID();
 
-                if (fromBlockTypes == null && curBlockType != 0 ||
-                        fromBlockTypes.contains(curBlockType)) {
+                if (fromBlockTypes == null && curBlockType != 0
+                        || fromBlockTypes.contains(curBlockType)) {
                     if (setBlock(pt, toBlock)) {
                         affected++;
                     }
@@ -862,16 +881,16 @@ public class EditSession {
 
     /**
      * Replaces all the blocks of a type inside a region to another block type.
-     *
+     * 
      * @param region
-     * @param fromBlockType -1 for non-air
+     * @param fromBlockType
+     *            -1 for non-air
      * @param pattern
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
     public int replaceBlocks(Region region, Set<Integer> fromBlockTypes,
-            Pattern pattern)
-            throws MaxChangedBlocksException {
+            Pattern pattern) throws MaxChangedBlocksException {
         int affected = 0;
 
         if (region instanceof CuboidRegion) {
@@ -892,9 +911,9 @@ public class EditSession {
                         Vector pt = new Vector(x, y, z);
                         int curBlockType = getBlock(pt).getID();
 
-                        if ((fromBlockTypes == null && curBlockType != 0) ||
-                                (fromBlockTypes != null &&
-                                fromBlockTypes.contains(curBlockType))) {
+                        if ((fromBlockTypes == null && curBlockType != 0)
+                                || (fromBlockTypes != null && fromBlockTypes
+                                        .contains(curBlockType))) {
                             if (setBlock(pt, pattern.next(pt))) {
                                 affected++;
                             }
@@ -906,8 +925,8 @@ public class EditSession {
             for (Vector pt : region) {
                 int curBlockType = getBlock(pt).getID();
 
-                if (fromBlockTypes == null && curBlockType != 0 ||
-                        fromBlockTypes.contains(curBlockType)) {
+                if (fromBlockTypes == null && curBlockType != 0
+                        || fromBlockTypes.contains(curBlockType)) {
                     if (setBlock(pt, pattern.next(pt))) {
                         affected++;
                     }
@@ -920,7 +939,7 @@ public class EditSession {
 
     /**
      * Make faces of the region (as if it was a cuboid if it's not).
-     *
+     * 
      * @param region
      * @param block
      * @return number of blocks affected
@@ -942,23 +961,35 @@ public class EditSession {
 
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
-                if (setBlock(new Vector(x, y, minZ), block)) { affected++; }
-                if (setBlock(new Vector(x, y, maxZ), block)) { affected++; }
+                if (setBlock(new Vector(x, y, minZ), block)) {
+                    affected++;
+                }
+                if (setBlock(new Vector(x, y, maxZ), block)) {
+                    affected++;
+                }
                 affected++;
             }
         }
 
         for (int y = minY; y <= maxY; y++) {
             for (int z = minZ; z <= maxZ; z++) {
-                if (setBlock(new Vector(minX, y, z), block)) { affected++; }
-                if (setBlock(new Vector(maxX, y, z), block)) { affected++; }
+                if (setBlock(new Vector(minX, y, z), block)) {
+                    affected++;
+                }
+                if (setBlock(new Vector(maxX, y, z), block)) {
+                    affected++;
+                }
             }
         }
 
         for (int z = minZ; z <= maxZ; z++) {
             for (int x = minX; x <= maxX; x++) {
-                if (setBlock(new Vector(x, minY, z), block)) { affected++; }
-                if (setBlock(new Vector(x, maxY, z), block)) { affected++; }
+                if (setBlock(new Vector(x, minY, z), block)) {
+                    affected++;
+                }
+                if (setBlock(new Vector(x, maxY, z), block)) {
+                    affected++;
+                }
             }
         }
 
@@ -967,7 +998,7 @@ public class EditSession {
 
     /**
      * Make walls of the region (as if it was a cuboid if it's not).
-     *
+     * 
      * @param region
      * @param block
      * @return number of blocks affected
@@ -989,16 +1020,24 @@ public class EditSession {
 
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
-                if (setBlock(new Vector(x, y, minZ), block)) { affected++; }
-                if (setBlock(new Vector(x, y, maxZ), block)) { affected++; }
+                if (setBlock(new Vector(x, y, minZ), block)) {
+                    affected++;
+                }
+                if (setBlock(new Vector(x, y, maxZ), block)) {
+                    affected++;
+                }
                 affected++;
             }
         }
 
         for (int y = minY; y <= maxY; y++) {
             for (int z = minZ; z <= maxZ; z++) {
-                if (setBlock(new Vector(minX, y, z), block)) { affected++; }
-                if (setBlock(new Vector(maxX, y, z), block)) { affected++; }
+                if (setBlock(new Vector(minX, y, z), block)) {
+                    affected++;
+                }
+                if (setBlock(new Vector(maxX, y, z), block)) {
+                    affected++;
+                }
             }
         }
 
@@ -1017,9 +1056,9 @@ public class EditSession {
             throws MaxChangedBlocksException {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
-        
+
         int upperY = Math.min(127, max.getBlockY() + 1);
-        int lowerY = Math.max(0, min.getBlockY()- 1);
+        int lowerY = Math.max(0, min.getBlockY() - 1);
 
         int affected = 0;
 
@@ -1032,7 +1071,7 @@ public class EditSession {
             for (int z = minZ; z <= maxZ; z++) {
                 for (int y = upperY; y >= lowerY; y--) {
                     Vector above = new Vector(x, y + 1, z);
-                    
+
                     if (y + 1 <= 127 && !getBlock(new Vector(x, y, z)).isAir()
                             && getBlock(above).isAir()) {
                         if (setBlock(above, block)) {
@@ -1057,9 +1096,8 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int stackCuboidRegion(Region region, Vector dir,
-            int count, boolean copyAir)
-            throws MaxChangedBlocksException {
+    public int stackCuboidRegion(Region region, Vector dir, int count,
+            boolean copyAir) throws MaxChangedBlocksException {
         int affected = 0;
 
         Vector min = region.getMinimumPoint();
@@ -1071,7 +1109,7 @@ public class EditSession {
         int maxX = max.getBlockX();
         int maxY = max.getBlockY();
         int maxZ = max.getBlockZ();
-        
+
         int xs = region.getWidth();
         int ys = region.getHeight();
         int zs = region.getLength();
@@ -1083,11 +1121,10 @@ public class EditSession {
 
                     if (!block.isAir() || copyAir) {
                         for (int i = 1; i <= count; i++) {
-                            Vector pos = new Vector(
-                                    x + xs * dir.getBlockX() * i,
-                                    y + ys * dir.getBlockY() * i,
-                                    z + zs * dir.getBlockZ() * i);
-                            
+                            Vector pos = new Vector(x + xs * dir.getBlockX()
+                                    * i, y + ys * dir.getBlockY() * i, z + zs
+                                    * dir.getBlockZ() * i);
+
                             if (setBlock(pos, block)) {
                                 affected++;
                             }
@@ -1102,7 +1139,7 @@ public class EditSession {
 
     /**
      * Move a cuboid region.
-     *
+     * 
      * @param region
      * @param dir
      * @param distance
@@ -1111,8 +1148,8 @@ public class EditSession {
      * @return number of blocks moved
      * @throws MaxChangedBlocksException
      */
-    public int moveCuboidRegion(Region region, Vector dir,
-            int distance, boolean copyAir, BaseBlock replace)
+    public int moveCuboidRegion(Region region, Vector dir, int distance,
+            boolean copyAir, BaseBlock replace)
             throws MaxChangedBlocksException {
         int affected = 0;
 
@@ -1130,7 +1167,7 @@ public class EditSession {
         Vector newMin = min.add(shift);
         Vector newMax = min.add(shift);
 
-        Map<Vector,BaseBlock> delayed = new LinkedHashMap<Vector,BaseBlock>();
+        Map<Vector, BaseBlock> delayed = new LinkedHashMap<Vector, BaseBlock>();
 
         for (int x = minX; x <= maxX; x++) {
             for (int z = minZ; z <= maxZ; z++) {
@@ -1146,8 +1183,10 @@ public class EditSession {
                         // Don't want to replace the old block if it's in
                         // the new area
                         if (x >= newMin.getBlockX() && x <= newMax.getBlockX()
-                                && y >= newMin.getBlockY() && y <= newMax.getBlockY()
-                                && z >= newMin.getBlockZ() && z <= newMax.getBlockZ()) {
+                                && y >= newMin.getBlockY()
+                                && y <= newMax.getBlockY()
+                                && z >= newMin.getBlockZ()
+                                && z <= newMax.getBlockZ()) {
                         } else {
                             setBlock(pos, replace);
                         }
@@ -1156,7 +1195,7 @@ public class EditSession {
             }
         }
 
-        for (Map.Entry<Vector,BaseBlock> entry : delayed.entrySet()) {
+        for (Map.Entry<Vector, BaseBlock> entry : delayed.entrySet()) {
             setBlock(entry.getKey(), entry.getValue());
             affected++;
         }
@@ -1166,13 +1205,14 @@ public class EditSession {
 
     /**
      * Drain nearby pools of water or lava.
-     *
+     * 
      * @param pos
      * @param radius
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int drainArea(Vector pos, int radius) throws MaxChangedBlocksException {
+    public int drainArea(Vector pos, int radius)
+            throws MaxChangedBlocksException {
         int affected = 0;
 
         HashSet<BlockVector> visited = new HashSet<BlockVector>();
@@ -1230,7 +1270,7 @@ public class EditSession {
 
     /**
      * Level water.
-     *
+     * 
      * @param pos
      * @param radius
      * @return number of blocks affected
@@ -1303,10 +1343,10 @@ public class EditSession {
      * @param block
      * @throws MaxChangedBlocksException
      */
-    private int makeHCylinderPoints(Vector center, int x, int z,
-            int height, BaseBlock block) throws MaxChangedBlocksException {
+    private int makeHCylinderPoints(Vector center, int x, int z, int height,
+            BaseBlock block) throws MaxChangedBlocksException {
         int affected = 0;
-        
+
         if (x == 0) {
             for (int y = 0; y < height; y++) {
                 setBlock(center.add(0, y, z), block);
@@ -1350,8 +1390,8 @@ public class EditSession {
      * @return number of blocks set
      * @throws MaxChangedBlocksException
      */
-    public int makeHollowCylinder(Vector pos, BaseBlock block,
-            int radius, int height) throws MaxChangedBlocksException {
+    public int makeHollowCylinder(Vector pos, BaseBlock block, int radius,
+            int height) throws MaxChangedBlocksException {
         int x = 0;
         int z = radius;
         int d = (5 - radius * 4) / 4;
@@ -1374,7 +1414,7 @@ public class EditSession {
 
         while (x < z) {
             x++;
-            
+
             if (d >= 0) {
                 z--;
                 d += 2 * (x - z) + 1;
@@ -1390,7 +1430,7 @@ public class EditSession {
 
     /**
      * Helper method to draw the cylinder.
-     *
+     * 
      * @param center
      * @param x
      * @param z
@@ -1398,8 +1438,8 @@ public class EditSession {
      * @param block
      * @throws MaxChangedBlocksException
      */
-    private int makeCylinderPoints(Vector center, int x, int z,
-            int height, BaseBlock block) throws MaxChangedBlocksException {
+    private int makeCylinderPoints(Vector center, int x, int z, int height,
+            BaseBlock block) throws MaxChangedBlocksException {
         int affected = 0;
 
         if (x == z) {
@@ -1437,8 +1477,8 @@ public class EditSession {
      * @return number of blocks set
      * @throws MaxChangedBlocksException
      */
-    public int makeCylinder(Vector pos, BaseBlock block,
-            int radius, int height) throws MaxChangedBlocksException {
+    public int makeCylinder(Vector pos, BaseBlock block, int radius, int height)
+            throws MaxChangedBlocksException {
         int x = 0;
         int z = radius;
         int d = (5 - radius * 4) / 4;
@@ -1477,7 +1517,7 @@ public class EditSession {
 
     /**
      * Makes a sphere.
-     *
+     * 
      * @param pos
      * @param block
      * @param radius
@@ -1485,10 +1525,10 @@ public class EditSession {
      * @return number of blocks changed
      * @throws MaxChangedBlocksException
      */
-    public int makeSphere(Vector pos, BaseBlock block, int radius, boolean filled)
-            throws MaxChangedBlocksException {
+    public int makeSphere(Vector pos, BaseBlock block, int radius,
+            boolean filled) throws MaxChangedBlocksException {
         int affected = 0;
-        
+
         for (int x = 0; x <= radius; x++) {
             for (int y = 0; y <= radius; y++) {
                 for (int z = 0; z <= radius; z++) {
@@ -1496,14 +1536,30 @@ public class EditSession {
                     double d = vec.distance(pos);
 
                     if (d <= radius + 0.5 && (filled || d >= radius - 0.5)) {
-                        if (setBlock(vec, block)) { affected++; }
-                        if (setBlock(pos.add(-x, y, z), block)) { affected++; }
-                        if (setBlock(pos.add(x, -y, z), block)) { affected++; }
-                        if (setBlock(pos.add(x, y, -z), block)) { affected++; }
-                        if (setBlock(pos.add(-x, -y, z), block)) { affected++; }
-                        if (setBlock(pos.add(x, -y, -z), block)) { affected++; }
-                        if (setBlock(pos.add(-x, y, -z), block)) { affected++; }
-                        if (setBlock(pos.add(-x, -y, -z), block)) { affected++; }
+                        if (setBlock(vec, block)) {
+                            affected++;
+                        }
+                        if (setBlock(pos.add(-x, y, z), block)) {
+                            affected++;
+                        }
+                        if (setBlock(pos.add(x, -y, z), block)) {
+                            affected++;
+                        }
+                        if (setBlock(pos.add(x, y, -z), block)) {
+                            affected++;
+                        }
+                        if (setBlock(pos.add(-x, -y, z), block)) {
+                            affected++;
+                        }
+                        if (setBlock(pos.add(x, -y, -z), block)) {
+                            affected++;
+                        }
+                        if (setBlock(pos.add(-x, y, -z), block)) {
+                            affected++;
+                        }
+                        if (setBlock(pos.add(-x, -y, -z), block)) {
+                            affected++;
+                        }
                     }
                 }
             }
@@ -1514,7 +1570,7 @@ public class EditSession {
 
     /**
      * Make snow.
-     *
+     * 
      * @param pos
      * @param radius
      * @return number of blocks affected
@@ -1536,7 +1592,7 @@ public class EditSession {
                 if ((new Vector(x, oy, z)).distance(pos) > radius) {
                     continue;
                 }
-                
+
                 for (int y = 127; y >= 1; y--) {
                     Vector pt = new Vector(x, y, z);
                     int id = getBlock(pt).getID();
@@ -1555,8 +1611,8 @@ public class EditSession {
                             || id == 53 // Wood steps
                             || id == 55 // Redstone wire
                             || id == 59 // Crops
-                            || (id >= 63 && id <= 72)
-                            || id == 75 // Redstone torch
+                            || (id >= 63 && id <= 72) || id == 75 // Redstone
+                                                                  // torch
                             || id == 76 // Redstone torch
                             || id == 77 // Stone button
                             || id == 78 // Snow
@@ -1567,7 +1623,7 @@ public class EditSession {
                             || id == 90) { // Portal
                         break;
                     }
-                    
+
                     // Ice!
                     if (id == 8 || id == 9) {
                         if (setBlock(pt, ice)) {
@@ -1581,7 +1637,7 @@ public class EditSession {
                         if (y == 127) { // Too high!
                             break;
                         }
-                        
+
                         if (setBlock(pt.add(0, 1, 0), snow)) {
                             affected++;
                         }
@@ -1593,13 +1649,14 @@ public class EditSession {
 
         return affected;
     }
-    
+
     /**
      * Set a block by chance.
      * 
      * @param pos
      * @param block
-     * @param c 0-1 chance
+     * @param c
+     *            0-1 chance
      * @return whether a block was changed
      */
     private boolean setChanceBlockIfAir(Vector pos, BaseBlock block, double c)
@@ -1612,15 +1669,15 @@ public class EditSession {
 
     /**
      * Makes a pumpkin patch.
-     *
+     * 
      * @param basePos
      */
     private void makePumpkinPatch(Vector basePos)
             throws MaxChangedBlocksException {
-        //BaseBlock logBlock = new BaseBlock(17);
+        // BaseBlock logBlock = new BaseBlock(17);
         BaseBlock leavesBlock = new BaseBlock(18);
 
-        //setBlock(basePos.subtract(0, 1, 0), logBlock);
+        // setBlock(basePos.subtract(0, 1, 0), logBlock);
         setBlockIfAir(basePos, leavesBlock);
 
         makePumpkinPatchVine(basePos, basePos.add(0, 0, 1));
@@ -1637,8 +1694,10 @@ public class EditSession {
      */
     private void makePumpkinPatchVine(Vector basePos, Vector pos)
             throws MaxChangedBlocksException {
-        if (pos.distance(basePos) > 4) return;
-        if (getBlock(pos).getID() != 0) return;
+        if (pos.distance(basePos) > 4)
+            return;
+        if (getBlock(pos).getID() != 0)
+            return;
 
         for (int i = -1; i > -3; i--) {
             Vector testPos = pos.add(0, i, 0);
@@ -1655,27 +1714,35 @@ public class EditSession {
         int h = prng.nextInt(3) - 1;
 
         if (t == 0) {
-            if (prng.nextBoolean()) makePumpkinPatchVine(basePos, pos.add(1, 0, 0));
-            if (prng.nextBoolean()) setBlockIfAir(pos.add(1, h, -1), new BaseBlock(18));
+            if (prng.nextBoolean())
+                makePumpkinPatchVine(basePos, pos.add(1, 0, 0));
+            if (prng.nextBoolean())
+                setBlockIfAir(pos.add(1, h, -1), new BaseBlock(18));
             setBlockIfAir(pos.add(0, 0, -1), new BaseBlock(86));
         } else if (t == 1) {
-            if (prng.nextBoolean()) makePumpkinPatchVine(basePos, pos.add(0, 0, 1));
-            if (prng.nextBoolean()) setBlockIfAir(pos.add(1, h, 0), new BaseBlock(18));
+            if (prng.nextBoolean())
+                makePumpkinPatchVine(basePos, pos.add(0, 0, 1));
+            if (prng.nextBoolean())
+                setBlockIfAir(pos.add(1, h, 0), new BaseBlock(18));
             setBlockIfAir(pos.add(1, 0, 1), new BaseBlock(86));
         } else if (t == 2) {
-            if (prng.nextBoolean()) makePumpkinPatchVine(basePos, pos.add(0, 0, -1));
-            if (prng.nextBoolean()) setBlockIfAir(pos.add(-1, h, 0), new BaseBlock(18));
+            if (prng.nextBoolean())
+                makePumpkinPatchVine(basePos, pos.add(0, 0, -1));
+            if (prng.nextBoolean())
+                setBlockIfAir(pos.add(-1, h, 0), new BaseBlock(18));
             setBlockIfAir(pos.add(-1, 0, 1), new BaseBlock(86));
         } else if (t == 3) {
-            if (prng.nextBoolean()) makePumpkinPatchVine(basePos, pos.add(-1, 0, 0));
-            if (prng.nextBoolean()) setBlockIfAir(pos.add(-1, h, -1), new BaseBlock(18));
+            if (prng.nextBoolean())
+                makePumpkinPatchVine(basePos, pos.add(-1, 0, 0));
+            if (prng.nextBoolean())
+                setBlockIfAir(pos.add(-1, h, -1), new BaseBlock(18));
             setBlockIfAir(pos.add(-1, 0, -1), new BaseBlock(86));
         }
     }
 
     /**
      * Makes pumpkin patches.
-     *
+     * 
      * @param basePos
      * @param size
      * @return number of trees created
@@ -1684,13 +1751,17 @@ public class EditSession {
             throws MaxChangedBlocksException {
         int affected = 0;
 
-        for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX() + size; x++) {
-            for (int z = basePos.getBlockZ() - size; z <= basePos.getBlockZ() + size; z++) {
+        for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX()
+                + size; x++) {
+            for (int z = basePos.getBlockZ() - size; z <= basePos.getBlockZ()
+                    + size; z++) {
                 // Don't want to be in the ground
                 if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir())
                     continue;
                 // The gods don't want a pumpkin patch here
-                if (Math.random() < 0.98) { continue; }
+                if (Math.random() < 0.98) {
+                    continue;
+                }
 
                 for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; y--) {
                     // Check if we hit the ground
@@ -1721,14 +1792,18 @@ public class EditSession {
     public int makeForest(Vector basePos, int size, double density,
             boolean pineTree) throws MaxChangedBlocksException {
         int affected = 0;
-        
-        for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX() + size; x++) {
-            for (int z = basePos.getBlockZ() - size; z <= basePos.getBlockZ() + size; z++) {
+
+        for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX()
+                + size; x++) {
+            for (int z = basePos.getBlockZ() - size; z <= basePos.getBlockZ()
+                    + size; z++) {
                 // Don't want to be in the ground
                 if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir())
                     continue;
                 // The gods don't want a tree here
-                if (Math.random() >= density) { continue; } // def 0.05
+                if (Math.random() >= density) {
+                    continue;
+                } // def 0.05
 
                 for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; y--) {
                     // Check if we hit the ground
@@ -1737,7 +1812,8 @@ public class EditSession {
                         if (pineTree) {
                             makePineTree(new Vector(x, y + 1, z));
                         } else {
-                            server.generateTree(this, new Vector(x, y + 1, z));
+                            server.generateTree(this, world,
+                                    new Vector(x, y + 1, z));
                         }
                         affected++;
                         break;
@@ -1753,13 +1829,12 @@ public class EditSession {
 
     /**
      * Makes a terrible looking pine tree.
-     *
+     * 
      * @param basePos
      */
-    private void makePineTree(Vector basePos)
-            throws MaxChangedBlocksException {
-        int trunkHeight = (int)Math.floor(Math.random() * 2) + 3;
-        int height = (int)Math.floor(Math.random() * 5) + 8;
+    private void makePineTree(Vector basePos) throws MaxChangedBlocksException {
+        int trunkHeight = (int) Math.floor(Math.random() * 2) + 3;
+        int height = (int) Math.floor(Math.random() * 5) + 8;
 
         BaseBlock logBlock = new BaseBlock(17);
         BaseBlock leavesBlock = new BaseBlock(18);
@@ -1812,7 +1887,7 @@ public class EditSession {
 
     /**
      * Count the number of blocks of a list of types in a region.
-     *
+     * 
      * @param region
      * @param searchIDs
      * @return
@@ -1861,10 +1936,8 @@ public class EditSession {
      * @return
      */
     public List<Countable<Integer>> getBlockDistribution(Region region) {
-        List<Countable<Integer>> distribution
-                = new ArrayList<Countable<Integer>>();
-        Map<Integer,Countable<Integer>> map =
-                new HashMap<Integer,Countable<Integer>>();
+        List<Countable<Integer>> distribution = new ArrayList<Countable<Integer>>();
+        Map<Integer, Countable<Integer>> map = new HashMap<Integer, Countable<Integer>>();
 
         if (region instanceof CuboidRegion) {
             // Doing this for speed
@@ -1909,23 +1982,25 @@ public class EditSession {
         }
 
         Collections.sort(distribution);
-        //Collections.reverse(distribution);
+        // Collections.reverse(distribution);
 
         return distribution;
     }
-    
+
     /**
      * Returns the highest solid 'terrain' block which can occur naturally.
      * Looks at: 1, 2, 3, 7, 12, 13, 14, 15, 16, 56, 73, 74, 87, 88, 89
      * 
      * @param x
      * @param z
-     * @param minY minimal height
-     * @param maxY maximal height
+     * @param minY
+     *            minimal height
+     * @param maxY
+     *            maximal height
      * @return height of highest block found or 'minY'
      */
 
-    public int getHighestTerrainBlock( int x , int z, int minY, int maxY) {
+    public int getHighestTerrainBlock(int x, int z, int minY, int maxY) {
         for (int y = maxY; y >= minY; y--) {
             Vector pt = new Vector(x, y, z);
             int id = getBlock(pt).getID();
@@ -1953,7 +2028,7 @@ public class EditSession {
         }
         return minY;
     }
-    
+
     /**
      * Gets the list of missing blocks and clears the list for the next
      * operation.
@@ -1974,7 +2049,8 @@ public class EditSession {
     }
 
     /**
-     * @param blockBag the blockBag to set
+     * @param blockBag
+     *            the blockBag to set
      */
     public void setBlockBag(BlockBag blockBag) {
         this.blockBag = blockBag;

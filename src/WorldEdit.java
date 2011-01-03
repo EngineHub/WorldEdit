@@ -15,12 +15,10 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.sk89q.worldedit.ServerInterface;
 
 /**
  * Entry point for the plugin for hey0's mod.
@@ -31,17 +29,28 @@ public class WorldEdit extends Plugin {
     /**
      * Logger.
      */
-    private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
-    /**
-     * WorldEditLibrary instance.
-     */
-    private static final HMWorldEditListener listener = new HMWorldEditListener();
+    private static final Logger logger = Logger
+            .getLogger("Minecraft.WorldEdit");
     
     /**
-     * WorldEdit version, fetched from the .jar's manifest. Used to print the
-     * WorldEdit version in various places.
+     * The event listener for WorldEdit an hMod. Configuration and such is
+     * also loaded here as well, although the core of the WorldEdit is
+     * actually in com.sk89q.worldedit.WorldEditController and is merely
+     * loaded by this listener.
+     */
+    private final HMWorldEditListener listener;
+
+    /**
+     * WorldEdit version, fetched from the .jar's manifest.
      */
     private String version;
+
+    /**
+     * Construct an instance of the plugin.
+     */
+    public WorldEdit() {
+        listener = new HMWorldEditListener(new HMServerInterface());
+    }
 
     /**
      * Initializes the plugin.
@@ -62,8 +71,6 @@ public class WorldEdit extends Plugin {
                 PluginListener.Priority.MEDIUM);
         loader.addListener(PluginLoader.Hook.ARM_SWING, listener, this,
                 PluginListener.Priority.MEDIUM);
-        
-        ServerInterface.setup(new HMServerInterface());
 
         logger.log(Level.INFO, "WorldEdit version " + getVersion() + " loaded");
     }
@@ -88,39 +95,30 @@ public class WorldEdit extends Plugin {
 
     /**
      * Get the CraftBook version.
-     *
+     * 
      * @return
      */
     public String getVersion() {
         if (version != null) {
             return version;
         }
-        
+
         Package p = WorldEdit.class.getPackage();
-        
+
         if (p == null) {
             p = Package.getPackage("com.sk89q.worldedit");
         }
-        
+
         if (p == null) {
             version = "(unknown)";
         } else {
             version = p.getImplementationVersion();
-            
+
             if (version == null) {
                 version = "(unknown)";
             }
         }
 
         return version;
-    }
-
-    /**
-     * Returns the listener.
-     *
-     * @return
-     */
-    public HMWorldEditListener getListener() {
-        return listener;
     }
 }

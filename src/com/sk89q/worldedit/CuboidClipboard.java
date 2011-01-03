@@ -1,4 +1,3 @@
-package com.sk89q.worldedit;
 // $Id$
 /*
  * WorldEdit
@@ -18,7 +17,8 @@ package com.sk89q.worldedit;
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import com.sk89q.worldedit.*;
+package com.sk89q.worldedit;
+
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
 import org.jnbt.*;

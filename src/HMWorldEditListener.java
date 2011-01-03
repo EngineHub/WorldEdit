@@ -17,53 +17,48 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.Handler;
-import java.util.logging.FileHandler;
-import java.io.*;
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.*;
-import com.sk89q.worldedit.data.*;
-import com.sk89q.worldedit.filters.*;
-import com.sk89q.worldedit.snapshots.*;
-import com.sk89q.worldedit.regions.*;
-import com.sk89q.worldedit.patterns.*;
 
 /**
- * Plugin base.
+ * The event listener for WorldEdit in hMod.
  *
  * @author sk89q
  */
 public class HMWorldEditListener extends PluginListener {
     /**
-     * Logger.
-     */
-    private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
-    
-    /**
-     * WorldEditLibrary's properties file.
-     */
-    private PropertiesFile properties;
-    
-    /**
      * Main WorldEdit controller.
      */
-    private WorldEditController controller = new WorldEditController();
+    private WorldEditController controller;
+    /**
+     * Configuration.
+     */
+    private LocalConfiguration config;
+    /**
+     * A copy of the server instance. This is where all world<->WorldEdit calls
+     * will go through.
+     */
+    private ServerInterface server;
+    
+    /**
+     * Constructs an instance.
+     * 
+     * @param server
+     */
+    public HMWorldEditListener(ServerInterface server) {
+        this.server = server;
+
+        config = new HMConfiguration();
+        controller = new WorldEditController(server, config);
+    }
+    
     /**
      *
      * @param player
      */
     @Override
     public void onDisconnect(Player player) {
-        controller.handleDisconnect(new HMPlayer(player));
+        controller.handleDisconnect(wrapPlayer(player));
     }
 
     /**
@@ -72,7 +67,7 @@ public class HMWorldEditListener extends PluginListener {
      * @param player
      */
     public void onArmSwing(Player player) {
-        controller.handleArmSwing(new HMPlayer(player));
+        controller.handleArmSwing(wrapPlayer(player));
     }
 
     /**
@@ -91,7 +86,7 @@ public class HMWorldEditListener extends PluginListener {
         Vector pos = new Vector(blockClicked.getX(),
                 blockClicked.getY(),
                 blockClicked.getZ());
-        return controller.handleBlockRightClick(new HMPlayer(player), pos);
+        return controller.handleBlockRightClick(wrapPlayer(player), null, pos);
     }
 
     /**
@@ -107,7 +102,7 @@ public class HMWorldEditListener extends PluginListener {
         Vector pos = new Vector(blockClicked.getX(),
                 blockClicked.getY(),
                 blockClicked.getZ());
-        return controller.handleBlockLeftClick(new HMPlayer(player), pos);
+        return controller.handleBlockLeftClick(wrapPlayer(player), null, pos);
     }
 
     /**
@@ -118,81 +113,21 @@ public class HMWorldEditListener extends PluginListener {
      */
     @Override
     public boolean onCommand(Player player, String[] split) {
-        return controller.handleCommand(new HMPlayer(player), split);
+        return controller.handleCommand(wrapPlayer(player), split);
     }
 
     /**
      * Loads the configuration.
      */
     public void loadConfiguration() {
-        if (properties == null) {
-            properties = new PropertiesFile("worldedit.properties");
-        } else {
-            try {
-                properties.load();
-            } catch (IOException e) {
-                logger.warning("worldedit.properties could not be loaded: "
-                        + e.getMessage());
-            }
-        }
-
-        controller.profile = properties.getBoolean("debug-profile", false);
-        controller.wandItem = properties.getInt("wand-item", 271);
-        controller.defaultChangeLimit = Math.max(-1, properties.getInt("default-max-blocks-changed", -1));
-        controller.maxChangeLimit = Math.max(-1, properties.getInt("max-blocks-changed", -1));
-        controller.maxRadius = Math.max(-1, properties.getInt("max-radius", -1));
-        controller.maxSuperPickaxeSize = Math.max(1, properties.getInt("max-super-pickaxe-size", 5));
-        controller.registerHelp = properties.getBoolean("register-help", true);
-        controller.logComands = properties.getBoolean("log-commands", false);
-        controller.superPickaxeDrop = properties.getBoolean("super-pickaxe-drop-items", true);
-        controller.superPickaxeManyDrop = properties.getBoolean("super-pickaxe-many-drop-items", false);
-        controller.noDoubleSlash = properties.getBoolean("no-double-slash", false);
-        controller.useInventory = properties.getBoolean("use-inventory", false);
-        controller.useInventoryOverride = properties.getBoolean("use-inventory-override", false);
-        
-        // Get allowed blocks
-        controller.allowedBlocks = new HashSet<Integer>();
-        for (String b : properties.getString("allowed-blocks",
-                WorldEditController.getDefaultAllowedBlocks()).split(",")) {
-            try {
-                controller.allowedBlocks.add(Integer.parseInt(b));
-            } catch (NumberFormatException e) {
-            }
-        }
-
-
-        String snapshotsDir = properties.getString("snapshots-dir", "");
-        if (!snapshotsDir.trim().equals("")) {
-            controller.snapshotRepo = new SnapshotRepository(snapshotsDir);
-        } else {
-            controller.snapshotRepo = null;
-        }
-
-        String type = properties.getString("shell-save-type", "").trim();
-        controller.shellSaveType = type.equals("") ? null : type;
-
-        String logFile = properties.getString("log-file", "");
-        if (!logFile.equals("")) {
-            try {
-                FileHandler handler = new FileHandler(logFile, true);
-                handler.setFormatter(new LogFormat());
-                logger.addHandler(handler);
-            } catch (IOException e) {
-                logger.log(Level.WARNING, "Could not use log file " + logFile + ": "
-                        + e.getMessage());
-            }
-        } else {
-            for (Handler handler : logger.getHandlers()) {
-                logger.removeHandler(handler);
-            }
-        }
+        config.load();
     }
 
     /**
      * Register commands with help.
      */
     public void registerCommands() {
-        if (controller.registerHelp) {
+        if (config.registerHelp) {
             for (Map.Entry<String,String> entry : controller.getCommands().entrySet()) {
                 etc.getInstance().addCommand(entry.getKey(), entry.getValue());
             }
@@ -221,7 +156,17 @@ public class HMWorldEditListener extends PluginListener {
      * @param player
      * @return
      */
-    public WorldEditSession _bridgeSession(Player player) {
-        return controller.getBridgeSession(new HMPlayer(player));
+    public LocalSession _bridgeSession(Player player) {
+        return controller.getBridgeSession(wrapPlayer(player));
+    }
+    
+    /**
+     * Wrap a hMod player for WorldEdit.
+     * 
+     * @param player
+     * @return
+     */
+    private LocalPlayer wrapPlayer(Player player) {
+        return new HMPlayer(server, player);
     }
 }

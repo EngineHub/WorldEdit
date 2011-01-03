@@ -26,7 +26,7 @@ import com.sk89q.worldedit.blocks.BlockType;
  *
  * @author sk89q
  */
-public abstract class WorldEditPlayer {    
+public abstract class LocalPlayer {    
     /**
      * Directions.
      */
@@ -48,9 +48,11 @@ public abstract class WorldEditPlayer {
     
     /**
      * Construct the object.
+     * 
+     * @param server
      */
-    protected WorldEditPlayer() {
-        server = ServerInterface.getInstance();
+    protected LocalPlayer(ServerInterface server) {
+        this.server = server;
     }
     
     /**
@@ -72,7 +74,7 @@ public abstract class WorldEditPlayer {
      *
      * @param searchPos search position
      */
-    public void findFreePosition(Vector searchPos) {
+    public void findFreePosition(LocalWorld world, Vector searchPos) {
         int x = searchPos.getBlockX();
         int y = Math.max(0, searchPos.getBlockY());
         int origY = y;
@@ -81,7 +83,8 @@ public abstract class WorldEditPlayer {
         byte free = 0;
 
         while (y <= 129) {
-            if (BlockType.canPassThrough(server.getBlockType(new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(server.getBlockType(world,
+                    new Vector(x, y, z)))) {
                 free++;
             } else {
                 free = 0;
@@ -106,7 +109,7 @@ public abstract class WorldEditPlayer {
      * that free position.
      */
     public void findFreePosition() {
-        findFreePosition(getBlockIn());
+        findFreePosition(getPosition().getWorld(), getBlockIn());
     }
 
     /**
@@ -119,12 +122,13 @@ public abstract class WorldEditPlayer {
         int x = pos.getBlockX();
         int y = Math.max(0, pos.getBlockY());
         int z = pos.getBlockZ();
+        LocalWorld world = getPosition().getWorld();
 
         byte free = 0;
         byte spots = 0;
 
         while (y <= 129) {
-            if (BlockType.canPassThrough(server.getBlockType(new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(server.getBlockType(world, new Vector(x, y, z)))) {
                 free++;
             } else {
                 free = 0;
@@ -133,7 +137,7 @@ public abstract class WorldEditPlayer {
             if (free == 2) {
                 spots++;
                 if (spots == 2) {
-                    int type = server.getBlockType(new Vector(x, y - 2, z));
+                    int type = server.getBlockType(world, new Vector(x, y - 2, z));
                     
                     // Don't get put in lava!
                     if (type == 10 || type == 11) {
@@ -161,11 +165,12 @@ public abstract class WorldEditPlayer {
         int x = pos.getBlockX();
         int y = Math.max(0, pos.getBlockY() - 1);
         int z = pos.getBlockZ();
+        LocalWorld world = getPosition().getWorld();
 
         byte free = 0;
 
         while (y >= 1) {
-            if (BlockType.canPassThrough(server.getBlockType(new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(server.getBlockType(world, new Vector(x, y, z)))) {
                 free++;
             } else {
                 free = 0;
@@ -176,7 +181,7 @@ public abstract class WorldEditPlayer {
                 // lightly and also check to see if there's something to
                 // stand upon
                 while (y >= 0) {
-                    int type = server.getBlockType(new Vector(x, y, z));
+                    int type = server.getBlockType(world, new Vector(x, y, z));
 
                     // Don't want to end up in lava
                     if (type != 0 && type != 10 && type != 11) {
@@ -209,17 +214,18 @@ public abstract class WorldEditPlayer {
         int initialY = Math.max(0, pos.getBlockY());
         int y = Math.max(0, pos.getBlockY() + 2);
         int z = pos.getBlockZ();
+        LocalWorld world = getPosition().getWorld();
         
         // No free space above
-        if (server.getBlockType(new Vector(x, y, z)) != 0) {
+        if (server.getBlockType(world, new Vector(x, y, z)) != 0) {
             return false;
         }
 
         while (y <= 127) {
             // Found a ceiling!
-            if (!BlockType.canPassThrough(server.getBlockType(new Vector(x, y, z)))) {
+            if (!BlockType.canPassThrough(server.getBlockType(world, new Vector(x, y, z)))) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
-                server.setBlockType(new Vector(x, platformY, z),
+                server.setBlockType(world, new Vector(x, platformY, z),
                         BlockType.GLASS.getID());
                 setPosition(new Vector(x + 0.5, platformY + 1, z + 0.5));
                 return true;
@@ -244,14 +250,15 @@ public abstract class WorldEditPlayer {
         int y = Math.max(0, pos.getBlockY() + 1);
         int z = pos.getBlockZ();
         int maxY = Math.min(128, initialY + distance);
+        LocalWorld world = getPosition().getWorld();
 
         while (y <= 129) {
-            if (!BlockType.canPassThrough(server.getBlockType(new Vector(x, y, z)))) {
+            if (!BlockType.canPassThrough(server.getBlockType(world, new Vector(x, y, z)))) {
                 break; // Hit something
             } else if (y > maxY + 1) {
                 break;
             } else if (y == maxY + 1) {
-                server.setBlockType(new Vector(x, y - 2, z),
+                server.setBlockType(world, new Vector(x, y - 2, z),
                         BlockType.GLASS.getID());
                 setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
                 return true;
@@ -268,8 +275,8 @@ public abstract class WorldEditPlayer {
      *
      * @return point
      */
-    public Vector getBlockIn() {
-        return getPosition().toBlockVector();
+    public WorldVector getBlockIn() {
+        return getPosition();
     }
 
     /**
@@ -277,8 +284,9 @@ public abstract class WorldEditPlayer {
      *
      * @return point
      */
-    public Vector getBlockOn() {
-        return getPosition().subtract(0, 1, 0).toBlockVector();
+    public WorldVector getBlockOn() {
+        WorldVector pos = getPosition();
+        return new WorldVector(pos.getWorld(), pos.subtract(0, 1, 0));
     }
 
     /**
@@ -287,7 +295,7 @@ public abstract class WorldEditPlayer {
      * @param range
      * @return point
      */
-    public abstract Vector getBlockTrace(int range);
+    public abstract WorldVector getBlockTrace(int range);
 
     /**
      * Get the point of the block being looked at. May return null.
@@ -295,14 +303,14 @@ public abstract class WorldEditPlayer {
      * @param range
      * @return point
      */
-    public abstract Vector getSolidBlockTrace(int range);
+    public abstract WorldVector getSolidBlockTrace(int range);
 
     /**
      * Get the player's cardinal direction (N, W, NW, etc.). May return null.
      *
      * @return
      */
-    public WorldEditPlayer.DIRECTION getCardinalDirection() {
+    public LocalPlayer.DIRECTION getCardinalDirection() {
         // From hey0's code
         double rot = (getYaw() - 90) % 360;
         if (rot < 0) {
@@ -317,25 +325,25 @@ public abstract class WorldEditPlayer {
      * @param rot
      * @return
      */
-    private static WorldEditPlayer.DIRECTION getDirection(double rot) {
+    private static LocalPlayer.DIRECTION getDirection(double rot) {
         if (0 <= rot && rot < 22.5) {
-            return WorldEditPlayer.DIRECTION.NORTH;
+            return LocalPlayer.DIRECTION.NORTH;
         } else if (22.5 <= rot && rot < 67.5) {
-            return WorldEditPlayer.DIRECTION.NORTH_EAST;
+            return LocalPlayer.DIRECTION.NORTH_EAST;
         } else if (67.5 <= rot && rot < 112.5) {
-            return WorldEditPlayer.DIRECTION.EAST;
+            return LocalPlayer.DIRECTION.EAST;
         } else if (112.5 <= rot && rot < 157.5) {
-            return WorldEditPlayer.DIRECTION.SOUTH_EAST;
+            return LocalPlayer.DIRECTION.SOUTH_EAST;
         } else if (157.5 <= rot && rot < 202.5) {
-            return WorldEditPlayer.DIRECTION.SOUTH;
+            return LocalPlayer.DIRECTION.SOUTH;
         } else if (202.5 <= rot && rot < 247.5) {
-            return WorldEditPlayer.DIRECTION.SOUTH_WEST;
+            return LocalPlayer.DIRECTION.SOUTH_WEST;
         } else if (247.5 <= rot && rot < 292.5) {
-            return WorldEditPlayer.DIRECTION.WEST;
+            return LocalPlayer.DIRECTION.WEST;
         } else if (292.5 <= rot && rot < 337.5) {
-            return WorldEditPlayer.DIRECTION.NORTH_WEST;
+            return LocalPlayer.DIRECTION.NORTH_WEST;
         } else if (337.5 <= rot && rot < 360.0) {
-            return WorldEditPlayer.DIRECTION.NORTH;
+            return LocalPlayer.DIRECTION.NORTH;
         } else {
             return null;
         }
@@ -360,7 +368,14 @@ public abstract class WorldEditPlayer {
      *
      * @return point
      */
-    public abstract Vector getPosition();
+    public abstract WorldVector getPosition();
+
+    /**
+     * Get the player's world.
+     *
+     * @return point
+     */
+    public abstract LocalWorld getWorld();
 
     /**
      * Get the player's view pitch.
@@ -462,6 +477,15 @@ public abstract class WorldEditPlayer {
      * @return
      */
     public abstract boolean hasPermission(String perm);
+    
+    /**
+     * Returns true if the player can destroy bedrock.
+     * 
+     * @return
+     */
+    public boolean canDestroyBedrock() {
+        return hasPermission("worldeditbedrock");
+    }
 
     /**
      * Returns true if equal.
@@ -471,10 +495,10 @@ public abstract class WorldEditPlayer {
      */
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof WorldEditPlayer)) {
+        if (!(other instanceof LocalPlayer)) {
             return false;
         }
-        WorldEditPlayer other2 = (WorldEditPlayer)other;
+        LocalPlayer other2 = (LocalPlayer)other;
         return other2.getName().equals(getName());
     }
 
