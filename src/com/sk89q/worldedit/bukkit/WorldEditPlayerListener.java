@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import org.bukkit.*;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerListener;
-
-import com.sk89q.worldedit.WorldEditPlayer;
+import com.sk89q.worldedit.*;
 
 /**
  * Handles all events thrown in relation to a Player
@@ -49,8 +49,7 @@ public class WorldEditPlayerListener extends PlayerListener {
      * @param event Relevant event details
      */
     public void onPlayerQuit(PlayerEvent event) {
-        WorldEditPlayer player = new BukkitPlayer(plugin.getServer().getOnlinePlayers()[0]);
-        plugin.controller.handleDisconnect(player);
+        plugin.controller.handleDisconnect(wrapPlayer(event.getPlayer()));
     }
 
     /**
@@ -59,7 +58,11 @@ public class WorldEditPlayerListener extends PlayerListener {
      * @param event Relevant event details
      */
     public void onPlayerCommand(PlayerChatEvent event) {
-        WorldEditPlayer player = new BukkitPlayer(plugin.getServer().getOnlinePlayers()[0]);
-        plugin.controller.handleCommand(player, event.getMessage().split(" "));
+        plugin.controller.handleCommand(wrapPlayer(event.getPlayer()),
+                event.getMessage().split(" "));
+    }
+    
+    private BukkitPlayer wrapPlayer(Player player) {
+        return new BukkitPlayer(plugin.server, player);
     }
 }

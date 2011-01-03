@@ -21,23 +21,25 @@ package com.sk89q.worldedit.bukkit;
 
 import org.bukkit.*;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bags.BlockBag;
 
-public class BukkitPlayer extends WorldEditPlayer {
+public class BukkitPlayer extends LocalPlayer {
     private Player player;
     
-    public BukkitPlayer(Player player) {
+    public BukkitPlayer(ServerInterface server, Player player) {
+        super(server);
         this.player = player;
     }
 
     @Override
-    public Vector getBlockTrace(int range) {
+    public WorldVector getBlockTrace(int range) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Vector getSolidBlockTrace(int range) {
+    public WorldVector getSolidBlockTrace(int range) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -54,9 +56,10 @@ public class BukkitPlayer extends WorldEditPlayer {
     }
 
     @Override
-    public Vector getPosition() {
+    public WorldVector getPosition() {
         Location loc = player.getLocation();
-        return new Vector(loc.getX(), loc.getY(), loc.getZ());
+        return new WorldVector(new BukkitWorld(loc.getWorld()),
+                loc.getX(), loc.getY(), loc.getZ());
     }
 
     @Override
@@ -117,6 +120,12 @@ public class BukkitPlayer extends WorldEditPlayer {
     public boolean hasPermission(String perm) {
         // TODO Auto-generated method stub
         return true;
+    }
+
+    @Override
+    public LocalWorld getWorld() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

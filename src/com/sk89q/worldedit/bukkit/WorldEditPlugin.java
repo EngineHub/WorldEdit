@@ -30,8 +30,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.worldedit.*;
 
 public class WorldEditPlugin extends JavaPlugin {
-    public final WorldEditController controller =
-        new WorldEditController();
+    public final ServerInterface server;
+    public final WorldEditController controller;
     
     private final WorldEditPlayerListener playerListener =
         new WorldEditPlayerListener(this);
@@ -41,25 +41,17 @@ public class WorldEditPlugin extends JavaPlugin {
     public WorldEditPlugin(PluginLoader pluginLoader, Server instance,
             PluginDescriptionFile desc, File plugin, ClassLoader cLoader) {
         super(pluginLoader, instance, desc, plugin, cLoader);
+        
+        LocalConfiguration config = new LocalConfiguration() {
+            @Override
+            public void load() {
+                // TODO Auto-generated method stub
+                disallowedBlocks = new HashSet<Integer>();
+            }
+        };
 
-        ServerInterface.setup(new BukkitServerInterface(getServer()));
-
-        controller.profile = true;
-        controller.allowedBlocks = new HashSet<Integer>();
-        controller.defaultChangeLimit = -1;
-        controller.maxChangeLimit = -1;
-        controller.shellSaveType = "sh";
-        controller.snapshotRepo = null;
-        controller.maxRadius = -1;
-        controller.maxSuperPickaxeSize = 5;
-        controller.logComands = false;
-        controller.registerHelp = true;
-        controller.wandItem = 271;
-        controller.superPickaxeDrop = true;
-        controller.superPickaxeManyDrop = true;
-        controller.noDoubleSlash = true;
-        controller.useInventory = false;
-        controller.useInventoryOverride = false;
+        server = new BukkitServerInterface(getServer());
+        controller = new WorldEditController(server, config);
 
         registerEvents();
     }
@@ -79,7 +71,7 @@ public class WorldEditPlugin extends JavaPlugin {
                 playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED,
                 blockListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_RIGHTCLICKED,
+        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED,
                 blockListener, Priority.Normal, this);
     }
 }
