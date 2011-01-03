@@ -57,11 +57,6 @@
     <copy tofile="${release.dir}/worldedit.updatr" file="worldedit.updatr"/>
     <replace file="${release.dir}/worldedit.updatr" token="%version%" value="${version}"/>
     <copy tofile="${release.dir}/WorldEdit.jar" file="${dist.dir}/WorldEdit.jar"/>
-    <copy todir="${release.dir}">
-      <fileset dir="lib">
-        <include name="jnbt.jar"/>
-      </fileset>
-    </copy>
     <zip destfile="${release.dir}/worldedit-${version}.zip" basedir="${release.dir}" excludes="*.zip"/>
     <mkdir dir="${release.dir}/src"/>
     <copy todir="${release.dir}/src">
