@@ -1850,7 +1850,7 @@ public class WorldEditController {
                     split[0] = split[0].substring(1);
                 }
                 
-                if (canUseCommand(player, split[0])) {
+                if (canUseCommand(player, split[0].substring(1))) {
                     LocalSession session = getSession(player);
                     BlockBag blockBag = session.getBlockBag(player);
                     
