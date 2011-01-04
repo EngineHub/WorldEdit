@@ -643,7 +643,7 @@ public class WorldEditController {
 
         // Single super pickaxe mode
         } else if (split[0].equalsIgnoreCase("/single")) {
-            if (!canUseCommand(player, "//")) {
+            if (!canUseCommand(player, "/")) {
                 player.printError("You don't have permission for super pickaxe usage.");
                 return true;
             }
@@ -658,7 +658,7 @@ public class WorldEditController {
         } else if (split[0].equalsIgnoreCase("/area")
                 || split[0].equalsIgnoreCase("/recur")) {
             
-            if (!canUseCommand(player, "//")) {
+            if (!canUseCommand(player, "/")) {
                 player.printError("You don't have permission for super pickaxe usage.");
                 return true;
             }
@@ -1733,7 +1733,7 @@ public class WorldEditController {
      * @param player
      */
     public void handleArmSwing(LocalPlayer player) {
-        if (!canUseCommand(player, "//"))
+        if (!canUseCommand(player, "/"))
             return;
     }
 
@@ -1751,12 +1751,12 @@ public class WorldEditController {
         
         // This prevents needless sessions from being created
         if (!hasSession(player) && !(itemInHand == config.wandItem &&
-                canUseCommand(player, "//pos2"))) { return false; }
+                canUseCommand(player, "/pos2"))) { return false; }
 
         LocalSession session = getSession(player);
 
         if (itemInHand == config.wandItem && session.isToolControlEnabled()
-                && canUseCommand(player, "//pos2")) {
+                && canUseCommand(player, "/pos2")) {
             session.setPos2(clicked);
             try {
                 player.print("Second position set to " + clicked
@@ -1785,8 +1785,8 @@ public class WorldEditController {
     public boolean handleBlockLeftClick(LocalPlayer player,
             LocalWorld world, Vector clicked) {
         
-        if (!canUseCommand(player, "//pos1")
-                && !canUseCommand(player, "//")) { return false; }
+        if (!canUseCommand(player, "/pos1")
+                && !canUseCommand(player, "/")) { return false; }
         
         LocalSession session = getSession(player);
 
@@ -1961,10 +1961,10 @@ public class WorldEditController {
      */
     private boolean canUseCommand(LocalPlayer player, String command) {
         // Allow the /worldeditselect permission
-        if (command.equalsIgnoreCase("//pos1")
-                || command.equalsIgnoreCase("//pos2")
-                || command.equalsIgnoreCase("//hpos1")
-                || command.equalsIgnoreCase("//hpos2")) {
+        if (command.equalsIgnoreCase("/pos1")
+                || command.equalsIgnoreCase("/pos2")
+                || command.equalsIgnoreCase("/hpos1")
+                || command.equalsIgnoreCase("/hpos2")) {
             return player.hasPermission(command)
                     || player.hasPermission("worldeditselect")
                     || player.hasPermission("worldedit");
