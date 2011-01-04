@@ -124,8 +124,7 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public LocalWorld getWorld() {
-        // TODO Auto-generated method stub
-        return null;
+        return new BukkitWorld(player.getWorld());
     }
 
 }
