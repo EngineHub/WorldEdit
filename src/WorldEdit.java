@@ -94,7 +94,7 @@ public class WorldEdit extends Plugin {
     }
 
     /**
-     * Get the CraftBook version.
+     * Get the WorldEdit version.
      * 
      * @return
      */
@@ -120,5 +120,14 @@ public class WorldEdit extends Plugin {
         }
 
         return version;
+    }
+    
+    /**
+     * Returns the listener for the WorldEdit bridge.
+     * 
+     * @return
+     */
+    public HMWorldEditListener getListener() {
+        return listener;
     }
 }
