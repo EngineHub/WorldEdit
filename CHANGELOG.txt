@@ -1,3 +1,8 @@
+2.5.1:
+- Fixed the WorldEdit bridge used by CraftBook and other plugins.
+- Fixed issues with permissions where the only reliable permission was
+    /worldedit.
+
 2.5:
 - Fixed issues with permissions not being read correctly.
 - WorldEdit is now world-aware (not that the Minecraft server is).
