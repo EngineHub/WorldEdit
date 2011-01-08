@@ -39,6 +39,10 @@ public class HMWorldEditListener extends PluginListener {
      * will go through.
      */
     private ServerInterface server;
+    /**
+     * A copy of a world, not that hMod/MC supports multiple worlds.
+     */
+    private HMWorld world;
     
     /**
      * Constructs an instance.
@@ -50,6 +54,7 @@ public class HMWorldEditListener extends PluginListener {
 
         config = new HMConfiguration();
         controller = new WorldEditController(server, config);
+        world = new HMWorld();
     }
     
     /**
@@ -83,10 +88,9 @@ public class HMWorldEditListener extends PluginListener {
     @SuppressWarnings("deprecation")
     public boolean onBlockCreate(Player player, Block blockPlaced,
             Block blockClicked, int itemInHand) {
-        Vector pos = new Vector(blockClicked.getX(),
-                blockClicked.getY(),
-                blockClicked.getZ());
-        return controller.handleBlockRightClick(wrapPlayer(player), null, pos);
+        WorldVector pos = new WorldVector(world, blockClicked.getX(),
+                blockClicked.getY(), blockClicked.getZ());
+        return controller.handleBlockRightClick(wrapPlayer(player), pos);
     }
 
     /**
@@ -99,10 +103,9 @@ public class HMWorldEditListener extends PluginListener {
      */
     @Override
     public boolean onBlockDestroy(Player player, Block blockClicked) {
-        Vector pos = new Vector(blockClicked.getX(),
-                blockClicked.getY(),
-                blockClicked.getZ());
-        return controller.handleBlockLeftClick(wrapPlayer(player), null, pos);
+        WorldVector pos = new WorldVector(world, blockClicked.getX(),
+                blockClicked.getY(), blockClicked.getZ());
+        return controller.handleBlockLeftClick(wrapPlayer(player), pos);
     }
 
     /**
@@ -167,6 +170,6 @@ public class HMWorldEditListener extends PluginListener {
      * @return
      */
     private LocalPlayer wrapPlayer(Player player) {
-        return new HMPlayer(server, player);
+        return new HMPlayer(server, world, player);
     }
 }

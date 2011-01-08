@@ -31,8 +31,9 @@ public class QueryTool implements SuperPickaxeMode {
 
     @Override
     public boolean act(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, LocalWorld world,
-            Vector clicked) {
+            LocalPlayer player, LocalSession session, WorldVector clicked) {
+        
+        LocalWorld world = clicked.getWorld();
         BaseBlock block = (new EditSession(server, world, 0)).rawGetBlock(clicked);
 
         player.print("\u00A79@" + clicked + ": " + "\u00A7e"

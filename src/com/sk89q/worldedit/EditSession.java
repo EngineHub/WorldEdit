@@ -51,10 +51,6 @@ public class EditSession {
     private static Random prng = new Random();
 
     /**
-     * Server interface.
-     */
-    private ServerInterface server;
-    /**
      * World.
      */
     private LocalWorld world;
@@ -62,23 +58,28 @@ public class EditSession {
     /**
      * Stores the original blocks before modification.
      */
-    private DoubleArrayList<BlockVector, BaseBlock> original = new DoubleArrayList<BlockVector, BaseBlock>(
+    private DoubleArrayList<BlockVector, BaseBlock> original =
+        new DoubleArrayList<BlockVector, BaseBlock>(
             true);
     /**
      * Stores the current blocks.
      */
-    private DoubleArrayList<BlockVector, BaseBlock> current = new DoubleArrayList<BlockVector, BaseBlock>(
+    private DoubleArrayList<BlockVector, BaseBlock> current =
+        new DoubleArrayList<BlockVector, BaseBlock>(
             false);
     /**
      * Blocks that should be placed before last.
      */
-    private DoubleArrayList<BlockVector, BaseBlock> queueAfter = new DoubleArrayList<BlockVector, BaseBlock>(
+    private DoubleArrayList<BlockVector, BaseBlock> queueAfter =
+        new DoubleArrayList<BlockVector, BaseBlock>(
             false);
     /**
      * Blocks that should be placed last.
      */
-    private DoubleArrayList<BlockVector, BaseBlock> queueLast = new DoubleArrayList<BlockVector, BaseBlock>(
+    private DoubleArrayList<BlockVector, BaseBlock> queueLast =
+        new DoubleArrayList<BlockVector, BaseBlock>(
             false);
+    
     /**
      * The maximum number of blocks to change at a time. If this number is
      * exceeded, a MaxChangedBlocksException exception will be raised. -1
@@ -112,7 +113,6 @@ public class EditSession {
         }
 
         this.maxBlocks = maxBlocks;
-        this.server = server;
         this.world = world;
     }
 
@@ -131,7 +131,6 @@ public class EditSession {
 
         this.maxBlocks = maxBlocks;
         this.blockBag = blockBag;
-        this.server = server;
         this.world = world;
     }
 
@@ -149,14 +148,14 @@ public class EditSession {
         }
 
         // Clear the chest so that it doesn't drop items
-        if (server.getBlockType(world, pt) == 54 && blockBag == null) {
-            server.clearChest(world, pt);
+        if (world.getBlockType(pt) == 54 && blockBag == null) {
+            world.clearChest(pt);
         }
 
         int id = block.getID();
 
         if (blockBag != null) {
-            int existing = server.getBlockType(world, pt);
+            int existing = world.getBlockType(pt);
 
             if (id > 0) {
                 try {
@@ -177,25 +176,25 @@ public class EditSession {
             }
         }
 
-        boolean result = server.setBlockType(world, pt, id);
+        boolean result = world.setBlockType(pt, id);
         if (id != 0) {
             if (BlockType.usesData(id)) {
-                server.setBlockData(world, pt, block.getData());
+                world.setBlockData(pt, block.getData());
             }
 
             // Signs
             if (block instanceof SignBlock) {
                 SignBlock signBlock = (SignBlock) block;
                 String[] text = signBlock.getText();
-                server.setSignText(world, pt, text);
+                world.setSignText(pt, text);
                 // Chests
             } else if (block instanceof ChestBlock && blockBag == null) {
                 ChestBlock chestBlock = (ChestBlock) block;
-                server.setChestContents(world, pt, chestBlock.getItems());
+                world.setChestContents(pt, chestBlock.getItems());
                 // Mob spawners
             } else if (block instanceof MobSpawnerBlock) {
                 MobSpawnerBlock mobSpawnerblock = (MobSpawnerBlock) block;
-                server.setMobSpawnerType(world, pt, mobSpawnerblock.getMobType());
+                world.setMobSpawnerType(pt, mobSpawnerblock.getMobType());
             }
         }
 
@@ -298,21 +297,20 @@ public class EditSession {
      * @return BaseBlock
      */
     public BaseBlock rawGetBlock(Vector pt) {
-        int type = server.getBlockType(world, pt);
-        int data = server.getBlockData(world, pt);
+        int type = world.getBlockType(pt);
+        int data = world.getBlockData(pt);
 
         // Sign
         if (type == 63 || type == 68) {
-            String[] text = server.getSignText(world, pt);
+            String[] text = world.getSignText(pt);
             return new SignBlock(type, data, text);
             // Chest
         } else if (type == 54) {
-            BaseItemStack[] items = server.getChestContents(world, pt);
+            BaseItemStack[] items = world.getChestContents(pt);
             return new ChestBlock(data, items);
             // Mob spawner
         } else if (type == 52) {
-            return new MobSpawnerBlock(data,
-                    server.getMobSpawnerType(world, pt));
+            return new MobSpawnerBlock(data, world.getMobSpawnerType(pt));
         } else {
             return new BaseBlock(type, data);
         }
@@ -1813,8 +1811,7 @@ public class EditSession {
                         if (pineTree) {
                             makePineTree(new Vector(x, y + 1, z));
                         } else {
-                            server.generateTree(this, world,
-                                    new Vector(x, y + 1, z));
+                            world.generateTree(this, new Vector(x, y + 1, z));
                         }
                         affected++;
                         break;

@@ -436,6 +436,8 @@ public class WorldEditController {
             logger.log(Level.INFO, "WorldEdit: " + player.getName() + ": "
                     + joinString(split, " "));
         }
+        
+        LocalWorld world = player.getPosition().getWorld();
 
         // Jump to the first free position
         if (split[0].equalsIgnoreCase("/unstuck")) {
@@ -1359,7 +1361,7 @@ public class WorldEditController {
                 Math.max(1, Integer.parseInt(split[1])) : -1;
 
             Vector origin = session.getPlacementPosition(player);
-            int killed = server.killMobs(player.getWorld(), origin, radius);
+            int killed = world.killMobs(origin, radius);
             player.print("Killed " + killed + " mobs.");
 
             return true;
@@ -1741,12 +1743,10 @@ public class WorldEditController {
      * Called on right click.
      *
      * @param player
-     * @param world
      * @param clicked
      * @return false if you want the action to go through
      */
-    public boolean handleBlockRightClick(LocalPlayer player, LocalWorld world,
-            Vector clicked) {
+    public boolean handleBlockRightClick(LocalPlayer player, WorldVector clicked) {
         int itemInHand = player.getItemInHand();
         
         // This prevents needless sessions from being created
@@ -1767,8 +1767,7 @@ public class WorldEditController {
 
             return true;
         } else if (player.isHoldingPickAxe() && session.getTool() != null) {
-            return session.getTool().act(server, config, player, session,
-                    world, clicked);
+            return session.getTool().act(server, config, player, session, clicked);
         }
 
         return false;
@@ -1778,12 +1777,10 @@ public class WorldEditController {
      * Called on left click.
      *
      * @param player
-     * @param world
      * @param clicked
      * @return false if you want the action to go through
      */
-    public boolean handleBlockLeftClick(LocalPlayer player,
-            LocalWorld world, Vector clicked) {
+    public boolean handleBlockLeftClick(LocalPlayer player, WorldVector clicked) {
         
         if (!canUseCommand(player, "/pos1")
                 && !canUseCommand(player, "/")) { return false; }
@@ -1818,7 +1815,7 @@ public class WorldEditController {
         } else if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
             if (session.getSuperPickaxeMode() != null) {
                 return session.getSuperPickaxeMode().act(server, config,
-                        player, session, world, clicked);
+                        player, session, clicked);
             }
         }
 

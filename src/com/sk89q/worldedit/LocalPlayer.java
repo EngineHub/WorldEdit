@@ -83,8 +83,7 @@ public abstract class LocalPlayer {
         byte free = 0;
 
         while (y <= 129) {
-            if (BlockType.canPassThrough(server.getBlockType(world,
-                    new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 free++;
             } else {
                 free = 0;
@@ -128,7 +127,7 @@ public abstract class LocalPlayer {
         byte spots = 0;
 
         while (y <= 129) {
-            if (BlockType.canPassThrough(server.getBlockType(world, new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 free++;
             } else {
                 free = 0;
@@ -137,7 +136,7 @@ public abstract class LocalPlayer {
             if (free == 2) {
                 spots++;
                 if (spots == 2) {
-                    int type = server.getBlockType(world, new Vector(x, y - 2, z));
+                    int type = world.getBlockType(new Vector(x, y - 2, z));
                     
                     // Don't get put in lava!
                     if (type == 10 || type == 11) {
@@ -170,7 +169,7 @@ public abstract class LocalPlayer {
         byte free = 0;
 
         while (y >= 1) {
-            if (BlockType.canPassThrough(server.getBlockType(world, new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 free++;
             } else {
                 free = 0;
@@ -181,7 +180,7 @@ public abstract class LocalPlayer {
                 // lightly and also check to see if there's something to
                 // stand upon
                 while (y >= 0) {
-                    int type = server.getBlockType(world, new Vector(x, y, z));
+                    int type = world.getBlockType(new Vector(x, y, z));
 
                     // Don't want to end up in lava
                     if (type != 0 && type != 10 && type != 11) {
@@ -217,15 +216,15 @@ public abstract class LocalPlayer {
         LocalWorld world = getPosition().getWorld();
         
         // No free space above
-        if (server.getBlockType(world, new Vector(x, y, z)) != 0) {
+        if (world.getBlockType(new Vector(x, y, z)) != 0) {
             return false;
         }
 
         while (y <= 127) {
             // Found a ceiling!
-            if (!BlockType.canPassThrough(server.getBlockType(world, new Vector(x, y, z)))) {
+            if (!BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
-                server.setBlockType(world, new Vector(x, platformY, z),
+                world.setBlockType(new Vector(x, platformY, z),
                         BlockType.GLASS.getID());
                 setPosition(new Vector(x + 0.5, platformY + 1, z + 0.5));
                 return true;
@@ -253,12 +252,12 @@ public abstract class LocalPlayer {
         LocalWorld world = getPosition().getWorld();
 
         while (y <= 129) {
-            if (!BlockType.canPassThrough(server.getBlockType(world, new Vector(x, y, z)))) {
+            if (!BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 break; // Hit something
             } else if (y > maxY + 1) {
                 break;
             } else if (y == maxY + 1) {
-                server.setBlockType(world, new Vector(x, y - 2, z),
+                world.setBlockType(new Vector(x, y - 2, z),
                         BlockType.GLASS.getID());
                 setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
                 return true;

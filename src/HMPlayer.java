@@ -34,15 +34,20 @@ public class HMPlayer extends LocalPlayer {
      * Stores the player.
      */
     private Player player;
+    /**
+     * World.
+     */
+    private HMWorld world;
 
     /**
      * Construct the object.
      * 
      * @param player
      */
-    public HMPlayer(ServerInterface server, Player player) {
+    public HMPlayer(ServerInterface server, HMWorld world, Player player) {
         super(server);
         this.player = player;
+        this.world = world;
     }
 
     /**
@@ -123,7 +128,7 @@ public class HMPlayer extends LocalPlayer {
      * @return point
      */
     public WorldVector getPosition() {
-        return new WorldVector(null, player.getX(), player.getY(), player.getZ());
+        return new WorldVector(world, player.getX(), player.getY(), player.getZ());
     }
 
     /**
@@ -132,7 +137,7 @@ public class HMPlayer extends LocalPlayer {
      * @return point
      */
     public LocalWorld getWorld() {
-        return null;
+        return world;
     }
 
     /**
@@ -163,7 +168,7 @@ public class HMPlayer extends LocalPlayer {
     public boolean passThroughForwardWall(int range) {
         boolean foundNext = false;
         int searchDist = 0;
-        HitBlox hitBlox = new HitBlox(player,range, 0.2);
+        HitBlox hitBlox = new HitBlox(player, range, 0.2);
         LocalWorld world = getPosition().getWorld();
         Block block;
         while ((block = hitBlox.getNextBlock()) != null) {
@@ -174,7 +179,7 @@ public class HMPlayer extends LocalPlayer {
             if (block.getType() == 0) {
                 if (foundNext) {
                     Vector v = new Vector(block.getX(), block.getY() - 1, block.getZ());
-                    if (server.getBlockType(world, v) == 0) {
+                    if (world.getBlockType(v) == 0) {
                         setPosition(v.add(0.5, 0, 0.5));
                         return true;
                     }

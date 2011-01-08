@@ -19,162 +19,11 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.blocks.BaseItemStack;
-
 /**
  * 
  * @author sk89q
  */
 public abstract class ServerInterface {
-    /**
-     * Set block type.
-     * 
-     * @param pt
-     * @param type
-     * @return
-     */
-    public abstract boolean setBlockType(LocalWorld world, Vector pt, int type);
-
-    /**
-     * Get block type.
-     * 
-     * @param pt
-     * @return
-     */
-    public abstract int getBlockType(LocalWorld world, Vector pt);
-
-    /**
-     * Set block data.
-     * 
-     * @param pt
-     * @param data
-     * @return
-     */
-    public abstract void setBlockData(LocalWorld world, Vector pt, int data);
-
-    /**
-     * Get block data.
-     * 
-     * @param pt
-     * @return
-     */
-    public abstract int getBlockData(LocalWorld world, Vector pt);
-
-    /**
-     * Set sign text.
-     * 
-     * @param pt
-     * @param text
-     */
-    public abstract void setSignText(LocalWorld world, Vector pt, String[] text);
-
-    /**
-     * Get sign text.
-     * 
-     * @param pt
-     * @return
-     */
-    public abstract String[] getSignText(LocalWorld world, Vector pt);
-
-    /**
-     * Gets the contents of chests. Will return null if the chest does not
-     * really exist or it is the second block for a double chest.
-     * 
-     * @param pt
-     * @return
-     */
-    public abstract BaseItemStack[] getChestContents(LocalWorld world, Vector pt);
-
-    /**
-     * Sets a chest slot.
-     * 
-     * @param pt
-     * @param contents
-     * @return
-     */
-    public abstract boolean setChestContents(LocalWorld world, Vector pt,
-            BaseItemStack[] contents);
-
-    /**
-     * Clear a chest's contents.
-     * 
-     * @param pt
-     */
-    public abstract boolean clearChest(LocalWorld world, Vector pt);
-
-    /**
-     * Checks if a mob type is valid.
-     * 
-     * @param type
-     * @return
-     */
-    public abstract boolean isValidMobType(String type);
-
-    /**
-     * Set mob spawner mob type.
-     * 
-     * @param pt
-     * @param mobType
-     */
-    public abstract void setMobSpawnerType(LocalWorld world, Vector pt,
-            String mobType);
-
-    /**
-     * Get mob spawner mob type. May return an empty string.
-     * 
-     * @param pt
-     * @param mobType
-     */
-    public abstract String getMobSpawnerType(LocalWorld world, Vector pt);
-
-    /**
-     * Generate a tree at a location.
-     * 
-     * @param pt
-     * @return
-     */
-    public abstract boolean generateTree(EditSession editSession,
-            LocalWorld world, Vector pt);
-
-    /**
-     * Drop an item.
-     * 
-     * @param pt
-     * @param type
-     * @param count
-     * @param times
-     */
-    public abstract void dropItem(LocalWorld world, Vector pt, int type,
-            int count, int times);
-
-    /**
-     * Drop an item.
-     * 
-     * @param pt
-     * @param type
-     * @param count
-     * @param times
-     */
-    public abstract void dropItem(LocalWorld world, Vector pt, int type,
-            int count);
-
-    /**
-     * Drop an item.
-     * 
-     * @param pt
-     * @param type
-     * @param count
-     * @param times
-     */
-    public abstract void dropItem(LocalWorld world, Vector pt, int type);
-
-    /**
-     * Simulate a block being mined.
-     * 
-     * @param pt
-     */
-    public abstract void simulateBlockMine(LocalWorld world, Vector pt);
-
     /**
      * Resolves an item name to its ID.
      * 
@@ -182,13 +31,12 @@ public abstract class ServerInterface {
      * @return
      */
     public abstract int resolveItem(String name);
-
+    
     /**
-     * Kill mobs in an area.
+     * Checks if a mob type is valid.
      * 
-     * @param origin
-     * @param radius
+     * @param type
      * @return
      */
-    public abstract int killMobs(LocalWorld world, Vector origin, int radius);
+    public abstract boolean isValidMobType(String type);
 }
