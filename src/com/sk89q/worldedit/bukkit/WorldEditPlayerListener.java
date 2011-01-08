@@ -57,8 +57,10 @@ public class WorldEditPlayerListener extends PlayerListener {
      * @param event Relevant event details
      */
     public void onPlayerCommand(PlayerChatEvent event) {
-        plugin.controller.handleCommand(wrapPlayer(event.getPlayer()),
-                event.getMessage().split(" "));
+        if (plugin.controller.handleCommand(wrapPlayer(event.getPlayer()),
+                event.getMessage().split(" "))) {
+            event.setCancelled(true);
+        }
     }
     
     private BukkitPlayer wrapPlayer(Player player) {

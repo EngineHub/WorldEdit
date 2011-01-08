@@ -65,7 +65,9 @@ public class WorldEditBlockListener extends BlockListener {
                 event.getBlock().getY(), event.getBlock().getZ());
         LocalPlayer player = wrapPlayer(event.getPlayer());
         
-        plugin.controller.handleBlockRightClick(player, pos);
+        if (plugin.controller.handleBlockRightClick(player, pos)) {
+            event.setCancelled(true);
+        }
     }
     
     private BukkitPlayer wrapPlayer(Player player) {
