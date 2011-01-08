@@ -92,12 +92,12 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public void print(String msg) {
-        player.sendMessage(msg);
+        player.sendMessage("\u00A7d" + msg);
     }
 
     @Override
     public void printError(String msg) {
-        player.sendMessage(msg);
+        player.sendMessage("\u00A7c" + msg);
     }
 
     @Override
