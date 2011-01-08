@@ -1571,6 +1571,54 @@ public class EditSession {
     }
 
     /**
+     * Thaw.
+     * 
+     * @param pos
+     * @param radius
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int thaw(Vector pos, int radius)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+        int radiusSq = (int)Math.pow(radius, 2);
+
+        int ox = pos.getBlockX();
+        int oy = pos.getBlockY();
+        int oz = pos.getBlockZ();
+
+        BaseBlock air = new BaseBlock(0);
+        BaseBlock water = new BaseBlock(BlockID.STATIONARY_WATER);
+
+        for (int x = ox - radius; x <= ox + radius; x++) {
+            for (int z = oz - radius; z <= oz + radius; z++) {
+                if ((new Vector(x, oy, z)).distanceSq(pos) > radiusSq) {
+                    continue;
+                }
+
+                for (int y = 127; y >= 1; y--) {
+                    Vector pt = new Vector(x, y, z);
+                    int id = getBlock(pt).getID();
+
+                    if (id == BlockID.ICE) { // Ice
+                        if (setBlock(pt, water)) {
+                            affected++;
+                        }
+                    } else if (id == BlockID.SNOW) {
+                        if (setBlock(pt, air)) {
+                            affected++;
+                        }
+                    } else if (id != 0) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
      * Make snow.
      * 
      * @param pos
