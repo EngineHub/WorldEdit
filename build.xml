@@ -37,7 +37,7 @@
       <!--<attribute name="Main-Class" value="com.sk89q.worldedit.cli.Main"/>-->
     </manifest>
     <copy tofile="${build.dir}/plugin.yml" file="plugin.yml"/>
-    <jar jarfile="${dist.dir}/WorldEdit.jar" basedir="${build.dir}" manifest="manifest.mf"/>
+    <jar jarfile="${dist.dir}/WorldEdit.jar" basedir="${build.dir}" manifest="manifest.mf" />
   </target>
 
   <!-- Create the .jar -->
@@ -61,12 +61,12 @@
     <copy tofile="${release.dir}/plugin.yml" file="plugin.yml"/>
     <replace file="${release.dir}/plugin.yml" token="WEVERSIONMACRO" value="${version}"/>
     <copy tofile="${release.dir}/WorldEdit.jar" file="${dist.dir}/WorldEdit.jar"/>
-    <zip destfile="${release.dir}/worldedit-${version}.zip" basedir="${release.dir}" excludes="*.zip"/>
+    <zip destfile="${release.dir}/worldedit-${version}.zip" basedir="${release.dir}" excludes="*.zip plugin.yml"/>
     <mkdir dir="${release.dir}/src"/>
     <copy todir="${release.dir}/src">
       <fileset dir="${src.dir}"/>
     </copy>
-    <zip destfile="${release.dir}/worldedit-${version}-src.zip" basedir="${release.dir}" excludes="*.zip"/>
+    <zip destfile="${release.dir}/worldedit-${version}-src.zip" basedir="${release.dir}" excludes="*.zip plugin.yml"/>
   </target>
 
   <!-- Clean the output -->
