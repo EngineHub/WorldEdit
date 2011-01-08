@@ -29,6 +29,11 @@ import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.worldedit.*;
 
+/**
+ * Plugin for Bukkit.
+ * 
+ * @author sk89qs
+ */
 public class WorldEditPlugin extends JavaPlugin {
     public final ServerInterface server;
     public final WorldEditController controller;

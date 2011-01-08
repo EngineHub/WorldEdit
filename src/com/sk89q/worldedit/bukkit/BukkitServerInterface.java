@@ -20,11 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import org.bukkit.*;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseItemStack;
 
 public class BukkitServerInterface extends ServerInterface {
     public Server server;
@@ -34,129 +30,15 @@ public class BukkitServerInterface extends ServerInterface {
     }
 
     @Override
-    public boolean setBlockType(LocalWorld world, Vector pt, int type) {
-        ((BukkitWorld)world).getWorld().getBlockAt(
-                pt.getBlockX(),
-                pt.getBlockY(),
-                pt.getBlockZ()).setTypeID(type);
-        
-        return true;
-    }
-
-    @Override
-    public int getBlockType(LocalWorld world, Vector pt) {
-        return ((BukkitWorld)world).getWorld().getBlockAt(
-                pt.getBlockX(),
-                pt.getBlockY(),
-                pt.getBlockZ()).getTypeID();
-    }
-
-    @Override
-    public void setBlockData(LocalWorld world, Vector pt, int data) {
-        ((BukkitWorld)world).getWorld().getBlockAt(
-                pt.getBlockX(),
-                pt.getBlockY(),
-                pt.getBlockZ()).setData((byte)data);
-        
-    }
-
-    @Override
-    public int getBlockData(LocalWorld world, Vector pt) {
-        return ((BukkitWorld)world).getWorld().getBlockAt(
-                pt.getBlockX(),
-                pt.getBlockY(),
-                pt.getBlockZ()).getData();
-    }
-
-    @Override
-    public void setSignText(LocalWorld world, Vector pt, String[] text) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public String[] getSignText(LocalWorld world, Vector pt) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public BaseItemStack[] getChestContents(LocalWorld world, Vector pt) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean setChestContents(LocalWorld world, Vector pt, BaseItemStack[] contents) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean clearChest(LocalWorld world, Vector pt) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean isValidMobType(String type) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void setMobSpawnerType(LocalWorld world, Vector pt, String mobType) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public String getMobSpawnerType(LocalWorld world, Vector pt) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean generateTree(EditSession editSession, LocalWorld world,
-            Vector pt) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void dropItem(LocalWorld world, Vector pt, int type, int count, int times) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void dropItem(LocalWorld world, Vector pt, int type, int count) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void dropItem(LocalWorld world, Vector pt, int type) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void simulateBlockMine(LocalWorld world, Vector pt) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
     public int resolveItem(String name) {
         // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
-    public int killMobs(LocalWorld world, Vector origin, int radius) {
+    public boolean isValidMobType(String type) {
         // TODO Auto-generated method stub
-        return 0;
+        return false;
     }
 
 }

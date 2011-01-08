@@ -74,6 +74,7 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public void giveItem(int type, int amt) {
+        player.getWorld().dropItem(player.getLocation(), new ItemStack(type, amt));
         // TODO Auto-generated method stub
         
     }
@@ -101,7 +102,8 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public void setPosition(Vector pos, float pitch, float yaw) {
-        // TODO Auto-generated method stub
+        player.teleportTo(new Location(player.getWorld(), pos.getX(), pos.getY(),
+                pos.getZ(), yaw, pitch));
     }
 
     @Override

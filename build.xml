@@ -58,6 +58,8 @@
     </copy>
     <copy tofile="${release.dir}/worldedit.updatr" file="worldedit.updatr"/>
     <replace file="${release.dir}/worldedit.updatr" token="%version%" value="${version}"/>
+    <copy tofile="${release.dir}/plugin.yml" file="plugin.yml"/>
+    <replace file="${release.dir}/plugin.yml" token="WEVERSIONMACRO" value="${version}"/>
     <copy tofile="${release.dir}/WorldEdit.jar" file="${dist.dir}/WorldEdit.jar"/>
     <zip destfile="${release.dir}/worldedit-${version}.zip" basedir="${release.dir}" excludes="*.zip"/>
     <mkdir dir="${release.dir}/src"/>

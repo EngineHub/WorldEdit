@@ -23,7 +23,6 @@ import org.bukkit.*;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerListener;
-import com.sk89q.worldedit.*;
 
 /**
  * Handles all events thrown in relation to a Player
