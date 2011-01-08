@@ -41,9 +41,10 @@ public class RecursivePickaxe implements SuperPickaxeMode {
     
     @Override
     public boolean act(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, LocalWorld world,
-            Vector clicked) {
-        int initialType = server.getBlockType(world, clicked);
+            LocalPlayer player, LocalSession session, WorldVector clicked) {
+        LocalWorld world = clicked.getWorld();
+        
+        int initialType = world.getBlockType(clicked);
         
         if (initialType == 0) {
             return true;
@@ -95,7 +96,7 @@ public class RecursivePickaxe implements SuperPickaxeMode {
 
         if (editSession.getBlock(pos).getID() == initialType) {
             if (drop) {
-                server.simulateBlockMine(world, pos);
+                world.simulateBlockMine(pos);
             }
             editSession.setBlock(pos, air);
         } else {

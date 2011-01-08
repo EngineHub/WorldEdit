@@ -30,21 +30,21 @@ import com.sk89q.worldedit.blocks.BlockID;
 public class SinglePickaxe implements SuperPickaxeMode {
     @Override
     public boolean act(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, LocalWorld world,
-            Vector clicked) {
+            LocalPlayer player, LocalSession session, WorldVector clicked) {
+        LocalWorld world = clicked.getWorld();
         
-        if (server.getBlockType(world, clicked) == BlockID.BEDROCK
+        if (world.getBlockType(clicked) == BlockID.BEDROCK
                 && !player.canDestroyBedrock()) {
             return true;
-        } else if (server.getBlockType(world, clicked) == BlockID.TNT) {
+        } else if (world.getBlockType(clicked) == BlockID.TNT) {
             return false;
         }
 
         if (config.superPickaxeDrop) {
-            server.simulateBlockMine(world, clicked);
+            world.simulateBlockMine(clicked);
         }
         
-        server.setBlockType(world, clicked, 0);
+        world.setBlockType(clicked, 0);
         
         return true;
     }

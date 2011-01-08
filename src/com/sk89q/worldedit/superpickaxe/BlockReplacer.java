@@ -36,9 +36,9 @@ public class BlockReplacer implements SuperPickaxeMode {
     
     @Override
     public boolean act(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, LocalWorld world,
-            Vector clicked) {
+            LocalPlayer player, LocalSession session, WorldVector clicked) {
         
+        LocalWorld world = clicked.getWorld();
         EditSession editSession = new EditSession(server, world, -1);
         
         try {

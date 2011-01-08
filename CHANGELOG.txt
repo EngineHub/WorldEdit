@@ -1,3 +1,23 @@
+2.6:
+- Removed 'air' prefix from commands. Now //pasteair is just //paste,
+    //moveair is just //move, etc.
+- Made /worldeditselect permission more encompassing, now including //chunk,
+    //expand, and //contract.
+- Added syntax for //expand <amt> <reverse-amt> <direction> which allows
+    you to expand in two directions at once. This also works for //contract.
+- Added //expand vert|vertical to expand the selection from top to bottom.
+- Added /thaw to reverse /snow.
+- Fixed WorldEdit not handling ice removal well.
+- Fixed some inaccuracy problems regarding player positions caused by a
+    recent update.
+- Fixed the tree generator.
+- Code reorganized a little more.
+
+2.5.1:
+- Fixed the WorldEdit bridge used by CraftBook and other plugins.
+- Fixed issues with permissions where the only reliable permission was
+    /worldedit.
+
 2.5:
 - Fixed issues with permissions not being read correctly.
 - WorldEdit is now world-aware (not that the Minecraft server is).

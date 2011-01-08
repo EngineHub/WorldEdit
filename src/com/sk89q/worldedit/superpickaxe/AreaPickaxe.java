@@ -38,12 +38,12 @@ public class AreaPickaxe implements SuperPickaxeMode {
     
     @Override
     public boolean act(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, LocalWorld world,
-            Vector clicked) {
+            LocalPlayer player, LocalSession session, WorldVector clicked) {
+        LocalWorld world = clicked.getWorld();
         int ox = clicked.getBlockX();
         int oy = clicked.getBlockY();
         int oz = clicked.getBlockZ();
-        int initialType = server.getBlockType(world, clicked);
+        int initialType = world.getBlockType(clicked);
         
         if (initialType == 0) {
             return true;
@@ -61,9 +61,9 @@ public class AreaPickaxe implements SuperPickaxeMode {
                 for (int y = oy - range; y <= oy + range; y++) {
                     for (int z = oz - range; z <= oz + range; z++) {
                         Vector pos = new Vector(x, y, z);
-                        if (server.getBlockType(world, pos) == initialType) {
+                        if (world.getBlockType(pos) == initialType) {
                             if (config.superPickaxeManyDrop) {
-                                server.simulateBlockMine(world, pos);
+                                world.simulateBlockMine(pos);
                             }
                             
                             editSession.setBlock(pos, air);

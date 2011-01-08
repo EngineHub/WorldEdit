@@ -30,13 +30,14 @@ public class TreePlanter implements SuperPickaxeMode {
 
     @Override
     public boolean act(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, LocalWorld world,
-            Vector clicked) {
+            LocalPlayer player, LocalSession session, WorldVector clicked) {
+        
+        LocalWorld world = clicked.getWorld();
         EditSession editSession =
             new EditSession(server, world, session.getBlockChangeLimit());
     
         try {
-            if (!server.generateTree(editSession, player.getWorld(), clicked)) {
+            if (!world.generateTree(editSession, clicked)) {
                 player.printError("Notch won't let you put a tree there.");
             }
         } finally {

@@ -37,6 +37,5 @@ public interface SuperPickaxeMode {
      * @return true to deny
      */
     public boolean act(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, LocalWorld world,
-            Vector clicked);
+            LocalPlayer player, LocalSession session, WorldVector clicked);
 }

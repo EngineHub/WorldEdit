@@ -447,6 +447,18 @@ public class Vector {
     }
 
     /**
+     * Get the distance away from a point, squared.
+     *
+     * @param pt
+     * @return distance
+     */
+    public double distanceSq(Vector pt) {
+        return Math.pow(pt.x - x, 2) +
+                Math.pow(pt.y - y, 2) +
+                Math.pow(pt.z - z, 2);
+    }
+
+    /**
      * Checks to see if a vector is contained with another.
      *
      * @param min
