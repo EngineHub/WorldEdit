@@ -1,5 +1,5 @@
 name = WorldEdit
 version = %version%
 url = updatr.update.sk89q.com/worldedit.updatr
-file = github.com/downloads/sk89q/worldedit/worldedit-%version%.zip
+file = cloud.github.com/downloads/sk89q/worldedit/worldedit-%version%.zip
 notes =
