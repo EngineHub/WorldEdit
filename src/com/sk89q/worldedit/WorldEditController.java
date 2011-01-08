@@ -92,8 +92,6 @@ public class WorldEditController {
         this.server = server;
         this.config = config;
         
-        // Note: Commands should only have the phrase 'air' at the end
-        // for now (see SMWorldEditListener.canUseCommand)
         commands.put("//pos1", "Set editing position #1");
         commands.put("//pos2", "Set editing position #2");
         commands.put("//hpos1", "Trace editing position #1");
@@ -122,11 +120,8 @@ public class WorldEditController {
         commands.put("//copy", "Copies the currently selected region");
         commands.put("//cut", "Cuts the currently selected region");
         commands.put("//paste", "<AtOrigin?> - Pastes the clipboard");
-        commands.put("//pasteair", "<AtOrigin?> - Pastes the clipboard (with air)");
         commands.put("//move", "<Count> <Dir> <LeaveID> - Move the selection");
-        commands.put("//moveair", "<Count> <Dir> <LeaveID> - Move the selection (with air)");
         commands.put("//stack", "<Count> <Dir> - Stacks the selection");
-        commands.put("//stackair", "<Count> <Dir> - Stacks the selection (with air)");
         commands.put("//load", "[Filename] - Load .schematic into clipboard");
         commands.put("//save", "[Filename] - Save clipboard to .schematic");
         commands.put("//fill", "[ID] [Radius] <Depth> - Fill a hole");
@@ -750,8 +745,7 @@ public class WorldEditController {
             return true;
 
         // Paste
-        } else if (split[0].equalsIgnoreCase("//pasteair") ||
-                   split[0].equalsIgnoreCase("//paste")) {
+        } else if (split[0].equalsIgnoreCase("//paste")) {
             checkArgs(split, 0, 1, split[0]);
             boolean atOrigin = split.length > 1
                     ? (split[1].equalsIgnoreCase("true")
@@ -759,14 +753,12 @@ public class WorldEditController {
                     : false;
             if (atOrigin) {
                 Vector pos = session.getClipboard().getOrigin();
-                session.getClipboard().place(editSession, pos,
-                    split[0].equalsIgnoreCase("//paste"));
+                session.getClipboard().place(editSession, pos, false);
                 player.findFreePosition();
                 player.print("Pasted to copy origin. Undo with //undo");
             } else {
                 Vector pos = session.getPlacementPosition(player);
-                session.getClipboard().paste(editSession, pos,
-                    split[0].equalsIgnoreCase("//paste"));
+                session.getClipboard().paste(editSession, pos, false);
                 player.findFreePosition();
                 player.print("Pasted relative to you. Undo with //undo");
             }
@@ -1241,8 +1233,7 @@ public class WorldEditController {
             return true;
 
         // Move
-        } else if (split[0].equalsIgnoreCase("//moveair") ||
-                   split[0].equalsIgnoreCase("//move")) {
+        } else if (split[0].equalsIgnoreCase("//move")) {
             checkArgs(split, 0, 3, split[0]);
             int count = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
             Vector dir = getDirection(player,
@@ -1255,37 +1246,55 @@ public class WorldEditController {
             } else {
                 replace = new BaseBlock(0);
             }
-            
-            boolean copyAir = split[0].equalsIgnoreCase("//moveair");
 
             int affected = editSession.moveCuboidRegion(session.getRegion(),
-                    dir, count, copyAir, replace);
+                    dir, count, true, replace);
             player.print(affected + " blocks moved.");
 
             return true;
 
         // Stack
-        } else if (split[0].equalsIgnoreCase("//stackair") ||
-                   split[0].equalsIgnoreCase("//stack")) {
+        } else if (split[0].equalsIgnoreCase("//stack")) {
             checkArgs(split, 0, 2, split[0]);
             int count = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
             Vector dir = getDirection(player,
                     split.length > 2 ? split[2].toLowerCase() : "me");
-            boolean copyAir = split[0].equalsIgnoreCase("//stackair");
 
             int affected = editSession.stackCuboidRegion(session.getRegion(),
-                    dir, count, copyAir);
+                    dir, count, true);
             player.print(affected + " blocks changed. Undo with //undo");
 
             return true;
 
         // Expand
         } else if (split[0].equalsIgnoreCase("//expand")) {
-            checkArgs(split, 1, 2, split[0]);
+            checkArgs(split, 1, 3, split[0]);
             Vector dir;
+            
+            if (split[1].equals("vert") || split[1].equals("vertical")) {
+                Region region = session.getRegion();
+                int oldSize = region.getSize();
+                region.expand(new Vector(0, 128, 0));
+                region.expand(new Vector(0, -128, 0));
+                session.learnRegionChanges();
+                int newSize = region.getSize();
+                player.print("Region expanded " + (newSize - oldSize) + " blocks [top-to-bottom].");
+                return true;
+            }
+            
             int change = Integer.parseInt(split[1]);
+            int reverseChange = 0;
+            
             if (split.length == 3) {
-                dir = getDirection(player, split[2].toLowerCase());
+                try {
+                    reverseChange = Integer.parseInt(split[2]) * -1;
+                    dir = getDirection(player, "me");
+                } catch (NumberFormatException e) {
+                    dir = getDirection(player, split[2].toLowerCase());
+                }
+            } else if (split.length == 4) {
+                reverseChange = Integer.parseInt(split[2]) * -1;
+                dir = getDirection(player, split[3].toLowerCase());
             } else {
                 dir = getDirection(player, "me");
             }
@@ -1293,6 +1302,9 @@ public class WorldEditController {
             Region region = session.getRegion();
             int oldSize = region.getSize();
             region.expand(dir.multiply(change));
+            if (reverseChange != 0) {
+                region.expand(dir.multiply(reverseChange));
+            }
             session.learnRegionChanges();
             int newSize = region.getSize();
             player.print("Region expanded " + (newSize - oldSize) + " blocks.");
@@ -1301,11 +1313,20 @@ public class WorldEditController {
 
         // Contract
         } else if (split[0].equalsIgnoreCase("//contract")) {
-            checkArgs(split, 1, 2, split[0]);
+            checkArgs(split, 1, 3, split[0]);
             Vector dir;
             int change = Integer.parseInt(split[1]);
+            int reverseChange = 0;
             if (split.length == 3) {
-                dir = getDirection(player, split[2].toLowerCase());
+                try {
+                    reverseChange = Integer.parseInt(split[2]) * -1;
+                    dir = getDirection(player, "me");
+                } catch (NumberFormatException e) {
+                    dir = getDirection(player, split[2].toLowerCase());
+                }
+            } else if (split.length == 4) {
+                reverseChange = Integer.parseInt(split[2]) * -1;
+                dir = getDirection(player, split[3].toLowerCase());
             } else {
                 dir = getDirection(player, "me");
             }
@@ -1313,6 +1334,9 @@ public class WorldEditController {
             Region region = session.getRegion();
             int oldSize = region.getSize();
             region.contract(dir.multiply(change));
+            if (reverseChange != 0) {
+                region.contract(dir.multiply(reverseChange));
+            }
             session.learnRegionChanges();
             int newSize = region.getSize();
             player.print("Region contracted " + (oldSize - newSize) + " blocks.");
@@ -1972,14 +1996,18 @@ public class WorldEditController {
         if (command.equalsIgnoreCase("/pos1")
                 || command.equalsIgnoreCase("/pos2")
                 || command.equalsIgnoreCase("/hpos1")
-                || command.equalsIgnoreCase("/hpos2")) {
+                || command.equalsIgnoreCase("/hpos2")
+                || command.equalsIgnoreCase("/chunk")
+                || command.equalsIgnoreCase("/expand")
+                || command.equalsIgnoreCase("/contract")
+                || command.equalsIgnoreCase("/shift")
+                || command.equalsIgnoreCase("toggleeditwand")) {
             return player.hasPermission(command)
                     || player.hasPermission("worldeditselect")
                     || player.hasPermission("worldedit");
         }
         
-        return player.hasPermission(command.replace("air", ""))
-                || player.hasPermission("worldedit");
+        return player.hasPermission("worldedit");
     }
 
     /**
