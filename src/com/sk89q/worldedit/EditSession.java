@@ -1579,6 +1579,7 @@ public class EditSession {
     public int simulateSnow(Vector pos, int radius)
             throws MaxChangedBlocksException {
         int affected = 0;
+        int radiusSq = (int)Math.pow(radius, 2);
 
         int ox = pos.getBlockX();
         int oy = pos.getBlockY();
@@ -1589,7 +1590,7 @@ public class EditSession {
 
         for (int x = ox - radius; x <= ox + radius; x++) {
             for (int z = oz - radius; z <= oz + radius; z++) {
-                if ((new Vector(x, oy, z)).distance(pos) > radius) {
+                if ((new Vector(x, oy, z)).distanceSq(pos) > radiusSq) {
                     continue;
                 }
 
