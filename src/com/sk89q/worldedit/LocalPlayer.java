@@ -276,7 +276,9 @@ public abstract class LocalPlayer {
      * @return point
      */
     public WorldVector getBlockIn() {
-        return getPosition();
+        WorldVector pos = getPosition();
+        return WorldVector.toBlockPoint(pos.getWorld(), pos.getX(),
+                pos.getY(), pos.getZ());
     }
 
     /**
@@ -286,7 +288,8 @@ public abstract class LocalPlayer {
      */
     public WorldVector getBlockOn() {
         WorldVector pos = getPosition();
-        return new WorldVector(pos.getWorld(), pos.subtract(0, 1, 0));
+        return WorldVector.toBlockPoint(pos.getWorld(), pos.getX(),
+                pos.getY() - 1, pos.getZ());
     }
 
     /**

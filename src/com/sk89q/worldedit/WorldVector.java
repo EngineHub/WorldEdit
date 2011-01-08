@@ -94,6 +94,21 @@ public class WorldVector extends Vector {
     }
 
     /**
+     * Get a block point from a point.
+     * 
+     * @param x
+     * @param y
+     * @param z
+     * @return point
+     */
+    public static WorldVector toBlockPoint(LocalWorld world, double x, double y,
+            double z) {
+        return new WorldVector(world, (int)Math.floor(x),
+                 (int)Math.floor(y),
+                 (int)Math.floor(z));
+    }
+
+    /**
      * Gets a BlockVector version.
      * 
      * @return BlockWorldVector
