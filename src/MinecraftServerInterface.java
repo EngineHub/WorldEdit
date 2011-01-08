@@ -62,7 +62,7 @@ public class MinecraftServerInterface {
 
         bt treeGen = new ib();
         return treeGen.a(proxy, random,
-                pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+                pt.getBlockX(), pt.getBlockY() + 1, pt.getBlockZ());
     }
 
     /**
