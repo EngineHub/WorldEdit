@@ -143,20 +143,24 @@ public class EditSession {
      */
     private boolean rawSetBlock(Vector pt, BaseBlock block) {
         int y = pt.getBlockY();
+        
         if (y < 0 || y > 127) {
             return false;
         }
+        
+        int existing = world.getBlockType(pt);
 
         // Clear the chest so that it doesn't drop items
-        if (world.getBlockType(pt) == 54 && blockBag == null) {
+        if (existing == 54 && blockBag == null) {
             world.clearChest(pt);
+        // Ice turns until water so this has to be done first
+        } else if (existing == BlockID.ICE) {
+            world.setBlockType(pt, 0);
         }
 
         int id = block.getID();
 
         if (blockBag != null) {
-            int existing = world.getBlockType(pt);
-
             if (id > 0) {
                 try {
                     blockBag.fetchPlacedBlock(id);
