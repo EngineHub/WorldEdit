@@ -34,7 +34,7 @@
       <attribute name="Implementation-Version" value="${version}"/>
       <attribute name="WorldEdit-Version" value="${version}"/>
       <attribute name="Class-Path" value="truezip.jar"/>
-      <attribute name="Main-Class" value="com.sk89q.worldedit.cli.Main"/>
+      <!--<attribute name="Main-Class" value="com.sk89q.worldedit.cli.Main"/>-->
     </manifest>
     <copy tofile="${build.dir}/plugin.yml" file="plugin.yml"/>
     <jar jarfile="${dist.dir}/WorldEdit.jar" basedir="${build.dir}" manifest="manifest.mf"/>
