@@ -322,6 +322,8 @@ public enum BlockType {
      */
     public static boolean canPassThrough(int id) {
         return id == 0 // Air
+                || id == 8 // Water
+                || id == 9 // Water
                 || id == 6 // Saplings
                 || id == 37 // Yellow flower
                 || id == 38 // Red flower
