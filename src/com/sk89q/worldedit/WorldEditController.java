@@ -1700,9 +1700,13 @@ public class WorldEditController {
         int zm = 0;
         
         LocalPlayer.DIRECTION dir = null;
+        
+        dirStr = dirStr.toLowerCase();
+        boolean wasDetected = false;
 
         if (dirStr.equals("me")) {
             dir = player.getCardinalDirection();
+            wasDetected = true;
         }
 
         if (dirStr.charAt(0) == 'w' || dir == LocalPlayer.DIRECTION.WEST) {
@@ -1718,7 +1722,11 @@ public class WorldEditController {
         } else if (dirStr.charAt(0) == 'd') {
             ym -= 1;
         } else {
-            throw new UnknownDirectionException(dirStr);
+            if (wasDetected) {
+                throw new UnknownDirectionException(dir.name());
+            } else {
+                throw new UnknownDirectionException(dirStr);
+            }
         }
 
         return new Vector(xm, ym, zm);
