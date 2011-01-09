@@ -1,3 +1,20 @@
+2.7:
+- Added sphere brush tool. Use /sphere <id> [radius] [noReplace?] to
+    enable it and /none to disable it (note: /none also disables the
+    right click super pickaxe tool). The brush tool builds a sphere at the
+    location that you are looking at. For the last argument, put "true"
+    or "yes" to prevent the brush from replacing non-air blocks.
+- Changed water to be considered a pass-through block. This means that
+    /thru, /jumpto, and such commands will ignore water.
+- /tree now makes regular tree and /bigtree makes big trees. /forestgen
+    will still make big tree forests.
+- The block replacer tool should now support inventory.
+- Fixed the NullPointerException with /jumpto and similar commands.
+- Made handling of non-right angles in getDirection() return more
+    relevant errors. Now //stack and similar commands won't give you the
+    cryptic error of "Unknown direction: me".
+- Updated sample worldedit.properties file.
+
 2.6:
 - Removed 'air' prefix from commands. Now //pasteair is just //paste,
     //moveair is just //move, etc.
