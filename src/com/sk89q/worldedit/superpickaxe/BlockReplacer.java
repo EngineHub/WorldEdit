@@ -39,7 +39,8 @@ public class BlockReplacer implements SuperPickaxeMode {
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         
         LocalWorld world = clicked.getWorld();
-        EditSession editSession = new EditSession(server, world, -1);
+        EditSession editSession = new EditSession(server, world, -1,
+                session.getBlockBag(player));
         
         try {
             editSession.setBlock(clicked, targetBlock);

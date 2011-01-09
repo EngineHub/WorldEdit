@@ -49,7 +49,7 @@ public class SphereBrush implements SuperPickaxeMode {
         }
 
         ReplacingEditSession editSession = new ReplacingEditSession(server, target.getWorld(),
-                session.getBlockChangeLimit());
+                session.getBlockChangeLimit(), session.getBlockBag(player));
         
         if (nonReplacing) {
             editSession.disableReplacing();
