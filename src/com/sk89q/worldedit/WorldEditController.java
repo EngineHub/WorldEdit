@@ -467,7 +467,7 @@ public class WorldEditController {
             checkArgs(split, 0, 0, split[0]);
             WorldVector pos = player.getSolidBlockTrace(300);
             if (pos != null) {
-                player.findFreePosition(pos.getWorld(), pos);
+                player.findFreePosition(pos);
                 player.print("Poof!");
             } else {
                 player.printError("No block in sight!");

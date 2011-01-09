@@ -74,7 +74,8 @@ public abstract class LocalPlayer {
      *
      * @param searchPos search position
      */
-    public void findFreePosition(LocalWorld world, Vector searchPos) {
+    public void findFreePosition(WorldVector searchPos) {
+        LocalWorld world = searchPos.getWorld();
         int x = searchPos.getBlockX();
         int y = Math.max(0, searchPos.getBlockY());
         int origY = y;
@@ -108,7 +109,7 @@ public abstract class LocalPlayer {
      * that free position.
      */
     public void findFreePosition() {
-        findFreePosition(getPosition().getWorld(), getBlockIn());
+        findFreePosition(getBlockIn());
     }
 
     /**

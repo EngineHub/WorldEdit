@@ -71,7 +71,7 @@ public class HMPlayer extends LocalPlayer {
         if (block == null) {
             return null;
         }
-        return new WorldVector(null, block.getX(), block.getY(), block.getZ());
+        return new WorldVector(world, block.getX(), block.getY(), block.getZ());
     }
 
     /**
@@ -92,7 +92,7 @@ public class HMPlayer extends LocalPlayer {
         if (block == null) {
             return null;
         }
-        return new WorldVector(null, block.getX(), block.getY(), block.getZ());
+        return new WorldVector(world, block.getX(), block.getY(), block.getZ());
     }
 
     /**

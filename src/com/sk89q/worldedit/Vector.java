@@ -467,8 +467,8 @@ public class Vector {
      */
     public boolean containedWithin(Vector min, Vector max) {
         return x >= min.getX() && x <= max.getX()
-                && y >= min.getY() && z <= max.getY()
-                && z >= min.getZ() && z <= max.getY();
+                && y >= min.getY() && y <= max.getY()
+                && z >= min.getZ() && z <= max.getZ();
     }
 
     /**
