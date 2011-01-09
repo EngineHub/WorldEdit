@@ -43,6 +43,7 @@ public abstract class LocalConfiguration {
     public SnapshotRepository snapshotRepo = null;
     public int maxRadius = -1;
     public int maxSuperPickaxeSize = 5;
+    public int maxBrushRadius = 6;
     public boolean logComands = false;
     public boolean registerHelp = true;
     public int wandItem = 271;

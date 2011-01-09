@@ -53,7 +53,7 @@ public class EditSession {
     /**
      * World.
      */
-    private LocalWorld world;
+    protected LocalWorld world;
 
     /**
      * Stores the original blocks before modification.
@@ -141,7 +141,7 @@ public class EditSession {
      * @param blockType
      * @return Whether the block changed
      */
-    private boolean rawSetBlock(Vector pt, BaseBlock block) {
+    protected boolean rawSetBlock(Vector pt, BaseBlock block) {
         int y = pt.getBlockY();
         
         if (y < 0 || y > 127) {

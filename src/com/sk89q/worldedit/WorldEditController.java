@@ -136,6 +136,7 @@ public class WorldEditController {
         commands.put("/tree", "Switch to the tree tool");
         commands.put("/bigtree", "Switch to the big tree tool");
         commands.put("/repl", "[ID] - Switch to the block replacer tool");
+        commands.put("/brush", "[ID] <Radius> <NoReplace?> - Switch to the sphere brush tool");
         commands.put("//expand", "[Num] <Dir> - Expands the selection");
         commands.put("//contract", "[Num] <Dir> - Contracts the selection");
         commands.put("//shift", "[Num] <Dir> - Shift the selection");
@@ -648,7 +649,7 @@ public class WorldEditController {
             }
             
             checkArgs(split, 0, 0, split[0]);
-            session.setSuperPickaxeMode(new SinglePickaxe());
+            session.setLeftClickMode(new SinglePickaxe());
             session.enableSuperPickAxe();
             player.print("Mode changed. Left click with a pickaxe. // to disable.");
             return true;
@@ -672,7 +673,7 @@ public class WorldEditController {
                 return true;
             }
             
-            session.setSuperPickaxeMode(
+            session.setLeftClickMode(
                     recur ? new RecursivePickaxe(range) : new AreaPickaxe(range));
             session.enableSuperPickAxe();
             player.print("Mode changed. Left click with a pickaxe. // to disable.");
@@ -681,21 +682,21 @@ public class WorldEditController {
         // Tree tool
         } else if (split[0].equalsIgnoreCase("/tree")) {
             checkArgs(split, 0, 0, split[0]);
-            session.setTool(new TreePlanter());
+            session.setRightClickMode(new TreePlanter());
             player.print("Tree tool equipped. Right click with a pickaxe.");
             return true;
 
         // Big tree tool
         } else if (split[0].equalsIgnoreCase("/bigtree")) {
             checkArgs(split, 0, 0, split[0]);
-            session.setTool(new BigTreePlanter());
+            session.setRightClickMode(new BigTreePlanter());
             player.print("Big tree tool equipped. Right click with a pickaxe.");
             return true;
 
         // Info tool
         } else if (split[0].equalsIgnoreCase("/info")) {
             checkArgs(split, 0, 0, split[0]);
-            session.setTool(new QueryTool());
+            session.setRightClickMode(new QueryTool());
             player.print("Info tool equipped. Right click with a pickaxe.");
             return true;
 
@@ -703,14 +704,36 @@ public class WorldEditController {
         } else if (split[0].equalsIgnoreCase("/repl")) {
             checkArgs(split, 1, 1, split[0]);
             BaseBlock targetBlock = getBlock(player, split[1]);
-            session.setTool(new BlockReplacer(targetBlock));
+            session.setRightClickMode(new BlockReplacer(targetBlock));
             player.print("Block replacer tool equipped. Right click with a pickaxe.");
+            return true;
+
+        // Sphere brush tool
+        } else if (split[0].equalsIgnoreCase("/brush")) {
+            checkArgs(split, 1, 3, split[0]);
+            int radius = split.length > 2 ? Integer.parseInt(split[2]) : 2;
+            boolean nonReplacing = split.length > 3
+                    ? (split[3].equalsIgnoreCase("true")
+                            || split[3].equalsIgnoreCase("yes")) : false;
+            if (radius > config.maxBrushRadius) {
+                player.printError("Maximum allowed brush radius: "
+                        + config.maxBrushRadius);
+                return true;
+            }
+            BaseBlock targetBlock = getBlock(player, split[1]);
+            session.setArmSwingMode(new SphereBrush(targetBlock, radius, nonReplacing));
+            if (nonReplacing) {
+                player.print("Non-replacing sphere brush tool equipped.");
+            } else {
+                player.print("Sphere brush tool equipped. Right click with a pickaxe.");
+            }
             return true;
 
         // No tool
         } else if (split[0].equalsIgnoreCase("/none")) {
             checkArgs(split, 0, 0, split[0]);
-            session.setTool(null);
+            session.setArmSwingMode(null);
+            session.setRightClickMode(null);
             player.print("Now no longer equipping a tool.");
             return true;
 
@@ -1778,8 +1801,14 @@ public class WorldEditController {
      * @param player
      */
     public void handleArmSwing(LocalPlayer player) {
-        if (!canUseCommand(player, "/"))
-            return;
+        LocalSession session = getSession(player);
+        
+        if (player.isHoldingPickAxe()) {
+            if (session.getArmSwingMode() != null) {
+                session.getArmSwingMode().act(server, config,
+                        player, session, null);
+            }
+        }
     }
 
     /**
@@ -1792,10 +1821,6 @@ public class WorldEditController {
     public boolean handleBlockRightClick(LocalPlayer player, WorldVector clicked) {
         int itemInHand = player.getItemInHand();
         
-        // This prevents needless sessions from being created
-        if (!hasSession(player) && !(itemInHand == config.wandItem &&
-                canUseCommand(player, "/pos2"))) { return false; }
-
         LocalSession session = getSession(player);
 
         if (itemInHand == config.wandItem && session.isToolControlEnabled()
@@ -1809,8 +1834,8 @@ public class WorldEditController {
             }
 
             return true;
-        } else if (player.isHoldingPickAxe() && session.getTool() != null) {
-            return session.getTool().act(server, config, player, session, clicked);
+        } else if (player.isHoldingPickAxe() && session.getRightClickMode() != null) {
+            return session.getRightClickMode().act(server, config, player, session, clicked);
         }
 
         return false;
@@ -1856,8 +1881,8 @@ public class WorldEditController {
                 return true;
             }
         } else if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
-            if (session.getSuperPickaxeMode() != null) {
-                return session.getSuperPickaxeMode().act(server, config,
+            if (session.getLeftClickMode() != null) {
+                return session.getLeftClickMode().act(server, config,
                         player, session, clicked);
             }
         }

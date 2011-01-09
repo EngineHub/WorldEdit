@@ -42,8 +42,9 @@ public class LocalSession {
     private CuboidClipboard clipboard;
     private boolean toolControl = true;
     private boolean superPickaxe = false;
-    private SuperPickaxeMode superPickaxeMode = new SinglePickaxe();
-    private SuperPickaxeMode tool;
+    private SuperPickaxeMode leftClickMode = new SinglePickaxe();
+    private SuperPickaxeMode armSwingMode;
+    private SuperPickaxeMode rightClickMode;
     private int maxBlocksChanged = -1;
     private boolean useInventory;
     private Snapshot snapshot;
@@ -359,29 +360,43 @@ public class LocalSession {
     /**
      * @return the superPickaxeMode
      */
-    public SuperPickaxeMode getSuperPickaxeMode() {
-        return superPickaxeMode;
+    public SuperPickaxeMode getLeftClickMode() {
+        return leftClickMode;
     }
 
     /**
      * @param superPickaxeMode the superPickaxeMode to set
      */
-    public void setSuperPickaxeMode(SuperPickaxeMode superPickaxeMode) {
-        this.superPickaxeMode = superPickaxeMode;
+    public void setLeftClickMode(SuperPickaxeMode leftClickMode) {
+        this.leftClickMode = leftClickMode;
     }
 
     /**
      * @return the tool
      */
-    public SuperPickaxeMode getTool() {
-        return tool;
+    public SuperPickaxeMode getRightClickMode() {
+        return rightClickMode;
     }
 
     /**
      * @param tool the tool to set
      */
-    public void setTool(SuperPickaxeMode tool) {
-        this.tool = tool;
+    public void setRightClickMode(SuperPickaxeMode rightClickMode) {
+        this.rightClickMode = rightClickMode;
+    }
+
+    /**
+     * @return the arm swing mode
+     */
+    public SuperPickaxeMode getArmSwingMode() {
+        return armSwingMode;
+    }
+
+    /**
+     * @param rightClickMode the tool to set
+     */
+    public void setArmSwingMode(SuperPickaxeMode armSwingMode) {
+        this.armSwingMode = armSwingMode;
     }
 
     /**

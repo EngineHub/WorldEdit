@@ -81,6 +81,7 @@ public class HMConfiguration extends LocalConfiguration {
         useInventory = properties.getBoolean("use-inventory", useInventory);
         useInventoryOverride = properties.getBoolean("use-inventory-override",
                 useInventoryOverride);
+        maxBrushRadius = properties.getInt("max-brush-radius", maxBrushRadius);
 
         // Get disallowed blocks
         disallowedBlocks = new HashSet<Integer>();
