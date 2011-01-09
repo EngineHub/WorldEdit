@@ -22,11 +22,11 @@ package com.sk89q.worldedit.superpickaxe;
 import com.sk89q.worldedit.*;
 
 /**
- * Plants a tree.
+ * Plants a big tree.
  * 
  * @author sk89q
  */
-public class TreePlanter implements SuperPickaxeMode {
+public class BigTreePlanter implements SuperPickaxeMode {
     @Override
     public boolean act(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
@@ -36,7 +36,7 @@ public class TreePlanter implements SuperPickaxeMode {
             new EditSession(server, world, session.getBlockChangeLimit());
     
         try {
-            if (!world.generateTree(editSession, clicked)) {
+            if (!world.generateBigTree(editSession, clicked)) {
                 player.printError("Notch won't let you put a tree there.");
             }
         } finally {

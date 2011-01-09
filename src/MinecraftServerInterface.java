@@ -43,12 +43,13 @@ public class MinecraftServerInterface {
     private static MinecraftSetBlockProxy proxy;
 
     /**
-     * Generate a tree at a location.
+     * Perform world generation at a location.
      *
      * @param pt
      * @return
      */
-    public static boolean generateTree(EditSession editSession, Vector pt) {
+    private static boolean performWorldGen(EditSession editSession, Vector pt,
+            bt worldGen) {
         if (proxy == null) {
             try {
                 proxy = createNoConstructor(MinecraftSetBlockProxy.class);
@@ -60,9 +61,29 @@ public class MinecraftServerInterface {
         }
         proxy.setEditSession(editSession);
 
-        bt treeGen = new ib();
-        return treeGen.a(proxy, random,
+        bt gen = worldGen;
+        return gen.a(proxy, random,
                 pt.getBlockX(), pt.getBlockY() + 1, pt.getBlockZ());
+    }
+
+    /**
+     * Generate a tree at a location.
+     *
+     * @param pt
+     * @return
+     */
+    public static boolean generateTree(EditSession editSession, Vector pt) {
+        return performWorldGen(editSession, pt, new kl());
+    }
+
+    /**
+     * Generate a big tree at a location.
+     *
+     * @param pt
+     * @return
+     */
+    public static boolean generateBigTree(EditSession editSession, Vector pt) {
+        return performWorldGen(editSession, pt, new ib());
     }
 
     /**

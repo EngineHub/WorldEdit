@@ -134,6 +134,7 @@ public class WorldEditController {
         commands.put("/none", "Switch to no tool");
         commands.put("/info", "Switch to the info tool");
         commands.put("/tree", "Switch to the tree tool");
+        commands.put("/bigtree", "Switch to the big tree tool");
         commands.put("/repl", "[ID] - Switch to the block replacer tool");
         commands.put("//expand", "[Num] <Dir> - Expands the selection");
         commands.put("//contract", "[Num] <Dir> - Contracts the selection");
@@ -682,6 +683,13 @@ public class WorldEditController {
             checkArgs(split, 0, 0, split[0]);
             session.setTool(new TreePlanter());
             player.print("Tree tool equipped. Right click with a pickaxe.");
+            return true;
+
+        // Big tree tool
+        } else if (split[0].equalsIgnoreCase("/bigtree")) {
+            checkArgs(split, 0, 0, split[0]);
+            session.setTool(new BigTreePlanter());
+            player.print("Big tree tool equipped. Right click with a pickaxe.");
             return true;
 
         // Info tool

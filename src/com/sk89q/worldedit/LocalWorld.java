@@ -129,6 +129,14 @@ public abstract class LocalWorld {
     public abstract boolean generateTree(EditSession editSession, Vector pt);
 
     /**
+     * Generate a big tree at a location.
+     * 
+     * @param pt
+     * @return
+     */
+    public abstract boolean generateBigTree(EditSession editSession, Vector pt);
+
+    /**
      * Drop an item.
      * 
      * @param pt

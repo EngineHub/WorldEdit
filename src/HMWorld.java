@@ -18,6 +18,7 @@
 */
 
 import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
@@ -279,8 +280,26 @@ public class HMWorld extends LocalWorld {
         try {
             return MinecraftServerInterface.generateTree(editSession, pt);
         } catch (Throwable t) {
-            logger.severe("Failed to create tree (do you need to update WorldEdit due to a Minecraft update?): "
-                    + t.getMessage());
+            logger.log(Level.SEVERE, 
+                    "Failed to create tree (do you need to update WorldEdit " +
+                    "due to a Minecraft update?)", t);
+            return false;
+        }
+    }
+
+    /**
+     * Generate a big tree at a location.
+     * 
+     * @param pt
+     * @return
+     */
+    public boolean generateBigTree(EditSession editSession, Vector pt) {
+        try {
+            return MinecraftServerInterface.generateBigTree(editSession, pt);
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, 
+                    "Failed to create big tree (do you need to update WorldEdit " +
+                    "due to a Minecraft update?)", t);
             return false;
         }
     }

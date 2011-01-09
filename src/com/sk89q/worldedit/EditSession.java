@@ -1863,7 +1863,7 @@ public class EditSession {
                         if (pineTree) {
                             makePineTree(new Vector(x, y + 1, z));
                         } else {
-                            world.generateTree(this, new Vector(x, y + 1, z));
+                            world.generateBigTree(this, new Vector(x, y + 1, z));
                         }
                         affected++;
                         break;

@@ -105,6 +105,12 @@ public class BukkitWorld extends LocalWorld {
     }
 
     @Override
+    public boolean generateBigTree(EditSession editSession, Vector pt) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
     public void dropItem(Vector pt, int type, int count, int times) {
         // TODO Auto-generated method stub
         
