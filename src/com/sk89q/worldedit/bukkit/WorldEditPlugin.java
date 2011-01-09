@@ -76,7 +76,7 @@ public class WorldEditPlugin extends JavaPlugin {
                 playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED,
                 blockListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED,
+        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_RIGHTCLICKED,
                 blockListener, Priority.Normal, this);
     }
 }

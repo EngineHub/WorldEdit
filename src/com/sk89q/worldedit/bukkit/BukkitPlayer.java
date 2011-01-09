@@ -46,7 +46,7 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public int getItemInHand() {
-        ItemStack itemStack = player.getSelectedItem();
+        ItemStack itemStack = player.getItemInHand();
         return itemStack != null ? itemStack.getTypeID() : 0;
     }
 

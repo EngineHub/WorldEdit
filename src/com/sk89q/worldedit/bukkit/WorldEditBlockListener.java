@@ -23,6 +23,8 @@ import org.bukkit.Player;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockBrokenEvent;
 import org.bukkit.event.block.BlockPlacedEvent;
+import org.bukkit.event.block.BlockRightClickedEvent;
+
 import com.sk89q.worldedit.*;
 
 public class WorldEditBlockListener extends BlockListener {
@@ -55,19 +57,17 @@ public class WorldEditBlockListener extends BlockListener {
     }
 
     /**
-     * Called when a player places a block
+     * Called when a player right clicks a block
      *
      * @param event Relevant event details
      */
-    public void onBlockPlaced(BlockPlacedEvent event) {
+    public void onBlockRightClicked(BlockRightClickedEvent event) {
         LocalWorld world = new BukkitWorld(event.getBlock().getWorld());
         WorldVector pos = new WorldVector(world, event.getBlock().getX(),
                 event.getBlock().getY(), event.getBlock().getZ());
         LocalPlayer player = wrapPlayer(event.getPlayer());
         
-        if (plugin.controller.handleBlockRightClick(player, pos)) {
-            event.setCancelled(true);
-        }
+        plugin.controller.handleBlockRightClick(player, pos);
     }
     
     private BukkitPlayer wrapPlayer(Player player) {
