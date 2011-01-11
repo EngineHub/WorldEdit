@@ -20,6 +20,8 @@
           <include name="truezip.jar" />
           <include name="Minecraft_Mod.jar" />
           <include name="minecraft_server.jar" />
+          <include name="minecraft_server_cb.jar" />
+          <include name="CraftBukkit.jar" />
           <include name="Bukkit.jar" />
         </fileset>
       </classpath>

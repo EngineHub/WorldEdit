@@ -17,7 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sk89q.worldedit.EditSession;
@@ -35,10 +34,6 @@ public class HMWorld extends LocalWorld {
      * Logger.
      */
     private final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
-    /**
-     * Random generator.
-     */
-    private Random random = new Random();
     
     /**
      * Set block type.
@@ -312,21 +307,6 @@ public class HMWorld extends LocalWorld {
      * @param count
      * @param times
      */
-    public void dropItem(Vector pt, int type, int count, int times) {
-        for (int i = 0; i < times; i++) {
-            etc.getServer().dropItem(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(),
-                    type, count);
-        }
-    }
-
-    /**
-     * Drop an item.
-     *
-     * @param pt
-     * @param type
-     * @param count
-     * @param times
-     */
     public void dropItem(Vector pt, int type, int count) {
         etc.getServer().dropItem(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(),
                 type, count);
@@ -343,65 +323,6 @@ public class HMWorld extends LocalWorld {
     public void dropItem(Vector pt, int type) {
         etc.getServer().dropItem(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(),
                 type, 1);
-    }
-
-    /**
-     * Simulate a block being mined.
-     * 
-     * @param pt
-     */
-    public void simulateBlockMine(Vector pt) {
-        int type = getBlockType(pt);
-        //setBlockType(pt, 0);
-
-        if (type == 1) { dropItem(pt, 4); } // Stone
-        else if (type == 2) { dropItem(pt, 3); } // Grass
-        else if (type == 7) { } // Bedrock
-        else if (type == 8) { } // Water
-        else if (type == 9) { } // Water
-        else if (type == 10) { } // Lava
-        else if (type == 11) { } // Lava
-        else if (type == 13) { // Gravel
-            dropItem(pt, type);
-
-            if (random.nextDouble() >= 0.9) {
-                dropItem(pt, 318);
-            }
-        }
-        else if (type == 16) { dropItem(pt, 263); } // Coal ore
-        else if (type == 18) { // Leaves
-            if (random.nextDouble() > 0.95) {
-                dropItem(pt, 6);
-            }
-        }
-        else if (type == 20) { } // Glass
-        else if (type == 43) { dropItem(pt, 44); } // Double step
-        else if (type == 47) { } // Bookshelves
-        else if (type == 51) { } // Fire
-        else if (type == 52) { } // Mob spawner
-        else if (type == 53) { dropItem(pt, 5); } // Wooden stairs
-        else if (type == 55) { dropItem(pt, 331); } // Redstone wire
-        else if (type == 56) { dropItem(pt, 264); } // Diamond ore
-        else if (type == 59) { dropItem(pt, 295); } // Crops
-        else if (type == 60) { dropItem(pt, 3); } // Soil
-        else if (type == 62) { dropItem(pt, 61); } // Furnace
-        else if (type == 63) { dropItem(pt, 323); } // Sign post
-        else if (type == 64) { dropItem(pt, 324); } // Wood door
-        else if (type == 67) { dropItem(pt, 4); } // Cobblestone stairs
-        else if (type == 68) { dropItem(pt, 323); } // Wall sign
-        else if (type == 71) { dropItem(pt, 330); } // Iron door
-        else if (type == 73) { dropItem(pt, 331, 1, 4); } // Redstone ore
-        else if (type == 74) { dropItem(pt, 331, 1, 4); } // Glowing redstone ore
-        else if (type == 75) { dropItem(pt, 76); } // Redstone torch
-        else if (type == 78) { } // Snow
-        else if (type == 79) { } // Ice
-        else if (type == 82) { dropItem(pt, 337, 1, 4); } // Clay
-        else if (type == 83) { dropItem(pt, 338); } // Reed
-        else if (type == 89) { dropItem(pt, 348); } // Lightstone
-        else if (type == 90) { } // Portal
-        else if (type != 0) {
-            dropItem(pt, type);
-        }
     }
     
     /**

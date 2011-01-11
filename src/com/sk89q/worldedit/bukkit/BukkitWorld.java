@@ -19,6 +19,10 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.bukkit.ItemStack;
+import org.bukkit.Location;
 import org.bukkit.World;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
@@ -26,6 +30,11 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 
 public class BukkitWorld extends LocalWorld {
+    /**
+     * Logger.
+     */
+    private final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+    
     private World world;
     
     public BukkitWorld(World world) {
@@ -100,37 +109,39 @@ public class BukkitWorld extends LocalWorld {
 
     @Override
     public boolean generateTree(EditSession editSession, Vector pt) {
-        // TODO Auto-generated method stub
-        return false;
+        try {
+            return CraftBukkitInterface.generateTree(editSession, pt);
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, 
+                    "Failed to create tree (do you need to update WorldEdit " +
+                    "due to a Minecraft update?)", t);
+            return false;
+        }
     }
 
     @Override
     public boolean generateBigTree(EditSession editSession, Vector pt) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void dropItem(Vector pt, int type, int count, int times) {
-        // TODO Auto-generated method stub
-        
+        try {
+            return CraftBukkitInterface.generateBigTree(editSession, pt);
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, 
+                    "Failed to create tree (do you need to update WorldEdit " +
+                    "due to a Minecraft update?)", t);
+            return false;
+        }
     }
 
     @Override
     public void dropItem(Vector pt, int type, int count) {
-        // TODO Auto-generated method stub
+        ItemStack item = new ItemStack(type, count);
+        world.dropItemNaturally(toLocation(pt), item);
         
     }
 
     @Override
     public void dropItem(Vector pt, int type) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void simulateBlockMine(Vector pt) {
-        // TODO Auto-generated method stub
+        ItemStack item = new ItemStack(type, 1);
+        world.dropItemNaturally(toLocation(pt), item);
         
     }
 
@@ -138,6 +149,10 @@ public class BukkitWorld extends LocalWorld {
     public int killMobs(Vector origin, int radius) {
         // TODO Auto-generated method stub
         return 0;
+    }
+    
+    private Location toLocation(Vector pt) {
+        return new Location(world, pt.getX(), pt.getY(), pt.getZ());
     }
 
     @Override
