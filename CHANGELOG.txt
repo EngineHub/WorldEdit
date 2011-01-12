@@ -1,3 +1,8 @@
+2.7.2:
+- Fixed permissions checking for individual commands.
+- /butcher should now kill animals again.
+- /thru should now treat torches and such as pass-through blocks.
+
 2.7.1:
 - Added tree and item drop support for the Bukkit version.
 
