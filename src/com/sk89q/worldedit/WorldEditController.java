@@ -2048,7 +2048,8 @@ public class WorldEditController {
                     || player.hasPermission("worldedit");
         }
         
-        return player.hasPermission("worldedit");
+        return player.hasPermission(command)
+                || player.hasPermission("worldedit");
     }
 
     /**
