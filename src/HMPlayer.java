@@ -176,10 +176,10 @@ public class HMPlayer extends LocalPlayer {
             if (searchDist > 20) {
                 return false;
             }
-            if (block.getType() == 0) {
+            if (BlockType.canPassThrough(block.getType())) {
                 if (foundNext) {
                     Vector v = new Vector(block.getX(), block.getY() - 1, block.getZ());
-                    if (world.getBlockType(v) == 0) {
+                    if (BlockType.canPassThrough(world.getBlockType(v))) {
                         setPosition(v.add(0.5, 0, 0.5));
                         return true;
                     }
