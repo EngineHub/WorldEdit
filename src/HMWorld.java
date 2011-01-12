@@ -344,6 +344,15 @@ public class HMWorld extends LocalWorld {
             }
         }
         
+        for (Mob mob : etc.getServer().getAnimalList()) {
+            Vector mobPos = new Vector(mob.getX(), mob.getY(), mob.getZ());
+            if (mob.getHealth() > 0
+                    && (radius == -1 || mobPos.distance(origin) <= radius)) {
+                mob.setHealth(0);
+                killed++;
+            }
+        }
+        
         return killed;
     }
 
