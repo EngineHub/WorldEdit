@@ -48,15 +48,6 @@ public class WorldEditController {
     private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     
     /**
-     * Default list of allowed block types.
-     */
-    private final static Integer[] DEFAULT_ALLOWED_BLOCKS = {
-        0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-        20, 35, 41, 42, 43, 44, 45, 47, 48, 49, 52, 53, 54, 56, 57, 58, 60,
-        61, 62, 67, 73, 78, 79, 80, 82, 85, 86, 87, 88, 89, 91
-    };
-    
-    /**
      * Server interface.
      */
     private ServerInterface server;
@@ -374,7 +365,7 @@ public class WorldEditController {
         String[] items = list.split(",");
         Set<Integer> blocks = new HashSet<Integer>();
         for (String s : items) {
-            blocks.add(getBlock(player, s, allBlocksAllowed).getID());
+            blocks.add(getBlock(player, s, allBlocksAllowed).getType());
         }
         return blocks;
     }
@@ -896,7 +887,7 @@ public class WorldEditController {
             checkMaxRadius(size);
 
             int affected = editSession.removeNear(
-                    session.getPlacementPosition(player), block.getID(), size);
+                    session.getPlacementPosition(player), block.getType(), size);
             player.print(affected + " block(s) have been removed.");
 
             return true;
@@ -1780,19 +1771,6 @@ public class WorldEditController {
      */
     public void clearSessions() {
         sessions.clear();
-    }
-
-    /**
-     * Get a comma-delimited list of the default allowed blocks.
-     * 
-     * @return comma-delimited list
-     */
-    public static String getDefaultAllowedBlocks() {
-        StringBuilder b = new StringBuilder();
-        for (Integer id : DEFAULT_ALLOWED_BLOCKS) {
-            b.append(id).append(",");
-        }
-        return b.substring(0, b.length() - 1);
     }
     
     /**

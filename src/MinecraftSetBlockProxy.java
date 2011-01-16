@@ -71,7 +71,7 @@ public class MinecraftSetBlockProxy extends ff {
      */
     @Override
     public int a(int x, int y, int z) {
-        return editSession.getBlock(new Vector(x, y, z)).getID();
+        return editSession.getBlock(new Vector(x, y, z)).getType();
     }
 
     /**

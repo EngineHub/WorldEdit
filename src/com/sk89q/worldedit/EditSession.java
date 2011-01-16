@@ -158,7 +158,7 @@ public class EditSession {
             world.setBlockType(pt, 0);
         }
 
-        int id = block.getID();
+        int id = block.getType();
 
         if (blockBag != null) {
             if (id > 0) {
@@ -258,15 +258,15 @@ public class EditSession {
     private boolean smartSetBlock(Vector pt, BaseBlock block) {
         if (queued) {
             // Place torches, etc. last
-            if (BlockType.shouldPlaceLast(block.getID())) {
+            if (BlockType.shouldPlaceLast(block.getType())) {
                 queueLast.put(pt.toBlockVector(), block);
-                return getBlock(pt).getID() != block.getID();
+                return getBlock(pt).getType() != block.getType();
                 // Destroy torches, etc. first
-            } else if (BlockType.shouldPlaceLast(getBlock(pt).getID())) {
+            } else if (BlockType.shouldPlaceLast(getBlock(pt).getType())) {
                 rawSetBlock(pt, new BaseBlock(0));
             } else {
                 queueAfter.put(pt.toBlockVector(), block);
-                return getBlock(pt).getID() != block.getID();
+                return getBlock(pt).getType() != block.getType();
             }
         }
 
@@ -719,7 +719,7 @@ public class EditSession {
                 for (int z = -size; z <= size; z++) {
                     Vector p = pos.add(x, y, z);
 
-                    if (getBlock(p).getID() == blockType) {
+                    if (getBlock(p).getType() == blockType) {
                         if (setBlock(p, air)) {
                             affected++;
                         }
@@ -853,7 +853,7 @@ public class EditSession {
                 for (int y = minY; y <= maxY; y++) {
                     for (int z = minZ; z <= maxZ; z++) {
                         Vector pt = new Vector(x, y, z);
-                        int curBlockType = getBlock(pt).getID();
+                        int curBlockType = getBlock(pt).getType();
 
                         if ((fromBlockTypes == null && curBlockType != 0)
                                 || (fromBlockTypes != null && fromBlockTypes
@@ -867,7 +867,7 @@ public class EditSession {
             }
         } else {
             for (Vector pt : region) {
-                int curBlockType = getBlock(pt).getID();
+                int curBlockType = getBlock(pt).getType();
 
                 if (fromBlockTypes == null && curBlockType != 0
                         || fromBlockTypes.contains(curBlockType)) {
@@ -911,7 +911,7 @@ public class EditSession {
                 for (int y = minY; y <= maxY; y++) {
                     for (int z = minZ; z <= maxZ; z++) {
                         Vector pt = new Vector(x, y, z);
-                        int curBlockType = getBlock(pt).getID();
+                        int curBlockType = getBlock(pt).getType();
 
                         if ((fromBlockTypes == null && curBlockType != 0)
                                 || (fromBlockTypes != null && fromBlockTypes
@@ -925,7 +925,7 @@ public class EditSession {
             }
         } else {
             for (Vector pt : region) {
-                int curBlockType = getBlock(pt).getID();
+                int curBlockType = getBlock(pt).getType();
 
                 if (fromBlockTypes == null && curBlockType != 0
                         || fromBlockTypes.contains(curBlockType)) {
@@ -1231,7 +1231,7 @@ public class EditSession {
         while (!queue.empty()) {
             BlockVector cur = queue.pop();
 
-            int type = getBlock(cur).getID();
+            int type = getBlock(cur).getType();
 
             // Check block type
             if (type != 8 && type != 9 && type != 10 && type != 11) {
@@ -1288,7 +1288,7 @@ public class EditSession {
         for (int x = pos.getBlockX() - 1; x <= pos.getBlockX() + 1; x++) {
             for (int z = pos.getBlockZ() - 1; z <= pos.getBlockZ() + 1; z++) {
                 for (int y = pos.getBlockY() - 1; y <= pos.getBlockY() + 1; y++) {
-                    int type = getBlock(new Vector(x, y, z)).getID();
+                    int type = getBlock(new Vector(x, y, z)).getType();
 
                     // Check block type
                     if (type == moving || type == stationary) {
@@ -1303,7 +1303,7 @@ public class EditSession {
         while (!queue.empty()) {
             BlockVector cur = queue.pop();
 
-            int type = getBlock(cur).getID();
+            int type = getBlock(cur).getType();
 
             // Check block type
             if (type != moving && type != stationary && type != 0) {
@@ -1598,7 +1598,7 @@ public class EditSession {
 
                 for (int y = 127; y >= 1; y--) {
                     Vector pt = new Vector(x, y, z);
-                    int id = getBlock(pt).getID();
+                    int id = getBlock(pt).getType();
 
                     if (id == BlockID.ICE) { // Ice
                         if (setBlock(pt, water)) {
@@ -1646,7 +1646,7 @@ public class EditSession {
 
                 for (int y = 127; y >= 1; y--) {
                     Vector pt = new Vector(x, y, z);
-                    int id = getBlock(pt).getID();
+                    int id = getBlock(pt).getType();
 
                     // Snow should not cover these blocks
                     if (id == 6 // Saplings
@@ -1747,12 +1747,12 @@ public class EditSession {
             throws MaxChangedBlocksException {
         if (pos.distance(basePos) > 4)
             return;
-        if (getBlock(pos).getID() != 0)
+        if (getBlock(pos).getType() != 0)
             return;
 
         for (int i = -1; i > -3; i--) {
             Vector testPos = pos.add(0, i, 0);
-            if (getBlock(testPos).getID() == 0) {
+            if (getBlock(testPos).getType() == 0) {
                 pos = testPos;
             } else {
                 break;
@@ -1816,7 +1816,7 @@ public class EditSession {
 
                 for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; y--) {
                     // Check if we hit the ground
-                    int t = getBlock(new Vector(x, y, z)).getID();
+                    int t = getBlock(new Vector(x, y, z)).getType();
                     if (t == 2 || t == 3) {
                         makePumpkinPatch(new Vector(x, y + 1, z));
                         affected++;
@@ -1858,7 +1858,7 @@ public class EditSession {
 
                 for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; y--) {
                     // Check if we hit the ground
-                    int t = getBlock(new Vector(x, y, z)).getID();
+                    int t = getBlock(new Vector(x, y, z)).getType();
                     if (t == 2 || t == 3) {
                         if (pineTree) {
                             makePineTree(new Vector(x, y + 1, z));
@@ -1962,7 +1962,7 @@ public class EditSession {
                     for (int z = minZ; z <= maxZ; z++) {
                         Vector pt = new Vector(x, y, z);
 
-                        if (searchIDs.contains(getBlock(pt).getID())) {
+                        if (searchIDs.contains(getBlock(pt).getType())) {
                             count++;
                         }
                     }
@@ -1970,7 +1970,7 @@ public class EditSession {
             }
         } else {
             for (Vector pt : region) {
-                if (searchIDs.contains(getBlock(pt).getID())) {
+                if (searchIDs.contains(getBlock(pt).getType())) {
                     count++;
                 }
             }
@@ -2006,7 +2006,7 @@ public class EditSession {
                     for (int z = minZ; z <= maxZ; z++) {
                         Vector pt = new Vector(x, y, z);
 
-                        int id = getBlock(pt).getID();
+                        int id = getBlock(pt).getType();
 
                         if (map.containsKey(id)) {
                             map.get(id).increment();
@@ -2020,7 +2020,7 @@ public class EditSession {
             }
         } else {
             for (Vector pt : region) {
-                int id = getBlock(pt).getID();
+                int id = getBlock(pt).getType();
 
                 if (map.containsKey(id)) {
                     map.get(id).increment();
@@ -2053,7 +2053,7 @@ public class EditSession {
     public int getHighestTerrainBlock(int x, int z, int minY, int maxY) {
         for (int y = maxY; y >= minY; y--) {
             Vector pt = new Vector(x, y, z);
-            int id = getBlock(pt).getID();
+            int id = getBlock(pt).getType();
 
             if (id == 1 // stone
                     || id == 2 // grass

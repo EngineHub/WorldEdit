@@ -21,7 +21,7 @@ package com.sk89q.worldedit.bukkit;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.bukkit.ItemStack;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.Location;
 import org.bukkit.World;
 import com.sk89q.worldedit.EditSession;
@@ -47,12 +47,12 @@ public class BukkitWorld extends LocalWorld {
 
     @Override
     public boolean setBlockType(Vector pt, int type) {
-        return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setTypeID(type);
+        return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setTypeId(type);
     }
 
     @Override
     public int getBlockType(Vector pt) {
-        return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getTypeID();
+        return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getTypeId();
     }
 
     @Override

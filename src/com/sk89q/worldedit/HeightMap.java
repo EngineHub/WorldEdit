@@ -125,7 +125,7 @@ public class HeightMap {
                     BaseBlock existing = session.getBlock(new Vector(X, curHeight, Z));
 
                     // Skip water/lava
-                    if (existing.getID() < 8 || existing.getID() > 11) {
+                    if (existing.getType() < 8 || existing.getType() > 11) {
                         session.setBlock(new Vector(X, newHeight, Z), existing);
                         blocksChanged++;
 

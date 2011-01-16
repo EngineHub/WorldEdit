@@ -56,7 +56,7 @@ public class BaseBlock {
     /**
      * @return the type
      */
-    public int getID() {
+    public int getType() {
         return (int)type;
     }
 

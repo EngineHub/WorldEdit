@@ -544,7 +544,7 @@ public class Vector {
             return false;
         }
         Vector other = (Vector)obj;
-        return other.x == this.x && other.y == this.y && other.z == this.z;
+        return other.getX() == this.x && other.getY() == this.y && other.getZ() == this.z;
 
     }
 

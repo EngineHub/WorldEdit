@@ -20,8 +20,9 @@
 package com.sk89q.worldedit.bukkit;
 
 import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bags.BlockBag;
 
 public class BukkitPlayer extends LocalPlayer {
@@ -47,7 +48,7 @@ public class BukkitPlayer extends LocalPlayer {
     @Override
     public int getItemInHand() {
         ItemStack itemStack = player.getItemInHand();
-        return itemStack != null ? itemStack.getTypeID() : 0;
+        return itemStack != null ? itemStack.getTypeId() : 0;
     }
 
     @Override

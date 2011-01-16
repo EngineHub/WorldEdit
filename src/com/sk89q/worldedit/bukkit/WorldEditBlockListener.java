@@ -19,11 +19,10 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import org.bukkit.Player;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockListener;
-import org.bukkit.event.block.BlockBrokenEvent;
-import org.bukkit.event.block.BlockPlacedEvent;
-import org.bukkit.event.block.BlockRightClickedEvent;
+import org.bukkit.event.block.BlockRightClickEvent;
 
 import com.sk89q.worldedit.*;
 
@@ -41,19 +40,21 @@ public class WorldEditBlockListener extends BlockListener {
     public WorldEditBlockListener(WorldEditPlugin plugin) {
         this.plugin = plugin;
     }
-    
+
     /**
-     * Called when a block is broken (or destroyed)
+     * Called when a block is damaged (or broken)
      *
      * @param event Relevant event details
      */
-    public void onBlockBroken(BlockBrokenEvent event) {
+    public void onBlockDamage(BlockDamageEvent event) {
         LocalWorld world = new BukkitWorld(event.getBlock().getWorld());
         WorldVector pos = new WorldVector(world, event.getBlock().getX(),
                 event.getBlock().getY(), event.getBlock().getZ());
         LocalPlayer player = wrapPlayer(event.getPlayer());
         
-        plugin.controller.handleBlockLeftClick(player, pos);
+        if (plugin.controller.handleBlockLeftClick(player, pos)) {
+            event.setCancelled(true);
+        }
     }
 
     /**
@@ -61,7 +62,7 @@ public class WorldEditBlockListener extends BlockListener {
      *
      * @param event Relevant event details
      */
-    public void onBlockRightClicked(BlockRightClickedEvent event) {
+    public void onBlockRightClick(BlockRightClickEvent event) {
         LocalWorld world = new BukkitWorld(event.getBlock().getWorld());
         WorldVector pos = new WorldVector(world, event.getBlock().getX(),
                 event.getBlock().getY(), event.getBlock().getZ());

@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerListener;

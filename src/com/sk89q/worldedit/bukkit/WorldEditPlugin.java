@@ -37,6 +37,7 @@ import com.sk89q.worldedit.*;
 public class WorldEditPlugin extends JavaPlugin {
     public final ServerInterface server;
     public final WorldEditController controller;
+    public final WorldEditAPI api;
     
     private final WorldEditPlayerListener playerListener =
         new WorldEditPlayerListener(this);
@@ -44,8 +45,8 @@ public class WorldEditPlugin extends JavaPlugin {
         new WorldEditBlockListener(this);
 
     public WorldEditPlugin(PluginLoader pluginLoader, Server instance,
-            PluginDescriptionFile desc, File plugin, ClassLoader cLoader) {
-        super(pluginLoader, instance, desc, plugin, cLoader);
+            PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
+        super(pluginLoader, instance, desc, folder, plugin, cLoader);
         
         LocalConfiguration config = new LocalConfiguration() {
             @Override
@@ -57,6 +58,8 @@ public class WorldEditPlugin extends JavaPlugin {
 
         server = new BukkitServerInterface(getServer());
         controller = new WorldEditController(server, config);
+        
+        api = new WorldEditAPI(this);
 
         registerEvents();
     }
@@ -78,5 +81,9 @@ public class WorldEditPlugin extends JavaPlugin {
                 blockListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_RIGHTCLICKED,
                 blockListener, Priority.Normal, this);
+    }
+    
+    public WorldEditAPI getAPI() {
+        return api;
     }
 }

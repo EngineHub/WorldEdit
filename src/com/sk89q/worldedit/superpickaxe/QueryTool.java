@@ -37,8 +37,8 @@ public class QueryTool implements SuperPickaxeMode {
         BaseBlock block = (new EditSession(server, world, 0)).rawGetBlock(clicked);
 
         player.print("\u00A79@" + clicked + ": " + "\u00A7e"
-                + "Type: " + block.getID() + "\u00A77" + " ("
-                + BlockType.fromID(block.getID()).getName() + ") "
+                + "Type: " + block.getType() + "\u00A77" + " ("
+                + BlockType.fromID(block.getType()).getName() + ") "
                 + "\u00A7f"
                 + "[" + block.getData() + "]");
 

@@ -94,7 +94,7 @@ public class RecursivePickaxe implements SuperPickaxeMode {
 
         visited.add(pos);
 
-        if (editSession.getBlock(pos).getID() == initialType) {
+        if (editSession.getBlock(pos).getType() == initialType) {
             if (drop) {
                 world.simulateBlockMine(pos);
             }
