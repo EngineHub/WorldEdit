@@ -55,7 +55,7 @@ public class WorldSetBlockProxy extends World {
      * @return
      */
     @Override
-    public boolean a(int x, int y, int z, int blockType) {
+    public boolean b(int x, int y, int z, int blockType) {
         try {
             return editSession.setBlock(new Vector(x, y, z), new BaseBlock(blockType));
         } catch (MaxChangedBlocksException ex) {
