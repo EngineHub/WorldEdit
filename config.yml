@@ -34,4 +34,4 @@ permissions:
                 - example
             permissions:
                 - /reload
-                - /worledit
+                - /worldedit
