@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -63,18 +64,9 @@ public class BukkitConfiguration extends LocalConfiguration {
                 useInventoryOverride);
         maxBrushRadius = config.getInt("limits.max-brush-radius", maxBrushRadius);
 
-        // Get disallowed blocks
-        disallowedBlocks = new HashSet<Integer>();
-        String defdisallowedBlocks = StringUtil.joinString(defaultDisallowedBlocks, ",", 0);
-        for (String b : config.getString("limits.disallowed-blocks",
-                defdisallowedBlocks).split(",")) {
-            try {
-                disallowedBlocks.add(Integer.parseInt(b));
-            } catch (NumberFormatException e) {
-            }
-        }
+        disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
 
-        String snapshotsDir = config.getString("snapshots.directry", "");
+        String snapshotsDir = config.getString("snapshots.directory", "");
         if (!snapshotsDir.trim().equals("")) {
             snapshotRepo = new SnapshotRepository(snapshotsDir);
         } else {
