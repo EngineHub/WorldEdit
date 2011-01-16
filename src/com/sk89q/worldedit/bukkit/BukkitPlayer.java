@@ -27,9 +27,11 @@ import com.sk89q.worldedit.bags.BlockBag;
 
 public class BukkitPlayer extends LocalPlayer {
     private Player player;
+    private WorldEditPlugin plugin;
     
-    public BukkitPlayer(ServerInterface server, Player player) {
+    public BukkitPlayer(WorldEditPlugin plugin, ServerInterface server, Player player) {
         super(server);
+        this.plugin = plugin;
         this.player = player;
     }
 
@@ -109,8 +111,7 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public String[] getGroups() {
-        // TODO Auto-generated method stub
-        return null;
+        return plugin.getGroups(player);
     }
 
     @Override
@@ -121,8 +122,7 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public boolean hasPermission(String perm) {
-        // TODO Auto-generated method stub
-        return true;
+        return plugin.hasPermission(player, "/" + perm);
     }
 
     @Override

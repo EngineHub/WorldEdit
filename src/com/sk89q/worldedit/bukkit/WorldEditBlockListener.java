@@ -72,6 +72,6 @@ public class WorldEditBlockListener extends BlockListener {
     }
     
     private BukkitPlayer wrapPlayer(Player player) {
-        return new BukkitPlayer(plugin.server, player);
+        return new BukkitPlayer(plugin, plugin.server, player);
     }
 }

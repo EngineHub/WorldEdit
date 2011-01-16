@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
@@ -58,13 +57,31 @@ public class WorldEditPlayerListener extends PlayerListener {
      * @param event Relevant event details
      */
     public void onPlayerCommand(PlayerChatEvent event) {
-        if (plugin.controller.handleCommand(wrapPlayer(event.getPlayer()),
-                event.getMessage().split(" "))) {
+        String[] split = event.getMessage().split(" ");
+        
+        if (split[0].equalsIgnoreCase("/reload")
+                && plugin.hasPermission(event.getPlayer(), "/reload")
+                && split.length > 1) {
+            if (split[1].equalsIgnoreCase("WorldEdit")) {
+                try {
+                    plugin.loadConfiguration();
+                    event.getPlayer().sendMessage("WorldEdit configuration reloaded.");
+                } catch (Throwable t) {
+                    event.getPlayer().sendMessage("Error while reloading: "
+                            + t.getMessage());
+                }
+
+                event.setCancelled(true);
+                return;
+            }
+        }
+        
+        if (plugin.controller.handleCommand(wrapPlayer(event.getPlayer()), split)) {
             event.setCancelled(true);
         }
     }
     
     private BukkitPlayer wrapPlayer(Player player) {
-        return new BukkitPlayer(plugin.server, player);
+        return new BukkitPlayer(plugin, plugin.server, player);
     }
 }

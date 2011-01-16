@@ -20,13 +20,15 @@
 package com.sk89q.worldedit.bukkit;
 
 import java.io.File;
-import java.util.HashSet;
+import java.util.logging.Logger;
 import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.sk89q.bukkit.migration.ConfigurationPermissionsResolver;
 import com.sk89q.worldedit.*;
 
 /**
@@ -35,37 +37,37 @@ import com.sk89q.worldedit.*;
  * @author sk89qs
  */
 public class WorldEditPlugin extends JavaPlugin {
+    private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+    
     public final ServerInterface server;
     public final WorldEditController controller;
     public final WorldEditAPI api;
     
+    private final LocalConfiguration config;
     private final WorldEditPlayerListener playerListener =
         new WorldEditPlayerListener(this);
     private final WorldEditBlockListener blockListener =
         new WorldEditBlockListener(this);
+    private final ConfigurationPermissionsResolver perms;
 
     public WorldEditPlugin(PluginLoader pluginLoader, Server instance,
             PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
         super(pluginLoader, instance, desc, folder, plugin, cLoader);
-        
-        LocalConfiguration config = new LocalConfiguration() {
-            @Override
-            public void load() {
-                // TODO Auto-generated method stub
-                disallowedBlocks = new HashSet<Integer>();
-            }
-        };
 
+        logger.info("WorldEdit " + desc.getVersion() + " loaded.");
+        
+        config = new BukkitConfiguration(getConfiguration(), logger);
+        perms = new ConfigurationPermissionsResolver(getConfiguration());
+        loadConfiguration();
+        
         server = new BukkitServerInterface(getServer());
         controller = new WorldEditController(server, config);
-        
         api = new WorldEditAPI(this);
 
         registerEvents();
     }
 
     public void onEnable() {
-        //loadConfiguration();
     }
 
     public void onDisable() {
@@ -81,6 +83,24 @@ public class WorldEditPlugin extends JavaPlugin {
                 blockListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_RIGHTCLICKED,
                 blockListener, Priority.Normal, this);
+    }
+    
+    public void loadConfiguration() {
+        getConfiguration().load();
+        config.load();
+        perms.load();
+    }
+    
+    String[] getGroups(Player player) {
+        return perms.getGroups(player.getName());
+    }
+    
+    boolean inGroup(Player player, String group) {
+        return perms.inGroup(player.getName(), group);
+    }
+    
+    boolean hasPermission(Player player, String perm) {
+        return perms.hasPermission(player.getName(), perm);
     }
     
     public WorldEditAPI getAPI() {

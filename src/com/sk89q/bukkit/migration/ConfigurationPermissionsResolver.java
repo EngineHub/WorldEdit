@@ -104,4 +104,13 @@ public class ConfigurationPermissionsResolver {
         
         return groups.contains(group);        
     }
+    
+    public String[] getGroups(String player) {
+        Set<String> groups = userGroups.get(player.toLowerCase());
+        if (groups == null) {
+            return new String[0];
+        }
+        
+        return (String[])groups.toArray();        
+    }
 }
