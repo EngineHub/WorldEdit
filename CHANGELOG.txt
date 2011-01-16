@@ -1,3 +1,6 @@
+2.8:
+- Improved Bukkit support.
+
 2.7.2:
 - Fixed permissions checking for individual commands.
 - /butcher should now kill animals again.

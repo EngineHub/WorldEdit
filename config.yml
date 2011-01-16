@@ -1,0 +1,37 @@
+limits:
+    max-blocks-changed:
+        default: -1
+        maximum: -1
+    max-radius: -1
+    max-super-pickaxe-size: 5
+    max-brush-radius: 5
+    disallowed-blocks: [6, 7, 14, 15, 16, 21, 22, 23, 24, 25, 26, 27, 28, 29, 39, 31, 32, 33, 34, 36, 37, 38, 39, 40, 46, 50, 51, 56, 59, 69, 73, 74, 75, 76, 77, 81, 83]
+use-inventory:
+    enable: false
+    allow-override: true
+logging:
+    log-commands: false
+    file: worldedit.log
+super-pickaxe:
+    drop-items: true
+    many-drop-items: false
+snapshots:
+    directory:
+shell-save-type: 
+no-double-slash: false
+debug: false
+permissions:
+    groups:
+        default:
+            permissions:
+                - /worldeditselect
+        example:
+            permissions:
+                - /worldeditselect
+    users:
+        sk89q:
+            groups:
+                - example
+            permissions:
+                - /reload
+                - /worledit

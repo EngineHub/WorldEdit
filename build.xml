@@ -58,6 +58,7 @@
       <fileset dir="."/>
       <globmapper from="*.txt" to="*.txt"/>
     </copy>
+    <copy tofile="${release.dir}/config.yml" file="config.yml"/>
     <copy tofile="${release.dir}/worldedit.updatr" file="worldedit.updatr"/>
     <replace file="${release.dir}/worldedit.updatr" token="%version%" value="${version}"/>
     <copy tofile="${release.dir}/plugin.yml" file="plugin.yml"/>
