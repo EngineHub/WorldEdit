@@ -578,4 +578,32 @@ public class Vector {
     public BlockVector toBlockVector() {
         return new BlockVector(this);
     }
+    
+    /**
+     * Gets the minimum components of two vectors.
+     * 
+     * @param v1
+     * @param v2
+     * @return minimum
+     */
+    public static Vector getMinimum(Vector v1, Vector v2) {
+        return new Vector(
+                Math.min(v1.getX(), v2.getX()),
+                Math.min(v1.getY(), v2.getY()),
+                Math.min(v1.getZ(), v2.getZ()));
+    }
+    
+    /**
+     * Gets the maximum components of two vectors.
+     * 
+     * @param v1
+     * @param v2
+     * @return maximum
+     */
+    public static Vector getMaximum(Vector v1, Vector v2) {
+        return new Vector(
+                Math.max(v1.getX(), v2.getX()),
+                Math.max(v1.getY(), v2.getY()),
+                Math.max(v1.getZ(), v2.getZ()));
+    }
 }
