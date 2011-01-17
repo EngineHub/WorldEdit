@@ -18,8 +18,6 @@
       <classpath>
         <fileset dir="${lib.dir}">
           <include name="truezip.jar" />
-          <include name="Minecraft_Mod.jar" />
-          <include name="minecraft_server.jar" />
           <include name="minecraft_server_cb.jar" />
           <include name="CraftBukkit.jar" />
           <include name="Bukkit.jar" />
@@ -35,10 +33,13 @@
       <attribute name="Implementation-Title" value="WorldEdit"/>
       <attribute name="Implementation-Version" value="${version}"/>
       <attribute name="WorldEdit-Version" value="${version}"/>
-      <attribute name="Class-Path" value="truezip.jar"/>
+      <attribute name="Class-Path" value="truezip.jar WorldEdit/truezip.jar"/>
       <!--<attribute name="Main-Class" value="com.sk89q.worldedit.cli.Main"/>-->
     </manifest>
+    <replace file="${build.dir}/plugin.yml" token="WEVERSIONMACRO" value="${version}"/>
     <copy tofile="${build.dir}/plugin.yml" file="plugin.yml"/>
+    <mkdir dir="${build.dir}/defaults"/>
+    <copy tofile="${build.dir}/defaults/config.yml" file="config.yml"/>
     <jar jarfile="${dist.dir}/WorldEdit.jar" basedir="${build.dir}" manifest="manifest.mf" />
   </target>
 
@@ -54,15 +55,10 @@
     <antcall target="jar"/>
     <delete dir="${release.dir}"/>
     <mkdir dir="${release.dir}"/>
-    <copy todir="${release.dir}">
-      <fileset dir="."/>
-      <globmapper from="*.txt" to="*.txt"/>
-    </copy>
-    <copy tofile="${release.dir}/config.yml" file="config.yml"/>
-    <copy tofile="${release.dir}/worldedit.updatr" file="worldedit.updatr"/>
-    <replace file="${release.dir}/worldedit.updatr" token="%version%" value="${version}"/>
-    <copy tofile="${release.dir}/plugin.yml" file="plugin.yml"/>
-    <replace file="${release.dir}/plugin.yml" token="WEVERSIONMACRO" value="${version}"/>
+    <copy tofile="${release.dir}/CHANGELOG.txt" file="CHANGELOG.txt"/>
+    <copy tofile="${release.dir}/LICENSE.txt" file="LICENSE.txt"/>
+    <copy tofile="${release.dir}/NOTICE.txt" file="NOTICE.txt"/>
+    <copy tofile="${release.dir}/README.txt" file="README.txt"/>
     <copy tofile="${release.dir}/WorldEdit.jar" file="${dist.dir}/WorldEdit.jar"/>
     <zip destfile="${release.dir}/worldedit-${version}.zip" basedir="${release.dir}" excludes="*.zip plugin.yml"/>
     <mkdir dir="${release.dir}/src"/>

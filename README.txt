@@ -13,4 +13,23 @@ files, and much more.
 For usage help, see:
 http://github.com/sk89q/worldedit/wiki/Usage
 
+Installation
+------------
+
+Bukkit:
+
+  1. Create a "plugins" folder inside your server folder.
+
+  2. Copy WorldEdit.jar into "plugins".
+  
+  3. Restart your server.
+
+Default configuration files will be created in plugins/WorldEdit/
+when WorldEdit is first started. Be sure to edit them and use
+/reload WorldGuard until you are satisfied (remember to remove the
+/reload permission from everyone when you are done).
+
+Thanks
+------
+
 Thanks to grum for writing the terrain smoother.

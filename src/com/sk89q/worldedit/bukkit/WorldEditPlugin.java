@@ -20,6 +20,9 @@
 package com.sk89q.worldedit.bukkit;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -56,6 +59,10 @@ public class WorldEditPlugin extends JavaPlugin {
 
         logger.info("WorldEdit " + desc.getVersion() + " loaded.");
         
+        folder.mkdirs();
+
+        createDefaultConfiguration("config.yml");
+        
         config = new BukkitConfiguration(getConfiguration(), logger);
         perms = new ConfigurationPermissionsResolver(getConfiguration());
         loadConfiguration();
@@ -83,6 +90,42 @@ public class WorldEditPlugin extends JavaPlugin {
                 blockListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_RIGHTCLICKED,
                 blockListener, Priority.Normal, this);
+    }
+    
+    private void createDefaultConfiguration(String name) {
+        File actual = new File(getDataFolder(), name);
+        if (!actual.exists()) {
+            
+            InputStream input =
+                    WorldEditPlugin.class.getResourceAsStream("/defaults/" + name);
+            if (input != null) {
+                FileOutputStream output = null;
+
+                try {
+                    output = new FileOutputStream(actual);
+                    byte[] buf = new byte[8192];
+                    int length = 0;
+                    while ((length = input.read(buf)) > 0) {
+                        output.write(buf, 0, length);
+                    }
+                    
+                    logger.info("WorldEdit: Default configuration file written: "
+                            + name);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        if (input != null)
+                            input.close();
+                    } catch (IOException e) {}
+
+                    try {
+                        if (output != null)
+                            output.close();
+                    } catch (IOException e) {}
+                }
+            }
+        }
     }
     
     public void loadConfiguration() {
