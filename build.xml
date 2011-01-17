@@ -36,8 +36,8 @@
       <attribute name="Class-Path" value="truezip.jar WorldEdit/truezip.jar"/>
       <!--<attribute name="Main-Class" value="com.sk89q.worldedit.cli.Main"/>-->
     </manifest>
-    <replace file="${build.dir}/plugin.yml" token="WEVERSIONMACRO" value="${version}"/>
     <copy tofile="${build.dir}/plugin.yml" file="plugin.yml"/>
+    <replace file="${build.dir}/plugin.yml" token="WEVERSIONMACRO" value="${version}"/>
     <mkdir dir="${build.dir}/defaults"/>
     <copy tofile="${build.dir}/defaults/config.yml" file="config.yml"/>
     <jar jarfile="${dist.dir}/WorldEdit.jar" basedir="${build.dir}" manifest="manifest.mf" />
