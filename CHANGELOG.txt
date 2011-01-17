@@ -1,3 +1,7 @@
+2.8.1:
+- Added some extra functions to Vector for WorldGuard.
+- Made setup easier and less confusing.
+
 2.8:
 - Improved Bukkit support.
 
