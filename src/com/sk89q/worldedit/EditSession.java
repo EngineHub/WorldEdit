@@ -1882,7 +1882,7 @@ public class EditSession {
      * 
      * @param basePos
      */
-    private void makePineTree(Vector basePos) throws MaxChangedBlocksException {
+    public void makePineTree(Vector basePos) throws MaxChangedBlocksException {
         int trunkHeight = (int) Math.floor(Math.random() * 2) + 3;
         int height = (int) Math.floor(Math.random() * 5) + 8;
 

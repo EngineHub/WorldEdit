@@ -125,6 +125,7 @@ public class WorldEditController {
         commands.put("/none", "Switch to no tool");
         commands.put("/info", "Switch to the info tool");
         commands.put("/tree", "Switch to the tree tool");
+        commands.put("/pinetree", "Switch to the pine tree tool");
         commands.put("/bigtree", "Switch to the big tree tool");
         commands.put("/repl", "[ID] - Switch to the block replacer tool");
         commands.put("/brush", "[ID] <Radius> <NoReplace?> - Switch to the sphere brush tool");
@@ -682,6 +683,13 @@ public class WorldEditController {
             checkArgs(split, 0, 0, split[0]);
             session.setRightClickMode(new BigTreePlanter());
             player.print("Big tree tool equipped. Right click with a pickaxe.");
+            return true;
+
+        // Pine tree tool
+        } else if (split[0].equalsIgnoreCase("/pinetree")) {
+            checkArgs(split, 0, 0, split[0]);
+            session.setRightClickMode(new PineTreePlanter());
+            player.print("Pine tree tree tool equipped. Right click with a pickaxe.");
             return true;
 
         // Info tool
