@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.blocks;
 
-import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.data.*;
 import java.util.Map;
 import java.util.HashMap;
