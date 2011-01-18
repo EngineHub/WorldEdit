@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.superpickaxe;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
@@ -47,9 +48,11 @@ public class SphereBrush implements SuperPickaxeMode {
             player.printError("No block in sight!");
             return true;
         }
-
+        
+        BlockBag bag = session.getBlockBag(player);
+        
         ReplacingEditSession editSession = new ReplacingEditSession(server, target.getWorld(),
-                session.getBlockChangeLimit(), session.getBlockBag(player));
+                session.getBlockChangeLimit(), bag);
         
         if (nonReplacing) {
             editSession.disableReplacing();
@@ -60,6 +63,7 @@ public class SphereBrush implements SuperPickaxeMode {
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {
+            bag.flushChanges();
             editSession.enableReplacing();
             session.remember(editSession);
         }

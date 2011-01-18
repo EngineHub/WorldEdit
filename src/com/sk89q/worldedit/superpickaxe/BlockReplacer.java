@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.superpickaxe;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
@@ -37,15 +38,17 @@ public class BlockReplacer implements SuperPickaxeMode {
     @Override
     public boolean act(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
+
+        BlockBag bag = session.getBlockBag(player);
         
         LocalWorld world = clicked.getWorld();
-        EditSession editSession = new EditSession(server, world, -1,
-                session.getBlockBag(player));
+        EditSession editSession = new EditSession(server, world, -1, bag);
         
         try {
             editSession.setBlock(clicked, targetBlock);
         } catch (MaxChangedBlocksException e) {
         } finally {
+            bag.flushChanges();
             session.remember(editSession);
         }
         
