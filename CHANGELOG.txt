@@ -1,3 +1,12 @@
+2.10:
+- Inventory support now works for Bukkit.
+- Now /jumpto and /thru works.
+- Now prints an error message if permission is not available.
+- Added support for cloth color with the super pickaxe drops.
+- Updated GroupUsers support to use GroupUsers' new API. GroupUsers
+    must be updated as well.
+- Added wand-item to default config.yml.
+
 2.9:
 - Added pine tree tool.
 - Bukkit: Added support for GroupUsers. If GroupUsers is not present,
