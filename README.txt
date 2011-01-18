@@ -12,3 +12,9 @@ files, and much more.
 
 For installation and usage help, see:
 http://wiki.sk89q.com/wiki/WorldEdit
+
+Thanks
+------
+
+- grum for providing the area smooth code.
+- toi for the TargetBlock class.
