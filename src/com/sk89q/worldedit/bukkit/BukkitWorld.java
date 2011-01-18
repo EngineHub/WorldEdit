@@ -157,16 +157,10 @@ public class BukkitWorld extends LocalWorld {
     }
 
     @Override
-    public void dropItem(Vector pt, int type, int count) {
-        ItemStack item = new ItemStack(type, count);
-        world.dropItemNaturally(toLocation(pt), item);
-        
-    }
-
-    @Override
-    public void dropItem(Vector pt, int type) {
-        ItemStack item = new ItemStack(type, 1);
-        world.dropItemNaturally(toLocation(pt), item);
+    public void dropItem(Vector pt, BaseItemStack item) {
+        ItemStack bukkitItem = new ItemStack(item.getType(), item.getAmount(),
+                (byte)item.getDamage());
+        world.dropItemNaturally(toLocation(pt), bukkitItem);
         
     }
 

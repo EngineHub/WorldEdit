@@ -28,7 +28,7 @@ public class BaseItem {
     /**
      * Item ID.
      */
-    private short id;
+    private int id;
     /**
      * Item damage.
      */
@@ -39,7 +39,7 @@ public class BaseItem {
      *
      * @param id
      */
-    public BaseItem(short id) {
+    public BaseItem(int id) {
         this.id = id;
         this.damage = 0;
     }
@@ -49,7 +49,7 @@ public class BaseItem {
      *
      * @param id
      */
-    public BaseItem(short id, short damage) {
+    public BaseItem(int id, short damage) {
         this.id = id;
         this.damage = damage;
     }
@@ -57,14 +57,14 @@ public class BaseItem {
     /**
      * @return the id
      */
-    public short getID() {
+    public int getType() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setID(short id) {
+    public void setType(int id) {
         this.id = id;
     }
 

@@ -35,7 +35,7 @@ public class BaseItemStack extends BaseItem {
      *
      * @param id
      */
-    public BaseItemStack(short id) {
+    public BaseItemStack(int id) {
         super(id);
     }
 
@@ -44,7 +44,7 @@ public class BaseItemStack extends BaseItem {
      *
      * @param id
      */
-    public BaseItemStack(short id, int amount) {
+    public BaseItemStack(int id, int amount) {
         super(id);
         this.amount = amount;
     }
@@ -54,7 +54,7 @@ public class BaseItemStack extends BaseItem {
      *
      * @param id
      */
-    public BaseItemStack(short id, int amount, short damage) {
+    public BaseItemStack(int id, int amount, short damage) {
         super(id, damage);
         this.amount = amount;
     }
