@@ -1,3 +1,9 @@
+2.9:
+- Added pine tree tool.
+- Bukkit: Added support for GroupUsers. If GroupUsers is not present,
+    WorldEdit will fall back to its own permissions system.
+- Bukkit: Added sign support for Bukkit.
+
 2.8.1:
 - Added some extra functions to Vector for WorldGuard.
 - Made setup easier and less confusing.
