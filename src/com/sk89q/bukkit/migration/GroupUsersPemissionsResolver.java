@@ -19,19 +19,16 @@
 
 package com.sk89q.bukkit.migration;
 
-import java.lang.reflect.*;
+import java.util.List;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import com.bukkit.authorblues.GroupUsers.GroupUsers;
-import com.bukkit.authorblues.GroupUsers.GroupUsersPlayerListener;
 
 public class GroupUsersPemissionsResolver implements PermissionsResolver {
     private Server server;
-    private GroupUsersPlayerListener listener;
+    private GroupUsers groupUsers;
     
     public void load() {
         
@@ -47,19 +44,8 @@ public class GroupUsersPemissionsResolver implements PermissionsResolver {
             throw new MissingPluginException();
         }
         
-        GroupUsers groupUsers = (GroupUsers)plugin;
         try {
-            Field field = groupUsers.getClass().getDeclaredField("playerListener");
-            field.setAccessible(true);
-            listener = (GroupUsersPlayerListener)field.get(groupUsers);
-        } catch (SecurityException e) {
-            throw new PluginAccessException();
-        } catch (NoSuchFieldException e) {
-            throw new PluginAccessException();
-        } catch (IllegalArgumentException e) {
-            throw new PluginAccessException();
-        } catch (IllegalAccessException e) {
-            throw new PluginAccessException();
+            groupUsers = (GroupUsers)plugin;
         } catch (ClassCastException e) {
             throw new PluginAccessException();
         }
@@ -68,24 +54,36 @@ public class GroupUsersPemissionsResolver implements PermissionsResolver {
     public boolean hasPermission(String name, String permission) {
         try {
             Player player = server.getPlayer(name);
-            if (player == null) {
-                return false;
-            }
-            PlayerChatEvent event = new PlayerChatEvent(Event.Type.PLAYER_CHAT, player, permission);
-            listener.onPlayerCommand(event);
-            return !event.isCancelled();
+            if (player == null) return false;
+            return groupUsers.playerCanUseCommand(player, permission);
         } catch (Throwable t) {
             t.printStackTrace();
             return false;
         }
     }
     
-    public boolean inGroup(String player, String group) {
-        return false;     
+    public boolean inGroup(String name, String group) {
+        try {
+            Player player = server.getPlayer(name);
+            if (player == null) return false;
+            return groupUsers.isInGroup(player, group);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
     }
     
-    public String[] getGroups(String player) {
-        return new String[0];        
+    public String[] getGroups(String name) {
+        try {
+            Player player = server.getPlayer(name);
+            if (player == null) return new String[0];
+            List<String> groups = groupUsers.getGroups();
+            if (groups == null) return new String[0];
+            return groups.toArray(new String[groups.size()]);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return new String[0];
+        }
     }
     
     public static class PluginAccessException extends Exception {
