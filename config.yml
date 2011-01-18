@@ -43,12 +43,7 @@ shell-save-type:
 no-double-slash: false
 debug: false
 
-# Change sk89q to your name (or sk89q will be able to use WorldEdit
-# on your server!). Check the documentation to see how to configure this
-# 
-# NOTE: The /reload permission is given to everyone below (only applies to
-# WorldEdit) so that you can reload WorldEdit with /reload WorldEdit
-# until your configuration work is done
+# See http://wiki.sk89q.com/wiki/WorldEdit/Permissions/Bukkit
 permissions:
     groups:
         default:
