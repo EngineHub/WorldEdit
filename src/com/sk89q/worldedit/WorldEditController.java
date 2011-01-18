@@ -1933,6 +1933,8 @@ public class WorldEditController {
                         
                         flushBlockBag(player, editSession);
                     }
+                } else {
+                    player.printError("You don't have permission for this command.");
                 }
             }
 
