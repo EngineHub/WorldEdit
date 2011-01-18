@@ -20,10 +20,12 @@
 package com.sk89q.worldedit.bukkit;
 
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
+import com.sk89q.worldedit.blocks.BlockType;
 
 public class BukkitPlayer extends LocalPlayer {
     private Player player;
@@ -37,14 +39,25 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public WorldVector getBlockTrace(int range) {
-        // TODO Auto-generated method stub
-        return null;
+        TargetBlock tb = new TargetBlock(player, range, 0.2);
+        Block block = tb.getTargetBlock();
+        if (block == null) {
+            return null;
+        }
+        return new WorldVector(getWorld(), block.getX(), block.getY(), block.getZ());
     }
 
     @Override
     public WorldVector getSolidBlockTrace(int range) {
-        // TODO Auto-generated method stub
-        return null;
+        TargetBlock tb = new TargetBlock(player, range, 0.2);
+        tb.reset();
+        while (tb.getNextBlock() != null
+                && BlockType.canPassThrough(tb.getCurrentBlock().getTypeId()));
+        Block block = tb.getCurrentBlock();
+        if (block == null) {
+            return null;
+        }
+        return new WorldVector(getWorld(), block.getX(), block.getY(), block.getZ());
     }
 
     @Override
@@ -78,13 +91,33 @@ public class BukkitPlayer extends LocalPlayer {
     @Override
     public void giveItem(int type, int amt) {
         player.getWorld().dropItem(player.getLocation(), new ItemStack(type, amt));
-        // TODO Auto-generated method stub
-        
+        // TODO: Make this actually give the item
     }
 
     @Override
     public boolean passThroughForwardWall(int range) {
-        // TODO Auto-generated method stub
+        boolean foundNext = false;
+        int searchDist = 0;
+        TargetBlock hitBlox = new TargetBlock(player, range, 0.2);
+        LocalWorld world = getPosition().getWorld();
+        Block block;
+        while ((block = hitBlox.getNextBlock()) != null) {
+            searchDist++;
+            if (searchDist > 20) {
+                return false;
+            }
+            if (BlockType.canPassThrough(block.getTypeId())) {
+                if (foundNext) {
+                    Vector v = new Vector(block.getX(), block.getY() - 1, block.getZ());
+                    if (BlockType.canPassThrough(world.getBlockType(v))) {
+                        setPosition(v.add(0.5, 0, 0.5));
+                        return true;
+                    }
+                }
+            } else {
+                foundNext = true;
+            }
+        }
         return false;
     }
 
