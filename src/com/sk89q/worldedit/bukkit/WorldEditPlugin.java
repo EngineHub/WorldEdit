@@ -31,7 +31,8 @@ import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.sk89q.bukkit.migration.ConfigurationPermissionsResolver;
+import com.sk89q.bukkit.migration.PermissionsResolverManager;
+import com.sk89q.bukkit.migration.PermissionsResolverServerListener;
 import com.sk89q.worldedit.*;
 
 /**
@@ -47,11 +48,13 @@ public class WorldEditPlugin extends JavaPlugin {
     public final WorldEditAPI api;
     
     private final LocalConfiguration config;
+    private final PermissionsResolverManager perms;
+    
     private final WorldEditPlayerListener playerListener =
         new WorldEditPlayerListener(this);
     private final WorldEditBlockListener blockListener =
         new WorldEditBlockListener(this);
-    private final ConfigurationPermissionsResolver perms;
+    private final PermissionsResolverServerListener permsListener;
 
     public WorldEditPlugin(PluginLoader pluginLoader, Server instance,
             PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
@@ -64,7 +67,9 @@ public class WorldEditPlugin extends JavaPlugin {
         createDefaultConfiguration("config.yml");
         
         config = new BukkitConfiguration(getConfiguration(), logger);
-        perms = new ConfigurationPermissionsResolver(getConfiguration());
+        perms = new PermissionsResolverManager(getConfiguration(), getServer(),
+                "WorldEdit", logger);
+        permsListener = new PermissionsResolverServerListener(perms);
         loadConfiguration();
         
         server = new BukkitServerInterface(getServer());
@@ -90,6 +95,10 @@ public class WorldEditPlugin extends JavaPlugin {
                 blockListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_RIGHTCLICKED,
                 blockListener, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_RIGHTCLICKED,
+                blockListener, Priority.Normal, this);
+        
+        permsListener.register(this);
     }
     
     private void createDefaultConfiguration(String name) {

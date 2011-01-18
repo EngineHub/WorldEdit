@@ -1,6 +1,6 @@
 // $Id$
 /*
- * WorldGuard
+ * WorldEdit
  * Copyright (C) 2010 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.HashMap;
 import org.bukkit.util.config.Configuration;
 
-public class ConfigurationPermissionsResolver {
+public class ConfigurationPermissionsResolver implements PermissionsResolver {
     private Configuration config;
     private Map<String,Set<String>> userPermissionsCache;
     private Map<String,Set<String>> userGroups;
