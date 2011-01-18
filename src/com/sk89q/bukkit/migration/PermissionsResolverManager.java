@@ -54,6 +54,9 @@ public class PermissionsResolverManager implements PermissionsResolver {
         } catch (MissingPluginException e) {
             perms = new ConfigurationPermissionsResolver(config);
             logger.info(name + ": No known permissions plugin detected. Using configuration file for permissions. (code: 11)");
+        } catch (Throwable e) {
+            perms = new ConfigurationPermissionsResolver(config);
+            logger.info(name + ": No known permissions plugin detected. Using configuration file for permissions. (code: 12)");
         }
     }
 
