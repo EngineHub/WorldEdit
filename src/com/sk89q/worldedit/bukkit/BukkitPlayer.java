@@ -149,8 +149,7 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public BlockBag getInventoryBlockBag() {
-        // TODO Auto-generated method stub
-        return null;
+        return new BukkitPlayerBlockBag(player);
     }
 
     @Override
