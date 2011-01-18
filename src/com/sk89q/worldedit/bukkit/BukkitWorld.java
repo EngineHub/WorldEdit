@@ -21,6 +21,9 @@ package com.sk89q.worldedit.bukkit;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -68,13 +71,35 @@ public class BukkitWorld extends LocalWorld {
 
     @Override
     public void setSignText(Vector pt, String[] text) {
-        // TODO Auto-generated method stub
+        Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        if (block == null) return;
+        BlockState state = block.getState();
+        if (state == null || !(state instanceof Sign)) return;
+        Sign sign = (Sign)state;
+        sign.setLine(0, text[0]);
+        sign.setLine(1, text[1]);
+        sign.setLine(2, text[2]);
+        sign.setLine(3, text[3]);
+        sign.update();
     }
 
     @Override
     public String[] getSignText(Vector pt) {
-        // TODO Auto-generated method stub
-        return null;
+        Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        if (block == null) return new String[] { "", "", "", "" };
+        BlockState state = block.getState();
+        if (state == null || !(state instanceof Sign)) return new String[] { "", "", "", "" };
+        Sign sign = (Sign)state;
+        String line0 = sign.getLine(0);
+        String line1 = sign.getLine(1);
+        String line2 = sign.getLine(2);
+        String line3 = sign.getLine(3);
+        return new String[] {
+                line0 != null ? line0 : "",
+                line1 != null ? line1 : "",
+                line2 != null ? line2 : "",
+                line3 != null ? line3 : "",
+            };
     }
 
     @Override
@@ -168,5 +193,4 @@ public class BukkitWorld extends LocalWorld {
     public int hashCode() {
         return world.hashCode();
     }
-
 }
