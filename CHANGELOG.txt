@@ -1,3 +1,16 @@
+2.11:
+- Ported over toi's ray tracing code so that it's now included in
+    WorldEdit. This will make porting WorldEdit to single player
+    and other platforms easier.
+- Fixed NullPointerExceptions that appeared while saving a chest.
+- Fixed NullPointerExceptions in some super pickaxe modes, made arm swing
+    handler get called on item usage. This means that you can use
+    /brush and /rbrush now but you right click in the air instead of
+    swinging your arm.
+- Made super pickaxe arm swing and right click modes mutually exclusive.
+- Added the navigation wand. Normally a swing of your navigation wand
+    would call /jumpto, but in the mean time you have to right click.
+
 2.10:
 - Inventory support now works for Bukkit.
 - Now /jumpto and /thru works.
