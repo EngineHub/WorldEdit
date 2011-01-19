@@ -533,6 +533,20 @@ public class Vector {
     }
 
     /**
+     * Get a block point from a point.
+     * 
+     * @param x
+     * @param y
+     * @param z
+     * @return point
+     */
+    public BlockVector toBlockPoint() {
+        return new BlockVector((int)Math.floor(x),
+                 (int)Math.floor(y),
+                 (int)Math.floor(z));
+    }
+
+    /**
      * Checks if another object is equivalent.
      * 
      * @param obj

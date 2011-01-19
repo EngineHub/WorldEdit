@@ -21,6 +21,7 @@ package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.util.TargetBlock;
 
 /**
  *
@@ -298,7 +299,10 @@ public abstract class LocalPlayer {
      * @param range
      * @return point
      */
-    public abstract WorldVector getBlockTrace(int range);
+    public WorldVector getBlockTrace(int range) {
+        TargetBlock tb = new TargetBlock(this, range, 0.2);
+        return tb.getTargetBlock();
+    }
 
     /**
      * Get the point of the block being looked at. May return null.
@@ -306,7 +310,10 @@ public abstract class LocalPlayer {
      * @param range
      * @return point
      */
-    public abstract WorldVector getSolidBlockTrace(int range);
+    public WorldVector getSolidBlockTrace(int range) {
+        TargetBlock tb = new TargetBlock(this, range, 0.2);
+        return tb.getSolidTargetBlock();
+    }
 
     /**
      * Get the player's cardinal direction (N, W, NW, etc.). May return null.
@@ -418,7 +425,31 @@ public abstract class LocalPlayer {
      * @param range
      * @return whether the player was pass through
      */
-    public abstract boolean passThroughForwardWall(int range);
+    public boolean passThroughForwardWall(int range) {
+        boolean foundNext = false;
+        int searchDist = 0;
+        TargetBlock hitBlox = new TargetBlock(this, range, 0.2);
+        LocalWorld world = getPosition().getWorld();
+        BlockWorldVector block;
+        while ((block = hitBlox.getNextBlock()) != null) {
+            searchDist++;
+            if (searchDist > 20) {
+                return false;
+            }
+            if (BlockType.canPassThrough(world.getBlockType(block))) {
+                if (foundNext) {
+                    Vector v = new Vector(block.getX(), block.getY() - 1, block.getZ());
+                    if (BlockType.canPassThrough(world.getBlockType(v))) {
+                        setPosition(v.add(0.5, 0, 0.5));
+                        return true;
+                    }
+                }
+            } else {
+                foundNext = true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Print a message.
