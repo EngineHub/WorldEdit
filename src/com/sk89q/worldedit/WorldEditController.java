@@ -1914,7 +1914,8 @@ public class WorldEditController {
                 return true;
             }
         } else if (player.getItemInHand() == config.navigationWand
-                && config.navigationWandMaxDistance > 0) {
+                && config.navigationWandMaxDistance > 0
+                && player.hasPermission("jumpto")) {
             WorldVector pos = player.getSolidBlockTrace(config.navigationWandMaxDistance);
             if (pos != null) {
                 player.findFreePosition(pos);
