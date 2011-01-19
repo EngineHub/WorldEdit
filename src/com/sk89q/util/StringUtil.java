@@ -67,6 +67,18 @@ public class StringUtil {
      * @param initialIndex
      * @return
      */
+    public static String joinString(String[] str, String delimiter) {
+        return joinString(str, delimiter, 0);
+    }
+
+    /**
+     * Join an array of strings into a string.
+     * 
+     * @param str
+     * @param delimiter
+     * @param initialIndex
+     * @return
+     */
     public static String joinString(Object[] str, String delimiter,
             int initialIndex) {
         if (str.length == 0) {

@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.*;
+import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
@@ -37,23 +38,17 @@ import com.sk89q.worldedit.regions.*;
 import com.sk89q.worldedit.patterns.*;
 
 /**
- * Plugin base.
+ * This class is the main entry point for WorldEdit. All events are routed
+ * to an instance of this controller for processing by WorldEdit. For
+ * integrating WorldEdit in other platforms, an instance of this class
+ * should be created and events should be redirected to it.
  *
  * @author sk89q
  */
 public class WorldEditController {
-    /**
-     * Logger.
-     */
     private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     
-    /**
-     * Server interface.
-     */
     private ServerInterface server;
-    /**
-     * WorldEdit configuration.
-     */
     private LocalConfiguration config;
     
     /**
@@ -67,9 +62,8 @@ public class WorldEditController {
             new HashMap<LocalPlayer,LocalSession>();
     
     /**
-     * List of commands. These are checked when onCommand() is called, so
-     * the list must know about every command. On plugin load, the commands
-     * will be loaded into help. On unload, they will be removed.
+     * List of commands. These are checked when the command event is called, so
+     * the list must know about every command.
      */
     private HashMap<String,String> commands = new HashMap<String,String>();
     
@@ -83,42 +77,91 @@ public class WorldEditController {
         this.server = server;
         this.config = config;
         
+        populateCommands();
+    }
+    
+    /**
+     * Builds the list of commands.
+     */
+    private void populateCommands() {
+        commands.put("//limit", "[Num] - See documentation");
+        commands.put("/toggleplace", "Toggle placing at pos #1");
+
+        commands.put("//undo", "Undo");
+        commands.put("//redo", "Redo");
+        commands.put("/clearhistory", "Clear history");
+        
         commands.put("//pos1", "Set editing position #1");
         commands.put("//pos2", "Set editing position #2");
         commands.put("//hpos1", "Trace editing position #1");
         commands.put("//hpos2", "Trace editing position #2");
         commands.put("//chunk", "Select the chunk that you are in");
-        commands.put("/toggleplace", "Toggle placing at pos #1");
         commands.put("//wand", "Gives you the \"edit wand\"");
         commands.put("/toggleeditwand", "Toggles edit wand selection");
-        commands.put("//", "Toggles super pick axe.");
-        commands.put("//undo", "Undo");
-        commands.put("//redo", "Redo");
-        commands.put("/clearhistory", "Clear history");
-        commands.put("/clearclipboard", "Clear clipboard");
+        commands.put("//expand", "[Num] <Dir> - Expands the selection");
+        commands.put("//contract", "[Num] <Dir> - Contracts the selection");
+        commands.put("//shift", "[Num] <Dir> - Shift the selection");
         commands.put("//size", "Get size of selected region");
         commands.put("//count", "[BlockIDs] - Count the number of blocks in the region");
         commands.put("//distr", "Get the top block distribution");
+
         commands.put("//set", "[ID] - Set all blocks inside region");
-        commands.put("//outline", "[ID] - Outline the region with blocks");
-        commands.put("//walls", "[ID] - Build walls");
         commands.put("//replace", "<FromID> [ToID] - Replace all existing blocks inside region");
-        commands.put("/replacenear", "<Size> <FromID> [ToID] - Replace all existing blocks nearby");
         commands.put("//overlay", "[ID] - Overlay the area one layer");
-        commands.put("/removeabove", "<Size> <Height> - Remove blocks above head");
-        commands.put("/removebelow", "<Size> <Height> - Remove blocks below position");
-        commands.put("/removenear", "<ID> <Size> - Remove blocks near you");
+        commands.put("//walls", "[ID] - Build walls");
+        commands.put("//outline", "[ID] - Outline the region with blocks");
+        commands.put("//move", "<Count> <Dir> <LeaveID> - Move the selection");
+        commands.put("//stack", "<Count> <Dir> - Stacks the selection");
+        commands.put("//smooth", "<Iterations> - Smooth an area's heightmap");
+
         commands.put("//copy", "Copies the currently selected region");
         commands.put("//cut", "Cuts the currently selected region");
         commands.put("//paste", "<AtOrigin?> - Pastes the clipboard");
-        commands.put("//move", "<Count> <Dir> <LeaveID> - Move the selection");
-        commands.put("//stack", "<Count> <Dir> - Stacks the selection");
+        commands.put("//rotate", "[Angle] - Rotate the clipboard");
+        commands.put("//flip", "<Dir> - Flip the clipboard");
         commands.put("//load", "[Filename] - Load .schematic into clipboard");
         commands.put("//save", "[Filename] - Save clipboard to .schematic");
+        commands.put("/clearclipboard", "Clear clipboard");
+
+        commands.put("//hcyl", "[ID] [Radius] <Height> - Create a vertical hollow cylinder");
+        commands.put("//cyl", "[ID] [Radius] <Height> - Create a vertical cylinder");
+        commands.put("//sphere", "[ID] [Radius] <Raised?> - Create a sphere");
+        commands.put("//hsphere", "[ID] [Radius] <Raised?> - Create a hollow sphere");
+        commands.put("/forestgen", "<Size> <Density> - Make Notch tree forest");
+        commands.put("/pinegen", "<Size> <Density> - Make an ugly pine tree forest");
+        commands.put("/pumpkins", "<Size> - Make a pumpkin forest");
+
         commands.put("//fill", "[ID] [Radius] <Depth> - Fill a hole");
         commands.put("//fillr", "[ID] [Radius] - Fill a hole fully recursively");
+        commands.put("/fixwater", "[Radius] - Level nearby pools of water");
+        commands.put("/fixlava", "[Radius] - Level nearby pools of lava");
         commands.put("//drain", "[Radius] - Drain nearby water/lava pools");
-        commands.put("//limit", "[Num] - See documentation");
+        commands.put("/removeabove", "<Size> <Height> - Remove blocks above head");
+        commands.put("/removebelow", "<Size> <Height> - Remove blocks below position");
+        commands.put("/removenear", "<ID> <Size> - Remove blocks near you");
+        commands.put("/replacenear", "<Size> <FromID> [ToID] - Replace all existing blocks nearby");
+        commands.put("/snow", "<Radius> - Simulate snow cover");
+        commands.put("/thaw", "<Radius> - Unthaw/remove snow");
+        commands.put("/butcher", "<Radius> - Kill nearby mobs");
+        commands.put("/ex", "[Size] - Extinguish fires");
+
+        commands.put("/chunkinfo", "Get the filename of the chunk that you are in");
+        commands.put("/listchunks", "Print a list of used chunks");
+        commands.put("/delchunks", "Generate a shell script to delete chunks");
+
+        commands.put("/unstuck", "Go up to the first free spot");
+        commands.put("/ascend", "Go up one level");
+        commands.put("/descend", "Go down one level");
+        commands.put("/jumpto", "Jump to the block that you are looking at");
+        commands.put("/thru", "Go through the wall that you are looking at");
+        commands.put("/ceil", "<Clearance> - Get to the ceiling");
+        commands.put("/up", "<Distance> - Go up some distance");
+
+        commands.put("/listsnapshots", "<Num> - List the 5 newest snapshots");
+        commands.put("//use", "[SnapshotID] - Use a particular snapshot");
+        commands.put("//restore", "<SnapshotID> - Restore a particular snapshot");
+
+        commands.put("//", "Toggles super pick axe.");
         commands.put("/single", "Switch to single block super pickaxe mode");
         commands.put("/area", "[Range] - Switch to area super pickaxe mode");
         commands.put("/recur", "[Range] - Switch to recursive super pickaxe mode");
@@ -129,38 +172,6 @@ public class WorldEditController {
         commands.put("/bigtree", "Switch to the big tree tool");
         commands.put("/repl", "[ID] - Switch to the block replacer tool");
         commands.put("/brush", "[ID] <Radius> <NoReplace?> - Switch to the sphere brush tool");
-        commands.put("//expand", "[Num] <Dir> - Expands the selection");
-        commands.put("//contract", "[Num] <Dir> - Contracts the selection");
-        commands.put("//shift", "[Num] <Dir> - Shift the selection");
-        commands.put("//rotate", "[Angle] - Rotate the clipboard");
-        commands.put("//flip", "<Dir> - Flip the clipboard");
-        commands.put("//hcyl", "[ID] [Radius] <Height> - Create a vertical hollow cylinder");
-        commands.put("//cyl", "[ID] [Radius] <Height> - Create a vertical cylinder");
-        commands.put("//sphere", "[ID] [Radius] <Raised?> - Create a sphere");
-        commands.put("//hsphere", "[ID] [Radius] <Raised?> - Create a hollow sphere");
-        commands.put("/fixwater", "[Radius] - Level nearby pools of water");
-        commands.put("/fixlava", "[Radius] - Level nearby pools of lava");
-        commands.put("/ex", "[Size] - Extinguish fires");
-        commands.put("/forestgen", "<Size> <Density> - Make Notch tree forest");
-        commands.put("/pinegen", "<Size> <Density> - Make an ugly pine tree forest");
-        commands.put("/snow", "<Radius> - Simulate snow cover");
-        commands.put("/thaw", "<Radius> - Unthaw/remove snow");
-        commands.put("/pumpkins", "<Size> - Make a pumpkin forest");
-        commands.put("/unstuck", "Go up to the first free spot");
-        commands.put("/ascend", "Go up one level");
-        commands.put("/descend", "Go down one level");
-        commands.put("/jumpto", "Jump to the block that you are looking at");
-        commands.put("/thru", "Go through the wall that you are looking at");
-        commands.put("/ceil", "<Clearance> - Get to the ceiling");
-        commands.put("/up", "<Distance> - Go up some distance");
-        commands.put("/chunkinfo", "Get the filename of the chunk that you are in");
-        commands.put("/listchunks", "Print a list of used chunks");
-        commands.put("/delchunks", "Generate a shell script to delete chunks");
-        commands.put("/listsnapshots", "<Num> - List the 5 newest snapshots");
-        commands.put("/butcher", "<Radius> - Kill nearby mobs");
-        commands.put("//use", "[SnapshotID] - Use a particular snapshot");
-        commands.put("//restore", "<SnapshotID> - Restore a particular snapshot");
-        commands.put("//smooth", "<Iterations> - Smooth an area's heightmap");
     }
 
     /**
@@ -418,13 +429,13 @@ public class WorldEditController {
      * @throws InsufficientArgumentsException
      * @throws DisallowedItemException
      */
-    public boolean performCommand(LocalPlayer player,
+    private boolean performCommand(LocalPlayer player,
             LocalSession session, EditSession editSession, String[] split)
             throws WorldEditException
     {
         if (config.logComands) {
             logger.log(Level.INFO, "WorldEdit: " + player.getName() + ": "
-                    + joinString(split, " "));
+                    + StringUtil.joinString(split, " "));
         }
         
         LocalWorld world = player.getPosition().getWorld();
@@ -1782,6 +1793,82 @@ public class WorldEditController {
     }
     
     /**
+     * Flush a block bag's changes to a player.
+     * 
+     * @param player
+     * @param blockBag
+     * @param editSession
+     */
+    private static void flushBlockBag(LocalPlayer player,
+            EditSession editSession) {
+        
+        BlockBag blockBag = editSession.getBlockBag();
+        
+        if (blockBag != null) {
+            blockBag.flushChanges();
+        }
+        
+        Set<Integer> missingBlocks = editSession.popMissingBlocks();
+        
+        if (missingBlocks.size() > 0) {
+            StringBuilder str = new StringBuilder();
+            str.append("Missing these blocks: ");
+            int size = missingBlocks.size();
+            int i = 0;
+            
+            for (Integer id : missingBlocks) {
+                BlockType type = BlockType.fromID(id);
+                
+                str.append(type != null
+                        ? type.getName() + " (" + id + ")"
+                        : id.toString());
+                
+                i++;
+                
+                if (i != size) {
+                    str.append(", ");
+                }
+            }
+            
+            player.printError(str.toString());
+        }
+    }
+
+    /**
+     * Checks to see if the player can use a command or /worldedit.
+     *
+     * @param player
+     * @param command
+     * @return
+     */
+    private boolean canUseCommand(LocalPlayer player, String command) {
+        // Allow the /worldeditselect permission
+        if (command.equalsIgnoreCase("/pos1")
+                || command.equalsIgnoreCase("/pos2")
+                || command.equalsIgnoreCase("/hpos1")
+                || command.equalsIgnoreCase("/hpos2")
+                || command.equalsIgnoreCase("/chunk")
+                || command.equalsIgnoreCase("/expand")
+                || command.equalsIgnoreCase("/contract")
+                || command.equalsIgnoreCase("/shift")
+                || command.equalsIgnoreCase("toggleeditwand")) {
+            return player.hasPermission(command)
+                    || player.hasPermission("worldeditselect")
+                    || player.hasPermission("worldedit");
+        }
+        
+        return player.hasPermission(command)
+                || player.hasPermission("worldedit");
+    }
+
+    /**
+     * @return the commands
+     */
+    public HashMap<String, String> getCommands() {
+        return commands;
+    }
+    
+    /**
      *
      * @param player
      */
@@ -1843,7 +1930,6 @@ public class WorldEditController {
      * @return false if you want the action to go through
      */
     public boolean handleBlockLeftClick(LocalPlayer player, WorldVector clicked) {
-        
         if (!canUseCommand(player, "/pos1")
                 && !canUseCommand(player, "/")) { return false; }
         
@@ -1941,27 +2027,27 @@ public class WorldEditController {
             return false;
         } catch (NumberFormatException e) {
             player.printError("Number expected; string given.");
-        } catch (IncompleteRegionException e2) {
+        } catch (IncompleteRegionException e) {
             player.printError("The edit region has not been fully defined.");
-        } catch (UnknownItemException e3) {
-            player.printError("Block name '" + e3.getID() + "' was not recognized.");
-        } catch (InvalidItemException e4) {
-            player.printError(e4.getMessage());
-        } catch (DisallowedItemException e4) {
-            player.printError("Block '" + e4.getID() + "' not allowed (see WorldEdit configuration).");
-        } catch (MaxChangedBlocksException e5) {
+        } catch (UnknownItemException e) {
+            player.printError("Block name '" + e.getID() + "' was not recognized.");
+        } catch (InvalidItemException e) {
+            player.printError(e.getMessage());
+        } catch (DisallowedItemException e) {
+            player.printError("Block '" + e.getID() + "' not allowed (see WorldEdit configuration).");
+        } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks changed in an operation reached ("
-                    + e5.getBlockLimit() + ").");
+                    + e.getBlockLimit() + ").");
         } catch (MaxRadiusException e) {
             player.printError("Maximum radius: " + config.maxRadius);
-        } catch (UnknownDirectionException ue) {
-            player.printError("Unknown direction: " + ue.getDirection());
-        } catch (InsufficientArgumentsException e6) {
-            player.printError(e6.getMessage());
-        } catch (EmptyClipboardException ec) {
+        } catch (UnknownDirectionException e) {
+            player.printError("Unknown direction: " + e.getDirection());
+        } catch (InsufficientArgumentsException e) {
+            player.printError(e.getMessage());
+        } catch (EmptyClipboardException e) {
             player.printError("Your clipboard is empty.");
-        } catch (WorldEditException e7) {
-            player.printError(e7.getMessage());
+        } catch (WorldEditException e) {
+            player.printError(e.getMessage());
         } catch (Throwable excp) {
             player.printError("Please report this error: [See console]");
             player.printRaw(excp.getClass().getName() + ": " + excp.getMessage());
@@ -1969,116 +2055,5 @@ public class WorldEditController {
         }
 
         return true;
-    }
-    
-    /**
-     * Flush a block bag's changes to a player.
-     * 
-     * @param player
-     * @param blockBag
-     * @param editSession
-     */
-    private static void flushBlockBag(LocalPlayer player,
-            EditSession editSession) {
-        
-        BlockBag blockBag = editSession.getBlockBag();
-        
-        if (blockBag != null) {
-            blockBag.flushChanges();
-        }
-        
-        Set<Integer> missingBlocks = editSession.popMissingBlocks();
-        
-        if (missingBlocks.size() > 0) {
-            StringBuilder str = new StringBuilder();
-            str.append("Missing these blocks: ");
-            int size = missingBlocks.size();
-            int i = 0;
-            
-            for (Integer id : missingBlocks) {
-                BlockType type = BlockType.fromID(id);
-                
-                str.append(type != null
-                        ? type.getName() + " (" + id + ")"
-                        : id.toString());
-                
-                i++;
-                
-                if (i != size) {
-                    str.append(", ");
-                }
-            }
-            
-            player.printError(str.toString());
-        }
-    }
-
-    /**
-     * Checks to see if the player can use a command or /worldedit.
-     *
-     * @param player
-     * @param command
-     * @return
-     */
-    private boolean canUseCommand(LocalPlayer player, String command) {
-        // Allow the /worldeditselect permission
-        if (command.equalsIgnoreCase("/pos1")
-                || command.equalsIgnoreCase("/pos2")
-                || command.equalsIgnoreCase("/hpos1")
-                || command.equalsIgnoreCase("/hpos2")
-                || command.equalsIgnoreCase("/chunk")
-                || command.equalsIgnoreCase("/expand")
-                || command.equalsIgnoreCase("/contract")
-                || command.equalsIgnoreCase("/shift")
-                || command.equalsIgnoreCase("toggleeditwand")) {
-            return player.hasPermission(command)
-                    || player.hasPermission("worldeditselect")
-                    || player.hasPermission("worldedit");
-        }
-        
-        return player.hasPermission(command)
-                || player.hasPermission("worldedit");
-    }
-
-    /**
-     * Joins a string from an array of strings.
-     *
-     * @param str
-     * @param delimiter
-     * @return
-     */
-    private static String joinString(String[] str, String delimiter) {
-        if (str.length == 0) {
-            return "";
-        }
-        StringBuilder buffer = new StringBuilder(str[0]);
-        for (int i = 1; i < str.length; i++) {
-            buffer.append(delimiter).append(str[i]);
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * @return the commands
-     */
-    public HashMap<String, String> getCommands() {
-        return commands;
-    }
-
-    /**
-     * Gets the WorldEditLibrary session for a player. Used for the bridge.
-     *
-     * @param player
-     * @return
-     */
-    public LocalSession getBridgeSession(LocalPlayer player) {
-        if (sessions.containsKey(player)) {
-            return sessions.get(player);
-        } else {
-            LocalSession session = new LocalSession();
-            session.setBlockChangeLimit(config.defaultChangeLimit);
-            sessions.put(player, session);
-            return session;
-        }
     }
 }
