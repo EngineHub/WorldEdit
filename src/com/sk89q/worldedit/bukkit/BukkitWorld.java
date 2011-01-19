@@ -105,7 +105,7 @@ public class BukkitWorld extends LocalWorld {
     @Override
     public BaseItemStack[] getChestContents(Vector pt) {
         // TODO Auto-generated method stub
-        return null;
+        return new BaseItemStack[0];
     }
 
     @Override
@@ -129,7 +129,7 @@ public class BukkitWorld extends LocalWorld {
     @Override
     public String getMobSpawnerType(Vector pt) {
         // TODO Auto-generated method stub
-        return null;
+        return "";
     }
 
     @Override
