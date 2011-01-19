@@ -39,6 +39,10 @@ super-pickaxe:
 snapshots:
     directory:
 
+navigation-wand:
+    item: 345
+    max-distance: 50
+
 wand-item: 271
 shell-save-type: 
 no-double-slash: false
