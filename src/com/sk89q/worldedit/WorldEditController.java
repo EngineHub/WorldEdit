@@ -172,6 +172,7 @@ public class WorldEditController {
         commands.put("/bigtree", "Switch to the big tree tool");
         commands.put("/repl", "[ID] - Switch to the block replacer tool");
         commands.put("/brush", "[ID] <Radius> <NoReplace?> - Switch to the sphere brush tool");
+        commands.put("/rbrush", "[ID] <Radius> - Switch to the replacing sphere brush tool");
     }
 
     /**
@@ -735,8 +736,22 @@ public class WorldEditController {
             if (nonReplacing) {
                 player.print("Non-replacing sphere brush tool equipped.");
             } else {
-                player.print("Sphere brush tool equipped. Right click with a pickaxe.");
+                player.print("Sphere brush tool equipped. Swing with a pickaxe.");
             }
+            return true;
+
+        // Sphere brush tool
+        } else if (split[0].equalsIgnoreCase("/rbrush")) {
+            checkArgs(split, 1, 3, split[0]);
+            int radius = split.length > 2 ? Integer.parseInt(split[2]) : 2;
+            if (radius > config.maxBrushRadius) {
+                player.printError("Maximum allowed brush radius: "
+                        + config.maxBrushRadius);
+                return true;
+            }
+            BaseBlock targetBlock = getBlock(player, split[1]);
+            session.setArmSwingMode(new ReplacingSphereBrush(targetBlock, radius));
+            player.print("Replacing sphere brush tool equipped. Swing with a pickaxe.");
             return true;
 
         // No tool
@@ -1880,16 +1895,20 @@ public class WorldEditController {
      * Called on arm swing.
      * 
      * @param player
+     * @return 
      */
-    public void handleArmSwing(LocalPlayer player) {
+    public boolean handleArmSwing(LocalPlayer player) {
         LocalSession session = getSession(player);
         
         if (player.isHoldingPickAxe()) {
             if (session.getArmSwingMode() != null) {
                 session.getArmSwingMode().act(server, config,
                         player, session, null);
+                return true;
             }
         }
+        
+        return false;
     }
 
     /**

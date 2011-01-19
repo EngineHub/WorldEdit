@@ -22,6 +22,7 @@ package com.sk89q.worldedit.bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerItemEvent;
 import org.bukkit.event.player.PlayerListener;
 
 /**
@@ -77,6 +78,17 @@ public class WorldEditPlayerListener extends PlayerListener {
         }
         
         if (plugin.controller.handleCommand(wrapPlayer(event.getPlayer()), split)) {
+            event.setCancelled(true);
+        }
+    }
+    
+    /**
+     * Called when a player uses an item
+     * 
+     * @param event Relevant event details
+     */
+    public void onPlayerItem(PlayerItemEvent event) {
+        if (plugin.controller.handleArmSwing(wrapPlayer(event.getPlayer()))) {
             event.setCancelled(true);
         }
     }

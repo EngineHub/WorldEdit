@@ -63,7 +63,9 @@ public class SphereBrush implements SuperPickaxeMode {
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {
-            bag.flushChanges();
+            if (bag != null) {
+                bag.flushChanges();
+            }
             editSession.enableReplacing();
             session.remember(editSession);
         }
