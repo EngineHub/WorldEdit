@@ -686,6 +686,7 @@ public class WorldEditController {
         // Tree tool
         } else if (split[0].equalsIgnoreCase("/tree")) {
             checkArgs(split, 0, 0, split[0]);
+            session.setArmSwingMode(null);
             session.setRightClickMode(new TreePlanter());
             player.print("Tree tool equipped. Right click with a pickaxe.");
             return true;
@@ -693,6 +694,7 @@ public class WorldEditController {
         // Big tree tool
         } else if (split[0].equalsIgnoreCase("/bigtree")) {
             checkArgs(split, 0, 0, split[0]);
+            session.setArmSwingMode(null);
             session.setRightClickMode(new BigTreePlanter());
             player.print("Big tree tool equipped. Right click with a pickaxe.");
             return true;
@@ -700,6 +702,7 @@ public class WorldEditController {
         // Pine tree tool
         } else if (split[0].equalsIgnoreCase("/pinetree")) {
             checkArgs(split, 0, 0, split[0]);
+            session.setArmSwingMode(null);
             session.setRightClickMode(new PineTreePlanter());
             player.print("Pine tree tree tool equipped. Right click with a pickaxe.");
             return true;
@@ -707,6 +710,7 @@ public class WorldEditController {
         // Info tool
         } else if (split[0].equalsIgnoreCase("/info")) {
             checkArgs(split, 0, 0, split[0]);
+            session.setArmSwingMode(null);
             session.setRightClickMode(new QueryTool());
             player.print("Info tool equipped. Right click with a pickaxe.");
             return true;
@@ -715,6 +719,7 @@ public class WorldEditController {
         } else if (split[0].equalsIgnoreCase("/repl")) {
             checkArgs(split, 1, 1, split[0]);
             BaseBlock targetBlock = getBlock(player, split[1]);
+            session.setArmSwingMode(null);
             session.setRightClickMode(new BlockReplacer(targetBlock));
             player.print("Block replacer tool equipped. Right click with a pickaxe.");
             return true;
@@ -732,6 +737,7 @@ public class WorldEditController {
                 return true;
             }
             BaseBlock targetBlock = getBlock(player, split[1]);
+            session.setRightClickMode(null);
             session.setArmSwingMode(new SphereBrush(targetBlock, radius, nonReplacing));
             if (nonReplacing) {
                 player.print("Non-replacing sphere brush tool equipped.");
@@ -750,6 +756,7 @@ public class WorldEditController {
                 return true;
             }
             BaseBlock targetBlock = getBlock(player, split[1]);
+            session.setRightClickMode(null);
             session.setArmSwingMode(new ReplacingSphereBrush(targetBlock, radius));
             player.print("Replacing sphere brush tool equipped. Swing with a pickaxe.");
             return true;
