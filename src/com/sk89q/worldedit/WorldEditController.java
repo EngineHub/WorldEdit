@@ -1913,6 +1913,14 @@ public class WorldEditController {
                         player, session, null);
                 return true;
             }
+        } else if (player.getItemInHand() == config.navigationWand
+                && config.navigationWandMaxDistance > 0) {
+            WorldVector pos = player.getSolidBlockTrace(config.navigationWandMaxDistance);
+            if (pos != null) {
+                player.findFreePosition(pos);
+            } else {
+                player.printError("No block in sight (or too far)!");
+            }
         }
         
         return false;

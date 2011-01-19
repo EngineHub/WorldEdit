@@ -61,6 +61,8 @@ public class BukkitConfiguration extends LocalConfiguration {
         useInventoryOverride = config.getBoolean("use-inventory.allow-override",
                 useInventoryOverride);
         maxBrushRadius = config.getInt("limits.max-brush-radius", maxBrushRadius);
+        navigationWand = config.getInt("navigation-wand-item", navigationWand);
+        navigationWandMaxDistance = config.getInt("navigation-wand-max-distance", navigationWandMaxDistance);
 
         disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
 

@@ -52,6 +52,8 @@ public abstract class LocalConfiguration {
     public boolean noDoubleSlash = false;
     public boolean useInventory = false;
     public boolean useInventoryOverride = false;
+    public int navigationWand = 345;
+    public int navigationWandMaxDistance = 50;
     
     /**
      * Loads the configuration.
