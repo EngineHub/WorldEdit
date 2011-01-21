@@ -111,6 +111,6 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
             return new String[0];
         }
         
-        return (String[])groups.toArray();        
+        return groups.toArray(new String[groups.size()]);        
     }
 }
