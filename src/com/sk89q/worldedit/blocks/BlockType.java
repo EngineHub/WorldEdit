@@ -371,11 +371,17 @@ public enum BlockType {
                 || id == 9 // Water
                 || id == 10 // Lava
                 || id == 11 // Lava
+                || id == 17 // Wood
+                || id == 18 // Leaves
+                || id == 23 // Dispenser
+                || id == 35 // Wool
                 || id == 50 // Torch
                 || id == 53 // Wooden stairs
                 || id == 55 // Redstone wire
                 || id == 59 // Crops
                 || id == 60 // Soil
+                || id == 61 // Furnace
+                || id == 62 // Furnace
                 || id == 63 // Sign post
                 || id == 64 // Wooden door
                 || id == 65 // Ladder
@@ -389,7 +395,9 @@ public enum BlockType {
                 || id == 75 // Redstone torch (off)
                 || id == 76 // Redstone torch (on)
                 || id == 77 // Stone button
-                || id == 81; // Cactus
+                || id == 81 // Cactus
+                || id == 86 // Pumpkin
+                || id == 91; // Jack-o-lantern
     }
 
     /**
