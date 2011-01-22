@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Logger;
 import org.bukkit.Server;
+import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
@@ -89,9 +90,9 @@ public class WorldEditPlugin extends JavaPlugin {
     private void registerEvents() {        
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT,
                 playerListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND,
-                playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ITEM,
+                playerListener, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND,
                 playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED,
                 blockListener, Priority.Normal, this);
@@ -143,6 +144,27 @@ public class WorldEditPlugin extends JavaPlugin {
         perms.load();
     }
     
+    public boolean onCommand(Player player, Command cmd, String commandLabel, String[] args) {
+        if (cmd.getName().equalsIgnoreCase("reloadwe")
+                && hasPermission(player, "reloadwe")) {
+            try {
+                loadConfiguration();
+                player.sendMessage("WorldEdit configuration reloaded.");
+            } catch (Throwable t) {
+                player.sendMessage("Error while reloading: "
+                        + t.getMessage());
+            }
+            
+            return true;
+        }
+        
+        String[] split = new String[args.length + 1];
+        System.arraycopy(args, 0, split, 1, args.length);
+        split[0] = "/" + cmd.getName();
+        
+        return controller.handleCommand(wrapPlayer(player), split);
+    }
+    
     String[] getGroups(Player player) {
         return perms.getGroups(player.getName());
     }
@@ -153,6 +175,10 @@ public class WorldEditPlugin extends JavaPlugin {
     
     boolean hasPermission(Player player, String perm) {
         return player.isOp() || perms.hasPermission(player.getName(), perm);
+    }
+    
+    BukkitPlayer wrapPlayer(Player player) {
+        return new BukkitPlayer(this, this.server, player);
     }
     
     public WorldEditAPI getAPI() {

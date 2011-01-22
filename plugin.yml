@@ -1,3 +1,255 @@
 name: WorldEdit
 main: com.sk89q.worldedit.bukkit.WorldEditPlugin
 version: "WEVERSIONMACRO"
+commands:
+    /limit:
+        description: See documentation
+        usage: /<command> <num>
+    toggleplace:
+        description: Toggle placing at pos #1
+        usage: /<command>
+
+    /undo:
+        description: Undo
+        usage: /<command>
+    /redo:
+        description: Redo
+        usage: /<command>
+    clearhistory:
+        description: Clear history
+        usage: /<command>
+
+    /pos1:
+        description: Set editing position #1
+        usage: /<command>
+    /pos2:
+        description: Set editing position #2
+        usage: /<command>
+    /hpos1:
+        description: Trace editing position #1
+        usage: /<command>
+    /hpos2:
+        description: Trace editing position #2
+        usage: /<command>
+    /chunk:
+        description: Select the chunk that you are in
+        usage: /<command>
+    /wand:
+        description: Gives you the edit wand
+        usage: /<command>
+    toggleeditwand:
+        description: Toggles edit wand selection
+        usage: /<command>
+    /expand:
+        description: Expands the selection
+        usage: /<command> <num> [direction]
+    /contract:
+        description: Contracts the selection
+        usage: /<command> <num> [direction]
+    /shift:
+        description: Shift the selection
+        usage: /<command> <num> [direction]
+    /size:
+        description: Get size of selected region
+        usage: /<command> 
+    /count:
+        description: Count the number of blocks in the region
+        usage: /<command> <ids>
+    /distr:
+        description: Get the top block distribution
+        usage: /<command> 
+
+    /set:
+        description: Set all blocks inside region
+        usage: /<command> <id>
+    /replace:
+        description: Replace all existing blocks inside region
+        usage: /<command> [from-id] [to-id]
+    /overlay:
+        description: Overlay the area one layer
+        usage: /<command> <id>
+    /walls:
+        description: Build walls
+        usage: /<command> <id>
+    /outline:
+        description: Outline the region with blocks
+        usage: /<command> <id>
+    /move:
+        description: Move the selection
+        usage: /<command> [count] [dir] [leave-id]
+    /stack:
+        description: Stacks the selection
+        usage: /<command> [count] [dir]
+    /smooth:
+        description: Smooth an area's heightmap
+        usage: /<command> [iterations]
+
+    /copy:
+        description: Copies the currently selected region
+        usage: /<command>
+    /cut:
+        description: Cuts the currently selected region
+        usage: /<command>
+    /paste:
+        description: Pastes the clipboard
+        usage: /<command> <at-origin?>
+    /rotate:
+        description: Rotate the clipboard
+        usage: /<command> <angle>
+    /flip:
+        description: Flip the clipboard
+        usage: /<command> [dir]
+    /load:
+        description: Load .schematic into clipboard
+        usage: /<command> <filename>
+    /save:
+        description: Save clipboard to .schematic
+        usage: /<command> <filename>
+    clearclipboard:
+        description: Clear clipboard
+        usage: /<command>
+
+    /hcyl:
+        description: Create a vertical hollow cylinder
+        usage: /<command> <id> <radius> [height]
+    /cyl:
+        description: Create a vertical cylinder
+        usage: /<command> <id> <radius> [height]
+    /sphere:
+        description: Create a sphere
+        usage: /<command> <id> <radius> [raised?]
+    /hsphere:
+        description: Create a hollow sphere
+        usage: /<command> <id> <radius> [raised?]
+    forestgen:
+        description: Make Notch tree forest
+        usage: /<command> [size] [density]
+    pinegen:
+        description: Make an ugly pine tree forest
+        usage: /<command> [size] [density]
+    pumpkins:
+        description: Make a pumpkin forest
+        usage: /<command> [size]
+
+    /fill:
+        description: Fill a hole
+        usage: /<command> <id> <radius> [depth]
+    /fillr:
+        description: Fill a hole fully recursively
+        usage: /<command> <id> <radius>
+    fixwater:
+        description: Level nearby pools of water
+        usage: /<command> <radius>
+    fixlava:
+        description: Level nearby pools of lava
+        usage: /<command> <radius>
+    /drain:
+        description: Drain nearby water/lava pools
+        usage: /<command> <radius>
+    removeabove:
+        description: Remove blocks above head
+        usage: /<command> [size] [height]
+    removebelow:
+        description: Remove blocks below position
+        usage: /<command> [size] [height]
+    removenear:
+        description: Remove blocks near you
+        usage: /<command> [id] [size]
+    replacenear:
+        description: Replace all existing blocks nearby
+        usage: /<command> <size> <from-id> <to-id>
+    snow:
+        description: Simulate snow cover
+        usage: /<command> <radius>
+    thaw:
+        description: Unthaw/remove snow
+        usage: /<command> <radius>
+    butcher:
+        description: Kill nearby mobs
+        usage: /<command> [radius]
+    ex:
+        description: Extinguish fires
+        usage: /<command> [size]
+
+    chunkinfo:
+        description: Get the filename of the chunk that you are in
+        usage: /<command>
+    listchunks:
+        description: Print a list of used chunks
+        usage: /<command>
+    delchunks:
+        description: Generate a shell script to delete chunks
+        usage: /<command>
+
+    unstuck:
+        description: Go up to the first free spot
+        usage: /<command>
+    ascend:
+        description: Go up one level
+        usage: /<command>
+    descend:
+        description: Go down one level
+        usage: /<command>
+    jumpto:
+        description: Jump to the block that you are looking at
+        usage: /<command>
+    thru:
+        description: Go through the wall that you are looking at
+        usage: /<command>
+    ceil:
+        description: Get to the ceiling
+        usage: /<command> [clearence]
+    up:
+        description: Go up some distance
+        usage: /<command> <distance>
+
+    listsnapshots:
+        description: List the 5 newest snapshots
+        usage: /<command> [num]
+    /use:
+        description: Use a particular snapshot
+        usage: /<command> <snapshot-id>
+    /restore:
+        description: Restore a particular snapshot
+        usage: /<command> [snapshot-id]
+
+    /:
+        description: Toggles super pick axe.
+        usage: /<command> 
+    single:
+        description: Switch to single block super pickaxe mode
+        usage: /<command> 
+    area:
+        description: Switch to area super pickaxe mode
+        usage: /<command> <range>
+    recur:
+        description: Switch to recursive super pickaxe mode
+        usage: /<command> <range>
+    none:
+        description: Switch to no tool
+        usage: /<command>
+    info:
+        description: Switch to the info tool
+        usage: /<command>
+    tree:
+        description: Switch to the tree tool
+        usage: /<command>
+    pinetree:
+        description: Switch to the pine tree tool
+        usage: /<command>
+    bigtree:
+        description: Switch to the big tree tool
+        usage: /<command>
+    repl:
+        description: Switch to the block replacer tool
+        usage: /<command> <id>
+    brush:
+        description: Switch to the sphere brush tool
+        usage: /<command> <id> [radius] [no-replace?]
+    reloadwe:
+        description: Switch to the replacing sphere brush tool
+        usage: /<command> <id> [radius]
+        
+    reloadwe:
+        description: Reload WorldEdit's configuration
+        usage: /<command>
