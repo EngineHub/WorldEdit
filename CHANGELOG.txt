@@ -1,3 +1,16 @@
+2.12:
+- Added new flat file permissions resolver, added * support for
+    ConfigurationPermissionsResolver.
+- Added support for Niji's permission system.
+- Fixed bad list to array conversion in ConfigurationPermissionsResolver.
+- Fixed default permissions with the built-in permission resolvers.
+- Fixed issue with BlockWorldVector causing java.lang.VerifyError due to
+    how Bukkit loads plugins.
+- Ops now have all permissions.
+- Changed /reload WorldEdit to /reloadwe.
+- Moved WorldEdit to use Bukkit's command registration. Let's hope
+    this didn't break things.
+
 2.11:
 - Ported over toi's ray tracing code so that it's now included in
     WorldEdit. This will make porting WorldEdit to single player
