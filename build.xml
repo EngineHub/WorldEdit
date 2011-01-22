@@ -22,6 +22,7 @@
           <include name="CraftBukkit.jar" />
           <include name="Bukkit.jar" />
           <include name="GroupUsers.jar" />
+          <include name="Permissions.jar" />
         </fileset>
       </classpath>
     </javac>

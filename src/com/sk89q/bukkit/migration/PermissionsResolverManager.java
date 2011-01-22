@@ -22,8 +22,6 @@ package com.sk89q.bukkit.migration;
 import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.bukkit.util.config.Configuration;
-import com.sk89q.bukkit.migration.GroupUsersPemissionsResolver.MissingPluginException;
-import com.sk89q.bukkit.migration.GroupUsersPemissionsResolver.PluginAccessException;
 
 public class PermissionsResolverManager implements PermissionsResolver {
     private Configuration config;
@@ -43,6 +41,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     
     public void findResolver() {
         if (tryGroupsUsers()) return;
+        if (tryNijiPermissions()) return;
         if (tryFlatFilePermissions()) return;
         
         perms = new ConfigurationPermissionsResolver(config);
@@ -54,12 +53,16 @@ public class PermissionsResolverManager implements PermissionsResolver {
             perms = new GroupUsersPemissionsResolver(server);
             logger.info(name + ": GroupUsers detected! Using GroupUsers for permissions.");
             return true;
-        } catch (PluginAccessException e) {
+        } catch (Throwable e) {
             return false;
-        } catch (NoClassDefFoundError e) {
-            return false;
-        } catch (MissingPluginException e) {
-            return false;
+        }
+    }
+    
+    private boolean tryNijiPermissions() {
+        try {
+            perms = new NijiPermissionsResolver(server);
+            logger.info(name + ": Permissions plugin detected! Using Permissions plugin for permissions.");
+            return true;
         } catch (Throwable e) {
             return false;
         }
