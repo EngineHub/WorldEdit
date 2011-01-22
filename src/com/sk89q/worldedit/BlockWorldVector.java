@@ -82,8 +82,8 @@ public class BlockWorldVector extends WorldVector {
             return false;
         }
         WorldVector other = (WorldVector)obj;
-        return (int)other.x == (int)this.x && (int)other.y == (int)this.y
-                && (int)other.z == (int)this.z;
+        return (int)other.getX() == (int)this.x && (int)other.getY() == (int)this.y
+                && (int)other.getZ() == (int)this.z;
 
     }
 
