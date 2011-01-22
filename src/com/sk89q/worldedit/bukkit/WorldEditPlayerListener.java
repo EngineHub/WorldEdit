@@ -60,21 +60,18 @@ public class WorldEditPlayerListener extends PlayerListener {
     public void onPlayerCommand(PlayerChatEvent event) {
         String[] split = event.getMessage().split(" ");
         
-        if (split[0].equalsIgnoreCase("/reload")
-                && plugin.hasPermission(event.getPlayer(), "/reload")
-                && split.length > 1) {
-            if (split[1].equalsIgnoreCase("WorldEdit")) {
-                try {
-                    plugin.loadConfiguration();
-                    event.getPlayer().sendMessage("WorldEdit configuration reloaded.");
-                } catch (Throwable t) {
-                    event.getPlayer().sendMessage("Error while reloading: "
-                            + t.getMessage());
-                }
-
-                event.setCancelled(true);
-                return;
+        if (split[0].equalsIgnoreCase("/reloadwe")
+                && plugin.hasPermission(event.getPlayer(), "/reloadwe")) {
+            try {
+                plugin.loadConfiguration();
+                event.getPlayer().sendMessage("WorldEdit configuration reloaded.");
+            } catch (Throwable t) {
+                event.getPlayer().sendMessage("Error while reloading: "
+                        + t.getMessage());
             }
+
+            event.setCancelled(true);
+            return;
         }
         
         if (plugin.controller.handleCommand(wrapPlayer(event.getPlayer()), split)) {
