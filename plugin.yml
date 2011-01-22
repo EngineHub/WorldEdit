@@ -246,9 +246,10 @@ commands:
     brush:
         description: Switch to the sphere brush tool
         usage: /<command> <id> [radius] [no-replace?]
-    reloadwe:
-        description: Switch to the replacing sphere brush tool
-        usage: /<command> <id> [radius]
+    
+    cs:
+        description: Execute a CraftScript
+        usage: /<command> <filename> [arg1 [args2 [arg3 [...]]]]
         
     reloadwe:
         description: Reload WorldEdit's configuration

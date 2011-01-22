@@ -27,11 +27,15 @@ import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.*;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
 import com.sk89q.worldedit.filters.*;
+import com.sk89q.worldedit.scripting.ScriptContext;
 import com.sk89q.worldedit.snapshots.*;
 import com.sk89q.worldedit.superpickaxe.*;
 import com.sk89q.worldedit.regions.*;
@@ -173,6 +177,8 @@ public class WorldEditController {
         commands.put("/repl", "[ID] - Switch to the block replacer tool");
         commands.put("/brush", "[ID] <Radius> <NoReplace?> - Switch to the sphere brush tool");
         commands.put("/rbrush", "[ID] <Radius> - Switch to the replacing sphere brush tool");
+
+        commands.put("/cs", "[Filename] <args...> - Execute a CraftScript");
     }
 
     /**
@@ -1701,6 +1707,17 @@ public class WorldEditController {
             }
 
             return true;
+
+        // CraftScript
+        } else if (split[0].equalsIgnoreCase("/cs")) {
+            checkArgs(split, 1, -1, split[0]);
+            
+            String[] args = new String[split.length - 1];
+            System.arraycopy(split, 1, args, 0, split.length - 1);
+            
+            runScript(player, split[1], args);
+            
+            return true;
         }
 
         return false;
@@ -2090,5 +2107,87 @@ public class WorldEditController {
         }
 
         return true;
+    }
+    
+    /**
+     * Executes a WorldEdit script.
+     * 
+     * @param player
+     * @param filename
+     * @param args
+     */
+    public void runScript(LocalPlayer player, String filename, String[] args) {
+        File dir = new File("craftscripts");
+        File f = new File(dir, filename);
+
+        if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$")) {
+            player.printError("Invalid filename. Don't forget the extension.");
+            return;
+        }
+        
+        int index = filename.lastIndexOf(".");
+        String ext = filename.substring(index + 1, filename.length());
+        
+        if (!ext.equalsIgnoreCase("js")) {
+            player.printError("Only .js scripts are currently supported");
+            return;
+        }
+
+        try {
+            String filePath = f.getCanonicalPath();
+            String dirPath = dir.getCanonicalPath();
+
+            if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
+                player.printError("Script could not read or it does not exist.");
+                return;
+            }
+        } catch (IOException e) {
+            player.printError("Script could not read or it does not exist: " + e.getMessage());
+            return;
+        }
+        
+        String script;
+        
+        try {
+            FileInputStream file = new FileInputStream(f);
+            DataInputStream in = new DataInputStream (file);
+            byte[] data = new byte[in.available()];
+            in.readFully(data);
+            in.close ();
+            script = new String(data, 0, data.length, "utf-8");
+        } catch (FileNotFoundException e) {
+            player.printError("Script does not exist: " + filename);
+            return;
+        } catch (IOException e) {
+            player.printError("Script read error: " + e.getMessage());
+            return;
+        }
+
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByExtension(ext);
+        
+        if (engine == null) {
+            player.printError("Failed to load the scripting engine.");
+            return;
+        }
+        
+        LocalSession session = getSession(player);
+        ScriptContext context = new ScriptContext(this, server, config, session, player);
+        
+        engine.put("argv", args);
+        engine.put("ctx", context);
+        engine.put("player", player);
+        
+        try {
+            engine.eval(script);
+        } catch (ScriptException e) {
+            e.printStackTrace();
+            player.printError("Script encountered an error: " + e.getMessage());
+            return;
+        } finally {
+            for (EditSession editSession : context._getEditSessions()) {
+                session.remember(editSession);
+            }
+        }
     }
 }
