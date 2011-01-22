@@ -7,6 +7,16 @@
   <property name="dist.dir" location="dist"/>
   <property name="release.dir" location="release"/>
   <property name="lib.dir" location="lib"/>
+  <property name="docs.dir" location="docs"/>
+  
+  <fileset dir="${lib.dir}" id="libs">
+    <include name="truezip.jar" />
+    <include name="minecraft_server_cb.jar" />
+    <include name="CraftBukkit.jar" />
+    <include name="Bukkit.jar" />
+    <include name="GroupUsers.jar" />
+    <include name="Permissions.jar" />
+  </fileset>
   
   <target name="init">
     <mkdir dir="${build.dir}"/>
@@ -16,14 +26,7 @@
   <target name="compile" depends="init">
     <javac srcdir="${src.dir}" deprecation="true" includeantruntime="true" destdir="${build.dir}" debug="true">
       <classpath>
-        <fileset dir="${lib.dir}">
-          <include name="truezip.jar" />
-          <include name="minecraft_server_cb.jar" />
-          <include name="CraftBukkit.jar" />
-          <include name="Bukkit.jar" />
-          <include name="GroupUsers.jar" />
-          <include name="Permissions.jar" />
-        </fileset>
+        <fileset refid="libs"/>
       </classpath>
     </javac>
   </target>
@@ -71,11 +74,21 @@
     <zip destfile="${release.dir}/worldedit-${version}-src.zip" basedir="${release.dir}" excludes="*.zip plugin.yml"/>
   </target>
 
+  <!-- Javadoc -->
+  <target name="javadoc">
+    <javadoc access="public" author="true" destdir="${docs.dir}" doctitle="WorldEdit API" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.6" sourcepath="src" splitindex="true" use="true" version="true">
+      <classpath>
+        <fileset refid="libs"/>
+      </classpath>
+    </javadoc>
+  </target>
+
   <!-- Clean the output -->
   <target name="clean">
     <delete dir="${build.dir}"/>
     <delete dir="${dist.dir}"/>
     <delete dir="${release.dir}"/>
+    <delete dir="${docs.dir}"/>
   </target>
   
   <!--<target name="-get-version-git" if="git-revision">
