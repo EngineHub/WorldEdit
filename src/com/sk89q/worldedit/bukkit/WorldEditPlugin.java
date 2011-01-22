@@ -152,7 +152,7 @@ public class WorldEditPlugin extends JavaPlugin {
     }
     
     boolean hasPermission(Player player, String perm) {
-        return perms.hasPermission(player.getName(), perm);
+        return player.isOp() || perms.hasPermission(player.getName(), perm);
     }
     
     public WorldEditAPI getAPI() {
