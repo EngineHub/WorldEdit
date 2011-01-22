@@ -31,21 +31,13 @@ import com.sk89q.worldedit.UnknownItemException;
 import com.sk89q.worldedit.WorldEditController;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
-public class ScriptContext {
-    private WorldEditController controller;
-    private LocalPlayer player;
-    private LocalConfiguration config;
-    private LocalSession session;
-    private ServerInterface server;
+public class ScriptContext extends ScriptEnvironment {
     private List<EditSession> editSessions = new ArrayList<EditSession>();
     
-    public ScriptContext(WorldEditController controller, ServerInterface server,
-            LocalConfiguration config, LocalSession session, LocalPlayer player) {
-        this.controller = controller;
-        this.player = player;
-        this.config = config;
-        this.server = server;
-        this.session = session;
+    public ScriptContext(WorldEditController controller,
+            ServerInterface server, LocalConfiguration config,
+            LocalSession session, LocalPlayer player) {
+        super(controller, server, config, session, player);
     }
     
     public EditSession startEditSession() {

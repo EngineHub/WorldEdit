@@ -2177,6 +2177,7 @@ public class WorldEditController {
         engine.put("argv", args);
         engine.put("ctx", context);
         engine.put("player", player);
+        engine.put("BaseBlock", BaseBlock.class);
         
         try {
             engine.eval(script);
