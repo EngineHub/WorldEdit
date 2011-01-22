@@ -42,22 +42,37 @@ public class PermissionsResolverManager implements PermissionsResolver {
     }
     
     public void findResolver() {
+        if (tryGroupsUsers()) return;
+        if (tryFlatFilePermissions()) return;
+        
+        perms = new ConfigurationPermissionsResolver(config);
+        logger.info(name + ": No known permissions plugin detected. Using configuration file for permissions.");
+    }
+    
+    private boolean tryGroupsUsers() {
         try {
             perms = new GroupUsersPemissionsResolver(server);
             logger.info(name + ": GroupUsers detected! Using GroupUsers for permissions.");
+            return true;
         } catch (PluginAccessException e) {
-            perms = new ConfigurationPermissionsResolver(config);
-            logger.warning(name + ": Failed to access GroupUsers. Falling back to configuration file for permissions.");
+            return false;
         } catch (NoClassDefFoundError e) {
-            perms = new ConfigurationPermissionsResolver(config);
-            logger.info(name + ": No known permissions plugin detected. Using configuration file for permissions. (code: 10)");
+            return false;
         } catch (MissingPluginException e) {
-            perms = new ConfigurationPermissionsResolver(config);
-            logger.info(name + ": No known permissions plugin detected. Using configuration file for permissions. (code: 11)");
+            return false;
         } catch (Throwable e) {
-            perms = new ConfigurationPermissionsResolver(config);
-            logger.info(name + ": No known permissions plugin detected. Using configuration file for permissions. (code: 12)");
+            return false;
         }
+    }
+    
+    private boolean tryFlatFilePermissions() {
+        if (FlatFilePermissionsResolver.filesExists()) {
+            perms = new FlatFilePermissionsResolver();
+            logger.info(name + ": perms_groups.txt and perms_users.txt detected! Using flat file permissions.");
+            return true;
+        }
+        
+        return false;
     }
 
     public void load() {
