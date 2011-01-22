@@ -65,6 +65,8 @@ public class BukkitConfiguration extends LocalConfiguration {
         navigationWand = config.getInt("navigation-wand.item", navigationWand);
         navigationWandMaxDistance = config.getInt("navigation-wand.max-distance", navigationWandMaxDistance);
 
+        scriptTimeout = config.getInt("scripting.timeout", scriptTimeout);
+        
         disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
 
         String snapshotsDir = config.getString("snapshots.directory", "");

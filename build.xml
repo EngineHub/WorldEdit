@@ -16,6 +16,7 @@
     <include name="Bukkit.jar" />
     <include name="GroupUsers.jar" />
     <include name="Permissions.jar" />
+    <include name="js.jar" />
   </fileset>
   
   <target name="init">
@@ -38,7 +39,7 @@
       <attribute name="Implementation-Title" value="WorldEdit"/>
       <attribute name="Implementation-Version" value="${version}"/>
       <attribute name="WorldEdit-Version" value="${version}"/>
-      <attribute name="Class-Path" value="truezip.jar WorldEdit/truezip.jar"/>
+      <attribute name="Class-Path" value="truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar"/>
       <!--<attribute name="Main-Class" value="com.sk89q.worldedit.cli.Main"/>-->
     </manifest>
     <delete file="${build.dir}/plugin.yml"/>

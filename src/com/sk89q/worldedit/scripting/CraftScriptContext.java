@@ -31,10 +31,10 @@ import com.sk89q.worldedit.UnknownItemException;
 import com.sk89q.worldedit.WorldEditController;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
-public class ScriptContext extends ScriptEnvironment {
+public class CraftScriptContext extends CraftScriptEnvironment {
     private List<EditSession> editSessions = new ArrayList<EditSession>();
     
-    public ScriptContext(WorldEditController controller,
+    public CraftScriptContext(WorldEditController controller,
             ServerInterface server, LocalConfiguration config,
             LocalSession session, LocalPlayer player) {
         super(controller, server, config, session, player);

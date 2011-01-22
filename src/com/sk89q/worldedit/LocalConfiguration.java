@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
@@ -36,7 +37,7 @@ public abstract class LocalConfiguration {
             };
 
     public boolean profile = false;
-    public Set<Integer> disallowedBlocks = null;
+    public Set<Integer> disallowedBlocks = new HashSet<Integer>();
     public int defaultChangeLimit = -1;
     public int maxChangeLimit = -1;
     public String shellSaveType = null;
@@ -54,6 +55,7 @@ public abstract class LocalConfiguration {
     public boolean useInventoryOverride = false;
     public int navigationWand = 345;
     public int navigationWandMaxDistance = 50;
+    public int scriptTimeout = 3000;
     
     /**
      * Loads the configuration.

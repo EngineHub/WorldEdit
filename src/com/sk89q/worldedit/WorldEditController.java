@@ -22,20 +22,19 @@ package com.sk89q.worldedit;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.*;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
 import com.sk89q.worldedit.filters.*;
-import com.sk89q.worldedit.scripting.ScriptContext;
+import com.sk89q.worldedit.scripting.*;
 import com.sk89q.worldedit.snapshots.*;
 import com.sk89q.worldedit.superpickaxe.*;
 import com.sk89q.worldedit.regions.*;
@@ -2149,44 +2148,61 @@ public class WorldEditController {
         String script;
         
         try {
-            FileInputStream file = new FileInputStream(f);
-            DataInputStream in = new DataInputStream (file);
+            InputStream file;
+            
+            if (!f.exists()) {
+                file = WorldEditController.class.getResourceAsStream(
+                        "craftscripts/" + filename);
+                
+                if (file == null) {
+                    player.printError("Script does not exist: " + filename);
+                    return;
+                }
+            } else {
+                file = new FileInputStream(f);
+            }
+            
+            DataInputStream in = new DataInputStream(file);
             byte[] data = new byte[in.available()];
             in.readFully(data);
-            in.close ();
+            in.close();
             script = new String(data, 0, data.length, "utf-8");
-        } catch (FileNotFoundException e) {
-            player.printError("Script does not exist: " + filename);
-            return;
         } catch (IOException e) {
             player.printError("Script read error: " + e.getMessage());
             return;
         }
-
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension(ext);
-        
-        if (engine == null) {
-            player.printError("Failed to load the scripting engine.");
-            return;
-        }
         
         LocalSession session = getSession(player);
-        ScriptContext context = new ScriptContext(this, server, config, session, player);
+        CraftScriptContext scriptContext =
+            new CraftScriptContext(this, server, config, session, player);
         
-        engine.put("argv", args);
-        engine.put("ctx", context);
-        engine.put("player", player);
-        engine.put("BaseBlock", BaseBlock.class);
+        CraftScriptEngine engine = null;
         
         try {
-            engine.eval(script);
+            engine = new RhinoCraftScriptEngine();
+        } catch (NoClassDefFoundError e) {
+            try {
+                engine = new SunRhinoCraftScriptEngine();
+            } catch (NoClassDefFoundError e2) {
+                player.printError("Failed to find an installed script engine.");
+                return;
+            }
+        }
+        
+        engine.setTimeLimit(3000);
+        
+        Map<String, Object> vars = new HashMap<String, Object>();
+        vars.put("argv", args);
+        vars.put("context", scriptContext);
+        vars.put("player", player);
+        
+        try {
+            engine.evaluate(script, filename, vars);
         } catch (ScriptException e) {
-            e.printStackTrace();
-            player.printError("Script encountered an error: " + e.getMessage());
-            return;
+            player.printError("Failed to execute:");
+            player.printRaw(e.getMessage());
         } finally {
-            for (EditSession editSession : context._getEditSessions()) {
+            for (EditSession editSession : scriptContext._getEditSessions()) {
                 session.remember(editSession);
             }
         }
