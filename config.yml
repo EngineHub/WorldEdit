@@ -53,10 +53,10 @@ permissions:
     groups:
         default:
             permissions:
-                - /reload
+                - /reloadwe
                 - /worldeditselect
     users:
         sk89q:
             permissions:
                 - /worldedit
-                - /reload
+                - /reloadwe
