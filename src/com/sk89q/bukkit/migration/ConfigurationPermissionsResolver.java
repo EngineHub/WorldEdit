@@ -29,6 +29,7 @@ import org.bukkit.util.config.Configuration;
 public class ConfigurationPermissionsResolver implements PermissionsResolver {
     private Configuration config;
     private Map<String,Set<String>> userPermissionsCache;
+    private Set<String> defaultPermissionsCache;
     private Map<String,Set<String>> userGroups;
     
     public ConfigurationPermissionsResolver(Configuration config) {
@@ -38,6 +39,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
     public void load() {
         userGroups = new HashMap<String,Set<String>>();
         userPermissionsCache = new HashMap<String,Set<String>>();
+        defaultPermissionsCache = new HashSet<String>();
 
         Map<String,Set<String>> userGroupPermissions = new HashMap<String,Set<String>>();
             
@@ -51,6 +53,10 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
                 if (permissions.size() > 0) {
                     Set<String> groupPerms = new HashSet<String>(permissions);
                     userGroupPermissions.put(key, groupPerms);
+                    
+                    if (key.equals("default")) {
+                        defaultPermissionsCache.addAll(permissions);
+                    }
                 }
             }
         }
@@ -90,7 +96,8 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
     public boolean hasPermission(String player, String permission) {
         Set<String> perms = userPermissionsCache.get(player.toLowerCase());
         if (perms == null) {
-            return false;
+            return defaultPermissionsCache.contains(permission)
+                    || defaultPermissionsCache.contains("*");
         }
         
         return perms.contains("*") || perms.contains(permission);        

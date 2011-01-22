@@ -31,6 +31,7 @@ import java.util.HashMap;
 
 public class FlatFilePermissionsResolver implements PermissionsResolver {
     private Map<String,Set<String>> userPermissionsCache;
+    private Set<String> defaultPermissionsCache;
     private Map<String,Set<String>> userGroups;
     
     public FlatFilePermissionsResolver() {
@@ -90,8 +91,13 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
     public void load() {
         userGroups = new HashMap<String,Set<String>>();
         userPermissionsCache = new HashMap<String,Set<String>>();
+        defaultPermissionsCache = new HashSet<String>();
 
         Map<String,Set<String>> userGroupPermissions = loadGroupPermissions();
+        
+        if (userGroupPermissions.containsKey("default")) {
+            defaultPermissionsCache = userGroupPermissions.get("default");
+        }
 
         File file = new File("perms_users.txt");
         FileReader input = null;
@@ -149,7 +155,8 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
     public boolean hasPermission(String player, String permission) {
         Set<String> perms = userPermissionsCache.get(player.toLowerCase());
         if (perms == null) {
-            return false;
+            return defaultPermissionsCache.contains(permission)
+                    || defaultPermissionsCache.contains("*");
         }
         
         return perms.contains("*") || perms.contains(permission);        
