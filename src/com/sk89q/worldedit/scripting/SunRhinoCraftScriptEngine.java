@@ -40,7 +40,7 @@ public class SunRhinoCraftScriptEngine implements CraftScriptEngine {
     @Override
     public Object evaluate(final String script, final String filename,
             final Map<String, Object> args)
-            throws ScriptException {
+            throws ScriptException, Throwable {
         SunRhinoContextFactory factory = new SunRhinoContextFactory(timeLimit);
         factory.initApplicationClassLoader(WorldEditController.class.getClassLoader());
         
@@ -62,6 +62,10 @@ public class SunRhinoCraftScriptEngine implements CraftScriptEngine {
         } catch (Error e) {
             throw new ScriptException(e.getMessage());
         } catch (RhinoException e) {
+            if (e instanceof WrappedException) {
+                throw ((WrappedException)e).getCause();
+            }
+            
             String msg;
             int line = (line = e.lineNumber()) == 0 ? -1 : line;
             

@@ -2114,8 +2114,10 @@ public class WorldEditController {
      * @param player
      * @param filename
      * @param args
+     * @throws WorldEditException 
      */
-    public void runScript(LocalPlayer player, String filename, String[] args) {
+    public void runScript(LocalPlayer player, String filename, String[] args)
+            throws WorldEditException {
         File dir = new File("craftscripts");
         File f = new File(dir, filename);
 
@@ -2174,7 +2176,7 @@ public class WorldEditController {
         
         LocalSession session = getSession(player);
         CraftScriptContext scriptContext =
-            new CraftScriptContext(this, server, config, session, player);
+                new CraftScriptContext(this, server, config, session, player, args);
         
         CraftScriptEngine engine = null;
         
@@ -2199,10 +2201,17 @@ public class WorldEditController {
         try {
             engine.evaluate(script, filename, vars);
         } catch (ScriptException e) {
-            player.printError("Failed to execute:");
+            player.printError("Failed to execute:");;
             player.printRaw(e.getMessage());
+        } catch (NumberFormatException e) {
+            throw e;
+        } catch (WorldEditException e) {
+            throw e;
+        } catch (Throwable e) {
+            player.printError("Failed to execute (exception):");
+            player.printRaw(e.getClass().getCanonicalName());
         } finally {
-            for (EditSession editSession : scriptContext._getEditSessions()) {
+            for (EditSession editSession : scriptContext.getEditSessions()) {
                 session.remember(editSession);
             }
         }
