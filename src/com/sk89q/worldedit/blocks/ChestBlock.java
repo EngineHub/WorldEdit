@@ -31,7 +31,7 @@ import org.jnbt.*;
  *
  * @author sk89q
  */
-public class ChestBlock extends BaseBlock implements TileEntityBlock {
+public class ChestBlock extends BaseBlock implements TileEntityBlock, ContainerBlock {
     /**
      * Store the list of items.
      */

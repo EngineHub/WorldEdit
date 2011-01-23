@@ -399,6 +399,19 @@ public enum BlockType {
                 || id == 86 // Pumpkin
                 || id == 91; // Jack-o-lantern
     }
+    
+    /**
+     * Returns true if the block is a container block.
+     * 
+     * @param id
+     * @return
+     */
+    public static boolean isContainerBlock(int id) {
+        return id == 23 // Dispenser
+                || id == 61 // Furnace
+                || id == 62 // Furnace
+                || id == 54; // Chest
+    }
 
     /**
      * Get the block or item that would have been dropped. If nothing is

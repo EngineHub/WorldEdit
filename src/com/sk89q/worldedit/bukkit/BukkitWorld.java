@@ -23,14 +23,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Furnace;
+import org.bukkit.block.MobSpawner;
 import org.bukkit.block.Sign;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Location;
 import org.bukkit.World;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.*;
 
 public class BukkitWorld extends LocalWorld {
     /**
@@ -40,51 +43,302 @@ public class BukkitWorld extends LocalWorld {
     
     private World world;
     
+    /**
+     * Construct the object.
+     * @param world
+     */
     public BukkitWorld(World world) {
         this.world = world;
     }
     
+    /**
+     * Get the world handle.
+     * 
+     * @return
+     */
     public World getWorld() {
         return world;
     }
 
+    /**
+     * Set block type.
+     * 
+     * @param pt
+     * @param type
+     * @return
+     */
     @Override
     public boolean setBlockType(Vector pt, int type) {
         return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setTypeId(type);
     }
 
+    /**
+     * Get block type.
+     * 
+     * @param pt
+     * @return
+     */
     @Override
     public int getBlockType(Vector pt) {
         return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getTypeId();
     }
 
+    /**
+     * Set block data.
+     * 
+     * @param pt
+     * @param data
+     * @return
+     */
     @Override
     public void setBlockData(Vector pt, int data) {
         world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setData((byte)data);
         
     }
 
+    /**
+     * Get block data.
+     * 
+     * @param pt
+     * @return
+     */
     @Override
     public int getBlockData(Vector pt) {
         return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getData();
     }
 
+    /**
+     * Attempts to accurately copy a BaseBlock's extra data to the world.
+     * 
+     * @param pt
+     * @param block
+     * @return
+     */
     @Override
-    public void setSignText(Vector pt, String[] text) {
+    public boolean copyToWorld(Vector pt, BaseBlock block) {
+        // Signs
+        if (block instanceof SignBlock) {
+            setSignText(pt, ((SignBlock)block).getText());
+            return true;
+        
+        // Furnaces
+        } else if (block instanceof FurnaceBlock) {
+            Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            if (bukkitBlock == null) return false;
+            BlockState state = bukkitBlock.getState();
+            if (!(state instanceof Furnace)) return false;
+            Furnace bukkit = (Furnace)state;
+            FurnaceBlock we = (FurnaceBlock)block;
+            bukkit.setBurnTime(we.getBurnTime());
+            bukkit.setCookTime(we.getCookTime());
+            return setContainerBlockContents(pt, ((ContainerBlock)block).getItems());
+            
+        // Chests/dispenser
+        } else if (block instanceof ContainerBlock) {
+            return setContainerBlockContents(pt, ((ContainerBlock)block).getItems());
+        
+        // Mob spawners
+        } else if (block instanceof MobSpawnerBlock) {
+            Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            if (bukkitBlock == null) return false;
+            BlockState state = bukkitBlock.getState();
+            if (!(state instanceof MobSpawner)) return false;
+            MobSpawner bukkit = (MobSpawner)state;
+            MobSpawnerBlock we = (MobSpawnerBlock)block;
+            bukkit.setMobTypeId(we.getMobType());
+            bukkit.setDelay(we.getDelay());
+            return true;
+        
+        // Note block
+        } else if (block instanceof NoteBlock) {
+            Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            if (bukkitBlock == null) return false;
+            BlockState state = bukkitBlock.getState();
+            if (!(state instanceof org.bukkit.block.NoteBlock)) return false;
+            org.bukkit.block.NoteBlock bukkit = (org.bukkit.block.NoteBlock)state;
+            NoteBlock we = (NoteBlock)block;
+            bukkit.setNote(we.getNote());
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Attempts to read a BaseBlock's extra data from the world.
+     * 
+     * @param pt
+     * @param block
+     * @return
+     */
+    @Override
+    public boolean copyFromWorld(Vector pt, BaseBlock block) {
+        // Signs
+        if (block instanceof SignBlock) {
+            ((SignBlock)block).setText(getSignText(pt));
+            return true;
+        
+        // Furnaces
+        } else if (block instanceof FurnaceBlock) {
+            Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            if (bukkitBlock == null) return false;
+            BlockState state = bukkitBlock.getState();
+            if (!(state instanceof Furnace)) return false;
+            Furnace bukkit = (Furnace)state;
+            FurnaceBlock we = (FurnaceBlock)block;
+            we.setBurnTime(bukkit.getBurnTime());
+            we.setCookTime(bukkit.getCookTime());
+            ((ContainerBlock)block).setItems(getContainerBlockContents(pt));
+            return true;
+
+        // Chests/dispenser
+        } else if (block instanceof ContainerBlock) {
+            ((ContainerBlock)block).setItems(getContainerBlockContents(pt));
+            return true;
+        
+        // Mob spawners
+        } else if (block instanceof MobSpawnerBlock) {
+            Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            if (bukkitBlock == null) return false;
+            BlockState state = bukkitBlock.getState();
+            if (!(state instanceof MobSpawner)) return false;
+            MobSpawner bukkit = (MobSpawner)state;
+            MobSpawnerBlock we = (MobSpawnerBlock)block;
+            we.setMobType(bukkit.getMobTypeId());
+            we.setDelay((short)bukkit.getDelay());
+            return true;
+        
+        // Note block
+        } else if (block instanceof NoteBlock) {
+            Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            if (bukkitBlock == null) return false;
+            BlockState state = bukkitBlock.getState();
+            if (!(state instanceof org.bukkit.block.NoteBlock)) return false;
+            org.bukkit.block.NoteBlock bukkit = (org.bukkit.block.NoteBlock)state;
+            NoteBlock we = (NoteBlock)block;
+            we.setNote(bukkit.getNote());
+        }
+        
+        return false;
+    }
+
+    /**
+     * Clear a chest's contents.
+     * 
+     * @param pt
+     */
+    @Override
+    public boolean clearContainerBlockContents(Vector pt) {
         Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        if (block == null) return;
+        if (block == null) {
+            return false;
+        }
         BlockState state = block.getState();
-        if (state == null || !(state instanceof Sign)) return;
+        if (!(state instanceof org.bukkit.block.ContainerBlock)) {
+            return false;
+        }
+
+        org.bukkit.block.ContainerBlock chest = (org.bukkit.block.ContainerBlock)state;
+        Inventory inven = chest.getInventory();
+        inven.clear();
+        return true;
+    }
+
+    /**
+     * Generate a tree at a location.
+     * 
+     * @param pt
+     * @return
+     */
+    @Override
+    public boolean generateTree(EditSession editSession, Vector pt) {
+        try {
+            return CraftBukkitInterface.generateTree(editSession, pt);
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, 
+                    "Failed to create tree (do you need to update WorldEdit " +
+                    "due to a Minecraft update?)", t);
+            return false;
+        }
+    }
+
+    /**
+     * Generate a big tree at a location.
+     * 
+     * @param pt
+     * @return
+     */
+    @Override
+    public boolean generateBigTree(EditSession editSession, Vector pt) {
+        try {
+            return CraftBukkitInterface.generateBigTree(editSession, pt);
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, 
+                    "Failed to create tree (do you need to update WorldEdit " +
+                    "due to a Minecraft update?)", t);
+            return false;
+        }
+    }
+
+    /**
+     * Drop an item.
+     *
+     * @param pt
+     * @param item
+     */
+    @Override
+    public void dropItem(Vector pt, BaseItemStack item) {
+        ItemStack bukkitItem = new ItemStack(item.getType(), item.getAmount(),
+                (byte)item.getDamage());
+        world.dropItemNaturally(toLocation(pt), bukkitItem);
+        
+    }
+
+    /**
+     * Kill mobs in an area.
+     * 
+     * @param origin
+     * @param radius
+     * @return
+     */
+    @Override
+    public int killMobs(Vector origin, int radius) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+    
+    private Location toLocation(Vector pt) {
+        return new Location(world, pt.getX(), pt.getY(), pt.getZ());
+    }
+
+    /**
+     * Set a sign's text.
+     * 
+     * @param pt
+     * @param text
+     * @return
+     */
+    private boolean setSignText(Vector pt, String[] text) {
+        Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        if (block == null) return false;
+        BlockState state = block.getState();
+        if (state == null || !(state instanceof Sign)) return false;
         Sign sign = (Sign)state;
         sign.setLine(0, text[0]);
         sign.setLine(1, text[1]);
         sign.setLine(2, text[2]);
         sign.setLine(3, text[3]);
         sign.update();
+        return true;
     }
 
-    @Override
-    public String[] getSignText(Vector pt) {
+    /**
+     * Get a sign's text.
+     * 
+     * @param pt
+     * @return
+     */
+    private String[] getSignText(Vector pt) {
         Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (block == null) return new String[] { "", "", "", "" };
         BlockState state = block.getState();
@@ -102,76 +356,76 @@ public class BukkitWorld extends LocalWorld {
             };
     }
 
-    @Override
-    public BaseItemStack[] getChestContents(Vector pt) {
-        // TODO Auto-generated method stub
-        return new BaseItemStack[0];
-    }
-
-    @Override
-    public boolean setChestContents(Vector pt, BaseItemStack[] contents) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean clearChest(Vector pt) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void setMobSpawnerType(Vector pt, String mobType) {
-        // TODO Auto-generated method stub
+    /**
+     * Get a container block's contents.
+     * 
+     * @param pt
+     * @return
+     */
+    private BaseItemStack[] getContainerBlockContents(Vector pt) {
+        Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        if (block == null) {
+            return new BaseItemStack[0];
+        }
+        BlockState state = block.getState();
+        if (!(state instanceof org.bukkit.block.ContainerBlock)) {
+            return new BaseItemStack[0];
+        }
         
+        org.bukkit.block.ContainerBlock container = (org.bukkit.block.ContainerBlock)state;
+        Inventory inven = container.getInventory();
+        int size = inven.getSize();
+        BaseItemStack[] contents = new BaseItemStack[size];
+        
+        for (int i = 0; i < size; i++) {
+            ItemStack bukkitStack = inven.getItem(i);
+            if (bukkitStack.getTypeId() > 0) {
+                contents[i] = new BaseItemStack(
+                        bukkitStack.getTypeId(),
+                        bukkitStack.getAmount(), 
+                        bukkitStack.getDamage());
+            }
+        }
+        
+        return contents;
     }
 
-    @Override
-    public String getMobSpawnerType(Vector pt) {
-        // TODO Auto-generated method stub
-        return "";
-    }
-
-    @Override
-    public boolean generateTree(EditSession editSession, Vector pt) {
-        try {
-            return CraftBukkitInterface.generateTree(editSession, pt);
-        } catch (Throwable t) {
-            logger.log(Level.SEVERE, 
-                    "Failed to create tree (do you need to update WorldEdit " +
-                    "due to a Minecraft update?)", t);
+    /**
+     * Set a container block's contents.
+     * 
+     * @param pt
+     * @param contents
+     * @return
+     */
+    private boolean setContainerBlockContents(Vector pt, BaseItemStack[] contents) {
+        Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        if (block == null) {
             return false;
         }
-    }
-
-    @Override
-    public boolean generateBigTree(EditSession editSession, Vector pt) {
-        try {
-            return CraftBukkitInterface.generateBigTree(editSession, pt);
-        } catch (Throwable t) {
-            logger.log(Level.SEVERE, 
-                    "Failed to create tree (do you need to update WorldEdit " +
-                    "due to a Minecraft update?)", t);
+        BlockState state = block.getState();
+        if (!(state instanceof org.bukkit.block.ContainerBlock)) {
             return false;
         }
-    }
-
-    @Override
-    public void dropItem(Vector pt, BaseItemStack item) {
-        ItemStack bukkitItem = new ItemStack(item.getType(), item.getAmount(),
-                (byte)item.getDamage());
-        world.dropItemNaturally(toLocation(pt), bukkitItem);
         
-    }
+        org.bukkit.block.ContainerBlock chest = (org.bukkit.block.ContainerBlock)state;
+        Inventory inven = chest.getInventory();
+        int size = inven.getSize();
+        
+        for (int i = 0; i < size; i++) {
+            if (i >= contents.length + 1) {
+                break;
+            }
 
-    @Override
-    public int killMobs(Vector origin, int radius) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-    
-    private Location toLocation(Vector pt) {
-        return new Location(world, pt.getX(), pt.getY(), pt.getZ());
+            if (contents[i] != null) {
+                inven.setItem(i, new ItemStack(contents[i].getType(),
+                        contents[i].getAmount(), 
+                        (byte)contents[i].getDamage()));
+            } else {
+                inven.setItem(i, null);
+            }
+        }
+        
+        return true;
     }
 
     @Override

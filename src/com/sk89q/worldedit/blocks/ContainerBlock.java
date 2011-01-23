@@ -17,28 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.bukkit;
+package com.sk89q.worldedit.blocks;
 
-import org.bukkit.*;
-import org.bukkit.entity.MobType;
-import com.sk89q.worldedit.ServerInterface;
+/**
+ * Represents a block that stores items.
+ * 
+ * @author sk89q
+ */
+public interface ContainerBlock {
+    /**
+     * Get the list of items.
+     *
+     * @return
+     */
+    public BaseItemStack[] getItems();
 
-public class BukkitServerInterface extends ServerInterface {
-    public Server server;
-    
-    public BukkitServerInterface(Server server) {
-        this.server = server;
-    }
-
-    @Override
-    public int resolveItem(String name) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public boolean isValidMobType(String type) {
-        return MobType.fromName(type) != null;
-    }
-
+    /**
+     * Set the list of items.
+     *
+     * @return
+     */
+    public void setItems(BaseItemStack[] items);
 }

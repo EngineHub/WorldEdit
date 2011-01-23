@@ -445,26 +445,26 @@ public class CuboidClipboard {
                     BlockVector pt = new BlockVector(x, y, z);
                     BaseBlock block;
 
-                    if (blocks[index] == 63 || blocks[index] == 68) { // Signs
+                    if (blocks[index] == BlockID.WALL_SIGN || blocks[index] == BlockID.SIGN_POST) {
                         block = new SignBlock(blocks[index], blockData[index]);
-                        if (tileEntitiesMap.containsKey(pt)) {
-                            ((TileEntityBlock)block).fromTileEntityNBT(
-                                    tileEntitiesMap.get(pt));
-                        }
-                    } else if(blocks[index] == 54) { // Chest
-                        block = new ChestBlock();
-                        if (tileEntitiesMap.containsKey(pt)) {
-                            ((TileEntityBlock)block).fromTileEntityNBT(
-                                    tileEntitiesMap.get(pt));
-                        }
-                    } else if(blocks[index] == 52) { // Mob spawner
-                        block = new MobSpawnerBlock();
-                        if (tileEntitiesMap.containsKey(pt)) {
-                            ((TileEntityBlock)block).fromTileEntityNBT(
-                                    tileEntitiesMap.get(pt));
-                        }
+                    } else if (blocks[index] == BlockID.CHEST) {
+                        block = new ChestBlock(blockData[index]);
+                    } else if (blocks[index] == BlockID.FURNACE || blocks[index] == BlockID.BURNING_FURNACE) {
+                        block = new FurnaceBlock(blocks[index], blockData[index]);
+                    } else if (blocks[index] == BlockID.DISPENSER) {
+                        block = new DispenserBlock(blockData[index]);
+                    } else if (blocks[index] == BlockID.MOB_SPAWNER) {
+                        block = new MobSpawnerBlock(blockData[index]);
+                    } else if (blocks[index] == BlockID.NOTE_BLOCK) {
+                        block = new NoteBlock(blockData[index]);
                     } else {
                         block = new BaseBlock(blocks[index], blockData[index]);
+                    }
+                    
+                    if (block instanceof TileEntityBlock 
+                            && tileEntitiesMap.containsKey(pt)) {
+                        ((TileEntityBlock)block).fromTileEntityNBT(
+                                tileEntitiesMap.get(pt));
                     }
 
                     clipboard.data[x][y][z] = block;

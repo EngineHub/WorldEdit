@@ -46,6 +46,11 @@ public final class BlockID {
     public static final int LEAVES = 18;
     public static final int SPONGE = 19;
     public static final int GLASS = 20;
+    public static final int LAPIS_LAZULI_ORE = 21;
+    public static final int LAPIS_LAZULI_BLOCK = 22;
+    public static final int DISPENSER = 23;
+    public static final int SANDSTONE = 24;
+    public static final int NOTE_BLOCK = 25;
     public static final int CLOTH = 35;
     public static final int YELLOW_FLOWER = 37;
     public static final int RED_FLOWER = 38;
@@ -98,8 +103,10 @@ public final class BlockID {
     public static final int FENCE = 85;
     public static final int PUMPKIN = 86;
     public static final int NETHERSTONE = 87;
+    public static final int NETHERRACK = 87;
     public static final int SLOW_SAND = 88;
     public static final int LIGHTSTONE = 89;
     public static final int PORTAL = 90;
     public static final int JACKOLANTERN = 91;
+    public static final int CAKE_BLOCK = 92;
 }

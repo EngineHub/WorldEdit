@@ -51,7 +51,7 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
     /**
      * Construct the mob spawner block.
      *
-     * @param items
+     * @param mobType
      */
     public MobSpawnerBlock(String mobType) {
         super(52);
@@ -62,7 +62,16 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
      * Construct the mob spawner block.
      *
      * @param data
-     * @param items
+     */
+    public MobSpawnerBlock(int data) {
+        super(52, data);
+    }
+
+    /**
+     * Construct the mob spawner block.
+     *
+     * @param data
+     * @param mobType
      */
     public MobSpawnerBlock(int data, String mobType) {
         super(52, data);
@@ -120,7 +129,7 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
             throws DataException {
         Map<String,Tag> values = new HashMap<String,Tag>();
         values.put("EntityId", new StringTag("EntityId", mobType));
-        values.put("Delay", new ShortTag("Delay", (short)0));
+        values.put("Delay", new ShortTag("Delay", delay));
         return values;
     }
 

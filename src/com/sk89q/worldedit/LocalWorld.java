@@ -20,6 +20,7 @@
 package com.sk89q.worldedit;
 
 import java.util.Random;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 
 /**
@@ -68,63 +69,29 @@ public abstract class LocalWorld {
     public abstract int getBlockData(Vector pt);
 
     /**
-     * Set sign text.
+     * Attempts to accurately copy a BaseBlock's extra data to the world.
      * 
      * @param pt
-     * @param text
-     */
-    public abstract void setSignText(Vector pt, String[] text);
-
-    /**
-     * Get sign text.
-     * 
-     * @param pt
+     * @param block
      * @return
      */
-    public abstract String[] getSignText(Vector pt);
+    public abstract boolean copyToWorld(Vector pt, BaseBlock block);
 
     /**
-     * Gets the contents of chests. Will return null if the chest does not
-     * really exist or it is the second block for a double chest.
+     * Attempts to read a BaseBlock's extra data from the world.
      * 
      * @param pt
+     * @param block
      * @return
      */
-    public abstract BaseItemStack[] getChestContents(Vector pt);
-
-    /**
-     * Sets a chest slot.
-     * 
-     * @param pt
-     * @param contents
-     * @return
-     */
-    public abstract boolean setChestContents(Vector pt,
-            BaseItemStack[] contents);
+    public abstract boolean copyFromWorld(Vector pt, BaseBlock block);
 
     /**
      * Clear a chest's contents.
      * 
      * @param pt
      */
-    public abstract boolean clearChest(Vector pt);
-
-    /**
-     * Set mob spawner mob type.
-     * 
-     * @param pt
-     * @param mobType
-     */
-    public abstract void setMobSpawnerType(Vector pt,
-            String mobType);
-
-    /**
-     * Get mob spawner mob type. May return an empty string.
-     * 
-     * @param pt
-     * @param mobType
-     */
-    public abstract String getMobSpawnerType(Vector pt);
+    public abstract boolean clearContainerBlockContents(Vector pt);
 
     /**
      * Generate a tree at a location.

@@ -150,9 +150,9 @@ public class EditSession {
         
         int existing = world.getBlockType(pt);
 
-        // Clear the chest so that it doesn't drop items
-        if (existing == 54 && blockBag == null) {
-            world.clearChest(pt);
+        // Clear the container block so that it doesn't drop items
+        if (BlockType.isContainerBlock(existing) && blockBag == null) {
+            world.clearContainerBlockContents(pt);
         // Ice turns until water so this has to be done first
         } else if (existing == BlockID.ICE) {
             world.setBlockType(pt, 0);
@@ -189,16 +189,27 @@ public class EditSession {
             // Signs
             if (block instanceof SignBlock) {
                 SignBlock signBlock = (SignBlock) block;
-                String[] text = signBlock.getText();
-                world.setSignText(pt, text);
-                // Chests
+                world.copyToWorld(pt, signBlock);
+            // Chests
             } else if (block instanceof ChestBlock && blockBag == null) {
                 ChestBlock chestBlock = (ChestBlock) block;
-                world.setChestContents(pt, chestBlock.getItems());
-                // Mob spawners
+                world.copyToWorld(pt, chestBlock);
+            // Furnaces
+            } else if (block instanceof FurnaceBlock && blockBag == null) {
+                FurnaceBlock furnaceBlock = (FurnaceBlock) block;
+                world.copyToWorld(pt, furnaceBlock);
+            // Dispenser
+            } else if (block instanceof DispenserBlock && blockBag == null) {
+                DispenserBlock dispenserBlock = (DispenserBlock) block;
+                world.copyToWorld(pt, dispenserBlock);
+            // Mob spawners
             } else if (block instanceof MobSpawnerBlock) {
                 MobSpawnerBlock mobSpawnerblock = (MobSpawnerBlock) block;
-                world.setMobSpawnerType(pt, mobSpawnerblock.getMobType());
+                world.copyToWorld(pt, mobSpawnerblock);
+            // Note blocks
+            } else if (block instanceof NoteBlock) {
+                NoteBlock noteBlock = (NoteBlock) block;
+                world.copyToWorld(pt, noteBlock);
             }
         }
 
@@ -305,16 +316,35 @@ public class EditSession {
         int data = world.getBlockData(pt);
 
         // Sign
-        if (type == 63 || type == 68) {
-            String[] text = world.getSignText(pt);
-            return new SignBlock(type, data, text);
-            // Chest
-        } else if (type == 54) {
-            BaseItemStack[] items = world.getChestContents(pt);
-            return new ChestBlock(data, items);
-            // Mob spawner
-        } else if (type == 52) {
-            return new MobSpawnerBlock(data, world.getMobSpawnerType(pt));
+        if (type == BlockID.WALL_SIGN || type == BlockID.SIGN_POST) {
+            SignBlock block = new SignBlock(type, data);
+            world.copyFromWorld(pt, block);
+            return block;
+        // Chest
+        } else if (type == BlockID.CHEST) {
+            ChestBlock block = new ChestBlock(data);
+            world.copyFromWorld(pt, block);
+            return block;
+        // Furnace
+        } else if (type == BlockID.FURNACE || type == BlockID.BURNING_FURNACE) {
+            FurnaceBlock block = new FurnaceBlock(type, data);
+            world.copyFromWorld(pt, block);
+            return block;
+        // Dispenser
+        } else if (type == BlockID.DISPENSER) {
+            DispenserBlock block = new DispenserBlock(data);
+            world.copyFromWorld(pt, block);
+            return block;
+        // Mob spawner
+        } else if (type == BlockID.MOB_SPAWNER) {
+            MobSpawnerBlock block = new MobSpawnerBlock(data);
+            world.copyFromWorld(pt, block);
+            return block;
+        // Note block
+        } else if (type == BlockID.NOTE_BLOCK) {
+            NoteBlock block = new NoteBlock(data);
+            world.copyFromWorld(pt, block);
+            return block;
         } else {
             return new BaseBlock(type, data);
         }
