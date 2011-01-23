@@ -188,43 +188,33 @@ public class Chunk {
     public BaseBlock getBlock(Vector pos) throws DataException {
         int id = getBlockID(pos);
         int data = getBlockData(pos);
+        BaseBlock block;
 
-        // Signs
-        if (id == 63 || id == 68) {
-            SignBlock block = new SignBlock(id, data);
-
-            Map<String,Tag> tileEntity = getBlockTileEntity(pos);
-
-            if (tileEntity != null) {
-                ((TileEntityBlock)block).fromTileEntityNBT(tileEntity);
-            }
-
-            return block;
-        // Chests
-        } else if (id == 54) {
-            ChestBlock block = new ChestBlock();
-
-            Map<String,Tag> tileEntity = getBlockTileEntity(pos);
-
-            if (tileEntity != null) {
-                ((TileEntityBlock)block).fromTileEntityNBT(tileEntity);
-            }
-
-            return block;
-        // Mob spawners
-        } else if (id == 52) {
-            MobSpawnerBlock block = new MobSpawnerBlock();
-
-            Map<String,Tag> tileEntity = getBlockTileEntity(pos);
-
-            if (tileEntity != null) {
-                ((TileEntityBlock)block).fromTileEntityNBT(tileEntity);
-            }
-
-            return block;
+        if (id == BlockID.WALL_SIGN || id == BlockID.SIGN_POST) {
+            block = new SignBlock(id, data);
+        } else if (id == BlockID.CHEST) {
+            block = new ChestBlock(data);
+        } else if (id == BlockID.FURNACE || id == BlockID.BURNING_FURNACE) {
+            block = new FurnaceBlock(id, data);
+        } else if (id == BlockID.DISPENSER) {
+            block = new DispenserBlock(data);
+        } else if (id == BlockID.MOB_SPAWNER) {
+            block = new MobSpawnerBlock(data);
+        } else if (id == BlockID.NOTE_BLOCK) {
+            block = new NoteBlock(data);
         } else {
-            return new BaseBlock(id, data);
+            block = new BaseBlock(id, data);
         }
+        
+        if (block instanceof TileEntityBlock) {
+            Map<String,Tag> tileEntity = getBlockTileEntity(pos);
+            
+            if (tileEntity.containsKey(pos)) {
+                ((TileEntityBlock)block).fromTileEntityNBT(tileEntity);
+            }
+        }
+
+        return block;
     }
 
     /**
