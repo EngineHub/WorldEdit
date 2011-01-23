@@ -412,7 +412,7 @@ public class BukkitWorld extends LocalWorld {
         int size = inven.getSize();
         
         for (int i = 0; i < size; i++) {
-            if (i >= contents.length + 1) {
+            if (i >= contents.length) {
                 break;
             }
 
