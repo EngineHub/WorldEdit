@@ -22,6 +22,7 @@ package com.sk89q.worldedit.scripting;
 import java.util.Map;
 import javax.script.ScriptException;
 import org.mozilla.javascript.*;
+import com.sk89q.worldedit.WorldEditException;
 
 public class RhinoCraftScriptEngine implements CraftScriptEngine {
     private int timeLimit;
@@ -38,7 +39,7 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
 
     @Override
     public Object evaluate(String script, String filename, Map<String, Object> args)
-            throws ScriptException {
+            throws ScriptException, Throwable {
         RhinoContextFactory factory = new RhinoContextFactory(timeLimit);
         Context cx = factory.enterContext();
         ScriptableObject scriptable = new ImporterTopLevel(cx);
@@ -53,6 +54,13 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
         } catch (Error e) {
             throw new ScriptException(e.getMessage());
         } catch (RhinoException e) {
+            if (e instanceof WrappedException) {
+                Throwable cause = ((WrappedException)e).getCause();
+                if (cause instanceof WorldEditException) {
+                    throw ((WrappedException)e).getCause();
+                }
+            }
+            
             String msg;
             int line = (line = e.lineNumber()) == 0 ? -1 : line;
             

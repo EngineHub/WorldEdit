@@ -22,6 +22,7 @@ package com.sk89q.worldedit.scripting;
 import java.util.Map;
 import javax.script.ScriptException;
 import com.sk89q.worldedit.WorldEditController;
+import com.sk89q.worldedit.WorldEditException;
 import sun.org.mozilla.javascript.internal.*;
 
 public class SunRhinoCraftScriptEngine implements CraftScriptEngine {
@@ -63,7 +64,10 @@ public class SunRhinoCraftScriptEngine implements CraftScriptEngine {
             throw new ScriptException(e.getMessage());
         } catch (RhinoException e) {
             if (e instanceof WrappedException) {
-                throw ((WrappedException)e).getCause();
+                Throwable cause = ((WrappedException)e).getCause();
+                if (cause instanceof WorldEditException) {
+                    throw ((WrappedException)e).getCause();
+                }
             }
             
             String msg;

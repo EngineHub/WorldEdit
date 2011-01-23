@@ -2203,13 +2203,15 @@ public class WorldEditController {
         } catch (ScriptException e) {
             player.printError("Failed to execute:");;
             player.printRaw(e.getMessage());
+            e.printStackTrace();
         } catch (NumberFormatException e) {
             throw e;
         } catch (WorldEditException e) {
             throw e;
         } catch (Throwable e) {
-            player.printError("Failed to execute (exception):");
+            player.printError("Failed to execute (see console):");
             player.printRaw(e.getClass().getCanonicalName());
+            e.printStackTrace();
         } finally {
             for (EditSession editSession : scriptContext.getEditSessions()) {
                 session.remember(editSession);
