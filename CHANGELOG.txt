@@ -1,3 +1,7 @@
+2.14:
+- Added full block data support (furnaces, note blocks, etc.) for Bukkit.
+- Added /s to repeat last script.
+
 2.13:
 - Scripting support is back!
 - Colored cloth blocks should now work.
