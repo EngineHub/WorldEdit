@@ -250,6 +250,9 @@ commands:
     cs:
         description: Execute a CraftScript
         usage: /<command> <filename> [arg1 [args2 [arg3 [...]]]]
+    s:
+        description: Re-execute last CraftScript
+        usage: /<command> [arg1 [args2 [arg3 [...]]]]
         
     reloadwe:
         description: Reload WorldEdit's configuration

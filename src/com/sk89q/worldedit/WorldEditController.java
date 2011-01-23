@@ -178,6 +178,7 @@ public class WorldEditController {
         commands.put("/rbrush", "[ID] <Radius> - Switch to the replacing sphere brush tool");
 
         commands.put("/cs", "[Filename] <args...> - Execute a CraftScript");
+        commands.put("/s", "<args...> - Re-execute last CraftScript");
     }
 
     /**
@@ -1714,7 +1715,28 @@ public class WorldEditController {
             String[] args = new String[split.length - 1];
             System.arraycopy(split, 1, args, 0, split.length - 1);
             
+            session.setLastScript(split[1]);
+            
             runScript(player, split[1], args);
+            
+            return true;
+
+        // CraftScript
+        } else if (split[0].equalsIgnoreCase("/s")) {
+            checkArgs(split, 1, -1, split[0]);
+            
+            String lastScript = session.getLastScript();
+            
+            if (lastScript == null) {
+                player.printError("Use /cs with a script name first.");
+                return true;
+            }
+            
+            String[] args = new String[split.length];
+            System.arraycopy(split, 0, args, 0, split.length);
+            args[0] = lastScript;
+            
+            runScript(player, lastScript, args);
             
             return true;
         }

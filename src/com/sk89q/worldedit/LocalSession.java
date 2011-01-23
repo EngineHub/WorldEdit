@@ -48,6 +48,7 @@ public class LocalSession {
     private int maxBlocksChanged = -1;
     private boolean useInventory;
     private Snapshot snapshot;
+    private String lastScript;
 
     /**
      * Clear history.
@@ -411,5 +412,19 @@ public class LocalSession {
      */
     public void setUseInventory(boolean useInventory) {
         this.useInventory = useInventory;
+    }
+
+    /**
+     * @return the lastScript
+     */
+    public String getLastScript() {
+        return lastScript;
+    }
+
+    /**
+     * @param lastScript the lastScript to set
+     */
+    public void setLastScript(String lastScript) {
+        this.lastScript = lastScript;
     }
 }
