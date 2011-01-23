@@ -2101,7 +2101,7 @@ public class WorldEditController {
         } catch (NumberFormatException e) {
             player.printError("Number expected; string given.");
         } catch (IncompleteRegionException e) {
-            player.printError("The edit region has not been fully defined.");
+            player.printError("Make a region selection first.");
         } catch (UnknownItemException e) {
             player.printError("Block name '" + e.getID() + "' was not recognized.");
         } catch (InvalidItemException e) {
@@ -2118,7 +2118,7 @@ public class WorldEditController {
         } catch (InsufficientArgumentsException e) {
             player.printError(e.getMessage());
         } catch (EmptyClipboardException e) {
-            player.printError("Your clipboard is empty.");
+            player.printError("Your clipboard is empty. Use //copy first.");
         } catch (WorldEditException e) {
             player.printError(e.getMessage());
         } catch (Throwable excp) {
