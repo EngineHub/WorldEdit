@@ -1,3 +1,9 @@
+2.13:
+- Scripting support is back!
+- Colored cloth blocks should now work.
+- Fixed issue where the command's arguments were printed to chat when
+    you also did not have permissions.
+
 2.12:
 - Added new flat file permissions resolver, added * support for
     ConfigurationPermissionsResolver.
