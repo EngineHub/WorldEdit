@@ -62,6 +62,9 @@
     <antcall target="jar"/>
     <delete dir="${release.dir}"/>
     <mkdir dir="${release.dir}"/>
+    <copy todir="${release.dir}/craftscripts">
+      <fileset dir="craftscripts"/>
+    </copy>
     <copy tofile="${release.dir}/CHANGELOG.txt" file="CHANGELOG.txt"/>
     <copy tofile="${release.dir}/LICENSE.txt" file="LICENSE.txt"/>
     <copy tofile="${release.dir}/NOTICE.txt" file="NOTICE.txt"/>
