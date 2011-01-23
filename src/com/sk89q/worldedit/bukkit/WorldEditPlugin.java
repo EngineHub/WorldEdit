@@ -162,7 +162,9 @@ public class WorldEditPlugin extends JavaPlugin {
         System.arraycopy(args, 0, split, 1, args.length);
         split[0] = "/" + cmd.getName();
         
-        return controller.handleCommand(wrapPlayer(player), split);
+        controller.handleCommand(wrapPlayer(player), split);
+        
+        return true;
     }
     
     String[] getGroups(Player player) {
