@@ -29,20 +29,6 @@ import com.sk89q.worldedit.util.TargetBlock;
  */
 public abstract class LocalPlayer {    
     /**
-     * Directions.
-     */
-    public enum DIRECTION {
-        NORTH,
-        NORTH_EAST,
-        EAST,
-        SOUTH_EAST,
-        SOUTH,
-        SOUTH_WEST,
-        WEST,
-        NORTH_WEST
-    };
-
-    /**
      * Server.
      */
     protected ServerInterface server;
@@ -320,7 +306,7 @@ public abstract class LocalPlayer {
      *
      * @return
      */
-    public LocalPlayer.DIRECTION getCardinalDirection() {
+    public PlayerDirection getCardinalDirection() {
         // From hey0's code
         double rot = (getYaw() - 90) % 360;
         if (rot < 0) {
@@ -335,25 +321,25 @@ public abstract class LocalPlayer {
      * @param rot
      * @return
      */
-    private static LocalPlayer.DIRECTION getDirection(double rot) {
+    private static PlayerDirection getDirection(double rot) {
         if (0 <= rot && rot < 22.5) {
-            return LocalPlayer.DIRECTION.NORTH;
+            return PlayerDirection.NORTH;
         } else if (22.5 <= rot && rot < 67.5) {
-            return LocalPlayer.DIRECTION.NORTH_EAST;
+            return PlayerDirection.NORTH_EAST;
         } else if (67.5 <= rot && rot < 112.5) {
-            return LocalPlayer.DIRECTION.EAST;
+            return PlayerDirection.EAST;
         } else if (112.5 <= rot && rot < 157.5) {
-            return LocalPlayer.DIRECTION.SOUTH_EAST;
+            return PlayerDirection.SOUTH_EAST;
         } else if (157.5 <= rot && rot < 202.5) {
-            return LocalPlayer.DIRECTION.SOUTH;
+            return PlayerDirection.SOUTH;
         } else if (202.5 <= rot && rot < 247.5) {
-            return LocalPlayer.DIRECTION.SOUTH_WEST;
+            return PlayerDirection.SOUTH_WEST;
         } else if (247.5 <= rot && rot < 292.5) {
-            return LocalPlayer.DIRECTION.WEST;
+            return PlayerDirection.WEST;
         } else if (292.5 <= rot && rot < 337.5) {
-            return LocalPlayer.DIRECTION.NORTH_WEST;
+            return PlayerDirection.NORTH_WEST;
         } else if (337.5 <= rot && rot < 360.0) {
-            return LocalPlayer.DIRECTION.NORTH;
+            return PlayerDirection.NORTH;
         } else {
             return null;
         }

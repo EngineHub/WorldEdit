@@ -1747,7 +1747,7 @@ public class WorldEditController {
         int ym = 0;
         int zm = 0;
         
-        LocalPlayer.DIRECTION dir = null;
+        PlayerDirection dir = null;
         
         dirStr = dirStr.toLowerCase();
         boolean wasDetected = false;
@@ -1757,13 +1757,13 @@ public class WorldEditController {
             wasDetected = true;
         }
 
-        if (dirStr.charAt(0) == 'w' || dir == LocalPlayer.DIRECTION.WEST) {
+        if (dirStr.charAt(0) == 'w' || dir == PlayerDirection.WEST) {
             zm += 1;
-        } else if (dirStr.charAt(0) == 'e' || dir == LocalPlayer.DIRECTION.EAST) {
+        } else if (dirStr.charAt(0) == 'e' || dir == PlayerDirection.EAST) {
             zm -= 1;
-        } else if (dirStr.charAt(0) == 's' || dir == LocalPlayer.DIRECTION.SOUTH) {
+        } else if (dirStr.charAt(0) == 's' || dir == PlayerDirection.SOUTH) {
             xm += 1;
-        } else if (dirStr.charAt(0) == 'n' || dir == LocalPlayer.DIRECTION.NORTH) {
+        } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.NORTH) {
             xm -= 1;
         } else if (dirStr.charAt(0) == 'u') {
             ym += 1;
@@ -1791,19 +1791,19 @@ public class WorldEditController {
     public CuboidClipboard.FlipDirection getFlipDirection(
             LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
-        LocalPlayer.DIRECTION dir = null;
+        PlayerDirection dir = null;
         
         if (dirStr.equals("me")) {
             dir = player.getCardinalDirection();
         }
 
-        if (dirStr.charAt(0) == 'w' || dir == LocalPlayer.DIRECTION.EAST) {
+        if (dirStr.charAt(0) == 'w' || dir == PlayerDirection.EAST) {
             return CuboidClipboard.FlipDirection.WEST_EAST;
-        } else if (dirStr.charAt(0) == 'e' || dir == LocalPlayer.DIRECTION.EAST) {
+        } else if (dirStr.charAt(0) == 'e' || dir == PlayerDirection.EAST) {
             return CuboidClipboard.FlipDirection.WEST_EAST;
-        } else if (dirStr.charAt(0) == 's' || dir == LocalPlayer.DIRECTION.SOUTH) {
+        } else if (dirStr.charAt(0) == 's' || dir == PlayerDirection.SOUTH) {
             return CuboidClipboard.FlipDirection.NORTH_SOUTH;
-        } else if (dirStr.charAt(0) == 'n' || dir == LocalPlayer.DIRECTION.SOUTH) {
+        } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.SOUTH) {
             return CuboidClipboard.FlipDirection.NORTH_SOUTH;
         } else if (dirStr.charAt(0) == 'u') {
             return CuboidClipboard.FlipDirection.UP_DOWN;

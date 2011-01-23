@@ -435,6 +435,18 @@ public class Vector {
     }
 
     /**
+     * Get the length of the vector.
+     *
+     * @param pt
+     * @return distance
+     */
+    public double length() {
+        return Math.sqrt(Math.pow(x, 2) +
+                Math.pow(y, 2) +
+                Math.pow(z, 2));
+    }
+
+    /**
      * Get the distance away from a point.
      *
      * @param pt
@@ -456,6 +468,16 @@ public class Vector {
         return Math.pow(pt.x - x, 2) +
                 Math.pow(pt.y - y, 2) +
                 Math.pow(pt.z - z, 2);
+    }
+
+    /**
+     * Get the normalized vector.
+     *
+     * @param pt
+     * @return vector
+     */
+    public Vector normalize() {
+        return divide(length());
     }
 
     /**

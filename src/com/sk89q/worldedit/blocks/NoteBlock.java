@@ -35,7 +35,17 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
     private byte note;
 
     /**
-     * Construct the sign without text.
+     * Construct the note block.
+     *
+     * @param data
+     */
+    public NoteBlock() {
+        super(25);
+        this.note = 0;
+    }
+
+    /**
+     * Construct the note block.
      *
      * @param data
      */
@@ -45,7 +55,7 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
     }
 
     /**
-     * Construct the sign with text.
+     * Construct the note block.
      *
      * @param note
      */
