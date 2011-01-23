@@ -78,17 +78,21 @@ var sess = context.remember();
 
 context.checkArgs(1, 1, "<image>");
 
-var img = ImageIO.read(context.getSafeFile("drawings", argv[1]));
+var f = context.getSafeFile("drawings", argv[1]);
 
-var width = img.getWidth();
-var height = img.getHeight();
+if (f != null) {
+    var img = ImageIO.read(f);
 
-var origin = player.getBlockIn();
+    var width = img.getWidth();
+    var height = img.getHeight();
 
-for (var x = 0; x < width; x++) {
-    for (var y = 0; y < height; y++) {
-        var c = new Color(img.getRGB(x, y));
-        var data = findClosestWoolColor(c);
-        sess.setBlock(origin.add(x, 0, y), new BaseBlock(35, data));
+    var origin = player.getBlockIn();
+
+    for (var x = 0; x < width; x++) {
+        for (var y = 0; y < height; y++) {
+            var c = new Color(img.getRGB(x, y));
+            var data = findClosestWoolColor(c);
+            sess.setBlock(origin.add(x, 0, y), new BaseBlock(35, data));
+        }
     }
 }
