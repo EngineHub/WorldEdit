@@ -41,7 +41,10 @@ snapshots:
 
 navigation-wand:
     item: 345
-    max-distance: 50
+    max-distance: 100
+
+scripting:
+    timeout: 3000
 
 wand-item: 271
 shell-save-type: 
