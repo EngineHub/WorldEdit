@@ -1,6 +1,7 @@
 2.14.1:
 - Improved some error messages.
 - Fixed snapshots not supporting all block types.
+- Fixed forest generator.
 
 2.14:
 - Added full block data support (furnaces, note blocks, etc.) for Bukkit.
