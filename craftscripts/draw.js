@@ -28,7 +28,7 @@ function makeColor(r, g, b) {
 }
 
 var clothColors = [
-    makeColor(0, 0, 0), // White
+    makeColor(254, 254, 254), // White - fixed so white gets picked over pink for white pixels
     makeColor(255, 100, 0), // Orange
     makeColor(200, 0, 200), // Magenta
     makeColor(87, 132, 223), // Light blue
@@ -76,7 +76,7 @@ function findClosestWoolColor(col) {
 
 var sess = context.remember();
 
-context.checkArgs(1, 1, "<image>");
+context.checkArgs(1, 2, "<image> <orientation>");
 
 var f = context.getSafeFile("drawings", argv[1]);
 
@@ -92,7 +92,13 @@ if (f != null) {
         for (var y = 0; y < height; y++) {
             var c = new Color(img.getRGB(x, y));
             var data = findClosestWoolColor(c);
+			//added this to enable the user to create images stood up rather than flat on the ground
+			if(argv[2]=="h"){
             sess.setBlock(origin.add(x, 0, y), new BaseBlock(35, data));
+			}
+			if(argv[2]=="v"){
+            sess.setBlock(origin.add(x, height-y, 0), new BaseBlock(35, data));
+			}
         }
     }
 }
