@@ -179,7 +179,7 @@ public class WorldEdit {
         commands.put("/rbrush", "[ID] <Radius> - Switch to the replacing sphere brush tool");
 
         commands.put("/cs", "[Filename] <args...> - Execute a CraftScript");
-        commands.put("/s", "<args...> - Re-execute last CraftScript");
+        commands.put("/.s", "<args...> - Re-execute last CraftScript");
     }
 
     /**
@@ -1746,7 +1746,7 @@ public class WorldEdit {
             return true;
 
         // CraftScript
-        } else if (split[0].equalsIgnoreCase("/s")) {
+        } else if (split[0].equalsIgnoreCase("/.s")) {
             checkArgs(split, 1, -1, split[0]);
             
             String lastScript = session.getLastScript();
