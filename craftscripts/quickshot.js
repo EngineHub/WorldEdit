@@ -48,7 +48,7 @@ var pitches = {
     "gb": 12,
 }
 
-function generate(dir) {
+function generate(dir, notes) {
     var sess = context.remember();
 
     var origin = player.getBlockOn();
@@ -61,8 +61,6 @@ function generate(dir) {
     var wire = new BaseBlock(BlockID.REDSTONE_WIRE);
     
     var length = 4;
-    
-    var notes = [4, 2, 3, 5];
     
     for (var i = 0; i < notes.length; i++) {
         var note = new NoteBlock();
@@ -131,7 +129,7 @@ function main() {
     
     context.print(notes);
     
-    generate(dir);
+    generate(dir, notes);
 }
 
 main();
