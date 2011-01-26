@@ -45,7 +45,7 @@ public class WorldEditPlugin extends JavaPlugin {
     private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     
     public final ServerInterface server;
-    public final WorldEditController controller;
+    public final WorldEdit controller;
     public final WorldEditAPI api;
     
     private final LocalConfiguration config;
@@ -74,7 +74,7 @@ public class WorldEditPlugin extends JavaPlugin {
         loadConfiguration();
         
         server = new BukkitServerInterface(getServer());
-        controller = new WorldEditController(server, config);
+        controller = new WorldEdit(server, config);
         api = new WorldEditAPI(this);
 
         registerEvents();

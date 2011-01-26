@@ -33,7 +33,7 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.UnknownItemException;
-import com.sk89q.worldedit.WorldEditController;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.patterns.Pattern;
 
@@ -46,7 +46,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     private List<EditSession> editSessions = new ArrayList<EditSession>();
     private String[] args;
     
-    public CraftScriptContext(WorldEditController controller,
+    public CraftScriptContext(WorldEdit controller,
             ServerInterface server, LocalConfiguration config,
             LocalSession session, LocalPlayer player, String[] args) {
         super(controller, server, config, session, player);

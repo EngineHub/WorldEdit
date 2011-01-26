@@ -49,7 +49,7 @@ import com.sk89q.worldedit.patterns.*;
  *
  * @author sk89q
  */
-public class WorldEditController {
+public class WorldEdit {
     private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     
     private ServerInterface server;
@@ -77,7 +77,7 @@ public class WorldEditController {
      * @param server
      * @param config
      */
-    public WorldEditController(ServerInterface server, LocalConfiguration config) {
+    public WorldEdit(ServerInterface server, LocalConfiguration config) {
         this.server = server;
         this.config = config;
         
@@ -2217,7 +2217,7 @@ public class WorldEditController {
             InputStream file;
             
             if (!f.exists()) {
-                file = WorldEditController.class.getResourceAsStream(
+                file = WorldEdit.class.getResourceAsStream(
                         "craftscripts/" + filename);
                 
                 if (file == null) {

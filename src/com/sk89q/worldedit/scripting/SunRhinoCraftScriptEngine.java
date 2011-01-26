@@ -21,7 +21,7 @@ package com.sk89q.worldedit.scripting;
 
 import java.util.Map;
 import javax.script.ScriptException;
-import com.sk89q.worldedit.WorldEditController;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import sun.org.mozilla.javascript.internal.*;
 
@@ -43,7 +43,7 @@ public class SunRhinoCraftScriptEngine implements CraftScriptEngine {
             final Map<String, Object> args)
             throws ScriptException, Throwable {
         SunRhinoContextFactory factory = new SunRhinoContextFactory(timeLimit);
-        factory.initApplicationClassLoader(WorldEditController.class.getClassLoader());
+        factory.initApplicationClassLoader(WorldEdit.class.getClassLoader());
         
         try {
             return factory.call(new ContextAction() {

@@ -23,16 +23,16 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.ServerInterface;
-import com.sk89q.worldedit.WorldEditController;
+import com.sk89q.worldedit.WorldEdit;
 
 public abstract class CraftScriptEnvironment {
-    protected WorldEditController controller;
+    protected WorldEdit controller;
     protected LocalPlayer player;
     protected LocalConfiguration config;
     protected LocalSession session;
     protected ServerInterface server;
     
-    public CraftScriptEnvironment(WorldEditController controller, ServerInterface server,
+    public CraftScriptEnvironment(WorldEdit controller, ServerInterface server,
             LocalConfiguration config, LocalSession session, LocalPlayer player) {
         this.controller = controller;
         this.player = player;
