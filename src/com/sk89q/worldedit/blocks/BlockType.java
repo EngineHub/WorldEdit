@@ -55,7 +55,7 @@ public enum BlockType {
     DISPENSER(23, "Dispenser", "dispenser"),
     SANDSTONE(24, "Sandstone", "sandstone"),
     NOTE_BLOCK(25, "Note block", new String[]{"musicblock", "noteblock", "note", "music", "instrument"}),
-    CLOTH(35, "Cloth", "cloth"),
+    CLOTH(35, "Cloth", new String[]{"cloth", "wool"}),
     YELLOW_FLOWER(37, "Yellow flower", "yellowflower"),
     RED_FLOWER(38, "Red rose", new String[]{"redflower", "redrose"}),
     BROWN_MUSHROOM(39, "Brown mushroom", new String[]{"brownmushroom", "mushroom"}),
