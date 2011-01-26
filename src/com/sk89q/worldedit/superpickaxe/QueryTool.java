@@ -45,6 +45,13 @@ public class QueryTool implements SuperPickaxeMode {
         if (block instanceof MobSpawnerBlock) {
             player.printRaw("\u00A7e" + "Mob Type: "
                     + ((MobSpawnerBlock)block).getMobType());
+        } else if (block instanceof NoteBlock) {
+            player.printRaw("\u00A7e" + "Note block: "
+                    + ((NoteBlock)block).getNote());
+        } else if (block.getType() == BlockID.CLOTH) {
+            // Should never be null
+            player.printRaw("\u00A7e" + "Color: "
+                    + ClothColor.fromID(block.getData()).getName());
         }
     
         return true;
