@@ -1,3 +1,20 @@
+2.15:
+- Added roof.js by Bentech. It makes a roof over your selection.
+- Added wool as an alias for cloth.
+- Added support for specifying color names instead of data values for cloth.
+- For the brush tools and the compass, you now have to SWING with your arm.
+- Right click with the compass now toggles between /thru and /jumpto.
+- The algorithm for /thru was improved.
+- Fixed quickshot.js not reading notes correctly.
+- Fixed /butcher. (I also added necessary methods to Bukkit so you now
+    have to update that too.)
+- draw.js now supports orientation and choses white wool for white pixels
+    instead of pink! (Thanks to Dean Ward.)
+- Improved /info tool to handle more block data.
+- Changed /s to /.s to avoid conflicts.
+- Now you can use /script.js directly as a command.
+- Improved /info tool to handle more block data.
+
 2.14.2:
 - Fixed array out of bounds error with snapshots.
 
