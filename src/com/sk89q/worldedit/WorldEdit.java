@@ -2119,10 +2119,16 @@ public class WorldEdit {
             // Legacy /, command
             if (split[0].equals("/,")) {
                 split[0] = "//";
-            }   
+            // Quick script shortcut
+            } else if (split[0].matches("^.+\\.js$")) {
+                String[] newSplit = new String[split.length + 1];
+                System.arraycopy(split, 0, newSplit, 1, split.length);
+                newSplit[0] = "/cs";
+                split = newSplit;
+            }
+
             
             String searchCmd = split[0].toLowerCase();
-
             if (commands.containsKey(searchCmd)
                     || (config.noDoubleSlash && commands.containsKey("/" + searchCmd))
                     || ((searchCmd.length() < 3 || searchCmd.charAt(2) != '/')
