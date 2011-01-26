@@ -258,16 +258,6 @@ public class WorldEdit {
         String testID = args1[0];
         
         int data;
-        
-        // Parse the block data (optional)
-        try {
-            data = args1.length > 1 ? Integer.parseInt(args1[1]) : 0;
-            if (data > 15 || data < 0) {
-                data = 0;
-            }
-        } catch (NumberFormatException e) {
-            data = 0;
-        }
 
         // Attempt to parse the item ID or otherwise resolve an item/block
         // name to its numeric ID
@@ -286,6 +276,26 @@ public class WorldEdit {
         if (blockType == null) {
             throw new UnknownItemException(arg);
         }
+        
+        // Parse the block data (optional)
+        try {
+            data = args1.length > 1 ? Integer.parseInt(args1[1]) : 0;
+            if (data > 15 || data < 0) {
+                data = 0;
+            }
+        } catch (NumberFormatException e) {
+            if (blockType == BlockType.CLOTH) {
+                ClothColor col = ClothColor.lookup(args1[1]);
+                
+                if (col != null) {
+                    data = col.getID();
+                } else {
+                    throw new InvalidItemException(arg, "Unknown cloth color '" + args1[1] + "'");
+                }
+            } else {
+                throw new InvalidItemException(arg, "Unknown data value '" + args1[1] + "'");
+            }
+        }
 
         // Check if the item is allowed
         if (allAllowed || player.hasPermission("worldeditanyblock")
@@ -301,7 +311,7 @@ public class WorldEdit {
                 text[3] = args0.length > 4 ? args0[4] : "";
                 return new SignBlock(blockType.getID(), data, text);
             
-            // Alow setting mob spawn type
+            // Allow setting mob spawn type
             } else if (blockType == BlockType.MOB_SPAWNER) {
                 if (args0.length > 1) {
                     if (!server.isValidMobType(args0[1])) {
@@ -310,6 +320,19 @@ public class WorldEdit {
                     return new MobSpawnerBlock(data, args0[1]);
                 } else {
                     return new MobSpawnerBlock(data, "Pig");
+                }
+            
+            // Allow setting note
+            } else if (blockType == BlockType.NOTE_BLOCK) {
+                if (args0.length > 1) {
+                    byte note = Byte.parseByte(args0[1]);
+                    if (note < 0 || note > 24) {
+                        throw new InvalidItemException(arg, "Out of range note value: '" + args0[1] + "'");
+                    } else {
+                        return new NoteBlock(data, note);
+                    }
+                } else {
+                    return new NoteBlock(data, (byte)0);
                 }
             }
 
