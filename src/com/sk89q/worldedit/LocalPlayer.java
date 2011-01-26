@@ -88,6 +88,27 @@ public abstract class LocalPlayer {
             y++;
         }
     }
+    
+    /**
+     * Set the player on the ground.
+     * 
+     * @param searchPos
+     */
+    public void setOnGround(WorldVector searchPos) {
+        LocalWorld world = searchPos.getWorld();
+        int x = searchPos.getBlockX();
+        int y = Math.max(0, searchPos.getBlockY());
+        int z = searchPos.getBlockZ();
+
+        while (y >= 0) {
+            if (!BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
+                setPosition(new Vector(x + 0.5, y + 1, z + 0.5));
+                return;
+            }
+
+            y--;
+        }
+    }
 
     /**
      * Find a position for the player to stand that is not inside a block.
@@ -412,28 +433,45 @@ public abstract class LocalPlayer {
      * @return whether the player was pass through
      */
     public boolean passThroughForwardWall(int range) {
-        boolean foundNext = false;
         int searchDist = 0;
         TargetBlock hitBlox = new TargetBlock(this, range, 0.2);
         LocalWorld world = getPosition().getWorld();
         BlockWorldVector block;
+        boolean firstBlock = true;
+        int freeToFind = 2;
+        boolean inFree = false;
+        
         while ((block = hitBlox.getNextBlock()) != null) {
+            boolean free = BlockType.canPassThrough(world.getBlockType(block));
+            
+            if (firstBlock) {
+                firstBlock = false;
+                
+                if (!free) {
+                    freeToFind--;
+                    continue;
+                }
+            }
+            
             searchDist++;
             if (searchDist > 20) {
                 return false;
             }
-            if (BlockType.canPassThrough(world.getBlockType(block))) {
-                if (foundNext) {
-                    Vector v = new Vector(block.getX(), block.getY() - 1, block.getZ());
-                    if (BlockType.canPassThrough(world.getBlockType(v))) {
-                        setPosition(v.add(0.5, 0, 0.5));
-                        return true;
-                    }
+            
+            if (inFree != free) {
+                if (free) {
+                    freeToFind--;
                 }
-            } else {
-                foundNext = true;
             }
+            
+            if (freeToFind == 0) {
+                setOnGround(block);
+                return true;
+            }
+            
+            inFree = free;
         }
+        
         return false;
     }
 
