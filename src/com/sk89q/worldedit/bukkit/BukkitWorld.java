@@ -26,6 +26,8 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.MobSpawner;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Creature;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Location;
@@ -298,13 +300,25 @@ public class BukkitWorld extends LocalWorld {
      * Kill mobs in an area.
      * 
      * @param origin
-     * @param radius
+     * @param radius -1 for all mobs
      * @return
      */
     @Override
     public int killMobs(Vector origin, int radius) {
-        // TODO Auto-generated method stub
-        return 0;
+        int num = 0;
+        double radiusSq = Math.pow(radius, 2);
+        
+        for (LivingEntity ent : world.getLivingEntities()) {
+            if (ent instanceof Creature) {
+                if (radius == -1
+                        || origin.distanceSq(BukkitUtil.toVector(ent.getLocation())) <= radiusSq) {
+                    ent.setHealth(0);
+                    num++;
+                }
+            }
+        }
+        
+        return num;
     }
     
     private Location toLocation(Vector pt) {
