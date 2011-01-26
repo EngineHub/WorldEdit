@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.bukkit;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerItemEvent;
@@ -33,6 +35,17 @@ public class WorldEditPlayerListener extends PlayerListener {
      * Plugin.
      */
     private WorldEditPlugin plugin;
+    
+    /**
+     * Called when a player plays an animation, such as an arm swing
+     * 
+     * @param event Relevant event details
+     */
+    public void onPlayerAnimation(PlayerAnimationEvent event) {
+        if (event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
+            plugin.controller.handleArmSwing(wrapPlayer(event.getPlayer()));
+        }
+    }
     
     /**
      * Construct the object;
@@ -71,7 +84,7 @@ public class WorldEditPlayerListener extends PlayerListener {
      * @param event Relevant event details
      */
     public void onPlayerItem(PlayerItemEvent event) {
-        if (plugin.controller.handleArmSwing(wrapPlayer(event.getPlayer()))) {
+        if (plugin.controller.handleRightClick(wrapPlayer(event.getPlayer()))) {
             event.setCancelled(true);
         }
     }

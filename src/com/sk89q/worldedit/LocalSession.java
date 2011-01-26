@@ -32,6 +32,11 @@ import com.sk89q.worldedit.regions.CuboidRegion;
  * @author sk89q
  */
 public class LocalSession {
+    public enum CompassMode {
+        JUMPTO,
+        THRU
+    }
+    
     public static final int MAX_HISTORY_SIZE = 15;
     
     private boolean placeAtPos1 = false;
@@ -49,6 +54,7 @@ public class LocalSession {
     private boolean useInventory;
     private Snapshot snapshot;
     private String lastScript;
+    private CompassMode compassMode = CompassMode.JUMPTO;
 
     /**
      * Clear history.
@@ -426,5 +432,19 @@ public class LocalSession {
      */
     public void setLastScript(String lastScript) {
         this.lastScript = lastScript;
+    }
+
+    /**
+     * @return the compassMode
+     */
+    public CompassMode getCompassMode() {
+        return compassMode;
+    }
+
+    /**
+     * @param compassMode the compassMode to set
+     */
+    public void setCompassMode(CompassMode compassMode) {
+        this.compassMode = compassMode;
     }
 }

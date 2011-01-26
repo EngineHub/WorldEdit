@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import java.io.*;
 import javax.script.ScriptException;
 import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.LocalSession.CompassMode;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
@@ -1952,14 +1953,55 @@ public class WorldEditController {
                 return true;
             }
         } else if (player.getItemInHand() == config.navigationWand
-                && config.navigationWandMaxDistance > 0
-                && player.hasPermission("jumpto")) {
-            WorldVector pos = player.getSolidBlockTrace(config.navigationWandMaxDistance);
-            if (pos != null) {
-                player.findFreePosition(pos);
-            } else {
-                player.printError("No block in sight (or too far)!");
+                && config.navigationWandMaxDistance > 0) {
+            CompassMode mode = session.getCompassMode();
+            
+            if (player.hasPermission("jumpto") && mode == CompassMode.JUMPTO) {
+                WorldVector pos = player.getSolidBlockTrace(config.navigationWandMaxDistance);
+                if (pos != null) {
+                    player.findFreePosition(pos);
+                } else {
+                    player.printError("No block in sight (or too far)!");
+                }
+            } else if (mode == CompassMode.THRU) { // Permission is implied
+                if (!player.passThroughForwardWall(40)) {
+                    player.printError("Nothing to pass through!");
+                }
             }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Called on right click (not on a block).
+     * 
+     * @param player
+     * @return 
+     */
+    public boolean handleRightClick(LocalPlayer player) {
+        LocalSession session = getSession(player);
+        
+        if (player.getItemInHand() == config.navigationWand) {
+            CompassMode mode = session.getCompassMode();
+            
+            if (mode == CompassMode.JUMPTO) {
+                if (player.hasPermission("thru")) {
+                    session.setCompassMode(CompassMode.THRU);
+                    player.print("Switched to /thru mode.");
+                } else {
+                    player.printError("You don't have permission for /thru.");
+                }
+            } else {
+                if (player.hasPermission("jumpto")) {
+                    session.setCompassMode(CompassMode.JUMPTO);
+                    player.print("Switched to /jumpto mode.");
+                } else {
+                    player.printError("You don't have permission for /jumpto.");
+                }
+            }
+            
+            return true;
         }
         
         return false;

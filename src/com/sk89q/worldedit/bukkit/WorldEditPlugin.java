@@ -90,6 +90,8 @@ public class WorldEditPlugin extends JavaPlugin {
     private void registerEvents() {        
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT,
                 playerListener, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ANIMATION,
+                playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ITEM,
                 playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND,
