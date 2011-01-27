@@ -2120,10 +2120,11 @@ public class WorldEdit {
             if (split[0].equals("/,")) {
                 split[0] = "//";
             // Quick script shortcut
-            } else if (split[0].matches("^.+\\.js$")) {
+            } else if (split[0].matches("^/[^/].*\\.js$")) {
                 String[] newSplit = new String[split.length + 1];
                 System.arraycopy(split, 0, newSplit, 1, split.length);
                 newSplit[0] = "/cs";
+                newSplit[1] = newSplit[1].substring(1);
                 split = newSplit;
             }
 
