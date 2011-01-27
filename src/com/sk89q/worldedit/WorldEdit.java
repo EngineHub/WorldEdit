@@ -981,8 +981,8 @@ public class WorldEdit {
         } else if (split[0].equalsIgnoreCase("//load")) {
             checkArgs(split, 1, 1, split[0]);
             String filename = split[1].replace("\0", "") + ".schematic";
-            File dir = new File("schematics");
-            File f = new File("schematics", filename);
+            File dir = new File(config.getWorkingDirectory(), "schematics");
+            File f = new File(new File(config.getWorkingDirectory(), "schematics"), filename);
 
             if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+$")) {
                 player.printError("Valid characters: A-Z, a-z, 0-9, spaces, "
@@ -997,7 +997,7 @@ public class WorldEdit {
                 if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
                     player.printError("Schematic could not read or it does not exist.");
                 } else {
-                    session.setClipboard(CuboidClipboard.loadSchematic(filePath));
+                    session.setClipboard(CuboidClipboard.loadSchematic(f));
                     logger.log(Level.INFO, player.getName() + " loaded " + filePath);
                     player.print(filename + " loaded. Paste it with //paste");
                 }
@@ -1020,8 +1020,8 @@ public class WorldEdit {
                 return true;
             }
             
-            File dir = new File("schematics");
-            File f = new File("schematics", filename);
+            File dir = new File(config.getWorkingDirectory(), "schematics");
+            File f = new File(new File(config.getWorkingDirectory(), "schematics"), filename);
 
             if (!dir.exists()) {
                 if (!dir.mkdir()) {
@@ -1043,7 +1043,7 @@ public class WorldEdit {
                         parent.mkdirs();
                     }
 
-                    session.getClipboard().saveSchematic(filePath);
+                    session.getClipboard().saveSchematic(f);
                     logger.log(Level.INFO, player.getName() + " saved " + filePath);
                     player.print(filename + " saved.");
                 }
@@ -2211,7 +2211,7 @@ public class WorldEdit {
      */
     public void runScript(LocalPlayer player, String filename, String[] args)
             throws WorldEditException {
-        File dir = new File("craftscripts");
+        File dir = new File(config.getWorkingDirectory(), "craftscripts");
         File f = new File(dir, filename);
 
         if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$")) {

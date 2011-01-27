@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,4 +62,13 @@ public abstract class LocalConfiguration {
      * Loads the configuration.
      */
     public abstract void load();
+    
+    /**
+     * Get the working directory to work from.
+     * 
+     * @return
+     */
+    public File getWorkingDirectory() {
+        return new File(".");
+    }
 }

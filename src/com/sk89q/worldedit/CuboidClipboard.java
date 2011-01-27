@@ -260,7 +260,7 @@ public class CuboidClipboard {
      * @throws IOException
      * @throws DataException
      */
-    public void saveSchematic(String path) throws IOException, DataException {
+    public void saveSchematic(File path) throws IOException, DataException {
         int width = getWidth();
         int height = getHeight();
         int length = getLength();
@@ -342,7 +342,7 @@ public class CuboidClipboard {
      * @throws DataException
      * @throws IOException
      */
-    public static CuboidClipboard loadSchematic(String path)
+    public static CuboidClipboard loadSchematic(File path)
             throws DataException, IOException {
         FileInputStream stream = new FileInputStream(path);
         NBTInputStream nbtStream = new NBTInputStream(stream);
