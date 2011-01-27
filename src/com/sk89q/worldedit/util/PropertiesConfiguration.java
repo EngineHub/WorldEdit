@@ -80,13 +80,13 @@ public class PropertiesConfiguration extends LocalConfiguration {
         registerHelp = getBool("register-help", registerHelp);
         wandItem = getInt("wand-item", wandItem);
         superPickaxeDrop = getBool("super-pickaxe-drop-items", superPickaxeDrop);
-        superPickaxeManyDrop = getBool("super-pickaxe-drop-many-items", superPickaxeManyDrop);
+        superPickaxeManyDrop = getBool("super-pickaxe-many-drop-items", superPickaxeManyDrop);
         noDoubleSlash = getBool("no-double-slash", noDoubleSlash);
         useInventory = getBool("use-inventory", useInventory);
         useInventoryOverride = getBool("use-inventory-override", useInventoryOverride);
         navigationWand = getInt("nav-wand-item", navigationWand);
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);
-        scriptTimeout = getInt("script-timeout", scriptTimeout);
+        scriptTimeout = getInt("scripting-timeout", scriptTimeout);
         
         String snapshotsDir = getString("snapshots-dir", "");
         if (!snapshotsDir.trim().equals("")) {
