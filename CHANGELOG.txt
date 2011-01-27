@@ -1,3 +1,8 @@
+2.15.1:
+- Fixed /script.js shortcut not stripping forward slashes.
+- Changed some internal working directory handling code to better support
+    single player modifications.
+
 2.15:
 - Added roof.js by Bentech. It makes a roof over your selection.
 - Added wool as an alias for cloth.
