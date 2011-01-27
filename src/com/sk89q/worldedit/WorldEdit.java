@@ -62,8 +62,8 @@ public class WorldEdit {
      * without any WorldEdit abilities or never use WorldEdit in a session will
      * not have a session object generated for them.
      */
-    private HashMap<LocalPlayer,LocalSession> sessions =
-            new HashMap<LocalPlayer,LocalSession>();
+    private HashMap<String,LocalSession> sessions =
+            new HashMap<String,LocalSession>();
     
     /**
      * List of commands. These are checked when the command event is called, so
@@ -189,8 +189,8 @@ public class WorldEdit {
      * @return
      */
     public LocalSession getSession(LocalPlayer player) {
-        if (sessions.containsKey(player)) {
-            return sessions.get(player);
+        if (sessions.containsKey(player.getName())) {
+            return sessions.get(player.getName());
         }
         
         LocalSession session = new LocalSession();
@@ -223,7 +223,7 @@ public class WorldEdit {
                         || !player.hasPermission("worldeditunlimited")));
         
         // Remember the session
-        sessions.put(player, session);
+        sessions.put(player.getName(), session);
         
         return session;
     }
@@ -235,7 +235,7 @@ public class WorldEdit {
      * @return
      */
     public boolean hasSession(LocalPlayer player) {
-        return sessions.containsKey(player);
+        return sessions.containsKey(player.getName());
     }
 
     /**
@@ -1866,7 +1866,7 @@ public class WorldEdit {
      * @param player
      */
     public void removeSession(LocalPlayer player) {
-        sessions.remove(player);
+        sessions.remove(player.getName());
     }
 
     /**
