@@ -51,7 +51,7 @@ public class BukkitConfiguration extends LocalConfiguration {
         maxSuperPickaxeSize = Math.max(1, config.getInt(
                 "limits.max-super-pickaxe-size", maxSuperPickaxeSize));
         registerHelp = true;
-        logComands = config.getBoolean("logging.log-commands", logComands);
+        logCommands = config.getBoolean("logging.log-commands", logCommands);
         superPickaxeDrop = config.getBoolean("super-pickaxe.drop-items",
                 superPickaxeDrop);
         superPickaxeManyDrop = config.getBoolean(

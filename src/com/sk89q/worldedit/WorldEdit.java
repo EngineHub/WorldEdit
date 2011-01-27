@@ -464,7 +464,7 @@ public class WorldEdit {
             LocalSession session, EditSession editSession, String[] split)
             throws WorldEditException
     {
-        if (config.logComands) {
+        if (config.logCommands) {
             logger.log(Level.INFO, "WorldEdit: " + player.getName() + ": "
                     + StringUtil.joinString(split, " "));
         }
@@ -1532,7 +1532,7 @@ public class WorldEdit {
             FileOutputStream out = null;
 
             if (config.shellSaveType == null) {
-                player.printError("shell-save-type has to be configured in worldedit.properties");
+                player.printError("Shell script type must be configured: 'bat' or 'bash' expected.");
             } else if (config.shellSaveType.equalsIgnoreCase("bat")) {
                 try {
                     out = new FileOutputStream("worldedit-delchunks.bat");
@@ -1593,7 +1593,7 @@ public class WorldEdit {
                     }
                 }
             } else {
-                player.printError("Unknown shell script save type. 'bat' or 'bash' expected.");
+                player.printError("Shell script type must be configured: 'bat' or 'bash' expected.");
             }
 
             return true;

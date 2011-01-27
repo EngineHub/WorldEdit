@@ -41,12 +41,12 @@ public abstract class LocalConfiguration {
     public Set<Integer> disallowedBlocks = new HashSet<Integer>();
     public int defaultChangeLimit = -1;
     public int maxChangeLimit = -1;
-    public String shellSaveType = null;
+    public String shellSaveType = "";
     public SnapshotRepository snapshotRepo = null;
     public int maxRadius = -1;
     public int maxSuperPickaxeSize = 5;
     public int maxBrushRadius = 6;
-    public boolean logComands = false;
+    public boolean logCommands = false;
     public boolean registerHelp = true;
     public int wandItem = 271;
     public boolean superPickaxeDrop = true;
