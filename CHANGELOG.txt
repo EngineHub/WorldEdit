@@ -1,5 +1,5 @@
 2.15.2:
-- Minor additions for easy of integration.
+- Minor additions for ease of integration.
 
 2.15.1:
 - Fixed /script.js shortcut not stripping forward slashes.
