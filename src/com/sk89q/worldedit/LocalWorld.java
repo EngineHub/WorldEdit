@@ -157,12 +157,14 @@ public abstract class LocalWorld {
             }
         }
         else if (type == 16) { dropItem(pt, new BaseItemStack(263)); } // Coal ore
+        else if (type == 17) { dropItem(pt, new BaseItemStack(17, 1, (short)getBlockData(pt))); } // Log
         else if (type == 18) { // Leaves
             if (random.nextDouble() > 0.95) {
                 dropItem(pt, new BaseItemStack(6));
             }
         }
         else if (type == 20) { } // Glass
+        else if (type == 21) { dropItem(pt, new BaseItemStack(351, 1, (short)4), (random.nextInt(5)+4)); }
         else if (type == 35) { dropItem(pt, new BaseItemStack(35, 1, (short)getBlockData(pt))); } // Cloth
         else if (type == 43) { dropItem(pt, new BaseItemStack(44)); } // Double step
         else if (type == 47) { } // Bookshelves
@@ -179,8 +181,8 @@ public abstract class LocalWorld {
         else if (type == 67) { dropItem(pt, new BaseItemStack(4)); } // Cobblestone stairs
         else if (type == 68) { dropItem(pt, new BaseItemStack(323)); } // Wall sign
         else if (type == 71) { dropItem(pt, new BaseItemStack(330)); } // Iron door
-        else if (type == 73) { dropItem(pt, new BaseItemStack(331), 4); } // Redstone ore
-        else if (type == 74) { dropItem(pt, new BaseItemStack(331), 4); } // Glowing redstone ore
+        else if (type == 73) { dropItem(pt, new BaseItemStack(331), (random.nextInt(2)+4)); } // Redstone ore
+        else if (type == 74) { dropItem(pt, new BaseItemStack(331), (random.nextInt(2)+4)); } // Glowing redstone ore
         else if (type == 75) { dropItem(pt, new BaseItemStack(76)); } // Redstone torch
         else if (type == 78) { } // Snow
         else if (type == 79) { } // Ice
