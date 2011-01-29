@@ -101,7 +101,7 @@ commands:
     /faces:
         description: Build the walls, ceiling, and roof of a selection
         usage: /<command> <block>
-        aliases: /outline
+        aliases: ['/outline']
     /smooth:
         description: Smooth the elevation in the selection
         usage: /<command> [iterations]
@@ -174,7 +174,7 @@ commands:
     /:
         description: Toggle the super pickaxe pickaxe function
         usage: /<command> 
-        aliases: ,
+        aliases: [',']
     area:
         description: Enable the area super pickaxe pickaxe mode
         usage: /<command> <radius>
@@ -238,7 +238,7 @@ commands:
     ex:
         description: Extinguish nearby fire
         usage: /<command> [radius]
-        aliases: ext, extinguish
+        aliases: ['ext', 'extinguish']
     butcher:
         description: Kill all or nearby mobs
         usage: /<command> [radius]

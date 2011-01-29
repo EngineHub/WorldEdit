@@ -67,6 +67,29 @@ public class StringUtil {
      * @param initialIndex
      * @return
      */
+    public static String joinQuotedString(String[] str, String delimiter,
+            int initialIndex, String quote) {
+        if (str.length == 0) {
+            return "";
+        }
+        StringBuilder buffer = new StringBuilder();
+        buffer.append(quote);
+        buffer.append(str[initialIndex]);
+        buffer.append(quote);
+        for (int i = initialIndex + 1; i < str.length; i++) {
+            buffer.append(delimiter).append(quote).append(str[i]).append(quote);
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * Join an array of strings into a string.
+     * 
+     * @param str
+     * @param delimiter
+     * @param initialIndex
+     * @return
+     */
     public static String joinString(String[] str, String delimiter) {
         return joinString(str, delimiter, 0);
     }

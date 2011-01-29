@@ -149,8 +149,9 @@ public class DocumentationPrinter {
                         + (cmd.flags().length() > 0 ? "[-" + cmd.flags() + "] " : "")
                         + cmd.usage());
                 if (cmd.aliases().length > 1) {
-                    stream.println("        aliases: "
-                            + StringUtil.joinString(cmd.aliases(), ", ", 1));
+                    stream.println("        aliases: ["
+                            + StringUtil.joinQuotedString(cmd.aliases(), ", ", 1, "'")
+                            + "]");
                 }
             }
         }
