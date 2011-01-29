@@ -685,7 +685,7 @@ public class WorldEdit {
                 String[] newSplit = new String[split.length + 1];
                 System.arraycopy(split, 0, newSplit, 1, split.length);
                 newSplit[0] = "cs";
-                newSplit[1] = newSplit[1].substring(1);
+                newSplit[1] = newSplit[1];
                 split = newSplit;
             }
             
