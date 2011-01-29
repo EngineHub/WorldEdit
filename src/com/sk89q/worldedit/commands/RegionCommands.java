@@ -174,7 +174,7 @@ public class RegionCommands {
 
     @Command(
         aliases = {"/move"},
-        usage = "[count] [direction] [leave-id] ",
+        usage = "[count] [direction] [leave-id]",
         desc = "Move the contents of the selection",
         min = 0,
         max = 3
@@ -204,7 +204,8 @@ public class RegionCommands {
 
     @Command(
         aliases = {"/stack"},
-        usage = "[count] [direction] ",
+        usage = "[count] [direction]",
+        flags = "a",
         desc = "Repeat the contents of the selection",
         min = 0,
         max = 2
@@ -219,7 +220,7 @@ public class RegionCommands {
                 args.argsLength() > 1 ? args.getString(1).toLowerCase() : "me");
 
         int affected = editSession.stackCuboidRegion(session.getRegion(),
-                dir, count, true);
+                dir, count, !args.hasFlag('a'));
         player.print(affected + " blocks changed. Undo with //undo");
     }
 }
