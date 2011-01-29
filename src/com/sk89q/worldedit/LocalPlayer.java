@@ -542,7 +542,7 @@ public abstract class LocalPlayer {
      * @return
      */
     public boolean canDestroyBedrock() {
-        return hasPermission("worldeditbedrock");
+        return hasPermission("worldedit.bedrock");
     }
 
     /**

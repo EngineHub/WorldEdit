@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 import com.sk89q.worldedit.DisallowedItemException;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.InsufficientArgumentsException;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
@@ -35,6 +34,7 @@ import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.UnknownItemException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.commands.InsufficientArgumentsException;
 import com.sk89q.worldedit.patterns.Pattern;
 
 /**

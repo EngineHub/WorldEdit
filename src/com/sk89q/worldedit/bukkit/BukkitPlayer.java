@@ -102,7 +102,7 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public boolean hasPermission(String perm) {
-        return plugin.hasPermission(player, "/" + perm);
+        return plugin.hasPermission(player, perm);
     }
 
     @Override

@@ -30,15 +30,12 @@ import java.util.logging.Logger;
 import java.io.*;
 import javax.script.ScriptException;
 import com.sk89q.util.StringUtil;
+import com.sk89q.util.commands.CommandContext;
 import com.sk89q.worldedit.LocalSession.CompassMode;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.*;
-import com.sk89q.worldedit.data.*;
-import com.sk89q.worldedit.filters.*;
+import com.sk89q.worldedit.commands.*;
 import com.sk89q.worldedit.scripting.*;
-import com.sk89q.worldedit.snapshots.*;
-import com.sk89q.worldedit.superpickaxe.*;
-import com.sk89q.worldedit.regions.*;
 import com.sk89q.worldedit.patterns.*;
 
 /**
@@ -50,10 +47,22 @@ import com.sk89q.worldedit.patterns.*;
  * @author sk89q
  */
 public class WorldEdit {
-    private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+    public static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     
+    /**
+     * Interface to the server.
+     */
     private ServerInterface server;
+    
+    /**
+     * Configuration. This is a subclass.
+     */
     private LocalConfiguration config;
+    
+    /**
+     * List of commands.
+     */
+    private CommandsManager commands;
     
     /**
      * Stores a list of WorldEdit sessions, keyed by players' names. Sessions
@@ -66,12 +75,6 @@ public class WorldEdit {
             new HashMap<String,LocalSession>();
     
     /**
-     * List of commands. These are checked when the command event is called, so
-     * the list must know about every command.
-     */
-    private HashMap<String,String> commands = new HashMap<String,String>();
-    
-    /**
      * Construct an instance of the plugin
      * 
      * @param server
@@ -81,105 +84,20 @@ public class WorldEdit {
         this.server = server;
         this.config = config;
         
-        populateCommands();
-    }
-    
-    /**
-     * Builds the list of commands.
-     */
-    private void populateCommands() {
-        commands.put("//limit", "[Num] - See documentation");
-        commands.put("/toggleplace", "Toggle placing at pos #1");
+        commands = new CommandsManager();
 
-        commands.put("//undo", "Undo");
-        commands.put("//redo", "Redo");
-        commands.put("/clearhistory", "Clear history");
-        
-        commands.put("//pos1", "Set editing position #1");
-        commands.put("//pos2", "Set editing position #2");
-        commands.put("//hpos1", "Trace editing position #1");
-        commands.put("//hpos2", "Trace editing position #2");
-        commands.put("//chunk", "Select the chunk that you are in");
-        commands.put("//wand", "Gives you the \"edit wand\"");
-        commands.put("/toggleeditwand", "Toggles edit wand selection");
-        commands.put("//expand", "[Num] <Dir> - Expands the selection");
-        commands.put("//contract", "[Num] <Dir> - Contracts the selection");
-        commands.put("//shift", "[Num] <Dir> - Shift the selection");
-        commands.put("//size", "Get size of selected region");
-        commands.put("//count", "[BlockIDs] - Count the number of blocks in the region");
-        commands.put("//distr", "Get the top block distribution");
-
-        commands.put("//set", "[ID] - Set all blocks inside region");
-        commands.put("//replace", "<FromID> [ToID] - Replace all existing blocks inside region");
-        commands.put("//overlay", "[ID] - Overlay the area one layer");
-        commands.put("//walls", "[ID] - Build walls");
-        commands.put("//outline", "[ID] - Outline the region with blocks");
-        commands.put("//move", "<Count> <Dir> <LeaveID> - Move the selection");
-        commands.put("//stack", "<Count> <Dir> - Stacks the selection");
-        commands.put("//smooth", "<Iterations> - Smooth an area's heightmap");
-
-        commands.put("//copy", "Copies the currently selected region");
-        commands.put("//cut", "Cuts the currently selected region");
-        commands.put("//paste", "<AtOrigin?> - Pastes the clipboard");
-        commands.put("//rotate", "[Angle] - Rotate the clipboard");
-        commands.put("//flip", "<Dir> - Flip the clipboard");
-        commands.put("//load", "[Filename] - Load .schematic into clipboard");
-        commands.put("//save", "[Filename] - Save clipboard to .schematic");
-        commands.put("/clearclipboard", "Clear clipboard");
-
-        commands.put("//hcyl", "[ID] [Radius] <Height> - Create a vertical hollow cylinder");
-        commands.put("//cyl", "[ID] [Radius] <Height> - Create a vertical cylinder");
-        commands.put("//sphere", "[ID] [Radius] <Raised?> - Create a sphere");
-        commands.put("//hsphere", "[ID] [Radius] <Raised?> - Create a hollow sphere");
-        commands.put("/forestgen", "<Size> <Density> - Make Notch tree forest");
-        commands.put("/pinegen", "<Size> <Density> - Make an ugly pine tree forest");
-        commands.put("/pumpkins", "<Size> - Make a pumpkin forest");
-
-        commands.put("//fill", "[ID] [Radius] <Depth> - Fill a hole");
-        commands.put("//fillr", "[ID] [Radius] - Fill a hole fully recursively");
-        commands.put("/fixwater", "[Radius] - Level nearby pools of water");
-        commands.put("/fixlava", "[Radius] - Level nearby pools of lava");
-        commands.put("//drain", "[Radius] - Drain nearby water/lava pools");
-        commands.put("/removeabove", "<Size> <Height> - Remove blocks above head");
-        commands.put("/removebelow", "<Size> <Height> - Remove blocks below position");
-        commands.put("/removenear", "<ID> <Size> - Remove blocks near you");
-        commands.put("/replacenear", "<Size> <FromID> [ToID] - Replace all existing blocks nearby");
-        commands.put("/snow", "<Radius> - Simulate snow cover");
-        commands.put("/thaw", "<Radius> - Unthaw/remove snow");
-        commands.put("/butcher", "<Radius> - Kill nearby mobs");
-        commands.put("/ex", "[Size] - Extinguish fires");
-
-        commands.put("/chunkinfo", "Get the filename of the chunk that you are in");
-        commands.put("/listchunks", "Print a list of used chunks");
-        commands.put("/delchunks", "Generate a shell script to delete chunks");
-
-        commands.put("/unstuck", "Go up to the first free spot");
-        commands.put("/ascend", "Go up one level");
-        commands.put("/descend", "Go down one level");
-        commands.put("/jumpto", "Jump to the block that you are looking at");
-        commands.put("/thru", "Go through the wall that you are looking at");
-        commands.put("/ceil", "<Clearance> - Get to the ceiling");
-        commands.put("/up", "<Distance> - Go up some distance");
-
-        commands.put("/listsnapshots", "<Num> - List the 5 newest snapshots");
-        commands.put("//use", "[SnapshotID] - Use a particular snapshot");
-        commands.put("//restore", "<SnapshotID> - Restore a particular snapshot");
-
-        commands.put("//", "Toggles super pick axe.");
-        commands.put("/single", "Switch to single block super pickaxe mode");
-        commands.put("/area", "[Range] - Switch to area super pickaxe mode");
-        commands.put("/recur", "[Range] - Switch to recursive super pickaxe mode");
-        commands.put("/none", "Switch to no tool");
-        commands.put("/info", "Switch to the info tool");
-        commands.put("/tree", "Switch to the tree tool");
-        commands.put("/pinetree", "Switch to the pine tree tool");
-        commands.put("/bigtree", "Switch to the big tree tool");
-        commands.put("/repl", "[ID] - Switch to the block replacer tool");
-        commands.put("/brush", "[ID] <Radius> <NoReplace?> - Switch to the sphere brush tool");
-        commands.put("/rbrush", "[ID] <Radius> - Switch to the replacing sphere brush tool");
-
-        commands.put("/cs", "[Filename] <args...> - Execute a CraftScript");
-        commands.put("/.s", "<args...> - Re-execute last CraftScript");
+        commands.register(ChunkCommands.class);
+        commands.register(ClipboardCommands.class);
+        commands.register(GeneralCommands.class);
+        commands.register(GenerationCommands.class);
+        commands.register(HistoryCommands.class);
+        commands.register(NavigationCommands.class);
+        commands.register(RegionCommands.class);
+        commands.register(ScriptingCommands.class);
+        commands.register(SelectionCommands.class);
+        commands.register(SnapshotCommands.class);
+        commands.register(SuperPickaxeCommands.class);
+        commands.register(UtilityCommands.class);
     }
 
     /**
@@ -198,7 +116,7 @@ public class WorldEdit {
         // Set the limit on the number of blocks that an operation can
         // change at once, or don't if the player has an override or there
         // is no limit. There is also a default limit
-        if (!player.hasPermission("worldeditnomax")
+        if (!player.hasPermission("worldedit.limit.unrestricted")
                 && config.maxChangeLimit > -1) {
             
             // If the default limit is infinite but there is a maximum
@@ -220,7 +138,7 @@ public class WorldEdit {
         // doesn't have an override
         session.setUseInventory(config.useInventory
                 && (!config.useInventoryOverride
-                        || !player.hasPermission("worldeditunlimited")));
+                        || !player.hasPermission("worldedit.inventory.unrestricted")));
         
         // Remember the session
         sessions.put(player.getName(), session);
@@ -298,7 +216,7 @@ public class WorldEdit {
         }
 
         // Check if the item is allowed
-        if (allAllowed || player.hasPermission("worldeditanyblock")
+        if (allAllowed || player.hasPermission("worldedit.anyblock")
                 || !config.disallowedBlocks.contains(blockType.getID())) {
             
             // Allow special sign text syntax
@@ -414,1358 +332,15 @@ public class WorldEdit {
     }
 
     /**
-     * Checks to make sure that there are enough but not too many arguments.
-     *
-     * @param args
-     * @param min
-     * @param max -1 for no maximum
-     * @param cmd command name
-     * @throws InsufficientArgumentsException
-     */
-    private void checkArgs(String[] args, int min, int max, String cmd)
-            throws InsufficientArgumentsException {
-        if (args.length <= min || (max != -1 && args.length - 1 > max)) {
-            if (commands.containsKey(cmd)) {
-                throw new InsufficientArgumentsException(cmd + " usage: " +
-                        commands.get(cmd));
-            } else {
-                throw new InsufficientArgumentsException("Invalid number of arguments");
-            }
-        }
-    }
-
-    /**
      * Checks to see if the specified radius is within bounds.
      *
      * @param radius
      * @throws MaxRadiusException
      */
-    private void checkMaxRadius(int radius) throws MaxRadiusException {
+    public void checkMaxRadius(int radius) throws MaxRadiusException {
         if (config.maxRadius > 0 && radius > config.maxRadius) {
             throw new MaxRadiusException();
         }
-    }
-
-    /**
-     * The main meat of command processing.
-     * 
-     * @param player
-     * @param editPlayer
-     * @param session
-     * @param editSession
-     * @param split
-     * @return
-     * @throws UnknownItemException
-     * @throws IncompleteRegionException
-     * @throws InsufficientArgumentsException
-     * @throws DisallowedItemException
-     */
-    private boolean performCommand(LocalPlayer player,
-            LocalSession session, EditSession editSession, String[] split)
-            throws WorldEditException
-    {
-        if (config.logCommands) {
-            logger.log(Level.INFO, "WorldEdit: " + player.getName() + ": "
-                    + StringUtil.joinString(split, " "));
-        }
-        
-        LocalWorld world = player.getPosition().getWorld();
-
-        // Jump to the first free position
-        if (split[0].equalsIgnoreCase("/unstuck")) {
-            checkArgs(split, 0, 0, split[0]);
-            player.print("There you go!");
-            player.findFreePosition();
-            return true;
-
-        // Ascend a level
-        } else if(split[0].equalsIgnoreCase("/ascend")) {
-            checkArgs(split, 0, 0, split[0]);
-            if (player.ascendLevel()) {
-                player.print("Ascended a level.");
-            } else {
-                player.printError("No free spot above you found.");
-            }
-            return true;
-
-        // Descend a level
-        } else if(split[0].equalsIgnoreCase("/descend")) {
-            checkArgs(split, 0, 0, split[0]);
-            if (player.descendLevel()) {
-                player.print("Descended a level.");
-            } else {
-                player.printError("No free spot below you found.");
-            }
-            return true;
-
-        // Jump to the block in sight
-        } else if (split[0].equalsIgnoreCase("/jumpto")) {
-            checkArgs(split, 0, 0, split[0]);
-            WorldVector pos = player.getSolidBlockTrace(300);
-            if (pos != null) {
-                player.findFreePosition(pos);
-                player.print("Poof!");
-            } else {
-                player.printError("No block in sight!");
-            }
-            return true;
-
-        // Go through a wall
-        } else if (split[0].equalsIgnoreCase("/thru")) {
-            checkArgs(split, 0, 0, split[0]);
-            if (player.passThroughForwardWall(6)) {
-                player.print("Whoosh!");
-            } else {
-                player.printError("No free spot ahead of you found.");
-            }
-            return true;
-
-        // Go to the ceiling
-        } else if (split[0].equalsIgnoreCase("/ceil")) {
-            checkArgs(split, 0, 1, split[0]);
-            int clearence = split.length > 1 ?
-                Math.max(0, Integer.parseInt(split[1])) : 0;
-
-            if (player.ascendToCeiling(clearence)) {
-                player.print("Whoosh!");
-            } else {
-                player.printError("No free spot above you found.");
-            }
-            return true;
-
-        // Go up
-        } else if (split[0].equalsIgnoreCase("/up")) {
-            checkArgs(split, 1, 1, split[0]);
-            int distance = Integer.parseInt(split[1]);
-
-            if (player.ascendUpwards(distance)) {
-                player.print("Whoosh!");
-            } else {
-                player.printError("You would hit something above you.");
-            }
-            return true;
-
-        // Set edit position #1
-        } else if (split[0].equalsIgnoreCase("//pos1")) {
-            checkArgs(split, 0, 0, split[0]);
-            session.setPos1(player.getBlockIn());
-            if (session.isRegionDefined()) {
-                player.print("First position set to " + player.getBlockIn()
-                        + " (" + session.getRegion().getSize() + ").");
-            } else {
-                player.print("First position set to " + player.getBlockIn() + ".");
-            }
-            return true;
-
-        // Set edit position #2
-        } else if (split[0].equalsIgnoreCase("//pos2")) {
-            checkArgs(split, 0, 0, split[0]);
-            session.setPos2(player.getBlockIn());
-            if (session.isRegionDefined()) {
-                player.print("Second position set to " + player.getBlockIn()
-                        + " (" + session.getRegion().getSize() + ").");
-            } else {
-                player.print("Second position set to " + player.getBlockIn() + ".");
-            }
-            return true;
-
-        // Trace edit position #1
-        } else if (split[0].equalsIgnoreCase("//hpos1")) {
-            checkArgs(split, 0, 0, split[0]);
-            Vector pos = player.getBlockTrace(300);
-            if (pos != null) {
-                session.setPos1(pos);
-                if (session.isRegionDefined()) {
-                    player.print("First position set to " + pos
-                            + " (" + session.getRegion().getSize() + ").");
-                } else {
-                    player.print("First position set to " + pos.toString() + " .");
-                }
-            } else {
-                player.printError("No block in sight!");
-            }
-            return true;
-
-        // Trace edit position #2
-        } else if (split[0].equalsIgnoreCase("//hpos2")) {
-            checkArgs(split, 0, 0, split[0]);
-            Vector pos = player.getBlockTrace(300);
-            if (pos != null) {
-                session.setPos2(pos);
-                if (session.isRegionDefined()) {
-                    player.print("Second position set to " + pos
-                            + " (" + session.getRegion().getSize() + ").");
-                } else {
-                    player.print("Second position set to " + pos.toString() + " .");
-                }
-            } else {
-                player.printError("No block in sight!");
-            }
-            return true;
-
-        // Select the chunk
-        } else if(split[0].equalsIgnoreCase("//chunk")) {
-            checkArgs(split, 0, 0, split[0]);
-
-            Vector2D min2D = ChunkStore.toChunk(player.getBlockIn());
-            Vector min = new Vector(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
-            Vector max = min.add(15, 127, 15);
-
-            session.setPos1(min);
-            session.setPos2(max);
-
-            player.print("Chunk selected: "
-                    + min2D.getBlockX() + ", " + min2D.getBlockZ());
-
-            return true;
-
-        // Edit wand
-        } else if (split[0].equalsIgnoreCase("//wand")) {
-            checkArgs(split, 0, 0, split[0]);
-            player.giveItem(config.wandItem, 1);
-            player.print("Left click: select pos #1; Right click: select pos #2");
-            return true;
-
-        // Toggle placing at pos #1
-        } else if (split[0].equalsIgnoreCase("/toggleplace")) {
-            checkArgs(split, 0, 0, split[0]);
-            if (session.togglePlacementPosition()) {
-                player.print("Now placing at pos #1.");
-            } else {
-                player.print("Now placing at the block you stand in.");
-            }
-            return true;
-
-        // Toggle edit wand
-        } else if (split[0].equalsIgnoreCase("/toggleeditwand")) {
-            checkArgs(split, 0, 0, split[0]);
-            session.setToolControl(!session.isToolControlEnabled());
-            if (session.isToolControlEnabled()) {
-                player.print("Edit wand enabled.");
-            } else {
-                player.print("Edit wand disabled.");
-            }
-            return true;
-
-        // Toggle super pick axe
-        } else if (split[0].equalsIgnoreCase("//")) {
-            checkArgs(split, 0, 0, split[0]);
-            if (session.toggleSuperPickAxe()) {
-                player.print("Super pick axe enabled.");
-            } else {
-                player.print("Super pick axe disabled.");
-            }
-            return true;
-
-        // Set max number of blocks to change at a time
-        } else if (split[0].equalsIgnoreCase("//limit")) {
-            checkArgs(split, 1, 1, split[0]);
-            int limit = Math.max(-1, Integer.parseInt(split[1]));
-            if (!player.hasPermission("worldeditnomax")
-                    && config.maxChangeLimit > -1) {
-                if (limit > config.maxChangeLimit) {
-                    player.printError("Your maximum allowable limit is "
-                            + config.maxChangeLimit + ".");
-                    return true;
-                }
-            }
-            
-            session.setBlockChangeLimit(limit);
-            player.print("Block change limit set to " + limit + ".");
-            
-            return true;
-
-        // Single super pickaxe mode
-        } else if (split[0].equalsIgnoreCase("/single")) {
-            if (!canUseCommand(player, "/")) {
-                player.printError("You don't have permission for super pickaxe usage.");
-                return true;
-            }
-            
-            checkArgs(split, 0, 0, split[0]);
-            session.setLeftClickMode(new SinglePickaxe());
-            session.enableSuperPickAxe();
-            player.print("Mode changed. Left click with a pickaxe. // to disable.");
-            return true;
-
-        // Area/recursive super pickaxe mode
-        } else if (split[0].equalsIgnoreCase("/area")
-                || split[0].equalsIgnoreCase("/recur")) {
-            
-            if (!canUseCommand(player, "/")) {
-                player.printError("You don't have permission for super pickaxe usage.");
-                return true;
-            }
-            
-            checkArgs(split, 1, 1, split[0]);
-            
-            boolean recur = split[0].equalsIgnoreCase("/recur");
-            int range = Integer.parseInt(split[1]);
-            
-            if (range > config.maxSuperPickaxeSize) {
-                player.printError("Maximum range: " + config.maxSuperPickaxeSize);
-                return true;
-            }
-            
-            session.setLeftClickMode(
-                    recur ? new RecursivePickaxe(range) : new AreaPickaxe(range));
-            session.enableSuperPickAxe();
-            player.print("Mode changed. Left click with a pickaxe. // to disable.");
-            return true;
-
-        // Tree tool
-        } else if (split[0].equalsIgnoreCase("/tree")) {
-            checkArgs(split, 0, 0, split[0]);
-            session.setArmSwingMode(null);
-            session.setRightClickMode(new TreePlanter());
-            player.print("Tree tool equipped. Right click with a pickaxe.");
-            return true;
-
-        // Big tree tool
-        } else if (split[0].equalsIgnoreCase("/bigtree")) {
-            checkArgs(split, 0, 0, split[0]);
-            session.setArmSwingMode(null);
-            session.setRightClickMode(new BigTreePlanter());
-            player.print("Big tree tool equipped. Right click with a pickaxe.");
-            return true;
-
-        // Pine tree tool
-        } else if (split[0].equalsIgnoreCase("/pinetree")) {
-            checkArgs(split, 0, 0, split[0]);
-            session.setArmSwingMode(null);
-            session.setRightClickMode(new PineTreePlanter());
-            player.print("Pine tree tree tool equipped. Right click with a pickaxe.");
-            return true;
-
-        // Info tool
-        } else if (split[0].equalsIgnoreCase("/info")) {
-            checkArgs(split, 0, 0, split[0]);
-            session.setArmSwingMode(null);
-            session.setRightClickMode(new QueryTool());
-            player.print("Info tool equipped. Right click with a pickaxe.");
-            return true;
-
-        // Replace block tool
-        } else if (split[0].equalsIgnoreCase("/repl")) {
-            checkArgs(split, 1, 1, split[0]);
-            BaseBlock targetBlock = getBlock(player, split[1]);
-            session.setArmSwingMode(null);
-            session.setRightClickMode(new BlockReplacer(targetBlock));
-            player.print("Block replacer tool equipped. Right click with a pickaxe.");
-            return true;
-
-        // Sphere brush tool
-        } else if (split[0].equalsIgnoreCase("/brush")) {
-            checkArgs(split, 1, 3, split[0]);
-            int radius = split.length > 2 ? Integer.parseInt(split[2]) : 2;
-            boolean nonReplacing = split.length > 3
-                    ? (split[3].equalsIgnoreCase("true")
-                            || split[3].equalsIgnoreCase("yes")) : false;
-            if (radius > config.maxBrushRadius) {
-                player.printError("Maximum allowed brush radius: "
-                        + config.maxBrushRadius);
-                return true;
-            }
-            BaseBlock targetBlock = getBlock(player, split[1]);
-            session.setRightClickMode(null);
-            session.setArmSwingMode(new SphereBrush(targetBlock, radius, nonReplacing));
-            if (nonReplacing) {
-                player.print("Non-replacing sphere brush tool equipped.");
-            } else {
-                player.print("Sphere brush tool equipped. Swing with a pickaxe.");
-            }
-            return true;
-
-        // Sphere brush tool
-        } else if (split[0].equalsIgnoreCase("/rbrush")) {
-            checkArgs(split, 1, 3, split[0]);
-            int radius = split.length > 2 ? Integer.parseInt(split[2]) : 2;
-            if (radius > config.maxBrushRadius) {
-                player.printError("Maximum allowed brush radius: "
-                        + config.maxBrushRadius);
-                return true;
-            }
-            BaseBlock targetBlock = getBlock(player, split[1]);
-            session.setRightClickMode(null);
-            session.setArmSwingMode(new ReplacingSphereBrush(targetBlock, radius));
-            player.print("Replacing sphere brush tool equipped. Swing with a pickaxe.");
-            return true;
-
-        // No tool
-        } else if (split[0].equalsIgnoreCase("/none")) {
-            checkArgs(split, 0, 0, split[0]);
-            session.setArmSwingMode(null);
-            session.setRightClickMode(null);
-            player.print("Now no longer equipping a tool.");
-            return true;
-
-        // Undo
-        } else if (split[0].equalsIgnoreCase("//undo")) {
-            checkArgs(split, 0, 0, split[0]);
-            EditSession undone = session.undo(session.getBlockBag(player));
-            if (undone != null) {
-                player.print("Undo successful.");
-                flushBlockBag(player, undone);
-            } else {
-                player.printError("Nothing to undo.");
-            }
-            return true;
-
-        // Redo
-        } else if (split[0].equalsIgnoreCase("//redo")) {
-            checkArgs(split, 0, 0, split[0]);
-            EditSession redone = session.redo(session.getBlockBag(player));
-            if (redone != null) {
-                player.print("Redo successful.");
-                flushBlockBag(player, redone);
-            } else {
-                player.printError("Nothing to redo.");
-            }
-            return true;
-
-        // Clear undo history
-        } else if (split[0].equalsIgnoreCase("/clearhistory")) {
-            checkArgs(split, 0, 0, split[0]);
-            session.clearHistory();
-            player.print("History cleared.");
-            return true;
-
-        // Clear clipboard
-        } else if (split[0].equalsIgnoreCase("/clearclipboard")) {
-            checkArgs(split, 0, 0, split[0]);
-            session.setClipboard(null);
-            player.print("Clipboard cleared.");
-            return true;
-
-        // Paste
-        } else if (split[0].equalsIgnoreCase("//paste")) {
-            checkArgs(split, 0, 1, split[0]);
-            boolean atOrigin = split.length > 1
-                    ? (split[1].equalsIgnoreCase("true")
-                            || split[1].equalsIgnoreCase("yes"))
-                    : false;
-            if (atOrigin) {
-                Vector pos = session.getClipboard().getOrigin();
-                session.getClipboard().place(editSession, pos, false);
-                player.findFreePosition();
-                player.print("Pasted to copy origin. Undo with //undo");
-            } else {
-                Vector pos = session.getPlacementPosition(player);
-                session.getClipboard().paste(editSession, pos, false);
-                player.findFreePosition();
-                player.print("Pasted relative to you. Undo with //undo");
-            }
-
-            return true;
-
-        // Draw a hollow cylinder
-        } else if (split[0].equalsIgnoreCase("//hcyl")
-                || split[0].equalsIgnoreCase("//cyl")) {
-            checkArgs(split, 2, 3, split[0]);
-            BaseBlock block = getBlock(player, split[1]);
-            int radius = Math.max(1, Integer.parseInt(split[2]));
-            int height = split.length > 3 ? Integer.parseInt(split[3]) : 1;
-            boolean filled = split[0].equalsIgnoreCase("//cyl");
-
-            Vector pos = session.getPlacementPosition(player);
-            int affected;
-            if (filled) {
-                affected = editSession.makeCylinder(pos, block, radius, height);
-            } else {
-                affected = editSession.makeHollowCylinder(pos, block, radius, height);
-            }
-            player.print(affected + " block(s) have been created.");
-
-            return true;
-
-        // Draw a sphere
-        } else if (split[0].equalsIgnoreCase("//sphere")
-                || split[0].equalsIgnoreCase("//hsphere")) {
-            checkArgs(split, 2, 3, split[0]);
-            BaseBlock block = getBlock(player, split[1]);
-            int radius = Math.max(1, Integer.parseInt(split[2]));
-            boolean raised = split.length > 3
-                    ? (split[3].equalsIgnoreCase("true")
-                            || split[3].equalsIgnoreCase("yes"))
-                    : false;
-            boolean filled = split[0].equalsIgnoreCase("//sphere");
-
-            Vector pos = session.getPlacementPosition(player);
-            if (raised) {
-                pos = pos.add(0, radius, 0);
-            }
-
-            int affected = editSession.makeSphere(pos, block, radius, filled);
-            player.findFreePosition();
-            player.print(affected + " block(s) have been created.");
-
-            return true;
-
-        // Fill a hole
-        } else if (split[0].equalsIgnoreCase("//fill")
-                || split[0].equalsIgnoreCase("//fillr")) {
-            boolean recursive = split[0].equalsIgnoreCase("//fillr");
-            checkArgs(split, 2, recursive ? 2 : 3, split[0]);
-            Pattern pattern = getBlockPattern(player, split[1]);
-            int radius = Math.max(1, Integer.parseInt(split[2]));
-            checkMaxRadius(radius);
-            int depth = split.length > 3 ? Math.max(1, Integer.parseInt(split[3])) : 1;
-
-            Vector pos = session.getPlacementPosition(player);
-            int affected = 0;
-            if (pattern instanceof SingleBlockPattern) {
-                affected = editSession.fillXZ(pos,
-                        ((SingleBlockPattern)pattern).getBlock(),
-                        radius, depth, recursive);
-            } else {
-                affected = editSession.fillXZ(pos, pattern, radius, depth, recursive);
-            }
-            player.print(affected + " block(s) have been created.");
-
-            return true;
-
-        // Remove blocks above current position
-        } else if (split[0].equalsIgnoreCase("/removeabove")) {
-            checkArgs(split, 0, 2, split[0]);
-            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
-            checkMaxRadius(size);
-            int height = split.length > 2 ? Math.min(128, Integer.parseInt(split[2]) + 2) : 128;
-
-            int affected = editSession.removeAbove(
-                    session.getPlacementPosition(player), size, height);
-            player.print(affected + " block(s) have been removed.");
-
-            return true;
-
-        // Remove blocks below current position
-        } else if (split[0].equalsIgnoreCase("/removebelow")) {
-            checkArgs(split, 0, 2, split[0]);
-            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
-            checkMaxRadius(size);
-            int height = split.length > 2 ? Math.max(1, Integer.parseInt(split[2])) : 128;
-
-            int affected = editSession.removeBelow(
-                    session.getPlacementPosition(player), size, height);
-            player.print(affected + " block(s) have been removed.");
-
-            return true;
-
-        // Remove blocks near
-        } else if (split[0].equalsIgnoreCase("/removenear")) {
-            checkArgs(split, 2, 2, split[0]);
-            BaseBlock block = getBlock(player, split[1], true);
-            int size = Math.max(1, Integer.parseInt(split[2]));
-            checkMaxRadius(size);
-
-            int affected = editSession.removeNear(
-                    session.getPlacementPosition(player), block.getType(), size);
-            player.print(affected + " block(s) have been removed.");
-
-            return true;
-
-        // Extinguish
-        } else if (split[0].equalsIgnoreCase("/ex")) {
-            checkArgs(split, 0, 1, split[0]);
-            int defaultRadius = config.maxRadius != -1 ? Math.min(40, config.maxRadius) : 40;
-            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1]))
-                    : defaultRadius;
-            checkMaxRadius(size);
-
-            int affected = editSession.removeNear(
-                    session.getPlacementPosition(player), 51, size);
-            player.print(affected + " block(s) have been removed.");
-
-            return true;
-
-        // Load .schematic to clipboard
-        } else if (split[0].equalsIgnoreCase("//load")) {
-            checkArgs(split, 1, 1, split[0]);
-            String filename = split[1].replace("\0", "") + ".schematic";
-            File dir = new File(config.getWorkingDirectory(), "schematics");
-            File f = new File(new File(config.getWorkingDirectory(), "schematics"), filename);
-
-            if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+$")) {
-                player.printError("Valid characters: A-Z, a-z, 0-9, spaces, "
-                        + "./\'$@~!%^*()[]+{},?");
-                return true;
-            }
-
-            try {
-                String filePath = f.getCanonicalPath();
-                String dirPath = dir.getCanonicalPath();
-
-                if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
-                    player.printError("Schematic could not read or it does not exist.");
-                } else {
-                    session.setClipboard(CuboidClipboard.loadSchematic(f));
-                    logger.log(Level.INFO, player.getName() + " loaded " + filePath);
-                    player.print(filename + " loaded. Paste it with //paste");
-                }
-            } catch (DataException e) {
-                player.printError("Load error: " + e.getMessage());
-            } catch (IOException e) {
-                player.printError("Schematic could not read or it does not exist: " + e.getMessage());
-            }
-
-            return true;
-
-        // Save clipboard to .schematic
-        } else if (split[0].equalsIgnoreCase("//save")) {
-            checkArgs(split, 1, 1, split[0]);
-            String filename = split[1].replace("\0", "") + ".schematic";
-
-            if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+$")) {
-                player.printError("Valid characters: A-Z, a-z, 0-9, spaces, "
-                        + "./\'$@~!%^*()[]+{},?");
-                return true;
-            }
-            
-            File dir = new File(config.getWorkingDirectory(), "schematics");
-            File f = new File(new File(config.getWorkingDirectory(), "schematics"), filename);
-
-            if (!dir.exists()) {
-                if (!dir.mkdir()) {
-                    player.printError("A schematics/ folder could not be created.");
-                    return true;
-                }
-            }
-
-            try {
-                String filePath = f.getCanonicalPath();
-                String dirPath = dir.getCanonicalPath();
-
-                if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
-                    player.printError("Invalid path for Schematic.");
-                } else {
-                    // Create parent directories
-                    File parent = f.getParentFile();
-                    if (parent != null && !parent.exists()) {
-                        parent.mkdirs();
-                    }
-
-                    session.getClipboard().saveSchematic(f);
-                    logger.log(Level.INFO, player.getName() + " saved " + filePath);
-                    player.print(filename + " saved.");
-                }
-            } catch (DataException se) {
-                player.printError("Save error: " + se.getMessage());
-            } catch (IOException e) {
-                player.printError("Schematic could not written: " + e.getMessage());
-            }
-            
-            return true;
-
-        // Get size
-        } else if (split[0].equalsIgnoreCase("//size")) {
-            Region region = session.getRegion();
-            Vector size = region.getMaximumPoint()
-                    .subtract(region.getMinimumPoint())
-                    .add(1, 1, 1);
-            player.print("First position: " + session.getPos1());
-            player.print("Second position: " + session.getPos2());
-            player.print("Size: " + size);
-            player.print("# of blocks: " + region.getSize());
-            return true;
-
-        // Get count
-        } else if (split[0].equalsIgnoreCase("//count")) {
-            checkArgs(split, 1, 1, split[0]);
-            Set<Integer> searchIDs = getBlockIDs(player, split[1], true);
-            player.print("Counted: " +
-                    editSession.countBlocks(session.getRegion(), searchIDs));
-            return true;
-
-        // Get block distribution
-        } else if (split[0].equalsIgnoreCase("//distr")) {
-            checkArgs(split, 0, 0, split[0]);
-            List<Countable<Integer>> distribution =
-                    editSession.getBlockDistribution(session.getRegion());
-            if (distribution.size() > 0) { // *Should* always be true
-                int size = session.getRegion().getSize();
-
-                player.print("# total blocks: " + size);
-                
-                for (Countable<Integer> c : distribution) {
-                    player.print(String.format("%-7s (%.3f%%) %s #%d",
-                            String.valueOf(c.getAmount()),
-                            c.getAmount() / (double)size * 100,
-                            BlockType.fromID(c.getID()).getName(), c.getID()));
-                }
-            } else {
-                player.printError("No blocks counted.");
-            }
-            return true;
-
-        // Replace all blocks in the region
-        } else if(split[0].equalsIgnoreCase("//set")) {
-            checkArgs(split, 1, 1, split[0]);
-            Pattern pattern = getBlockPattern(player, split[1]);
-            int affected;
-            if (pattern instanceof SingleBlockPattern) {
-                affected = editSession.setBlocks(session.getRegion(),
-                        ((SingleBlockPattern)pattern).getBlock());
-            } else {
-                affected = editSession.setBlocks(session.getRegion(), pattern);
-            }
-            player.print(affected + " block(s) have been changed.");
-
-            return true;
-
-        // Smooth the heightmap of a region
-        } else if (split[0].equalsIgnoreCase("//smooth")) {
-            checkArgs(split, 0, 1, split[0]);
-
-            int iterations = 1;
-            if (split.length >= 2)
-                iterations = Integer.parseInt(split[1]);
-
-            HeightMap heightMap = new HeightMap(editSession, session.getRegion());
-            HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
-            int affected = heightMap.applyFilter(filter, iterations);
-            player.print("Terrain's height map smoothed. " + affected + " block(s) changed.");
-
-            return true;
-
-        // Set the outline of a region
-        } else if(split[0].equalsIgnoreCase("//outline")) {
-            checkArgs(split, 1, 1, split[0]);
-            BaseBlock block = getBlock(player, split[1]);
-            int affected = editSession.makeCuboidFaces(session.getRegion(), block);
-            player.print(affected + " block(s) have been changed.");
-
-            return true;
-
-        // Set the walls of a region
-        } else if(split[0].equalsIgnoreCase("//walls")) {
-            checkArgs(split, 1, 1, split[0]);
-            BaseBlock block = getBlock(player, split[1]);
-            int affected = editSession.makeCuboidWalls(session.getRegion(), block);
-            player.print(affected + " block(s) have been changed.");
-
-            return true;
-
-        // Drain pools
-        } else if(split[0].equalsIgnoreCase("//drain")) {
-            checkArgs(split, 1, 1, split[0]);
-            int radius = Math.max(0, Integer.parseInt(split[1]));
-            checkMaxRadius(radius);
-            int affected = editSession.drainArea(
-                    session.getPlacementPosition(player), radius);
-            player.print(affected + " block(s) have been changed.");
-
-            return true;
-
-        // Fix water
-        } else if(split[0].equalsIgnoreCase("/fixwater")) {
-            checkArgs(split, 1, 1, split[0]);
-            int radius = Math.max(0, Integer.parseInt(split[1]));
-            checkMaxRadius(radius);
-            int affected = editSession.fixLiquid(
-                    session.getPlacementPosition(player), radius, 8, 9);
-            player.print(affected + " block(s) have been changed.");
-
-            return true;
-
-        // Fix lava
-        } else if(split[0].equalsIgnoreCase("/fixlava")) {
-            checkArgs(split, 1, 1, split[0]);
-            int radius = Math.max(0, Integer.parseInt(split[1]));
-            checkMaxRadius(radius);
-            int affected = editSession.fixLiquid(
-                    session.getPlacementPosition(player), radius, 10, 11);
-            player.print(affected + " block(s) have been changed.");
-
-            return true;
-
-        // Replace all blocks in the region
-        } else if(split[0].equalsIgnoreCase("//replace")) {
-            checkArgs(split, 1, 2, split[0]);
-
-            Set<Integer> from;
-            Pattern to;
-            if (split.length == 2) {
-                from = null;
-                to = getBlockPattern(player, split[1]);
-            } else {
-                from = getBlockIDs(player, split[1], true);
-                to = getBlockPattern(player, split[2]);
-            }
-
-            int affected = 0;
-            if (to instanceof SingleBlockPattern) {
-                affected = editSession.replaceBlocks(session.getRegion(), from,
-                        ((SingleBlockPattern)to).getBlock());
-            } else {
-                affected = editSession.replaceBlocks(session.getRegion(), from, to);
-            }
-            player.print(affected + " block(s) have been replaced.");
-
-            return true;
-
-        // Replace all blocks in the region
-        } else if(split[0].equalsIgnoreCase("/replacenear")) {
-            checkArgs(split, 2, 3, split[0]);
-            int size = Math.max(1, Integer.parseInt(split[1]));
-            Set<Integer> from;
-            BaseBlock to;
-            if (split.length == 3) {
-                from = null;
-                to = getBlock(player, split[2]);
-            } else {
-                from = getBlockIDs(player, split[2], true);
-                to = getBlock(player, split[3]);
-            }
-
-            Vector min = player.getBlockIn().subtract(size, size, size);
-            Vector max = player.getBlockIn().add(size, size, size);
-            Region region = new CuboidRegion(min, max);
-
-            int affected = editSession.replaceBlocks(region, from, to);
-            player.print(affected + " block(s) have been replaced.");
-
-            return true;
-
-        // Lay blocks over an area
-        } else if (split[0].equalsIgnoreCase("//overlay")) {
-            checkArgs(split, 1, 1, split[0]);
-            BaseBlock block = getBlock(player, split[1]);
-
-            Region region = session.getRegion();
-            int affected = editSession.overlayCuboidBlocks(region, block);
-            player.print(affected + " block(s) have been overlayed.");
-
-            return true;
-
-        // Copy
-        } else if (split[0].equalsIgnoreCase("//copy")
-                || split[0].equalsIgnoreCase("//cut")) {
-            boolean cut = split[0].equalsIgnoreCase("//cut");
-            BaseBlock block = new BaseBlock(0);
-
-            if (cut) {
-                checkArgs(split, 0, 1, split[0]);
-                if (split.length > 1) {
-                    getBlock(player, split[1]);
-                }
-            } else {
-                checkArgs(split, 0, 0, split[0]);
-            }
-                
-            Region region = session.getRegion();
-            Vector min = region.getMinimumPoint();
-            Vector max = region.getMaximumPoint();
-            Vector pos = player.getBlockIn();
-
-            CuboidClipboard clipboard = new CuboidClipboard(
-                    max.subtract(min).add(new Vector(1, 1, 1)),
-                    min, min.subtract(pos));
-            clipboard.copy(editSession);
-            session.setClipboard(clipboard);
-
-            if (cut) {
-                editSession.setBlocks(session.getRegion(), block);
-                player.print("Block(s) cut.");
-            } else {
-                player.print("Block(s) copied.");
-            }
-
-            return true;
-
-        // Make tree forest
-        } else if (split[0].equalsIgnoreCase("/forestgen")) {
-            checkArgs(split, 0, 2, split[0]);
-            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 10;
-            double density = split.length > 2 ? Double.parseDouble(split[2]) / 100 : 0.05;
-
-            int affected = editSession.makeForest(player.getPosition(),
-                    size, density, false);
-            player.print(affected + " trees created.");
-
-            return true;
-
-        // Make pine tree forest
-        } else if (split[0].equalsIgnoreCase("/pinegen")) {
-            checkArgs(split, 0, 1, split[0]);
-            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 10;
-            double density = split.length > 2 ? Double.parseDouble(split[2]) / 100 : 0.05;
-
-            int affected = editSession.makeForest(player.getPosition(),
-                    size, density, true);
-            player.print(affected + " pine trees created.");
-
-            return true;
-
-        // Let it snow~
-        } else if (split[0].equalsIgnoreCase("/snow")) {
-            checkArgs(split, 0, 1, split[0]);
-            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 10;
-
-            int affected = editSession.simulateSnow(player.getBlockIn(), size);
-            player.print(affected + " surfaces covered. Let it snow~");
-
-            return true;
-
-        // Thaw
-        } else if (split[0].equalsIgnoreCase("/thaw")) {
-            checkArgs(split, 0, 1, split[0]);
-            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 10;
-
-            int affected = editSession.thaw(player.getBlockIn(), size);
-            player.print(affected + " surfaces thawed.");
-
-            return true;
-
-        // Make pumpkin patches
-        } else if (split[0].equalsIgnoreCase("/pumpkins")) {
-            checkArgs(split, 0, 1, split[0]);
-            int size = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 10;
-
-            int affected = editSession.makePumpkinPatches(player.getPosition(), size);
-            player.print(affected + " pumpkin patches created.");
-
-            return true;
-
-        // Move
-        } else if (split[0].equalsIgnoreCase("//move")) {
-            checkArgs(split, 0, 3, split[0]);
-            int count = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
-            Vector dir = getDirection(player,
-                    split.length > 2 ? split[2].toLowerCase() : "me");
-            BaseBlock replace;
-
-            // Replacement block argument
-            if (split.length > 3) {
-                replace = getBlock(player, split[3]);
-            } else {
-                replace = new BaseBlock(0);
-            }
-
-            int affected = editSession.moveCuboidRegion(session.getRegion(),
-                    dir, count, true, replace);
-            player.print(affected + " blocks moved.");
-
-            return true;
-
-        // Stack
-        } else if (split[0].equalsIgnoreCase("//stack")) {
-            checkArgs(split, 0, 2, split[0]);
-            int count = split.length > 1 ? Math.max(1, Integer.parseInt(split[1])) : 1;
-            Vector dir = getDirection(player,
-                    split.length > 2 ? split[2].toLowerCase() : "me");
-
-            int affected = editSession.stackCuboidRegion(session.getRegion(),
-                    dir, count, true);
-            player.print(affected + " blocks changed. Undo with //undo");
-
-            return true;
-
-        // Expand
-        } else if (split[0].equalsIgnoreCase("//expand")) {
-            checkArgs(split, 1, 3, split[0]);
-            Vector dir;
-            
-            if (split[1].equals("vert") || split[1].equals("vertical")) {
-                Region region = session.getRegion();
-                int oldSize = region.getSize();
-                region.expand(new Vector(0, 128, 0));
-                region.expand(new Vector(0, -128, 0));
-                session.learnRegionChanges();
-                int newSize = region.getSize();
-                player.print("Region expanded " + (newSize - oldSize) + " blocks [top-to-bottom].");
-                return true;
-            }
-            
-            int change = Integer.parseInt(split[1]);
-            int reverseChange = 0;
-            
-            if (split.length == 3) {
-                try {
-                    reverseChange = Integer.parseInt(split[2]) * -1;
-                    dir = getDirection(player, "me");
-                } catch (NumberFormatException e) {
-                    dir = getDirection(player, split[2].toLowerCase());
-                }
-            } else if (split.length == 4) {
-                reverseChange = Integer.parseInt(split[2]) * -1;
-                dir = getDirection(player, split[3].toLowerCase());
-            } else {
-                dir = getDirection(player, "me");
-            }
-
-            Region region = session.getRegion();
-            int oldSize = region.getSize();
-            region.expand(dir.multiply(change));
-            if (reverseChange != 0) {
-                region.expand(dir.multiply(reverseChange));
-            }
-            session.learnRegionChanges();
-            int newSize = region.getSize();
-            player.print("Region expanded " + (newSize - oldSize) + " blocks.");
-
-            return true;
-
-        // Contract
-        } else if (split[0].equalsIgnoreCase("//contract")) {
-            checkArgs(split, 1, 3, split[0]);
-            Vector dir;
-            int change = Integer.parseInt(split[1]);
-            int reverseChange = 0;
-            if (split.length == 3) {
-                try {
-                    reverseChange = Integer.parseInt(split[2]) * -1;
-                    dir = getDirection(player, "me");
-                } catch (NumberFormatException e) {
-                    dir = getDirection(player, split[2].toLowerCase());
-                }
-            } else if (split.length == 4) {
-                reverseChange = Integer.parseInt(split[2]) * -1;
-                dir = getDirection(player, split[3].toLowerCase());
-            } else {
-                dir = getDirection(player, "me");
-            }
-
-            Region region = session.getRegion();
-            int oldSize = region.getSize();
-            region.contract(dir.multiply(change));
-            if (reverseChange != 0) {
-                region.contract(dir.multiply(reverseChange));
-            }
-            session.learnRegionChanges();
-            int newSize = region.getSize();
-            player.print("Region contracted " + (oldSize - newSize) + " blocks.");
-
-            return true;
-
-        // Shift
-        } else if (split[0].equalsIgnoreCase("//shift")) {
-            checkArgs(split, 1, 2, split[0]);
-            Vector dir;
-            int change = Integer.parseInt(split[1]);
-            if (split.length == 3) {
-                dir = getDirection(player, split[2].toLowerCase());
-            } else {
-                dir = getDirection(player, "me");
-            }
-
-            Region region = session.getRegion();
-            region.expand(dir.multiply(change));
-            region.contract(dir.multiply(change));
-            session.learnRegionChanges();
-            player.print("Region shifted.");
-
-            return true;
-
-        // Rotate
-        } else if (split[0].equalsIgnoreCase("//rotate")) {
-            checkArgs(split, 1, 1, split[0]);
-            int angle = Integer.parseInt(split[1]);
-            if (angle % 90 == 0) {
-                CuboidClipboard clipboard = session.getClipboard();
-                clipboard.rotate2D(angle);
-                player.print("Clipboard rotated by " + angle + " degrees.");
-            } else {
-                player.printError("Angles must be divisible by 90 degrees.");
-            }
-
-            return true;
-
-        // Flip
-        } else if (split[0].equalsIgnoreCase("//flip")) {
-            checkArgs(split, 0, 1, split[0]);
-            CuboidClipboard.FlipDirection dir = getFlipDirection(player,
-                    split.length > 1 ? split[1].toLowerCase() : "me");
-
-            CuboidClipboard clipboard = session.getClipboard();
-            clipboard.flip(dir);
-            player.print("Clipboard flipped.");
-
-            return true;
-
-        // Kill mobs
-        } else if (split[0].equalsIgnoreCase("/butcher")) {
-            checkArgs(split, 0, 1, split[0]);
-
-            int radius = split.length > 1 ?
-                Math.max(1, Integer.parseInt(split[1])) : -1;
-
-            Vector origin = session.getPlacementPosition(player);
-            int killed = world.killMobs(origin, radius);
-            player.print("Killed " + killed + " mobs.");
-
-            return true;
-
-        // Get chunk filename
-        } else if (split[0].equalsIgnoreCase("/chunkinfo")) {
-            checkArgs(split, 0, 0, split[0]);
-
-            Vector pos = player.getBlockIn();
-            int chunkX = (int)Math.floor(pos.getBlockX() / 16.0);
-            int chunkZ = (int)Math.floor(pos.getBlockZ() / 16.0);
-
-            String folder1 = Integer.toString(divisorMod(chunkX, 64), 36);
-            String folder2 = Integer.toString(divisorMod(chunkZ, 64), 36);
-            String filename = "c." + Integer.toString(chunkX, 36)
-                    + "." + Integer.toString(chunkZ, 36) + ".dat";
-
-            player.print("Chunk: " + chunkX + ", " + chunkZ);
-            player.print(folder1 + "/" + folder2 + "/" + filename);
-
-            return true;
-
-        // Dump a list of involved chunks
-        } else if (split[0].equalsIgnoreCase("/listchunks")) {
-            checkArgs(split, 0, 0, split[0]);
-
-            Set<Vector2D> chunks = session.getRegion().getChunks();
-
-            for (Vector2D chunk : chunks) {
-                player.print(NestedFileChunkStore.getFilename(chunk));
-            }
-
-            return true;
-
-        // Dump a list of involved chunks
-        } else if (split[0].equalsIgnoreCase("/delchunks")) {
-            checkArgs(split, 0, 0, split[0]);
-
-            Set<Vector2D> chunks = session.getRegion().getChunks();
-            FileOutputStream out = null;
-
-            if (config.shellSaveType == null) {
-                player.printError("Shell script type must be configured: 'bat' or 'bash' expected.");
-            } else if (config.shellSaveType.equalsIgnoreCase("bat")) {
-                try {
-                    out = new FileOutputStream("worldedit-delchunks.bat");
-                    OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
-                    writer.write("@ECHO off\r\n");
-                    writer.write("ECHO This batch file was generated by WorldEdit.\r\n");
-                    writer.write("ECHO It contains a list of chunks that were in the selected region\r\n");
-                    writer.write("ECHO at the time that the /delchunks command was used. Run this file\r\n");
-                    writer.write("ECHO in order to delete the chunk files listed in this file.\r\n");
-                    writer.write("ECHO.\r\n");
-                    writer.write("PAUSE\r\n");
-
-                    for (Vector2D chunk : chunks) {
-                        String filename = NestedFileChunkStore.getFilename(chunk);
-                        writer.write("ECHO " + filename + "\r\n");
-                        writer.write("DEL \"world/" + filename + "\"\r\n");
-                    }
-
-                    writer.write("ECHO Complete.\r\n");
-                    writer.write("PAUSE\r\n");
-                    writer.close();
-                    player.print("worldedit-delchunks.bat written. Run it when no one is near the region.");
-                } catch (IOException e) {
-                    player.printError("Error occurred: " + e.getMessage());
-                } finally {
-                    if (out != null) {
-                        try { out.close(); } catch (IOException ie) {}
-                    }
-                }
-            } else if (config.shellSaveType.equalsIgnoreCase("bash")) {
-                try {
-                    out = new FileOutputStream("worldedit-delchunks.sh");
-                    OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
-                    writer.write("#!/bin/bash\n");
-                    writer.write("echo This shell file was generated by WorldEdit.\n");
-                    writer.write("echo It contains a list of chunks that were in the selected region\n");
-                    writer.write("echo at the time that the /delchunks command was used. Run this file\n");
-                    writer.write("echo in order to delete the chunk files listed in this file.\n");
-                    writer.write("echo\n");
-                    writer.write("read -p \"Press any key to continue...\"\n");
-
-                    for (Vector2D chunk : chunks) {
-                        String filename = NestedFileChunkStore.getFilename(chunk);
-                        writer.write("echo " + filename + "\n");
-                        writer.write("rm \"world/" + filename + "\"\n");
-                    }
-
-                    writer.write("echo Complete.\n");
-                    writer.write("read -p \"Press any key to continue...\"\n");
-                    writer.close();
-                    player.print("worldedit-delchunks.sh written. Run it when no one is near the region.");
-                    player.print("You will have to chmod it to be executable.");
-                } catch (IOException e) {
-                    player.printError("Error occurred: " + e.getMessage());
-                } finally {
-                    if (out != null) {
-                        try { out.close(); } catch (IOException ie) {}
-                    }
-                }
-            } else {
-                player.printError("Shell script type must be configured: 'bat' or 'bash' expected.");
-            }
-
-            return true;
-
-        // List snapshots
-        } else if (split[0].equalsIgnoreCase("/listsnapshots")) {
-            checkArgs(split, 0, 1, split[0]);
-
-            int num = split.length > 1 ?
-                Math.min(40, Math.max(5, Integer.parseInt(split[1]))) : 5;
-
-            if (config.snapshotRepo != null) {
-                Snapshot[] snapshots = config.snapshotRepo.getSnapshots();
-
-                if (snapshots.length > 0) {
-                    for (byte i = 0; i < Math.min(num, snapshots.length); i++) {
-                        player.print((i + 1) + ". " + snapshots[i].getName());
-                    }
-
-                    player.print("Use //use [snapshot] or //use latest to set the snapshot.");
-                } else {
-                    player.printError("No snapshots are available.");
-                }
-            } else {
-                player.printError("Snapshot/backup restore is not configured.");
-            }
-
-            return true;
-
-        // Use a certain snapshot
-        } else if (split[0].equalsIgnoreCase("//use")) {
-            checkArgs(split, 1, 1, split[0]);
-
-            if (config.snapshotRepo == null) {
-                player.printError("Snapshot/backup restore is not configured.");
-                return true;
-            }
-
-            String name = split[1];
-
-            // Want the latest snapshot?
-            if (name.equalsIgnoreCase("latest")) {
-                Snapshot snapshot = config.snapshotRepo.getDefaultSnapshot();
-
-                if (snapshot != null) {
-                    session.setSnapshot(null);
-                    player.print("Now using newest snapshot.");
-                } else {
-                    player.printError("No snapshots were found.");
-                }
-            } else {
-                try {
-                    session.setSnapshot(config.snapshotRepo.getSnapshot(name));
-                    player.print("Snapshot set to: " + name);
-                } catch (InvalidSnapshotException e) {
-                    player.printError("That snapshot does not exist or is not available.");
-                }
-            }
-
-            return true;
-
-        // Restore
-        } else if (split[0].equalsIgnoreCase("//restore")) {
-            checkArgs(split, 0, 1, split[0]);
-
-            if (config.snapshotRepo == null) {
-                player.printError("Snapshot/backup restore is not configured.");
-                return true;
-            }
-
-            Region region = session.getRegion();
-            Snapshot snapshot;
-
-            if (split.length > 1) {
-                try {
-                    snapshot = config.snapshotRepo.getSnapshot(split[1]);
-                } catch (InvalidSnapshotException e) {
-                    player.printError("That snapshot does not exist or is not available.");
-                    return true;
-                }
-            } else {
-                snapshot = session.getSnapshot();
-            }
-            
-            ChunkStore chunkStore = null;
-
-            // No snapshot set?
-            if (snapshot == null) {
-                snapshot = config.snapshotRepo.getDefaultSnapshot();
-
-                if (snapshot == null) {
-                    player.printError("No snapshots were found.");
-                    return true;
-                }
-            }
-
-            // Load chunk store
-            try {
-                chunkStore = snapshot.getChunkStore();
-                player.print("Snapshot '" + snapshot.getName() + "' loaded; now restoring...");
-            } catch (DataException e) {
-                player.printError("Failed to load snapshot: " + e.getMessage());
-                return true;
-            } catch (IOException e) {
-                player.printError("Failed to load snapshot: " + e.getMessage());
-                return true;
-            }
-
-            try {
-                // Restore snapshot
-                SnapshotRestore restore = new SnapshotRestore(chunkStore, region);
-                //player.print(restore.getChunksAffected() + " chunk(s) will be loaded.");
-
-                restore.restore(editSession);
-
-                if (restore.hadTotalFailure()) {
-                    String error = restore.getLastErrorMessage();
-                    if (error != null) {
-                        player.printError("Errors prevented any blocks from being restored.");
-                        player.printError("Last error: " + error);
-                    } else {
-                        player.printError("No chunks could be loaded. (Bad archive?)");
-                    }
-                } else {
-                    player.print(String.format("Restored; %d "
-                            + "missing chunks and %d other errors.",
-                            restore.getMissingChunks().size(),
-                            restore.getErrorChunks().size()));
-                }
-            } finally {
-                try {
-                    chunkStore.close();
-                } catch (IOException e) {
-                }
-            }
-
-            return true;
-
-        // CraftScript
-        } else if (split[0].equalsIgnoreCase("/cs")) {
-            checkArgs(split, 1, -1, split[0]);
-            
-            String[] args = new String[split.length - 1];
-            System.arraycopy(split, 1, args, 0, split.length - 1);
-            
-            session.setLastScript(split[1]);
-            
-            runScript(player, split[1], args);
-            
-            return true;
-
-        // CraftScript
-        } else if (split[0].equalsIgnoreCase("/.s")) {
-            checkArgs(split, 1, -1, split[0]);
-            
-            String lastScript = session.getLastScript();
-            
-            if (lastScript == null) {
-                player.printError("Use /cs with a script name first.");
-                return true;
-            }
-            
-            String[] args = new String[split.length];
-            System.arraycopy(split, 0, args, 0, split.length);
-            args[0] = lastScript;
-            
-            runScript(player, lastScript, args);
-            
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -1775,7 +350,7 @@ public class WorldEdit {
      * @param n
      * @return
      */
-    private static int divisorMod(int a, int n) {
+    public static int divisorMod(int a, int n) {
         return (int)(a - n * Math.floor(Math.floor(a) / (double)n));
     }
 
@@ -1883,7 +458,7 @@ public class WorldEdit {
      * @param blockBag
      * @param editSession
      */
-    private static void flushBlockBag(LocalPlayer player,
+    public void flushBlockBag(LocalPlayer player,
             EditSession editSession) {
         
         BlockBag blockBag = editSession.getBlockBag();
@@ -1919,37 +494,10 @@ public class WorldEdit {
     }
 
     /**
-     * Checks to see if the player can use a command or /worldedit.
-     *
-     * @param player
-     * @param command
-     * @return
-     */
-    private boolean canUseCommand(LocalPlayer player, String command) {
-        // Allow the /worldeditselect permission
-        if (command.equalsIgnoreCase("/pos1")
-                || command.equalsIgnoreCase("/pos2")
-                || command.equalsIgnoreCase("/hpos1")
-                || command.equalsIgnoreCase("/hpos2")
-                || command.equalsIgnoreCase("/chunk")
-                || command.equalsIgnoreCase("/expand")
-                || command.equalsIgnoreCase("/contract")
-                || command.equalsIgnoreCase("/shift")
-                || command.equalsIgnoreCase("toggleeditwand")) {
-            return player.hasPermission(command)
-                    || player.hasPermission("worldeditselect")
-                    || player.hasPermission("worldedit");
-        }
-        
-        return player.hasPermission(command)
-                || player.hasPermission("worldedit");
-    }
-
-    /**
      * @return the commands
      */
-    public HashMap<String, String> getCommands() {
-        return commands;
+    public Map<String, String> getCommands() {
+        return commands.getCommands();
     }
     
     /**
@@ -1979,7 +527,7 @@ public class WorldEdit {
                 && config.navigationWandMaxDistance > 0) {
             CompassMode mode = session.getCompassMode();
             
-            if (player.hasPermission("jumpto") && mode == CompassMode.JUMPTO) {
+            if (player.hasPermission("worldedit.navigation.jumpto") && mode == CompassMode.JUMPTO) {
                 WorldVector pos = player.getSolidBlockTrace(config.navigationWandMaxDistance);
                 if (pos != null) {
                     player.findFreePosition(pos);
@@ -2009,14 +557,14 @@ public class WorldEdit {
             CompassMode mode = session.getCompassMode();
             
             if (mode == CompassMode.JUMPTO) {
-                if (player.hasPermission("thru")) {
+                if (player.hasPermission("worldedit.navigation.thru")) {
                     session.setCompassMode(CompassMode.THRU);
                     player.print("Switched to /thru mode.");
                 } else {
                     player.printError("You don't have permission for /thru.");
                 }
             } else {
-                if (player.hasPermission("jumpto")) {
+                if (player.hasPermission("worldedit.navigation.jumpto")) {
                     session.setCompassMode(CompassMode.JUMPTO);
                     player.print("Switched to /jumpto mode.");
                 } else {
@@ -2043,7 +591,7 @@ public class WorldEdit {
         LocalSession session = getSession(player);
 
         if (itemInHand == config.wandItem && session.isToolControlEnabled()
-                && canUseCommand(player, "/pos2")) {
+                && player.hasPermission("worldedit.selection.pos")) {
             session.setPos2(clicked);
             try {
                 player.print("Second position set to " + clicked
@@ -2068,13 +616,11 @@ public class WorldEdit {
      * @return false if you want the action to go through
      */
     public boolean handleBlockLeftClick(LocalPlayer player, WorldVector clicked) {
-        if (!canUseCommand(player, "/pos1")
-                && !canUseCommand(player, "/")) { return false; }
-        
         LocalSession session = getSession(player);
 
         if (player.getItemInHand() == config.wandItem) {
-            if (session.isToolControlEnabled()) {
+            if (session.isToolControlEnabled()
+                    && player.hasPermission("worldedit.selection.pos")) {
                 // Bug workaround
                 if (clicked.getBlockX() == 0 && clicked.getBlockY() == 0
                         && clicked.getBlockZ() == 0) {
@@ -2116,56 +662,55 @@ public class WorldEdit {
      */
     public boolean handleCommand(LocalPlayer player, String[] split) {
         try {
-            // Legacy /, command
-            if (split[0].equals("/,")) {
-                split[0] = "//";
+            
             // Quick script shortcut
-            } else if (split[0].matches("^/[^/].*\\.js$")) {
+            if (split[0].matches("^/[^/].*\\.js$")) {
                 String[] newSplit = new String[split.length + 1];
                 System.arraycopy(split, 0, newSplit, 1, split.length);
                 newSplit[0] = "/cs";
                 newSplit[1] = newSplit[1].substring(1);
                 split = newSplit;
             }
-
             
             String searchCmd = split[0].toLowerCase();
-            if (commands.containsKey(searchCmd)
-                    || (config.noDoubleSlash && commands.containsKey("/" + searchCmd))
+            if (commands.hasCommand(searchCmd)
+                    || (config.noDoubleSlash && commands.hasCommand("/" + searchCmd))
                     || ((searchCmd.length() < 3 || searchCmd.charAt(2) != '/')
-                            && commands.containsKey(searchCmd.substring(1)))) {
-                if (config.noDoubleSlash && commands.containsKey("/" + searchCmd)) {
+                            && commands.hasCommand(searchCmd.substring(1)))) {
+                if (config.noDoubleSlash && commands.hasCommand("/" + searchCmd)) {
                     split[0] = "/" + split[0];
-                } else if (commands.containsKey(searchCmd.substring(1))) {
+                } else if (commands.hasCommand(searchCmd.substring(1))) {
                     split[0] = split[0].substring(1);
                 }
+            
+                LocalSession session = getSession(player);
+                BlockBag blockBag = session.getBlockBag(player);
                 
-                if (canUseCommand(player, split[0].substring(1))) {
-                    LocalSession session = getSession(player);
-                    BlockBag blockBag = session.getBlockBag(player);
-                    
-                    EditSession editSession =
-                            new EditSession(server, player.getWorld(),
-                                    session.getBlockChangeLimit(), blockBag);
-                    editSession.enableQueue();
+                EditSession editSession =
+                        new EditSession(server, player.getWorld(),
+                                session.getBlockChangeLimit(), blockBag);
+                editSession.enableQueue();
 
-                    long start = System.currentTimeMillis();
+                long start = System.currentTimeMillis();
 
-                    try {
-                        return performCommand(player, session, editSession, split);
-                    } finally {
-                        session.remember(editSession);
-                        editSession.flushQueue();
-
-                        if (config.profile) {
-                            long time = System.currentTimeMillis() - start;
-                            player.print((time / 1000.0) + "s elapsed");
-                        }
-                        
-                        flushBlockBag(player, editSession);
+                try {
+                    if (config.logCommands) {
+                        logger.log(Level.INFO, "WorldEdit: " + player.getName() + ": "
+                                + StringUtil.joinString(split, " "));
                     }
-                } else {
-                    player.printError("You don't have permission for this command.");
+                    
+                    return commands.execute(new CommandContext(split), this,
+                            session, player, editSession);
+                } finally {
+                    session.remember(editSession);
+                    editSession.flushQueue();
+
+                    if (config.profile) {
+                        long time = System.currentTimeMillis() - start;
+                        player.print((time / 1000.0) + "s elapsed");
+                    }
+                    
+                    flushBlockBag(player, editSession);
                 }
             }
 
@@ -2311,5 +856,14 @@ public class WorldEdit {
                 session.remember(editSession);
             }
         }
+    }
+    
+    /**
+     * Get Worldedit's configuration.
+     * 
+     * @return
+     */
+    public LocalConfiguration getConfiguration() {
+        return config;
     }
 }
