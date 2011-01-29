@@ -83,7 +83,7 @@ public class ChunkCommands {
         min = 0,
         max = 0
     )
-    @CommandPermissions({"delchunks"})
+    @CommandPermissions({"worldedit.delchunks"})
     public static void deleteChunks(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

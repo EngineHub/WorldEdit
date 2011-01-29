@@ -137,7 +137,7 @@ public class UtilityCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions({"fixWater"})
+    @CommandPermissions({"worldedit.fixwater"})
     public static void fixWater(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
