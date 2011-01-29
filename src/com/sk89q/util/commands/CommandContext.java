@@ -47,7 +47,7 @@ public class CommandContext {
         System.arraycopy(args, i, newArgs, 1, args.length - i);
         newArgs[0] = args[0];
         
-        this.args = args;
+        this.args = newArgs;
     }
     
     public String getCommand() {
