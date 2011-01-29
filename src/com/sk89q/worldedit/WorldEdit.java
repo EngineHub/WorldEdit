@@ -830,7 +830,7 @@ public class WorldEdit {
             }
         }
         
-        engine.setTimeLimit(3000);
+        engine.setTimeLimit(config.scriptTimeout);
         
         Map<String, Object> vars = new HashMap<String, Object>();
         vars.put("argv", args);
