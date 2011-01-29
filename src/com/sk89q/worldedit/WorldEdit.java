@@ -431,7 +431,7 @@ public class WorldEdit {
         } else if (dirStr.charAt(0) == 'd') {
             return CuboidClipboard.FlipDirection.UP_DOWN;
         } else {
-            throw new UnknownDirectionException(dirStr);
+            throw new UnknownDirectionException(dir.name());
         }
     }
 

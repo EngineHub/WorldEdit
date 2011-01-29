@@ -69,8 +69,7 @@ public class ScriptingCommands {
             return;
         }
 
-        String[] scriptArgs = args.getPaddedSlice(0, 1);
-        scriptArgs[0] = lastScript;
+        String[] scriptArgs = args.getSlice(0);
         
         we.runScript(player, lastScript, scriptArgs);
         

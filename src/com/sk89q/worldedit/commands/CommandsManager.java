@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.commands;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -108,7 +107,7 @@ public class CommandsManager {
      */
     public boolean execute(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+            throws WorldEditException, Throwable {
         Method method = commands.get(args.getCommand().toLowerCase());
         
         if (method == null) {
@@ -140,8 +139,10 @@ public class CommandsManager {
         } catch (InvocationTargetException e) {
             if (e.getCause() instanceof WorldEditException) {
                 throw (WorldEditException)e.getCause();
+            } else if (e.getCause() instanceof NumberFormatException) {
+                throw (NumberFormatException)e.getCause();
             } else {
-                e.printStackTrace();
+                throw e.getCause();
             }
         }
         

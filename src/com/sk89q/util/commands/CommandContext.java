@@ -66,7 +66,7 @@ public class CommandContext {
     
     public String[] getPaddedSlice(int index, int padding) {
         String[] slice = new String[args.length - index + padding];
-        System.arraycopy(args, index, slice, padding, args.length - index + padding);
+        System.arraycopy(args, index, slice, padding, args.length - index);
         return slice;
     }
     

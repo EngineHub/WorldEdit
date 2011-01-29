@@ -106,7 +106,7 @@ public class ClipboardCommands {
             throws WorldEditException {
 
         boolean atOrigin = args.argsLength() > 0
-                ? (args.getString(1).equalsIgnoreCase("true")
+                ? (args.getString(0).equalsIgnoreCase("true")
                         || args.getString(0).equalsIgnoreCase("yes"))
                 : false;
                 

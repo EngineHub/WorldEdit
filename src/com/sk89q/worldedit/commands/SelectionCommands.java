@@ -195,7 +195,7 @@ public class SelectionCommands {
 
     @Command(
         aliases = {"//expand"},
-        usage = "<amount> [[reverse-amount] <direction>]",
+        usage = "<amount> [reverse-amount] <direction>",
         desc = "Expand the selection area",
         min = 1,
         max = 3
@@ -207,13 +207,10 @@ public class SelectionCommands {
 
         Vector dir;
 
-        int change = args.getInteger(0);
-        int reverseChange = 0;
-
         // Special syntax (//expand vert) to expand the selection between
         // sky and bedrock.
-        if (args.getString(0).equals("vert")
-                || args.getString(0).equals("vertical")) {
+        if (args.getString(0).equalsIgnoreCase("vert")
+                || args.getString(0).equalsIgnoreCase("vertical")) {
             Region region = session.getRegion();
             int oldSize = region.getSize();
             region.expand(new Vector(0, 128, 0));
@@ -225,6 +222,9 @@ public class SelectionCommands {
             
             return;
         }
+
+        int change = args.getInteger(0);
+        int reverseChange = 0;
         
         // Specifying a direction
         if (args.argsLength() == 2) {
@@ -369,7 +369,7 @@ public class SelectionCommands {
             throws WorldEditException {
         
         Set<Integer> searchIDs = we.getBlockIDs(player,
-                args.getString(1), true);
+                args.getString(0), true);
         player.print("Counted: " +
                 editSession.countBlocks(session.getRegion(), searchIDs));
     }

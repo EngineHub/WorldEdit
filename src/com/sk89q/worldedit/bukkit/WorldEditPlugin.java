@@ -148,7 +148,7 @@ public class WorldEditPlugin extends JavaPlugin {
     
     public boolean onCommand(Player player, Command cmd, String commandLabel, String[] args) {
         if (cmd.getName().equalsIgnoreCase("reloadwe")
-                && hasPermission(player, "reloadwe")) {
+                && hasPermission(player, "worldedit.reload")) {
             try {
                 loadConfiguration();
                 player.sendMessage("WorldEdit configuration reloaded.");
