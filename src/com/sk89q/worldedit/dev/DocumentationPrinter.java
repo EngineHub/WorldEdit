@@ -21,14 +21,30 @@ package com.sk89q.worldedit.dev;
 
 import java.io.*;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import com.sk89q.util.StringUtil;
 import com.sk89q.util.commands.Command;
 import com.sk89q.worldedit.commands.CommandPermissions;
 
 public class DocumentationPrinter {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         File commandsDir = new File(args[0]);
         
-        for (File f : commandsDir.listFiles()) {
+        List<Class<?>> commandClasses = getCommandClasses(commandsDir);
+
+        System.out.println("Writing permissions wiki table...");
+        writePermissionsWikiTable(commandClasses);
+        System.out.println("Writing Bukkit plugin.yml...");
+        writeBukkitYAML(commandClasses);
+
+        System.out.println("Done!");
+    }
+    
+    private static List<Class<?>> getCommandClasses(File dir) {
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        
+        for (File f : dir.listFiles()) {
             if (!f.getName().matches("^.*\\.java$")) {
                 continue;
             }
@@ -43,18 +59,42 @@ public class DocumentationPrinter {
             } catch (ClassNotFoundException e) {
                 continue;
             }
-
+            
+            classes.add(cls);
+        }
+        
+        return classes;
+    }   
+    
+    private static void writePermissionsWikiTable(List<Class<?>> commandClasses)
+            throws IOException {
+        FileOutputStream stream = null;
+        try {
+            stream = new FileOutputStream("wiki_permissions.txt");
+            PrintStream print = new PrintStream(stream);
+            _writePermissionsWikiTable(print, commandClasses);
+        } finally {
+            if (stream != null) {
+                stream.close();
+            }
+        }
+    }
+    
+    private static void _writePermissionsWikiTable(PrintStream stream,
+            List<Class<?>> commandClasses) {
+        
+        for (Class<?> cls : commandClasses) {
             for (Method method : cls.getMethods()) {
                 if (!method.isAnnotationPresent(Command.class)) {
                     continue;
                 }
-
+    
                 Command cmd = method.getAnnotation(Command.class);
-
-                System.out.println("|-");
-                System.out.print("| " + cmd.aliases()[0]);
-                System.out.print(" || ");
-
+    
+                stream.println("|-");
+                stream.print("| " + cmd.aliases()[0]);
+                stream.print(" || ");
+    
                 if (method.isAnnotationPresent(CommandPermissions.class)) {
                     CommandPermissions perms =
                         method.getAnnotation(CommandPermissions.class);
@@ -62,13 +102,56 @@ public class DocumentationPrinter {
                     String[] permKeys = perms.value();
                     for (int i = 0; i < permKeys.length; i++) {
                         if (i > 0) {
-                            System.out.print(", ");
+                            stream.print(", ");
                         }
-                        System.out.print(permKeys[i]);
+                        stream.print(permKeys[i]);
                     }
                 }
+    
+                stream.println();
+            }
+        }
+    }
+    
+    private static void writeBukkitYAML(List<Class<?>> commandClasses)
+            throws IOException {
+        FileOutputStream stream = null;
+        try {
+            stream = new FileOutputStream("plugin.yml");
+            PrintStream print = new PrintStream(stream);
+            _writeBukkitYAML(print, commandClasses);
+        } finally {
+            if (stream != null) {
+                stream.close();
+            }
+        }
+    }
+    
+    private static void _writeBukkitYAML(PrintStream stream,
+            List<Class<?>> commandClasses) {
 
-                System.out.println();
+        stream.println("name: WorldEdit");
+        stream.println("main: com.sk89q.worldedit.bukkit.WorldEditPlugin");
+        stream.println("version: \"WEVERSIONMACRO\"");
+        stream.println("commands:");
+        
+        for (Class<?> cls : commandClasses) {
+            for (Method method : cls.getMethods()) {
+                if (!method.isAnnotationPresent(Command.class)) {
+                    continue;
+                }
+    
+                Command cmd = method.getAnnotation(Command.class);
+
+                stream.println("    " + cmd.aliases()[0] + ":");
+                stream.println("        description: " + cmd.desc());
+                stream.println("        usage: /<command> "
+                        + (cmd.flags().length() > 0 ? "[-" + cmd.flags() + "] " : "")
+                        + cmd.usage());
+                if (cmd.aliases().length > 1) {
+                    stream.println("        aliases: "
+                            + StringUtil.joinString(cmd.aliases(), ", ", 1));
+                }
             }
         }
     }
