@@ -31,7 +31,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
  */
 public class GenerationCommands {
     @Command(
-        aliases = {"//hcyl"},
+        aliases = {"/hcyl"},
         usage = "<block> <radius> [height] ",
         desc = "Generate a hollow cylinder",
         min = 2,
@@ -52,7 +52,7 @@ public class GenerationCommands {
     }
 
     @Command(
-        aliases = {"//cyl"},
+        aliases = {"/cyl"},
         usage = "<block> <radius> [height] ",
         desc = "Generate a cylinder",
         min = 2,
@@ -73,7 +73,7 @@ public class GenerationCommands {
     }
 
     @Command(
-        aliases = {"//hsphere"},
+        aliases = {"/hsphere"},
         usage = "<block> <radius> [raised?] ",
         desc = "Generate a hollow sphere",
         min = 2,
@@ -102,7 +102,7 @@ public class GenerationCommands {
     }
 
     @Command(
-        aliases = {"//sphere"},
+        aliases = {"/sphere"},
         usage = "<block> <radius> [raised?] ",
         desc = "Generate a filled sphere",
         min = 2,
@@ -131,7 +131,7 @@ public class GenerationCommands {
     }
 
     @Command(
-        aliases = {"/forestgen"},
+        aliases = {"forestgen"},
         usage = "[size] [density] ",
         desc = "Generate a forest",
         min = 0,
@@ -151,7 +151,7 @@ public class GenerationCommands {
     }
     
     @Command(
-        aliases = {"/pinegen"},
+        aliases = {"pinegen"},
         usage = "[size] [density]",
         desc = "Generate a pine forest",
         min = 0,
@@ -171,7 +171,7 @@ public class GenerationCommands {
     }
     
     @Command(
-        aliases = {"/pumpkins"},
+        aliases = {"pumpkins"},
         usage = "[size]",
         desc = "Generate pumpkin patches",
         min = 0,

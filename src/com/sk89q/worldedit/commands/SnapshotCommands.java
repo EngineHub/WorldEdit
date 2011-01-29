@@ -37,7 +37,7 @@ import com.sk89q.worldedit.snapshots.SnapshotRestore;
  */
 public class SnapshotCommands {
     @Command(
-        aliases = {"/listsnapshots"},
+        aliases = {"listsnapshots"},
         usage = "[num]",
         desc = "List snapshots",
         min = 0,
@@ -71,7 +71,7 @@ public class SnapshotCommands {
     }
     
     @Command(
-        aliases = {"//use"},
+        aliases = {"/use"},
         usage = "<snapshot>",
         desc = "Choose a snapshot to use",
         min = 1,
@@ -112,7 +112,7 @@ public class SnapshotCommands {
     }
 
     @Command(
-        aliases = {"//restore"},
+        aliases = {"/restore"},
         usage = "[snapshot]",
         desc = "Restore the selection from a snapshot",
         min = 0,

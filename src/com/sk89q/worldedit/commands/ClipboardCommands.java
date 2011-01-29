@@ -35,7 +35,7 @@ import com.sk89q.worldedit.regions.Region;
  */
 public class ClipboardCommands {
     @Command(
-        aliases = {"//copy"},
+        aliases = {"/copy"},
         usage = "",
         desc = "Copy the selection to the clipboard",
         min = 0,
@@ -61,7 +61,7 @@ public class ClipboardCommands {
     }
 
     @Command(
-        aliases = {"//cut"},
+        aliases = {"/cut"},
         usage = "[leave-id]",
         desc = "Cut the selection to the clipboard",
         min = 0,
@@ -94,7 +94,7 @@ public class ClipboardCommands {
     }
     
     @Command(
-        aliases = {"//paste"},
+        aliases = {"/paste"},
         usage = "[at-origin?]",
         desc = "Paste the clipboard's contents",
         min = 0,
@@ -124,7 +124,7 @@ public class ClipboardCommands {
     }
 
     @Command(
-        aliases = {"//rotate"},
+        aliases = {"/rotate"},
         usage = "<angle-in-degrees>",
         desc = "Rotate the contents of the clipboard",
         min = 1,
@@ -147,7 +147,7 @@ public class ClipboardCommands {
     }
 
     @Command(
-        aliases = {"//flip"},
+        aliases = {"/flip"},
         usage = "[dir]",
         desc = "Flip the contents of the clipboard",
         min = 0,
@@ -167,7 +167,7 @@ public class ClipboardCommands {
     }
     
     @Command(
-        aliases = {"//load"},
+        aliases = {"/load"},
         usage = "<filename>",
         desc = "Load a schematic into your clipboard",
         min = 1,
@@ -209,7 +209,7 @@ public class ClipboardCommands {
     }
     
     @Command(
-        aliases = {"//save"},
+        aliases = {"/save"},
         usage = "<filename>",
         desc = "Save a schematic into your clipboard",
         min = 1,
@@ -265,7 +265,7 @@ public class ClipboardCommands {
     }
     
     @Command(
-        aliases = {"/clearclipboard"},
+        aliases = {"clearclipboard"},
         usage = "",
         desc = "Clear your clipboard",
         min = 0,

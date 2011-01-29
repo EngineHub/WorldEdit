@@ -32,7 +32,7 @@ import com.sk89q.worldedit.superpickaxe.*;
  */
 public class SuperPickaxeCommands {
     @Command(
-        aliases = {"//", "/,"},
+        aliases = {"/", ","},
         usage = "",
         desc = "Toggle the super pickaxe pickaxe function",
         min = 0,
@@ -51,7 +51,7 @@ public class SuperPickaxeCommands {
     }
     
     @Command(
-        aliases = {"/single"},
+        aliases = {"single"},
         usage = "",
         desc = "Enable the single block super pickaxe mode",
         min = 0,
@@ -68,7 +68,7 @@ public class SuperPickaxeCommands {
     }
     
     @Command(
-        aliases = {"/area"},
+        aliases = {"area"},
         usage = "<radius>",
         desc = "Enable the area super pickaxe pickaxe mode",
         min = 1,
@@ -93,7 +93,7 @@ public class SuperPickaxeCommands {
     }
     
     @Command(
-        aliases = {"/recur"},
+        aliases = {"recur"},
         usage = "<radius>",
         desc = "Enable the recursive super pickaxe pickaxe mode",
         min = 1,
@@ -118,7 +118,7 @@ public class SuperPickaxeCommands {
     }
 
     @Command(
-        aliases = {"/none"},
+        aliases = {"none"},
         usage = "",
         desc = "Turn off all superpickaxe alternate modes",
         min = 0,
@@ -134,7 +134,7 @@ public class SuperPickaxeCommands {
     }
 
     @Command(
-        aliases = {"/info"},
+        aliases = {"info"},
         usage = "",
         desc = "Block information tool",
         min = 0,
@@ -151,7 +151,7 @@ public class SuperPickaxeCommands {
     }
 
     @Command(
-        aliases = {"/tree"},
+        aliases = {"tree"},
         usage = "",
         desc = "Tree generator tool",
         min = 0,
@@ -168,7 +168,7 @@ public class SuperPickaxeCommands {
     }
 
     @Command(
-        aliases = {"/bigtree"},
+        aliases = {"bigtree"},
         usage = "",
         desc = "Big tree generator tool",
         min = 0,
@@ -185,7 +185,7 @@ public class SuperPickaxeCommands {
     }
 
     @Command(
-        aliases = {"/pinetree"},
+        aliases = {"pinetree"},
         usage = "",
         desc = "Pine tree generator tool",
         min = 0,
@@ -202,7 +202,7 @@ public class SuperPickaxeCommands {
     }
 
     @Command(
-        aliases = {"/repl"},
+        aliases = {"repl"},
         usage = "<block>",
         desc = "Block replacer tool",
         min = 1,
@@ -220,7 +220,7 @@ public class SuperPickaxeCommands {
     }
 
     @Command(
-        aliases = {"/brush"},
+        aliases = {"brush"},
         usage = "<block> [radius] [no-replace?]",
         desc = "Build spheres from far away",
         min = 1,
@@ -253,7 +253,7 @@ public class SuperPickaxeCommands {
     }
     
     @Command(
-        aliases = {"/rbrush"},
+        aliases = {"rbrush"},
         usage = "<block> [radius] ",
         desc = "Brush tool that will only replace blocks",
         min = 1,

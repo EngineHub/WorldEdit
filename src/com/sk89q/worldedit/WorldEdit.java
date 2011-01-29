@@ -678,12 +678,13 @@ public class WorldEdit {
      */
     public boolean handleCommand(LocalPlayer player, String[] split) {
         try {
+            split[0] = split[0].substring(1);
             
             // Quick script shortcut
-            if (split[0].matches("^/[^/].*\\.js$")) {
+            if (split[0].matches("^[^/].*\\.js$")) {
                 String[] newSplit = new String[split.length + 1];
                 System.arraycopy(split, 0, newSplit, 1, split.length);
-                newSplit[0] = "/cs";
+                newSplit[0] = "cs";
                 newSplit[1] = newSplit[1].substring(1);
                 split = newSplit;
             }
@@ -691,7 +692,7 @@ public class WorldEdit {
             String searchCmd = split[0].toLowerCase();
             if (commands.hasCommand(searchCmd)
                     || (config.noDoubleSlash && commands.hasCommand("/" + searchCmd))
-                    || ((searchCmd.length() < 3 || searchCmd.charAt(2) != '/')
+                    || (searchCmd.length() >= 2 && searchCmd.charAt(0) == '/'
                             && commands.hasCommand(searchCmd.substring(1)))) {
                 if (config.noDoubleSlash && commands.hasCommand("/" + searchCmd)) {
                     split[0] = "/" + split[0];

@@ -28,4 +28,5 @@ public @interface Command {
     String desc();
     int min();
     int max();
+    String flags() default "";
 }

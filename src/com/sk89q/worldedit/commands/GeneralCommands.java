@@ -30,7 +30,7 @@ import com.sk89q.worldedit.*;
  */
 public class GeneralCommands {
     @Command(
-        aliases = {"//limit"},
+        aliases = {"/limit"},
         usage = "<limit>",
         desc = "Modify block change limit",
         min = 1,
@@ -58,7 +58,7 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = {"/toggleplace"},
+        aliases = {"toggleplace"},
         usage = "",
         desc = "",
         min = 0,

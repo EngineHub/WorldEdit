@@ -36,7 +36,7 @@ import com.sk89q.worldedit.regions.Region;
  */
 public class RegionCommands {
     @Command(
-        aliases = {"//set"},
+        aliases = {"/set"},
         usage = "<block>",
         desc = "Set all the blocks inside the selection to a block",
         min = 1,
@@ -62,7 +62,7 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = {"//replace"},
+        aliases = {"/replace"},
         usage = "[from-block] <to-block>",
         desc = "Replace all blocks in the selection with another",
         min = 1,
@@ -95,7 +95,7 @@ public class RegionCommands {
     }
     
     @Command(
-        aliases = {"//overlay"},
+        aliases = {"/overlay"},
         usage = "<block>",
         desc = "Set a block on top of blocks in the region",
         min = 1,
@@ -114,7 +114,7 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = {"//walls"},
+        aliases = {"/walls"},
         usage = "<block>",
         desc = "Build the four sides of the selection",
         min = 1,
@@ -132,7 +132,7 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = {"//faces", "//outline"},
+        aliases = {"/faces", "/outline"},
         usage = "<block>",
         desc = "Build the walls, ceiling, and roof of a selection",
         min = 1,
@@ -149,7 +149,7 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = {"//smooth"},
+        aliases = {"/smooth"},
         usage = "[iterations]",
         desc = "Smooth the elevation in the selection",
         min = 0,
@@ -173,7 +173,7 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = {"//move"},
+        aliases = {"/move"},
         usage = "[count] [direction] [leave-id] ",
         desc = "Move the contents of the selection",
         min = 0,
@@ -203,7 +203,7 @@ public class RegionCommands {
     
 
     @Command(
-        aliases = {"//stack"},
+        aliases = {"/stack"},
         usage = "[count] [direction] ",
         desc = "Repeat the contents of the selection",
         min = 0,

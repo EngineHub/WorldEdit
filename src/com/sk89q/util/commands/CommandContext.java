@@ -18,14 +18,35 @@
 
 package com.sk89q.util.commands;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class CommandContext {
     protected String[] args;
+    protected Set<Character> flags = new HashSet<Character>();
     
     public CommandContext(String args) {
-        this.args = args.split(" ");
+        this(args.split(" "));
     }
     
     public CommandContext(String[] args) {
+        int i = 1;
+        
+        for (; i < args.length; i++) {
+            if (args[i].charAt(0) == '-') {
+                for (int k = 1; k < args[i].length(); k++) {
+                    flags.add(args[i].charAt(k));
+                }
+            } else {
+                break;
+            }
+        }
+        
+        String[] newArgs = new String[args.length - i + 1];
+        
+        System.arraycopy(args, i, newArgs, 1, args.length - i);
+        newArgs[0] = args[0];
+        
         this.args = args;
     }
     
@@ -68,6 +89,14 @@ public class CommandContext {
         String[] slice = new String[args.length - index + padding];
         System.arraycopy(args, index, slice, padding, args.length - index);
         return slice;
+    }
+    
+    public boolean hasFlag(char ch) {
+        return flags.contains(ch);
+    }
+    
+    public Set<Character> getFlags() {
+        return flags;
     }
     
     public int length() {

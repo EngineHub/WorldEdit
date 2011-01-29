@@ -96,6 +96,19 @@ public class CommandsManager {
     }
     
     /**
+     * Get the usage string for a command.
+     * 
+     * @param command
+     * @param cmd
+     * @return
+     */
+    private String getUsage(String command, Command cmd) {
+        return command
+                + (cmd.flags().length() > 0 ? " [-" + cmd.flags() + "]" : " ")
+                + cmd.usage();
+    }
+    
+    /**
      * Attempt to execute a command.
      * 
      * @param args
@@ -121,13 +134,23 @@ public class CommandsManager {
         Command cmd = method.getAnnotation(Command.class);
         
         if (args.argsLength() < cmd.min()) {
-            player.printError(args.getCommand() + " " + cmd.usage());
+            player.printError("Too few arguments.");
+            player.printError(getUsage(args.getCommand(), cmd));
             return true;
         }
         
         if (cmd.max() != -1 && args.argsLength() > cmd.max()) {
-            player.printError(args.getCommand() + " " + cmd.usage());
+            player.printError("Too many arguments.");
+            player.printError(getUsage(args.getCommand(), cmd));
             return true;
+        }
+        
+        for (char flag : args.getFlags()) {
+            if (cmd.flags().indexOf(String.valueOf(flag)) == -1) {
+                player.printError("Unknown flag: " + flag);
+                player.printError(getUsage(args.getCommand(), cmd));
+                return true;
+            }
         }
         
         try {

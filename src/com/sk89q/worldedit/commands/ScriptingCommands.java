@@ -30,7 +30,7 @@ import com.sk89q.worldedit.*;
  */
 public class ScriptingCommands {
     @Command(
-        aliases = {"/cs"},
+        aliases = {"cs"},
         usage = "<filename> [args...]",
         desc = "Execute a CraftScript",
         min = 1,
@@ -50,7 +50,7 @@ public class ScriptingCommands {
     }
 
     @Command(
-        aliases = {"/.s"},
+        aliases = {".s"},
         usage = "[args...]",
         desc = "Execute last CraftScript",
         min = 0,

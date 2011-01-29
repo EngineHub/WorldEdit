@@ -35,7 +35,7 @@ import com.sk89q.worldedit.blocks.*;
  */
 public class SelectionCommands {
     @Command(
-        aliases = {"//pos1"},
+        aliases = {"/pos1"},
         usage = "",
         desc = "Set position 1",
         min = 0,
@@ -57,7 +57,7 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"//pos2"},
+        aliases = {"/pos2"},
         usage = "",
         desc = "Set position 2",
         min = 0,
@@ -79,7 +79,7 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"//hpos1"},
+        aliases = {"/hpos1"},
         usage = "",
         desc = "Set position 1 to targeted block",
         min = 0,
@@ -106,7 +106,7 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"//hpos2"},
+        aliases = {"/hpos2"},
         usage = "",
         desc = "Set position 2 to targeted block",
         min = 0,
@@ -134,7 +134,7 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"//chunk"},
+        aliases = {"/chunk"},
         usage = "",
         desc = "Set the selection to your current chunk",
         min = 0,
@@ -157,7 +157,7 @@ public class SelectionCommands {
     }
     
     @Command(
-        aliases = {"//wand"},
+        aliases = {"/wand"},
         usage = "",
         desc = "Get the wand object",
         min = 0,
@@ -173,7 +173,7 @@ public class SelectionCommands {
     }
     
     @Command(
-        aliases = {"/toggleeditwand"},
+        aliases = {"toggleeditwand"},
         usage = "",
         desc = "Toggle functionality of the edit wand",
         min = 0,
@@ -194,7 +194,7 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"//expand"},
+        aliases = {"/expand"},
         usage = "<amount> [reverse-amount] <direction>",
         desc = "Expand the selection area",
         min = 1,
@@ -259,7 +259,7 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"//contract"},
+        aliases = {"/contract"},
         usage = "<amount> [reverse-amount] [direction]",
         desc = "Contract the selection area",
         min = 1,
@@ -305,7 +305,7 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"//shift"},
+        aliases = {"/shift"},
         usage = "<amount> [direction]",
         desc = "Shift the selection area",
         min = 1,
@@ -334,7 +334,7 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"//size"},
+        aliases = {"/size"},
         usage = "",
         desc = "Get information about the selection",
         min = 0,
@@ -375,7 +375,7 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"//distr"},
+        aliases = {"/distr"},
         usage = "",
         desc = "Get the distribution of blocks in the selection",
         min = 0,

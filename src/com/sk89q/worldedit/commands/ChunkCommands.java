@@ -33,7 +33,7 @@ import com.sk89q.worldedit.data.NestedFileChunkStore;
  */
 public class ChunkCommands {
     @Command(
-        aliases = {"/chunkinfo"},
+        aliases = {"chunkinfo"},
         usage = "",
         desc = "Get information about the chunk that you are inside",
         min = 0,
@@ -58,7 +58,7 @@ public class ChunkCommands {
     }
 
     @Command(
-        aliases = {"/listchunks"},
+        aliases = {"listchunks"},
         usage = "",
         desc = "List chunks that your selection includes",
         min = 0,
@@ -77,7 +77,7 @@ public class ChunkCommands {
     }
 
     @Command(
-        aliases = {"/delchunks"},
+        aliases = {"delchunks"},
         usage = "",
         desc = "Delete chunks that your selection includes",
         min = 0,
