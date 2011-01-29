@@ -95,29 +95,28 @@ public class ClipboardCommands {
     
     @Command(
         aliases = {"/paste"},
-        usage = "[at-origin?]",
+        usage = "",
+        flags = "ao",
         desc = "Paste the clipboard's contents",
         min = 0,
-        max = 1
+        max = 0
     )
     @CommandPermissions({"worldedit.clipboard.paste"})
     public static void paste(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        boolean atOrigin = args.argsLength() > 0
-                ? (args.getString(0).equalsIgnoreCase("true")
-                        || args.getString(0).equalsIgnoreCase("yes"))
-                : false;
+        boolean atOrigin = args.hasFlag('o');
+        boolean pasteNoAir = args.hasFlag('a');
                 
         if (atOrigin) {
             Vector pos = session.getClipboard().getOrigin();
-            session.getClipboard().place(editSession, pos, false);
+            session.getClipboard().place(editSession, pos, pasteNoAir);
             player.findFreePosition();
             player.print("Pasted to copy origin. Undo with //undo");
         } else {
             Vector pos = session.getPlacementPosition(player);
-            session.getClipboard().paste(editSession, pos, false);
+            session.getClipboard().paste(editSession, pos, pasteNoAir);
             player.findFreePosition();
             player.print("Pasted relative to you. Undo with //undo");
         }
