@@ -92,7 +92,7 @@ public class DocumentationPrinter {
                 Command cmd = method.getAnnotation(Command.class);
     
                 stream.println("|-");
-                stream.print("| " + cmd.aliases()[0]);
+                stream.print("| /" + cmd.aliases()[0]);
                 stream.print(" || ");
     
                 if (method.isAnnotationPresent(CommandPermissions.class)) {
