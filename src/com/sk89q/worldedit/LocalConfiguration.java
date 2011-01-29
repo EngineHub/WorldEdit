@@ -57,6 +57,8 @@ public abstract class LocalConfiguration {
     public int navigationWand = 345;
     public int navigationWandMaxDistance = 50;
     public int scriptTimeout = 3000;
+    public String saveDir = "schematics";
+    public String scriptsDir = "craftscripts";
     
     /**
      * Loads the configuration.

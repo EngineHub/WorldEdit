@@ -342,6 +342,22 @@ public class WorldEdit {
             throw new MaxRadiusException();
         }
     }
+    
+    /**
+     * Get a file relative to the defined working directory. If the specified
+     * path is absolute, then the working directory is not used.
+     * 
+     * @param path
+     * @return
+     */
+    public File getWorkingDirectoryFile(String path) {
+        File f = new File(path);
+        if (f.isAbsolute()) {
+            return f;
+        } else {
+            return new File(config.getWorkingDirectory(), path);
+        }
+    }
 
     /**
      * Modulus, divisor-style.
@@ -757,7 +773,7 @@ public class WorldEdit {
      */
     public void runScript(LocalPlayer player, String filename, String[] args)
             throws WorldEditException {
-        File dir = new File(config.getWorkingDirectory(), "craftscripts");
+        File dir = getWorkingDirectoryFile(config.scriptsDir);
         File f = new File(dir, filename);
 
         if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$")) {

@@ -181,8 +181,8 @@ public class ClipboardCommands {
         LocalConfiguration config = we.getConfiguration();
 
         String filename = args.getString(0).replace("\0", "") + ".schematic";
-        File dir = new File(config.getWorkingDirectory(), "schematics");
-        File f = new File(new File(config.getWorkingDirectory(), "schematics"), filename);
+        File dir = we.getWorkingDirectoryFile(config.saveDir);
+        File f = new File(dir, filename);
 
         if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+$")) {
             player.printError("Valid characters: A-Z, a-z, 0-9, spaces, "
@@ -230,8 +230,8 @@ public class ClipboardCommands {
             return;
         }
         
-        File dir = new File(config.getWorkingDirectory(), "schematics");
-        File f = new File(new File(config.getWorkingDirectory(), "schematics"), filename);
+        File dir = we.getWorkingDirectoryFile(config.saveDir);
+        File f = new File(dir, filename);
 
         if (!dir.exists()) {
             if (!dir.mkdir()) {
