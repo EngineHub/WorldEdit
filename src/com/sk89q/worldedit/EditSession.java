@@ -143,8 +143,14 @@ public class EditSession {
      */
     protected boolean rawSetBlock(Vector pt, BaseBlock block) {
         int y = pt.getBlockY();
+        int type = block.getType();
         
         if (y < 0 || y > 127) {
+            return false;
+        }
+        
+        // No invalid blocks
+        if ((type > 25 && type < 35) || type == 36 || type > 92) {
             return false;
         }
         
