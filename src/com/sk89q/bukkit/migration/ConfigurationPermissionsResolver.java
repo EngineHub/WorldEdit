@@ -94,6 +94,13 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
     }
     
     public boolean hasPermission(String player, String permission) {
+        int dotPos = permission.lastIndexOf(".");
+        if (dotPos > -1) {
+            if (hasPermission(player, permission.substring(0, dotPos))) {
+                return true;
+            }
+        }
+        
         Set<String> perms = userPermissionsCache.get(player.toLowerCase());
         if (perms == null) {
             return defaultPermissionsCache.contains(permission)

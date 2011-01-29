@@ -55,6 +55,12 @@ public class GroupUsersPemissionsResolver implements PermissionsResolver {
         try {
             Player player = server.getPlayer(name);
             if (player == null) return false;
+            int dotPos = permission.lastIndexOf(".");
+            if (dotPos > -1) {
+                if (hasPermission(name, permission.substring(0, dotPos))) {
+                    return true;
+                }
+            }
             return groupUsers.playerCanUseCommand(player, permission);
         } catch (Throwable t) {
             t.printStackTrace();

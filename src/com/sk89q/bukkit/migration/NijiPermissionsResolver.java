@@ -67,7 +67,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         try {
             Player player = server.getPlayer(name);
             if (player == null) return false;
-            return group.equals(api.Security.getGroup(player.getName()));
+            return api.Security.inGroup(name, group);
         } catch (Throwable t) {
             t.printStackTrace();
             return false;
