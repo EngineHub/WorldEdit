@@ -860,12 +860,8 @@ public class WorldEdit {
         try {
             engine = new RhinoCraftScriptEngine();
         } catch (NoClassDefFoundError e) {
-            try {
-                engine = new SunRhinoCraftScriptEngine();
-            } catch (NoClassDefFoundError e2) {
-                player.printError("Failed to find an installed script engine.");
-                return;
-            }
+            player.printError("Please install a scripting engine.");
+            return;
         }
         
         engine.setTimeLimit(config.scriptTimeout);
