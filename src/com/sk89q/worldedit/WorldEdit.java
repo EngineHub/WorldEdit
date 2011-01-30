@@ -570,7 +570,13 @@ public class WorldEdit {
     public boolean handleRightClick(LocalPlayer player) {
         LocalSession session = getSession(player);
         
-        if (player.getItemInHand() == config.navigationWand) {
+        if (player.isHoldingPickAxe()) {
+            if (session.getArmSwingMode() != null) {
+                session.getArmSwingMode().act(server, config,
+                        player, session, null);
+                return true;
+            }
+        } else if (player.getItemInHand() == config.navigationWand) {
             CompassMode mode = session.getCompassMode();
             
             if (mode == CompassMode.JUMPTO) {
