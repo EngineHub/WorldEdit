@@ -286,6 +286,20 @@ public class WorldEdit {
             throws UnknownItemException, DisallowedItemException {
 
         String[] items = list.split(",");
+        
+        if (list.equals("#clipboard") || list.equals("#copy")) {
+            LocalSession session = getSession(player);
+            CuboidClipboard clipboard;
+            
+            try {
+                clipboard = session.getClipboard();
+            } catch (EmptyClipboardException e) {
+                player.printError("Copy a selection first with //copy.");
+                throw new UnknownItemException("#clipboard");
+            }
+            
+            return new ClipboardPattern(clipboard);
+        }
 
         if (items.length == 1) {
             return new SingleBlockPattern(getBlock(player, items[0]));

@@ -269,6 +269,18 @@ public class CuboidClipboard {
     }
     
     /**
+     * Get one point in the copy. The point is relative to the origin
+     * of the copy (0, 0, 0) and not to the actual copy origin.
+     * 
+     * @param pos
+     * @return null
+     * @throws ArrayIndexOutOfBoundsException
+     */
+    public BaseBlock getPoint(Vector pos) throws ArrayIndexOutOfBoundsException {
+        return data[pos.getBlockX()][pos.getBlockY()][pos.getBlockZ()];
+    }
+    
+    /**
      * Get the size of the copy.
      * 
      * @return
