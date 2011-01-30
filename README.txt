@@ -16,5 +16,11 @@ http://wiki.sk89q.com/wiki/WorldEdit
 Thanks
 ------
 
-- grum for providing the area smooth code.
-- toi for the TargetBlock class.
+Thanks to the following individuals for their contributions to WorldEdit.
+
+- Erik Broes
+- Gunther De Wachter
+- Dean Ward
+- angelsl
+- winzjany
+- toi

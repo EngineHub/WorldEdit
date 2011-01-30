@@ -12,6 +12,7 @@
   <fileset dir="${lib.dir}" id="libs">
     <include name="truezip.jar" />
     <include name="Bukkit.jar" />
+    <include name="Craftbukkit.jar" />
     <include name="GroupUsers.jar" />
     <include name="Permissions.jar" />
     <include name="js.jar" />
