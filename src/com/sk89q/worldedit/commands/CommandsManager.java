@@ -104,7 +104,7 @@ public class CommandsManager {
      */
     private String getUsage(String command, Command cmd) {
         return command
-                + (cmd.flags().length() > 0 ? " [-" + cmd.flags() + "]" : " ")
+                + (cmd.flags().length() > 0 ? " [-" + cmd.flags() + "] " : " ")
                 + cmd.usage();
     }
     
