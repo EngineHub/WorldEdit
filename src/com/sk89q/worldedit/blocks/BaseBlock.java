@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.sk89q.worldedit.data.BlockData;
+
 /**
  * Represents a block.
  *
@@ -88,5 +90,26 @@ public class BaseBlock {
      */
     public boolean isAir() {
         return type == 0;
+    }
+    
+    /**
+     * Rotate this block 90 degrees.
+     */
+    public void rotate90() {
+        data = (char)BlockData.rotate90(type, data);
+    }
+    
+    /**
+     * Rotate this block -90 degrees.
+     */
+    public void rotate90Reverse() {
+        data = (char)BlockData.rotate90Reverse(type, data);
+    }
+    
+    /**
+     * Flip this block.
+     */
+    public void flip() {
+        data = (char)BlockData.flip(type, data);
     }
 }

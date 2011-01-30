@@ -123,6 +123,8 @@ public class CuboidClipboard {
         if (angle % 90 != 0) { // Can only rotate 90 degrees at the moment
             return;
         }
+        boolean reverse = angle < 0;
+        int numRotations = (int)Math.floor(angle / 90.0);
 
         int width = getWidth();
         int length = getLength();
@@ -142,7 +144,18 @@ public class CuboidClipboard {
                 int newX = v.getBlockX();
                 int newZ = v.getBlockZ();
                 for (int y = 0; y < height; y++) {
-                    newData[shiftX + newX][y][shiftZ + newZ] = data[x][y][z];
+                    BaseBlock block = data[x][y][z];
+                    newData[shiftX + newX][y][shiftZ + newZ] = block;
+                    
+                    if (reverse) {
+                        for (int i = 0; i < numRotations; i++) {
+                            block.rotate90Reverse();
+                        }
+                    } else {
+                        for (int i = 0; i < numRotations; i++) {
+                            block.rotate90();
+                        }
+                    }
                 }
             }
         }
@@ -171,6 +184,7 @@ public class CuboidClipboard {
                 for (int z = 0; z < length; z++) {
                     for (int y = 0; y < height; y++) {
                         BaseBlock old = data[xs][y][z];
+                        old.flip();
                         data[xs][y][z] = data[width - xs - 1][y][z];
                         data[width - xs - 1][y][z] = old;
                     }
@@ -182,6 +196,7 @@ public class CuboidClipboard {
                 for (int x = 0; x < width; x++) {
                     for (int y = 0; y < height; y++) {
                         BaseBlock old = data[x][y][zs];
+                        old.flip();
                         data[x][y][zs] = data[x][y][length - zs - 1];
                         data[x][y][length - zs - 1] = old;
                     }
