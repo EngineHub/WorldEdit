@@ -19,7 +19,9 @@
 
 package com.sk89q.worldedit.commands;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 import com.sk89q.util.commands.Command;
 import com.sk89q.util.commands.CommandContext;
 import com.sk89q.worldedit.*;
@@ -36,6 +38,8 @@ import com.sk89q.worldedit.snapshots.SnapshotRestore;
  * @author sk89q
  */
 public class SnapshotCommands {
+    private static Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+    
     @Command(
         aliases = {"listsnapshots"},
         usage = "[num]",
@@ -63,7 +67,19 @@ public class SnapshotCommands {
 
                 player.print("Use //use [snapshot] or //use latest to set the snapshot.");
             } else {
-                player.printError("No snapshots are available.");
+                player.printError("No snapshots are available. See console for details.");
+                
+                // Okay, let's toss some debugging information!
+                File dir = config.snapshotRepo.getDirectory();
+                
+                try {
+                    logger.info("WorldEdit found no snapshots: looked in: " +
+                            dir.getCanonicalPath());
+                } catch (IOException e) {
+                    logger.info("WorldEdit found no snapshots: looked in "
+                            + "(NON-RESOLVABLE PATH - does it exist?): " +
+                            dir.getPath());
+                }
             }
         } else {
             player.printError("Snapshot/backup restore is not configured.");
@@ -151,7 +167,20 @@ public class SnapshotCommands {
             snapshot = config.snapshotRepo.getDefaultSnapshot();
 
             if (snapshot == null) {
-                player.printError("No snapshots were found.");
+                player.printError("No snapshots were found. See console for details.");
+                
+                // Okay, let's toss some debugging information!
+                File dir = config.snapshotRepo.getDirectory();
+                
+                try {
+                    logger.info("WorldEdit found no snapshots: looked in: " +
+                            dir.getCanonicalPath());
+                } catch (IOException e) {
+                    logger.info("WorldEdit found no snapshots: looked in "
+                            + "(NON-RESOLVABLE PATH - does it exist?): " +
+                            dir.getPath());
+                }
+                
                 return;
             }
         }
