@@ -237,61 +237,43 @@ public class SuperPickaxeCommands {
     }
 
     @Command(
-        aliases = {"brush"},
-        usage = "<block> [radius] [no-replace?]",
-        desc = "Build spheres from far away",
-        min = 1,
-        max = 3
+        aliases = {"/brush"},
+        usage = "",
+        flags = "r",
+        desc = "Build from far away",
+        min = 0,
+        max = 0
     )
     @CommandPermissions({"worldedit.superpickaxe.drawing.brush"})
     public static void brush(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
         
-        LocalConfiguration config = we.getConfiguration();
-
-        int radius = args.argsLength() > 1 ? args.getInteger(1) : 2;
-        boolean nonReplacing = args.argsLength() > 2
-                ? (args.getString(2).equalsIgnoreCase("true")
-                        || args.getString(2).equalsIgnoreCase("yes")) : false;
-        if (radius > config.maxBrushRadius) {
-            player.printError("Maximum allowed brush radius: "
-                    + config.maxBrushRadius);
-            return;
-        }
-        BaseBlock targetBlock = we.getBlock(player, args.getString(0));
+        boolean nonReplacing = args.hasFlag('r');
+        
         session.setRightClickMode(null);
-        session.setArmSwingMode(new SphereBrush(targetBlock, radius, nonReplacing));
+        session.setArmSwingMode(new Brush(nonReplacing));
         if (nonReplacing) {
-            player.print("Non-replacing sphere brush tool equipped.");
+            player.print("Non-replacing brush tool equipped.");
         } else {
-            player.print("Sphere brush tool equipped. Swing with a pickaxe.");
+            player.print("Brush tool equipped. Swing with a pickaxe.");
         }
     }
     
     @Command(
-        aliases = {"rbrush"},
-        usage = "<block> [radius] ",
+        aliases = {"/rbrush"},
+        usage = "",
         desc = "Brush tool that will only replace blocks",
-        min = 1,
-        max = 2
+        min = 0,
+        max = 0
     )
     @CommandPermissions({"worldedit.superpickaxe.drawing.brush"})
     public static void rbrush(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
         
-        LocalConfiguration config = we.getConfiguration();
-
-        int radius = args.argsLength() > 1 ? args.getInteger(1) : 2;
-        if (radius > config.maxBrushRadius) {
-            player.printError("Maximum allowed brush radius: "
-                    + config.maxBrushRadius);
-            return;
-        }
-        BaseBlock targetBlock = we.getBlock(player, args.getString(0));
         session.setRightClickMode(null);
-        session.setArmSwingMode(new ReplacingSphereBrush(targetBlock, radius));
-        player.print("Replacing sphere brush tool equipped. Swing with a pickaxe.");
+        session.setArmSwingMode(new ReplacingBrush());
+        player.print("Replacing brush tool equipped. Swing with a pickaxe.");
     }
 }

@@ -2,6 +2,18 @@ name: WorldEdit
 main: com.sk89q.worldedit.bukkit.WorldEditPlugin
 version: "WEVERSIONMACRO"
 commands:
+    /sb:
+        description: Choose the sphere brush
+        usage: /<command> [-h] <block> [radius]
+        aliases: ['/sphereb']
+    /cb:
+        description: Choose the cylinder brush
+        usage: /<command> [-h] <block> [radius] [height]
+        aliases: ['/cylb']
+    /cbb:
+        description: Choose the clipboard brush
+        usage: /<command> [-a] 
+        aliases: ['/copyb']
     chunkinfo:
         description: Get information about the chunk that you are inside
         usage: /<command> 
@@ -197,12 +209,12 @@ commands:
     cycler:
         description: Block data cycler tool
         usage: /<command> 
-    brush:
-        description: Build spheres from far away
-        usage: /<command> <block> [radius] [no-replace?]
-    rbrush:
+    /brush:
+        description: Build from far away
+        usage: /<command> [-r] 
+    /rbrush:
         description: Brush tool that will only replace blocks
-        usage: /<command> <block> [radius] 
+        usage: /<command> 
     recur:
         description: Enable the recursive super pickaxe pickaxe mode
         usage: /<command> <radius>

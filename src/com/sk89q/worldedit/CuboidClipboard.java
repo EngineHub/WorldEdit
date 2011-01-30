@@ -267,6 +267,15 @@ public class CuboidClipboard {
             }
         }
     }
+    
+    /**
+     * Get the size of the copy.
+     * 
+     * @return
+     */
+    public Vector getSize() {
+        return size;
+    }
 
     /**
      * Saves the clipboard data to a .schematic-format file.

@@ -97,6 +97,7 @@ public class WorldEdit {
         commands.register(SelectionCommands.class);
         commands.register(SnapshotCommands.class);
         commands.register(SuperPickaxeCommands.class);
+        commands.register(BrushShapeCommands.class);
         commands.register(UtilityCommands.class);
     }
 

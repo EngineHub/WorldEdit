@@ -21,25 +21,14 @@ package com.sk89q.worldedit.superpickaxe;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.superpickaxe.brushes.BrushShape;
 
 /**
  * Builds a sphere at the place being looked at.
  * 
  * @author sk89q
  */
-public class SphereBrush implements SuperPickaxeMode {
-    private BaseBlock targetBlock;
-    private int radius;
-    private boolean nonReplacing;
-    
-    public SphereBrush(BaseBlock targetBlock, int radius, boolean nonReplacing) {
-        this.targetBlock = targetBlock;
-        this.radius = radius;
-        this.nonReplacing = nonReplacing;
-    }
-    
-    @Override
+public class ReplacingBrush implements SuperPickaxeMode {
     public boolean act(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         WorldVector target = player.getBlockTrace(500);
@@ -51,15 +40,21 @@ public class SphereBrush implements SuperPickaxeMode {
         
         BlockBag bag = session.getBlockBag(player);
         
-        ReplacingEditSession editSession = new ReplacingEditSession(server, target.getWorld(),
-                session.getBlockChangeLimit(), bag);
+        BrushShape shape = session.getBrushShape();
         
-        if (nonReplacing) {
-            editSession.disableReplacing();
+        if (shape == null) {
+            player.printError("Select a brush first.");
+            return true;
         }
         
+        ReplacingExistingEditSession editSession =
+                new ReplacingExistingEditSession(server, target.getWorld(),
+                session.getBlockChangeLimit(), bag);
+        
+        editSession.enableReplacing();
+        
         try {
-            editSession.makeSphere(target, targetBlock, radius, true);
+            shape.build(editSession, target);
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {

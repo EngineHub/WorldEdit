@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import com.sk89q.worldedit.snapshots.Snapshot;
 import com.sk89q.worldedit.superpickaxe.SinglePickaxe;
 import com.sk89q.worldedit.superpickaxe.SuperPickaxeMode;
+import com.sk89q.worldedit.superpickaxe.brushes.BrushShape;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -55,6 +56,7 @@ public class LocalSession {
     private Snapshot snapshot;
     private String lastScript;
     private CompassMode compassMode = CompassMode.JUMPTO;
+    private BrushShape brushShape = null;
 
     /**
      * Clear history.
@@ -446,5 +448,19 @@ public class LocalSession {
      */
     public void setCompassMode(CompassMode compassMode) {
         this.compassMode = compassMode;
+    }
+
+    /**
+     * @return the brushShape
+     */
+    public BrushShape getBrushShape() {
+        return brushShape;
+    }
+
+    /**
+     * @param brushShape the brushShape to set
+     */
+    public void setBrushShape(BrushShape brushShape) {
+        this.brushShape = brushShape;
     }
 }

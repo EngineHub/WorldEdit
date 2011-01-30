@@ -21,20 +21,18 @@ package com.sk89q.worldedit.superpickaxe;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.superpickaxe.brushes.BrushShape;
 
 /**
- * Builds a sphere at the place being looked at.
+ * Builds a shape at the place being looked at.
  * 
  * @author sk89q
  */
-public class ReplacingSphereBrush implements SuperPickaxeMode {
-    private BaseBlock targetBlock;
-    private int radius;
+public class Brush implements SuperPickaxeMode {
+    private boolean nonReplacing;
     
-    public ReplacingSphereBrush(BaseBlock targetBlock, int radius) {
-        this.targetBlock = targetBlock;
-        this.radius = radius;
+    public Brush(boolean nonReplacing) {
+        this.nonReplacing = nonReplacing;
     }
     
     @Override
@@ -49,14 +47,22 @@ public class ReplacingSphereBrush implements SuperPickaxeMode {
         
         BlockBag bag = session.getBlockBag(player);
         
-        ReplacingExistingEditSession editSession =
-                new ReplacingExistingEditSession(server, target.getWorld(),
+        BrushShape shape = session.getBrushShape();
+        
+        if (shape == null) {
+            player.printError("Select a brush first.");
+            return true;
+        }
+        
+        ReplacingEditSession editSession = new ReplacingEditSession(server, target.getWorld(),
                 session.getBlockChangeLimit(), bag);
         
-        editSession.enableReplacing();
+        if (nonReplacing) {
+            editSession.disableReplacing();
+        }
         
         try {
-            editSession.makeSphere(target, targetBlock, radius, true);
+            shape.build(editSession, target);
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {
