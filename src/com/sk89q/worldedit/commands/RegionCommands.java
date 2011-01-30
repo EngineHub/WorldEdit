@@ -106,10 +106,16 @@ public class RegionCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        BaseBlock block = we.getBlock(player, args.getString(0));
+        Pattern pat = we.getBlockPattern(player, args.getString(0));
 
         Region region = session.getRegion();
-        int affected = editSession.overlayCuboidBlocks(region, block);
+        int affected = 0;
+        if (pat instanceof SingleBlockPattern) {
+            affected = editSession.overlayCuboidBlocks(region,
+                    ((SingleBlockPattern)pat).getBlock());
+        } else {
+            affected = editSession.overlayCuboidBlocks(region, pat);
+        }
         player.print(affected + " block(s) have been overlayed.");
     }
 

@@ -1125,6 +1125,48 @@ public class EditSession {
     }
 
     /**
+     * Overlays a layer of blocks over a cuboid area.
+     * 
+     * @param region
+     * @param pattern
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int overlayCuboidBlocks(Region region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        Vector min = region.getMinimumPoint();
+        Vector max = region.getMaximumPoint();
+
+        int upperY = Math.min(127, max.getBlockY() + 1);
+        int lowerY = Math.max(0, min.getBlockY() - 1);
+
+        int affected = 0;
+
+        int minX = min.getBlockX();
+        int minZ = min.getBlockZ();
+        int maxX = max.getBlockX();
+        int maxZ = max.getBlockZ();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                for (int y = upperY; y >= lowerY; y--) {
+                    Vector above = new Vector(x, y + 1, z);
+
+                    if (y + 1 <= 127 && !getBlock(new Vector(x, y, z)).isAir()
+                            && getBlock(above).isAir()) {
+                        if (setBlock(above, pattern.next(above))) {
+                            affected++;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
      * Stack a cuboid region.
      * 
      * @param region
