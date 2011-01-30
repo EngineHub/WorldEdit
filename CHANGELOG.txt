@@ -1,3 +1,29 @@
+3.0:
+- Added /searchitem or //l command to lookup items and block by name and ID.
+- Added block data cycling super pickaxe tool. (/cycler)
+- Added //paste [-ao] syntax to paste without air and at origin.
+- Added support for //stack [-a] to not stack air.
+- Added the ability to configure the schematic and CraftScript directories.
+- Added better support for cake, added some more block/item aliases.
+- Added support for rotation block orientation with the rotate and flip
+    commands (now stairs, torches, etc. will rotate correctly).
+- Added distance to //size.
+- Added more brush shapes (hollow sphere, cylinder, hollow cylinder,
+    and clipboard) for the brush tools.
+- Added in a valid block ID check.
+- Added debugging information for when no snapshots could be found.
+- Added pattern support to //overlay (i.e. //overlay 3%torch,97%air).
+- Added a clipboard pattern (//set #clipboard) -- useful for repeating
+    patterns over an area.
+- Changed the arm swing tools to also work on right click.
+- Improved block drop list (thanks to Gunther De Wachter).
+- Fixed scripting.timeout setting taking no effect.
+- Fixed group checking with Permissions.
+- Moved commands around in the code and added hierarchical permissions
+    support in the process. All permission systems supported by WorldEdit
+    (and utilizing plugins) support hierarchy, regardless if they really
+    do or not. WorldEdit will simulate hierarchy as required.
+
 2.15.2:
 - Minor additions for ease of integration.
 

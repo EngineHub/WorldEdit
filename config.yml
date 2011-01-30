@@ -45,6 +45,10 @@ navigation-wand:
 
 scripting:
     timeout: 3000
+    dir: craftscripts
+
+saving:
+    dir: schematics
 
 wand-item: 271
 shell-save-type: 
