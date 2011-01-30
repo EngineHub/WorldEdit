@@ -353,6 +353,7 @@ public class SelectionCommands {
         player.print("First position: " + session.getPos1());
         player.print("Second position: " + session.getPos2());
         player.print("Size: " + size);
+        player.print("Distance: " + region.getMaximumPoint().distance(region.getMinimumPoint()));
         player.print("# of blocks: " + region.getSize());
     }
 
