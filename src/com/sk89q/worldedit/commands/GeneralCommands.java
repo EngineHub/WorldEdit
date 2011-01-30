@@ -22,6 +22,7 @@ package com.sk89q.worldedit.commands;
 import com.sk89q.util.commands.Command;
 import com.sk89q.util.commands.CommandContext;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.ItemType;
 
 /**
  * General WorldEdit commands.
@@ -72,6 +73,83 @@ public class GeneralCommands {
             player.print("Now placing at pos #1.");
         } else {
             player.print("Now placing at the block you stand in.");
+        }
+    }
+
+    @Command(
+        aliases = {"searchitem", "/l"},
+        usage = "<query>",
+        flags = "bi",
+        desc = "Search for an item",
+        min = 1,
+        max = 1
+    )
+    public static void searchItem(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        
+        String query = args.getString(0).trim().toLowerCase();
+        boolean blocksOnly = args.hasFlag('b');
+        boolean itemsOnly = args.hasFlag('i');
+        
+        try {
+            int id = Integer.parseInt(query);
+            
+            ItemType type = ItemType.fromID(id);
+            
+            if (type != null) {
+                player.print("#" + type.getID() + " (" + type.getName() + ")");
+            } else {
+                player.printError("No item found by ID " + id);
+            }
+            
+            return;
+        } catch (NumberFormatException e) {
+        }
+        
+        if (query.length() <= 2) {
+            player.printError("Enter a longer search string (len > 2).");
+            return;
+        }
+        
+        if (!blocksOnly && !itemsOnly) {
+            player.print("Searching for: " + query);
+        } else if (blocksOnly && itemsOnly) {
+            player.printError("You cannot use both the 'b' and 'i' flags simultaneously.");
+            return;
+        } else if (blocksOnly) {
+            player.print("Searching for blocks: " + query);
+        } else {
+            player.print("Searching for items: " + query);
+        }
+        
+        int found = 0;
+        
+        for (ItemType type : ItemType.values()) {
+            if (found >= 15) {
+                player.print("Too many results!");
+                break;
+            }
+            
+            if (blocksOnly && type.getID() > 255) {
+                continue;
+            }
+            
+            if (itemsOnly && type.getID() <= 255) {
+                continue;
+            }
+            
+            for (String alias : type.getAliases()) {
+                if (alias.contains(query)) {
+                    player.print("#" + type.getID() + " (" + type.getName() + ")");
+                    found++;
+                    break;
+                }
+            }
+        }
+        
+        if (found == 0) {
+            player.printError("No items found.");
         }
     }
 }

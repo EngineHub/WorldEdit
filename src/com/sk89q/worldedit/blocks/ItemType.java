@@ -301,6 +301,15 @@ public enum ItemType {
     }
     
     /**
+     * Get a list of aliases.
+     * 
+     * @return
+     */
+    public String[] getAliases() {
+        return lookupKeys;
+    }
+    
+    /**
      * Returns true if an item should not be stacked.
      * 
      * @param id

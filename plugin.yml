@@ -38,6 +38,10 @@ commands:
     toggleplace:
         description: 
         usage: /<command> 
+    searchitem:
+        description: Search for an item
+        usage: /<command> <query>
+        aliases: ['/l']
     /limit:
         description: Modify block change limit
         usage: /<command> <limit>
