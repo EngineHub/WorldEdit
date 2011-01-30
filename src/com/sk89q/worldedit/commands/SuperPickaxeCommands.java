@@ -24,6 +24,7 @@ import com.sk89q.util.commands.CommandContext;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.superpickaxe.*;
+import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
  * Super pickaxe commands.
@@ -152,53 +153,28 @@ public class SuperPickaxeCommands {
 
     @Command(
         aliases = {"tree"},
-        usage = "",
+        usage = "[type]",
         desc = "Tree generator tool",
         min = 0,
-        max = 0
+        max = 1
     )
     @CommandPermissions({"worldedit.superpickaxe.tree"})
     public static void tree(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
+        TreeGenerator.TreeType type = args.argsLength() > 0 ?
+                type = TreeGenerator.lookup(args.getString(0))
+                : TreeGenerator.TreeType.TREE;
+
+        if (type == null) {
+            player.printError("Tree type '" + args.getString(0) + "' is unknown.");
+            return;
+        }
+
         session.setArmSwingMode(null);
-        session.setRightClickMode(new TreePlanter());
+        session.setRightClickMode(new TreePlanter(new TreeGenerator(type)));
         player.print("Tree tool equipped. Right click grass with a pickaxe.");
-    }
-
-    @Command(
-        aliases = {"bigtree"},
-        usage = "",
-        desc = "Big tree generator tool",
-        min = 0,
-        max = 0
-    )
-    @CommandPermissions({"worldedit.superpickaxe.tree.big"})
-    public static void bigTree(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
-
-        session.setArmSwingMode(null);
-        session.setRightClickMode(new BigTreePlanter());
-        player.print("Big tree tool equipped. Right click grass with a pickaxe.");
-    }
-
-    @Command(
-        aliases = {"pinetree"},
-        usage = "",
-        desc = "Pine tree generator tool",
-        min = 0,
-        max = 0
-    )
-    @CommandPermissions({"worldedit.superpickaxe.tree.pine"})
-    public static void pineTree(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
-
-        session.setArmSwingMode(null);
-        session.setRightClickMode(new PineTreePlanter());
-        player.print("Pine tree tool equipped. Right click a block with a pickaxe.");
     }
 
     @Command(

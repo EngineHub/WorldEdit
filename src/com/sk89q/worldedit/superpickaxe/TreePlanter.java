@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.superpickaxe;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
  * Plants a tree.
@@ -27,6 +28,12 @@ import com.sk89q.worldedit.*;
  * @author sk89q
  */
 public class TreePlanter implements SuperPickaxeMode {
+    private TreeGenerator gen;
+    
+    public TreePlanter(TreeGenerator gen) {
+        this.gen = gen;
+    }
+    
     @Override
     public boolean act(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
@@ -36,9 +43,11 @@ public class TreePlanter implements SuperPickaxeMode {
             new EditSession(server, world, session.getBlockChangeLimit());
     
         try {
-            if (!world.generateTree(editSession, clicked)) {
-                player.printError("Notch won't let you put a tree there.");
+            if (!gen.generate(editSession, clicked.add(0, 1, 0))) {
+                player.printError("A tree can't go there.");
             }
+        } catch (MaxChangedBlocksException e) {
+            player.printError("Max. blocks changed reached.");
         } finally {
             session.remember(editSession);
         }

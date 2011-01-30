@@ -71,10 +71,7 @@ commands:
         usage: /<command> <block> <radius> [raised?] 
     forestgen:
         description: Generate a forest
-        usage: /<command> [size] [density] 
-    pinegen:
-        description: Generate a pine forest
-        usage: /<command> [size] [density]
+        usage: /<command> [size] [type] [density]
     pumpkins:
         description: Generate pumpkin patches
         usage: /<command> [size]
@@ -197,12 +194,6 @@ commands:
     none:
         description: Turn off all superpickaxe alternate modes
         usage: /<command> 
-    bigtree:
-        description: Big tree generator tool
-        usage: /<command> 
-    pinetree:
-        description: Pine tree generator tool
-        usage: /<command> 
     repl:
         description: Block replacer tool
         usage: /<command> <block>
@@ -226,7 +217,7 @@ commands:
         usage: /<command> 
     tree:
         description: Tree generator tool
-        usage: /<command> 
+        usage: /<command> [type]
     /fillr:
         description: Fill a hole recursively
         usage: /<command>  <block> <radius> [depth] 

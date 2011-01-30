@@ -23,6 +23,7 @@ import com.sk89q.util.commands.Command;
 import com.sk89q.util.commands.CommandContext;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
  * Generation commands.
@@ -132,7 +133,7 @@ public class GenerationCommands {
 
     @Command(
         aliases = {"forestgen"},
-        usage = "[size] [density] ",
+        usage = "[size] [type] [density]",
         desc = "Generate a forest",
         min = 0,
         max = 2
@@ -141,33 +142,22 @@ public class GenerationCommands {
     public static void forestGen(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
-
+        
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 10;
-        double density = args.argsLength() > 1 ? Double.parseDouble(args.getString(1)) / 100 : 0.05;
+        TreeGenerator.TreeType type = args.argsLength() > 1 ?
+                type = TreeGenerator.lookup(args.getString(1))
+                : TreeGenerator.TreeType.TREE;
+        double density = args.argsLength() > 2 ? args.getDouble(2) / 100 : 0.05;
 
+        if (type == null) {
+            player.printError("Tree type '" + args.getString(1) + "' is unknown.");
+            return;
+        } else {
+        }
+        
         int affected = editSession.makeForest(player.getPosition(),
-                size, density, false);
+                size, density, new TreeGenerator(type));
         player.print(affected + " trees created.");
-    }
-    
-    @Command(
-        aliases = {"pinegen"},
-        usage = "[size] [density]",
-        desc = "Generate a pine forest",
-        min = 0,
-        max = 2
-    )
-    @CommandPermissions({"worldedit.generation.forest"})
-    public static void pineGen(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
-
-        int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 10;
-        double density = args.argsLength() > 1 ? Double.parseDouble(args.getString(1)) / 100 : 0.05;
-
-        int affected = editSession.makeForest(player.getPosition(),
-                size, density, true);
-        player.print(affected + " pine trees created.");
     }
     
     @Command(

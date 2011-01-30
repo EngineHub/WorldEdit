@@ -99,7 +99,8 @@ public abstract class LocalWorld {
      * @param pt
      * @return
      */
-    public abstract boolean generateTree(EditSession editSession, Vector pt);
+    public abstract boolean generateTree(EditSession editSession, Vector pt)
+            throws MaxChangedBlocksException;
 
     /**
      * Generate a big tree at a location.
@@ -107,7 +108,35 @@ public abstract class LocalWorld {
      * @param pt
      * @return
      */
-    public abstract boolean generateBigTree(EditSession editSession, Vector pt);
+    public abstract boolean generateBigTree(EditSession editSession, Vector pt)
+            throws MaxChangedBlocksException;
+
+    /**
+     * Generate a birch tree at a location.
+     * 
+     * @param pt
+     * @return
+     */
+    public abstract boolean generateBirchTree(EditSession editSession, Vector pt)
+    throws MaxChangedBlocksException;
+
+    /**
+     * Generate a redwood tree at a location.
+     * 
+     * @param pt
+     * @return
+     */
+    public abstract boolean generateRedwoodTree(EditSession editSession, Vector pt)
+    throws MaxChangedBlocksException;
+
+    /**
+     * Generate a tall redwood tree at a location.
+     * 
+     * @param pt
+     * @return
+     */
+    public abstract boolean generateTallRedwoodTree(EditSession editSession, Vector pt)
+    throws MaxChangedBlocksException;
 
     /**
      * Drop an item.

@@ -11,8 +11,6 @@
   
   <fileset dir="${lib.dir}" id="libs">
     <include name="truezip.jar" />
-    <include name="minecraft_server_cb.jar" />
-    <include name="CraftBukkit.jar" />
     <include name="Bukkit.jar" />
     <include name="GroupUsers.jar" />
     <include name="Permissions.jar" />

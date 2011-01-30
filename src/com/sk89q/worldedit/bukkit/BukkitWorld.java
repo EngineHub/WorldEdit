@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
@@ -31,6 +29,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Location;
+import org.bukkit.TreeType;
 import org.bukkit.World;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
@@ -38,11 +37,6 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.*;
 
 public class BukkitWorld extends LocalWorld {
-    /**
-     * Logger.
-     */
-    private final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
-    
     private World world;
     
     /**
@@ -254,14 +248,8 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean generateTree(EditSession editSession, Vector pt) {
-        try {
-            return CraftBukkitInterface.generateTree(editSession, pt);
-        } catch (Throwable t) {
-            logger.log(Level.SEVERE, 
-                    "Failed to create tree (do you need to update WorldEdit " +
-                    "due to a Minecraft update?)", t);
-            return false;
-        }
+        return world.generateTree(BukkitUtil.toLocation(world, pt), TreeType.TREE,
+                new EditSessionBlockChangeDegate(editSession));
     }
 
     /**
@@ -272,14 +260,44 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean generateBigTree(EditSession editSession, Vector pt) {
-        try {
-            return CraftBukkitInterface.generateBigTree(editSession, pt);
-        } catch (Throwable t) {
-            logger.log(Level.SEVERE, 
-                    "Failed to create tree (do you need to update WorldEdit " +
-                    "due to a Minecraft update?)", t);
-            return false;
-        }
+        return world.generateTree(BukkitUtil.toLocation(world, pt), TreeType.BIG_TREE,
+                new EditSessionBlockChangeDegate(editSession));
+    }
+
+    /**
+     * Generate a birch tree at a location.
+     * 
+     * @param pt
+     * @return
+     */
+    @Override
+    public boolean generateBirchTree(EditSession editSession, Vector pt) {
+        return world.generateTree(BukkitUtil.toLocation(world, pt), TreeType.BIRCH,
+                new EditSessionBlockChangeDegate(editSession));
+    }
+
+    /**
+     * Generate a redwood tree at a location.
+     * 
+     * @param pt
+     * @return
+     */
+    @Override
+    public boolean generateRedwoodTree(EditSession editSession, Vector pt) {
+        return world.generateTree(BukkitUtil.toLocation(world, pt), TreeType.REDWOOD,
+                new EditSessionBlockChangeDegate(editSession));
+    }
+
+    /**
+     * Generate a redwood tree at a location.
+     * 
+     * @param pt
+     * @return
+     */
+    @Override
+    public boolean generateTallRedwoodTree(EditSession editSession, Vector pt) {
+        return world.generateTree(BukkitUtil.toLocation(world, pt), TreeType.TALL_REDWOOD,
+                new EditSessionBlockChangeDegate(editSession));
     }
 
     /**

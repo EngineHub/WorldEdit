@@ -24,11 +24,16 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.Location;
 import org.bukkit.Server;
+import org.bukkit.World;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 
 public class BukkitUtil {
     private BukkitUtil()  {
+    }
+    
+    public static Location toLocation(World world, Vector loc) {
+        return new Location(world, loc.getX(), loc.getY(), loc.getZ());
     }
     
     public static BlockVector toVector(Block block) {
