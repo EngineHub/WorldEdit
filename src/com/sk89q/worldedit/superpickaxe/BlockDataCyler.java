@@ -38,7 +38,7 @@ public class BlockDataCyler implements SuperPickaxeMode {
         int data = world.getBlockData(clicked);
         
         if (config.allowedDataCycleBlocks.size() > 0
-                && !player.hasPermission("worldedit.superpickaxe.data-cycler.any")
+                && !player.hasPermission("worldedit.override.data-cycler")
                 && !config.allowedDataCycleBlocks.contains(type)) {
             player.printError("You are not permitted to cycle the data value of that block.");
             return true;
