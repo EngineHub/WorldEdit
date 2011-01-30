@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
@@ -145,8 +146,15 @@ public class WorldEditPlugin extends JavaPlugin {
         config.load();
         perms.load();
     }
-    
-    public boolean onCommand(Player player, Command cmd, String commandLabel, String[] args) {
+
+    public boolean onCommand(CommandSender sender, Command cmd,
+            String commandLabel, String[] args) {
+        if (!sender.isPlayer()) {
+            return true;
+        }
+        
+        Player player = (Player)sender;
+        
         if (cmd.getName().equalsIgnoreCase("reloadwe")
                 && hasPermission(player, "worldedit.reload")) {
             try {
