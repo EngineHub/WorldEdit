@@ -40,7 +40,7 @@ commands:
         usage: /<command> 
     searchitem:
         description: Search for an item
-        usage: /<command> <query>
+        usage: /<command> [-bi] <query>
         aliases: ['/l']
     /limit:
         description: Modify block change limit
@@ -194,6 +194,9 @@ commands:
     repl:
         description: Block replacer tool
         usage: /<command> <block>
+    cycler:
+        description: Block data cycler tool
+        usage: /<command> 
     brush:
         description: Build spheres from far away
         usage: /<command> <block> [radius] [no-replace?]

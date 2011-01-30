@@ -220,6 +220,23 @@ public class SuperPickaxeCommands {
     }
 
     @Command(
+        aliases = {"cycler"},
+        usage = "",
+        desc = "Block data cycler tool",
+        min = 0,
+        max = 0
+    )
+    @CommandPermissions({"worldedit.superpickaxe.data-cycler"})
+    public static void cycler(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        session.setArmSwingMode(null);
+        session.setRightClickMode(new BlockDataCyler());
+        player.print("Block cycler tool equipped. Right click with a pickaxe.");
+    }
+
+    @Command(
         aliases = {"brush"},
         usage = "<block> [radius] [no-replace?]",
         desc = "Build spheres from far away",

@@ -72,6 +72,8 @@ public class BukkitConfiguration extends LocalConfiguration {
         
         disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
 
+        allowedDataCycleBlocks = new HashSet<Integer>(config.getIntList("limits.allowed-data-cycle-blocks", null));
+        
         String snapshotsDir = config.getString("snapshots.directory", "");
         if (!snapshotsDir.trim().equals("")) {
             snapshotRepo = new SnapshotRepository(snapshotsDir);
