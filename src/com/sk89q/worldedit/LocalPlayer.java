@@ -543,7 +543,18 @@ public abstract class LocalPlayer {
      * @param extensions null to allow all
      * @return
      */
-    public File openFileDialog(String[] extensions) {
+    public File openFileOpenDialog(String[] extensions) {
+        printError("File dialogs are not supported in your environment.");
+        return null;
+    }
+    
+    /**
+     * Open a file save dialog.
+     * 
+     * @param extensions null to allow all
+     * @return
+     */
+    public File openFileSaveDialog(String[] extensions) {
         printError("File dialogs are not supported in your environment.");
         return null;
     }

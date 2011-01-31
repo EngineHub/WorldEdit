@@ -210,23 +210,55 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @return
      * @throws FilenameException 
      */
+    @Deprecated
     public File getSafeFile(String folder, String filename) throws FilenameException {
         File dir = controller.getWorkingDirectoryFile(folder);
-        return controller.getSafeFile(player, dir, filename, null);
+        return controller.getSafeOpenFile(player, dir, filename, null, null);
     }
     
     /**
-     * This version will append an extension if one doesn't exist.
+     * Gets the path to a file for opening. This method will check to see if the
+     * filename has valid characters and has an extension. It also prevents
+     * directory traversal exploits by checking the root directory and the file
+     * directory. On success, a <code>java.io.File</code> object will be
+     * returned.
+     * 
+     * <p>Use this method if you need to read a file from a directory.</p>
      * 
      * @param folder sub-directory to look in
      * @param filename filename (user-submitted)
      * @param defaultExt default extension to append if there is none
+     * @param exts list of extensions for file open dialog, null for no filter
      * @return
      * @throws FilenameException 
      */
-    public File getSafeFile(String folder, String filename, String defaultExt)
+    public File getSafeOpenFile(String folder, String filename,
+            String defaultExt, String[] exts)
             throws FilenameException {
         File dir = controller.getWorkingDirectoryFile(folder);
-        return controller.getSafeFile(player, dir, filename, defaultExt);
+        return controller.getSafeOpenFile(player, dir, filename, defaultExt, exts);
+    }
+    
+    /**
+     * Gets the path to a file for saving. This method will check to see if the
+     * filename has valid characters and has an extension. It also prevents
+     * directory traversal exploits by checking the root directory and the file
+     * directory. On success, a <code>java.io.File</code> object will be
+     * returned.
+     * 
+     * <p>Use this method if you need to read a file from a directory.</p>
+     * 
+     * @param folder sub-directory to look in
+     * @param filename filename (user-submitted)
+     * @param defaultExt default extension to append if there is none
+     * @param exts list of extensions for file save dialog, null for no filter
+     * @return
+     * @throws FilenameException 
+     */
+    public File getSafeSaveFile(String folder, String filename,
+            String defaultExt, String[] exts)
+            throws FilenameException {
+        File dir = controller.getWorkingDirectoryFile(folder);
+        return controller.getSafeSaveFile(player, dir, filename, defaultExt, exts);
     }
 }

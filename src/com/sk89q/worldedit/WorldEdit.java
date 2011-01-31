@@ -355,15 +355,59 @@ public class WorldEdit {
      * @param dir sub-directory to look in
      * @param filename filename (user-submitted)
      * @param defaultExt append an extension if missing one, null to not use
+     * @param extensions list of extensions, null for any
      * @return
      * @throws FilenameException
      */
-    public File getSafeFile(LocalPlayer player, File dir, String filename,
-            String defaultExt) throws FilenameException {
+    public File getSafeSaveFile(LocalPlayer player, File dir, String filename,
+            String defaultExt, String[] extensions)
+            throws FilenameException {
+        return getSafeFile(player, dir, filename, defaultExt, extensions, true);
+    }
+    
+    /**
+     * Gets the path to a file. This method will check to see if the filename
+     * has valid characters and has an extension. It also prevents directory
+     * traversal exploits by checking the root directory and the file directory.
+     * On success, a <code>java.io.File</code> object will be returned.
+     * 
+     * @param dir sub-directory to look in
+     * @param filename filename (user-submitted)
+     * @param defaultExt append an extension if missing one, null to not use
+     * @param extensions list of extensions, null for any
+     * @return
+     * @throws FilenameException
+     */
+    public File getSafeOpenFile(LocalPlayer player, File dir, String filename,
+            String defaultExt, String[] extensions)
+            throws FilenameException {
+        return getSafeFile(player, dir, filename, defaultExt, extensions, false);
+    }
+    
+    /**
+     * Get a safe path to a file.
+     * 
+     * @param player
+     * @param dir
+     * @param filename
+     * @param defaultExt
+     * @param extensions
+     * @param isSave
+     * @return
+     * @throws FilenameException
+     */
+    private File getSafeFile(LocalPlayer player, File dir, String filename,
+            String defaultExt, String[] extensions, boolean isSave)
+            throws FilenameException {
         File f;
         
         if (filename.equals("#")) {
-            f = player.openFileDialog(null);
+            if (isSave) {
+                f = player.openFileSaveDialog(extensions);
+            } else {
+                f = player.openFileOpenDialog(extensions);
+            }
+            
             if (f == null) {
                 throw new FileSelectionAbortedException("No file selected");
             }
