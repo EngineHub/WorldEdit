@@ -1,3 +1,7 @@
+3.2.1:
+- Added version information for SP.
+- Improved Bukkit performance drastically.
+
 3.2:
 - Fixed /forestgen having an incorrect number of maximum arguments.
 - Re-added Sun Rhino implementation as a separate library bundled in
