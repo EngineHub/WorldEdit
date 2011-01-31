@@ -1,3 +1,16 @@
+3.2:
+- Fixed /forestgen having an incorrect number of maximum arguments.
+- Re-added Sun Rhino implementation as a separate library bundled in
+    during creation of the .jar.
+- Unified file selection and checking API.
+- Fixed CraftScripts not properly loading files from the current
+    working directory as defined by the implementation.
+- Enabled queue on EditSessions given to scripts.
+- Improved draw.js to be more user friendly.
+- Fixed /forestgen having an incorrect number of maximum arguments.
+- Fixed /removenear not taking a default size argument.
+- Improved overall performance.
+
 3.1:
 - Added more tree generators. /tree [type] and
     /forestgen [size] [type] [density] are the new commands.
