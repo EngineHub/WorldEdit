@@ -74,13 +74,16 @@ function findClosestWoolColor(col) {
     return closestId;
 }
 
-var sess = context.remember();
 
 context.checkArgs(1, 2, "<image> <orientation>");
 
 var f = context.getSafeFile("drawings", argv[1]);
+var sess = context.remember();
+var upright = argv[2] == "v";
 
-if (f != null) {
+if (!f.exists()) {
+    player.error("Specified file doesn't exist.");
+} else {
     var img = ImageIO.read(f);
 
     var width = img.getWidth();
@@ -92,12 +95,12 @@ if (f != null) {
         for (var y = 0; y < height; y++) {
             var c = new Color(img.getRGB(x, y));
             var data = findClosestWoolColor(c);
-			//added this to enable the user to create images stood up rather than flat on the ground
-			if(argv[2]=="h"){
-            sess.setBlock(origin.add(x, 0, y), new BaseBlock(35, data));
-			}
-			if(argv[2]=="v"){
-            sess.setBlock(origin.add(x, height-y, 0), new BaseBlock(35, data));
+			// Added this to enable the user to create images upright
+            // rather than flat on the ground
+			if (!upright) {
+                sess.setBlock(origin.add(x, 0, y), new BaseBlock(35, data));
+			} else {
+                sess.setBlock(origin.add(x, height - y, 0), new BaseBlock(35, data));
 			}
         }
     }
