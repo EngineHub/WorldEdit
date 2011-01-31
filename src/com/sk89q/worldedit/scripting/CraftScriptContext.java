@@ -63,6 +63,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
         EditSession editSession =
                 new EditSession(server, player.getWorld(),
                         session.getBlockChangeLimit(), session.getBlockBag(player));
+        editSession.enableQueue();
         editSessions.add(editSession);
         return editSession;
     }

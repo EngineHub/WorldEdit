@@ -930,6 +930,7 @@ public class WorldEdit {
             e.printStackTrace();
         } finally {
             for (EditSession editSession : scriptContext.getEditSessions()) {
+                editSession.flushQueue();
                 session.remember(editSession);
             }
         }
