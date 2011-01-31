@@ -415,7 +415,7 @@ public class BukkitWorld extends LocalWorld {
                 contents[i] = new BaseItemStack(
                         bukkitStack.getTypeId(),
                         bukkitStack.getAmount(), 
-                        (byte)bukkitStack.getDamage());
+                        bukkitStack.getDurability());
             }
         }
         
