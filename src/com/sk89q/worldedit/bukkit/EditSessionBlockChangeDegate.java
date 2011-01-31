@@ -54,6 +54,6 @@ public class EditSessionBlockChangeDegate implements BlockChangeDelegate {
     }
 
     public int getTypeId(int x, int y, int z) {
-        return editSession.getBlock(new Vector(x, y, z)).getType();
+        return editSession.getBlockType(new Vector(x, y, z));
     }
 }
