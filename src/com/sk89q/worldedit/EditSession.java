@@ -316,6 +316,27 @@ public class EditSession {
      * Gets the block type at a position x, y, z.
      * 
      * @param pt
+     * @return Block type
+     */
+    public int getBlockType(Vector pt) {
+        // In the case of the queue, the block may have not actually been
+        // changed yet
+        if (queued) {
+            /*
+             * BlockVector blockPt = pt.toBlockVector();
+             * 
+             * if (current.containsKey(blockPt)) { return current.get(blockPt);
+             * }
+             */
+        }
+
+        return world.getBlockType(pt);
+    }
+
+    /**
+     * Gets the block type at a position x, y, z.
+     * 
+     * @param pt
      * @return BaseBlock
      */
     public BaseBlock rawGetBlock(Vector pt) {
@@ -693,7 +714,7 @@ public class EditSession {
                 for (int y = oY; y <= maxY; y++) {
                     Vector pt = new Vector(x, y, z);
 
-                    if (!getBlock(pt).isAir()) {
+                    if (getBlockType(pt) != 0) {
                         setBlock(pt, new BaseBlock(0));
                         affected++;
                     }
@@ -727,7 +748,7 @@ public class EditSession {
                 for (int y = oY; y >= minY; y--) {
                     Vector pt = new Vector(x, y, z);
 
-                    if (!getBlock(pt).isAir()) {
+                    if (getBlockType(pt) != 0) {
                         setBlock(pt, new BaseBlock(0));
                         affected++;
                     }
@@ -756,7 +777,7 @@ public class EditSession {
                 for (int z = -size; z <= size; z++) {
                     Vector p = pos.add(x, y, z);
 
-                    if (getBlock(p).getType() == blockType) {
+                    if (getBlockType(p) == blockType) {
                         if (setBlock(p, air)) {
                             affected++;
                         }
