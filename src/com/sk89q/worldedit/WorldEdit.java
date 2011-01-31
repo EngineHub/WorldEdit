@@ -429,13 +429,13 @@ public class WorldEdit {
             String dirPath = dir.getCanonicalPath();
 
             if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
-                throw new FilenameNotFoundException(filename,
+                throw new FilenameResolutionException(filename,
                         "Path is outside allowable root");
             }
             
             return f;
         } catch (IOException e) {
-            throw new FilenameNotFoundException(filename,
+            throw new FilenameResolutionException(filename,
                     "Failed to resolve path");
         }
     }
@@ -871,8 +871,8 @@ public class WorldEdit {
         } catch (InvalidFilenameException e) {
             player.printError("Filename '" + e.getFilename() + "' invalid: "
                     + e.getMessage());
-        } catch (FilenameNotFoundException e) {
-            player.printError("File '" + e.getFilename() + "' not found: "
+        } catch (FilenameResolutionException e) {
+            player.printError("File '" + e.getFilename() + "' resolution error: "
                     + e.getMessage());
         } catch (FileSelectionAbortedException e) {
             player.printError("File selection aborted.");
