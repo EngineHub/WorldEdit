@@ -204,7 +204,7 @@ public class UtilityCommands {
             throws WorldEditException {
 
         BaseBlock block = we.getBlock(player, args.getString(0), true);
-        int size = Math.max(1, args.getInteger(1));
+        int size = Math.max(1, args.getInteger(1, 50));
         we.checkMaxRadius(size);
 
         int affected = editSession.removeNear(

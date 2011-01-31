@@ -61,6 +61,10 @@ public class CommandContext {
     public String getString(int index) {
         return args[index + 1];
     }
+    
+    public String getString(int index, String def) {
+        return index + 1 < args.length ? args[index + 1] : def;
+    }
 
     public String getJoinedStrings(int initialIndex) {
         initialIndex = initialIndex + 1;
@@ -75,8 +79,16 @@ public class CommandContext {
         return Integer.parseInt(args[index + 1]);
     }
     
+    public int getInteger(int index, int def) throws NumberFormatException {
+        return index + 1 < args.length ? Integer.parseInt(args[index + 1]) : def;
+    }
+    
     public double getDouble(int index) throws NumberFormatException {
         return Double.parseDouble(args[index + 1]);
+    }
+    
+    public double getDouble(int index, double def) throws NumberFormatException {
+        return index + 1 < args.length ? Double.parseDouble(args[index + 1]) : def;
     }
     
     public String[] getSlice(int index) {
