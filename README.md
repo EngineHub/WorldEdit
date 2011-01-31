@@ -17,6 +17,7 @@ Some dependencies are required:
     permission system for Bukkit
 - [Permissions](http://forums.bukkit.org/threads/1403/) provides an
     permission system for Bukkit
+- worldeditsunrhino.jar is included
 
 For links to downloads, check out
 [http://wiki.sk89q.com/wiki/WorldEdit/Development](http://wiki.sk89q.com/wiki/WorldEdit/Development)

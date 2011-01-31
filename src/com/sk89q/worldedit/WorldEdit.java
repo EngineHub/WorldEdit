@@ -856,12 +856,17 @@ public class WorldEdit {
                 new CraftScriptContext(this, server, config, session, player, args);
         
         CraftScriptEngine engine = null;
-        
+
         try {
             engine = new RhinoCraftScriptEngine();
         } catch (NoClassDefFoundError e) {
-            player.printError("Please install a scripting engine.");
-            return;
+            try {
+                engine = new SunRhinoCraftScriptEngine();
+            } catch (NoClassDefFoundError e2) {
+                player.printError("Failed to find an installed script engine.");
+                player.printError("Please see http://wiki.sk89q.com/wiki/WorldEdit/Installation");
+                return;
+            }
         }
         
         engine.setTimeLimit(config.scriptTimeout);

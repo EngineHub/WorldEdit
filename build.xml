@@ -16,6 +16,7 @@
     <include name="GroupUsers.jar" />
     <include name="Permissions.jar" />
     <include name="js.jar" />
+    <include name="worldeditsunrhino.jar" />
   </fileset>
   
   <target name="init">
@@ -46,7 +47,9 @@
     <replace file="${build.dir}/plugin.yml" token="WEVERSIONMACRO" value="${version}"/>
     <mkdir dir="${build.dir}/defaults"/>
     <copy tofile="${build.dir}/defaults/config.yml" file="config.yml"/>
-    <jar jarfile="${dist.dir}/WorldEdit.jar" basedir="${build.dir}" manifest="manifest.mf" />
+    <jar jarfile="${dist.dir}/WorldEdit.jar" basedir="${build.dir}" manifest="manifest.mf">
+        <zipgroupfileset dir="lib" includes="worldeditsunrhino.jar" />
+    </jar>
   </target>
 
   <!-- Create the .jar -->
