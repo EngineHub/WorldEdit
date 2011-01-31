@@ -1,3 +1,6 @@
+3.2.2:
+- Updated for Bukkit commit 8ccfad945663cd0ea60531b085748c81fc6fefb8.
+
 3.2.1:
 - Added version information for SP.
 - Improved Bukkit performance drastically.
