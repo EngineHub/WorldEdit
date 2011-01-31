@@ -41,6 +41,8 @@ public class BukkitConfiguration extends LocalConfiguration {
 
     @Override
     public void load() {
+        showFirstUseVersion = false;
+        
         profile = config.getBoolean("debug", profile);
         wandItem = config.getInt("wand-item", wandItem);
         defaultChangeLimit = Math.max(-1, config.getInt(

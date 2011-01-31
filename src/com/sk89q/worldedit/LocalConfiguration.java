@@ -60,6 +60,7 @@ public abstract class LocalConfiguration {
     public Set<Integer> allowedDataCycleBlocks = new HashSet<Integer>();
     public String saveDir = "schematics";
     public String scriptsDir = "craftscripts";
+    public boolean showFirstUseVersion = true;
     
     /**
      * Loads the configuration.

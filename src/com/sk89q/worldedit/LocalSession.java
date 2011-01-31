@@ -40,6 +40,8 @@ public class LocalSession {
     
     public static final int MAX_HISTORY_SIZE = 15;
     
+    private LocalConfiguration config;
+    
     private boolean placeAtPos1 = false;
     private Vector pos1, pos2;
     private Region region;
@@ -57,6 +59,16 @@ public class LocalSession {
     private String lastScript;
     private CompassMode compassMode = CompassMode.JUMPTO;
     private BrushShape brushShape = null;
+    private boolean beenToldVersion = false;
+    
+    /**
+     * Construct the object.
+     * 
+     * @param config
+     */
+    public LocalSession(LocalConfiguration config) {
+        this.config = config;
+    }
 
     /**
      * Clear history.
@@ -462,5 +474,18 @@ public class LocalSession {
      */
     public void setBrushShape(BrushShape brushShape) {
         this.brushShape = brushShape;
+    }
+    
+    /**
+     * Tell the player the WorldEdit version.
+     */
+    public void tellVersion(LocalPlayer player) {
+        if (config.showFirstUseVersion) {
+            if (!beenToldVersion) {
+                player.printRaw("\u00A78WorldEdit ver. " + WorldEdit.getVersion()
+                        + " (http://sk89q.com/projects/worldedit/)");
+                beenToldVersion = true;
+            }
+        }
     }
 }

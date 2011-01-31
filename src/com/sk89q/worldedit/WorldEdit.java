@@ -48,6 +48,7 @@ import com.sk89q.worldedit.patterns.*;
  */
 public class WorldEdit {
     public static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+    private static String version;
     
     /**
      * Interface to the server.
@@ -73,6 +74,13 @@ public class WorldEdit {
      */
     private HashMap<String,LocalSession> sessions =
             new HashMap<String,LocalSession>();
+    
+    /**
+     * Initialize statically.
+     */
+    static {
+        getVersion();
+    }
     
     /**
      * Construct an instance of the plugin
@@ -112,7 +120,7 @@ public class WorldEdit {
             return sessions.get(player.getName());
         }
         
-        LocalSession session = new LocalSession();
+        LocalSession session = new LocalSession(config);
         
         // Set the limit on the number of blocks that an operation can
         // change at once, or don't if the player has an override or there
@@ -818,6 +826,8 @@ public class WorldEdit {
                 LocalSession session = getSession(player);
                 BlockBag blockBag = session.getBlockBag(player);
                 
+                session.tellVersion(player);
+                
                 EditSession editSession =
                         new EditSession(server, player.getWorld(),
                                 session.getBlockChangeLimit(), blockBag);
@@ -987,5 +997,34 @@ public class WorldEdit {
      */
     public LocalConfiguration getConfiguration() {
         return config;
+    }
+
+    /**
+     * Get the version.
+     *
+     * @return
+     */
+    public static String getVersion() {
+        if (version != null) {
+            return version;
+        }
+        
+        Package p = WorldEdit.class.getPackage();
+        
+        if (p == null) {
+            p = Package.getPackage("com.sk89q.worldedit");
+        }
+        
+        if (p == null) {
+            version = "(unknown)";
+        } else {
+            version = p.getImplementationVersion();
+            
+            if (version == null) {
+                version = "(unknown)";
+            }
+        }
+
+        return version;
     }
 }
