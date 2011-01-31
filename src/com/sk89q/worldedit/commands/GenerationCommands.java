@@ -136,7 +136,7 @@ public class GenerationCommands {
         usage = "[size] [type] [density]",
         desc = "Generate a forest",
         min = 0,
-        max = 2
+        max = 3
     )
     @CommandPermissions({"worldedit.generation.forest"})
     public static void forestGen(CommandContext args, WorldEdit we,
