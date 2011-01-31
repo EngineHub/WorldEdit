@@ -1,3 +1,9 @@
+3.1:
+- Added more tree generators. /tree [type] and
+    /forestgen [size] [type] [density] are the new commands.
+- No longer using the internal Rhino JavaScript engine, so Windows users
+    will now have to download Rhino separately to use scripting.
+
 3.0:
 - Added /searchitem or //l command to lookup items and block by name and ID.
 - Added block data cycling super pickaxe tool. (/cycler)
