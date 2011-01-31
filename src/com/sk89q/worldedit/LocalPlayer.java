@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit;
 
+import java.io.File;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.util.TargetBlock;
@@ -535,6 +536,17 @@ public abstract class LocalPlayer {
      * @return
      */
     public abstract boolean hasPermission(String perm);
+    
+    /**
+     * Open a file open dialog.
+     * 
+     * @param extensions null to allow all
+     * @return
+     */
+    public File openFileDialog(String[] extensions) {
+        printError("File dialogs are not supported in your environment.");
+        return null;
+    }
     
     /**
      * Returns true if the player can destroy bedrock.

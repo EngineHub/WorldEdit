@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.commands;
 
+import java.io.File;
 import com.sk89q.util.commands.Command;
 import com.sk89q.util.commands.CommandContext;
 import com.sk89q.worldedit.*;
@@ -45,8 +46,11 @@ public class ScriptingCommands {
         String[] scriptArgs = args.getSlice(1);
         
         session.setLastScript(args.getString(0));
+
+        File dir = we.getWorkingDirectoryFile(we.getConfiguration().scriptsDir);
+        File f = we.getSafeFile(player, dir, args.getString(0), "js");
         
-        we.runScript(player, args.getString(0), scriptArgs);
+        we.runScript(player, f, scriptArgs);
     }
 
     @Command(
@@ -70,8 +74,11 @@ public class ScriptingCommands {
         }
 
         String[] scriptArgs = args.getSlice(0);
+
+        File dir = we.getWorkingDirectoryFile(we.getConfiguration().scriptsDir);
+        File f = we.getSafeFile(player, dir, lastScript, "js");
         
-        we.runScript(player, lastScript, scriptArgs);
+        we.runScript(player, f, scriptArgs);
         
     }
 }

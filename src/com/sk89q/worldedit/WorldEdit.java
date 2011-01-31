@@ -345,6 +345,56 @@ public class WorldEdit {
         }
         return blocks;
     }
+    
+    /**
+     * Gets the path to a file. This method will check to see if the filename
+     * has valid characters and has an extension. It also prevents directory
+     * traversal exploits by checking the root directory and the file directory.
+     * On success, a <code>java.io.File</code> object will be returned.
+     * 
+     * @param dir sub-directory to look in
+     * @param filename filename (user-submitted)
+     * @param defaultExt append an extension if missing one, null to not use
+     * @return
+     * @throws FilenameException
+     */
+    public File getSafeFile(LocalPlayer player, File dir, String filename,
+            String defaultExt) throws FilenameException {
+        File f;
+        
+        if (filename.equals("#")) {
+            f = player.openFileDialog(null);
+            if (f == null) {
+                throw new FileSelectionAbortedException("No file selected");
+            }
+        } else {
+            if (defaultExt != null && filename.lastIndexOf('.') == -1) {
+                filename += "." + defaultExt;
+            }
+            
+            if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$")) {
+                throw new InvalidFilenameException(filename,
+                        "Invalid characters or extension missing");
+            }
+            
+            f = new File(dir, filename);
+        }
+
+        try {
+            String filePath = f.getCanonicalPath();
+            String dirPath = dir.getCanonicalPath();
+
+            if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
+                throw new FilenameNotFoundException(filename,
+                        "Path is outside allowable root");
+            }
+            
+            return f;
+        } catch (IOException e) {
+            throw new FilenameNotFoundException(filename,
+                    "Failed to resolve path");
+        }
+    }
 
     /**
      * Checks to see if the specified radius is within bounds.
@@ -774,6 +824,14 @@ public class WorldEdit {
             player.printError(e.getMessage());
         } catch (EmptyClipboardException e) {
             player.printError("Your clipboard is empty. Use //copy first.");
+        } catch (InvalidFilenameException e) {
+            player.printError("Filename '" + e.getFilename() + "' invalid: "
+                    + e.getMessage());
+        } catch (FilenameNotFoundException e) {
+            player.printError("File '" + e.getFilename() + "' not found: "
+                    + e.getMessage());
+        } catch (FileSelectionAbortedException e) {
+            player.printError("File selection aborted.");
         } catch (WorldEditException e) {
             player.printError(e.getMessage());
         } catch (Throwable excp) {
@@ -793,34 +851,14 @@ public class WorldEdit {
      * @param args
      * @throws WorldEditException 
      */
-    public void runScript(LocalPlayer player, String filename, String[] args)
+    public void runScript(LocalPlayer player, File f, String[] args)
             throws WorldEditException {
-        File dir = getWorkingDirectoryFile(config.scriptsDir);
-        File f = new File(dir, filename);
-
-        if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$")) {
-            player.printError("Invalid filename. Don't forget the extension.");
-            return;
-        }
-        
+        String filename = f.getPath();        
         int index = filename.lastIndexOf(".");
         String ext = filename.substring(index + 1, filename.length());
         
         if (!ext.equalsIgnoreCase("js")) {
             player.printError("Only .js scripts are currently supported");
-            return;
-        }
-
-        try {
-            String filePath = f.getCanonicalPath();
-            String dirPath = dir.getCanonicalPath();
-
-            if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
-                player.printError("Script could not read or it does not exist.");
-                return;
-            }
-        } catch (IOException e) {
-            player.printError("Script could not read or it does not exist: " + e.getMessage());
             return;
         }
         

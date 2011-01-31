@@ -179,15 +179,9 @@ public class ClipboardCommands {
         
         LocalConfiguration config = we.getConfiguration();
 
-        String filename = args.getString(0).replace("\0", "") + ".schematic";
+        String filename = args.getString(0);
         File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = new File(dir, filename);
-
-        if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+$")) {
-            player.printError("Valid characters: A-Z, a-z, 0-9, spaces, "
-                    + "./\'$@~!%^*()[]+{},?");
-            return;
-        }
+        File f = we.getSafeFile(player, dir, filename, "schematic");
 
         try {
             String filePath = f.getCanonicalPath();
@@ -221,41 +215,28 @@ public class ClipboardCommands {
         
         LocalConfiguration config = we.getConfiguration();
 
-        String filename = args.getString(0).replace("\0", "") + ".schematic";
+        String filename = args.getString(0);
 
-        if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+$")) {
-            player.printError("Valid characters: A-Z, a-z, 0-9, spaces, "
-                    + "./\'$@~!%^*()[]+{},?");
-            return;
-        }
-        
         File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = new File(dir, filename);
+        File f = we.getSafeFile(player, dir, filename, "schematic");
 
         if (!dir.exists()) {
             if (!dir.mkdir()) {
-                player.printError("A schematics/ folder could not be created.");
+                player.printError("The storage folder could not be created.");
                 return;
             }
         }
 
         try {
-            String filePath = f.getCanonicalPath();
-            String dirPath = dir.getCanonicalPath();
-
-            if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
-                player.printError("Invalid path for Schematic.");
-            } else {
-                // Create parent directories
-                File parent = f.getParentFile();
-                if (parent != null && !parent.exists()) {
-                    parent.mkdirs();
-                }
-
-                session.getClipboard().saveSchematic(f);
-                WorldEdit.logger.info(player.getName() + " saved " + filePath);
-                player.print(filename + " saved.");
+            // Create parent directories
+            File parent = f.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
             }
+
+            session.getClipboard().saveSchematic(f);
+            WorldEdit.logger.info(player.getName() + " saved " + f.getCanonicalPath());
+            player.print(filename + " saved.");
         } catch (DataException se) {
             player.printError("Save error: " + se.getMessage());
         } catch (IOException e) {

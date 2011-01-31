@@ -20,13 +20,13 @@
 package com.sk89q.worldedit.scripting;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import com.sk89q.worldedit.DisallowedItemException;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.FilenameException;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
@@ -200,37 +200,32 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * Gets the path to a file. This method will check to see if the filename
      * has valid characters and has an extension. It also prevents directory
      * traversal exploits by checking the root directory and the file directory.
-     * On success, a <code>java.io.File</code> object will be returned,
-     * otherwise a null will be returned and the player will be informed.
+     * On success, a <code>java.io.File</code> object will be returned.
      * 
      * <p>Use this method if you need to read a file from a directory.</p>
      * 
-     * @param folder subdirectory to look in
+     * @param folder sub-directory to look in
      * @param filename filename (user-submitted)
      * @return
+     * @throws FilenameException 
      */
-    public File getSafeFile(String folder, String filename) {
-        File dir = new File(folder);
-        File f = new File(dir, filename);
-
-        if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$")) {
-            player.printError("Invalid filename specified.");
-            return null;
-        }
-
-        try {
-            String filePath = f.getCanonicalPath();
-            String dirPath = dir.getCanonicalPath();
-
-            if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
-                player.printError("File could not read or it does not exist.");
-                return null;
-            }
-            
-            return f;
-        } catch (IOException e) {
-            player.printError("File could not read or it does not exist: " + e.getMessage());
-            return null;
-        }
+    public File getSafeFile(String folder, String filename) throws FilenameException {
+        File dir = controller.getWorkingDirectoryFile(folder);
+        return controller.getSafeFile(player, dir, filename, null);
+    }
+    
+    /**
+     * This version will append an extension if one doesn't exist.
+     * 
+     * @param folder sub-directory to look in
+     * @param filename filename (user-submitted)
+     * @param defaultExt default extension to append if there is none
+     * @return
+     * @throws FilenameException 
+     */
+    public File getSafeFile(String folder, String filename, String defaultExt)
+            throws FilenameException {
+        File dir = controller.getWorkingDirectoryFile(folder);
+        return controller.getSafeFile(player, dir, filename, defaultExt);
     }
 }
