@@ -76,7 +76,7 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public int getBlockType(Vector pt) {
-        return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getTypeId();
+        return world.getBlockTypeIdAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
     }
 
     /**

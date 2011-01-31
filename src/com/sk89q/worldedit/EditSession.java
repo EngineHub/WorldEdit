@@ -772,10 +772,17 @@ public class EditSession {
         int affected = 0;
         BaseBlock air = new BaseBlock(0);
 
-        for (int x = -size; x <= size; x++) {
-            for (int y = -size; y <= size; y++) {
-                for (int z = -size; z <= size; z++) {
-                    Vector p = pos.add(x, y, z);
+        int minX = pos.getBlockX() - size;
+        int maxX = pos.getBlockX() + size;
+        int minY = Math.max(0, pos.getBlockY() - size);
+        int maxY = Math.min(127, pos.getBlockY() + size);
+        int minZ = pos.getBlockZ() - size;
+        int maxZ = pos.getBlockZ() + size;
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    Vector p = new Vector(x, y, z);
 
                     if (getBlockType(p) == blockType) {
                         if (setBlock(p, air)) {
