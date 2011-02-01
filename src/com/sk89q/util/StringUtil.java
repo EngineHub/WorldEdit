@@ -18,6 +18,8 @@
 
 package com.sk89q.util;
 
+import java.util.List;
+
 /**
  * String utilities.
  * 
@@ -130,6 +132,26 @@ public class StringUtil {
         StringBuilder buffer = new StringBuilder(Integer.toString(str[initialIndex]));
         for (int i = initialIndex + 1; i < str.length; i++) {
             buffer.append(delimiter).append(Integer.toString(str[i]));
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * Join an list of strings into a string.
+     * 
+     * @param str
+     * @param delimiter
+     * @param initialIndex
+     * @return
+     */
+    public static String joinString(List<String> str, String delimiter,
+            int initialIndex) {
+        if (str.size() == 0) {
+            return "";
+        }
+        StringBuilder buffer = new StringBuilder(str.get(initialIndex).toString());
+        for (int i = initialIndex + 1; i < str.size(); i++) {
+            buffer.append(delimiter).append(str.get(i).toString());
         }
         return buffer.toString();
     }
