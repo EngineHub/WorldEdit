@@ -488,6 +488,13 @@ public abstract class LocalPlayer {
      *
      * @param msg
      */
+    public abstract void printDebug(String msg);
+
+    /**
+     * Print a WorldEdit message.
+     *
+     * @param msg
+     */
     public abstract void print(String msg);
 
     /**

@@ -80,6 +80,11 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
+    public void printDebug(String msg) {
+        player.sendMessage("\u00A77" + msg);
+    }
+
+    @Override
     public void printError(String msg) {
         player.sendMessage("\u00A7c" + msg);
     }
@@ -109,5 +114,4 @@ public class BukkitPlayer extends LocalPlayer {
     public LocalWorld getWorld() {
         return new BukkitWorld(player.getWorld());
     }
-
 }
