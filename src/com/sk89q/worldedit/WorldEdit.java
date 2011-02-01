@@ -849,7 +849,15 @@ public class WorldEdit {
 
                     if (config.profile) {
                         long time = System.currentTimeMillis() - start;
-                        player.print((time / 1000.0) + "s elapsed");
+                        int changed = editSession.getBlockChangeCount();
+                        if (time > 0) {
+                            double throughput = changed / (time / 1000.0);
+                            player.printDebug((time / 1000.0) + "s elapsed (history: "
+                                    + changed + " changed; "
+                                    + Math.round(throughput) + " blocks/sec).");
+                        } else {
+                            player.printDebug((time / 1000.0) + "s elapsed.");
+                        }
                     }
                     
                     flushBlockBag(player, editSession);

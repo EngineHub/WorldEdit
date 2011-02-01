@@ -2159,4 +2159,13 @@ public class EditSession {
     public LocalWorld getWorld() {
         return world;
     }
+    
+    /**
+     * Get the number of blocks changed, including repeated block changes.
+     * 
+     * @return
+     */
+    public int getBlockChangeCount() {
+        return original.size();
+    }
 }
