@@ -89,7 +89,7 @@ public class SnapshotCommands {
     @Command(
         aliases = {"/use"},
         usage = "<snapshot>",
-        desc = "Choose a snapshot to use",
+        desc = "Choose a snapshot to use, or 'latest'",
         min = 1,
         max = 1
     )
@@ -113,14 +113,14 @@ public class SnapshotCommands {
 
             if (snapshot != null) {
                 session.setSnapshot(null);
-                player.print("Now using newest snapshot.");
+                player.print("Now using latest snapshot (" + snapshot.getName() + ").");
             } else {
                 player.printError("No snapshots were found.");
             }
         } else {
             try {
                 session.setSnapshot(config.snapshotRepo.getSnapshot(name));
-                player.print("Snapshot set to: " + name);
+                player.print("Now using specified snapshot (" + name + ").");
             } catch (InvalidSnapshotException e) {
                 player.printError("That snapshot does not exist or is not available.");
             }
@@ -167,7 +167,7 @@ public class SnapshotCommands {
             snapshot = config.snapshotRepo.getDefaultSnapshot();
 
             if (snapshot == null) {
-                player.printError("No snapshots were found. See console for details.");
+                player.printError("No snapshots were found. See console/log for details.");
                 
                 // Okay, let's toss some debugging information!
                 File dir = config.snapshotRepo.getDirectory();
@@ -224,5 +224,87 @@ public class SnapshotCommands {
             } catch (IOException e) {
             }
         }
+    }
+
+    @Command(
+        aliases = {"ssearlier"},
+        usage = "",
+        desc = "Select an earlier backup",
+        min = 0,
+        max = 1
+    )
+    @CommandPermissions({"worldedit.snapshots.restore"})
+    public static void ssearlier(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+    	
+        LocalConfiguration config = we.getConfiguration();
+
+        if( config.snapshotRepo == null ) {
+            player.printError("Snapshot/backup restore is not configured.");
+            return;
+        }
+
+    	Snapshot[] snapshots = config.snapshotRepo.getSnapshots();
+
+        if (snapshots.length > 0)
+        {
+        	Snapshot currentss = session.getSnapshot();
+
+    		if( currentss == null )
+    			currentss = snapshots[0];
+    		
+    		String ssname = currentss.getName();
+        	
+            for( int i = 0; i < snapshots.length; i++ )
+            	if( ssname.compareToIgnoreCase( snapshots[i].getName() ) > 0 ) {
+            		session.setSnapshot( snapshots[i] );
+            		player.print("Moved to earlier snapshot (" + snapshots[i].getName() + ").");            		
+            		return;
+            	}
+        }
+            
+    	player.print("No earlier snapshot found.");
+    }
+    
+    @Command(
+        aliases = {"sslater"},
+        usage = "",
+        desc = "Select a later backup",
+        min = 0,
+        max = 1
+    )
+    @CommandPermissions({"worldedit.snapshots.restore"})
+    public static void sslater(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        LocalConfiguration config = we.getConfiguration();
+
+        if( config.snapshotRepo == null ) {
+            player.printError("Snapshot/backup restore is not configured.");
+            return;
+        }
+
+    	Snapshot[] snapshots = config.snapshotRepo.getSnapshots();
+
+        if (snapshots.length > 0)
+        {
+        	Snapshot currentss = session.getSnapshot();
+
+    		if( currentss == null )
+    			currentss = snapshots[0];
+    		
+    		String ssname = currentss.getName();
+        	
+            for( int i = snapshots.length - 1; i >= 0; i-- )
+            	if( ssname.compareToIgnoreCase( snapshots[i].getName() ) < 0 ) {
+            		session.setSnapshot( snapshots[i] );
+            		player.print("Moved to later snapshot (" + snapshots[i].getName() + ").");            		
+            		return;
+            	}
+        }
+            
+    	player.print("No later snapshot found.");
     }
 }
