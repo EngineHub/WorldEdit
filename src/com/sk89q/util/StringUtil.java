@@ -18,7 +18,7 @@
 
 package com.sk89q.util;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * String utilities.
@@ -144,14 +144,22 @@ public class StringUtil {
      * @param initialIndex
      * @return
      */
-    public static String joinString(List<String> str, String delimiter,
+    public static String joinString(Collection<?> str, String delimiter,
             int initialIndex) {
         if (str.size() == 0) {
             return "";
         }
-        StringBuilder buffer = new StringBuilder(str.get(initialIndex).toString());
-        for (int i = initialIndex + 1; i < str.size(); i++) {
-            buffer.append(delimiter).append(str.get(i).toString());
+        StringBuilder buffer = new StringBuilder();
+        int i = 0;
+        for (Object o : str) {
+            if (i >= initialIndex) {
+                if (i > 0) {
+                    buffer.append(delimiter);
+                }
+                
+                buffer.append(o.toString());
+            }
+            i++;
         }
         return buffer.toString();
     }

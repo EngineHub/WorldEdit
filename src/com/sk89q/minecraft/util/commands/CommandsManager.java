@@ -21,10 +21,10 @@ package com.sk89q.minecraft.util.commands;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import com.sk89q.util.StringUtil;
 
 /**
@@ -174,7 +174,7 @@ public class CommandsManager {
         
         command.append("<");
         
-        List<String> allowedCommands = new ArrayList<String>();
+        Set<String> allowedCommands = new HashSet<String>();
         
         for (Map.Entry<String, Method> entry : map.entrySet()) {
             Method childMethod = entry.getValue();
@@ -232,7 +232,7 @@ public class CommandsManager {
             if (parent == null) { // Root
                 return false;
             } else {
-                player.printError(getNestedUsage(args, level - 1, method, player));
+                player.printError(getNestedUsage(args, level - 1, parent, player));
                 return true;
             }
         }
