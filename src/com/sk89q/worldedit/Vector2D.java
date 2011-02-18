@@ -21,7 +21,7 @@ package com.sk89q.worldedit;
 
 /**
  *
- * @author Albert
+ * @author sk89q
  */
 public class Vector2D {
     protected final double x, z;
@@ -52,7 +52,6 @@ public class Vector2D {
      * Construct the Vector2D object.
      *
      * @param x
-     * @param y
      * @param z
      */
     public Vector2D(float x, float z) {

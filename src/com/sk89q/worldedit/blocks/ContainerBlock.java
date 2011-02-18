@@ -34,8 +34,8 @@ public interface ContainerBlock {
 
     /**
      * Set the list of items.
-     *
-     * @return
+     * 
+     * @param items 
      */
     public void setItems(BaseItemStack[] items);
 }

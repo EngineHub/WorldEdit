@@ -33,7 +33,7 @@ public interface BrushShape {
     /**
      * Build the object.
      * 
-     * @param build
+     * @param editSession
      * @param pos
      * @param mat
      * @param size

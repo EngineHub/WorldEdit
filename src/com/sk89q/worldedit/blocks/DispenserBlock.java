@@ -77,8 +77,6 @@ public class DispenserBlock extends BaseBlock implements TileEntityBlock, Contai
 
     /**
      * Set the list of items.
-     *
-     * @return
      */
     public void setItems(BaseItemStack[] items) {
         this.items = items;

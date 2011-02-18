@@ -107,7 +107,6 @@ public class TreeGenerator {
     /**
      * Generate a tree.
      * 
-     * @param world
      * @param editSession
      * @param pos
      * @return

@@ -52,6 +52,7 @@ public class AlphaChunkStore extends NestedFileChunkStore {
      * @throws DataException
      * @throws IOException
      */
+    @Override
     protected InputStream getInputStream(String f1, String f2, String name)
             throws DataException, IOException {
         String file = f1 + File.separator + f2 + File.separator + name;

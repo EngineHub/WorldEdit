@@ -36,7 +36,7 @@ public class SingleBlockPattern implements Pattern {
     /**
      * Construct the object.
      * 
-     * @param blockType
+     * @param block
      */
     public SingleBlockPattern(BaseBlock block) {
         this.block = block;

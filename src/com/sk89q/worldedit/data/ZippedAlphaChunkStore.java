@@ -52,7 +52,7 @@ public class ZippedAlphaChunkStore extends NestedFileChunkStore {
      * @param zipFile
      * @param folder
      * @throws IOException
-     * @throws ZIPException
+     * @throws ZipException
      */
     public ZippedAlphaChunkStore(File zipFile, String folder)
             throws IOException, ZipException {
@@ -67,9 +67,8 @@ public class ZippedAlphaChunkStore extends NestedFileChunkStore {
      * be detected.
      *
      * @param zipFile
-     * @param folder
      * @throws IOException
-     * @throws ZIPException
+     * @throws ZipException
      */
     public ZippedAlphaChunkStore(File zipFile)
             throws IOException, ZipException {
@@ -88,6 +87,7 @@ public class ZippedAlphaChunkStore extends NestedFileChunkStore {
      * @throws IOException
      * @throws DataException
      */
+    @Override
     protected InputStream getInputStream(String f1, String f2, String name)
             throws IOException, DataException {
         String file = f1 + "/" + f2 + "/" + name;
@@ -157,6 +157,7 @@ public class ZippedAlphaChunkStore extends NestedFileChunkStore {
      *
      * @throws IOException
      */
+    @Override
     public void close() throws IOException {
         zip.close();
     }

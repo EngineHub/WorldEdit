@@ -54,7 +54,7 @@ public class TrueZipLegacyAlphaChunkStore extends NestedFileChunkStore {
      * @param zipFile
      * @param folder
      * @throws IOException
-     * @throws ZIPException
+     * @throws ZipException 
      */
     public TrueZipLegacyAlphaChunkStore(File zipFile, String folder)
             throws IOException, ZipException {
@@ -69,9 +69,8 @@ public class TrueZipLegacyAlphaChunkStore extends NestedFileChunkStore {
      * be detected.
      *
      * @param zipFile
-     * @param folder
      * @throws IOException
-     * @throws ZIPException
+     * @throws ZipException
      */
     public TrueZipLegacyAlphaChunkStore(File zipFile)
             throws IOException, ZipException {
@@ -90,6 +89,7 @@ public class TrueZipLegacyAlphaChunkStore extends NestedFileChunkStore {
      * @throws IOException
      * @throws DataException
      */
+    @Override
     @SuppressWarnings("unchecked")
     protected InputStream getInputStream(String f1, String f2, String name)
             throws IOException, DataException {
@@ -160,6 +160,7 @@ public class TrueZipLegacyAlphaChunkStore extends NestedFileChunkStore {
      *
      * @throws IOException
      */
+    @Override
     public void close() throws IOException {
         zip.close();
     }

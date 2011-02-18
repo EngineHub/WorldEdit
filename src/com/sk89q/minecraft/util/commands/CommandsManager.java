@@ -204,6 +204,7 @@ public class CommandsManager {
      * @param player
      * @param methodArgs
      * @return
+     * @throws Throwable 
      */
     public boolean execute(String[] args, CommandsPlayer player,
             Object[] methodArgs) throws Throwable {
@@ -219,10 +220,11 @@ public class CommandsManager {
      * @param methodArgs
      * @param level
      * @return
+     * @throws Throwable 
      */
     public boolean executeMethod(Method parent, String[] args,
             CommandsPlayer player, Object[] methodArgs, int level)
-            throws  Throwable {
+            throws Throwable {
         String cmdName = args[level];
         
         Map<String, Method> map = commands.get(parent);

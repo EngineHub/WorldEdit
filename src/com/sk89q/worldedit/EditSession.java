@@ -393,6 +393,8 @@ public class EditSession {
 
     /**
      * Restores all blocks to their initial state.
+     * 
+     * @param sess 
      */
     public void undo(EditSession sess) {
         for (Map.Entry<BlockVector, BaseBlock> entry : original) {
@@ -404,6 +406,8 @@ public class EditSession {
 
     /**
      * Sets to new state.
+     * 
+     * @param sess 
      */
     public void redo(EditSession sess) {
         for (Map.Entry<BlockVector, BaseBlock> entry : current) {
@@ -416,6 +420,7 @@ public class EditSession {
     /**
      * Get the number of changed blocks.
      * 
+     * @return 
      */
     public int size() {
         return original.size();
@@ -505,6 +510,7 @@ public class EditSession {
      * @param depth
      * @param recursive
      * @return number of blocks affected
+     * @throws MaxChangedBlocksException 
      */
     public int fillXZ(Vector origin, BaseBlock block, int radius, int depth,
             boolean recursive) throws MaxChangedBlocksException {
@@ -609,6 +615,7 @@ public class EditSession {
      * @param depth
      * @param recursive
      * @return number of blocks affected
+     * @throws MaxChangedBlocksException 
      */
     public int fillXZ(Vector origin, Pattern pattern, int radius, int depth,
             boolean recursive) throws MaxChangedBlocksException {
@@ -711,6 +718,7 @@ public class EditSession {
      * @param size
      * @param height
      * @return number of blocks affected
+     * @throws MaxChangedBlocksException 
      */
     public int removeAbove(Vector pos, int size, int height)
             throws MaxChangedBlocksException {
@@ -745,6 +753,7 @@ public class EditSession {
      * @param size
      * @param height
      * @return number of blocks affected
+     * @throws MaxChangedBlocksException 
      */
     public int removeBelow(Vector pos, int size, int height)
             throws MaxChangedBlocksException {
@@ -779,6 +788,7 @@ public class EditSession {
      * @param blockType
      * @param size
      * @return number of blocks affected
+     * @throws MaxChangedBlocksException 
      */
     public int removeNear(Vector pos, int blockType, int size)
             throws MaxChangedBlocksException {
@@ -859,7 +869,7 @@ public class EditSession {
      * Sets all the blocks inside a region to a certain block type.
      * 
      * @param region
-     * @param block
+     * @param pattern
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
@@ -905,9 +915,8 @@ public class EditSession {
      * Replaces all the blocks of a type inside a region to another block type.
      * 
      * @param region
-     * @param fromBlockType
-     *            -1 for non-air
-     * @param toBlockType
+     * @param fromBlockTypes -1 for non-air
+     * @param toBlock
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
@@ -963,8 +972,7 @@ public class EditSession {
      * Replaces all the blocks of a type inside a region to another block type.
      * 
      * @param region
-     * @param fromBlockType
-     *            -1 for non-air
+     * @param fromBlockTypes -1 for non-air
      * @param pattern
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
@@ -1395,6 +1403,8 @@ public class EditSession {
      * 
      * @param pos
      * @param radius
+     * @param moving 
+     * @param stationary 
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
@@ -1826,9 +1836,9 @@ public class EditSession {
      * 
      * @param pos
      * @param block
-     * @param c
-     *            0-1 chance
+     * @param c 0-1 chance
      * @return whether a block was changed
+     * @throws MaxChangedBlocksException 
      */
     public boolean setChanceBlockIfAir(Vector pos, BaseBlock block, double c)
             throws MaxChangedBlocksException {
@@ -1917,6 +1927,7 @@ public class EditSession {
      * @param basePos
      * @param size
      * @return number of trees created
+     * @throws MaxChangedBlocksException 
      */
     public int makePumpkinPatches(Vector basePos, int size)
             throws MaxChangedBlocksException {
@@ -1959,6 +1970,7 @@ public class EditSession {
      * @param density
      * @param treeGenerator
      * @return number of trees created
+     * @throws MaxChangedBlocksException 
      */
     public int makeForest(Vector basePos, int size, double density,
             TreeGenerator treeGenerator) throws MaxChangedBlocksException {

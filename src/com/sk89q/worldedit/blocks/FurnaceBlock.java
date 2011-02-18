@@ -49,6 +49,8 @@ public class FurnaceBlock extends BaseBlock implements TileEntityBlock, Containe
 
     /**
      * Construct the chest block.
+     * 
+     * @param type 
      */
     public FurnaceBlock(int type) {
         super(type);
@@ -58,6 +60,7 @@ public class FurnaceBlock extends BaseBlock implements TileEntityBlock, Containe
     /**
      * Construct the chest block.
      *
+     * @param type 
      * @param data
      */
     public FurnaceBlock(int type, int data) {
@@ -68,6 +71,7 @@ public class FurnaceBlock extends BaseBlock implements TileEntityBlock, Containe
     /**
      * Construct the chest block.
      *
+     * @param type 
      * @param data
      * @param items
      */
@@ -87,8 +91,6 @@ public class FurnaceBlock extends BaseBlock implements TileEntityBlock, Containe
 
     /**
      * Set the list of items.
-     *
-     * @return
      */
     public void setItems(BaseItemStack[] items) {
         this.items = items;

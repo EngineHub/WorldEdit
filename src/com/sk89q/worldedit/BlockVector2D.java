@@ -37,7 +37,8 @@ public class BlockVector2D extends Vector2D {
     /**
      * Construct the Vector object.
      *
-     * @param pt
+     * @param x 
+     * @param z 
      */
     public BlockVector2D(int x, int z) {
         super(x, z);
@@ -46,7 +47,8 @@ public class BlockVector2D extends Vector2D {
     /**
      * Construct the Vector object.
      *
-     * @param pt
+     * @param x 
+     * @param z 
      */
     public BlockVector2D(float x, float z) {
         super(x, z);
@@ -55,7 +57,8 @@ public class BlockVector2D extends Vector2D {
     /**
      * Construct the Vector object.
      *
-     * @param pt
+     * @param x 
+     * @param z 
      */
     public BlockVector2D(double x, double z) {
         super(x, z);

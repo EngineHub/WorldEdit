@@ -102,7 +102,7 @@ public class SnapshotRepository {
     /**
      * Check to see if a snapshot is valid.
      *
-     * @param dir
+     * @param snapshot
      * @return whether it is a valid snapshot
      */
     public boolean isValidSnapshotName(String snapshot) {

@@ -51,6 +51,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
     /**
      * Load the configuration file.
      */
+    @Override
     public void load() {
         InputStream stream = null;
         try {

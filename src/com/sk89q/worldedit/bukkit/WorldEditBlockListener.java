@@ -46,6 +46,7 @@ public class WorldEditBlockListener extends BlockListener {
      *
      * @param event Relevant event details
      */
+    @Override
     public void onBlockDamage(BlockDamageEvent event) {
         LocalWorld world = new BukkitWorld(event.getBlock().getWorld());
         WorldVector pos = new WorldVector(world, event.getBlock().getX(),
@@ -62,6 +63,7 @@ public class WorldEditBlockListener extends BlockListener {
      *
      * @param event Relevant event details
      */
+    @Override
     public void onBlockRightClick(BlockRightClickEvent event) {
         LocalWorld world = new BukkitWorld(event.getBlock().getWorld());
         WorldVector pos = new WorldVector(world, event.getBlock().getX(),

@@ -284,7 +284,6 @@ public enum BlockType {
     /**
      * Checks to see whether a block should be placed last.
      *
-     * @param id
      * @return
      */
     public boolean shouldPlaceLast() {

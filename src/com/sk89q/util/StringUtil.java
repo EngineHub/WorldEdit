@@ -67,6 +67,7 @@ public class StringUtil {
      * @param str
      * @param delimiter
      * @param initialIndex
+     * @param quote 
      * @return
      */
     public static String joinQuotedString(String[] str, String delimiter,
@@ -89,7 +90,6 @@ public class StringUtil {
      * 
      * @param str
      * @param delimiter
-     * @param initialIndex
      * @return
      */
     public static String joinString(String[] str, String delimiter) {

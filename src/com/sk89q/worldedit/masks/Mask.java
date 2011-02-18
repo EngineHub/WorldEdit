@@ -35,6 +35,7 @@ public interface Mask {
      * as getting a BaseBlock has unneeded overhead in most block querying
      * situations (enumerating a chest's contents is a waste, for example).
      * 
+     * @param editSession 
      * @param pos
      * @return
      */

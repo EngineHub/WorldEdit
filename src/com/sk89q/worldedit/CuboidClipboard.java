@@ -78,6 +78,7 @@ public class CuboidClipboard {
      *
      * @param size
      * @param origin
+     * @param offset 
      */
     public CuboidClipboard(Vector size, Vector origin, Vector offset) {
         this.size = size;
@@ -373,7 +374,6 @@ public class CuboidClipboard {
      * Load a .schematic file into a clipboard.
      * 
      * @param path
-     * @param origin
      * @return clipboard
      * @throws DataException
      * @throws IOException
@@ -556,7 +556,7 @@ public class CuboidClipboard {
     }
 
     /**
-     * @param origin the offset to set
+     * @param offset 
      */
     public void setOffset(Vector offset) {
         this.offset = offset;

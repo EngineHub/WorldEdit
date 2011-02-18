@@ -89,8 +89,8 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
 
     /**
      * Set the mob type.
-     *
-     * @return
+     * 
+     * @param mobType 
      */
     public void setMobType(String mobType) {
         this.mobType = mobType;

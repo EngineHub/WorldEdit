@@ -105,6 +105,7 @@ public abstract class BlockBag {
      * Get a block.
      *
      * @param id
+     * @throws BlockBagException 
      */
     public abstract void fetchBlock(int id) throws BlockBagException;
     
@@ -112,6 +113,7 @@ public abstract class BlockBag {
      * Store a block.
      * 
      * @param id
+     * @throws BlockBagException 
      */
     public abstract void storeBlock(int id) throws BlockBagException;
     
@@ -140,14 +142,12 @@ public abstract class BlockBag {
      * Adds a position to be used a source.
      *
      * @param pos
-     * @return
      */
     public abstract void addSourcePosition(Vector pos);
     /**
      * Adds a position to be used a source.
      *
      * @param pos
-     * @return
      */
     public abstract void addSingleSourcePosition(Vector pos);
 }

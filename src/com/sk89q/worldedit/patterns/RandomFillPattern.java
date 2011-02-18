@@ -43,7 +43,7 @@ public class RandomFillPattern implements Pattern {
     /**
      * Construct the object.
      *
-     * @param blockType
+     * @param blocks
      */
     public RandomFillPattern(List<BlockChance> blocks) {
         double max = 0;

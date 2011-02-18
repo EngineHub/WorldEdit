@@ -77,8 +77,6 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock, ContainerB
 
     /**
      * Set the list of items.
-     *
-     * @return
      */
     public void setItems(BaseItemStack[] items) {
         this.items = items;

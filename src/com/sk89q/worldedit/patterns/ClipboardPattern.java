@@ -40,7 +40,7 @@ public class ClipboardPattern implements Pattern {
     /**
      * Construct the object.
      *
-     * @param blockType
+     * @param clipboard
      */
     public ClipboardPattern(CuboidClipboard clipboard) {
         this.clipboard = clipboard;

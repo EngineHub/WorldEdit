@@ -36,6 +36,7 @@ public class BlockWorldVector extends WorldVector {
     
     /**
      * Construct the Vector object.
+     * @param world 
      *
      * @param pt
      */
@@ -45,8 +46,11 @@ public class BlockWorldVector extends WorldVector {
 
     /**
      * Construct the Vector object.
-     *
-     * @param pt
+     * 
+     * @param world 
+     * @param x 
+     * @param y 
+     * @param z 
      */
     public BlockWorldVector(LocalWorld world, int x, int y, int z) {
         super(world, x, y, z);
@@ -54,8 +58,11 @@ public class BlockWorldVector extends WorldVector {
 
     /**
      * Construct the Vector object.
-     *
-     * @param pt
+     * 
+     * @param world 
+     * @param x 
+     * @param y 
+     * @param z 
      */
     public BlockWorldVector(LocalWorld world, float x, float y, float z) {
         super(world, x, y, z);
@@ -63,8 +70,11 @@ public class BlockWorldVector extends WorldVector {
 
     /**
      * Construct the Vector object.
-     *
-     * @param pt
+     * 
+     * @param world 
+     * @param x 
+     * @param y 
+     * @param z 
      */
     public BlockWorldVector(LocalWorld world, double x, double y, double z) {
         super(world, x, y, z);

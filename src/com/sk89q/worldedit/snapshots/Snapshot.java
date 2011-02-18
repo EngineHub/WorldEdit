@@ -39,8 +39,7 @@ public class Snapshot {
     /**
      * Construct a snapshot restoration operation.
      * 
-     * @param editSession
-     * @param dir
+     * @param repo
      * @param snapshot
      */
     public Snapshot(SnapshotRepository repo, String snapshot) {
@@ -53,6 +52,7 @@ public class Snapshot {
      * 
      * @return
      * @throws IOException
+     * @throws DataException 
      */
     public ChunkStore getChunkStore() throws IOException, DataException {
         if (file.getName().toLowerCase().endsWith(".zip")) {

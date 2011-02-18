@@ -34,8 +34,6 @@ public abstract class ChunkStore {
      * 
      * @param pos
      * @return
-     * @throws ChunkStoreException
-     * @throws IOException
      */
     public static BlockVector2D toChunk(Vector pos) {
         int chunkX = (int)Math.floor(pos.getBlockX() / 16.0);
@@ -58,8 +56,7 @@ public abstract class ChunkStore {
     /**
      * Get a chunk at a location.
      *
-     * @param x
-     * @param z
+     * @param pos
      * @return
      * @throws ChunkStoreException
      * @throws IOException

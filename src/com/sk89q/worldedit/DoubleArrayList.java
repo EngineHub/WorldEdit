@@ -30,6 +30,8 @@ import java.util.NoSuchElementException;
  * Double array lists to work like a Map, but not really.
  *
  * @author sk89q
+ * @param <A> 
+ * @param <B> 
  */
 public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
     /**
@@ -100,9 +102,8 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
 
     /**
      * Entry iterator.
-     *
-     * @param <A>
-     * @param <B>
+     * 
+     * @param <T> 
      */
     public class ForwardEntryIterator<T extends Map.Entry<A,B>>
             implements Iterator<Map.Entry<A,B>> {
@@ -131,8 +132,7 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
     /**
      * Entry iterator.
      * 
-     * @param <A>
-     * @param <B>
+     * @param <T> 
      */
     public class ReverseEntryIterator<T extends Map.Entry<A,B>>
             implements Iterator<Map.Entry<A,B>> {
@@ -161,8 +161,8 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
     /**
      * Class to masquerade as Map.Entry.
      * 
-     * @param <A>
-     * @param <B>
+     * @param <C> 
+     * @param <D> 
      */
     public class Entry<C,D> implements Map.Entry<A,B> {
         private A key;

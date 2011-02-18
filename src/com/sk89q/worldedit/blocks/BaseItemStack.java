@@ -43,6 +43,7 @@ public class BaseItemStack extends BaseItem {
      * Construct the object.
      *
      * @param id
+     * @param amount 
      */
     public BaseItemStack(int id, int amount) {
         super(id);
@@ -53,6 +54,8 @@ public class BaseItemStack extends BaseItem {
      * Construct the object.
      *
      * @param id
+     * @param amount 
+     * @param damage 
      */
     public BaseItemStack(int id, int amount, short damage) {
         super(id, damage);

@@ -36,8 +36,10 @@ public class BlockVector extends Vector {
 
     /**
      * Construct the Vector object.
-     *
-     * @param pt
+     * 
+     * @param x 
+     * @param y 
+     * @param z 
      */
     public BlockVector(int x, int y, int z) {
         super(x, y, z);
@@ -46,7 +48,10 @@ public class BlockVector extends Vector {
     /**
      * Construct the Vector object.
      *
-     * @param pt
+     * 
+     * @param x 
+     * @param y 
+     * @param z 
      */
     public BlockVector(float x, float y, float z) {
         super(x, y, z);
@@ -55,7 +60,10 @@ public class BlockVector extends Vector {
     /**
      * Construct the Vector object.
      *
-     * @param pt
+     * 
+     * @param x 
+     * @param y 
+     * @param z 
      */
     public BlockVector(double x, double y, double z) {
         super(x, y, z);

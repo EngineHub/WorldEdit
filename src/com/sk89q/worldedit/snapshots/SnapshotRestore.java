@@ -58,6 +58,7 @@ public class SnapshotRestore {
     /**
      * Construct the snapshot restore operation.
      * 
+     * @param chunkStore 
      * @param region
      */
     public SnapshotRestore(ChunkStore chunkStore, Region region) {
@@ -131,7 +132,7 @@ public class SnapshotRestore {
      * Restores to world.
      *
      * @param editSession
-     * @param region
+     * @throws MaxChangedBlocksException 
      */
     public void restore(EditSession editSession)
             throws MaxChangedBlocksException {

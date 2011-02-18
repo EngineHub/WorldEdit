@@ -31,6 +31,7 @@ import java.io.StringWriter;
  * @author sk89q
  */
 public class LogFormat extends Formatter {
+    @Override
     public String format(LogRecord record) {
         StringBuilder text = new StringBuilder();
         Level level = record.getLevel();

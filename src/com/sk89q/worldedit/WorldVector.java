@@ -33,6 +33,7 @@ public class WorldVector extends Vector {
     /**
      * Construct the Vector object.
      *
+     * @param world 
      * @param x
      * @param y
      * @param z
@@ -45,6 +46,7 @@ public class WorldVector extends Vector {
     /**
      * Construct the Vector object.
      *
+     * @param world 
      * @param x
      * @param y
      * @param z
@@ -57,6 +59,7 @@ public class WorldVector extends Vector {
     /**
      * Construct the Vector object.
      *
+     * @param world 
      * @param x
      * @param y
      * @param z
@@ -69,6 +72,7 @@ public class WorldVector extends Vector {
     /**
      * Construct the Vector object.
      *
+     * @param world 
      * @param pt
      */
     public WorldVector(LocalWorld world, Vector pt) {
@@ -78,6 +82,8 @@ public class WorldVector extends Vector {
 
     /**
      * Construct the Vector object.
+     * 
+     * @param world 
      */
     public WorldVector(LocalWorld world) {
         super();
@@ -96,6 +102,7 @@ public class WorldVector extends Vector {
     /**
      * Get a block point from a point.
      * 
+     * @param world 
      * @param x
      * @param y
      * @param z

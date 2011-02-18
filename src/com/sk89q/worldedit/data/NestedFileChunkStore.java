@@ -56,7 +56,6 @@ public abstract class NestedFileChunkStore extends ChunkStore {
      * separator.
      * 
      * @param pos
-     * @param separator
      * @return
      */
     public static String getFilename(Vector2D pos) {
@@ -71,6 +70,7 @@ public abstract class NestedFileChunkStore extends ChunkStore {
      * @throws DataException
      * @throws IOException
      */
+    @Override
     public CompoundTag getChunkTag(Vector2D pos)
             throws DataException, IOException {
         int x = pos.getBlockX();

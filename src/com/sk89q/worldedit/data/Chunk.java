@@ -38,12 +38,13 @@ public class Chunk {
     private byte[] data;
     private int rootX;
     private int rootZ;
-    Map<BlockVector,Map<String,Tag>> tileEntities;
+    private Map<BlockVector,Map<String,Tag>> tileEntities;
 
     /**
      * Construct the chunk with a compound tag.
      * 
-     * @param rootTag
+     * @param tag 
+     * @throws DataException 
      */
     public Chunk(CompoundTag tag) throws DataException {
         rootTag = tag;

@@ -66,6 +66,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
      *
      * @param id
      */
+    @Override
     public void fetchBlock(int id) throws BlockBagException {
         if (id == 0) {
             throw new IllegalArgumentException("Can't fetch air block");
@@ -111,6 +112,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
      * 
      * @param id
      */
+    @Override
     public void storeBlock(int id) throws BlockBagException {
         if (id == 0) {
             throw new IllegalArgumentException("Can't store air block");
@@ -163,6 +165,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
     /**
      * Flush any changes. This is called at the end.
      */
+    @Override
     public void flushChanges() {
         if (items != null) {
             player.getInventory().setContents(items);
@@ -174,16 +177,17 @@ public class BukkitPlayerBlockBag extends BlockBag {
      * Adds a position to be used a source.
      *
      * @param pos
-     * @return
      */
+    @Override
     public void addSourcePosition(Vector pos) {
     }
+    
     /**
      * Adds a position to be used a source.
      *
      * @param pos
-     * @return
      */
+    @Override
     public void addSingleSourcePosition(Vector pos) {
     }
 }

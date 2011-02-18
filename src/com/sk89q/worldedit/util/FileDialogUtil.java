@@ -70,6 +70,7 @@ public class FileDialogUtil {
             desc = StringUtil.joinString(exts, ",");
         }
         
+        @Override
         public boolean accept(File f) {
             if (f.isDirectory()) {
                 return true;
@@ -83,6 +84,7 @@ public class FileDialogUtil {
             }
         }
 
+        @Override
         public String getDescription() {
             return desc;
         }

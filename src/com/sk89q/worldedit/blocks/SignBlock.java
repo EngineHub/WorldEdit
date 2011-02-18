@@ -36,8 +36,9 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
 
     /**
      * Construct the sign without text.
-     *
-     * @param text
+     * 
+     * @param type 
+     * @param data 
      */
     public SignBlock(int type, int data) {
         super(type, data);
@@ -46,8 +47,10 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
 
     /**
      * Construct the sign with text.
-     *
-     * @param text
+     * 
+     * @param type 
+     * @param data 
+     * @param text 
      */
     public SignBlock(int type, int data, String[] text) {
         super(type, data);

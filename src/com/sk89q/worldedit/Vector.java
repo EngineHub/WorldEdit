@@ -437,7 +437,6 @@ public class Vector {
     /**
      * Get the length of the vector.
      *
-     * @param pt
      * @return distance
      */
     public double length() {
@@ -473,7 +472,6 @@ public class Vector {
     /**
      * Get the normalized vector.
      *
-     * @param pt
      * @return vector
      */
     public Vector normalize() {
@@ -520,12 +518,11 @@ public class Vector {
     /**
      * 2D transformation.
      * 
-     * @param vec
      * @param angle in degrees
      * @param aboutX
-     * @param aboutY
+     * @param aboutZ
      * @param translateX
-     * @param translateY
+     * @param translateZ
      * @return
      */
     public Vector transform2D(double angle,
@@ -557,9 +554,6 @@ public class Vector {
     /**
      * Get a block point from a point.
      * 
-     * @param x
-     * @param y
-     * @param z
      * @return point
      */
     public BlockVector toBlockPoint() {

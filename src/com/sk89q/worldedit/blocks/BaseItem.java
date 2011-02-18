@@ -48,6 +48,7 @@ public class BaseItem {
      * Construct the object.
      *
      * @param id
+     * @param damage 
      */
     public BaseItem(int id, short damage) {
         this.id = id;

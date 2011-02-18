@@ -28,12 +28,14 @@ public class RhinoContextFactory extends ContextFactory {
         this.timeLimit = timeLimit;
     }
     
+    @Override
     protected Context makeContext() {
         RhinoContext cx = new RhinoContext(this);
         cx.setInstructionObserverThreshold(10000);
         return cx;
     }
 
+    @Override
     protected void observeInstructionCount(Context cx, int instructionCount) {
         RhinoContext mcx = (RhinoContext)cx;
         long currentTime = System.currentTimeMillis();
@@ -43,6 +45,7 @@ public class RhinoContextFactory extends ContextFactory {
         }
     }
 
+    @Override
     protected Object doTopCall(Callable callable, Context cx, Scriptable scope,
             Scriptable thisObj, Object[] args) {
         RhinoContext mcx = (RhinoContext)cx;

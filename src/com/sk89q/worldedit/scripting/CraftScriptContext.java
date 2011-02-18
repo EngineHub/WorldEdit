@@ -134,7 +134,6 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     /**
      * Checks to make sure that there are enough but not too many arguments.
      *
-     * @param args
      * @param min
      * @param max -1 for no maximum
      * @param usage usage string
@@ -179,6 +178,8 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      *
      * @param list
      * @return pattern
+     * @throws UnknownItemException 
+     * @throws DisallowedItemException 
      */
     public Pattern getBlockPattern(String list)
             throws UnknownItemException, DisallowedItemException {
@@ -191,6 +192,8 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param list
      * @param allBlocksAllowed
      * @return set
+     * @throws UnknownItemException 
+     * @throws DisallowedItemException 
      */
     public Set<Integer> getBlockIDs(String list, boolean allBlocksAllowed)
             throws UnknownItemException, DisallowedItemException {
