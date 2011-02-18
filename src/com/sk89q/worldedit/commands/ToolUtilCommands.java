@@ -52,7 +52,7 @@ public class ToolUtilCommands {
     }
 
     @Command(
-        aliases = {"pickaxe", "pa", "spa"},
+        aliases = {"superpickaxe", "pickaxe", "sp"},
         desc = "Select super pickaxe mode"
     )
     @NestedCommand({SuperPickaxeCommands.class})

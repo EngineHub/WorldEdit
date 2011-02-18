@@ -221,10 +221,10 @@ commands:
         description: Toggle the super pickaxe pickaxe function
         usage: /<command> 
         aliases: [',']
-    pickaxe:
+    superpickaxe:
         description: Select super pickaxe mode
         usage: /<command> 
-        aliases: ['pa', 'spa']
+        aliases: ['pickaxe', 'sp']
     mask:
         description: Set the brush mask
         usage: /<command> [mask]
