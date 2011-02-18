@@ -147,9 +147,10 @@ public class WorldEditPlugin extends JavaPlugin {
         perms.load();
     }
 
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
-        if (!sender.isPlayer()) {
+        if (!(sender instanceof Player)) {
             return true;
         }
         

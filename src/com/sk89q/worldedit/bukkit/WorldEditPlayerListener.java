@@ -30,6 +30,7 @@ import org.bukkit.event.player.PlayerListener;
 /**
  * Handles all events thrown in relation to a Player
  */
+@SuppressWarnings("deprecation")
 public class WorldEditPlayerListener extends PlayerListener {
     /**
      * Plugin.
@@ -41,6 +42,7 @@ public class WorldEditPlayerListener extends PlayerListener {
      * 
      * @param event Relevant event details
      */
+    @Override
     public void onPlayerAnimation(PlayerAnimationEvent event) {
         if (event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
             plugin.controller.handleArmSwing(wrapPlayer(event.getPlayer()));
@@ -61,6 +63,7 @@ public class WorldEditPlayerListener extends PlayerListener {
      *
      * @param event Relevant event details
      */
+    @Override
     public void onPlayerQuit(PlayerEvent event) {
         plugin.controller.handleDisconnect(wrapPlayer(event.getPlayer()));
     }
@@ -70,6 +73,7 @@ public class WorldEditPlayerListener extends PlayerListener {
      *
      * @param event Relevant event details
      */
+    @Override
     public void onPlayerCommand(PlayerChatEvent event) {
         String[] split = event.getMessage().split(" ");
         
@@ -83,6 +87,7 @@ public class WorldEditPlayerListener extends PlayerListener {
      * 
      * @param event Relevant event details
      */
+    @Override
     public void onPlayerItem(PlayerItemEvent event) {
         if (plugin.controller.handleRightClick(wrapPlayer(event.getPlayer()))) {
             event.setCancelled(true);

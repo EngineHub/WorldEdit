@@ -22,7 +22,7 @@ package com.sk89q.worldedit.bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
-import org.bukkit.block.MobSpawner;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
@@ -84,7 +84,6 @@ public class BukkitWorld extends LocalWorld {
      * 
      * @param pt
      * @param data
-     * @return
      */
     @Override
     public void setBlockData(Vector pt, int data) {
@@ -138,10 +137,10 @@ public class BukkitWorld extends LocalWorld {
             Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (bukkitBlock == null) return false;
             BlockState state = bukkitBlock.getState();
-            if (!(state instanceof MobSpawner)) return false;
-            MobSpawner bukkit = (MobSpawner)state;
+            if (!(state instanceof CreatureSpawner)) return false;
+            CreatureSpawner bukkit = (CreatureSpawner)state;
             MobSpawnerBlock we = (MobSpawnerBlock)block;
-            bukkit.setMobTypeId(we.getMobType());
+            bukkit.setCreatureTypeId(we.getMobType());
             bukkit.setDelay(we.getDelay());
             return true;
         
@@ -197,10 +196,10 @@ public class BukkitWorld extends LocalWorld {
             Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (bukkitBlock == null) return false;
             BlockState state = bukkitBlock.getState();
-            if (!(state instanceof MobSpawner)) return false;
-            MobSpawner bukkit = (MobSpawner)state;
+            if (!(state instanceof CreatureSpawner)) return false;
+            CreatureSpawner bukkit = (CreatureSpawner)state;
             MobSpawnerBlock we = (MobSpawnerBlock)block;
-            we.setMobType(bukkit.getMobTypeId());
+            we.setMobType(bukkit.getCreatureTypeId());
             we.setDelay((short)bukkit.getDelay());
             return true;
         

@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import org.bukkit.*;
-import org.bukkit.entity.MobType;
+import org.bukkit.entity.CreatureType;
 import com.sk89q.worldedit.ServerInterface;
 
 public class BukkitServerInterface extends ServerInterface {
@@ -38,7 +38,7 @@ public class BukkitServerInterface extends ServerInterface {
 
     @Override
     public boolean isValidMobType(String type) {
-        return MobType.fromName(type) != null;
+        return CreatureType.fromName(type) != null;
     }
 
 }
