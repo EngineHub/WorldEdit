@@ -17,36 +17,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.superpickaxe;
+package com.sk89q.worldedit.tools;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BlockID;
 
 /**
- * A super pickaxe mode that removes one block.
+ * Represents a tool that uses a block..
  * 
  * @author sk89q
  */
-public class SinglePickaxe implements SuperPickaxeMode {
-    @Override
+public interface BlockTool extends Tool {
+    /**
+     * Perform the action. Should return true to deny the default
+     * action.
+     * 
+     * @param server 
+     * @param config 
+     * @param player
+     * @param session
+     * @param clicked
+     * @return true to deny
+     */
     public boolean act(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, WorldVector clicked) {
-        LocalWorld world = clicked.getWorld();
-        
-        if (world.getBlockType(clicked) == BlockID.BEDROCK
-                && !player.canDestroyBedrock()) {
-            return true;
-        } else if (world.getBlockType(clicked) == BlockID.TNT) {
-            return false;
-        }
-
-        if (config.superPickaxeDrop) {
-            world.simulateBlockMine(clicked);
-        }
-        
-        world.setBlockType(clicked, 0);
-        
-        return true;
-    }
-
+            LocalPlayer player, LocalSession session, WorldVector clicked);
 }

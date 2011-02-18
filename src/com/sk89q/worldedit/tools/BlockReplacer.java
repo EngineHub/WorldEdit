@@ -17,59 +17,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.superpickaxe;
+package com.sk89q.worldedit.tools;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.superpickaxe.brushes.BrushShape;
+import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
- * Builds a shape at the place being looked at.
+ * A mode that replaces one block.
  * 
  * @author sk89q
  */
-public class Brush implements SuperPickaxeMode {
-    private boolean nonReplacing;
+public class BlockReplacer implements BlockTool {
+    private BaseBlock targetBlock;
     
-    public Brush(boolean nonReplacing) {
-        this.nonReplacing = nonReplacing;
+    public BlockReplacer(BaseBlock targetBlock) {
+        this.targetBlock = targetBlock;
     }
     
     @Override
     public boolean act(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
-        WorldVector target = player.getBlockTrace(500);
-        
-        if (target == null) {
-            player.printError("No block in sight!");
-            return true;
-        }
-        
+
         BlockBag bag = session.getBlockBag(player);
         
-        BrushShape shape = session.getBrushShape();
-        
-        if (shape == null) {
-            player.printError("Select a brush first.");
-            return true;
-        }
-        
-        ReplacingEditSession editSession = new ReplacingEditSession(server, target.getWorld(),
-                session.getBlockChangeLimit(), bag);
-        
-        if (nonReplacing) {
-            editSession.disableReplacing();
-        }
+        LocalWorld world = clicked.getWorld();
+        EditSession editSession = new EditSession(world, -1, bag);
         
         try {
-            shape.build(editSession, target);
+            editSession.setBlock(clicked, targetBlock);
         } catch (MaxChangedBlocksException e) {
-            player.printError("Max blocks change limit reached.");
         } finally {
             if (bag != null) {
                 bag.flushChanges();
             }
-            editSession.enableReplacing();
             session.remember(editSession);
         }
         

@@ -17,26 +17,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.superpickaxe.brushes;
+package com.sk89q.worldedit.masks;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
 
-public class HollowCylinderBrushShape implements BrushShape {
-    private BaseBlock targetBlock;
-    private int radius;
-    private int height;
-    
-    public HollowCylinderBrushShape(BaseBlock targetBlock, int radius, int height) {
-        this.targetBlock = targetBlock;
-        this.radius = radius;
-        this.height = height;
-    }
-    
-    public void build(EditSession editSession, Vector pos)
-            throws MaxChangedBlocksException {
-        editSession.makeHollowCylinder(pos, targetBlock, radius, height);
-    }
+/**
+ * Base matcher for the block filtering framework. Implementing classes
+ * can be used to filter blocks to set or replace
+ *
+ * @author sk89q
+ */
+public interface Mask {
+    /**
+     * Given a block position, this method returns true if the block at
+     * that position matches the filter. Block information is not provided
+     * as getting a BaseBlock has unneeded overhead in most block querying
+     * situations (enumerating a chest's contents is a waste, for example).
+     * 
+     * @param pos
+     * @return
+     */
+    public boolean matches(EditSession editSession, Vector pos);
 }

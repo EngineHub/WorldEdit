@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.superpickaxe;
+package com.sk89q.worldedit.tools;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BlockID;
@@ -27,7 +27,7 @@ import com.sk89q.worldedit.blocks.BlockID;
  * 
  * @author sk89q
  */
-public class BlockDataCyler implements SuperPickaxeMode {
+public class BlockDataCyler implements BlockTool {
     @Override
     public boolean act(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {

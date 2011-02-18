@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.filters;
+package com.sk89q.worldedit.filtering;
 
 import java.awt.image.Kernel;
 

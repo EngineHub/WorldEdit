@@ -17,40 +17,51 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.superpickaxe;
+package com.sk89q.worldedit.tools;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.tools.brushes.BrushShape;
 
 /**
- * A smode that replaces one block.
+ * Builds a sphere at the place being looked at.
  * 
  * @author sk89q
  */
-public class BlockReplacer implements SuperPickaxeMode {
-    private BaseBlock targetBlock;
-    
-    public BlockReplacer(BaseBlock targetBlock) {
-        this.targetBlock = targetBlock;
-    }
-    
-    @Override
+public class ReplacingBrush implements Tool {
     public boolean act(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
-
+        WorldVector target = player.getBlockTrace(500);
+        
+        if (target == null) {
+            player.printError("No block in sight!");
+            return true;
+        }
+        
         BlockBag bag = session.getBlockBag(player);
         
-        LocalWorld world = clicked.getWorld();
-        EditSession editSession = new EditSession(server, world, -1, bag);
+        BrushShape shape = session.getBrushShape();
+        
+        if (shape == null) {
+            player.printError("Select a brush first.");
+            return true;
+        }
+        
+        ReplacingExistingEditSession editSession =
+                new ReplacingExistingEditSession(server, target.getWorld(),
+                session.getBlockChangeLimit(), bag);
+        
+        editSession.enableReplacing();
         
         try {
-            editSession.setBlock(clicked, targetBlock);
+            shape.build(editSession, target);
         } catch (MaxChangedBlocksException e) {
+            player.printError("Max blocks change limit reached.");
         } finally {
             if (bag != null) {
                 bag.flushChanges();
             }
+            editSession.enableReplacing();
             session.remember(editSession);
         }
         

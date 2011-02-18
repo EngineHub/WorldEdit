@@ -29,7 +29,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.*;
 import javax.script.ScriptException;
-import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalSession.CompassMode;
@@ -37,6 +36,12 @@ import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.commands.*;
 import com.sk89q.worldedit.scripting.*;
+import com.sk89q.worldedit.tools.BlockTool;
+import com.sk89q.worldedit.tools.Tool;
+import com.sk89q.worldedit.tools.TraceTool;
+import com.sk89q.worldedit.masks.BlockTypeMask;
+import com.sk89q.worldedit.masks.ExistingBlockMask;
+import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.*;
 
 /**
@@ -105,8 +110,8 @@ public class WorldEdit {
         commands.register(ScriptingCommands.class);
         commands.register(SelectionCommands.class);
         commands.register(SnapshotCommands.class);
-        commands.register(SuperPickaxeCommands.class);
-        commands.register(BrushShapeCommands.class);
+        commands.register(ToolUtilCommands.class);
+        commands.register(ToolCommands.class);
         commands.register(UtilityCommands.class);
     }
 
@@ -290,6 +295,8 @@ public class WorldEdit {
      * @param player
      * @param list
      * @return pattern
+     * @throws UnknownItemException 
+     * @throws DisallowedItemException 
      */
     public Pattern getBlockPattern(LocalPlayer player, String list)
             throws UnknownItemException, DisallowedItemException {
@@ -334,6 +341,29 @@ public class WorldEdit {
 
         return new RandomFillPattern(blockChances);
     }
+    
+    /**
+     * Get a block mask. Block masks are used to determine which
+     * blocks to include when replacing.
+     * 
+     * @param player
+     * @param list
+     * @return
+     * @throws UnknownItemException
+     * @throws DisallowedItemException
+     */
+    public Mask getBlockMask(LocalPlayer player, String list)
+            throws UnknownItemException, DisallowedItemException {
+        if (list.charAt(0) == '#') {
+            if (list.equalsIgnoreCase("#existing")) {
+                return new ExistingBlockMask();
+            } else {
+                throw new UnknownItemException(list);
+            }
+        } else {
+            return new BlockTypeMask(getBlockIDs(player, list, true));
+        }
+    }
 
     /**
      * Get a list of blocks as a set.
@@ -342,6 +372,8 @@ public class WorldEdit {
      * @param list
      * @param allBlocksAllowed
      * @return set
+     * @throws UnknownItemException 
+     * @throws DisallowedItemException 
      */
     public Set<Integer> getBlockIDs(LocalPlayer player,
             String list, boolean allBlocksAllowed)
@@ -361,6 +393,7 @@ public class WorldEdit {
      * traversal exploits by checking the root directory and the file directory.
      * On success, a <code>java.io.File</code> object will be returned.
      * 
+     * @param player 
      * @param dir sub-directory to look in
      * @param filename filename (user-submitted)
      * @param defaultExt append an extension if missing one, null to not use
@@ -380,6 +413,7 @@ public class WorldEdit {
      * traversal exploits by checking the root directory and the file directory.
      * On success, a <code>java.io.File</code> object will be returned.
      * 
+     * @param player 
      * @param dir sub-directory to look in
      * @param filename filename (user-submitted)
      * @param defaultExt append an extension if missing one, null to not use
@@ -493,8 +527,9 @@ public class WorldEdit {
      * null if a direction could not be found.
      * 
      * @param player
-     * @param dir
+     * @param dirStr 
      * @return
+     * @throws UnknownDirectionException 
      */
     public Vector getDirection(LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
@@ -540,8 +575,9 @@ public class WorldEdit {
      * null if a direction could not be found.
      *
      * @param player
-     * @param dir
+     * @param dirStr 
      * @return
+     * @throws UnknownDirectionException 
      */
     public CuboidClipboard.FlipDirection getFlipDirection(
             LocalPlayer player, String dirStr)
@@ -589,7 +625,6 @@ public class WorldEdit {
      * Flush a block bag's changes to a player.
      * 
      * @param player
-     * @param blockBag
      * @param editSession
      */
     public void flushBlockBag(LocalPlayer player,
@@ -651,13 +686,7 @@ public class WorldEdit {
     public boolean handleArmSwing(LocalPlayer player) {
         LocalSession session = getSession(player);
         
-        if (player.isHoldingPickAxe()) {
-            if (session.getArmSwingMode() != null) {
-                session.getArmSwingMode().act(server, config,
-                        player, session, null);
-                return true;
-            }
-        } else if (player.getItemInHand() == config.navigationWand
+        if (player.getItemInHand() == config.navigationWand
                 && config.navigationWandMaxDistance > 0) {
             CompassMode mode = session.getCompassMode();
             
@@ -687,13 +716,7 @@ public class WorldEdit {
     public boolean handleRightClick(LocalPlayer player) {
         LocalSession session = getSession(player);
         
-        if (player.isHoldingPickAxe()) {
-            if (session.getArmSwingMode() != null) {
-                session.getArmSwingMode().act(server, config,
-                        player, session, null);
-                return true;
-            }
-        } else if (player.getItemInHand() == config.navigationWand) {
+        if (player.getItemInHand() == config.navigationWand) {
             CompassMode mode = session.getCompassMode();
             
             if (mode == CompassMode.JUMPTO) {
@@ -715,6 +738,13 @@ public class WorldEdit {
             return true;
         }
         
+        Tool tool = session.getTool(player.getItemInHand());
+        
+        if (tool != null && tool instanceof TraceTool) {
+            ((TraceTool)tool).act(server, config, player, session);
+            return true;
+        }
+        
         return false;
     }
 
@@ -733,6 +763,7 @@ public class WorldEdit {
         if (itemInHand == config.wandItem && session.isToolControlEnabled()
                 && player.hasPermission("worldedit.selection.pos")) {
             session.setPos2(clicked);
+            
             try {
                 player.print("Second position set to " + clicked
                         + " (" + session.getRegion().getSize() + ").");
@@ -741,8 +772,13 @@ public class WorldEdit {
             }
 
             return true;
-        } else if (player.isHoldingPickAxe() && session.getRightClickMode() != null) {
-            return session.getRightClickMode().act(server, config, player, session, clicked);
+        }
+
+        Tool tool = session.getTool(player.getItemInHand());
+        
+        if (tool != null && tool instanceof BlockTool) {
+            ((BlockTool)tool).act(server, config, player, session, clicked);
+            return true;
         }
 
         return false;
@@ -785,8 +821,8 @@ public class WorldEdit {
                 return true;
             }
         } else if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
-            if (session.getLeftClickMode() != null) {
-                return session.getLeftClickMode().act(server, config,
+            if (session.getSuperPickaxe() != null) {
+                return session.getSuperPickaxe().act(server, config,
                         player, session, clicked);
             }
         }
@@ -830,7 +866,7 @@ public class WorldEdit {
                 session.tellVersion(player);
                 
                 EditSession editSession =
-                        new EditSession(server, player.getWorld(),
+                        new EditSession(player.getWorld(),
                                 session.getBlockChangeLimit(), blockBag);
                 editSession.enableQueue();
 
@@ -913,7 +949,7 @@ public class WorldEdit {
      * Executes a WorldEdit script.
      * 
      * @param player
-     * @param filename
+     * @param f
      * @param args
      * @throws WorldEditException 
      */

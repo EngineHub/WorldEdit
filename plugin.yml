@@ -2,18 +2,18 @@ name: WorldEdit
 main: com.sk89q.worldedit.bukkit.WorldEditPlugin
 version: "WEVERSIONMACRO"
 commands:
-    /sb:
+    sphere:
         description: Choose the sphere brush
         usage: /<command> [-h] <block> [radius]
-        aliases: ['/sphereb']
-    /cb:
+        aliases: ['s']
+    cylinder:
         description: Choose the cylinder brush
         usage: /<command> [-h] <block> [radius] [height]
-        aliases: ['/cylb']
-    /cbb:
+        aliases: ['cyl', 'c']
+    clipboard:
         description: Choose the clipboard brush
         usage: /<command> [-a] 
-        aliases: ['/copyb']
+        aliases: ['copy']
     chunkinfo:
         description: Get information about the chunk that you are inside
         usage: /<command> 
@@ -57,17 +57,17 @@ commands:
     /limit:
         description: Modify block change limit
         usage: /<command> <limit>
-    /hcyl:
-        description: Generate a hollow cylinder
-        usage: /<command> <block> <radius> [height] 
+    /sphere:
+        description: Generate a filled sphere
+        usage: /<command> <block> <radius> [raised?] 
     /cyl:
         description: Generate a cylinder
         usage: /<command> <block> <radius> [height] 
+    /hcyl:
+        description: Generate a hollow cylinder
+        usage: /<command> <block> <radius> [height] 
     /hsphere:
         description: Generate a hollow sphere
-        usage: /<command> <block> <radius> [raised?] 
-    /sphere:
-        description: Generate a filled sphere
         usage: /<command> <block> <radius> [raised?] 
     forestgen:
         description: Generate a forest
@@ -184,13 +184,16 @@ commands:
     /restore:
         description: Restore the selection from a snapshot
         usage: /<command> [snapshot]
-    /:
-        description: Toggle the super pickaxe pickaxe function
-        usage: /<command> 
-        aliases: [',']
     area:
         description: Enable the area super pickaxe pickaxe mode
         usage: /<command> <radius>
+    recur:
+        description: Enable the recursive super pickaxe pickaxe mode
+        usage: /<command> <radius>
+        aliases: ['recursive']
+    single:
+        description: Enable the single block super pickaxe mode
+        usage: /<command> 
     none:
         description: Turn off all superpickaxe alternate modes
         usage: /<command> 
@@ -200,24 +203,31 @@ commands:
     cycler:
         description: Block data cycler tool
         usage: /<command> 
-    /brush:
-        description: Build from far away
-        usage: /<command> [-r] 
-    /rbrush:
-        description: Brush tool that will only replace blocks
+    brush:
+        description: Brush tool
         usage: /<command> 
-    recur:
-        description: Enable the recursive super pickaxe pickaxe mode
-        usage: /<command> <radius>
+        aliases: ['b']
     info:
         description: Block information tool
-        usage: /<command> 
-    single:
-        description: Enable the single block super pickaxe mode
         usage: /<command> 
     tree:
         description: Tree generator tool
         usage: /<command> [type]
+    tool:
+        description: Select a tool to bind
+        usage: /<command> 
+        aliases: ['t']
+    /:
+        description: Toggle the super pickaxe pickaxe function
+        usage: /<command> 
+        aliases: [',']
+    pickaxe:
+        description: Select super pickaxe mode
+        usage: /<command> 
+        aliases: ['pa', 'spa']
+    mask:
+        description: Set the brush mask
+        usage: /<command> [mask]
     /fillr:
         description: Fill a hole recursively
         usage: /<command>  <block> <radius> [depth] 

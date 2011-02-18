@@ -17,25 +17,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.superpickaxe.brushes;
+package com.sk89q.worldedit.tools;
 
-import com.sk89q.worldedit.CuboidClipboard;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.ServerInterface;
 
-public class ClipboardBrushShape implements BrushShape {
-    private CuboidClipboard clipboard;
-    private boolean noAir;
-    
-    public ClipboardBrushShape(CuboidClipboard clipboard, boolean noAir) {
-        this.clipboard = clipboard;
-        this.noAir = noAir;
-    }
-    
-    public void build(EditSession editSession, Vector pos)
-            throws MaxChangedBlocksException {
-        clipboard.place(editSession,
-                pos.subtract(clipboard.getSize().divide(2)), noAir);
-    }
+/**
+ * Represents a tool that does not require a block.
+ *
+ * @author sk89q
+ */
+public interface TraceTool extends Tool {
+    /**
+     * Perform the action. Should return true to deny the default
+     * action.
+     * 
+     * @param server 
+     * @param config 
+     * @param player
+     * @param session
+     * @return true to deny
+     */
+    public boolean act(ServerInterface server, LocalConfiguration config,
+            LocalPlayer player, LocalSession session);
 }

@@ -30,28 +30,29 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.superpickaxe.brushes.ClipboardBrushShape;
-import com.sk89q.worldedit.superpickaxe.brushes.CylinderBrushShape;
-import com.sk89q.worldedit.superpickaxe.brushes.HollowCylinderBrushShape;
-import com.sk89q.worldedit.superpickaxe.brushes.SphereBrushShape;
-import com.sk89q.worldedit.superpickaxe.brushes.HollowSphereBrushShape;
+import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.tools.Brush;
+import com.sk89q.worldedit.tools.brushes.ClipboardBrush;
+import com.sk89q.worldedit.tools.brushes.CylinderBrush;
+import com.sk89q.worldedit.tools.brushes.HollowCylinderBrush;
+import com.sk89q.worldedit.tools.brushes.HollowSphereBrush;
+import com.sk89q.worldedit.tools.brushes.SphereBrush;
 
 /**
  * Brush shape commands.
  *
  * @author sk89q
  */
-public class BrushShapeCommands {
+public class BrushCommands {
     @Command(
-        aliases = {"/sb", "/sphereb"},
+        aliases = {"sphere", "s"},
         usage = "<block> [radius]",
         flags = "h",
         desc = "Choose the sphere brush",
         min = 1,
         max = 2
     )
-    @CommandPermissions({"worldedit.superpickaxe.drawing.brush.sphere"})
+    @CommandPermissions({"worldedit.brush.sphere"})
     public static void sphereBrush(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -64,27 +65,31 @@ public class BrushShapeCommands {
                     + config.maxBrushRadius);
             return;
         }
-        
-        BaseBlock targetBlock = we.getBlock(player, args.getString(0));
+
+        Brush tool = session.getBrushTool(player.getItemInHand());
+        Pattern fill = we.getBlockPattern(player, args.getString(0));
+        tool.setFill(fill);
+        tool.setSize(radius);
         
         if (args.hasFlag('h')) {
-            session.setBrushShape(new HollowSphereBrushShape(targetBlock, radius));
+            tool.setBrush(new HollowSphereBrush());
         } else {
-            session.setBrushShape(new SphereBrushShape(targetBlock, radius));
+            tool.setBrush(new SphereBrush());
         }
-        
-        player.print("Sphere brush shape equipped.");
+
+        player.print(String.format("Sphere brush shape equipped (%d).",
+                radius));
     }
 
     @Command(
-        aliases = {"/cb", "/cylb"},
+        aliases = {"cylinder", "cyl", "c"},
         usage = "<block> [radius] [height]",
         flags = "h",
         desc = "Choose the cylinder brush",
         min = 1,
-        max = 2
+        max = 3
     )
-    @CommandPermissions({"worldedit.superpickaxe.drawing.brush.cylinder"})
+    @CommandPermissions({"worldedit.brush.cylinder"})
     public static void cylinderBrush(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -98,33 +103,37 @@ public class BrushShapeCommands {
             return;
         }
 
-        int height = args.argsLength() > 1 ? args.getInteger(1) : 1;
+        int height = args.argsLength() > 2 ? args.getInteger(2) : 1;
         if (height > config.maxBrushRadius) {
             player.printError("Maximum allowed brush radius/height: "
                     + config.maxBrushRadius);
             return;
         }
-        
-        BaseBlock targetBlock = we.getBlock(player, args.getString(0));
+
+        Brush tool = session.getBrushTool(player.getItemInHand());
+        Pattern fill = we.getBlockPattern(player, args.getString(0));
+        tool.setFill(fill);
+        tool.setSize(radius);
         
         if (args.hasFlag('h')) {
-            session.setBrushShape(new HollowCylinderBrushShape(targetBlock, radius, height));
+            tool.setBrush(new HollowCylinderBrush(height));
         } else {
-            session.setBrushShape(new CylinderBrushShape(targetBlock, radius, height));
+            tool.setBrush(new CylinderBrush(height));
         }
         
-        player.print("Cylinder brush shape equipped.");
+        player.print(String.format("Cylinder brush shape equipped (%d by %d).",
+                radius, height));
     }
 
     @Command(
-        aliases = {"/cbb", "/copyb"},
+        aliases = {"clipboard", "copy"},
         usage = "",
         flags = "a",
         desc = "Choose the clipboard brush",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.superpickaxe.drawing.brush.clipboard"})
+    @CommandPermissions({"worldedit.brush.clipboard"})
     public static void clipboardBrush(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -147,8 +156,9 @@ public class BrushShapeCommands {
                     + config.maxBrushRadius);
             return;
         }
-        
-        session.setBrushShape(new ClipboardBrushShape(clipboard, args.hasFlag('a')));
+
+        Brush tool = session.getBrushTool(player.getItemInHand());
+        tool.setBrush(new ClipboardBrush(clipboard, args.hasFlag('a')));
         
         player.print("Clipboard brush shape equipped.");
     }

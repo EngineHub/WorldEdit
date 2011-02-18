@@ -17,25 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.superpickaxe.brushes;
-
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
+package com.sk89q.worldedit.tools;
 
 /**
- * Represents a shape.
+ * Represents a tool. This interface alone defines nothing. A tool also
+ * has to implement <code>BlockTool</code> or <code>TraceTool</code>.
  *
  * @author sk89q
  */
-public interface BrushShape {
-    /**
-     * Build the object.
-     * 
-     * @param build
-     * @param pos
-     * @throws MaxChangedBlocksException 
-     */
-    public void build(EditSession editSession, Vector pos)
-            throws MaxChangedBlocksException;
+public abstract interface Tool {
 }

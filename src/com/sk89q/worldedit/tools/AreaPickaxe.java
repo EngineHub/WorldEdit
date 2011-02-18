@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.superpickaxe;
+package com.sk89q.worldedit.tools;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -28,7 +28,7 @@ import com.sk89q.worldedit.blocks.BlockID;
  * 
  * @author sk89q
  */
-public class AreaPickaxe implements SuperPickaxeMode {
+public class AreaPickaxe implements BlockTool {
     private static final BaseBlock air = new BaseBlock(0);
     private int range;
     
@@ -52,9 +52,9 @@ public class AreaPickaxe implements SuperPickaxeMode {
         if (initialType == BlockID.BEDROCK && !player.canDestroyBedrock()) {
             return true;
         }
-        
-        EditSession editSession = new EditSession(server, world,
-                session.getBlockChangeLimit());
+
+        EditSession editSession =
+                new EditSession(world, session.getBlockChangeLimit());
         
         try {
             for (int x = ox - range; x <= ox + range; x++) {

@@ -17,24 +17,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.superpickaxe.brushes;
+package com.sk89q.worldedit.masks;
 
+import java.util.HashSet;
+import java.util.Set;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
 
-public class SphereBrushShape implements BrushShape {
-    private BaseBlock targetBlock;
-    private int radius;
+/**
+ * A filter that matches blocks based on block types.
+ *
+ * @author sk89q
+ */
+public class BlockTypeMask implements Mask {
+    private Set<Integer> types;
     
-    public SphereBrushShape(BaseBlock targetBlock, int radius) {
-        this.targetBlock = targetBlock;
-        this.radius = radius;
+    public BlockTypeMask() {
+        types = new HashSet<Integer>();
     }
     
-    public void build(EditSession editSession, Vector pos)
-            throws MaxChangedBlocksException {
-        editSession.makeSphere(pos, targetBlock, radius, true);
+    public BlockTypeMask(Set<Integer> types) {
+        this.types = types;
     }
+    
+    public BlockTypeMask(int type) {
+        this();
+        add(type);
+    }
+    
+    public void add(int type) {
+        types.add(type);
+    }
+    
+    public boolean matches(EditSession editSession, Vector pos) {
+        return types.contains(editSession.getBlockType(pos));
+    }
+
 }

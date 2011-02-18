@@ -17,24 +17,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.superpickaxe.brushes;
+package com.sk89q.worldedit.tools.brushes;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.patterns.Pattern;
 
-public class HollowSphereBrushShape implements BrushShape {
-    private BaseBlock targetBlock;
-    private int radius;
-    
-    public HollowSphereBrushShape(BaseBlock targetBlock, int radius) {
-        this.targetBlock = targetBlock;
-        this.radius = radius;
+public class SphereBrush implements BrushShape {
+    public SphereBrush() {
     }
     
-    public void build(EditSession editSession, Vector pos)
+    public void build(EditSession editSession, Vector pos, Pattern mat, int size)
             throws MaxChangedBlocksException {
-        editSession.makeSphere(pos, targetBlock, radius, false);
+        editSession.makeSphere(pos, mat, size, true);
     }
 }

@@ -17,39 +17,41 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.superpickaxe;
+package com.sk89q.worldedit.tools;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.blocks.*;
 
 /**
  * Plants a tree.
  * 
  * @author sk89q
  */
-public class TreePlanter implements SuperPickaxeMode {
-    private TreeGenerator gen;
-    
-    public TreePlanter(TreeGenerator gen) {
-        this.gen = gen;
-    }
-    
+public class QueryTool implements BlockTool {
+
     @Override
     public boolean act(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         
         LocalWorld world = clicked.getWorld();
-        EditSession editSession =
-            new EditSession(server, world, session.getBlockChangeLimit());
-    
-        try {
-            if (!gen.generate(editSession, clicked.add(0, 1, 0))) {
-                player.printError("A tree can't go there.");
-            }
-        } catch (MaxChangedBlocksException e) {
-            player.printError("Max. blocks changed reached.");
-        } finally {
-            session.remember(editSession);
+        BaseBlock block = (new EditSession(world, 0)).rawGetBlock(clicked);
+
+        player.print("\u00A79@" + clicked + ": " + "\u00A7e"
+                + "Type: " + block.getType() + "\u00A77" + " ("
+                + BlockType.fromID(block.getType()).getName() + ") "
+                + "\u00A7f"
+                + "[" + block.getData() + "]");
+
+        if (block instanceof MobSpawnerBlock) {
+            player.printRaw("\u00A7e" + "Mob Type: "
+                    + ((MobSpawnerBlock)block).getMobType());
+        } else if (block instanceof NoteBlock) {
+            player.printRaw("\u00A7e" + "Note block: "
+                    + ((NoteBlock)block).getNote());
+        } else if (block.getType() == BlockID.CLOTH) {
+            // Should never be null
+            player.printRaw("\u00A7e" + "Color: "
+                    + ClothColor.fromID(block.getData()).getName());
         }
     
         return true;

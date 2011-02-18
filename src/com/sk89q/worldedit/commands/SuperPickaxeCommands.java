@@ -1,7 +1,7 @@
 // $Id$
 /*
  * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com>
+ * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,37 +22,17 @@ package com.sk89q.worldedit.commands;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.NestedCommand;
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.superpickaxe.*;
-import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.tools.AreaPickaxe;
+import com.sk89q.worldedit.tools.RecursivePickaxe;
+import com.sk89q.worldedit.tools.SinglePickaxe;
 
-/**
- * Super pickaxe commands.
- * 
- * @author sk89q
- */
-public class SuperPickaxeCommands {
-    @Command(
-        aliases = {"/", ","},
-        usage = "",
-        desc = "Toggle the super pickaxe pickaxe function",
-        min = 0,
-        max = 0
-    )
-    @CommandPermissions({"worldedit.superpickaxe.pickaxe"})
-    public static void togglePickaxe(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
-
-        if (session.toggleSuperPickAxe()) {
-            player.print("Super pick axe enabled.");
-        } else {
-            player.print("Super pick axe disabled.");
-        }
-    }
-    
+public class SuperPickaxeCommands {    
     @Command(
         aliases = {"single"},
         usage = "",
@@ -60,12 +40,12 @@ public class SuperPickaxeCommands {
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.superpickaxe.pickaxe"})
+    @CommandPermissions({"worldedit.superpickaxe"})
     public static void single(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        session.setLeftClickMode(new SinglePickaxe());
+        session.setSuperPickaxe(new SinglePickaxe());
         session.enableSuperPickAxe();
         player.print("Mode changed. Left click with a pickaxe. // to disable.");
     }
@@ -77,7 +57,7 @@ public class SuperPickaxeCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.superpickaxe.pickaxe.area"})
+    @CommandPermissions({"worldedit.superpickaxe.area"})
     public static void area(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -90,19 +70,19 @@ public class SuperPickaxeCommands {
             return;
         }
         
-        session.setLeftClickMode(new AreaPickaxe(range));
+        session.setSuperPickaxe(new AreaPickaxe(range));
         session.enableSuperPickAxe();
         player.print("Mode changed. Left click with a pickaxe. // to disable.");
     }
     
     @Command(
-        aliases = {"recur"},
+        aliases = {"recur", "recursive"},
         usage = "<radius>",
         desc = "Enable the recursive super pickaxe pickaxe mode",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.superpickaxe.pickaxe.recursive"})
+    @CommandPermissions({"worldedit.superpickaxe.recursive"})
     public static void recursive(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -115,143 +95,8 @@ public class SuperPickaxeCommands {
             return;
         }
         
-        session.setLeftClickMode(new RecursivePickaxe(range));
+        session.setSuperPickaxe(new RecursivePickaxe(range));
         session.enableSuperPickAxe();
         player.print("Mode changed. Left click with a pickaxe. // to disable.");
-    }
-
-    @Command(
-        aliases = {"none"},
-        usage = "",
-        desc = "Turn off all superpickaxe alternate modes",
-        min = 0,
-        max = 0
-    )
-    public static void none(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
-
-        session.setArmSwingMode(null);
-        session.setRightClickMode(null);
-        player.print("Now no longer equipping a tool.");
-    }
-
-    @Command(
-        aliases = {"info"},
-        usage = "",
-        desc = "Block information tool",
-        min = 0,
-        max = 0
-    )
-    @CommandPermissions({"worldedit.superpickaxe.info"})
-    public static void info(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
-
-        session.setArmSwingMode(null);
-        session.setRightClickMode(new QueryTool());
-        player.print("Info tool equipped. Right click with a pickaxe.");
-    }
-
-    @Command(
-        aliases = {"tree"},
-        usage = "[type]",
-        desc = "Tree generator tool",
-        min = 0,
-        max = 1
-    )
-    @CommandPermissions({"worldedit.superpickaxe.tree"})
-    public static void tree(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
-
-        TreeGenerator.TreeType type = args.argsLength() > 0 ?
-                type = TreeGenerator.lookup(args.getString(0))
-                : TreeGenerator.TreeType.TREE;
-
-        if (type == null) {
-            player.printError("Tree type '" + args.getString(0) + "' is unknown.");
-            return;
-        }
-
-        session.setArmSwingMode(null);
-        session.setRightClickMode(new TreePlanter(new TreeGenerator(type)));
-        player.print("Tree tool equipped. Right click grass with a pickaxe.");
-    }
-
-    @Command(
-        aliases = {"repl"},
-        usage = "<block>",
-        desc = "Block replacer tool",
-        min = 1,
-        max = 1
-    )
-    @CommandPermissions({"worldedit.superpickaxe.replacer"})
-    public static void repl(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
-
-        BaseBlock targetBlock = we.getBlock(player, args.getString(0));
-        session.setArmSwingMode(null);
-        session.setRightClickMode(new BlockReplacer(targetBlock));
-        player.print("Block replacer tool equipped. Right click with a pickaxe.");
-    }
-
-    @Command(
-        aliases = {"cycler"},
-        usage = "",
-        desc = "Block data cycler tool",
-        min = 0,
-        max = 0
-    )
-    @CommandPermissions({"worldedit.superpickaxe.data-cycler"})
-    public static void cycler(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
-
-        session.setArmSwingMode(null);
-        session.setRightClickMode(new BlockDataCyler());
-        player.print("Block cycler tool equipped. Right click with a pickaxe.");
-    }
-
-    @Command(
-        aliases = {"/brush"},
-        usage = "",
-        flags = "r",
-        desc = "Build from far away",
-        min = 0,
-        max = 0
-    )
-    @CommandPermissions({"worldedit.superpickaxe.drawing.brush"})
-    public static void brush(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
-        
-        boolean nonReplacing = args.hasFlag('r');
-        
-        session.setRightClickMode(null);
-        session.setArmSwingMode(new Brush(nonReplacing));
-        if (nonReplacing) {
-            player.print("Non-replacing brush tool equipped.");
-        } else {
-            player.print("Brush tool equipped. Swing with a pickaxe.");
-        }
-    }
-    
-    @Command(
-        aliases = {"/rbrush"},
-        usage = "",
-        desc = "Brush tool that will only replace blocks",
-        min = 0,
-        max = 0
-    )
-    @CommandPermissions({"worldedit.superpickaxe.drawing.brush"})
-    public static void rbrush(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
-        
-        session.setRightClickMode(null);
-        session.setArmSwingMode(new ReplacingBrush());
-        player.print("Replacing brush tool equipped. Swing with a pickaxe.");
     }
 }

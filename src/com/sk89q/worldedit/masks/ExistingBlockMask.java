@@ -1,7 +1,7 @@
 // $Id$
 /*
- * WorldEditLibrary
- * Copyright (C) 2010 sk89q <http://www.sk89q.com>
+ * WorldEdit
+ * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,28 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.filters;
+package com.sk89q.worldedit.masks;
 
-import java.awt.image.Kernel;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.Vector;
 
-/**
- * A linear Kernel generator (all cells weight the same)
- * 
- * @author Grum
- */
-
-public class LinearKernel extends Kernel {
-
-    public LinearKernel(int radius) {
-        super(radius * 2 + 1, radius * 2 + 1, createKernel(radius));
-    }
-
-    private static float[] createKernel(int radius) {
-        int diameter = radius * 2 + 1;
-        float[] data = new float[diameter*diameter];
-        
-        for (int i = 0; i < data.length; data[i++] = 1.0f/data.length) ;
-
-        return data;
+public class ExistingBlockMask implements Mask {
+    public boolean matches(EditSession editSession, Vector pos) {
+        return editSession.getBlockType(pos) != 0;
     }
 }

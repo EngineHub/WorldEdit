@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.superpickaxe;
+package com.sk89q.worldedit.tools;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,7 +31,7 @@ import com.sk89q.worldedit.blocks.BlockID;
  * 
  * @author sk89q
  */
-public class RecursivePickaxe implements SuperPickaxeMode {
+public class RecursivePickaxe implements BlockTool {
     private static final BaseBlock air = new BaseBlock(0);
     private int range;
     
@@ -54,8 +54,8 @@ public class RecursivePickaxe implements SuperPickaxeMode {
             return true;
         }
         
-        EditSession editSession = new EditSession(server, world,
-                session.getBlockChangeLimit());
+        EditSession editSession =
+                new EditSession(world, session.getBlockChangeLimit());
 
         try {
             recurse(server, editSession, world, clicked.toBlockVector(),

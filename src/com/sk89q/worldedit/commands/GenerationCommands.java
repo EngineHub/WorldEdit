@@ -23,7 +23,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
@@ -44,7 +44,7 @@ public class GenerationCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        BaseBlock block = we.getBlock(player, args.getString(0));
+        Pattern block = we.getBlockPattern(player, args.getString(0));
         int radius = Math.max(1, args.getInteger(1));
         int height = args.argsLength() > 2 ? args.getInteger(2) : 1;
 
@@ -65,7 +65,7 @@ public class GenerationCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        BaseBlock block = we.getBlock(player, args.getString(0));
+        Pattern block = we.getBlockPattern(player, args.getString(0));
         int radius = Math.max(1, args.getInteger(1));
         int height = args.argsLength() > 2 ? args.getInteger(2) : 1;
 
@@ -86,7 +86,7 @@ public class GenerationCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        BaseBlock block = we.getBlock(player, args.getString(0));
+        Pattern block = we.getBlockPattern(player, args.getString(0));
         int radius = Math.max(1, args.getInteger(1));
         boolean raised = args.argsLength() > 2
                 ? (args.getString(2).equalsIgnoreCase("true")
@@ -115,7 +115,7 @@ public class GenerationCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        BaseBlock block = we.getBlock(player, args.getString(0));
+        Pattern block = we.getBlockPattern(player, args.getString(0));
         int radius = Math.max(1, args.getInteger(1));
         boolean raised = args.argsLength() > 2
                 ? (args.getString(2).equalsIgnoreCase("true")

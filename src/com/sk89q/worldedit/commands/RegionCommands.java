@@ -25,8 +25,8 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.filters.GaussianKernel;
-import com.sk89q.worldedit.filters.HeightMapFilter;
+import com.sk89q.worldedit.filtering.GaussianKernel;
+import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.patterns.*;
 import com.sk89q.worldedit.regions.Region;
 

@@ -21,78 +21,62 @@ package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.masks.Mask;
 
 /**
- * An edit session that can be set to not replace existing blocks.
+ * An edit session that will only replace blocks as specified.
  * 
  * @author sk89q
  */
 public class ReplacingEditSession extends EditSession {
     /**
-     * True to prevent replacing.
+     * Filter to use to filter blocks.
      */
-    private boolean noReplace = false;
+    private Mask mask;
     
     /**
      * Construct the object.
      * 
-     * @param server
      * @param world
      * @param maxBlocks
+     * @param mask 
      */
-    public ReplacingEditSession(ServerInterface server, LocalWorld world,
-            int maxBlocks) {
-        super(server, world, maxBlocks);
+    public ReplacingEditSession(LocalWorld world,
+            int maxBlocks, Mask mask) {
+        super(world, maxBlocks);
+        this.mask = mask;
     }
 
     /**
      * Construct the object.
      * 
-     * @param server
      * @param world
      * @param maxBlocks
      * @param blockBag
+     * @param mask 
      */
-    public ReplacingEditSession(ServerInterface server, LocalWorld world,
-            int maxBlocks, BlockBag blockBag) {
-        super(server, world, maxBlocks, blockBag);
-    }
-    
-    /**
-     * Enables block replacing.
-     */
-    public void enableReplacing() {
-        noReplace = false;
-    }
-    
-    /**
-     * Disables block replacing.
-     */
-    public void disableReplacing() {
-        noReplace = true;
+    public ReplacingEditSession(LocalWorld world, int maxBlocks,
+            BlockBag blockBag, Mask mask) {
+        super(world, maxBlocks, blockBag);
+        this.mask = mask;
     }
     
     /**
      * Sets a block without changing history.
      * 
      * @param pt
-     * @param blockType
+     * @param block
      * @return Whether the block changed
      */
-    public boolean rawSetBlock(Vector pt, BaseBlock block) {
-        if (!noReplace) {
-            return super.rawSetBlock(pt, block);
-        }
-        
+    @Override
+    public boolean rawSetBlock(Vector pt, BaseBlock block) {        
         int y = pt.getBlockY();
         
         if (y < 0 || y > 127) {
             return false;
         }
         
-        int existing = world.getBlockType(pt);
-        
-        if (existing != 0) {
+        if (!mask.matches(this, pt)) {
             return false;
         }
         

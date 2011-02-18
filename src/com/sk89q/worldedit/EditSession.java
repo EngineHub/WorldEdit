@@ -104,11 +104,10 @@ public class EditSession {
     /**
      * Construct the object with a maximum number of blocks.
      * 
-     * @param server
      * @param world
      * @param maxBlocks
      */
-    public EditSession(ServerInterface server, LocalWorld world, int maxBlocks) {
+    public EditSession(LocalWorld world, int maxBlocks) {
         if (maxBlocks < -1) {
             throw new IllegalArgumentException("Max blocks must be >= -1");
         }
@@ -120,12 +119,12 @@ public class EditSession {
     /**
      * Construct the object with a maximum number of blocks and a block bag.
      * 
-     * @param server
+     * @param world
      * @param maxBlocks
+     * @param blockBag
      * @blockBag
      */
-    public EditSession(ServerInterface server, LocalWorld world, int maxBlocks,
-            BlockBag blockBag) {
+    public EditSession(LocalWorld world, int maxBlocks, BlockBag blockBag) {
         if (maxBlocks < -1) {
             throw new IllegalArgumentException("Max blocks must be >= -1");
         }
@@ -231,6 +230,7 @@ public class EditSession {
      * @param pt
      * @param block
      * @return Whether the block changed -- not entirely dependable
+     * @throws MaxChangedBlocksException 
      */
     public boolean setBlock(Vector pt, BaseBlock block)
             throws MaxChangedBlocksException {
@@ -247,6 +247,19 @@ public class EditSession {
         current.put(pt.toBlockVector(), block);
 
         return smartSetBlock(pt, block);
+    }
+
+    /**
+     * Set a block with a pattern.
+     * 
+     * @param pt
+     * @param pat
+     * @return Whether the block changed -- not entirely dependable
+     * @throws MaxChangedBlocksException 
+     */
+    public boolean setBlock(Vector pt, Pattern pat)
+            throws MaxChangedBlocksException {
+        return setBlock(pt, pat.next(pt));
     }
 
     /**
@@ -381,23 +394,23 @@ public class EditSession {
     /**
      * Restores all blocks to their initial state.
      */
-    public void undo() {
+    public void undo(EditSession sess) {
         for (Map.Entry<BlockVector, BaseBlock> entry : original) {
             BlockVector pt = (BlockVector) entry.getKey();
-            smartSetBlock(pt, (BaseBlock) entry.getValue());
+            sess.smartSetBlock(pt, (BaseBlock) entry.getValue());
         }
-        flushQueue();
+        sess.flushQueue();
     }
 
     /**
      * Sets to new state.
      */
-    public void redo() {
+    public void redo(EditSession sess) {
         for (Map.Entry<BlockVector, BaseBlock> entry : current) {
             BlockVector pt = (BlockVector) entry.getKey();
-            smartSetBlock(pt, (BaseBlock) entry.getValue());
+            sess.smartSetBlock(pt, (BaseBlock) entry.getValue());
         }
-        flushQueue();
+        sess.flushQueue();
     }
 
     /**
@@ -1453,7 +1466,7 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     private int makeHCylinderPoints(Vector center, int x, int z, int height,
-            BaseBlock block) throws MaxChangedBlocksException {
+            Pattern block) throws MaxChangedBlocksException {
         int affected = 0;
 
         if (x == 0) {
@@ -1499,7 +1512,7 @@ public class EditSession {
      * @return number of blocks set
      * @throws MaxChangedBlocksException
      */
-    public int makeHollowCylinder(Vector pos, BaseBlock block, int radius,
+    public int makeHollowCylinder(Vector pos, Pattern block, int radius,
             int height) throws MaxChangedBlocksException {
         int x = 0;
         int z = radius;
@@ -1548,7 +1561,7 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     private int makeCylinderPoints(Vector center, int x, int z, int height,
-            BaseBlock block) throws MaxChangedBlocksException {
+            Pattern block) throws MaxChangedBlocksException {
         int affected = 0;
 
         if (x == z) {
@@ -1586,7 +1599,7 @@ public class EditSession {
      * @return number of blocks set
      * @throws MaxChangedBlocksException
      */
-    public int makeCylinder(Vector pos, BaseBlock block, int radius, int height)
+    public int makeCylinder(Vector pos, Pattern block, int radius, int height)
             throws MaxChangedBlocksException {
         int x = 0;
         int z = radius;
@@ -1634,7 +1647,7 @@ public class EditSession {
      * @return number of blocks changed
      * @throws MaxChangedBlocksException
      */
-    public int makeSphere(Vector pos, BaseBlock block, int radius,
+    public int makeSphere(Vector pos, Pattern block, int radius,
             boolean filled) throws MaxChangedBlocksException {
         int affected = 0;
 
