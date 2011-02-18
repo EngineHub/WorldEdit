@@ -1,7 +1,7 @@
 // $Id$
 /*
  * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com>
+ * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.commands;
+package com.sk89q.minecraft.util.commands;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CommandPermissions {
-    String[] value();
+public @interface NestedCommand {
+    Class<?>[] value();
 }

@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.util.commands;
+package com.sk89q.minecraft.util.commands;
 
 import java.util.HashSet;
 import java.util.Set;

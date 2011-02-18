@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.commands;
+package com.sk89q.minecraft.util.commands;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,14 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.sk89q.util.StringUtil;
-import com.sk89q.util.commands.Command;
-import com.sk89q.util.commands.CommandContext;
-import com.sk89q.util.commands.NestedCommand;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
 
 /**
  * Manager for handling commands.
@@ -72,6 +64,8 @@ public class CommandsManager {
     private void registerMethods(Class<?> cls, Method parent) {
         Map<String, Method> map;
         
+        // Make a new hash map to cache the commands for this class
+        // as looking up methods via reflection is fairly slow
         if (commands.containsKey(parent)) {
             map = commands.get(parent);
         } else {
@@ -86,18 +80,24 @@ public class CommandsManager {
 
             Command cmd = method.getAnnotation(Command.class);
             
-            // Cache the commands
+            // Cache the aliases too
             for (String alias : cmd.aliases()) {
                 map.put(alias, method);
             }
             
-            // Build a list of commands and their usage details
-            if (cmd.usage().length() == 0) {
-                descs.put(cmd.aliases()[0], cmd.desc());
-            } else {
-                descs.put(cmd.aliases()[0], cmd.usage() + " - " + cmd.desc());
+            // Build a list of commands and their usage details, at least for
+            // root level commands
+            if (parent == null) {
+                if (cmd.usage().length() == 0) {
+                    descs.put(cmd.aliases()[0], cmd.desc());
+                } else {
+                    descs.put(cmd.aliases()[0], cmd.usage() + " - " + cmd.desc());
+                }
             }
             
+            // Look for nested commands -- if there are any, those have
+            // to be cached too so that they can be quickly looked
+            // up when processing commands
             if (method.isAnnotationPresent(NestedCommand.class)) {
                 NestedCommand nestedCmd = method.getAnnotation(NestedCommand.class);
                 
@@ -160,7 +160,7 @@ public class CommandsManager {
      * @return
      */
     private String getNestedUsage(String[] args, int level, Method method,
-            LocalPlayer player) {
+            CommandsPlayer player) {
         StringBuilder command = new StringBuilder();
         
         command.append("/");
@@ -201,16 +201,13 @@ public class CommandsManager {
      * Attempt to execute a command.
      * 
      * @param args
-     * @param we
-     * @param session
      * @param player
-     * @param editSession
+     * @param methodArgs
      * @return
      */
-    public boolean execute(String[] args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException, Throwable {
-        return executeMethod(null, args, we, session, player, editSession, 0);
+    public boolean execute(String[] args, CommandsPlayer player,
+            Object[] methodArgs) throws Throwable {
+        return executeMethod(null, args, player, methodArgs, 0);
     }
     
     /**
@@ -218,16 +215,14 @@ public class CommandsManager {
      * 
      * @param parent
      * @param args
-     * @param we
-     * @param session
      * @param player
-     * @param editSession
+     * @param methodArgs
      * @param level
      * @return
      */
-    public boolean executeMethod(Method parent, String[] args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession,
-            int level) throws WorldEditException, Throwable {
+    public boolean executeMethod(Method parent, String[] args,
+            CommandsPlayer player, Object[] methodArgs, int level)
+            throws  Throwable {
         String cmdName = args[level];
         
         Map<String, Method> map = commands.get(parent);
@@ -253,8 +248,7 @@ public class CommandsManager {
                 player.printError(getNestedUsage(args, level, method, player));
                 return true;
             } else {
-                return executeMethod(method, args, we, session, player,
-                        editSession, level + 1);
+                return executeMethod(method, args, player, methodArgs, level + 1);
             }
         } else {
             Command cmd = method.getAnnotation(Command.class);
@@ -284,20 +278,16 @@ public class CommandsManager {
                 }
             }
             
+            methodArgs[0] = context;
+            
             try {
-                method.invoke(null, context, we, session, player, editSession);
+                method.invoke(null, methodArgs);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
-                if (e.getCause() instanceof WorldEditException) {
-                    throw (WorldEditException)e.getCause();
-                } else if (e.getCause() instanceof NumberFormatException) {
-                    throw (NumberFormatException)e.getCause();
-                } else {
-                    throw e.getCause();
-                }
+                throw e.getCause();
             }
         }
         
@@ -311,7 +301,7 @@ public class CommandsManager {
      * @param player
      * @return
      */
-    private boolean checkPermissions(Method method, LocalPlayer player) {
+    private boolean checkPermissions(Method method, CommandsPlayer player) {
         if (!method.isAnnotationPresent(CommandPermissions.class)) {
             return true;
         }
@@ -335,7 +325,7 @@ public class CommandsManager {
      * @param player
      * @return
      */
-    private boolean hasPermission(Method method, LocalPlayer player) {
+    private boolean hasPermission(Method method, CommandsPlayer player) {
         CommandPermissions perms = method.getAnnotation(CommandPermissions.class);
         if (perms == null) {
             return true;

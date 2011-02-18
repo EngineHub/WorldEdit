@@ -29,6 +29,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.*;
 import javax.script.ScriptException;
+import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalSession.CompassMode;
 import com.sk89q.worldedit.bags.BlockBag;
@@ -840,8 +842,11 @@ public class WorldEdit {
                                 + StringUtil.joinString(split, " "));
                     }
                     
-                    return commands.execute(split, this,
-                            session, player, editSession);
+                    Object[] methodArgs = new Object[] {
+                            null, this, session, player, editSession
+                            };
+
+                    return commands.execute(split, player, methodArgs);
                 } finally {
                     session.remember(editSession);
                     editSession.flushQueue();

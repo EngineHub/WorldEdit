@@ -23,9 +23,9 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.util.StringUtil;
-import com.sk89q.util.commands.Command;
-import com.sk89q.worldedit.commands.CommandPermissions;
 
 public class DocumentationPrinter {
     public static void main(String[] args) throws IOException {
