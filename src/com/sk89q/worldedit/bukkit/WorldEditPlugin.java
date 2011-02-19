@@ -76,7 +76,7 @@ public class WorldEditPlugin extends JavaPlugin {
         permsListener = new PermissionsResolverServerListener(perms);
         loadConfiguration();
         
-        server = new BukkitServerInterface(getServer());
+        server = new BukkitServerInterface(this, getServer());
         controller = new WorldEdit(server, config);
         api = new WorldEditAPI(this);
 

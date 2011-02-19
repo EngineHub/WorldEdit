@@ -25,8 +25,10 @@ import com.sk89q.worldedit.ServerInterface;
 
 public class BukkitServerInterface extends ServerInterface {
     public Server server;
+    public WorldEditPlugin plugin;
     
-    public BukkitServerInterface(Server server) {
+    public BukkitServerInterface(WorldEditPlugin plugin, Server server) {
+        this.plugin = plugin;
         this.server = server;
     }
 
@@ -39,6 +41,11 @@ public class BukkitServerInterface extends ServerInterface {
     @Override
     public boolean isValidMobType(String type) {
         return CreatureType.fromName(type) != null;
+    }
+
+    @Override
+    public void reload() {
+        plugin.loadConfiguration();
     }
 
 }

@@ -39,4 +39,9 @@ public abstract class ServerInterface {
      * @return
      */
     public abstract boolean isValidMobType(String type);
+    
+    /**
+     * Reload WorldEdit configuration.
+     */
+    public abstract void reload();
 }

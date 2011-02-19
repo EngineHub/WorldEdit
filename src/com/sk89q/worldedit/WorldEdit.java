@@ -1069,6 +1069,15 @@ public class WorldEdit {
     public LocalConfiguration getConfiguration() {
         return config;
     }
+    
+    /**
+     * Get the server interface.
+     * 
+     * @return
+     */
+    public ServerInterface getServer() {
+        return server;
+    }
 
     /**
      * Get the version.

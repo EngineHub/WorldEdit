@@ -50,6 +50,10 @@ commands:
     /paste:
         description: Paste the clipboard's contents
         usage: /<command> [-ao] 
+    we:
+        description: WorldEdit commands
+        usage: /<command> 
+        aliases: ['worldedit']
     toggleplace:
         description: 
         usage: /<command> 
@@ -295,3 +299,6 @@ commands:
     /drain:
         description: Drain a pool
         usage: /<command> <radius>
+    /version:
+        description: Get WorldEdit version
+        usage: /<command> 
