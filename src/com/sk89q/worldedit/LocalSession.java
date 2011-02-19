@@ -47,7 +47,7 @@ public class LocalSession {
         THRU
     }
     
-    public static final int MAX_HISTORY_SIZE = 15;
+    public static int MAX_HISTORY_SIZE = 15;
     
     private LocalConfiguration config;
     

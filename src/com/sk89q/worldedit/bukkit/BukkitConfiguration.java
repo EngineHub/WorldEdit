@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.util.config.Configuration;
 import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LogFormat;
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
 
@@ -75,6 +76,8 @@ public class BukkitConfiguration extends LocalConfiguration {
         disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
 
         allowedDataCycleBlocks = new HashSet<Integer>(config.getIntList("limits.allowed-data-cycle-blocks", null));
+        
+        LocalSession.MAX_HISTORY_SIZE = Math.max(15, config.getInt("history.size", 15));
         
         String snapshotsDir = config.getString("snapshots.directory", "");
         if (!snapshotsDir.trim().equals("")) {

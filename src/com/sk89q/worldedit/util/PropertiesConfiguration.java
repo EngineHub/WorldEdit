@@ -25,6 +25,7 @@ import java.util.Properties;
 import java.util.Set;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
 
 /**
@@ -88,6 +89,8 @@ public class PropertiesConfiguration extends LocalConfiguration {
         navigationWand = getInt("nav-wand-item", navigationWand);
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);
         scriptTimeout = getInt("scripting-timeout", scriptTimeout);
+        
+        LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
         
         String snapshotsDir = getString("snapshots-dir", "");
         if (!snapshotsDir.trim().equals("")) {
