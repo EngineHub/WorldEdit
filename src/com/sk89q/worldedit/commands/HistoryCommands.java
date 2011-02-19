@@ -31,7 +31,7 @@ import com.sk89q.worldedit.*;
  */
 public class HistoryCommands {
     @Command(
-        aliases = {"/undo"},
+        aliases = {"/undo", "undo"},
         usage = "[times]",
         desc = "Undoes the last action",
         min = 0,
@@ -57,7 +57,7 @@ public class HistoryCommands {
     }
     
     @Command(
-        aliases = {"/redo"},
+        aliases = {"/redo", "redo"},
         usage = "[times]",
         desc = "Redoes the last action (from history)",
         min = 0,

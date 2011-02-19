@@ -81,9 +81,11 @@ commands:
     /redo:
         description: Redoes the last action (from history)
         usage: /<command> [times]
+        aliases: ['redo']
     /undo:
         description: Undoes the last action
         usage: /<command> [times]
+        aliases: ['undo']
     unstuck:
         description: Escape from being stuck inside a block
         usage: /<command> 
