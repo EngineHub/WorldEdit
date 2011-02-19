@@ -24,6 +24,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.LocalWorld.EntityType;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.patterns.*;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -322,5 +323,52 @@ public class UtilityCommands {
         Vector origin = session.getPlacementPosition(player);
         int killed = player.getWorld().killMobs(origin, radius);
         player.print("Killed " + killed + " mobs.");
+    }
+
+    @Command(
+        aliases = {"remove", "rem", "rement"},
+        usage = "<type> <radius>",
+        desc = "Remove all entities of a type",
+        min = 2,
+        max = 2
+    )
+    @CommandPermissions({"worldedit.remove"})
+    public static void remove(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        String typeStr = args.getString(0);
+        int radius = args.getInteger(1);
+        
+        if (radius < -1) {
+            player.printError("Use -1 to remove all entities in loaded chunks");
+            return;
+        }
+        
+        EntityType type = null;
+
+        if (typeStr.matches("arrows?")) {
+            type = EntityType.ARROWS;
+        } else if (typeStr.matches("items?")
+                || typeStr.matches("drops?")) {
+            type = EntityType.ITEMS;
+        } else if (typeStr.matches("paintings?")
+                || typeStr.matches("art")) {
+            type = EntityType.PAINTINGS;
+        } else if (typeStr.matches("boats?")) {
+            type = EntityType.BOATS;
+        } else if (typeStr.matches("minecarts?")
+                || typeStr.matches("carts?")) {
+            type = EntityType.MINECARTS;
+        } else if (typeStr.matches("tnt")) {
+            type = EntityType.TNT;
+        } else {
+            player.printError("Acceptable types: arrows, items, paintings, boats, minecarts, tnt");
+            return;
+        }
+
+        Vector origin = session.getPlacementPosition(player);
+        int removed = player.getWorld().removeEntities(type, origin, radius);
+        player.print("Marked " + removed + " entit(ies) for removal.");
     }
 }

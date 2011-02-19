@@ -262,6 +262,10 @@ commands:
     butcher:
         description: Kill all or nearby mobs
         usage: /<command> [radius]
+    remove:
+        description: Remove all entities of a type
+        usage: /<command> <type> <radius>
+        aliases: ['rem', 'rement']
     /fill:
         description: Fill a hole
         usage: /<command>  <block> <radius> [depth] 

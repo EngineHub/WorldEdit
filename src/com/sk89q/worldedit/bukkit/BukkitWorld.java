@@ -24,8 +24,17 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Ghast;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Painting;
+import org.bukkit.entity.Slime;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Location;
@@ -326,12 +335,75 @@ public class BukkitWorld extends LocalWorld {
         double radiusSq = Math.pow(radius, 2);
         
         for (LivingEntity ent : world.getLivingEntities()) {
-            if (ent instanceof Creature) {
+            if (ent instanceof Creature || ent instanceof Ghast || ent instanceof Slime) {
                 if (radius == -1
                         || origin.distanceSq(BukkitUtil.toVector(ent.getLocation())) <= radiusSq) {
-                    ent.setHealth(0);
+                    ent.remove();
                     num++;
                 }
+            }
+        }
+        
+        return num;
+    }
+    
+    /**
+     * Remove entities in an area.
+     * 
+     * @param origin
+     * @param radius
+     * @return
+     */
+    @Override
+    public int removeEntities(EntityType type, Vector origin, int radius) {
+        int num = 0;
+        double radiusSq = Math.pow(radius, 2);
+        
+        for (Entity ent : world.getEntities()) {
+            if (radius != -1
+                    && origin.distanceSq(BukkitUtil.toVector(ent.getLocation())) > radiusSq) {
+                continue;
+            }
+            
+            switch (type) {
+                case ARROWS:
+                    if (ent instanceof Arrow) {
+                        ent.remove();
+                        num++;
+                    }
+                    break;
+                case BOATS:
+                    if (ent instanceof Boat) {
+                        ent.remove();
+                        num++;
+                    }
+                    break;
+                case ITEMS:
+                    if (ent instanceof Item) {
+                        ent.remove();
+                        num++;
+                    }
+                    break;
+                case MINECARTS:
+                    if (ent instanceof Minecart) {
+                        ent.remove();
+                        num++;
+                    }
+                    break;
+                case PAINTINGS:
+                    if (ent instanceof Painting) {
+                        ent.remove();
+                        num++;
+                    }
+                    break;
+                case TNT:
+                    if (ent instanceof TNTPrimed) {
+                        ent.remove();
+                        num++;
+                    }
+                    break;
+                default:
+                    continue;
             }
         }
         

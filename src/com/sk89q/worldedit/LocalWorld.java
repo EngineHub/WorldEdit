@@ -30,6 +30,18 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
  */
 public abstract class LocalWorld {
     /**
+     * List of removable entity types.
+     */
+    public enum EntityType {
+        ARROWS,
+        ITEMS,
+        PAINTINGS,
+        BOATS,
+        MINECARTS,
+        TNT,
+    }
+    
+    /**
      * Random generator.
      */
     protected Random random = new Random();
@@ -297,6 +309,16 @@ public abstract class LocalWorld {
      * @return
      */
     public abstract int killMobs(Vector origin, int radius);
+
+    /**
+     * Remove entities in an area.
+     * 
+     * @param type 
+     * @param origin
+     * @param radius
+     * @return
+     */
+    public abstract int removeEntities(EntityType type, Vector origin, int radius);
 
     /**
      * Compare if the other world is equal.
