@@ -36,6 +36,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.bukkit.migration.PermissionsResolverManager;
 import com.sk89q.bukkit.migration.PermissionsResolverServerListener;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.bags.BlockBag;
+import com.sk89q.worldedit.regions.Region;
 
 /**
  * Plugin for Bukkit.
@@ -45,9 +47,9 @@ import com.sk89q.worldedit.*;
 public class WorldEditPlugin extends JavaPlugin {
     private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     
-    public final ServerInterface server;
-    public final WorldEdit controller;
-    public final WorldEditAPI api;
+    private final ServerInterface server;
+    private final WorldEdit controller;
+    private final WorldEditAPI api;
     
     private final LocalConfiguration config;
     private final PermissionsResolverManager perms;
@@ -141,7 +143,7 @@ public class WorldEditPlugin extends JavaPlugin {
         }
     }
     
-    public void loadConfiguration() {
+    void loadConfiguration() {
         getConfiguration().load();
         config.load();
         perms.load();
@@ -178,6 +180,97 @@ public class WorldEditPlugin extends JavaPlugin {
         return true;
     }
     
+    /**
+     * Get a reference to the WorldEdit object.
+     * 
+     * @return
+     */
+    public WorldEdit getWorldEdit() {
+        return controller;
+    }
+    
+    /**
+     * Gets the session for the player.
+     * 
+     * @param player
+     * @return
+     */
+    public LocalSession getSession(Player player) {
+        return controller.getSession(wrapPlayer(player));
+    }
+    
+    /**
+     * Gets the region selection for the player.
+     * 
+     * @param player
+     * @return
+     * @throws IncompleteRegionException 
+     */
+    public Region getPlayerSelection(Player player)
+            throws IncompleteRegionException {
+        return controller.getSession(wrapPlayer(player)).getRegion();
+    }
+    
+    /**
+     * Gets the session for the player.
+     * 
+     * @param player
+     * @return
+     */
+    public EditSession createEditSession(Player player) {
+        LocalPlayer wePlayer = wrapPlayer(player);
+        LocalSession session = controller.getSession(wePlayer);
+        BlockBag blockBag = session.getBlockBag(wePlayer);
+        
+        EditSession editSession =
+            new EditSession(wePlayer.getWorld(),
+                    session.getBlockChangeLimit(), blockBag);
+        editSession.enableQueue();
+        
+        return editSession;
+    }
+    
+    /**
+     * Remember an edit session.
+     * 
+     * @param player
+     * @param editSession
+     */
+    public void remember(Player player, EditSession editSession) {
+        LocalPlayer wePlayer = wrapPlayer(player);
+        LocalSession session = controller.getSession(wePlayer);
+        
+        session.remember(editSession);
+        editSession.flushQueue();
+        
+        controller.flushBlockBag(wePlayer, editSession);
+    }
+    
+    /**
+     * Wrap an operation into an EditSession.
+     * 
+     * @param player
+     * @param op
+     * @throws Throwable
+     */
+    public void perform(Player player, WorldEditOperation op)
+            throws Throwable {
+        LocalPlayer wePlayer = wrapPlayer(player);
+        LocalSession session = controller.getSession(wePlayer);
+        
+        EditSession editSession = createEditSession(player);
+        try {
+            op.run(session, wePlayer, editSession);
+        } finally {
+            remember(player, editSession);
+        }
+    }
+    
+    @Deprecated
+    public WorldEditAPI getAPI() {
+        return api;
+    }
+    
     String[] getGroups(Player player) {
         return perms.getGroups(player.getName());
     }
@@ -192,9 +285,5 @@ public class WorldEditPlugin extends JavaPlugin {
     
     BukkitPlayer wrapPlayer(Player player) {
         return new BukkitPlayer(this, this.server, player);
-    }
-    
-    public WorldEditAPI getAPI() {
-        return api;
     }
 }
