@@ -56,6 +56,7 @@ history:
 wand-item: 271
 shell-save-type: 
 no-double-slash: false
+no-op-permissions: false
 debug: false
 
 # See http://wiki.sk89q.com/wiki/WorldEdit/Permissions/Bukkit

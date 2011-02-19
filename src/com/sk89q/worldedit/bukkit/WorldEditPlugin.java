@@ -51,7 +51,7 @@ public class WorldEditPlugin extends JavaPlugin {
     final WorldEdit controller;
     final WorldEditAPI api;
     
-    private final LocalConfiguration config;
+    private final BukkitConfiguration config;
     private final PermissionsResolverManager perms;
     
     private final WorldEditPlayerListener playerListener =
@@ -280,7 +280,8 @@ public class WorldEditPlugin extends JavaPlugin {
     }
     
     boolean hasPermission(Player player, String perm) {
-        return player.isOp() || perms.hasPermission(player.getName(), perm);
+        return (!config.noOpPermissions && player.isOp())
+                || perms.hasPermission(player.getName(), perm);
     }
     
     BukkitPlayer wrapPlayer(Player player) {

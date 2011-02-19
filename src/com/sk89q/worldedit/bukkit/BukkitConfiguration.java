@@ -35,6 +35,8 @@ public class BukkitConfiguration extends LocalConfiguration {
     private Configuration config;
     private Logger logger;
     
+    public boolean noOpPermissions = false;
+    
     public BukkitConfiguration(Configuration config, Logger logger) {
         this.config = config;
         this.logger = logger;
@@ -76,6 +78,8 @@ public class BukkitConfiguration extends LocalConfiguration {
         disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
 
         allowedDataCycleBlocks = new HashSet<Integer>(config.getIntList("limits.allowed-data-cycle-blocks", null));
+
+        noOpPermissions = config.getBoolean("no-op-permissions", false);
         
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, config.getInt("history.size", 15));
         
