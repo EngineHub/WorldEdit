@@ -65,8 +65,7 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public void giveItem(int type, int amt) {
-        player.getWorld().dropItem(player.getLocation(), new ItemStack(type, amt));
-        // TODO: Make this actually give the item
+        player.getInventory().addItem(new ItemStack(type, amt));
     }
 
     @Override
