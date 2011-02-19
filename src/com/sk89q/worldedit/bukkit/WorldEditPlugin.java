@@ -47,9 +47,9 @@ import com.sk89q.worldedit.regions.Region;
 public class WorldEditPlugin extends JavaPlugin {
     private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     
-    private final ServerInterface server;
-    private final WorldEdit controller;
-    private final WorldEditAPI api;
+    final ServerInterface server;
+    final WorldEdit controller;
+    final WorldEditAPI api;
     
     private final LocalConfiguration config;
     private final PermissionsResolverManager perms;

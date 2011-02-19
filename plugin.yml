@@ -80,10 +80,10 @@ commands:
         usage: /<command> 
     /redo:
         description: Redoes the last action (from history)
-        usage: /<command> 
+        usage: /<command> [times]
     /undo:
         description: Undoes the last action
-        usage: /<command> 
+        usage: /<command> [times]
     unstuck:
         description: Escape from being stuck inside a block
         usage: /<command> 
