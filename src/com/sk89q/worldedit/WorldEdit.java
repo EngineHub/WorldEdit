@@ -41,6 +41,7 @@ import com.sk89q.worldedit.tools.Tool;
 import com.sk89q.worldedit.tools.TraceTool;
 import com.sk89q.worldedit.masks.BlockTypeMask;
 import com.sk89q.worldedit.masks.ExistingBlockMask;
+import com.sk89q.worldedit.masks.InvertedBlockTypeMask;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.*;
 
@@ -375,7 +376,12 @@ public class WorldEdit {
                 throw new UnknownItemException(list);
             }
         } else {
-            return new BlockTypeMask(getBlockIDs(player, list, true));
+            if (list.charAt(0) == '!' && list.length() > 1) {
+                return new InvertedBlockTypeMask(
+                        getBlockIDs(player, list.substring(1), true));
+            } else {
+                return new BlockTypeMask(getBlockIDs(player, list, true));
+            }
         }
     }
 
