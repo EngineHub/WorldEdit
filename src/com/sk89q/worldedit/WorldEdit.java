@@ -247,8 +247,14 @@ public class WorldEdit {
             // Allow setting mob spawn type
             } else if (blockType == BlockType.MOB_SPAWNER) {
                 if (args0.length > 1) {
-                    if (!server.isValidMobType(args0[1])) {
-                        throw new InvalidItemException(arg, "Unknown mob type '" + args0[1] + "'");
+                    String mobName = args0[1];
+                    if (mobName.length() > 1) {
+                        mobName = mobName.substring(0, 1).toUpperCase()
+                                + mobName.substring(1);
+                    }
+                    
+                    if (!server.isValidMobType(mobName)) {
+                        throw new InvalidItemException(arg, "Unknown mob type '" + mobName + "'");
                     }
                     return new MobSpawnerBlock(data, args0[1]);
                 } else {
@@ -303,20 +309,26 @@ public class WorldEdit {
 
         String[] items = list.split(",");
         
-        if (list.equals("#clipboard") || list.equals("#copy")) {
-            LocalSession session = getSession(player);
-            CuboidClipboard clipboard;
-            
-            try {
-                clipboard = session.getClipboard();
-            } catch (EmptyClipboardException e) {
-                player.printError("Copy a selection first with //copy.");
-                throw new UnknownItemException("#clipboard");
+        // Handle special block pattern types
+        if (list.charAt(0) == '#') {
+            if (list.equals("#clipboard") || list.equals("#copy")) {
+                LocalSession session = getSession(player);
+                CuboidClipboard clipboard;
+                
+                try {
+                    clipboard = session.getClipboard();
+                } catch (EmptyClipboardException e) {
+                    player.printError("Copy a selection first with //copy.");
+                    throw new UnknownItemException("#clipboard");
+                }
+                
+                return new ClipboardPattern(clipboard);
+            } else {
+                throw new UnknownItemException(list);
             }
-            
-            return new ClipboardPattern(clipboard);
         }
 
+        // If it's only one block, then just return that single one
         if (items.length == 1) {
             return new SingleBlockPattern(getBlock(player, items[0]));
         }
@@ -327,6 +339,8 @@ public class WorldEdit {
             BaseBlock block;
             
             double chance;
+            
+            // Parse special percentage syntax
             if (s.matches("[0-9]+(?:\\.(?:[0-9]+)?)?%.*")) {
                 String[] p = s.split("%");
                 chance = Double.parseDouble(p[0]);
