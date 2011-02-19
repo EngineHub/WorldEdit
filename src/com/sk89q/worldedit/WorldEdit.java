@@ -109,7 +109,7 @@ public class WorldEdit {
         commands.register(RegionCommands.class);
         commands.register(ScriptingCommands.class);
         commands.register(SelectionCommands.class);
-        commands.register(SnapshotCommands.class);
+        commands.register(SnapshotUtilCommands.class);
         commands.register(ToolUtilCommands.class);
         commands.register(ToolCommands.class);
         commands.register(UtilityCommands.class);
