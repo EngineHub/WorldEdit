@@ -24,7 +24,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.patterns.Pattern;
 
-public class HollowCylinderBrush implements BrushShape {
+public class HollowCylinderBrush implements Brush {
     private int height;
     
     public HollowCylinderBrush(int height) {

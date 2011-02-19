@@ -25,7 +25,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.patterns.Pattern;
 
-public class ClipboardBrush implements BrushShape {
+public class ClipboardBrush implements Brush {
     private CuboidClipboard clipboard;
     private boolean noAir;
     

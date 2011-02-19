@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import com.sk89q.worldedit.snapshots.Snapshot;
-import com.sk89q.worldedit.tools.Brush;
+import com.sk89q.worldedit.tools.BrushTool;
 import com.sk89q.worldedit.tools.SinglePickaxe;
 import com.sk89q.worldedit.tools.BlockTool;
 import com.sk89q.worldedit.tools.Tool;
@@ -433,15 +433,15 @@ public class LocalSession {
      * @return the tool
      * @throws InvalidToolBindException 
      */
-    public Brush getBrushTool(int item) throws InvalidToolBindException {
+    public BrushTool getBrushTool(int item) throws InvalidToolBindException {
         Tool tool = getTool(item);
         
-        if (tool == null || !(tool instanceof Brush)) {
-            tool = new Brush();
+        if (tool == null || !(tool instanceof BrushTool)) {
+            tool = new BrushTool();
             setTool(item, tool);
         }
         
-        return (Brush)tool;
+        return (BrushTool)tool;
     }
 
     /**

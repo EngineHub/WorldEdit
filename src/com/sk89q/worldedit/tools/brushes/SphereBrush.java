@@ -24,7 +24,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.patterns.Pattern;
 
-public class SphereBrush implements BrushShape {
+public class SphereBrush implements Brush {
     public SphereBrush() {
     }
     

@@ -24,7 +24,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.patterns.Pattern;
 
-public class CylinderBrush implements BrushShape {
+public class CylinderBrush implements Brush {
     private int height;
     
     public CylinderBrush(int height) {

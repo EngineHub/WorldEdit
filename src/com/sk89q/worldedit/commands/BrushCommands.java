@@ -31,7 +31,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.tools.Brush;
+import com.sk89q.worldedit.tools.BrushTool;
 import com.sk89q.worldedit.tools.brushes.ClipboardBrush;
 import com.sk89q.worldedit.tools.brushes.CylinderBrush;
 import com.sk89q.worldedit.tools.brushes.HollowCylinderBrush;
@@ -66,7 +66,7 @@ public class BrushCommands {
             return;
         }
 
-        Brush tool = session.getBrushTool(player.getItemInHand());
+        BrushTool tool = session.getBrushTool(player.getItemInHand());
         Pattern fill = we.getBlockPattern(player, args.getString(0));
         tool.setFill(fill);
         tool.setSize(radius);
@@ -110,7 +110,7 @@ public class BrushCommands {
             return;
         }
 
-        Brush tool = session.getBrushTool(player.getItemInHand());
+        BrushTool tool = session.getBrushTool(player.getItemInHand());
         Pattern fill = we.getBlockPattern(player, args.getString(0));
         tool.setFill(fill);
         tool.setSize(radius);
@@ -157,7 +157,7 @@ public class BrushCommands {
             return;
         }
 
-        Brush tool = session.getBrushTool(player.getItemInHand());
+        BrushTool tool = session.getBrushTool(player.getItemInHand());
         tool.setBrush(new ClipboardBrush(clipboard, args.hasFlag('a')));
         
         player.print("Clipboard brush shape equipped.");

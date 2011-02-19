@@ -24,7 +24,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.patterns.Pattern;
 
-public class HollowSphereBrush implements BrushShape {
+public class HollowSphereBrush implements Brush {
     public HollowSphereBrush() {
     }
     

@@ -26,7 +26,7 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
-import com.sk89q.worldedit.tools.brushes.BrushShape;
+import com.sk89q.worldedit.tools.brushes.Brush;
 import com.sk89q.worldedit.tools.brushes.SphereBrush;
 
 /**
@@ -34,9 +34,9 @@ import com.sk89q.worldedit.tools.brushes.SphereBrush;
  * 
  * @author sk89q
  */
-public class Brush implements TraceTool {
+public class BrushTool implements TraceTool {
     private Mask mask = null;
-    private BrushShape brush = new SphereBrush();
+    private Brush brush = new SphereBrush();
     private Pattern material = new SingleBlockPattern(new BaseBlock(BlockID.COBBLESTONE));
     private int size = 1;
     
@@ -63,7 +63,7 @@ public class Brush implements TraceTool {
      * 
      * @param brush
      */
-    public void setBrush(BrushShape brush) {
+    public void setBrush(Brush brush) {
         this.brush = brush;
     }
     
@@ -72,7 +72,7 @@ public class Brush implements TraceTool {
      * 
      * @return
      */
-    public BrushShape getBrush() {
+    public Brush getBrush() {
         return brush;
     }
     

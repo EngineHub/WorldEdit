@@ -25,11 +25,11 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.patterns.Pattern;
 
 /**
- * Represents a shape.
+ * Represents a brush.
  *
  * @author sk89q
  */
-public interface BrushShape {
+public interface Brush {
     /**
      * Build the object.
      * 
