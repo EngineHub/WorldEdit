@@ -13,9 +13,9 @@ Some dependencies are required:
 - [TrueZip](http://java.net/projects/truezip) provides snapshot reading
 - [Bukkit](http://bukkit.org/) is a SMP plugin API
 - [Rhino](http://www.mozilla.org/rhino/) provides a JavaScript engine
-- [GroupUsers](http://forums.bukkit.org/threads/639/) provides an
+- [GroupUsers](http://forums.bukkit.org/threads/639/) provides a
     permission system for Bukkit
-- [Permissions](http://forums.bukkit.org/threads/1403/) provides an
+- [Permissions](http://forums.bukkit.org/threads/1403/) provides a
     permission system for Bukkit
 - worldeditsunrhino.jar is included
 
