@@ -21,6 +21,7 @@ package com.sk89q.worldedit.commands;
 
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
@@ -380,6 +381,7 @@ public class SelectionCommands {
         aliases = {"/distr"},
         usage = "",
         desc = "Get the distribution of blocks in the selection",
+        flags = "c",
         min = 0,
         max = 0
     )
@@ -391,16 +393,28 @@ public class SelectionCommands {
         List<Countable<Integer>> distribution =
             editSession.getBlockDistribution(session.getRegion());
         
+        Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+        
         if (distribution.size() > 0) { // *Should* always be true
             int size = session.getRegion().getSize();
     
             player.print("# total blocks: " + size);
             
+            if (args.hasFlag('c')) {
+                logger.info("Block distribution (req. by " + player.getName() + "):");
+                logger.info("# total blocks: " + size);
+            }
+            
             for (Countable<Integer> c : distribution) {
-                player.print(String.format("%-7s (%.3f%%) %s #%d",
+                String str = String.format("%-7s (%.3f%%) %s #%d",
                         String.valueOf(c.getAmount()),
                         c.getAmount() / (double)size * 100,
-                        BlockType.fromID(c.getID()).getName(), c.getID()));
+                        BlockType.fromID(c.getID()).getName(), c.getID());
+                player.print(str);
+                
+                if (args.hasFlag('c')) {
+                    logger.info(str);
+                }
             }
         } else {
             player.printError("No blocks counted.");
