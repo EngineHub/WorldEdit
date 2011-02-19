@@ -311,7 +311,7 @@ public class SelectionCommands {
         usage = "<amount> [direction]",
         desc = "Shift the selection area",
         min = 1,
-        max = 3
+        max = 2
     )
     @CommandPermissions({"worldedit.selection.shift"})
     public static void shift(CommandContext args, WorldEdit we,
@@ -333,6 +333,72 @@ public class SelectionCommands {
         session.learnRegionChanges();
         
         player.print("Region shifted.");
+    }
+
+    @Command(
+        aliases = {"/outset"},
+        usage = "<amount>",
+        desc = "Outset the selection area",
+        flags = "hv",
+        min = 1,
+        max = 1
+    )
+    @CommandPermissions({"worldedit.selection.outset"})
+    public static void outset(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        int change = args.getInteger(0);
+
+        Region region = session.getRegion();
+        
+        if (!args.hasFlag('h')) {
+            region.expand((new Vector(0, 1, 0)).multiply(change));
+            region.expand((new Vector(0, -1, 0)).multiply(change));
+        }
+        
+        if (!args.hasFlag('v')) {
+            region.expand((new Vector(1, 0, 0)).multiply(change));
+            region.expand((new Vector(-1, 0, 0)).multiply(change));
+            region.expand((new Vector(0, 0, 1)).multiply(change));
+            region.expand((new Vector(0, 0, -1)).multiply(change));
+        }
+        
+        session.learnRegionChanges();
+        
+        player.print("Region outset.");
+    }
+
+    @Command(
+        aliases = {"/inset"},
+        usage = "<amount>",
+        desc = "Inset the selection area",
+        flags = "hv",
+        min = 1,
+        max = 1
+    )
+    @CommandPermissions({"worldedit.selection.outset"})
+    public static void inset(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        int change = args.getInteger(0);
+
+        Region region = session.getRegion();
+        
+        if (!args.hasFlag('h')) {
+            region.contract((new Vector(0, 1, 0)).multiply(change));
+            region.contract((new Vector(0, -1, 0)).multiply(change));
+        }
+        
+        if (!args.hasFlag('v')) {
+            region.contract((new Vector(1, 0, 0)).multiply(change));
+            region.contract((new Vector(-1, 0, 0)).multiply(change));
+            region.contract((new Vector(0, 0, 1)).multiply(change));
+            region.contract((new Vector(0, 0, -1)).multiply(change));
+        }
+        
+        session.learnRegionChanges();
+        
+        player.print("Region inset.");
     }
 
     @Command(
