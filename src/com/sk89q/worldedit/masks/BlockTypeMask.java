@@ -30,7 +30,7 @@ import com.sk89q.worldedit.Vector;
  * @author sk89q
  */
 public class BlockTypeMask implements Mask {
-    private Set<Integer> types;
+    protected Set<Integer> types;
     
     public BlockTypeMask() {
         types = new HashSet<Integer>();

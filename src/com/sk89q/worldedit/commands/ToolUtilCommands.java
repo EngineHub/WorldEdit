@@ -25,6 +25,7 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.patterns.Pattern;
 
 /**
  * Tool commands.
@@ -89,5 +90,44 @@ public class ToolUtilCommands {
             session.getBrushTool(player.getItemInHand()).setMask(mask);
             player.print("Brush mask set.");
         }
+    }
+
+    @Command(
+        aliases = {"mat", "material", "fill"},
+        usage = "[pattern]",
+        desc = "Set the brush material",
+        min = 1,
+        max = 1
+    )
+    public static void material(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        session.getBrushTool(player.getItemInHand()).setFill(pattern);
+        player.print("Brush material set.");
+    }
+
+    @Command(
+        aliases = {"size"},
+        usage = "[pattern]",
+        desc = "Set the brush size",
+        min = 1,
+        max = 1
+    )
+    public static void size(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        
+        LocalConfiguration config = we.getConfiguration();
+        
+        int radius = args.getInteger(0);
+        if (radius > config.maxBrushRadius) {
+            player.printError("Maximum allowed brush radius: "
+                    + config.maxBrushRadius);
+            return;
+        }
+        
+        session.getBrushTool(player.getItemInHand()).setSize(radius);
+        player.print("Brush size set.");
     }
 }
