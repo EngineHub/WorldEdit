@@ -458,6 +458,8 @@ public class LocalSession {
             throw new InvalidToolBindException(item, "Item is not usuable");
         } else if (item == config.wandItem) {
             throw new InvalidToolBindException(item, "Already used for the wand");
+        } else if (item == config.navigationWand) {
+            throw new InvalidToolBindException(item, "Already used for the navigation wand");
         }
         
         this.tools.put(item, tool);
