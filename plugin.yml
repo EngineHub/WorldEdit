@@ -14,6 +14,9 @@ commands:
         description: Choose the clipboard brush
         usage: /<command> [-a] 
         aliases: ['copy']
+    smooth:
+        description: Choose the terrain softener brush
+        usage: /<command> [size] [iterations]
     chunkinfo:
         description: Get information about the chunk that you are inside
         usage: /<command> 
@@ -107,6 +110,9 @@ commands:
     up:
         description: Go upwards some distance
         usage: /<command> <block>
+    /smooth:
+        description: Smooth the elevation in the selection
+        usage: /<command> [iterations]
     /overlay:
         description: Set a block on top of blocks in the region
         usage: /<command> <block>
@@ -117,9 +123,6 @@ commands:
         description: Build the walls, ceiling, and roof of a selection
         usage: /<command> <block>
         aliases: ['/outline']
-    /smooth:
-        description: Smooth the elevation in the selection
-        usage: /<command> [iterations]
     /replace:
         description: Replace all blocks in the selection with another
         usage: /<command> [from-block] <to-block>

@@ -36,6 +36,7 @@ import com.sk89q.worldedit.tools.brushes.ClipboardBrush;
 import com.sk89q.worldedit.tools.brushes.CylinderBrush;
 import com.sk89q.worldedit.tools.brushes.HollowCylinderBrush;
 import com.sk89q.worldedit.tools.brushes.HollowSphereBrush;
+import com.sk89q.worldedit.tools.brushes.SmoothBrush;
 import com.sk89q.worldedit.tools.brushes.SphereBrush;
 
 /**
@@ -161,5 +162,36 @@ public class BrushCommands {
         tool.setBrush(new ClipboardBrush(clipboard, args.hasFlag('a')));
         
         player.print("Clipboard brush shape equipped.");
+    }
+
+    @Command(
+        aliases = {"smooth"},
+        usage = "[size] [iterations]",
+        desc = "Choose the terrain softener brush",
+        min = 0,
+        max = 2
+    )
+    @CommandPermissions({"worldedit.brush.smooth"})
+    public static void smoothBrush(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        
+        LocalConfiguration config = we.getConfiguration();
+
+        int radius = args.argsLength() > 0 ? args.getInteger(0) : 2;
+        if (radius > config.maxBrushRadius) {
+            player.printError("Maximum allowed brush radius: "
+                    + config.maxBrushRadius);
+            return;
+        }
+
+        int iterations = args.argsLength() > 1 ? args.getInteger(1) : 4;
+
+        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        tool.setSize(radius);
+        tool.setBrush(new SmoothBrush(iterations));
+
+        player.print(String.format("Smooth brush equipped (%d x %dx).",
+                radius, iterations));
     }
 }
