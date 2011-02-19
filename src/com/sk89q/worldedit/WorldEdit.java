@@ -946,6 +946,9 @@ public class WorldEdit {
         } catch (FilenameResolutionException e) {
             player.printError("File '" + e.getFilename() + "' resolution error: "
                     + e.getMessage());
+        } catch (InvalidToolBindException e) {
+            player.printError("Can't bind tool to "
+                    + ItemType.toHeldName(e.getItemId()) + ": " + e.getMessage());
         } catch (FileSelectionAbortedException e) {
             player.printError("File selection aborted.");
         } catch (WorldEditException e) {

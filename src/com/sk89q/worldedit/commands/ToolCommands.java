@@ -25,6 +25,7 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.ItemType;
 import com.sk89q.worldedit.tools.*;
 import com.sk89q.worldedit.util.TreeGenerator;
 
@@ -41,7 +42,7 @@ public class ToolCommands {
             throws WorldEditException {
 
         session.setTool(player.getItemInHand(), null);
-        player.print("Now no longer equipping a tool.");
+        player.print("Tool unbound from your current item.");
     }
 
     @Command(
@@ -57,7 +58,8 @@ public class ToolCommands {
             throws WorldEditException {
 
         session.setTool(player.getItemInHand(), new QueryTool());
-        player.print("Info tool equipped. Right click with a pickaxe.");
+        player.print("Info tool bound to "
+                + ItemType.toHeldName(player.getItemInHand()) + ".");
     }
 
     @Command(
@@ -82,7 +84,8 @@ public class ToolCommands {
         }
 
         session.setTool(player.getItemInHand(), new TreePlanter(new TreeGenerator(type)));
-        player.print("Tree tool equipped. Right click grass with a pickaxe.");
+        player.print("Tree tool bound to "
+                + ItemType.toHeldName(player.getItemInHand()) + ".");
     }
 
     @Command(
@@ -99,7 +102,8 @@ public class ToolCommands {
 
         BaseBlock targetBlock = we.getBlock(player, args.getString(0));
         session.setTool(player.getItemInHand(), new BlockReplacer(targetBlock));
-        player.print("Block replacer tool equipped. Right click with a pickaxe.");
+        player.print("Block replacer tool bound to "
+                + ItemType.toHeldName(player.getItemInHand()) + ".");
     }
 
     @Command(
@@ -115,7 +119,8 @@ public class ToolCommands {
             throws WorldEditException {
 
         session.setTool(player.getItemInHand(), new BlockDataCyler());
-        player.print("Block cycler tool equipped. Right click with a pickaxe.");
+        player.print("Block data cycler tool bound to "
+                + ItemType.toHeldName(player.getItemInHand()) + ".");
     }
 
     @Command(

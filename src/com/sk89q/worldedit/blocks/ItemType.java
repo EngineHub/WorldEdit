@@ -292,6 +292,39 @@ public enum ItemType {
     }
 
     /**
+     * Get a name for the item.
+     *
+     * @param id
+     * @return
+     */
+    public static String toName(int id) {
+        ItemType type = ids.get(id);
+        if (type != null) {
+            return type.getName();
+        } else {
+            return "#" + id;
+        }
+    }
+
+    /**
+     * Get a name for a held item.
+     *
+     * @param id
+     * @return
+     */
+    public static String toHeldName(int id) {
+        if (id == 0) {
+            return "Hand";
+        }
+        ItemType type = ids.get(id);
+        if (type != null) {
+            return type.getName();
+        } else {
+            return "#" + id;
+        }
+    }
+
+    /**
      * Return type from name. May return null.
      *
      * @param name

@@ -431,8 +431,9 @@ public class LocalSession {
      * 
      * @param item 
      * @return the tool
+     * @throws InvalidToolBindException 
      */
-    public Brush getBrushTool(int item) {
+    public Brush getBrushTool(int item) throws InvalidToolBindException {
         Tool tool = getTool(item);
         
         if (tool == null || !(tool instanceof Brush)) {
@@ -448,8 +449,17 @@ public class LocalSession {
      * 
      * @param item 
      * @param tool the tool to set
+     * @throws InvalidToolBindException 
      */
-    public void setTool(int item, Tool tool) {
+    public void setTool(int item, Tool tool) throws InvalidToolBindException {
+        if (item > 0 && item < 255) {
+            throw new InvalidToolBindException(item, "Blocks can't be used");
+        } else if (item == 263 || item == 348) {
+            throw new InvalidToolBindException(item, "Item is not usuable");
+        } else if (item == config.wandItem) {
+            throw new InvalidToolBindException(item, "Already used for the wand");
+        }
+        
         this.tools.put(item, tool);
     }
 
