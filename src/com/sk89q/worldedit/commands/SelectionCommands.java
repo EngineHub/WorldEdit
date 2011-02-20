@@ -399,7 +399,7 @@ public class SelectionCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.selection.outset"})
+    @CommandPermissions({"worldedit.selection.inset"})
     public static void inset(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
