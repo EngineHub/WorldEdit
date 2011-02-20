@@ -47,26 +47,23 @@ import com.sk89q.worldedit.regions.Region;
 public class WorldEditPlugin extends JavaPlugin {
     private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     
-    final ServerInterface server;
-    final WorldEdit controller;
-    final WorldEditAPI api;
+    ServerInterface server;
+    WorldEdit controller;
+    WorldEditAPI api;
     
-    private final BukkitConfiguration config;
-    private final PermissionsResolverManager perms;
+    private BukkitConfiguration config;
+    private PermissionsResolverManager perms;
     
-    private final WorldEditPlayerListener playerListener =
+    private WorldEditPlayerListener playerListener =
         new WorldEditPlayerListener(this);
-    private final WorldEditBlockListener blockListener =
+    private WorldEditBlockListener blockListener =
         new WorldEditBlockListener(this);
-    private final PermissionsResolverServerListener permsListener;
+    private PermissionsResolverServerListener permsListener;
 
-    public WorldEditPlugin(PluginLoader pluginLoader, Server instance,
-            PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
-        super(pluginLoader, instance, desc, folder, plugin, cLoader);
-
-        logger.info("WorldEdit " + desc.getVersion() + " loaded.");
+    public void onEnable() {
+        logger.info("WorldEdit " + getDescription().getVersion() + " loaded.");
         
-        folder.mkdirs();
+        getDataFolder().mkdirs();
 
         createDefaultConfiguration("config.yml");
         
@@ -83,9 +80,6 @@ public class WorldEditPlugin extends JavaPlugin {
         registerEvents();
     }
 
-    public void onEnable() {
-    }
-
     public void onDisable() {
         controller.clearSessions();
     }
@@ -97,7 +91,7 @@ public class WorldEditPlugin extends JavaPlugin {
                 playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ITEM,
                 playerListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND,
+        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS,
                 playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED,
                 blockListener, Priority.Normal, this);

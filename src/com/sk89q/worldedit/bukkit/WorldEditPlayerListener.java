@@ -30,7 +30,6 @@ import org.bukkit.event.player.PlayerListener;
 /**
  * Handles all events thrown in relation to a Player
  */
-@SuppressWarnings("deprecation")
 public class WorldEditPlayerListener extends PlayerListener {
     /**
      * Plugin.
@@ -74,7 +73,7 @@ public class WorldEditPlayerListener extends PlayerListener {
      * @param event Relevant event details
      */
     @Override
-    public void onPlayerCommand(PlayerChatEvent event) {
+    public void onPlayerCommandPreprocess(PlayerChatEvent event) {
         String[] split = event.getMessage().split(" ");
         
         if (plugin.controller.handleCommand(wrapPlayer(event.getPlayer()), split)) {
