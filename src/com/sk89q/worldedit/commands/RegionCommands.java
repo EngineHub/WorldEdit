@@ -53,10 +53,10 @@ public class RegionCommands {
         int affected;
         
         if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.setBlocks(session.getRegion(),
+            affected = editSession.setBlocks(session.getSelection(player.getWorld()),
                     ((SingleBlockPattern)pattern).getBlock());
         } else {
-            affected = editSession.setBlocks(session.getRegion(), pattern);
+            affected = editSession.setBlocks(session.getSelection(player.getWorld()), pattern);
         }
         
         player.print(affected + " block(s) have been changed.");
@@ -86,10 +86,10 @@ public class RegionCommands {
 
         int affected = 0;
         if (to instanceof SingleBlockPattern) {
-            affected = editSession.replaceBlocks(session.getRegion(), from,
+            affected = editSession.replaceBlocks(session.getSelection(player.getWorld()), from,
                     ((SingleBlockPattern)to).getBlock());
         } else {
-            affected = editSession.replaceBlocks(session.getRegion(), from, to);
+            affected = editSession.replaceBlocks(session.getSelection(player.getWorld()), from, to);
         }
         
         player.print(affected + " block(s) have been replaced.");
@@ -109,7 +109,7 @@ public class RegionCommands {
 
         Pattern pat = we.getBlockPattern(player, args.getString(0));
 
-        Region region = session.getRegion();
+        Region region = session.getSelection(player.getWorld());
         int affected = 0;
         if (pat instanceof SingleBlockPattern) {
             affected = editSession.overlayCuboidBlocks(region,
@@ -133,7 +133,7 @@ public class RegionCommands {
             throws WorldEditException {
 
         BaseBlock block = we.getBlock(player, args.getString(0));
-        int affected = editSession.makeCuboidWalls(session.getRegion(), block);
+        int affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), block);
         
         player.print(affected + " block(s) have been changed.");
     }
@@ -151,7 +151,7 @@ public class RegionCommands {
             throws WorldEditException {
 
         BaseBlock block = we.getBlock(player, args.getString(0));
-        int affected = editSession.makeCuboidFaces(session.getRegion(), block);
+        int affected = editSession.makeCuboidFaces(session.getSelection(player.getWorld()), block);
         player.print(affected + " block(s) have been changed.");
     }
 
@@ -172,7 +172,7 @@ public class RegionCommands {
             iterations = args.getInteger(0);
         }
 
-        HeightMap heightMap = new HeightMap(editSession, session.getRegion());
+        HeightMap heightMap = new HeightMap(editSession, session.getSelection(player.getWorld()));
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         int affected = heightMap.applyFilter(filter, iterations);
         player.print("Terrain's height map smoothed. " + affected + " block(s) changed.");
@@ -203,7 +203,7 @@ public class RegionCommands {
             replace = new BaseBlock(0);
         }
 
-        int affected = editSession.moveCuboidRegion(session.getRegion(),
+        int affected = editSession.moveCuboidRegion(session.getSelection(player.getWorld()),
                 dir, count, true, replace);
         player.print(affected + " blocks moved.");
     }
@@ -226,7 +226,7 @@ public class RegionCommands {
         Vector dir = we.getDirection(player,
                 args.argsLength() > 1 ? args.getString(1).toLowerCase() : "me");
 
-        int affected = editSession.stackCuboidRegion(session.getRegion(),
+        int affected = editSession.stackCuboidRegion(session.getSelection(player.getWorld()),
                 dir, count, !args.hasFlag('a'));
         player.print(affected + " blocks changed. Undo with //undo");
     }

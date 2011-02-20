@@ -178,15 +178,20 @@ commands:
     //count:
         description: Counts the number of a certain type of block
         usage: /<command> <block>
-    /size:
+    /m:
         description: Get information about the selection
         usage: /<command> 
+        aliases: ['//size']
     /shift:
         description: Shift the selection area
         usage: /<command> <amount> [direction]
     /expand:
         description: Expand the selection area
         usage: /<command> <amount> [reverse-amount] <direction>
+    /sel:
+        description: Choose a region selector
+        usage: /<command> [type]
+        aliases: [',']
     /inset:
         description: Inset the selection area
         usage: /<command> [-hv] <amount>
@@ -299,6 +304,10 @@ commands:
     /drain:
         description: Drain a pool
         usage: /<command> <radius>
-    /version:
+    version:
         description: Get WorldEdit version
+        usage: /<command> 
+        aliases: ['ver']
+    reload:
+        description: Reload WorldEdit
         usage: /<command> 

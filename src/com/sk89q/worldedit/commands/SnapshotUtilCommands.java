@@ -71,7 +71,7 @@ public class SnapshotUtilCommands {
             return;
         }
 
-        Region region = session.getRegion();
+        Region region = session.getSelection(player.getWorld());
         Snapshot snapshot;
 
         if (args.argsLength() > 0) {

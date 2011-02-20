@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.data.ChunkStore;
@@ -28,7 +29,7 @@ import java.util.HashSet;
 
 /**
  *
- * @author Albert
+ * @author sk89q
  */
 public class CuboidRegion implements Region {
     /**
@@ -80,7 +81,7 @@ public class CuboidRegion implements Region {
      * 
      * @return number of blocks
      */
-    public int getSize() {
+    public int getArea() {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
 
@@ -289,11 +290,29 @@ public class CuboidRegion implements Region {
     }
 
     /**
+     * Returns true based on whether the region contains the point,
+     *
+     * @param pt
+     */
+    public boolean contains(Vector pt) {
+        double x = pt.getX();
+        double y = pt.getY();
+        double z = pt.getZ();
+
+        Vector min = getMinimumPoint();
+        Vector max = getMaximumPoint();
+        
+        return x >= min.getBlockX() && x <= max.getBlockX()
+                && y >= min.getBlockY() && y <= max.getBlockY()
+                && z >= min.getBlockZ() && z <= max.getBlockZ();
+    }
+
+    /**
      * Get the iterator.
      * 
-     * @return iterator of Points
+     * @return iterator of points inside the region
      */
-    public Iterator<Vector> iterator() {
+    public Iterator<BlockVector> iterator() {
         throw new UnsupportedOperationException("Not implemented");
     }
 }

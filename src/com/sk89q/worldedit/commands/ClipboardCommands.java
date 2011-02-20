@@ -47,7 +47,7 @@ public class ClipboardCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
             
-        Region region = session.getRegion();
+        Region region = session.getSelection(player.getWorld());
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
         Vector pos = player.getBlockIn();
@@ -79,7 +79,7 @@ public class ClipboardCommands {
             block = we.getBlock(player, args.getString(0));
         }
             
-        Region region = session.getRegion();
+        Region region = session.getSelection(player.getWorld());
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
         Vector pos = player.getBlockIn();
@@ -90,7 +90,7 @@ public class ClipboardCommands {
         clipboard.copy(editSession);
         session.setClipboard(clipboard);
 
-        editSession.setBlocks(session.getRegion(), block);
+        editSession.setBlocks(session.getSelection(player.getWorld()), block);
         player.print("Block(s) cut.");
     }
     

@@ -208,7 +208,8 @@ public class WorldEditPlugin extends JavaPlugin {
      */
     public Region getPlayerSelection(Player player)
             throws IncompleteRegionException {
-        return controller.getSession(wrapPlayer(player)).getRegion();
+        return controller.getSession(wrapPlayer(player))
+                .getSelection(new BukkitWorld(player.getWorld()));
     }
     
     /**

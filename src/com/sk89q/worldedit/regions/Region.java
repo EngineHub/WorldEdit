@@ -19,15 +19,16 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import java.util.Set;
 
 /**
  *
- * @author Albert
+ * @author sk89q
  */
-public interface Region extends Iterable<Vector> {
+public interface Region extends Iterable<BlockVector> {
     /**
      * Get the lower point of a region.
      * 
@@ -45,7 +46,7 @@ public interface Region extends Iterable<Vector> {
      * 
      * @return number of blocks
      */
-    public int getSize();
+    public int getArea();
     /**
      * Get X-size.
      *
@@ -68,14 +69,23 @@ public interface Region extends Iterable<Vector> {
      * Expand the region.
      *
      * @param change
+     * @throws RegionOperationException 
      */
-    public void expand(Vector change);
+    public void expand(Vector change) throws RegionOperationException;
     /**
      * Contract the region.
      *
      * @param change
+     * @throws RegionOperationException 
      */
-    public void contract(Vector change);
+    public void contract(Vector change) throws RegionOperationException;
+    /**
+     * Returns true based on whether the region contains the point,
+     *
+     * @param pt
+     * @return 
+     */
+    public boolean contains(Vector pt);
     /**
      * Get a list of chunks.
      * 

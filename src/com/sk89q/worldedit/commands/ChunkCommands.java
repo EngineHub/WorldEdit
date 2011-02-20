@@ -70,7 +70,7 @@ public class ChunkCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        Set<Vector2D> chunks = session.getRegion().getChunks();
+        Set<Vector2D> chunks = session.getSelection(player.getWorld()).getChunks();
 
         for (Vector2D chunk : chunks) {
             player.print(NestedFileChunkStore.getFilename(chunk));
@@ -91,7 +91,7 @@ public class ChunkCommands {
 
         LocalConfiguration config = we.getConfiguration();
         
-        Set<Vector2D> chunks = session.getRegion().getChunks();
+        Set<Vector2D> chunks = session.getSelection(player.getWorld()).getChunks();
         FileOutputStream out = null;
 
         if (config.shellSaveType == null) {

@@ -28,8 +28,9 @@ import com.sk89q.worldedit.tools.SinglePickaxe;
 import com.sk89q.worldedit.tools.BlockTool;
 import com.sk89q.worldedit.tools.Tool;
 import com.sk89q.worldedit.bags.BlockBag;
+import com.sk89q.worldedit.regions.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.RegionSelector;
 
 /**
  * An instance of this represents the WorldEdit session of a user. A session
@@ -51,9 +52,9 @@ public class LocalSession {
     
     private LocalConfiguration config;
     
+    private LocalWorld selectionWorld;
+    private RegionSelector regionSelector = new CuboidRegionSelector();
     private boolean placeAtPos1 = false;
-    private Vector pos1, pos2;
-    private Region region;
     private LinkedList<EditSession> history = new LinkedList<EditSession>();
     private int historyPointer = 0;
     private CuboidClipboard clipboard;
@@ -147,25 +148,41 @@ public class LocalSession {
     }
 
     /**
-     * Checks to make sure that position 1 is defined.
+     * Get the region selector for defining the selection. If the selection
+     * was defined for a different world, the old selection will be discarded.
      * 
-     * @throws IncompleteRegionException
+     * @param world 
+     * @return position
      */
-    private void checkPos1() throws IncompleteRegionException {
-        if (pos1 == null) {
-            throw new IncompleteRegionException();
+    public RegionSelector getRegionSelector(LocalWorld world) {
+        if (selectionWorld == null) {
+            selectionWorld = world;
+        } else if (!selectionWorld.equals(world)) {
+            selectionWorld = world;
+            regionSelector.clear();
         }
+        return regionSelector;
     }
 
     /**
-     * Checks to make sure that position 2 is defined.
-     *
-     * @throws IncompleteRegionException
+     * Get the region selector. This won't check worlds so make sure that
+     * this region selector isn't used blindly.
+     * 
+     * @return position
      */
-    private void checkPos2() throws IncompleteRegionException {
-        if (pos2 == null) {
-            throw new IncompleteRegionException();
-        }
+    public RegionSelector getRegionSelector() {
+        return regionSelector;
+    }
+
+    /**
+     * Set the region selector.
+     * 
+     * @param world
+     * @param selector
+     */
+    public void setRegionSelector(LocalWorld world, RegionSelector selector) {
+        selectionWorld = world;
+        regionSelector = selector;
     }
 
     /**
@@ -173,80 +190,50 @@ public class LocalSession {
      * 
      * @return 
      */
+    @Deprecated
     public boolean isRegionDefined() {
-        return pos1 != null && pos2 != null;
+        return regionSelector.isDefined();
     }
 
     /**
-     * Gets defined position 1.
+     * Returns true if the region is fully defined for the specified world.
      * 
-     * @return position 1
-     * @throws IncompleteRegionException
+     * @param world 
+     * @return 
      */
-    public Vector getPos1() throws IncompleteRegionException {
-        checkPos1();
-        return pos1;
-    }
-
-    /**
-     * Sets position 1.
-     *
-     * @param pt
-     */
-    public void setPos1(Vector pt) {
-        pos1 = pt;
-        if (pos1 != null && pos2 != null) {
-            region = new CuboidRegion(pos1, pos2);
+    public boolean isSelectionDefined(LocalWorld world) {
+        if (selectionWorld == null || !selectionWorld.equals(world)) {
+            return false;
         }
+        return regionSelector.isDefined();
     }
 
     /**
-     * Gets position 2.
-     * 
-     * @return position 2
-     * @throws IncompleteRegionException
-     */
-    public Vector getPos2() throws IncompleteRegionException {
-        checkPos2();
-        return pos2;
-    }
-
-    /**
-     * Sets position 2.
-     *
-     * @param pt
-     */
-    public void setPos2(Vector pt) {
-        pos2 = pt;
-        if (pos1 != null && pos2 != null) {
-            region = new CuboidRegion(pos1, pos2);
-        }
-    }
-
-    /**
-     * Update session position 1/2 based on the currently set region,
-     * provided that the region is of a cuboid.
-     */
-    public void learnRegionChanges() {
-        if (region instanceof CuboidRegion) {
-            CuboidRegion cuboidRegion = (CuboidRegion)region;
-            pos1 = cuboidRegion.getPos1();
-            pos2 = cuboidRegion.getPos2();
-        }
-    }
-
-    /**
-     * Get the region. If you change the region, you should
-     * call learnRegionChanges().
+     * Use <code>getSelection()</code>.
      * 
      * @return region
      * @throws IncompleteRegionException
      */
+    @Deprecated
     public Region getRegion() throws IncompleteRegionException {
-        if (region == null) {
+        return regionSelector.getRegion();
+    }
+
+    /**
+     * Get the selection region. If you change the region, you should
+     * call learnRegionChanges().  If the selection is defined in
+     * a different world, the <code>IncompleteRegionException</code>
+     * exception will be thrown.
+     * 
+     * @param world 
+     * @return region
+     * @throws IncompleteRegionException
+     */
+    public Region getSelection(LocalWorld world) throws IncompleteRegionException {
+        if (selectionWorld == null || !selectionWorld.equals(world)) {
             throw new IncompleteRegionException();
         }
-        return region;
+        return regionSelector.getRegion();
     }
 
     /**
@@ -353,8 +340,7 @@ public class LocalSession {
             return player.getBlockIn();
         }
 
-        checkPos1();
-        return pos1;
+        return regionSelector.getPrimaryPosition();
     }
 
     /**

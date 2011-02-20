@@ -35,6 +35,7 @@ import com.sk89q.worldedit.LocalSession.CompassMode;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.commands.*;
+import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.scripting.*;
 import com.sk89q.worldedit.tools.BlockTool;
 import com.sk89q.worldedit.tools.Tool;
@@ -782,13 +783,9 @@ public class WorldEdit {
 
         if (itemInHand == config.wandItem && session.isToolControlEnabled()
                 && player.hasPermission("worldedit.selection.pos")) {
-            session.setPos2(clicked);
-            
-            try {
-                player.print("Second position set to " + clicked
-                        + " (" + session.getRegion().getSize() + ").");
-            } catch (IncompleteRegionException e) {
-                player.print("Second position set to " + clicked + ".");
+            RegionSelector selector = session.getRegionSelector(player.getWorld());
+            if (selector.selectSecondary(clicked)) {
+                selector.explainSecondarySelection(player, clicked);
             }
 
             return true;
@@ -823,19 +820,9 @@ public class WorldEdit {
                     return false;
                 }
 
-                try {
-                    if (session.getPos1().equals(clicked)) {
-                        return false;
-                    }
-                } catch (IncompleteRegionException e) {
-                }
-
-                session.setPos1(clicked);
-                try {
-                    player.print("First position set to " + clicked
-                            + " (" + session.getRegion().getSize() + ").");
-                } catch (IncompleteRegionException e) {
-                    player.print("First position set to " + clicked + ".");
+                RegionSelector selector = session.getRegionSelector(player.getWorld());
+                if (selector.selectPrimary(clicked)) {
+                    selector.explainPrimarySelection(player, clicked);
                 }
 
                 return true;
