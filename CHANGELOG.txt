@@ -1,3 +1,34 @@
+4.0-beta1:
+- Added /remove command to remove entities (paintings, items, minecarts,
+    boats, arrows, and primed TNT).
+- /butcher now works for slimes and ghasts and will no longer drop items.
+- The tool system has been overhauled so that when you use a tool, it gets
+    bound to your currently held item. For example, you could bind the tree
+    tool to a wooden sword and the brush tool to a diamond axe.
+- Brush commands have been broken up. Use /brush, /mat, and /size to adjust
+    a brush's settings. A different brush can be bound to different items.
+- //wand now gives the wand item directly.
+- New mask support allows you to filter the blocks that would be changed.
+    This currently only works for brushes.
+- Added some API methods.
+- Added multiple undo/redo.
+- Added -c flag to //distr to print to console.
+- Added //outset and //inset commands to quickly adjust the size of
+    the current selection.
+- Snapshot commands now are nested under /snap and /snapshot commands.
+- Changed super pickaxe mode command to /sp.
+- Added history size configuration option.
+- //size is currently /m due to a bug.
+- Added smooth brush.
+- Added /we version and /we reload.
+- Added 'no-op-permissions' setting for Bukkit.
+- Added polygonal regions. These are still in development as they are
+    a bit inaccurate at the moment.
+- Updated WorldEdit for Bukkit.
+- Improved parsing of block pattern/data syntax.
+- Improved block and item name list.
+- Improved debugging messages (if that's enabled).
+
 3.2.2:
 - Updated for Bukkit commit 8ccfad945663cd0ea60531b085748c81fc6fefb8.
 
