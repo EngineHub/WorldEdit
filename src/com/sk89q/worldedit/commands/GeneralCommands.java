@@ -79,7 +79,7 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = {"searchitem", "/l"},
+        aliases = {"searchitem", "/l", "search"},
         usage = "<query>",
         flags = "bi",
         desc = "Search for an item",
