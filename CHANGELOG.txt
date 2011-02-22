@@ -1,3 +1,9 @@
+4.0-beta2:
+- Fixed issue with too many commands being put into plugin.yml, causing
+    conflicts with other plugins.
+- //size works properly again.
+- /search is now an alias for /searchitem.
+
 4.0-beta1:
 - Added /remove command to remove entities (paintings, items, minecarts,
     boats, arrows, and primed TNT).
