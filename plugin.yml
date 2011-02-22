@@ -45,7 +45,7 @@ commands:
     searchitem:
         description: Search for an item
         usage: /<command> [-bi] <query>
-        aliases: ['/l']
+        aliases: ['/l', 'search']
     /limit:
         description: Modify block change limit
         usage: /<command> <limit>
@@ -163,10 +163,9 @@ commands:
     //count:
         description: Counts the number of a certain type of block
         usage: /<command> <block>
-    /m:
+    /size:
         description: Get information about the selection
         usage: /<command> 
-        aliases: ['//size']
     /shift:
         description: Shift the selection area
         usage: /<command> <amount> [direction]
