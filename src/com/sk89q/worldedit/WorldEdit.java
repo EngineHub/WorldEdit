@@ -853,61 +853,63 @@ public class WorldEdit {
             }
             
             String searchCmd = split[0].toLowerCase();
-            if (commands.hasCommand(searchCmd)
-                    || (config.noDoubleSlash && commands.hasCommand("/" + searchCmd))
-                    || (searchCmd.length() >= 2 && searchCmd.charAt(0) == '/'
-                            && commands.hasCommand(searchCmd.substring(1)))) {
-                if (config.noDoubleSlash && commands.hasCommand("/" + searchCmd)) {
-                    split[0] = "/" + split[0];
-                } else if (commands.hasCommand(searchCmd.substring(1))) {
-                    split[0] = split[0].substring(1);
-                }
             
-                LocalSession session = getSession(player);
-                BlockBag blockBag = session.getBlockBag(player);
-                
-                session.tellVersion(player);
-                
-                EditSession editSession =
-                        new EditSession(player.getWorld(),
-                                session.getBlockChangeLimit(), blockBag);
-                editSession.enableQueue();
-
-                long start = System.currentTimeMillis();
-
-                try {
-                    if (config.logCommands) {
-                        logger.info("WorldEdit: " + player.getName() + ": "
-                                + StringUtil.joinString(split, " "));
-                    }
-                    
-                    Object[] methodArgs = new Object[] {
-                            null, this, session, player, editSession
-                            };
-
-                    return commands.execute(split, player, methodArgs);
-                } finally {
-                    session.remember(editSession);
-                    editSession.flushQueue();
-
-                    if (config.profile) {
-                        long time = System.currentTimeMillis() - start;
-                        int changed = editSession.getBlockChangeCount();
-                        if (time > 0) {
-                            double throughput = changed / (time / 1000.0);
-                            player.printDebug((time / 1000.0) + "s elapsed (history: "
-                                    + changed + " changed; "
-                                    + Math.round(throughput) + " blocks/sec).");
-                        } else {
-                            player.printDebug((time / 1000.0) + "s elapsed.");
-                        }
-                    }
-                    
-                    flushBlockBag(player, editSession);
-                }
+            // Try to detect the command
+            if (commands.hasCommand(searchCmd)) {
+            } else if (config.noDoubleSlash && commands.hasCommand("/" + searchCmd)) {
+                split[0] = "/" + split[0];
+            } else if (commands.hasCommand(searchCmd.substring(1))) {
+                split[0] = split[0].substring(1);
             }
+            
+            // No command found!
+            if (!commands.hasCommand(split[0])) {
+                return false;
+            }
+        
+            LocalSession session = getSession(player);
+            BlockBag blockBag = session.getBlockBag(player);
+            
+            session.tellVersion(player);
+            
+            // Create an edit session
+            EditSession editSession =
+                    new EditSession(player.getWorld(),
+                            session.getBlockChangeLimit(), blockBag);
+            editSession.enableQueue();
 
-            return false;
+            long start = System.currentTimeMillis();
+
+            try {
+                if (config.logCommands) {
+                    logger.info("WorldEdit: " + player.getName() + ": "
+                            + StringUtil.joinString(split, " "));
+                }
+                
+                Object[] methodArgs = new Object[] {
+                        null, this, session, player, editSession
+                        };
+
+                return commands.execute(split, player, methodArgs);
+            } finally {
+                session.remember(editSession);
+                editSession.flushQueue();
+
+                if (config.profile) {
+                    long time = System.currentTimeMillis() - start;
+                    int changed = editSession.getBlockChangeCount();
+                    if (time > 0) {
+                        double throughput = changed / (time / 1000.0);
+                        player.printDebug((time / 1000.0) + "s elapsed (history: "
+                                + changed + " changed; "
+                                + Math.round(throughput) + " blocks/sec).");
+                    } else {
+                        player.printDebug((time / 1000.0) + "s elapsed.");
+                    }
+                }
+                
+                flushBlockBag(player, editSession);
+            }
         } catch (NumberFormatException e) {
             player.printError("Number expected; string given.");
         } catch (IncompleteRegionException e) {

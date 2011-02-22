@@ -425,7 +425,7 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/m", "//size"},
+        aliases = {"/size"},
         usage = "",
         desc = "Get information about the selection",
         min = 0,
