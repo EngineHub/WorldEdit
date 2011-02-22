@@ -26,6 +26,19 @@ import java.util.List;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.commands.ChunkCommands;
+import com.sk89q.worldedit.commands.ClipboardCommands;
+import com.sk89q.worldedit.commands.GeneralCommands;
+import com.sk89q.worldedit.commands.GenerationCommands;
+import com.sk89q.worldedit.commands.HistoryCommands;
+import com.sk89q.worldedit.commands.NavigationCommands;
+import com.sk89q.worldedit.commands.RegionCommands;
+import com.sk89q.worldedit.commands.ScriptingCommands;
+import com.sk89q.worldedit.commands.SelectionCommands;
+import com.sk89q.worldedit.commands.SnapshotUtilCommands;
+import com.sk89q.worldedit.commands.ToolCommands;
+import com.sk89q.worldedit.commands.ToolUtilCommands;
+import com.sk89q.worldedit.commands.UtilityCommands;
 
 public class DocumentationPrinter {
     public static void main(String[] args) throws IOException {
@@ -43,8 +56,22 @@ public class DocumentationPrinter {
     
     private static List<Class<?>> getCommandClasses(File dir) {
         List<Class<?>> classes = new ArrayList<Class<?>>();
+
+        classes.add(ChunkCommands.class);
+        classes.add(ClipboardCommands.class);
+        classes.add(GeneralCommands.class);
+        classes.add(GenerationCommands.class);
+        classes.add(HistoryCommands.class);
+        classes.add(NavigationCommands.class);
+        classes.add(RegionCommands.class);
+        classes.add(ScriptingCommands.class);
+        classes.add(SelectionCommands.class);
+        classes.add(SnapshotUtilCommands.class);
+        classes.add(ToolUtilCommands.class);
+        classes.add(ToolCommands.class);
+        classes.add(UtilityCommands.class);
         
-        for (File f : dir.listFiles()) {
+        /*for (File f : dir.listFiles()) {
             if (!f.getName().matches("^.*\\.java$")) {
                 continue;
             }
@@ -61,7 +88,7 @@ public class DocumentationPrinter {
             }
             
             classes.add(cls);
-        }
+        }*/
         
         return classes;
     }   
