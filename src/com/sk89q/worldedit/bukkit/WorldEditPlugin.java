@@ -29,6 +29,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.player.PlayerListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.bukkit.migration.PermissionsResolverManager;
 import com.sk89q.bukkit.migration.PermissionsResolverServerListener;
@@ -39,71 +42,134 @@ import com.sk89q.worldedit.regions.Region;
 /**
  * Plugin for Bukkit.
  * 
- * @author sk89qs
+ * @author sk89q
  */
 public class WorldEditPlugin extends JavaPlugin {
+    /**
+     * WorldEdit messages get sent here.
+     */
     private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     
-    ServerInterface server;
-    WorldEdit controller;
-    WorldEditAPI api;
+    /**
+     * The server interface that all server-related API goes through.
+     */
+    protected ServerInterface server;
+    /**
+     * Main WorldEdit instance.
+     */
+    protected WorldEdit controller;
+    /**
+     * Deprecated API.
+     */
+    protected WorldEditAPI api;
     
+    /**
+     * Holds the configuration for WorldEdit.
+     */
     private BukkitConfiguration config;
+    /**
+     * The permissions resolver in use.
+     */
     private PermissionsResolverManager perms;
-    
-    private WorldEditPlayerListener playerListener =
-        new WorldEditPlayerListener(this);
-    private WorldEditBlockListener blockListener =
-        new WorldEditBlockListener(this);
-    private PermissionsResolverServerListener permsListener;
 
+    /**
+     * Called on plugin enable.
+     */
     public void onEnable() {
-        logger.info("WorldEdit " + getDescription().getVersion() + " loaded.");
+        logger.info("WorldEdit " + getDescription().getVersion() + " enabled.");
         
+        // Make the data folders that WorldEdit uses
         getDataFolder().mkdirs();
 
+        // Create the default configuration file
         createDefaultConfiguration("config.yml");
         
+        // Set up configuration and such, including the permissions
+        // resolver
         config = new BukkitConfiguration(getConfiguration(), logger);
-        perms = new PermissionsResolverManager(getConfiguration(), getServer(),
-                "WorldEdit", logger);
-        permsListener = new PermissionsResolverServerListener(perms);
+        perms = new PermissionsResolverManager(
+                getConfiguration(), getServer(), "WorldEdit", logger);
+        
+        // Load the configuration
         loadConfiguration();
         
+        // Setup interfaces
         server = new BukkitServerInterface(this, getServer());
         controller = new WorldEdit(server, config);
         api = new WorldEditAPI(this);
 
+        // Now we can register events!
         registerEvents();
     }
 
+    /**
+     * Called on plugin disable.
+     */
     public void onDisable() {
         controller.clearSessions();
     }
+    
+    /**
+     * Loads and reloads all configuration.
+     */
+    protected void loadConfiguration() {
+        getConfiguration().load();
+        config.load();
+        perms.load();
+    }
 
-    private void registerEvents() {        
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT,
-                playerListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ANIMATION,
-                playerListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ITEM,
-                playerListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS,
-                playerListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED,
-                blockListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_RIGHTCLICKED,
-                blockListener, Priority.Normal, this);
+    /**
+     * Register the events used by WorldEdit.
+     */
+    protected void registerEvents() {        
+        PlayerListener playerListener = new WorldEditPlayerListener(this);
+        BlockListener blockListener = new WorldEditBlockListener(this);
         
-        permsListener.register(this);
+        registerEvent(Event.Type.PLAYER_QUIT, playerListener);
+        registerEvent(Event.Type.PLAYER_ANIMATION, playerListener);
+        registerEvent(Event.Type.PLAYER_ITEM, playerListener);
+        registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, playerListener);
+        registerEvent(Event.Type.BLOCK_DAMAGED, blockListener);
+        registerEvent(Event.Type.BLOCK_RIGHTCLICKED, blockListener);
+        
+        // The permissions resolver has some hooks of its own
+        (new PermissionsResolverServerListener(perms)).register(this);
     }
     
-    private void createDefaultConfiguration(String name) {
+    /**
+     * Register an event.
+     * 
+     * @param type
+     * @param listener
+     * @param priority
+     */
+    protected void registerEvent(Event.Type type, Listener listener, Priority priority) {
+        getServer().getPluginManager()
+                .registerEvent(type, listener, priority, this);
+    }
+    
+    /**
+     * Register an event at normal priority.
+     * 
+     * @param type
+     * @param listener
+     */
+    protected void registerEvent(Event.Type type, Listener listener) {
+        getServer().getPluginManager()
+                .registerEvent(type, listener, Priority.Normal, this);
+    }
+    
+    /**
+     * Create a default configuration file from the .jar.
+     * 
+     * @param name
+     */
+    protected void createDefaultConfiguration(String name) {
         File actual = new File(getDataFolder(), name);
         if (!actual.exists()) {
             
             InputStream input =
-                    WorldEditPlugin.class.getResourceAsStream("/defaults/" + name);
+                    this.getClass().getResourceAsStream("/defaults/" + name);
             if (input != null) {
                 FileOutputStream output = null;
 
@@ -115,8 +181,8 @@ public class WorldEditPlugin extends JavaPlugin {
                         output.write(buf, 0, length);
                     }
                     
-                    logger.info("WorldEdit: Default configuration file written: "
-                            + name);
+                    logger.info(getDescription().getName()
+                            + ": Default configuration file written: " + name);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
@@ -133,35 +199,23 @@ public class WorldEditPlugin extends JavaPlugin {
             }
         }
     }
-    
-    void loadConfiguration() {
-        getConfiguration().load();
-        config.load();
-        perms.load();
-    }
 
+    /**
+     * Called on WorldEdit command.
+     */
     @Override
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
+        // Since WorldEdit is primarily made for use in-game, we're going
+        // to ignore the situation where the command sender is not aplayer.
         if (!(sender instanceof Player)) {
             return true;
         }
         
         Player player = (Player)sender;
         
-        if (cmd.getName().equalsIgnoreCase("reloadwe")
-                && hasPermission(player, "worldedit.reload")) {
-            try {
-                loadConfiguration();
-                player.sendMessage("WorldEdit configuration reloaded.");
-            } catch (Throwable t) {
-                player.sendMessage("Error while reloading: "
-                        + t.getMessage());
-            }
-            
-            return true;
-        }
-        
+        // Add the command to the array because the underlying command handling
+        // code of WorldEdit expects it
         String[] split = new String[args.length + 1];
         System.arraycopy(args, 0, split, 1, args.length);
         split[0] = "/" + cmd.getName();
@@ -258,25 +312,41 @@ public class WorldEditPlugin extends JavaPlugin {
         }
     }
     
+    /**
+     * Get the API.
+     * 
+     * @return
+     */
     @Deprecated
     public WorldEditAPI getAPI() {
         return api;
     }
     
-    String[] getGroups(Player player) {
-        return perms.getGroups(player.getName());
+    /**
+     * Returns the configuration used by WorldEdit.
+     * 
+     * @return
+     */
+    public BukkitConfiguration getLocalConfiguration() {
+        return config;
     }
     
-    boolean inGroup(Player player, String group) {
-        return perms.inGroup(player.getName(), group);
+    /**
+     * Get the permissions resolver in use.
+     * 
+     * @return
+     */
+    public PermissionsResolverManager getPermissionsResolver() {
+        return perms;
     }
     
-    boolean hasPermission(Player player, String perm) {
-        return (!config.noOpPermissions && player.isOp())
-                || perms.hasPermission(player.getName(), perm);
-    }
-    
-    BukkitPlayer wrapPlayer(Player player) {
+    /**
+     * Used to wrap a Bukkit Player as a LocalPlayer.
+     * 
+     * @param player
+     * @return
+     */
+    public BukkitPlayer wrapPlayer(Player player) {
         return new BukkitPlayer(this, this.server, player);
     }
 }

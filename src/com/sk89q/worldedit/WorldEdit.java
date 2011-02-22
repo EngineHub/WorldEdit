@@ -19,13 +19,7 @@
 
 package com.sk89q.worldedit;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.logging.Level;
+import java.util.*;
 import java.util.logging.Logger;
 import java.io.*;
 import javax.script.ScriptException;
@@ -37,13 +31,8 @@ import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.commands.*;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.scripting.*;
-import com.sk89q.worldedit.tools.BlockTool;
-import com.sk89q.worldedit.tools.Tool;
-import com.sk89q.worldedit.tools.TraceTool;
-import com.sk89q.worldedit.masks.BlockTypeMask;
-import com.sk89q.worldedit.masks.ExistingBlockMask;
-import com.sk89q.worldedit.masks.InvertedBlockTypeMask;
-import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.tools.*;
+import com.sk89q.worldedit.masks.*;
 import com.sk89q.worldedit.patterns.*;
 
 /**
@@ -55,7 +44,14 @@ import com.sk89q.worldedit.patterns.*;
  * @author sk89q
  */
 public class WorldEdit {
+    /**
+     * Logger for debugging.
+     */
     public static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+    
+    /**
+     * Holds WorldEdit's version.
+     */
     private static String version;
     
     /**
@@ -881,7 +877,7 @@ public class WorldEdit {
 
                 try {
                     if (config.logCommands) {
-                        logger.log(Level.INFO, "WorldEdit: " + player.getName() + ": "
+                        logger.info("WorldEdit: " + player.getName() + ": "
                                 + StringUtil.joinString(split, " "));
                     }
                     
