@@ -22,9 +22,11 @@ package com.sk89q.worldedit.dev;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.NestedCommand;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.commands.ChunkCommands;
 import com.sk89q.worldedit.commands.ClipboardCommands;
@@ -99,7 +101,7 @@ public class DocumentationPrinter {
         try {
             stream = new FileOutputStream("wiki_permissions.txt");
             PrintStream print = new PrintStream(stream);
-            _writePermissionsWikiTable(print, commandClasses);
+            _writePermissionsWikiTable(print, commandClasses, "/");
         } finally {
             if (stream != null) {
                 stream.close();
@@ -108,7 +110,7 @@ public class DocumentationPrinter {
     }
     
     private static void _writePermissionsWikiTable(PrintStream stream,
-            List<Class<?>> commandClasses) {
+            List<Class<?>> commandClasses, String prefix) {
         
         for (Class<?> cls : commandClasses) {
             for (Method method : cls.getMethods()) {
@@ -119,7 +121,7 @@ public class DocumentationPrinter {
                 Command cmd = method.getAnnotation(Command.class);
     
                 stream.println("|-");
-                stream.print("| /" + cmd.aliases()[0]);
+                stream.print("| " + prefix + cmd.aliases()[0]);
                 stream.print(" || ");
     
                 if (method.isAnnotationPresent(CommandPermissions.class)) {
@@ -136,6 +138,16 @@ public class DocumentationPrinter {
                 }
     
                 stream.println();
+    
+                if (method.isAnnotationPresent(NestedCommand.class)) {
+                    NestedCommand nested =
+                        method.getAnnotation(NestedCommand.class);
+                    
+                    Class<?>[] nestedClasses = nested.value();
+                    _writePermissionsWikiTable(stream,
+                            Arrays.asList(nestedClasses),
+                            prefix + cmd.aliases()[0] + " ");
+                }
             }
         }
     }
