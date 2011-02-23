@@ -858,7 +858,8 @@ public class WorldEdit {
             if (commands.hasCommand(searchCmd)) {
             } else if (config.noDoubleSlash && commands.hasCommand("/" + searchCmd)) {
                 split[0] = "/" + split[0];
-            } else if (commands.hasCommand(searchCmd.substring(1))) {
+            } else if (split[0].length() >= 2 && split[0].charAt(0) == '/'
+                    && commands.hasCommand(searchCmd.substring(1))) {
                 split[0] = split[0].substring(1);
             }
             
