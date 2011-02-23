@@ -1,3 +1,6 @@
+4.0-beta4:
+- /b changed to /br.
+
 4.0-beta3:
 - Fixed BLOCK_DAMAGED bug.
 - Fixed command conflicts.
