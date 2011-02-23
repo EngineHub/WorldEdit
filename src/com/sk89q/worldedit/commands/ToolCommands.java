@@ -124,7 +124,7 @@ public class ToolCommands {
     }
 
     @Command(
-        aliases = {"brush", "b"},
+        aliases = {"brush", "br"},
         desc = "Brush tool"
     )
     @NestedCommand({BrushCommands.class})

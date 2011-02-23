@@ -221,7 +221,7 @@ commands:
     brush:
         description: Brush tool
         usage: /<command> 
-        aliases: ['b']
+        aliases: ['br']
     info:
         description: Block information tool
         usage: /<command> 
