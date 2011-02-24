@@ -79,6 +79,7 @@ public class ToolUtilCommands {
         min = 0,
         max = 1
     )
+    @CommandPermissions({"worldedit.brush.options.mask"})
     public static void mask(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -99,6 +100,7 @@ public class ToolUtilCommands {
         min = 1,
         max = 1
     )
+    @CommandPermissions({"worldedit.brush.options.material"})
     public static void material(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -114,6 +116,7 @@ public class ToolUtilCommands {
         min = 1,
         max = 1
     )
+    @CommandPermissions({"worldedit.brush.options.size"})
     public static void size(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
