@@ -1,3 +1,6 @@
+4.0-beta5;
+- Fixed permissions with brush commands.
+
 4.0-beta4:
 - /b changed to /br.
 
