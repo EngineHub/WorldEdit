@@ -65,10 +65,10 @@ public class CuboidRegionSelector implements RegionSelector {
 
     public void explainSecondarySelection(LocalPlayer player, Vector pos) {
         if (pos1 != null && pos2 != null) {
-            player.print("Second position set to " + pos1
+            player.print("Second position set to " + pos2
                     + " (" + region.getArea() + ").");
         } else {
-            player.print("Second position set to " + pos1 + ".");
+            player.print("Second position set to " + pos2 + ".");
         }
     }
     
