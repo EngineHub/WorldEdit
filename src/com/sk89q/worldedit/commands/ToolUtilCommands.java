@@ -63,7 +63,7 @@ public class ToolUtilCommands {
     }
 
     @Command(
-        aliases = {"tool", "t"},
+        aliases = {"tool"},
         desc = "Select a tool to bind"
     )
     @NestedCommand({ToolCommands.class})

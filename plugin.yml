@@ -198,7 +198,6 @@ commands:
     tool:
         description: Select a tool to bind
         usage: /<command> 
-        aliases: ['t']
     mat:
         description: Set the brush material
         usage: /<command> [pattern]
