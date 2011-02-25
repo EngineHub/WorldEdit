@@ -160,7 +160,7 @@ commands:
     /distr:
         description: Get the distribution of blocks in the selection
         usage: /<command> [-c] 
-    //count:
+    /count:
         description: Counts the number of a certain type of block
         usage: /<command> <block>
     /size:

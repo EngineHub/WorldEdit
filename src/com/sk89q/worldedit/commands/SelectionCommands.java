@@ -453,7 +453,7 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"//count"},
+        aliases = {"/count"},
         usage = "<block>",
         desc = "Counts the number of a certain type of block",
         min = 1,

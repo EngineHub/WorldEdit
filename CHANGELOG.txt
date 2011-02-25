@@ -1,4 +1,5 @@
 4.0-beta6:
+- Fixed //count being ///count.
 - Added a workaround to the fact that Minecraft no longer sends a block
     dig packet for bedrock. WorldEdit now detects if you're hitting bedrock,
     but it may not be entirely accurate (torches will trick it!).
