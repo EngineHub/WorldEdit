@@ -1,7 +1,7 @@
 // $Id$
 /*
  * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com>
+ * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,19 +19,10 @@
 
 package com.sk89q.minecraft.util.commands;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-/**
- * Indicates a list of permissions that should be checked.
- *
- * @author sk89q
- */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface CommandPermissions {
-    /**
-     * A list of permissions. Only one permission has to be met
-     * for the command to be permitted.
-     */
-    String[] value();
+public class WrappedCommandException extends CommandException {
+    private static final long serialVersionUID = -4075721444847778918L;
+    
+    public WrappedCommandException(Throwable t) {
+        super(t);
+    }
 }

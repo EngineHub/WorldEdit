@@ -23,7 +23,12 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.io.*;
 import javax.script.ScriptException;
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
+import com.sk89q.minecraft.util.commands.CommandUsageException;
 import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
+import com.sk89q.minecraft.util.commands.UnhandledCommandException;
+import com.sk89q.minecraft.util.commands.WrappedCommandException;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalSession.CompassMode;
 import com.sk89q.worldedit.bags.BlockBag;
@@ -67,7 +72,7 @@ public class WorldEdit {
     /**
      * List of commands.
      */
-    private CommandsManager commands;
+    private CommandsManager<LocalPlayer> commands;
     
     /**
      * Stores a list of WorldEdit sessions, keyed by players' names. Sessions
@@ -96,7 +101,12 @@ public class WorldEdit {
         this.server = server;
         this.config = config;
         
-        commands = new CommandsManager();
+        commands = new CommandsManager<LocalPlayer>() {
+            @Override
+            public boolean hasPermission(LocalPlayer player, String perm) {
+                return player.hasPermission(perm);
+            }
+        };
 
         commands.register(ChunkCommands.class);
         commands.register(ClipboardCommands.class);
@@ -886,12 +896,19 @@ public class WorldEdit {
                     logger.info("WorldEdit: " + player.getName() + ": "
                             + StringUtil.joinString(split, " "));
                 }
-                
-                Object[] methodArgs = new Object[] {
-                        null, this, session, player, editSession
-                        };
 
-                return commands.execute(split, player, methodArgs);
+                commands.execute(split, player, this, session, player, editSession);
+            } catch (CommandPermissionsException e) {
+                player.printError("You don't have permission to do this.");
+            } catch (MissingNestedCommandException e) {
+                player.printError(e.getUsage());
+            } catch (CommandUsageException e) {
+                player.printError(e.getMessage());
+                player.printError(e.getUsage());
+            } catch (WrappedCommandException e) {
+                throw e.getCause();
+            } catch (UnhandledCommandException e) {
+                return false;
             } finally {
                 session.remember(editSession);
                 editSession.flushQueue();
