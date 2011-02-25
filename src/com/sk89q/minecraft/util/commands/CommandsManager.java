@@ -346,6 +346,10 @@ public abstract class CommandsManager<T> {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
+                if (e.getCause() instanceof CommandException) {
+                    throw (CommandException) e.getCause();
+                }
+                
                 throw new WrappedCommandException(e.getCause());
             }
         }
