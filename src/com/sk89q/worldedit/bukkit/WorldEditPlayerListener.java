@@ -26,6 +26,9 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerItemEvent;
 import org.bukkit.event.player.PlayerListener;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.blocks.BlockID;
 
 /**
  * Handles all events thrown in relation to a Player
@@ -43,8 +46,18 @@ public class WorldEditPlayerListener extends PlayerListener {
      */
     @Override
     public void onPlayerAnimation(PlayerAnimationEvent event) {
+        LocalPlayer localPlayer = wrapPlayer(event.getPlayer());
+        
         if (event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
-            plugin.controller.handleArmSwing(wrapPlayer(event.getPlayer()));
+            plugin.controller.handleArmSwing(localPlayer);
+        }
+        
+        // As of Minecraft 1.3, a block dig packet is no longer sent for
+        // bedrock, so we have to do an (inaccurate) detection ourself
+        WorldVector pt = localPlayer.getBlockTrace(5);
+        if (pt != null && pt.getWorld().getBlockType(pt) == BlockID.BEDROCK) {
+            if (plugin.controller.handleBlockLeftClick(localPlayer, pt)) {
+            }
         }
     }
     
