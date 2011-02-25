@@ -1,4 +1,12 @@
-4.0-beta5;
+4.0-beta6:
+- Added a workaround to the fact that Minecraft no longer sends a block
+    dig packet for bedrock. WorldEdit now detects if you're hitting bedrock,
+    but it may not be entirely accurate (torches will trick it!).
+- Removed /t on request of Kainzo.
+- Fixed second position setting commands saying position one instead of two
+    when selecting cuboids.
+
+4.0-beta5:
 - Fixed permissions with brush commands.
 
 4.0-beta4:
