@@ -233,6 +233,25 @@ public class WorldEdit {
                 } else {
                     throw new InvalidItemException(arg, "Unknown cloth color '" + args1[1] + "'");
                 }
+            } else if (blockType == BlockType.STEP
+                    || blockType == BlockType.DOUBLE_STEP) {
+                BlockType dataType = BlockType.lookup(args1[1]);
+                
+                if (dataType != null) {
+                    if (dataType == BlockType.STONE) {
+                        data = 0;
+                    } else if (dataType == BlockType.SANDSTONE) {
+                        data = 1;
+                    } else if (dataType == BlockType.WOOD) {
+                        data = 2;
+                    } else if (dataType == BlockType.COBBLESTONE) {
+                        data = 3;
+                    } else {
+                        throw new InvalidItemException(arg, "Invalid step type '" + args1[1] + "'");
+                    }
+                } else {
+                    throw new InvalidItemException(arg, "Unknown step type '" + args1[1] + "'");
+                }
             } else {
                 throw new InvalidItemException(arg, "Unknown data value '" + args1[1] + "'");
             }

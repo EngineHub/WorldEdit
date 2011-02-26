@@ -55,6 +55,7 @@ public enum BlockType {
     DISPENSER(23, "Dispenser", "dispenser"),
     SANDSTONE(24, "Sandstone", "sandstone"),
     NOTE_BLOCK(25, "Note block", new String[] {"musicblock", "noteblock", "note", "music", "instrument"}),
+    BED(26, "Bed", "bed"),
     CLOTH(35, "Wool", new String[] {"cloth", "wool"}),
     YELLOW_FLOWER(37, "Yellow flower", new String[] {"yellowflower", "flower"}),
     RED_FLOWER(38, "Red rose", new String[] {"redflower", "redrose", "rose"}),
@@ -124,7 +125,9 @@ public enum BlockType {
     PORTAL(90, "Portal", "portal"),
     JACK_O_LANTERN(91, "Pumpkin (on)",
             new String[] {"pumpkinlighted", "pumpkinon", "litpumpkin", "jackolantern"}),
-    CAKE(92, "Cake", new String[] {"cake", "cakeblock"});
+    CAKE(92, "Cake", new String[] {"cake", "cakeblock"}),
+    REDSTONE_REPEATER_OFF(93, "Redstone repeater (off)", new String[] {"diode", "redstonerepeater", "repeater", "delayer"}),
+    REDSTONE_REPEATER_ON(94, "Redstone repeater (on)", new String[] {"diodeon", "redstonerepeateron", "repeateron", "delayeron"});
 
     /**
      * Stores a list of dropped blocks for blocks.
@@ -385,7 +388,10 @@ public enum BlockType {
                 || id == 17 // Wood
                 || id == 18 // Leaves
                 || id == 23 // Dispenser
+                || id == 26 // Bed
                 || id == 35 // Wool
+                || id == 43 // Double slab
+                || id == 44 // Slab
                 || id == 50 // Torch
                 || id == 53 // Wooden stairs
                 || id == 55 // Redstone wire
@@ -409,7 +415,9 @@ public enum BlockType {
                 || id == 81 // Cactus
                 || id == 86 // Pumpkin
                 || id == 91 // Jack-o-lantern
-                || id == 92; // Cake
+                || id == 92 // Cake
+                || id == 93 // Redstone repeater (off)
+                || id == 94; // Redstone repeater (on)
     }
     
     /**
