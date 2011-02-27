@@ -313,6 +313,38 @@ public class CuboidRegion implements Region {
      * @return iterator of points inside the region
      */
     public Iterator<BlockVector> iterator() {
-        throw new UnsupportedOperationException("Not implemented");
+        return new Iterator<BlockVector>() {
+            private Vector min = getMinimumPoint();
+            private Vector max = getMaximumPoint();
+            private int nextX = min.getBlockX();
+            private int nextY = min.getBlockY();
+            private int nextZ = min.getBlockZ();
+            
+            public boolean hasNext() {
+                return (nextX != Integer.MIN_VALUE);
+            }
+            
+            public BlockVector next() {
+                if (!hasNext()) throw new java.util.NoSuchElementException();
+                BlockVector answer = new BlockVector(nextX, nextY, nextZ);
+                nextX++;
+                if (nextX > max.getBlockX()) {
+                    nextX = min.getBlockX();
+                    nextY++;
+                    if (nextY > max.getBlockY()) {
+                        nextY = min.getBlockY();
+                        nextZ++;
+                        if (nextZ > max.getBlockZ()) {
+                            nextX = Integer.MIN_VALUE;
+                        }
+                    }
+                }
+                return answer;
+            }
+            
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 }
