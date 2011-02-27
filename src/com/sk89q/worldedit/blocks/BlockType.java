@@ -434,6 +434,24 @@ public enum BlockType {
     }
 
     /**
+     * Returns true if a block uses redstone in some way.
+     *
+     * @param id
+     * @return
+     */
+    public static boolean isRedstoneBlock(int id) {
+        return id == 69 // Lever
+                || id == 70 // Stone pressure plate
+                || id == 72 // Wood pressure plate
+                || id == 76 // Redstone torch
+                || id == 75 // Redstone torch
+                || id == 77 // Stone button
+                || id == 55 // Redstone wire
+                || id == 64 // Wooden door
+                || id == 71; // Iron door
+    }
+
+    /**
      * Get the block or item that would have been dropped. If nothing is
      * dropped, 0 will be returned. If the block should not be destroyed
      * (i.e. bedrock), -1 will be returned.
