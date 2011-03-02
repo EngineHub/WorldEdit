@@ -21,6 +21,7 @@ package com.sk89q.bukkit.migration;
 
 import java.util.logging.Logger;
 import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.config.Configuration;
 
 public class PermissionsResolverManager implements PermissionsResolver {
@@ -40,6 +41,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     }
     
     public void findResolver() {
+        if (tryPluginPermissionsResolver()) return;
         if (tryGroupsUsers()) return;
         if (tryNijiPermissions()) return;
         if (tryFlatFilePermissions()) return;
@@ -76,6 +78,31 @@ public class PermissionsResolverManager implements PermissionsResolver {
         }
         
         return false;
+    }
+    
+    private boolean tryPluginPermissionsResolver() {
+        for (Plugin plugin : server.getPluginManager().getPlugins()) {
+            if (plugin instanceof PermissionsProvider) {
+                perms = new PluginPermissionsResolver(
+                        (PermissionsProvider) plugin);
+                logger.info(name + ": Using plugin '"
+                        + plugin.getDescription().getName() + " for permissions.");
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public void setPluginPermissionsResolver(Plugin plugin) {
+        if (!(plugin instanceof PermissionsProvider)) {
+            return;
+        }
+        
+        perms = new PluginPermissionsResolver(
+                (PermissionsProvider) plugin);
+        logger.info(name + ": Using plugin '"
+                + plugin.getDescription().getName() + " for permissions.");
     }
 
     public void load() {

@@ -39,9 +39,12 @@ public class PermissionsResolverServerListener extends ServerListener {
      */
     @Override
     public void onPluginEnabled(PluginEvent event) {
-        String name = event.getPlugin().getDescription().getName();
+        Plugin plugin = event.getPlugin();
+        String name = plugin.getDescription().getName();
         
-        if (name.equalsIgnoreCase("GroupUsers") || name.equalsIgnoreCase("Permissions")) {
+        if (plugin instanceof PermissionsProvider) {
+            manager.setPluginPermissionsResolver(plugin);
+        } else if (name.equalsIgnoreCase("GroupUsers") || name.equalsIgnoreCase("Permissions")) {
             manager.findResolver();
         }
     }
@@ -53,9 +56,12 @@ public class PermissionsResolverServerListener extends ServerListener {
      */
     @Override
     public void onPluginDisabled(PluginEvent event) {
-        String name = event.getPlugin().getDescription().getName();
+        Plugin plugin = event.getPlugin();
+        String name = plugin.getDescription().getName();
         
-        if (name.equalsIgnoreCase("GroupUsers") || name.equalsIgnoreCase("Permissions")) {
+        if (plugin instanceof PermissionsProvider
+                || name.equalsIgnoreCase("GroupUsers")
+                || name.equalsIgnoreCase("Permissions")) {
             manager.findResolver();
         }
     }
