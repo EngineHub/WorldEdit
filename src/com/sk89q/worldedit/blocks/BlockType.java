@@ -51,7 +51,7 @@ public enum BlockType {
     SPONGE(19, "Sponge", "sponge"),
     GLASS(20, "Glass", "glass"),
     LAPIS_LAZULI_ORE(21, "Lapis lazuli ore", new String[] {"lapislazuliore", "blueore"}),
-    LAPIS_LAZULI(22, "Lapis lazuli", new String[] {"lapislazuli", "lapislazuliblock", "blue", "bluerock"}),
+    LAPIS_LAZULI(22, "Lapis lazuli", new String[] {"lapislazuli", "lapislazuliblock", "bluerock"}),
     DISPENSER(23, "Dispenser", "dispenser"),
     SANDSTONE(24, "Sandstone", "sandstone"),
     NOTE_BLOCK(25, "Note block", new String[] {"musicblock", "noteblock", "note", "music", "instrument"}),
