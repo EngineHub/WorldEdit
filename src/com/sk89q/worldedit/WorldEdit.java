@@ -198,7 +198,7 @@ public class WorldEdit {
         String[] args1 = args0[0].split(":", 2);
         String testID = args1[0];
         
-        int data;
+        int data = -1;
 
         // Attempt to parse the item ID or otherwise resolve an item/block
         // name to its numeric ID
@@ -215,45 +215,55 @@ public class WorldEdit {
         }
 
         if (blockType == null) {
-            throw new UnknownItemException(arg);
+            // Maybe it's a cloth
+            ClothColor col = ClothColor.lookup(testID);
+            
+            if (col != null) {
+                blockType = BlockType.fromID(35);
+                data = col.getID();
+            } else {
+                throw new UnknownItemException(arg);
+            }
         }
         
-        // Parse the block data (optional)
-        try {
-            data = args1.length > 1 ? Integer.parseInt(args1[1]) : 0;
-            if (data > 15 || data < 0) {
-                data = 0;
-            }
-        } catch (NumberFormatException e) {
-            if (blockType == BlockType.CLOTH) {
-                ClothColor col = ClothColor.lookup(args1[1]);
-                
-                if (col != null) {
-                    data = col.getID();
-                } else {
-                    throw new InvalidItemException(arg, "Unknown cloth color '" + args1[1] + "'");
+        if (data == -1) { // Block data not yet detected
+            // Parse the block data (optional)
+            try {
+                data = args1.length > 1 ? Integer.parseInt(args1[1]) : 0;
+                if (data > 15 || data < 0) {
+                    data = 0;
                 }
-            } else if (blockType == BlockType.STEP
-                    || blockType == BlockType.DOUBLE_STEP) {
-                BlockType dataType = BlockType.lookup(args1[1]);
-                
-                if (dataType != null) {
-                    if (dataType == BlockType.STONE) {
-                        data = 0;
-                    } else if (dataType == BlockType.SANDSTONE) {
-                        data = 1;
-                    } else if (dataType == BlockType.WOOD) {
-                        data = 2;
-                    } else if (dataType == BlockType.COBBLESTONE) {
-                        data = 3;
+            } catch (NumberFormatException e) {
+                if (blockType == BlockType.CLOTH) {
+                    ClothColor col = ClothColor.lookup(args1[1]);
+                    
+                    if (col != null) {
+                        data = col.getID();
                     } else {
-                        throw new InvalidItemException(arg, "Invalid step type '" + args1[1] + "'");
+                        throw new InvalidItemException(arg, "Unknown cloth color '" + args1[1] + "'");
+                    }
+                } else if (blockType == BlockType.STEP
+                        || blockType == BlockType.DOUBLE_STEP) {
+                    BlockType dataType = BlockType.lookup(args1[1]);
+                    
+                    if (dataType != null) {
+                        if (dataType == BlockType.STONE) {
+                            data = 0;
+                        } else if (dataType == BlockType.SANDSTONE) {
+                            data = 1;
+                        } else if (dataType == BlockType.WOOD) {
+                            data = 2;
+                        } else if (dataType == BlockType.COBBLESTONE) {
+                            data = 3;
+                        } else {
+                            throw new InvalidItemException(arg, "Invalid step type '" + args1[1] + "'");
+                        }
+                    } else {
+                        throw new InvalidItemException(arg, "Unknown step type '" + args1[1] + "'");
                     }
                 } else {
-                    throw new InvalidItemException(arg, "Unknown step type '" + args1[1] + "'");
+                    throw new InvalidItemException(arg, "Unknown data value '" + args1[1] + "'");
                 }
-            } else {
-                throw new InvalidItemException(arg, "Unknown data value '" + args1[1] + "'");
             }
         }
 
