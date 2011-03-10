@@ -1,4 +1,6 @@
-package org.jnbt;
+package com.sk89q.jnbt;
+
+import java.nio.charset.Charset;
 
 /*
  * JNBT License
@@ -34,40 +36,37 @@ package org.jnbt;
  */
 
 /**
- * The <code>TAG_Double</code> tag.
+ * A class which holds constant values.
  * @author Graham Edgecombe
  *
  */
-public final class DoubleTag extends Tag {
+public final class NBTConstants {
 	
 	/**
-	 * The value.
+	 * The character set used by NBT (UTF-8).
 	 */
-	private final double value;
-
+	public static final Charset CHARSET = Charset.forName("UTF-8");
+	
 	/**
-	 * Creates the tag.
-	 * @param name The name.
-	 * @param value The value.
+	 * Tag type constants.
 	 */
-	public DoubleTag(String name, double value) {
-		super(name);
-		this.value = value;
-	}
+	public static final int TYPE_END = 0,
+		TYPE_BYTE = 1,
+		TYPE_SHORT = 2,
+		TYPE_INT = 3,
+		TYPE_LONG = 4,
+		TYPE_FLOAT = 5,
+		TYPE_DOUBLE = 6,
+		TYPE_BYTE_ARRAY = 7,
+		TYPE_STRING = 8,
+		TYPE_LIST = 9,
+		TYPE_COMPOUND = 10;
 	
-	@Override
-	public Double getValue() {
-		return value;
-	}
-	
-	@Override
-	public String toString() {
-		String name = getName();
-		String append = "";
-		if(name != null && !name.equals("")) {
-			append = "(\"" + this.getName() + "\")";
-		}
-		return "TAG_Double" + append + ": " + value;
+	/**
+	 * Default private constructor.
+	 */
+	private NBTConstants() {
+		
 	}
 
 }

@@ -21,12 +21,15 @@ package com.sk89q.worldedit.snapshots;
 
 import com.sk89q.worldedit.data.*;
 import java.io.*;
+import java.util.logging.Logger;
 
 /**
  *
  * @author sk89q
  */
 public class Snapshot {
+    protected static Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+    
     /**
      * Stores snapshot file.
      */
@@ -57,7 +60,7 @@ public class Snapshot {
     public ChunkStore getChunkStore() throws IOException, DataException {
         if (file.getName().toLowerCase().endsWith(".zip")) {
             try {
-                return new TrueZipLegacyAlphaChunkStore(file);
+                return new TrueZipLegacyChunkStore(file);
             } catch (NoClassDefFoundError e) {
                 return new ZippedAlphaChunkStore(file);
             }
@@ -65,12 +68,12 @@ public class Snapshot {
                 || file.getName().toLowerCase().endsWith(".tar.gz")
                 || file.getName().toLowerCase().endsWith(".tar")) {
             try {
-                return new TrueZipAlphaChunkStore(file);
+                return new TrueZipLegacyChunkStore(file);
             } catch (NoClassDefFoundError e) {
                 throw new DataException("TrueZIP is required for .tar support");
             }
         } else {
-            return new AlphaChunkStore(file);
+            return new FileLegacyChunkStore(file);
         }
     }
 

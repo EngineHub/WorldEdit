@@ -23,9 +23,9 @@ package com.sk89q.worldedit.data;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.*;
-import org.jnbt.*;
 
 /**
  * Represents a chunk.

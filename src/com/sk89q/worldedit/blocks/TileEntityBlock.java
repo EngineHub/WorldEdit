@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.data.*;
 import java.util.Map;
-import org.jnbt.Tag;
 
 /**
  * A class implementing this interface has extra TileEntityBlock data to store.

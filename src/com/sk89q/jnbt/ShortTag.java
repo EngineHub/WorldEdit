@@ -1,4 +1,6 @@
-package org.jnbt;
+package com.sk89q.jnbt;
+
+import com.sk89q.jnbt.Tag;
 
 /*
  * JNBT License
@@ -34,29 +36,29 @@ package org.jnbt;
  */
 
 /**
- * The <code>TAG_String</code> tag.
+ * The <code>TAG_Short</code> tag.
  * @author Graham Edgecombe
  *
  */
-public final class StringTag extends Tag {
+public final class ShortTag extends Tag {
 
 	/**
 	 * The value.
 	 */
-	private final String value;
+	private final short value;
 	
 	/**
 	 * Creates the tag.
 	 * @param name The name.
 	 * @param value The value.
 	 */
-	public StringTag(String name, String value) {
+	public ShortTag(String name, short value) {
 		super(name);
 		this.value = value;
 	}
 	
 	@Override
-	public String getValue() {
+	public Short getValue() {
 		return value;
 	}
 	
@@ -67,7 +69,7 @@ public final class StringTag extends Tag {
 		if(name != null && !name.equals("")) {
 			append = "(\"" + this.getName() + "\")";
 		}
-		return "TAG_String" + append + ": " + value;
+		return "TAG_Short" + append + ": " + value;
 	}
 
 }

@@ -1,4 +1,6 @@
-package org.jnbt;
+package com.sk89q.jnbt;
+
+import com.sk89q.jnbt.Tag;
 
 /*
  * JNBT License
@@ -34,29 +36,29 @@ package org.jnbt;
  */
 
 /**
- * The <code>TAG_Long</code> tag.
+ * The <code>TAG_Int</code> tag.
  * @author Graham Edgecombe
  *
  */
-public final class LongTag extends Tag {
+public final class IntTag extends Tag {
 
 	/**
 	 * The value.
 	 */
-	private final long value;
+	private final int value;
 	
 	/**
 	 * Creates the tag.
 	 * @param name The name.
 	 * @param value The value.
 	 */
-	public LongTag(String name, long value) {
+	public IntTag(String name, int value) {
 		super(name);
 		this.value = value;
 	}
-	
+
 	@Override
-	public Long getValue() {
+	public Integer getValue() {
 		return value;
 	}
 	
@@ -67,7 +69,7 @@ public final class LongTag extends Tag {
 		if(name != null && !name.equals("")) {
 			append = "(\"" + this.getName() + "\")";
 		}
-		return "TAG_Long" + append + ": " + value;
+		return "TAG_Int" + append + ": " + value;
 	}
 
 }

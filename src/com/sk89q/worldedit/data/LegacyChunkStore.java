@@ -19,10 +19,13 @@
 
 package com.sk89q.worldedit.data;
 
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.NBTInputStream;
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.*;
 import java.io.*;
 import java.util.Map;
-import org.jnbt.*;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Represents chunk stores that use Alpha's file format for storing chunks.
@@ -31,7 +34,7 @@ import org.jnbt.*;
  *
  * @author sk89q
  */
-public abstract class NestedFileChunkStore extends ChunkStore {
+public abstract class LegacyChunkStore extends ChunkStore {
     /**
      * Get the filename of a chunk.
      * 
@@ -82,7 +85,8 @@ public abstract class NestedFileChunkStore extends ChunkStore {
                 + "." + Integer.toString(z, 36) + ".dat";
 
         InputStream stream = getInputStream(folder1, folder2, filename);
-        NBTInputStream nbt = new NBTInputStream(stream);
+        NBTInputStream nbt = new NBTInputStream(
+                new GZIPInputStream(stream));
         Tag tag;
 
         try {

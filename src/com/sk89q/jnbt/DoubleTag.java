@@ -1,4 +1,6 @@
-package org.jnbt;
+package com.sk89q.jnbt;
+
+import com.sk89q.jnbt.Tag;
 
 /*
  * JNBT License
@@ -33,33 +35,30 @@ package org.jnbt;
  * POSSIBILITY OF SUCH DAMAGE. 
  */
 
-import java.util.Collections;
-import java.util.Map;
-
 /**
- * The <code>TAG_Compound</code> tag.
+ * The <code>TAG_Double</code> tag.
  * @author Graham Edgecombe
  *
  */
-public final class CompoundTag extends Tag {
+public final class DoubleTag extends Tag {
 	
 	/**
 	 * The value.
 	 */
-	private final Map<String, Tag> value;
-	
+	private final double value;
+
 	/**
 	 * Creates the tag.
 	 * @param name The name.
 	 * @param value The value.
 	 */
-	public CompoundTag(String name, Map<String, Tag> value) {
+	public DoubleTag(String name, double value) {
 		super(name);
-		this.value = Collections.unmodifiableMap(value);
+		this.value = value;
 	}
-
+	
 	@Override
-	public Map<String, Tag> getValue() {
+	public Double getValue() {
 		return value;
 	}
 	
@@ -70,13 +69,7 @@ public final class CompoundTag extends Tag {
 		if(name != null && !name.equals("")) {
 			append = "(\"" + this.getName() + "\")";
 		}
-		StringBuilder bldr = new StringBuilder();
-		bldr.append("TAG_Compound" + append + ": " + value.size() + " entries\r\n{\r\n");
-		for(Map.Entry<String, Tag> entry : value.entrySet()) {
-			bldr.append("   " + entry.getValue().toString().replaceAll("\r\n", "\r\n   ") + "\r\n");
-		}
-		bldr.append("}");
-		return bldr.toString();
+		return "TAG_Double" + append + ": " + value;
 	}
 
 }

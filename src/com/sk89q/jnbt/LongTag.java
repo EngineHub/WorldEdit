@@ -1,4 +1,6 @@
-package org.jnbt;
+package com.sk89q.jnbt;
+
+import com.sk89q.jnbt.Tag;
 
 /*
  * JNBT License
@@ -33,48 +35,30 @@ package org.jnbt;
  * POSSIBILITY OF SUCH DAMAGE. 
  */
 
-import java.util.Collections;
-import java.util.List;
-
 /**
- * The <code>TAG_List</code> tag.
+ * The <code>TAG_Long</code> tag.
  * @author Graham Edgecombe
  *
  */
-public final class ListTag extends Tag {
+public final class LongTag extends Tag {
 
-	/**
-	 * The type.
-	 */
-	private final Class<? extends Tag> type;
-	
 	/**
 	 * The value.
 	 */
-	private final List<Tag> value;
+	private final long value;
 	
 	/**
 	 * Creates the tag.
 	 * @param name The name.
-	 * @param type The type of item in the list.
 	 * @param value The value.
 	 */
-	public ListTag(String name, Class<? extends Tag> type, List<Tag> value) {
+	public LongTag(String name, long value) {
 		super(name);
-		this.type = type;
-		this.value = Collections.unmodifiableList(value);
-	}
-	
-	/**
-	 * Gets the type of item in this list.
-	 * @return The type of item in this list.
-	 */
-	public Class<? extends Tag> getType() {
-		return type;
+		this.value = value;
 	}
 	
 	@Override
-	public List<Tag> getValue() {
+	public Long getValue() {
 		return value;
 	}
 	
@@ -85,13 +69,7 @@ public final class ListTag extends Tag {
 		if(name != null && !name.equals("")) {
 			append = "(\"" + this.getName() + "\")";
 		}
-		StringBuilder bldr = new StringBuilder();
-		bldr.append("TAG_List" + append + ": " + value.size() + " entries of type " + NBTUtils.getTypeName(type) + "\r\n{\r\n");
-		for(Tag t : value) {
-			bldr.append("   " + t.toString().replaceAll("\r\n", "\r\n   ") + "\r\n");
-		}
-		bldr.append("}");
-		return bldr.toString();
+		return "TAG_Long" + append + ": " + value;
 	}
 
 }

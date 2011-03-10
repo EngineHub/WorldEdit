@@ -26,7 +26,7 @@ import java.io.*;
  *
  * @author sk89q
  */
-public class AlphaChunkStore extends NestedFileChunkStore {
+public class FileLegacyChunkStore extends LegacyChunkStore {
     /**
      * Folder to read from.
      */
@@ -38,7 +38,7 @@ public class AlphaChunkStore extends NestedFileChunkStore {
      * 
      * @param path
      */
-    public AlphaChunkStore(File path) {
+    public FileLegacyChunkStore(File path) {
         this.path = path;
     }
 

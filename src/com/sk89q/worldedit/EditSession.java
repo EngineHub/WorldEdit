@@ -2109,7 +2109,7 @@ public class EditSession {
 
     /**
      * Returns the highest solid 'terrain' block which can occur naturally.
-     * Looks at: 1, 2, 3, 7, 12, 13, 14, 15, 16, 56, 73, 74, 87, 88, 89
+     * Looks at: 1, 2, 3, 7, 12, 13, 14, 15, 16, 56, 73, 74, 87, 88, 89, 82
      * 
      * @param x
      * @param z
@@ -2131,6 +2131,7 @@ public class EditSession {
                     || id == 7 // bedrock
                     || id == 12 // sand
                     || id == 13 // gravel
+                    || id == 82 // clay
                     // hell
                     || id == 87 // netherstone
                     || id == 88 // slowsand

@@ -1,4 +1,4 @@
-package org.jnbt;
+package com.sk89q.jnbt;
 
 /*
  * JNBT License
@@ -41,7 +41,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
+import com.sk89q.jnbt.ByteArrayTag;
+import com.sk89q.jnbt.ByteTag;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.DoubleTag;
+import com.sk89q.jnbt.EndTag;
+import com.sk89q.jnbt.FloatTag;
+import com.sk89q.jnbt.IntTag;
+import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.LongTag;
+import com.sk89q.jnbt.NBTConstants;
+import com.sk89q.jnbt.NBTUtils;
+import com.sk89q.jnbt.ShortTag;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
 
 /**
  * <p>This class reads <strong>NBT</strong>, or
@@ -68,7 +81,7 @@ public final class NBTInputStream implements Closeable {
 	 * @throws IOException if an I/O error occurs.
 	 */
 	public NBTInputStream(InputStream is) throws IOException {
-		this.is = new DataInputStream(new GZIPInputStream(is));
+		this.is = new DataInputStream(is);
 	}
 	
 	/**

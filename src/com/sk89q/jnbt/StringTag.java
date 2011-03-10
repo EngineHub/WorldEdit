@@ -1,4 +1,6 @@
-package org.jnbt;
+package com.sk89q.jnbt;
+
+import com.sk89q.jnbt.Tag;
 
 /*
  * JNBT License
@@ -34,48 +36,40 @@ package org.jnbt;
  */
 
 /**
- * The <code>TAG_Byte_Array</code> tag.
+ * The <code>TAG_String</code> tag.
  * @author Graham Edgecombe
  *
  */
-public final class ByteArrayTag extends Tag {
-	
+public final class StringTag extends Tag {
+
 	/**
 	 * The value.
 	 */
-	private final byte[] value;
+	private final String value;
 	
 	/**
 	 * Creates the tag.
 	 * @param name The name.
 	 * @param value The value.
 	 */
-	public ByteArrayTag(String name, byte[] value) {
+	public StringTag(String name, String value) {
 		super(name);
 		this.value = value;
 	}
 	
 	@Override
-	public byte[] getValue() {
+	public String getValue() {
 		return value;
 	}
 	
 	@Override
 	public String toString() {
-		StringBuilder hex = new StringBuilder();
-		for(byte b : value) {
-			String hexDigits = Integer.toHexString(b).toUpperCase();
-			if(hexDigits.length() == 1) {
-				hex.append("0");
-			}
-			hex.append(hexDigits).append(" ");
-		}
 		String name = getName();
 		String append = "";
 		if(name != null && !name.equals("")) {
 			append = "(\"" + this.getName() + "\")";
 		}
-		return "TAG_Byte_Array" + append + ": " + hex.toString();
+		return "TAG_String" + append + ": " + value;
 	}
 
 }

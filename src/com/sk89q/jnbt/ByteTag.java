@@ -1,4 +1,6 @@
-package org.jnbt;
+package com.sk89q.jnbt;
+
+import com.sk89q.jnbt.Tag;
 
 /*
  * JNBT License
@@ -34,29 +36,29 @@ package org.jnbt;
  */
 
 /**
- * The <code>TAG_Float</code> tag.
+ * The <code>TAG_Byte</code> tag.
  * @author Graham Edgecombe
  *
  */
-public final class FloatTag extends Tag {
+public final class ByteTag extends Tag {
 
 	/**
 	 * The value.
 	 */
-	private final float value;
+	private final byte value;
 	
 	/**
 	 * Creates the tag.
 	 * @param name The name.
 	 * @param value The value.
 	 */
-	public FloatTag(String name, float value) {
+	public ByteTag(String name, byte value) {
 		super(name);
 		this.value = value;
 	}
-	
+
 	@Override
-	public Float getValue() {
+	public Byte getValue() {
 		return value;
 	}
 	
@@ -67,7 +69,7 @@ public final class FloatTag extends Tag {
 		if(name != null && !name.equals("")) {
 			append = "(\"" + this.getName() + "\")";
 		}
-		return "TAG_Float" + append + ": " + value;
+		return "TAG_Byte" + append + ": " + value;
 	}
-
+	
 }

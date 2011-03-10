@@ -1,4 +1,4 @@
-package org.jnbt;
+package com.sk89q.jnbt;
 
 /*
  * JNBT License
@@ -33,38 +33,67 @@ package org.jnbt;
  * POSSIBILITY OF SUCH DAMAGE. 
  */
 
+import java.util.Collections;
+import java.util.List;
+import com.sk89q.jnbt.NBTUtils;
+import com.sk89q.jnbt.Tag;
+
 /**
- * Represents a single NBT tag.
+ * The <code>TAG_List</code> tag.
  * @author Graham Edgecombe
  *
  */
-public abstract class Tag {
-	
+public final class ListTag extends Tag {
+
 	/**
-	 * The name of this tag.
+	 * The type.
 	 */
-	private final String name;
+	private final Class<? extends Tag> type;
 	
 	/**
-	 * Creates the tag with the specified name.
+	 * The value.
+	 */
+	private final List<Tag> value;
+	
+	/**
+	 * Creates the tag.
 	 * @param name The name.
+	 * @param type The type of item in the list.
+	 * @param value The value.
 	 */
-	public Tag(String name) {
-		this.name = name;
+	public ListTag(String name, Class<? extends Tag> type, List<Tag> value) {
+		super(name);
+		this.type = type;
+		this.value = Collections.unmodifiableList(value);
 	}
 	
 	/**
-	 * Gets the name of this tag.
-	 * @return The name of this tag.
+	 * Gets the type of item in this list.
+	 * @return The type of item in this list.
 	 */
-	public final String getName() {
-		return name;
+	public Class<? extends Tag> getType() {
+		return type;
 	}
 	
-	/**
-	 * Gets the value of this tag.
-	 * @return The value of this tag.
-	 */
-	public abstract Object getValue();
+	@Override
+	public List<Tag> getValue() {
+		return value;
+	}
+	
+	@Override
+	public String toString() {
+		String name = getName();
+		String append = "";
+		if(name != null && !name.equals("")) {
+			append = "(\"" + this.getName() + "\")";
+		}
+		StringBuilder bldr = new StringBuilder();
+		bldr.append("TAG_List" + append + ": " + value.size() + " entries of type " + NBTUtils.getTypeName(type) + "\r\n{\r\n");
+		for(Tag t : value) {
+			bldr.append("   " + t.toString().replaceAll("\r\n", "\r\n   ") + "\r\n");
+		}
+		bldr.append("}");
+		return bldr.toString();
+	}
 
 }

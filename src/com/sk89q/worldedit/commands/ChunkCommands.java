@@ -25,7 +25,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.data.NestedFileChunkStore;
+import com.sk89q.worldedit.data.LegacyChunkStore;
 
 /**
  * Chunk tools.
@@ -73,7 +73,7 @@ public class ChunkCommands {
         Set<Vector2D> chunks = session.getSelection(player.getWorld()).getChunks();
 
         for (Vector2D chunk : chunks) {
-            player.print(NestedFileChunkStore.getFilename(chunk));
+            player.print(LegacyChunkStore.getFilename(chunk));
         }
     }
 
@@ -109,7 +109,7 @@ public class ChunkCommands {
                 writer.write("PAUSE\r\n");
 
                 for (Vector2D chunk : chunks) {
-                    String filename = NestedFileChunkStore.getFilename(chunk);
+                    String filename = LegacyChunkStore.getFilename(chunk);
                     writer.write("ECHO " + filename + "\r\n");
                     writer.write("DEL \"world/" + filename + "\"\r\n");
                 }
@@ -138,7 +138,7 @@ public class ChunkCommands {
                 writer.write("read -p \"Press any key to continue...\"\n");
 
                 for (Vector2D chunk : chunks) {
-                    String filename = NestedFileChunkStore.getFilename(chunk);
+                    String filename = LegacyChunkStore.getFilename(chunk);
                     writer.write("echo " + filename + "\n");
                     writer.write("rm \"world/" + filename + "\"\n");
                 }

@@ -1,4 +1,4 @@
-package org.jnbt;
+package com.sk89q.jnbt;
 
 /*
  * JNBT License
@@ -33,30 +33,34 @@ package org.jnbt;
  * POSSIBILITY OF SUCH DAMAGE. 
  */
 
+import java.util.Collections;
+import java.util.Map;
+import com.sk89q.jnbt.Tag;
+
 /**
- * The <code>TAG_Byte</code> tag.
+ * The <code>TAG_Compound</code> tag.
  * @author Graham Edgecombe
  *
  */
-public final class ByteTag extends Tag {
-
+public final class CompoundTag extends Tag {
+	
 	/**
 	 * The value.
 	 */
-	private final byte value;
+	private final Map<String, Tag> value;
 	
 	/**
 	 * Creates the tag.
 	 * @param name The name.
 	 * @param value The value.
 	 */
-	public ByteTag(String name, byte value) {
+	public CompoundTag(String name, Map<String, Tag> value) {
 		super(name);
-		this.value = value;
+		this.value = Collections.unmodifiableMap(value);
 	}
 
 	@Override
-	public Byte getValue() {
+	public Map<String, Tag> getValue() {
 		return value;
 	}
 	
@@ -67,7 +71,13 @@ public final class ByteTag extends Tag {
 		if(name != null && !name.equals("")) {
 			append = "(\"" + this.getName() + "\")";
 		}
-		return "TAG_Byte" + append + ": " + value;
+		StringBuilder bldr = new StringBuilder();
+		bldr.append("TAG_Compound" + append + ": " + value.size() + " entries\r\n{\r\n");
+		for(Map.Entry<String, Tag> entry : value.entrySet()) {
+			bldr.append("   " + entry.getValue().toString().replaceAll("\r\n", "\r\n   ") + "\r\n");
+		}
+		bldr.append("}");
+		return bldr.toString();
 	}
-	
+
 }

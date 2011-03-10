@@ -19,14 +19,15 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
-import org.jnbt.*;
 import java.io.*;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 /**
  * The clipboard remembers the state of a cuboid region.
@@ -381,7 +382,8 @@ public class CuboidClipboard {
     public static CuboidClipboard loadSchematic(File path)
             throws DataException, IOException {
         FileInputStream stream = new FileInputStream(path);
-        NBTInputStream nbtStream = new NBTInputStream(stream);
+        NBTInputStream nbtStream = new NBTInputStream(
+                new GZIPInputStream(stream));
 
         Vector origin = new Vector();
         Vector offset = new Vector();

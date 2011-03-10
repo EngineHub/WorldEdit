@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.data;
 
 import java.io.*;
+import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.*;
-import org.jnbt.*;
 
 /**
  * Represents chunk storage mechanisms.

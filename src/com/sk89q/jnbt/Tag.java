@@ -1,4 +1,4 @@
-package org.jnbt;
+package com.sk89q.jnbt;
 
 /*
  * JNBT License
@@ -34,40 +34,37 @@ package org.jnbt;
  */
 
 /**
- * The <code>TAG_Int</code> tag.
+ * Represents a single NBT tag.
  * @author Graham Edgecombe
  *
  */
-public final class IntTag extends Tag {
-
-	/**
-	 * The value.
-	 */
-	private final int value;
+public abstract class Tag {
 	
 	/**
-	 * Creates the tag.
+	 * The name of this tag.
+	 */
+	private final String name;
+	
+	/**
+	 * Creates the tag with the specified name.
 	 * @param name The name.
-	 * @param value The value.
 	 */
-	public IntTag(String name, int value) {
-		super(name);
-		this.value = value;
-	}
-
-	@Override
-	public Integer getValue() {
-		return value;
+	public Tag(String name) {
+		this.name = name;
 	}
 	
-	@Override
-	public String toString() {
-		String name = getName();
-		String append = "";
-		if(name != null && !name.equals("")) {
-			append = "(\"" + this.getName() + "\")";
-		}
-		return "TAG_Int" + append + ": " + value;
+	/**
+	 * Gets the name of this tag.
+	 * @return The name of this tag.
+	 */
+	public final String getName() {
+		return name;
 	}
+	
+	/**
+	 * Gets the value of this tag.
+	 * @return The value of this tag.
+	 */
+	public abstract Object getValue();
 
 }

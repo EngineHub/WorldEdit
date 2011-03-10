@@ -21,15 +21,17 @@ package com.sk89q.worldedit.data;
 
 import java.io.*;
 import java.util.regex.Pattern;
-import java.util.zip.*;
+import java.util.zip.ZipException;
 import java.util.Enumeration;
+import de.schlichtherle.util.zip.*;
 
 /**
- * Represents the chunk store used by Minecraft alpha but zipped.
+ * Represents the chunk store used by Minecraft alpha but zipped. Uses
+ * the replacement classes for java.util.zip.* from TrueZip.
  *
  * @author sk89q
  */
-public class ZippedAlphaChunkStore extends LegacyChunkStore {
+public class TrueZipLegacyChunkStore extends LegacyChunkStore {
     /**
      * ZIP file.
      */
@@ -52,9 +54,9 @@ public class ZippedAlphaChunkStore extends LegacyChunkStore {
      * @param zipFile
      * @param folder
      * @throws IOException
-     * @throws ZipException
+     * @throws ZipException 
      */
-    public ZippedAlphaChunkStore(File zipFile, String folder)
+    public TrueZipLegacyChunkStore(File zipFile, String folder)
             throws IOException, ZipException {
         this.zipFile = zipFile;
         this.folder = folder;
@@ -70,7 +72,7 @@ public class ZippedAlphaChunkStore extends LegacyChunkStore {
      * @throws IOException
      * @throws ZipException
      */
-    public ZippedAlphaChunkStore(File zipFile)
+    public TrueZipLegacyChunkStore(File zipFile)
             throws IOException, ZipException {
         this.zipFile = zipFile;
 
@@ -88,6 +90,7 @@ public class ZippedAlphaChunkStore extends LegacyChunkStore {
      * @throws DataException
      */
     @Override
+    @SuppressWarnings("unchecked")
     protected InputStream getInputStream(String f1, String f2, String name)
             throws IOException, DataException {
         String file = f1 + "/" + f2 + "/" + name;
