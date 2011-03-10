@@ -58,17 +58,51 @@ public class Snapshot {
      * @throws DataException 
      */
     public ChunkStore getChunkStore() throws IOException, DataException {
+        ChunkStore chunkStore = _getChunkStore();
+        
+        logger.info("WorldEdit: Using " + chunkStore.getClass().getCanonicalName()
+                + " for loading snapshot '" + file.getAbsolutePath() + "'");
+        
+        return chunkStore;
+    }
+
+    /**
+     * Get a chunk store.
+     * 
+     * @return
+     * @throws IOException
+     * @throws DataException 
+     */
+    public ChunkStore _getChunkStore() throws IOException, DataException {
         if (file.getName().toLowerCase().endsWith(".zip")) {
             try {
-                return new TrueZipLegacyChunkStore(file);
+                ChunkStore chunkStore = new TrueZipMcRegionChunkStore(file);
+                
+                if (!chunkStore.isValid()) {
+                    return new TrueZipLegacyChunkStore(file);
+                }
+                
+                return chunkStore;
             } catch (NoClassDefFoundError e) {
-                return new ZippedAlphaChunkStore(file);
+                ChunkStore chunkStore = new ZippedMcRegionChunkStore(file);
+                
+                if (!chunkStore.isValid()) {
+                    return new ZippedLegacyChunkStore(file);
+                }
+                
+                return chunkStore;
             }
         } else if (file.getName().toLowerCase().endsWith(".tar.bz2")
                 || file.getName().toLowerCase().endsWith(".tar.gz")
                 || file.getName().toLowerCase().endsWith(".tar")) {
             try {
-                return new TrueZipLegacyChunkStore(file);
+                ChunkStore chunkStore = new TrueZipMcRegionChunkStore(file);
+                
+                if (!chunkStore.isValid()) {
+                    return new TrueZipLegacyChunkStore(file);
+                }
+                
+                return chunkStore;
             } catch (NoClassDefFoundError e) {
                 throw new DataException("TrueZIP is required for .tar support");
             }

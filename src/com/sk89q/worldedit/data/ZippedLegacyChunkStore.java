@@ -29,7 +29,7 @@ import java.util.Enumeration;
  *
  * @author sk89q
  */
-public class ZippedAlphaChunkStore extends LegacyChunkStore {
+public class ZippedLegacyChunkStore extends LegacyChunkStore {
     /**
      * ZIP file.
      */
@@ -54,7 +54,7 @@ public class ZippedAlphaChunkStore extends LegacyChunkStore {
      * @throws IOException
      * @throws ZipException
      */
-    public ZippedAlphaChunkStore(File zipFile, String folder)
+    public ZippedLegacyChunkStore(File zipFile, String folder)
             throws IOException, ZipException {
         this.zipFile = zipFile;
         this.folder = folder;
@@ -70,7 +70,7 @@ public class ZippedAlphaChunkStore extends LegacyChunkStore {
      * @throws IOException
      * @throws ZipException
      */
-    public ZippedAlphaChunkStore(File zipFile)
+    public ZippedLegacyChunkStore(File zipFile)
             throws IOException, ZipException {
         this.zipFile = zipFile;
 
