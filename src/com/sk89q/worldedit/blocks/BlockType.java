@@ -313,6 +313,7 @@ public enum BlockType {
      */
     public static boolean shouldPlaceLast(int id) {
         return id == 6 // Saplings
+                || id == 26 // Beds
                 || id == 37 // Yellow flower
                 || id == 38 // Red flower
                 || id == 39 // Brown mushroom
