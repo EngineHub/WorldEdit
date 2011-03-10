@@ -60,7 +60,9 @@ public class ForwardSeekableInputStream extends InputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        throw new IOException("Offset not supported for read()");
+        int read = super.read(b, off, len);
+        position += read;
+        return read;
     }
 
     @Override

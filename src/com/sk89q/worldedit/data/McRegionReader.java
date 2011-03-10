@@ -117,8 +117,8 @@ public class McRegionReader {
     public synchronized InputStream getChunkInputStream(Vector2D pos)
             throws IOException, DataException {
 
-        int x = pos.getBlockX();
-        int z = pos.getBlockZ();
+        int x = pos.getBlockX() & 31;
+        int z = pos.getBlockZ() & 31;
         
         if (x < 0 || x >= 32 || z < 0 || z >= 32) {
             throw new DataException("MCRegion file does not contain " + x + "," + z);
