@@ -48,8 +48,15 @@ public abstract class McRegionChunkStore extends ChunkStore {
     
     protected McRegionReader getReader(Vector2D pos) throws DataException, IOException {
         String filename = getFilename(pos);
-        if (curFilename != null && curFilename.equals(filename)) {
-            return cachedReader;
+        if (curFilename != null) {
+            if (curFilename.equals(filename)) {
+                return cachedReader;
+            } else {
+                try {
+                    cachedReader.close();
+                } catch (IOException e) {
+                }
+            }
         }
         InputStream stream = getInputStream(filename);
         cachedReader = new McRegionReader(stream);
