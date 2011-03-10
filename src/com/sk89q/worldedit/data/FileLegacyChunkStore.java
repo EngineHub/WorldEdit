@@ -62,4 +62,9 @@ public class FileLegacyChunkStore extends LegacyChunkStore {
             throw new MissingChunkException();
         }
     }
+
+    @Override
+    public boolean isValid() {
+        return true; // Yeah, oh well
+    }
 }

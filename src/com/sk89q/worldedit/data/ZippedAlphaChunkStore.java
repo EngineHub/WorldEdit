@@ -161,4 +161,9 @@ public class ZippedAlphaChunkStore extends LegacyChunkStore {
     public void close() throws IOException {
         zip.close();
     }
+
+    @Override
+    public boolean isValid() {
+        return true; // Yeah, oh well
+    }
 }

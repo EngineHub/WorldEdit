@@ -75,4 +75,11 @@ public abstract class ChunkStore {
     public void close() throws IOException {
 
     }
+    
+    /**
+     * Returns whether the chunk store is of this type.
+     * 
+     * @return
+     */
+    public abstract boolean isValid();
 }

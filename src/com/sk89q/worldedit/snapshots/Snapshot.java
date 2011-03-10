@@ -73,7 +73,13 @@ public class Snapshot {
                 throw new DataException("TrueZIP is required for .tar support");
             }
         } else {
-            return new FileLegacyChunkStore(file);
+            ChunkStore chunkStore = new FileMcRegionChunkStore(file);
+            
+            if (!chunkStore.isValid()) {
+                return new FileLegacyChunkStore(file);
+            }
+            
+            return chunkStore;
         }
     }
 

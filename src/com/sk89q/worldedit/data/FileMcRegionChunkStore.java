@@ -54,4 +54,9 @@ public class FileMcRegionChunkStore extends McRegionChunkStore {
         }
     }
 
+    @Override
+    public boolean isValid() {
+        return new File(path, "region").isDirectory();
+    }
+
 }
