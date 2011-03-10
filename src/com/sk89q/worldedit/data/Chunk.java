@@ -209,10 +209,7 @@ public class Chunk {
         
         if (block instanceof TileEntityBlock) {
             Map<String,Tag> tileEntity = getBlockTileEntity(pos);
-            
-            if (tileEntity.containsKey(pos)) {
-                ((TileEntityBlock)block).fromTileEntityNBT(tileEntity);
-            }
+            ((TileEntityBlock)block).fromTileEntityNBT(tileEntity);
         }
 
         return block;
