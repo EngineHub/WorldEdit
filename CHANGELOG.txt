@@ -1,3 +1,14 @@
+4.1:
+- Added McRegion support.
+- Optimized the case when worlds were not in the root directory of a zip.
+- Fixed snapshot restoration not working on sign blocks and other special
+    tile entity blocks.
+- Added beds as a place-last block.
+- Fixed beds and redstone repeaters not being set.
+- Added an alias for wool colors as though they were blocks, so you can now
+    do //set blue, etc.
+- Removed "blue" as an alias for lapis lazuli.
+
 4.0-beta8:
 - Added things for CraftBook.
 
