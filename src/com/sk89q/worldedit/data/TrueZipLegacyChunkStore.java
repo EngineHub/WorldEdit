@@ -119,8 +119,9 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
 
                         // Whoo, found level.dat!
                         if (pattern.matcher(testEntry.getName()).matches()) {
-                            file = testEntry.getName().replaceAll("level\\.dat$", "")
-                                    + file;
+                            folder = testEntry.getName().replaceAll("level\\.dat$", "");
+                            folder = folder.substring(0, folder.length() - 1);
+                            file = folder + file;
                             break;
                         }
                     }
