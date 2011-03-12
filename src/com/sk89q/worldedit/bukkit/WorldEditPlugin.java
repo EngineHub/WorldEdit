@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Logger;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,7 +38,8 @@ import com.sk89q.bukkit.migration.PermissionsResolverManager;
 import com.sk89q.bukkit.migration.PermissionsResolverServerListener;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.bukkit.selections.*;
+import com.sk89q.worldedit.regions.*;
 
 /**
  * Plugin for Bukkit.
@@ -247,19 +249,6 @@ public class WorldEditPlugin extends JavaPlugin {
     }
     
     /**
-     * Gets the region selection for the player.
-     * 
-     * @param player
-     * @return
-     * @throws IncompleteRegionException 
-     */
-    public Region getPlayerSelection(Player player)
-            throws IncompleteRegionException {
-        return controller.getSession(wrapPlayer(player))
-                .getSelection(new BukkitWorld(player.getWorld()));
-    }
-    
-    /**
      * Gets the session for the player.
      * 
      * @param player
@@ -350,5 +339,31 @@ public class WorldEditPlugin extends JavaPlugin {
      */
     public BukkitPlayer wrapPlayer(Player player) {
         return new BukkitPlayer(this, this.server, player);
+    }
+    
+    /**
+     * Gets the region selection for the player.
+     * 
+     * @param player
+     * @return the selection or null if there was none
+     */
+    public Selection getSelection(Player player) {
+        LocalSession session = controller.getSession(wrapPlayer(player));
+        RegionSelector selector = session.getRegionSelector();
+        
+        try {
+            Region region = selector.getRegion();
+            World world = ((BukkitWorld) session.getSelectionWorld()).getWorld();
+            
+            if (region instanceof CuboidRegion) {
+                return new CuboidSelection(world, (CuboidRegion)region);
+            } else if (region instanceof Polygonal2DRegion) {
+                return new Polygonal2DSelection(world, (Polygonal2DRegion)region);
+            } else {
+                return null;
+            }
+        } catch (IncompleteRegionException e) {
+            return null;
+        }
     }
 }

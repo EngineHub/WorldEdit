@@ -231,6 +231,15 @@ public class LocalSession {
         }
         return selector.getRegion();
     }
+    
+    /**
+     * Get the selection world.
+     * 
+     * @return
+     */
+    public LocalWorld getSelectionWorld() {
+        return selectionWorld;
+    }
 
     /**
      * Gets the clipboard.
