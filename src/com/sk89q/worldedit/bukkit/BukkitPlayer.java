@@ -22,8 +22,10 @@ package com.sk89q.worldedit.bukkit;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
+import com.sk89q.worldedit.cui.CUIEvent;
 
 public class BukkitPlayer extends LocalPlayer {
     private Player player;
@@ -113,5 +115,22 @@ public class BukkitPlayer extends LocalPlayer {
     @Override
     public LocalWorld getWorld() {
         return new BukkitWorld(player.getWorld());
+    }
+    
+    @Override
+    public void dispatchCUIEvent(CUIEvent event) {
+        String[] params = event.getParameters();
+        
+        if (params.length > 0) {
+            printRaw("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId()
+                    + "|" + StringUtil.joinString(params, "|"));
+        } else {
+            printRaw("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId());
+        }
+    }
+    
+    @Override
+    public void dispatchCUIHandshake() {
+        printRaw("\u00A75\u00A76\u00A74\u00A75");
     }
 }

@@ -820,7 +820,7 @@ public class WorldEdit {
                 && player.hasPermission("worldedit.selection.pos")) {
             RegionSelector selector = session.getRegionSelector(player.getWorld());
             if (selector.selectSecondary(clicked)) {
-                selector.explainSecondarySelection(player, clicked);
+                selector.explainSecondarySelection(player, session, clicked);
             }
 
             return true;
@@ -857,7 +857,7 @@ public class WorldEdit {
 
                 RegionSelector selector = session.getRegionSelector(player.getWorld());
                 if (selector.selectPrimary(clicked)) {
-                    selector.explainPrimarySelection(player, clicked);
+                    selector.explainPrimarySelection(player, session, clicked);
                 }
 
                 return true;

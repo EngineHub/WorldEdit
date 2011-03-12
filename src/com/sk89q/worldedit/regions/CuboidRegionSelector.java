@@ -24,14 +24,17 @@ import java.util.List;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.cui.CUIPointBasedRegion;
+import com.sk89q.worldedit.cui.SelectionPointEvent;
 
 /**
  * Selector for cuboids.
  *
  * @author sk89q
  */
-public class CuboidRegionSelector implements RegionSelector {
+public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion {
     protected BlockVector pos1;
     protected BlockVector pos2;
     protected CuboidRegion region = new CuboidRegion(new Vector(), new Vector());
@@ -54,22 +57,30 @@ public class CuboidRegionSelector implements RegionSelector {
         return true;
     }
 
-    public void explainPrimarySelection(LocalPlayer player, Vector pos) {
+    public void explainPrimarySelection(LocalPlayer player,
+            LocalSession session, Vector pos) {
         if (pos1 != null && pos2 != null) {
             player.print("First position set to " + pos1
                     + " (" + region.getArea() + ").");
         } else {
             player.print("First position set to " + pos1 + ".");
         }
+        
+        session.dispatchCUIEvent(player,
+                new SelectionPointEvent(0, pos, getArea()));
     }
 
-    public void explainSecondarySelection(LocalPlayer player, Vector pos) {
+    public void explainSecondarySelection(LocalPlayer player,
+            LocalSession session, Vector pos) {
         if (pos1 != null && pos2 != null) {
             player.print("Second position set to " + pos2
                     + " (" + region.getArea() + ").");
         } else {
             player.print("Second position set to " + pos2 + ".");
         }
+        
+        session.dispatchCUIEvent(player,
+                new SelectionPointEvent(1, pos, getArea()));
     }
     
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
@@ -118,5 +129,21 @@ public class CuboidRegionSelector implements RegionSelector {
         }
         
         return lines;
+    }
+
+    public String getTypeId() {
+        return "cuboid";
+    }
+
+    public Vector[] getCUIPoints() {
+        return new Vector[] { pos1, pos2 };
+    }
+
+    public int getArea() {
+        if (pos1 != null && pos2 != null) {
+            return region.getArea();
+        }
+        
+        return -1;
     }
 }

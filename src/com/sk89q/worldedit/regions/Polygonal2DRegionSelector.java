@@ -25,6 +25,7 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 
 /**
@@ -66,11 +67,13 @@ public class Polygonal2DRegionSelector implements RegionSelector {
         return true;
     }
 
-    public void explainPrimarySelection(LocalPlayer player, Vector pos) {
+    public void explainPrimarySelection(LocalPlayer player,
+            LocalSession session, Vector pos) {
         player.print("Starting a new polygon at " + pos + ".");
     }
 
-    public void explainSecondarySelection(LocalPlayer player, Vector pos) {
+    public void explainSecondarySelection(LocalPlayer player,
+            LocalSession session, Vector pos) {
         player.print("Added point #" + region.size() + " at " + pos + ".");
     }
 
@@ -109,6 +112,14 @@ public class Polygonal2DRegionSelector implements RegionSelector {
         List<String> lines = new ArrayList<String>();
         lines.add("# points: " + region.size());
         return lines;
+    }
+
+    public String getTypeId() {
+        return "polygon2d";
+    }
+
+    public int getArea() {
+        return region.getArea();
     }
 
 }

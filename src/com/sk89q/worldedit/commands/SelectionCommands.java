@@ -58,7 +58,7 @@ public class SelectionCommands {
         }
 
         session.getRegionSelector(player.getWorld())
-                .explainPrimarySelection(player, player.getBlockIn());
+                .explainPrimarySelection(player, session, player.getBlockIn());
     }
 
     @Command(
@@ -81,7 +81,7 @@ public class SelectionCommands {
 
 
         session.getRegionSelector(player.getWorld())
-                .explainSecondarySelection(player, player.getBlockIn());
+                .explainSecondarySelection(player, session, player.getBlockIn());
     }
 
     @Command(
@@ -106,7 +106,7 @@ public class SelectionCommands {
             }
 
             session.getRegionSelector(player.getWorld())
-                    .explainPrimarySelection(player, pos);
+                    .explainPrimarySelection(player, session, pos);
         } else {
             player.printError("No block in sight!");
         }
@@ -134,7 +134,7 @@ public class SelectionCommands {
             }
 
             session.getRegionSelector(player.getWorld())
-                    .explainSecondarySelection(player, pos);
+                    .explainSecondarySelection(player, session, pos);
         } else {
             player.printError("No block in sight!");
         }

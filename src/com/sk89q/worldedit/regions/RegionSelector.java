@@ -23,6 +23,7 @@ import java.util.List;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 
 /**
@@ -51,17 +52,21 @@ public interface RegionSelector {
      * Tell the player information about his/her primary selection.
      * 
      * @param player
+     * @param session 
      * @param pos 
      */
-    public void explainPrimarySelection(LocalPlayer player, Vector pos);
+    public void explainPrimarySelection(LocalPlayer player, 
+            LocalSession session, Vector pos);
 
     /**
      * Tell the player information about his/her secondary selection.
      * 
      * @param player
+     * @param session 
      * @param pos 
      */
-    public void explainSecondarySelection(LocalPlayer player, Vector pos);
+    public void explainSecondarySelection(LocalPlayer player,
+            LocalSession session, Vector pos);
     
     /**
      * Get the primary position.
@@ -87,6 +92,13 @@ public interface RegionSelector {
     public boolean isDefined();
     
     /**
+     * Get the number of blocks inside the region.
+     * 
+     * @return number of blocks or -1 if undefined
+     */
+    public int getArea();
+    
+    /**
      * Update the selector with changes to the region.
      */
     public void learnChanges();
@@ -102,6 +114,13 @@ public interface RegionSelector {
      * @return
      */
     public String getTypeName();
+    
+    /**
+     * Get a lowecase space-less ID.
+     * 
+     * @return
+     */
+    public String getTypeId();
     
     /**
      * Get lines of information about the selection.

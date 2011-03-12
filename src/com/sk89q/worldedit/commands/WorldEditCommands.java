@@ -59,4 +59,18 @@ public class WorldEditCommands {
         we.getServer().reload();
         player.print("Configuration reloaded!");
     }
+
+    @Command(
+        aliases = {"cui"},
+        usage = "",
+        desc = "Complete CUI handshake",
+        min = 0,
+        max = 0
+    )
+    public static void cui(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        session.setCUISupport(true);
+        session.dispatchCUISetup(player);
+    }
 }

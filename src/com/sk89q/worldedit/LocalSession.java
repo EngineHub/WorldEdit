@@ -28,6 +28,10 @@ import com.sk89q.worldedit.tools.SinglePickaxe;
 import com.sk89q.worldedit.tools.BlockTool;
 import com.sk89q.worldedit.tools.Tool;
 import com.sk89q.worldedit.bags.BlockBag;
+import com.sk89q.worldedit.cui.CUIPointBasedRegion;
+import com.sk89q.worldedit.cui.CUIEvent;
+import com.sk89q.worldedit.cui.SelectionPointEvent;
+import com.sk89q.worldedit.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -53,7 +57,7 @@ public class LocalSession {
     private LocalConfiguration config;
     
     private LocalWorld selectionWorld;
-    private RegionSelector regionSelector = new CuboidRegionSelector();
+    private RegionSelector selector = new CuboidRegionSelector();
     private boolean placeAtPos1 = false;
     private LinkedList<EditSession> history = new LinkedList<EditSession>();
     private int historyPointer = 0;
@@ -69,6 +73,7 @@ public class LocalSession {
     private String lastScript;
     private CompassMode compassMode = CompassMode.JUMPTO;
     private boolean beenToldVersion = false;
+    private boolean hasCUISupport = false;
     
     /**
      * Construct the object.
@@ -159,9 +164,9 @@ public class LocalSession {
             selectionWorld = world;
         } else if (!selectionWorld.equals(world)) {
             selectionWorld = world;
-            regionSelector.clear();
+            selector.clear();
         }
-        return regionSelector;
+        return selector;
     }
 
     /**
@@ -171,7 +176,7 @@ public class LocalSession {
      * @return position
      */
     public RegionSelector getRegionSelector() {
-        return regionSelector;
+        return selector;
     }
 
     /**
@@ -182,7 +187,7 @@ public class LocalSession {
      */
     public void setRegionSelector(LocalWorld world, RegionSelector selector) {
         selectionWorld = world;
-        regionSelector = selector;
+        this.selector = selector;
     }
 
     /**
@@ -192,7 +197,7 @@ public class LocalSession {
      */
     @Deprecated
     public boolean isRegionDefined() {
-        return regionSelector.isDefined();
+        return selector.isDefined();
     }
 
     /**
@@ -205,7 +210,7 @@ public class LocalSession {
         if (selectionWorld == null || !selectionWorld.equals(world)) {
             return false;
         }
-        return regionSelector.isDefined();
+        return selector.isDefined();
     }
 
     /**
@@ -216,7 +221,7 @@ public class LocalSession {
      */
     @Deprecated
     public Region getRegion() throws IncompleteRegionException {
-        return regionSelector.getRegion();
+        return selector.getRegion();
     }
 
     /**
@@ -233,7 +238,7 @@ public class LocalSession {
         if (selectionWorld == null || !selectionWorld.equals(world)) {
             throw new IncompleteRegionException();
         }
-        return regionSelector.getRegion();
+        return selector.getRegion();
     }
 
     /**
@@ -340,7 +345,7 @@ public class LocalSession {
             return player.getBlockIn();
         }
 
-        return regionSelector.getPrimaryPosition();
+        return selector.getPrimaryPosition();
     }
 
     /**
@@ -518,5 +523,56 @@ public class LocalSession {
                 beenToldVersion = true;
             }
         }
+    }
+    
+    /**
+     * Dispatch a CUI event but only if the player has CUI support.
+     * 
+     * @param player
+     * @param event
+     */
+    public void dispatchCUIEvent(LocalPlayer player, CUIEvent event) {
+        if (hasCUISupport) {
+            player.dispatchCUIEvent(event);
+        }
+    }
+    
+    /**
+     * Dispatch the initial setup CUI messages.
+     * 
+     * @param player
+     */
+    public void dispatchCUISetup(LocalPlayer player) {
+        if (!hasCUISupport) {
+            return;
+        }
+        
+        if (selector != null) {
+            player.dispatchCUIEvent(
+                    new SelectionShapeEvent(selector.getTypeId()));
+            
+            if (selector instanceof CUIPointBasedRegion) {
+                Vector[] points = ((CUIPointBasedRegion) selector).getCUIPoints();
+                int size = selector.getArea();
+                
+                int i = 0;
+                for (Vector pt : points) {
+                    if (pt != null) {
+                        player.dispatchCUIEvent(
+                                new SelectionPointEvent(i, pt, size));
+                    }
+                    i++;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Sets the status of CUI support.
+     * 
+     * @param support
+     */
+    public void setCUISupport(boolean support) {
+        hasCUISupport = true;
     }
 }
