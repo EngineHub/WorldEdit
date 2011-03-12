@@ -44,14 +44,6 @@ import com.sk89q.worldedit.regions.RegionSelector;
  * @author sk89q
  */
 public class LocalSession {
-    /**
-     * List of compass modes.
-     */
-    public enum CompassMode {
-        JUMPTO,
-        THRU
-    }
-    
     public static int MAX_HISTORY_SIZE = 15;
     
     private LocalConfiguration config;
@@ -71,7 +63,6 @@ public class LocalSession {
     private boolean useInventory;
     private Snapshot snapshot;
     private String lastScript;
-    private CompassMode compassMode = CompassMode.JUMPTO;
     private boolean beenToldVersion = false;
     private boolean hasCUISupport = false;
     
@@ -490,24 +481,6 @@ public class LocalSession {
      */
     public void setLastScript(String lastScript) {
         this.lastScript = lastScript;
-    }
-
-    /**
-     * Get the compass mode.
-     * 
-     * @return the compassMode
-     */
-    public CompassMode getCompassMode() {
-        return compassMode;
-    }
-
-    /**
-     * Set the compass mode.
-     * 
-     * @param compassMode the compassMode to set
-     */
-    public void setCompassMode(CompassMode compassMode) {
-        this.compassMode = compassMode;
     }
     
     /**

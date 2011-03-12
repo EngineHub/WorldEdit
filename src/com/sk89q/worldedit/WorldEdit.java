@@ -30,7 +30,6 @@ import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
 import com.sk89q.minecraft.util.commands.UnhandledCommandException;
 import com.sk89q.minecraft.util.commands.WrappedCommandException;
 import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.LocalSession.CompassMode;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.commands.*;
@@ -740,23 +739,14 @@ public class WorldEdit {
      * @return 
      */
     public boolean handleArmSwing(LocalPlayer player) {
-        LocalSession session = getSession(player);
-        
         if (player.getItemInHand() == config.navigationWand
-                && config.navigationWandMaxDistance > 0) {
-            CompassMode mode = session.getCompassMode();
-            
-            if (player.hasPermission("worldedit.navigation.jumpto") && mode == CompassMode.JUMPTO) {
-                WorldVector pos = player.getSolidBlockTrace(config.navigationWandMaxDistance);
-                if (pos != null) {
-                    player.findFreePosition(pos);
-                } else {
-                    player.printError("No block in sight (or too far)!");
-                }
-            } else if (mode == CompassMode.THRU) { // Permission is implied
-                if (!player.passThroughForwardWall(40)) {
-                    player.printError("Nothing to pass through!");
-                }
+                && config.navigationWandMaxDistance > 0
+                && player.hasPermission("worldedit.navigation.jumpto")) {
+            WorldVector pos = player.getSolidBlockTrace(config.navigationWandMaxDistance);
+            if (pos != null) {
+                player.findFreePosition(pos);
+            } else {
+                player.printError("No block in sight (or too far)!");
             }
         }
         
@@ -771,27 +761,14 @@ public class WorldEdit {
      */
     public boolean handleRightClick(LocalPlayer player) {
         LocalSession session = getSession(player);
-        
-        if (player.getItemInHand() == config.navigationWand) {
-            CompassMode mode = session.getCompassMode();
+
+        if (player.getItemInHand() == config.navigationWand
+                && config.navigationWandMaxDistance > 0
+                && player.hasPermission("worldedit.navigation.thru")) {
             
-            if (mode == CompassMode.JUMPTO) {
-                if (player.hasPermission("worldedit.navigation.thru")) {
-                    session.setCompassMode(CompassMode.THRU);
-                    player.print("Switched to /thru mode.");
-                } else {
-                    player.printError("You don't have permission for /thru.");
-                }
-            } else {
-                if (player.hasPermission("worldedit.navigation.jumpto")) {
-                    session.setCompassMode(CompassMode.JUMPTO);
-                    player.print("Switched to /jumpto mode.");
-                } else {
-                    player.printError("You don't have permission for /jumpto.");
-                }
+            if (!player.passThroughForwardWall(40)) {
+                player.printError("Nothing to pass through!");
             }
-            
-            return true;
         }
         
         Tool tool = session.getTool(player.getItemInHand());
