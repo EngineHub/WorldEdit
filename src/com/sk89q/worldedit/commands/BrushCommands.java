@@ -30,7 +30,11 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.masks.BlockTypeMask;
 import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.tools.BrushTool;
 import com.sk89q.worldedit.tools.brushes.ClipboardBrush;
 import com.sk89q.worldedit.tools.brushes.CylinderBrush;
@@ -193,5 +197,37 @@ public class BrushCommands {
 
         player.print(String.format("Smooth brush equipped (%d x %dx).",
                 radius, iterations));
+    }
+    
+    @Command(
+        aliases = {"ex", "extinguish"},
+        usage = "[radius]",
+        desc = "Shortcut fire extinguisher brush",
+        min = 0,
+        max = 1
+    )
+    @CommandPermissions({"worldedit.brush.ex"})
+    public static void extinguishBrush(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        
+        LocalConfiguration config = we.getConfiguration();
+
+        int radius = args.argsLength() > 1 ? args.getInteger(1) : 5;
+        if (radius > config.maxBrushRadius) {
+            player.printError("Maximum allowed brush radius: "
+                    + config.maxBrushRadius);
+            return;
+        }
+
+        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        Pattern fill = new SingleBlockPattern(new BaseBlock(0));
+        tool.setFill(fill);
+        tool.setSize(radius);
+        tool.setMask(new BlockTypeMask(BlockID.FIRE));
+        tool.setBrush(new SphereBrush());
+
+        player.print(String.format("Extinguisher equipped (%d).",
+                radius));
     }
 }
