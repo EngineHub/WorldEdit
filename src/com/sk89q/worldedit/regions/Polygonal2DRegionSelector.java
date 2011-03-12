@@ -77,6 +77,9 @@ public class Polygonal2DRegionSelector implements RegionSelector {
         player.print("Added point #" + region.size() + " at " + pos + ".");
     }
 
+    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
+    }
+
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
         if (pos1 == null) {
             throw new IncompleteRegionException();

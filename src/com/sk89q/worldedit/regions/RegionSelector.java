@@ -69,6 +69,15 @@ public interface RegionSelector {
             LocalSession session, Vector pos);
     
     /**
+     * The the player information about the region's changes. This may resend
+     * all the defining region information if needed.
+     * 
+     * @param player
+     * @param session
+     */
+    public void explainRegionAdjust(LocalPlayer player, LocalSession session);
+    
+    /**
      * Get the primary position.
      * 
      * @return

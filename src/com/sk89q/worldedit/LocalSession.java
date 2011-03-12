@@ -530,21 +530,34 @@ public class LocalSession {
         }
         
         if (selector != null) {
-            player.dispatchCUIEvent(
-                    new SelectionShapeEvent(selector.getTypeId()));
+            dispatchCUISelection(player);
+        }
+    }
+    
+    /**
+     * Send the selection information.
+     * 
+     * @param player
+     */
+    public void dispatchCUISelection(LocalPlayer player) {
+        if (!hasCUISupport) {
+            return;
+        }
+        
+        player.dispatchCUIEvent(
+                new SelectionShapeEvent(selector.getTypeId()));
+        
+        if (selector instanceof CUIPointBasedRegion) {
+            Vector[] points = ((CUIPointBasedRegion) selector).getCUIPoints();
+            int size = selector.getArea();
             
-            if (selector instanceof CUIPointBasedRegion) {
-                Vector[] points = ((CUIPointBasedRegion) selector).getCUIPoints();
-                int size = selector.getArea();
-                
-                int i = 0;
-                for (Vector pt : points) {
-                    if (pt != null) {
-                        player.dispatchCUIEvent(
-                                new SelectionPointEvent(i, pt, size));
-                    }
-                    i++;
+            int i = 0;
+            for (Vector pt : points) {
+                if (pt != null) {
+                    player.dispatchCUIEvent(
+                            new SelectionPointEvent(i, pt, size));
                 }
+                i++;
             }
         }
     }

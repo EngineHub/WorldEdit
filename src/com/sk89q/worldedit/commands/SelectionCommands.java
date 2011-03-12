@@ -160,6 +160,8 @@ public class SelectionCommands {
         selector.selectPrimary(min);
         selector.selectSecondary(max);
         session.setRegionSelector(player.getWorld(), selector);
+        
+        session.dispatchCUISelection(player);
 
         player.print("Chunk selected: "
                 + min2D.getBlockX() + ", " + min2D.getBlockZ());
@@ -268,6 +270,8 @@ public class SelectionCommands {
         session.getRegionSelector().learnChanges();
         int newSize = region.getArea();
         
+        session.getRegionSelector().explainRegionAdjust(player, session);
+        
         player.print("Region expanded " + (newSize - oldSize) + " blocks.");
     }
 
@@ -315,6 +319,8 @@ public class SelectionCommands {
             session.getRegionSelector().learnChanges();
             int newSize = region.getArea();
             
+            session.getRegionSelector().explainRegionAdjust(player, session);
+            
             player.print("Region contracted " + (oldSize - newSize) + " blocks.");
         } catch (RegionOperationException e) {
             player.printError(e.getMessage());
@@ -347,6 +353,8 @@ public class SelectionCommands {
             region.expand(dir.multiply(change));
             region.contract(dir.multiply(change));
             session.getRegionSelector().learnChanges();
+            
+            session.getRegionSelector().explainRegionAdjust(player, session);
             
             player.print("Region shifted.");
         } catch (RegionOperationException e) {
@@ -385,6 +393,8 @@ public class SelectionCommands {
 
             session.getRegionSelector().learnChanges();
             
+            session.getRegionSelector().explainRegionAdjust(player, session);
+            
             player.print("Region outset.");
         } catch (RegionOperationException e) {
             player.printError(e.getMessage());
@@ -420,6 +430,8 @@ public class SelectionCommands {
         }
 
         session.getRegionSelector().learnChanges();
+        
+        session.getRegionSelector().explainRegionAdjust(player, session);
         
         player.print("Region inset.");
     }

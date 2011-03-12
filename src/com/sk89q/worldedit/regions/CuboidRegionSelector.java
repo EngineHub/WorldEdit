@@ -82,6 +82,17 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         session.dispatchCUIEvent(player,
                 new SelectionPointEvent(1, pos, getArea()));
     }
+
+    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
+        if (pos1 != null) {
+            session.dispatchCUIEvent(player,
+                    new SelectionPointEvent(0, pos1, getArea()));
+        }
+        if (pos2 != null) {
+            session.dispatchCUIEvent(player,
+                    new SelectionPointEvent(1, pos2, getArea()));
+        }
+    }
     
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
         if (pos1 == null) {

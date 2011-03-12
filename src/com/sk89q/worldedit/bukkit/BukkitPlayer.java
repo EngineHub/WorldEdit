@@ -122,15 +122,15 @@ public class BukkitPlayer extends LocalPlayer {
         String[] params = event.getParameters();
         
         if (params.length > 0) {
-            printRaw("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId()
+            player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId()
                     + "|" + StringUtil.joinString(params, "|"));
         } else {
-            printRaw("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId());
+            player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId());
         }
     }
     
     @Override
     public void dispatchCUIHandshake() {
-        printRaw("\u00A75\u00A76\u00A74\u00A75");
+        player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75");
     }
 }
