@@ -540,9 +540,11 @@ public class SelectionCommands {
         String typeName = args.getString(0);
         if (typeName.equalsIgnoreCase("cuboid")) {
             session.setRegionSelector(player.getWorld(), new CuboidRegionSelector());
+            session.dispatchCUISelection(player);
             player.print("Cuboid: left click for point 1, right click for point 2");
         } else if (typeName.equalsIgnoreCase("poly")) {
             session.setRegionSelector(player.getWorld(), new Polygonal2DRegionSelector());
+            session.dispatchCUISelection(player);
             player.print("2D polygon selector: Left/right click to add a point.");
         } else {
             player.printError("Only 'cuboid' and 'poly' are accepted.");
