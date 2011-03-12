@@ -188,114 +188,62 @@ public abstract class LocalWorld {
      */
     public void simulateBlockMine(Vector pt) {
         int type = getBlockType(pt);
-        // setBlockType(pt, 0);
+        //setBlockType(pt, 0);
 
-        if (type == 1) {
-            dropItem(pt, new BaseItemStack(4));
-        } // Stone
-        else if (type == 2) {
-            dropItem(pt, new BaseItemStack(3));
-        } // Grass
-        else if (type == 7) {
-        } // Bedrock
-        else if (type == 8) {
-        } // Water
-        else if (type == 9) {
-        } // Water
-        else if (type == 10) {
-        } // Lava
-        else if (type == 11) {
-        } // Lava
+        if (type == 1) { dropItem(pt, new BaseItemStack(4)); } // Stone
+        else if (type == 2) { dropItem(pt, new BaseItemStack(3)); } // Grass
+        else if (type == 7) { } // Bedrock
+        else if (type == 8) { } // Water
+        else if (type == 9) { } // Water
+        else if (type == 10) { } // Lava
+        else if (type == 11) { } // Lava
         else if (type == 13) { // Gravel
             dropItem(pt, new BaseItemStack(type));
 
             if (random.nextDouble() >= 0.9) {
                 dropItem(pt, new BaseItemStack(318));
             }
-        } else if (type == 16) {
-            dropItem(pt, new BaseItemStack(263));
-        } // Coal ore
-        else if (type == 17) {
-            dropItem(pt, new BaseItemStack(17, 1, (short) getBlockData(pt)));
-        } // Log
+        }
+        else if (type == 16) { dropItem(pt, new BaseItemStack(263)); } // Coal ore
+        else if (type == 17) { dropItem(pt, new BaseItemStack(17, 1, (short)getBlockData(pt))); } // Log
         else if (type == 18) { // Leaves
             if (random.nextDouble() > 0.95) {
                 dropItem(pt, new BaseItemStack(6));
             }
-        } else if (type == 20) {
-        } // Glass
-        else if (type == 21) {
-            dropItem(pt, new BaseItemStack(351, 1, (short) 4),
-                    (random.nextInt(5) + 4));
-        } else if (type == 35) {
-            dropItem(pt, new BaseItemStack(35, 1, (short) getBlockData(pt)));
-        } // Cloth
-        else if (type == 43) {
-            dropItem(pt, new BaseItemStack(44));
-        } // Double step
-        else if (type == 47) {
-        } // Bookshelves
-        else if (type == 51) {
-        } // Fire
-        else if (type == 52) {
-        } // Mob spawner
-        else if (type == 53) {
-            dropItem(pt, new BaseItemStack(5));
-        } // Wooden stairs
-        else if (type == 55) {
-            dropItem(pt, new BaseItemStack(331));
-        } // Redstone wire
-        else if (type == 56) {
-            dropItem(pt, new BaseItemStack(264));
-        } // Diamond ore
-        else if (type == 59) {
-            dropItem(pt, new BaseItemStack(295));
-        } // Crops
-        else if (type == 60) {
-            dropItem(pt, new BaseItemStack(3));
-        } // Soil
-        else if (type == 62) {
-            dropItem(pt, new BaseItemStack(61));
-        } // Furnace
-        else if (type == 63) {
-            dropItem(pt, new BaseItemStack(323));
-        } // Sign post
-        else if (type == 64) {
-            dropItem(pt, new BaseItemStack(324));
-        } // Wood door
-        else if (type == 67) {
-            dropItem(pt, new BaseItemStack(4));
-        } // Cobblestone stairs
-        else if (type == 68) {
-            dropItem(pt, new BaseItemStack(323));
-        } // Wall sign
-        else if (type == 71) {
-            dropItem(pt, new BaseItemStack(330));
-        } // Iron door
-        else if (type == 73) {
-            dropItem(pt, new BaseItemStack(331), (random.nextInt(2) + 4));
-        } // Redstone ore
-        else if (type == 74) {
-            dropItem(pt, new BaseItemStack(331), (random.nextInt(2) + 4));
-        } // Glowing redstone ore
-        else if (type == 75) {
-            dropItem(pt, new BaseItemStack(76));
-        } // Redstone torch
-        else if (type == 78) {
-        } // Snow
-        else if (type == 79) {
-        } // Ice
-        else if (type == 82) {
-            dropItem(pt, new BaseItemStack(337), 4);
-        } // Clay
-        else if (type == 83) {
-            dropItem(pt, new BaseItemStack(338));
-        } // Reed
-        else if (type == 89) {
-            dropItem(pt, new BaseItemStack(348));
-        } // Lightstone
-        else if (type == 90) {
-        } // Portal
+        }
+        else if (type == 20) { } // Glass
+        else if (type == 21) { dropItem(pt, new BaseItemStack(351, 1, (short)4), (random.nextInt(5)+4)); }
+        else if (type == 26) { dropItem(pt, new BaseItemStack(355)); } // Bed
+        else if (type == 35) { dropItem(pt, new BaseItemStack(35, 1, (short)getBlockData(pt))); } // Cloth
+        else if (type == 43) { // Double step
+            dropItem(pt, new BaseItemStack(44, 1, (short)getBlockData(pt)), 2);
+        }
+        else if (type == 44) { dropItem(pt, new BaseItemStack(44, 1, (short)getBlockData(pt))); } // Step
+        else if (type == 47) { } // Bookshelves
+        else if (type == 51) { } // Fire
+        else if (type == 52) { } // Mob spawner
+        else if (type == 53) { dropItem(pt, new BaseItemStack(5)); } // Wooden stairs
+        else if (type == 55) { dropItem(pt, new BaseItemStack(331)); } // Redstone wire
+        else if (type == 56) { dropItem(pt, new BaseItemStack(264)); } // Diamond ore
+        else if (type == 59) { dropItem(pt, new BaseItemStack(295)); } // Crops
+        else if (type == 60) { dropItem(pt, new BaseItemStack(3)); } // Soil
+        else if (type == 62) { dropItem(pt, new BaseItemStack(61)); } // Furnace
+        else if (type == 63) { dropItem(pt, new BaseItemStack(323)); } // Sign post
+        else if (type == 64) { dropItem(pt, new BaseItemStack(324)); } // Wood door
+        else if (type == 67) { dropItem(pt, new BaseItemStack(4)); } // Cobblestone stairs
+        else if (type == 68) { dropItem(pt, new BaseItemStack(323)); } // Wall sign
+        else if (type == 71) { dropItem(pt, new BaseItemStack(330)); } // Iron door
+        else if (type == 73) { dropItem(pt, new BaseItemStack(331), (random.nextInt(2)+4)); } // Redstone ore
+        else if (type == 74) { dropItem(pt, new BaseItemStack(331), (random.nextInt(2)+4)); } // Glowing redstone ore
+        else if (type == 75) { dropItem(pt, new BaseItemStack(76)); } // Redstone torch
+        else if (type == 78) { } // Snow
+        else if (type == 79) { } // Ice
+        else if (type == 82) { dropItem(pt, new BaseItemStack(337), 4); } // Clay
+        else if (type == 83) { dropItem(pt, new BaseItemStack(338)); } // Reed
+        else if (type == 89) { dropItem(pt, new BaseItemStack(348)); } // Lightstone
+        else if (type == 90) { } // Portal
+        else if (type == 93) { dropItem(pt, new BaseItemStack(356)); } // Repeater
+        else if (type == 94) { dropItem(pt, new BaseItemStack(356)); } // Repeater
         else if (type != 0) {
             dropItem(pt, new BaseItemStack(type));
         }
