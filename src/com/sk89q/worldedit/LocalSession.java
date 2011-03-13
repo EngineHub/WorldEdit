@@ -116,6 +116,7 @@ public class LocalSession {
             EditSession editSession = history.get(historyPointer);
             EditSession newEditSession =
                     new EditSession(editSession.getWorld(), -1, newBlockBag);
+            newEditSession.enableQueue();
             editSession.undo(newEditSession);
             return editSession;
         } else {
@@ -135,6 +136,7 @@ public class LocalSession {
             EditSession editSession = history.get(historyPointer);
             EditSession newEditSession =
                 new EditSession(editSession.getWorld(), -1, newBlockBag);
+            newEditSession.enableQueue();
             editSession.redo(newEditSession);
             historyPointer++;
             return editSession;
