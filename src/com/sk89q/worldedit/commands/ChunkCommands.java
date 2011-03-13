@@ -26,6 +26,7 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.data.LegacyChunkStore;
+import com.sk89q.worldedit.data.McRegionChunkStore;
 import com.sk89q.worldedit.regions.Region;
 
 /**
@@ -56,7 +57,9 @@ public class ChunkCommands {
                 + "." + Integer.toString(chunkZ, 36) + ".dat";
 
         player.print("Chunk: " + chunkX + ", " + chunkZ);
-        player.print(folder1 + "/" + folder2 + "/" + filename);
+        player.print("Old format: " + folder1 + "/" + folder2 + "/" + filename);
+        player.print("McRegion: region/" + McRegionChunkStore.getFilename(
+                new Vector2D(chunkX, chunkZ)));
     }
 
     @Command(
