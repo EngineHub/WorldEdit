@@ -230,4 +230,21 @@ public class RegionCommands {
                 dir, count, !args.hasFlag('a'));
         player.print(affected + " blocks changed. Undo with //undo");
     }
+
+    @Command(
+        aliases = {"/regen"},
+        usage = "",
+        desc = "Regenerates the contents of the selection",
+        min = 0,
+        max = 0
+    )
+    @CommandPermissions({"worldedit.regen"})
+    public static void regenerateChunk(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        
+        Region region = session.getSelection(player.getWorld());
+        player.getWorld().regenerate(region, editSession);
+        player.print("Region regenerated.");
+    }
 }

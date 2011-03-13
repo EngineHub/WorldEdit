@@ -250,6 +250,20 @@ public class EditSession {
     }
 
     /**
+     * Insert a contrived block change into the history.
+     * 
+     * @param pt
+     * @param existing 
+     * @param block
+     */
+    public void rememberChange(Vector pt, BaseBlock existing, BaseBlock block) {
+        BlockVector blockPt = pt.toBlockVector();
+
+        original.put(blockPt, existing);
+        current.put(pt.toBlockVector(), block);
+    }
+
+    /**
      * Set a block with a pattern.
      * 
      * @param pt
@@ -286,7 +300,7 @@ public class EditSession {
      * @param block
      * @return
      */
-    private boolean smartSetBlock(Vector pt, BaseBlock block) {
+    public boolean smartSetBlock(Vector pt, BaseBlock block) {
         if (queued) {
             // Place torches, etc. last
             if (BlockType.shouldPlaceLast(block.getType())) {

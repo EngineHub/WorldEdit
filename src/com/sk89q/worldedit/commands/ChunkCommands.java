@@ -26,6 +26,7 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.data.LegacyChunkStore;
+import com.sk89q.worldedit.regions.Region;
 
 /**
  * Chunk tools.

@@ -22,6 +22,7 @@ package com.sk89q.worldedit;
 import java.util.Random;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.regions.Region;
 
 /**
  * Represents a world.
@@ -78,6 +79,15 @@ public abstract class LocalWorld {
      * @return
      */
     public abstract int getBlockData(Vector pt);
+    
+    /**
+     * Regenerate an area.
+     * 
+     * @param region
+     * @param editSession
+     * @return
+     */
+    public abstract boolean regenerate(Region region, EditSession editSession);
 
     /**
      * Attempts to accurately copy a BaseBlock's extra data to the world.

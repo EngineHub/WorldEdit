@@ -11,6 +11,9 @@ commands:
     delchunks:
         description: Delete chunks that your selection includes
         usage: /<command> 
+    clearclipboard:
+        description: Clear your clipboard
+        usage: /<command> 
     /load:
         description: Load a schematic into your clipboard
         usage: /<command> <filename>
@@ -32,12 +35,6 @@ commands:
     /paste:
         description: Paste the clipboard's contents
         usage: /<command> [-ao] 
-    clearclipboard:
-        description: Clear your clipboard
-        usage: /<command> 
-    /limit:
-        description: Modify block change limit
-        usage: /<command> <limit>
     we:
         description: WorldEdit commands
         usage: /<command> 
@@ -49,6 +46,9 @@ commands:
         description: Search for an item
         usage: /<command> [-bi] <query>
         aliases: ['/l', 'search']
+    /limit:
+        description: Modify block change limit
+        usage: /<command> <limit>
     /hcyl:
         description: Generate a hollow cylinder
         usage: /<command> <block> <radius> [height] 
@@ -67,17 +67,17 @@ commands:
     pumpkins:
         description: Generate pumpkin patches
         usage: /<command> [size]
-    /undo:
-        description: Undoes the last action
-        usage: /<command> [times]
-        aliases: ['undo']
+    clearhistory:
+        description: Clear your history
+        usage: /<command> 
     /redo:
         description: Redoes the last action (from history)
         usage: /<command> [times]
         aliases: ['redo']
-    clearhistory:
-        description: Clear your history
-        usage: /<command> 
+    /undo:
+        description: Undoes the last action
+        usage: /<command> [times]
+        aliases: ['undo']
     unstuck:
         description: Escape from being stuck inside a block
         usage: /<command> 
@@ -87,26 +87,17 @@ commands:
     descend:
         description: Go down a floor
         usage: /<command> 
-    ceil:
-        description: Go to the celing
-        usage: /<command> [clearance]
     thru:
         description: Passthrough walls
         usage: /<command> 
     jumpto:
         description: Teleport to a location
         usage: /<command> 
+    ceil:
+        description: Go to the celing
+        usage: /<command> [clearance]
     up:
         description: Go upwards some distance
-        usage: /<command> <block>
-    /replace:
-        description: Replace all blocks in the selection with another
-        usage: /<command> [from-block] <to-block>
-    /stack:
-        description: Repeat the contents of the selection
-        usage: /<command> [-a] [count] [direction]
-    /set:
-        description: Set all the blocks inside the selection to a block
         usage: /<command> <block>
     /overlay:
         description: Set a block on top of blocks in the region
@@ -121,24 +112,27 @@ commands:
     /smooth:
         description: Smooth the elevation in the selection
         usage: /<command> [iterations]
+    /regen:
+        description: Regenerates the contents of the selection
+        usage: /<command> 
+    /replace:
+        description: Replace all blocks in the selection with another
+        usage: /<command> [from-block] <to-block>
+    /stack:
+        description: Repeat the contents of the selection
+        usage: /<command> [-a] [count] [direction]
+    /set:
+        description: Set all the blocks inside the selection to a block
+        usage: /<command> <block>
     /move:
         description: Move the contents of the selection
         usage: /<command> [count] [direction] [leave-id]
-    cs:
-        description: Execute a CraftScript
-        usage: /<command> <filename> [args...]
     .s:
         description: Execute last CraftScript
         usage: /<command> [args...]
-    /count:
-        description: Counts the number of a certain type of block
-        usage: /<command> <block>
-    /size:
-        description: Get information about the selection
-        usage: /<command> 
-    /shift:
-        description: Shift the selection area
-        usage: /<command> <amount> [direction]
+    cs:
+        description: Execute a CraftScript
+        usage: /<command> <filename> [args...]
     /chunk:
         description: Set the selection to your current chunk
         usage: /<command> 
@@ -160,25 +154,34 @@ commands:
     toggleeditwand:
         description: Toggle functionality of the edit wand
         usage: /<command> 
-    /expand:
-        description: Expand the selection area
-        usage: /<command> <amount> [reverse-amount] <direction>
     /contract:
         description: Contract the selection area
         usage: /<command> <amount> [reverse-amount] [direction]
     /outset:
         description: Outset the selection area
         usage: /<command> [-hv] <amount>
-    /inset:
-        description: Inset the selection area
-        usage: /<command> [-hv] <amount>
     /distr:
         description: Get the distribution of blocks in the selection
         usage: /<command> [-c] 
+    /count:
+        description: Counts the number of a certain type of block
+        usage: /<command> <block>
+    /size:
+        description: Get information about the selection
+        usage: /<command> 
+    /shift:
+        description: Shift the selection area
+        usage: /<command> <amount> [direction]
+    /expand:
+        description: Expand the selection area
+        usage: /<command> <amount> [reverse-amount] <direction>
     /sel:
         description: Choose a region selector
         usage: /<command> [type]
         aliases: [',']
+    /inset:
+        description: Inset the selection area
+        usage: /<command> [-hv] <amount>
     snapshot:
         description: Snapshot commands
         usage: /<command> 
@@ -187,12 +190,6 @@ commands:
         description: Restore the selection from a snapshot
         usage: /<command> [snapshot]
         aliases: ['/restore']
-    size:
-        description: Set the brush size
-        usage: /<command> [pattern]
-    mask:
-        description: Set the brush mask
-        usage: /<command> [mask]
     /:
         description: Toggle the super pickaxe pickaxe function
         usage: /<command> 
@@ -208,15 +205,15 @@ commands:
         description: Set the brush material
         usage: /<command> [pattern]
         aliases: ['material', 'fill']
-    info:
-        description: Block information tool
-        usage: /<command> 
+    size:
+        description: Set the brush size
+        usage: /<command> [pattern]
+    mask:
+        description: Set the brush mask
+        usage: /<command> [mask]
     none:
         description: Turn off all superpickaxe alternate modes
         usage: /<command> 
-    tree:
-        description: Tree generator tool
-        usage: /<command> [type]
     repl:
         description: Block replacer tool
         usage: /<command> <block>
@@ -227,19 +224,15 @@ commands:
         description: Brush tool
         usage: /<command> 
         aliases: ['br']
-    remove:
-        description: Remove all entities of a type
-        usage: /<command> <type> <radius>
-        aliases: ['rem', 'rement']
-    /fill:
-        description: Fill a hole
-        usage: /<command>  <block> <radius> [depth] 
+    info:
+        description: Block information tool
+        usage: /<command> 
+    tree:
+        description: Tree generator tool
+        usage: /<command> [type]
     /fillr:
         description: Fill a hole recursively
         usage: /<command>  <block> <radius> [depth] 
-    /drain:
-        description: Drain a pool
-        usage: /<command> <radius>
     fixlava:
         description: Fix lava to be stationary
         usage: /<command> <radius>
@@ -271,3 +264,13 @@ commands:
     butcher:
         description: Kill all or nearby mobs
         usage: /<command> [radius]
+    remove:
+        description: Remove all entities of a type
+        usage: /<command> <type> <radius>
+        aliases: ['rem', 'rement']
+    /fill:
+        description: Fill a hole
+        usage: /<command>  <block> <radius> [depth] 
+    /drain:
+        description: Drain a pool
+        usage: /<command> <radius>

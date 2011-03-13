@@ -43,7 +43,9 @@ import org.bukkit.World;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.regions.Region;
 
 public class BukkitWorld extends LocalWorld {
     private World world;
@@ -109,6 +111,60 @@ public class BukkitWorld extends LocalWorld {
     @Override
     public int getBlockData(Vector pt) {
         return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getData();
+    }
+
+    /**
+     * Regenerate an area.
+     * 
+     * @param region
+     * @param editSession
+     * @return
+     */
+    @Override
+    public boolean regenerate(Region region, EditSession editSession) {
+        BaseBlock[] history = new BaseBlock[16 * 16 * 128];
+        
+        for (Vector2D chunk : region.getChunks()) {
+            Vector min = new Vector(chunk.getBlockX() * 16, 0, chunk.getBlockZ() * 16);
+            Vector max = min.add(15, 127, 15);
+            
+            // First save all the blocks inside
+            for (int x = 0; x < 16; x++) {
+                for (int y = 0; y < 128; y++) {
+                    for (int z = 0; z < 16; z++) {
+                        Vector pt = min.add(x, y, z);
+                        int index = y * 16 * 16 + z * 16 + x;
+                        history[index] = editSession.getBlock(pt);
+                    }
+                }
+            }
+            
+            try {
+                world.regenerateChunk(chunk.getBlockX(), chunk.getBlockZ());
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+            
+            // Then restore 
+            for (int x = 0; x < 16; x++) {
+                for (int y = 0; y < 128; y++) {
+                    for (int z = 0; z < 16; z++) {
+                        Vector pt = min.add(x, y, z);
+                        int index = y * 16 * 16 + z * 16 + x;
+                        
+                        // We have to restore the block if it was outside
+                        if (!region.contains(pt)) {
+                            editSession.smartSetBlock(pt, history[index]);
+                        } else { // Otherwise fool with history
+                            editSession.rememberChange(pt, history[index],
+                                    editSession.rawGetBlock(pt));
+                        }
+                    }
+                }
+            }
+        }
+        
+        return true;
     }
 
     /**
