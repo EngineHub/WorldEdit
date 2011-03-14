@@ -21,6 +21,10 @@ package com.sk89q.worldedit.commands;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
 import java.util.logging.Logger;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -36,6 +40,7 @@ import com.sk89q.worldedit.snapshots.Snapshot;
  */
 public class SnapshotCommands {
     private static Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+    private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
     
     @Command(
         aliases = {"list"},
@@ -55,11 +60,11 @@ public class SnapshotCommands {
             Math.min(40, Math.max(5, args.getInteger(0))) : 5;
 
         if (config.snapshotRepo != null) {
-            Snapshot[] snapshots = config.snapshotRepo.getSnapshots();
+            List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true);
 
-            if (snapshots.length > 0) {
-                for (byte i = 0; i < Math.min(num, snapshots.length); i++) {
-                    player.print((i + 1) + ". " + snapshots[i].getName());
+            if (snapshots.size() > 0) {
+                for (byte i = 0; i < Math.min(num, snapshots.size()); i++) {
+                    player.print((i + 1) + ". " + snapshots.get(i).getName());
                 }
 
                 player.print("Use /snap use [snapshot] or /snap use latest.");
@@ -120,6 +125,80 @@ public class SnapshotCommands {
                 player.print("Snapshot set to: " + name);
             } catch (InvalidSnapshotException e) {
                 player.printError("That snapshot does not exist or is not available.");
+            }
+        }
+    }
+    
+    @Command(
+        aliases = {"before"},
+        usage = "<date>",
+        desc = "Choose the nearest snapshot before a date",
+        min = 1,
+        max = -1
+    )
+    @CommandPermissions({"worldedit.snapshots.restore"})
+    public static void before(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        
+        LocalConfiguration config = we.getConfiguration();
+        
+        if (config.snapshotRepo == null) {
+            player.printError("Snapshot/backup restore is not configured.");
+            return;
+        }
+        
+        Calendar date = session.detectDate(args.getJoinedStrings(0));
+        
+        if (date == null) {
+            player.printError("Could not detect the date inputted.");
+        } else {
+            dateFormat.setTimeZone(session.getTimeZone());
+            
+            Snapshot snapshot = config.snapshotRepo.getSnapshotBefore(date);
+            if (snapshot == null) {
+                player.printError("Couldn't find a snapshot before "
+                        + dateFormat.format(date.getTime()) + ".");
+            } else {
+                session.setSnapshot(snapshot);
+                player.print("Snapshot set to: " + snapshot.getName());
+            }
+        }
+    }
+    
+    @Command(
+        aliases = {"after"},
+        usage = "<date>",
+        desc = "Choose the nearest snapshot after a date",
+        min = 1,
+        max = -1
+    )
+    @CommandPermissions({"worldedit.snapshots.restore"})
+    public static void after(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        
+        LocalConfiguration config = we.getConfiguration();
+        
+        if (config.snapshotRepo == null) {
+            player.printError("Snapshot/backup restore is not configured.");
+            return;
+        }
+        
+        Calendar date = session.detectDate(args.getJoinedStrings(0));
+        
+        if (date == null) {
+            player.printError("Could not detect the date inputted.");
+        } else {
+            dateFormat.setTimeZone(session.getTimeZone());
+            
+            Snapshot snapshot = config.snapshotRepo.getSnapshotAfter(date);
+            if (snapshot == null) {
+                player.printError("Couldn't find a snapshot after "
+                        + dateFormat.format(date.getTime()) + ".");
+            } else {
+                session.setSnapshot(snapshot);
+                player.print("Snapshot set to: " + snapshot.getName());
             }
         }
     }

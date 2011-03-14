@@ -17,6 +17,7 @@
     <include name="Permissions.jar" />
     <include name="js.jar" />
     <include name="worldeditsunrhino.jar" />
+    <include name="jchronic.jar" />
   </fileset>
   
   <target name="init">
@@ -48,7 +49,8 @@
     <mkdir dir="${build.dir}/defaults"/>
     <copy tofile="${build.dir}/defaults/config.yml" file="config.yml"/>
     <jar jarfile="${dist.dir}/WorldEdit.jar" basedir="${build.dir}" manifest="manifest.mf">
-        <zipgroupfileset dir="lib" includes="worldeditsunrhino.jar" />
+      <zipgroupfileset dir="lib" includes="worldeditsunrhino.jar" />
+      <zipgroupfileset dir="lib" includes="jchronic.jar" />
     </jar>
   </target>
 

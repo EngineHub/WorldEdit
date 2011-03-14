@@ -20,8 +20,10 @@
 package com.sk89q.worldedit.snapshots;
 
 import java.io.*;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -31,7 +33,13 @@ public class SnapshotRepository {
     /**
      * Stores the directory the snapshots come from.
      */
-    private File dir;
+    protected File dir;
+    
+    /**
+     * List of date parsers.
+     */
+    protected List<SnapshotDateParser> dateParsers
+            = new ArrayList<SnapshotDateParser>();
 
     /**
      * Create a new instance of a repository.
@@ -40,6 +48,9 @@ public class SnapshotRepository {
      */
     public SnapshotRepository(File dir) {
         this.dir = dir;
+
+        dateParsers.add(new YYMMDDHHIISSParser());
+        dateParsers.add(new ModificationTimerParser());
     }
 
     /**
@@ -48,16 +59,17 @@ public class SnapshotRepository {
      * @param dir
      */
     public SnapshotRepository(String dir) {
-        this.dir = new File(dir);
+        this(new File(dir));
     }
 
     /**
      * Get a list of snapshots in a directory. The newest snapshot is
      * near the top of the array.
      *
+     * @param newestFirst 
      * @return
      */
-    public Snapshot[] getSnapshots() {
+    public List<Snapshot> getSnapshots(boolean newestFirst) {
         FilenameFilter filter = new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 File f = new File(dir, name);
@@ -66,22 +78,81 @@ public class SnapshotRepository {
         };
 
         String[] snapshotNames = dir.list(filter);
+        List<Snapshot> list = new ArrayList<Snapshot>(snapshotNames.length);
+        
+        for (String name : snapshotNames) {
+            Snapshot snapshot = new Snapshot(this, name);
+            detectDate(snapshot);
+            list.add(snapshot);
+        }
 
-        if (snapshotNames == null || snapshotNames.length == 0) {
-            return new Snapshot[0];
+        if (newestFirst) {
+            Collections.sort(list, Collections.reverseOrder());
+        } else {
+            Collections.sort(list);
+        }
+
+        return list;
+    }
+    
+    /**
+     * Get the first snapshot after a date.
+     * 
+     * @param date
+     * @return
+     */
+    public Snapshot getSnapshotAfter(Calendar date) {
+        List<Snapshot> snapshots = getSnapshots(true);
+        Snapshot last = null;
+        
+        for (Snapshot snapshot : snapshots) {
+            if (snapshot.getDate() != null
+                    && snapshot.getDate().before(date)) {
+                return last;
+            }
+            
+            last = snapshot;
         }
         
-        Snapshot[] snapshots = new Snapshot[snapshotNames.length];
-
-        Arrays.sort(snapshotNames, Collections.reverseOrder());
-
-        int i = 0;
-        for (String name : snapshotNames) {
-            snapshots[i] = new Snapshot(this, name);
-            i++;
+        return last;
+    }
+    
+    /**
+     * Get the first snapshot before a date.
+     * 
+     * @param date
+     * @return
+     */
+    public Snapshot getSnapshotBefore(Calendar date) {
+        List<Snapshot> snapshots = getSnapshots(false);
+        Snapshot last = null;
+        
+        for (Snapshot snapshot : snapshots) {
+            if (snapshot.getDate().after(date)) {
+                return last;
+            }
+            
+            last = snapshot;
         }
-
-        return snapshots;
+        
+        return last;
+    }
+    
+    /**
+     * Attempt to detect a snapshot's date and assign it.
+     * 
+     * @param snapshot
+     */
+    protected void detectDate(Snapshot snapshot) {
+        for (SnapshotDateParser parser : dateParsers) {
+            Calendar date = parser.detectDate(snapshot.getFile());
+            if (date != null) {
+                snapshot.setDate(date);
+                return;
+            }
+        }
+        
+        snapshot.setDate(null);
     }
 
     /**
@@ -90,13 +161,13 @@ public class SnapshotRepository {
      * @return
      */
     public Snapshot getDefaultSnapshot() {
-        Snapshot[] snapshots = getSnapshots();
+        List<Snapshot> snapshots = getSnapshots(true);
 
-        if (snapshots.length == 0) {
+        if (snapshots.size() == 0) {
             return null;
         }
 
-        return snapshots[0];
+        return snapshots.get(0);
     }
 
     /**

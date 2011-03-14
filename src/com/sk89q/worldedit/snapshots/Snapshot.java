@@ -21,23 +21,28 @@ package com.sk89q.worldedit.snapshots;
 
 import com.sk89q.worldedit.data.*;
 import java.io.*;
+import java.util.Calendar;
 import java.util.logging.Logger;
 
 /**
  *
  * @author sk89q
  */
-public class Snapshot {
+public class Snapshot implements Comparable<Snapshot> {
     protected static Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     
     /**
      * Stores snapshot file.
      */
-    private File file;
+    protected File file;
     /**
      * Name of the snapshot;
      */
-    private String name;
+    protected String name;
+    /**
+     * Stores the date associated with the snapshot.
+     */
+    protected Calendar date;
 
     /**
      * Construct a snapshot restoration operation.
@@ -124,5 +129,49 @@ public class Snapshot {
      */
     public String getName() {
         return name;
+    }
+    
+    /**
+     * Get the file for the snapshot.
+     * 
+     * @return
+     */
+    public File getFile() {
+        return file;
+    }
+    
+    /**
+     * Get the date associated with this snapshot.
+     * 
+     * @return
+     */
+    public Calendar getDate() {
+        return date;
+    }
+    
+    /**
+     * Set the date of the snapshot.
+     * 
+     * @param date
+     */
+    public void setDate(Calendar date) {
+        this.date = date;
+    }
+
+    @Override
+    public int compareTo(Snapshot o) {
+        if (o.date == null || date == null) {
+            return name.compareTo(o.name);
+        } else {
+            return date.compareTo(o.date);
+        }
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Snapshot) {
+            return file.equals(((Snapshot) o).file);
+        }
+        return false;
     }
 }

@@ -6,3 +6,5 @@ This product includes software from WorldEdit
 This product includes software from JOpt Simple, under the MIT license.
 
 This product includes software by toi.
+
+This product includes software from JChronic, under the MIT license.

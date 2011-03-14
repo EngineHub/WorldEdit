@@ -19,9 +19,15 @@
 
 package com.sk89q.worldedit;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.TimeZone;
+import com.sk89q.jchronic.Chronic;
+import com.sk89q.jchronic.Options;
+import com.sk89q.jchronic.utils.Span;
+import com.sk89q.jchronic.utils.Time;
 import com.sk89q.worldedit.snapshots.Snapshot;
 import com.sk89q.worldedit.tools.BrushTool;
 import com.sk89q.worldedit.tools.SinglePickaxe;
@@ -65,7 +71,8 @@ public class LocalSession {
     private String lastScript;
     private boolean beenToldVersion = false;
     private boolean hasCUISupport = false;
-    
+    private TimeZone timezone = TimeZone.getDefault();
+
     /**
      * Construct the object.
      * 
@@ -73,6 +80,24 @@ public class LocalSession {
      */
     public LocalSession(LocalConfiguration config) {
         this.config = config;
+    }
+    
+    /**
+     * Get the session's timezone.
+     * 
+     * @return
+     */
+    public TimeZone getTimeZone() {
+        return timezone;
+    }
+
+    /**
+     * Set the session's timezone.
+     * 
+     * @param timezone 
+     */
+    public void setTimezone(TimeZone timezone) {
+        this.timezone = timezone;
     }
 
     /**
@@ -571,5 +596,23 @@ public class LocalSession {
      */
     public void setCUISupport(boolean support) {
         hasCUISupport = true;
+    }
+    
+    /**
+     * Detect date from a user's input.
+     * 
+     * @param input
+     * @return
+     */
+    public Calendar detectDate(String input) {
+        Time.setTimeZone(getTimeZone());
+        Options opt = new com.sk89q.jchronic.Options();
+        opt.setNow(Calendar.getInstance(getTimeZone()));
+        Span date = Chronic.parse(input, opt);
+        if (date == null) {
+            return null;
+        } else {
+            return date.getBeginCalendar();
+        }
     }
 }
