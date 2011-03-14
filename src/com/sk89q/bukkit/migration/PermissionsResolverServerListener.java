@@ -46,6 +46,7 @@ public class PermissionsResolverServerListener extends ServerListener {
             manager.setPluginPermissionsResolver(plugin);
         } else if (name.equalsIgnoreCase("GroupUsers") || name.equalsIgnoreCase("Permissions")) {
             manager.findResolver();
+            manager.load();
         }
     }
 
@@ -63,6 +64,7 @@ public class PermissionsResolverServerListener extends ServerListener {
                 || name.equalsIgnoreCase("GroupUsers")
                 || name.equalsIgnoreCase("Permissions")) {
             manager.findResolver();
+            manager.load();
         }
     }
     
