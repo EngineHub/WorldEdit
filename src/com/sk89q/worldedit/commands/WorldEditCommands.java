@@ -19,6 +19,10 @@
 
 package com.sk89q.worldedit.commands;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.TimeZone;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
@@ -29,6 +33,8 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 
 public class WorldEditCommands {
+    private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+    
     @Command(
         aliases = {"version", "ver"},
         usage = "",
@@ -72,5 +78,22 @@ public class WorldEditCommands {
             throws WorldEditException {
         session.setCUISupport(true);
         session.dispatchCUISetup(player);
+    }
+
+    @Command(
+        aliases = {"tz"},
+        usage = "[timezone]",
+        desc = "Set your timezone",
+        min = 1,
+        max = 1
+    )
+    public static void tz(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        TimeZone tz = TimeZone.getTimeZone(args.getString(0));
+        session.setTimezone(tz);
+        player.print("Timezone set for this session to: " + tz.getDisplayName());
+        player.print("The current time in that timezone is: "
+                + dateFormat.format(Calendar.getInstance(tz).getTime()));
     }
 }
