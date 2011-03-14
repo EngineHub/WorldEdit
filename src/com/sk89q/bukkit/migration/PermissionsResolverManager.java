@@ -42,22 +42,11 @@ public class PermissionsResolverManager implements PermissionsResolver {
     
     public void findResolver() {
         if (tryPluginPermissionsResolver()) return;
-        if (tryGroupsUsers()) return;
         if (tryNijiPermissions()) return;
         if (tryFlatFilePermissions()) return;
         
         perms = new ConfigurationPermissionsResolver(config);
         logger.info(name + ": No known permissions plugin detected. Using configuration file for permissions.");
-    }
-    
-    private boolean tryGroupsUsers() {
-        try {
-            perms = new GroupUsersPemissionsResolver(server);
-            logger.info(name + ": GroupUsers detected! Using GroupUsers for permissions.");
-            return true;
-        } catch (Throwable e) {
-            return false;
-        }
     }
     
     private boolean tryNijiPermissions() {
