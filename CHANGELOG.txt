@@ -1,3 +1,22 @@
+4.2:
+Bukkit users: Minimum build #: 541
+- Changed the compass so that left click is /jumpto and
+    right click is /thru.
+- Add a basic API method to get a player's selection region.
+- Added shortcut fire extinguisher brush.
+- Added //regen to regenerate an area.
+- Added McRegion support to /chunkinfo.
+- Added /snap before [date] and /snap after [date].
+    Example: /snap before last Monday 2am
+- Added /worldedit tz to set your timezone. It currently does not persist
+    yet. Example: /we tz america/los_angeles
+- Fixed block mine drops for 1.3.
+- Possibly fixed item dropping with undo/redo.
+- Fixed the permissions resolver not being loaded if it was loaded after
+    a plugin was enabled or re-enabled.
+- Removed GroupUsers support.
+- Added some support for the WorldEdit client-side UI (CUI) protocol.
+
 4.1:
 - Added McRegion support.
 - Optimized the case when worlds were not in the root directory of a zip.
