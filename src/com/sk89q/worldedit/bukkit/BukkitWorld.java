@@ -126,7 +126,6 @@ public class BukkitWorld extends LocalWorld {
         
         for (Vector2D chunk : region.getChunks()) {
             Vector min = new Vector(chunk.getBlockX() * 16, 0, chunk.getBlockZ() * 16);
-            Vector max = min.add(15, 127, 15);
             
             // First save all the blocks inside
             for (int x = 0; x < 16; x++) {
