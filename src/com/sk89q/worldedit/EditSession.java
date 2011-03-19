@@ -141,7 +141,7 @@ public class EditSession {
      * @param blockType
      * @return Whether the block changed
      */
-    protected boolean rawSetBlock(Vector pt, BaseBlock block) {
+    public boolean rawSetBlock(Vector pt, BaseBlock block) {
         int y = pt.getBlockY();
         int type = block.getType();
         
