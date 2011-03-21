@@ -624,6 +624,66 @@ public class WorldEdit {
 
         return new Vector(xm, ym, zm);
     }
+    
+    /**
+     * Get diagonal direction vector for a player's direction. May return
+     * null if a direction could not be found.
+     * 
+     * @param player
+     * @param dirStr 
+     * @return
+     * @throws UnknownDirectionException 
+     */
+    public Vector getDiagonalDirection( LocalPlayer player, String dirStr )
+        throws UnknownDirectionException {
+        int xm = 0;
+        int ym = 0;
+        int zm = 0;
+
+        PlayerDirection dir = null;
+
+        dirStr = dirStr.toLowerCase();
+        boolean wasDetected = false;
+
+        if ( dirStr.equals( "me" ) ) {
+            dir = player.getCardinalDirection();
+            wasDetected = true;
+        }
+
+        if ((dirStr.charAt(0) == 's' && dirStr.indexOf( 'w' ) > 0) || dir == PlayerDirection.SOUTH_WEST) {
+            zm += 1;
+            xm += 1;
+        } else if ((dirStr.charAt(0) == 'n' && dirStr.indexOf( 'w' ) > 0) || dir == PlayerDirection.NORTH_WEST) {
+            zm += 1;
+            xm -= 1;
+        } else if ((dirStr.charAt(0) == 's' && dirStr.indexOf( 'e' ) > 0) || dir == PlayerDirection.SOUTH_EAST) {
+            zm -= 1;
+            xm += 1;
+        } else if ((dirStr.charAt(0) == 'n' && dirStr.indexOf( 'e' ) > 0) || dir == PlayerDirection.NORTH_EAST) {
+            zm -= 1;
+            xm -= 1;
+        } else if (dirStr.charAt(0) == 'w' || dir == PlayerDirection.WEST) {
+            zm += 1;
+        } else if (dirStr.charAt(0) == 'e' || dir == PlayerDirection.EAST) {
+            zm -= 1;
+        } else if (dirStr.charAt(0) == 's' || dir == PlayerDirection.SOUTH) {
+            xm += 1;
+        } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.NORTH) {
+            xm -= 1;
+        } else if (dirStr.charAt(0) == 'u') {
+            ym += 1;
+        } else if (dirStr.charAt(0) == 'd') {
+            ym -= 1;
+        } else {
+            if (wasDetected) {
+                throw new UnknownDirectionException(dir.name());
+            } else {
+                throw new UnknownDirectionException(dirStr);
+            }
+        }
+
+        return new Vector( xm, ym, zm );
+    }
 
     /**
      * Get the flip direction for a player's direction. May return

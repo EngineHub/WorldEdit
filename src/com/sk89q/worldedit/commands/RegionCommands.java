@@ -223,7 +223,7 @@ public class RegionCommands {
             throws WorldEditException {
 
         int count = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
-        Vector dir = we.getDirection(player,
+        Vector dir = we.getDiagonalDirection(player,
                 args.argsLength() > 1 ? args.getString(1).toLowerCase() : "me");
 
         int affected = editSession.stackCuboidRegion(session.getSelection(player.getWorld()),
