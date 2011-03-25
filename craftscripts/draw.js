@@ -45,6 +45,42 @@ var clothColors = [
     makeColor(255, 0, 0), // Red
     makeColor(0, 0, 0), // Black
 ]
+var clothColorsOpt = [
+	makeColor(178, 178, 178), // White
+	makeColor(187, 102, 44), // Orange
+	makeColor(152, 61, 161), // Magenta
+	makeColor(84, 111, 170), // Light blue
+	makeColor(156, 145, 23), // Yellow
+	makeColor(47, 151, 38), // Green
+	makeColor(174, 105, 124), // Pink
+	makeColor(53, 53, 53), // Gray
+	makeColor(127, 133, 133), // Light grey
+	makeColor(32, 94, 120), // Cyan
+	makeColor(103, 43, 156), // Purple
+	makeColor(31, 41, 123), // Blue
+	makeColor(68, 41, 22), // Brown
+	makeColor(44, 61, 19), // Cactus green
+	makeColor(131, 36, 32), // Red
+	makeColor(21, 18, 18), // Black
+]
+var clothColorsOptHD = [
+	makeColor(168, 168, 168), // White
+	makeColor(143, 59, 0), // Orange 
+	makeColor(152, 0, 67), // Magenta
+	makeColor(0, 153, 153), // Light blue
+	makeColor(150, 150, 0), // Yellow
+	makeColor(59, 143, 0), // Green
+	makeColor(167, 83, 125), // Pink
+	makeColor(64, 64, 64), // Gray
+	makeColor(101, 101, 101), // Light grey
+	makeColor(0, 83, 83), // Cyan
+	makeColor(43, 12, 75), // Purple
+	makeColor(0, 38, 77), // Blue
+	makeColor(52, 25, 0), // Brown
+	makeColor(10, 76, 10), // Cactus green
+	makeColor(127, 9, 9), // Red
+	makeColor(17, 17, 17), // Black
+]
 
 // http://stackoverflow.com/questions/2103368/color-logic-algorithm/2103608#2103608
 function colorDistance(c1, c2) {
@@ -58,31 +94,38 @@ function colorDistance(c1, c2) {
     return Math.sqrt(weightR*r*r + weightG*g*g + weightB*b*b);
 }
 
-function findClosestWoolColor(col) {
-    var closestId = 0;
-    var closestDistance = colorDistance(col, clothColors[0]);
-    
-    for (var i = 1; i < clothColors.length; i++) {
-        var dist = colorDistance(col, clothColors[i]);
-        
-        if (dist < closestDistance) {
-            closestId = i;
-            closestDistance = dist;
-        }
-    }
-    
-    return closestId;
+function findClosestWoolColor(col, clothColors) {
+	var closestId = 0;
+	var closestDistance = colorDistance(col, clothColors[0]);
+	
+	for(var i = 1; i < clothColors.length; i++) {
+		var dist = colorDistance(col, clothColors[i]);
+		
+		if(dist < closestDistance) {
+			closestId = i;
+			closestDistance = dist;
+		}
+	}
+	
+	return closestId;
 }
 
 
-context.checkArgs(1, 2, "<image> <orientation>");
+context.checkArgs(1, 3, "<image> <orientation> <palette>");
 
 var f = context.getSafeFile("drawings", argv[1]);
 var sess = context.remember();
 var upright = argv[2] == "v";
-
+var colors = clothColors;
+if(argv[3] == "opt") {
+	colors = clothColorsOpt;
+	player.print("Using optimized palette");
+} else if(argv[3] == "optHD") {
+	colors = clothColorsOptHD;
+	player.print("Using optimized HD palette");
+}
 if (!f.exists()) {
-    player.error("Specified file doesn't exist.");
+    player.printError("Specified file doesn't exist.");
 } else {
     var img = ImageIO.read(f);
 
@@ -94,7 +137,7 @@ if (!f.exists()) {
     for (var x = 0; x < width; x++) {
         for (var y = 0; y < height; y++) {
             var c = new Color(img.getRGB(x, y));
-            var data = findClosestWoolColor(c);
+            var data = findClosestWoolColor(c,colors);
 			// Added this to enable the user to create images upright
             // rather than flat on the ground
 			if (!upright) {
