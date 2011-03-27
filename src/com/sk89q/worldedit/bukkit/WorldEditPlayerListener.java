@@ -20,13 +20,15 @@
 package com.sk89q.worldedit.bukkit;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
 import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.BlockID;
 
@@ -93,16 +95,40 @@ public class WorldEditPlayerListener extends PlayerListener {
             event.setCancelled(true);
         }
     }
-    
+
     /**
-     * Called when a player uses an item
-     * 
+     * Called when a player interacts
+     *
      * @param event Relevant event details
      */
     @Override
-    public void onPlayerItem(PlayerItemEvent event) {
-        if (plugin.controller.handleRightClick(wrapPlayer(event.getPlayer()))) {
-            event.setCancelled(true);
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            LocalWorld world = new BukkitWorld(event.getClickedBlock().getWorld());
+            WorldVector pos = new WorldVector(world, event.getClickedBlock().getX(),
+                    event.getClickedBlock().getY(), event.getClickedBlock().getZ());
+            LocalPlayer player = wrapPlayer(event.getPlayer());
+            
+            if (plugin.controller.handleBlockLeftClick(player, pos)) {
+                event.setCancelled(true);
+            }
+        } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            LocalWorld world = new BukkitWorld(event.getClickedBlock().getWorld());
+            WorldVector pos = new WorldVector(world, event.getClickedBlock().getX(),
+                    event.getClickedBlock().getY(), event.getClickedBlock().getZ());
+            LocalPlayer player = wrapPlayer(event.getPlayer());
+            
+            if (plugin.controller.handleBlockRightClick(player, pos)) {
+                event.setCancelled(true);
+            }
+
+            if (plugin.controller.handleRightClick(wrapPlayer(event.getPlayer()))) {
+                event.setCancelled(true);
+            }
+        } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
+            if (plugin.controller.handleRightClick(wrapPlayer(event.getPlayer()))) {
+                event.setCancelled(true);
+            }
         }
     }
     

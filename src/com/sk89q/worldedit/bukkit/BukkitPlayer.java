@@ -92,7 +92,7 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public void setPosition(Vector pos, float pitch, float yaw) {
-        player.teleportTo(new Location(player.getWorld(), pos.getX(), pos.getY(),
+        player.teleport(new Location(player.getWorld(), pos.getX(), pos.getY(),
                 pos.getZ(), yaw, pitch));
     }
 

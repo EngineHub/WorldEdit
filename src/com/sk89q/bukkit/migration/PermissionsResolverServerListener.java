@@ -38,7 +38,7 @@ public class PermissionsResolverServerListener extends ServerListener {
      * @param event Relevant event details
      */
     @Override
-    public void onPluginEnabled(PluginEvent event) {
+    public void onPluginEnable(PluginEvent event) {
         Plugin plugin = event.getPlugin();
         String name = plugin.getDescription().getName();
         
@@ -56,7 +56,7 @@ public class PermissionsResolverServerListener extends ServerListener {
      * @param event Relevant event details
      */
     @Override
-    public void onPluginDisabled(PluginEvent event) {
+    public void onPluginDisable(PluginEvent event) {
         Plugin plugin = event.getPlugin();
         String name = plugin.getDescription().getName();
         

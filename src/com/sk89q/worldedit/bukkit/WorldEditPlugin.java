@@ -126,14 +126,11 @@ public class WorldEditPlugin extends JavaPlugin {
     protected void registerEvents() {        
         PlayerListener playerListener = new WorldEditPlayerListener(this);
         PlayerListener criticalPlayerListener = new WorldEditCriticalPlayerListener(this);
-        BlockListener blockListener = new WorldEditBlockListener(this);
         
         registerEvent(Event.Type.PLAYER_QUIT, playerListener);
         registerEvent(Event.Type.PLAYER_ANIMATION, playerListener);
-        registerEvent(Event.Type.PLAYER_ITEM, playerListener);
+        registerEvent(Event.Type.PLAYER_INTERACT, playerListener);
         registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, playerListener);
-        registerEvent(Event.Type.BLOCK_DAMAGED, blockListener);
-        registerEvent(Event.Type.BLOCK_RIGHTCLICKED, blockListener);
         registerEvent(Event.Type.PLAYER_JOIN, criticalPlayerListener, Priority.Lowest);
         
         // The permissions resolver has some hooks of its own
