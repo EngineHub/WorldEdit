@@ -21,6 +21,7 @@ package com.sk89q.worldedit.bukkit.selections;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import com.sk89q.worldedit.Vector;
 
 public interface Selection {
     /**
@@ -31,11 +32,25 @@ public interface Selection {
     public Location getMinimumPoint();
     
     /**
+     * Get the lower point of a region.
+     * 
+     * @return min. point
+     */
+    public Vector getNativeMinimumPoint();
+    
+    /**
      * Get the upper point of a region.
      * 
      * @return max. point
      */
     public Location getMaximumPoint();
+    
+    /**
+     * Get the upper point of a region.
+     * 
+     * @return max. point
+     */
+    public Vector getNativeMaximumPoint();
     
     /**
      * Get the world.

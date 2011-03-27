@@ -19,7 +19,9 @@
 
 package com.sk89q.worldedit.bukkit.selections;
 
+import java.util.List;
 import org.bukkit.World;
+import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.regions.*;
 
 public class Polygonal2DSelection extends RegionSelection {
@@ -30,5 +32,9 @@ public class Polygonal2DSelection extends RegionSelection {
         super(world, region);
         this.world = world;
         this.poly2d = region;
+    }
+    
+    public List<BlockVector2D> getNativePoints() {
+        return poly2d.getPoints();
     }
 }

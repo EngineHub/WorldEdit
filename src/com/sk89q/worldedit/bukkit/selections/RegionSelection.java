@@ -23,6 +23,7 @@ import static com.sk89q.worldedit.bukkit.BukkitUtil.toLocation;
 import static com.sk89q.worldedit.bukkit.BukkitUtil.toVector;
 import org.bukkit.Location;
 import org.bukkit.World;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.Region;
 
 public abstract class RegionSelection implements Selection {
@@ -41,8 +42,18 @@ public abstract class RegionSelection implements Selection {
     }
 
     @Override
+    public Vector getNativeMinimumPoint() {
+        return region.getMinimumPoint();
+    }
+
+    @Override
     public Location getMaximumPoint() {
         return toLocation(world, region.getMaximumPoint());
+    }
+
+    @Override
+    public Vector getNativeMaximumPoint() {
+        return region.getMaximumPoint();
     }
 
     @Override
