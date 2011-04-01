@@ -128,6 +128,7 @@ public enum ItemType {
     CAKE(92, "Cake", new String[] {"cake", "cakeblock"}),
     REDSTONE_REPEATER_OFF(93, "Redstone repeater (off)", new String[] {"diode", "redstonerepeater", "repeater", "delayer"}),
     REDSTONE_REPEATER_ON(94, "Redstone repeater (on)", new String[] {"diodeon", "redstonerepeateron", "repeateron", "delayeron"}),
+    LOCKED_CHEST(95, "Locked chest", new String[] {"lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"}),
     
     IRON_SHOVEL(256, "Iron shovel", "ironshovel"),
     IRON_PICK(257, "Iron pick", new String[] {"ironpick", "ironpickaxe"}),
@@ -236,6 +237,7 @@ public enum ItemType {
     CAKE_ITEM(354, "Cake", "cake"),
     BED_ITEM(355, "Bed", "bed"),
     REDSTONE_REPEATER(356, "Redstone repeater", new String[] {"redstonerepeater", "diode", "delayer"}),
+    COOKIE(357, "Cookie", "cookie"),
     GOLD_RECORD(2256, "Gold Record", new String[] {"goldrecord", "golddisc"}),
     GREEN_RECORD(2257, "Green Record", new String[] {"greenrecord", "greenddisc"});
 

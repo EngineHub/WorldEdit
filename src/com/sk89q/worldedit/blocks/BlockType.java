@@ -127,7 +127,8 @@ public enum BlockType {
             new String[] {"pumpkinlighted", "pumpkinon", "litpumpkin", "jackolantern"}),
     CAKE(92, "Cake", new String[] {"cake", "cakeblock"}),
     REDSTONE_REPEATER_OFF(93, "Redstone repeater (off)", new String[] {"diode", "redstonerepeater", "repeater", "delayer"}),
-    REDSTONE_REPEATER_ON(94, "Redstone repeater (on)", new String[] {"diodeon", "redstonerepeateron", "repeateron", "delayeron"});
+    REDSTONE_REPEATER_ON(94, "Redstone repeater (on)", new String[] {"diodeon", "redstonerepeateron", "repeateron", "delayeron"}),
+    LOCKED_CHEST(95, "Locked chest", new String[] {"lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"});
 
     /**
      * Stores a list of dropped blocks for blocks.
