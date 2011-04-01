@@ -23,10 +23,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
-import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.WorldVector;
@@ -51,14 +51,14 @@ public class WorldEditPlayerListener extends PlayerListener {
         LocalPlayer localPlayer = wrapPlayer(event.getPlayer());
         
         if (event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
-            plugin.controller.handleArmSwing(localPlayer);
+            plugin.getWorldEdit().handleArmSwing(localPlayer);
         }
         
         // As of Minecraft 1.3, a block dig packet is no longer sent for
         // bedrock, so we have to do an (inaccurate) detection ourself
         WorldVector pt = localPlayer.getBlockTrace(5);
         if (pt != null && pt.getWorld().getBlockType(pt) == BlockID.BEDROCK) {
-            if (plugin.controller.handleBlockLeftClick(localPlayer, pt)) {
+            if (plugin.getWorldEdit().handleBlockLeftClick(localPlayer, pt)) {
             }
         }
     }
@@ -78,8 +78,8 @@ public class WorldEditPlayerListener extends PlayerListener {
      * @param event Relevant event details
      */
     @Override
-    public void onPlayerQuit(PlayerEvent event) {
-        plugin.controller.handleDisconnect(wrapPlayer(event.getPlayer()));
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        plugin.getWorldEdit().handleDisconnect(wrapPlayer(event.getPlayer()));
     }
 
     /**
@@ -88,10 +88,10 @@ public class WorldEditPlayerListener extends PlayerListener {
      * @param event Relevant event details
      */
     @Override
-    public void onPlayerCommandPreprocess(PlayerChatEvent event) {
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String[] split = event.getMessage().split(" ");
         
-        if (plugin.controller.handleCommand(wrapPlayer(event.getPlayer()), split)) {
+        if (plugin.getWorldEdit().handleCommand(wrapPlayer(event.getPlayer()), split)) {
             event.setCancelled(true);
         }
     }
@@ -109,7 +109,7 @@ public class WorldEditPlayerListener extends PlayerListener {
                     event.getClickedBlock().getY(), event.getClickedBlock().getZ());
             LocalPlayer player = wrapPlayer(event.getPlayer());
             
-            if (plugin.controller.handleBlockLeftClick(player, pos)) {
+            if (plugin.getWorldEdit().handleBlockLeftClick(player, pos)) {
                 event.setCancelled(true);
             }
         } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -118,21 +118,21 @@ public class WorldEditPlayerListener extends PlayerListener {
                     event.getClickedBlock().getY(), event.getClickedBlock().getZ());
             LocalPlayer player = wrapPlayer(event.getPlayer());
             
-            if (plugin.controller.handleBlockRightClick(player, pos)) {
+            if (plugin.getWorldEdit().handleBlockRightClick(player, pos)) {
                 event.setCancelled(true);
             }
 
-            if (plugin.controller.handleRightClick(wrapPlayer(event.getPlayer()))) {
+            if (plugin.getWorldEdit().handleRightClick(wrapPlayer(event.getPlayer()))) {
                 event.setCancelled(true);
             }
         } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
-            if (plugin.controller.handleRightClick(wrapPlayer(event.getPlayer()))) {
+            if (plugin.getWorldEdit().handleRightClick(wrapPlayer(event.getPlayer()))) {
                 event.setCancelled(true);
             }
         }
     }
     
     private BukkitPlayer wrapPlayer(Player player) {
-        return new BukkitPlayer(plugin, plugin.server, player);
+        return new BukkitPlayer(plugin, plugin.getServerInterface(), player);
     }
 }

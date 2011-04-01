@@ -36,6 +36,7 @@ public class WorldEditAPI  {
      * @return
      */
     public LocalSession getSession(Player player) {
-        return plugin.controller.getSession(new BukkitPlayer(plugin, plugin.server, player));
+        return plugin.getWorldEdit().getSession(
+                new BukkitPlayer(plugin, plugin.getServerInterface(), player));
     }
 }

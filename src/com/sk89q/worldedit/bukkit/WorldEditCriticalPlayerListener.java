@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 
 /**
@@ -47,11 +47,11 @@ public class WorldEditCriticalPlayerListener extends PlayerListener {
      * @param event Relevant event details
      */
     @Override
-    public void onPlayerJoin(PlayerEvent event) {
+    public void onPlayerJoin(PlayerJoinEvent event) {
         wrapPlayer(event.getPlayer()).dispatchCUIHandshake();
     }
     
     private BukkitPlayer wrapPlayer(Player player) {
-        return new BukkitPlayer(plugin, plugin.server, player);
+        return new BukkitPlayer(plugin, plugin.getServerInterface(), player);
     }
 }

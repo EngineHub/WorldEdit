@@ -31,7 +31,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.bukkit.migration.PermissionsResolverManager;
@@ -55,15 +54,15 @@ public class WorldEditPlugin extends JavaPlugin {
     /**
      * The server interface that all server-related API goes through.
      */
-    protected ServerInterface server;
+    private ServerInterface server;
     /**
      * Main WorldEdit instance.
      */
-    protected WorldEdit controller;
+    private WorldEdit controller;
     /**
      * Deprecated API.
      */
-    protected WorldEditAPI api;
+    private WorldEditAPI api;
     
     /**
      * Holds the configuration for WorldEdit.
@@ -227,15 +226,6 @@ public class WorldEditPlugin extends JavaPlugin {
     }
     
     /**
-     * Get a reference to the WorldEdit object.
-     * 
-     * @return
-     */
-    public WorldEdit getWorldEdit() {
-        return controller;
-    }
-    
-    /**
      * Gets the session for the player.
      * 
      * @param player
@@ -336,6 +326,24 @@ public class WorldEditPlugin extends JavaPlugin {
      */
     public BukkitPlayer wrapPlayer(Player player) {
         return new BukkitPlayer(this, this.server, player);
+    }
+    
+    /**
+     * Get the server interface.
+     * 
+     * @return
+     */
+    public ServerInterface getServerInterface() {
+        return server;
+    }
+    
+    /**
+     * Get WorldEdit.
+     * 
+     * @return
+     */
+    public WorldEdit getWorldEdit() {
+        return controller;
     }
     
     /**

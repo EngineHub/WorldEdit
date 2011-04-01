@@ -138,7 +138,7 @@ public class EditSession {
      * Sets a block without changing history.
      * 
      * @param pt
-     * @param blockType
+     * @param block 
      * @return Whether the block changed
      */
     public boolean rawSetBlock(Vector pt, BaseBlock block) {

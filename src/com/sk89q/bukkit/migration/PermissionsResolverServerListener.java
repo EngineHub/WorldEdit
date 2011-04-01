@@ -21,7 +21,8 @@ package com.sk89q.bukkit.migration;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
-import org.bukkit.event.server.PluginEvent;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 import org.bukkit.plugin.Plugin;
 
@@ -38,7 +39,7 @@ public class PermissionsResolverServerListener extends ServerListener {
      * @param event Relevant event details
      */
     @Override
-    public void onPluginEnable(PluginEvent event) {
+    public void onPluginEnable(PluginEnableEvent event) {
         Plugin plugin = event.getPlugin();
         String name = plugin.getDescription().getName();
         
@@ -56,7 +57,7 @@ public class PermissionsResolverServerListener extends ServerListener {
      * @param event Relevant event details
      */
     @Override
-    public void onPluginDisable(PluginEvent event) {
+    public void onPluginDisable(PluginDisableEvent event) {
         Plugin plugin = event.getPlugin();
         String name = plugin.getDescription().getName();
         
