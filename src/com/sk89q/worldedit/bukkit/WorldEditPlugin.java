@@ -169,7 +169,7 @@ public class WorldEditPlugin extends JavaPlugin {
         if (!actual.exists()) {
             
             InputStream input =
-                    this.getClass().getResourceAsStream("/defaults/" + name);
+                    WorldEdit.class.getResourceAsStream("/defaults/" + name);
             if (input != null) {
                 FileOutputStream output = null;
 
