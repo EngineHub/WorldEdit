@@ -55,31 +55,44 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         try {
             Player player = server.getPlayer(name);
             if (player == null) return false;
-            return api.Security.permission(player, permission);
+            try {
+                return api.getHandler().has(player, permission);
+            } catch (Throwable t) {
+                return api.Security.permission(player, permission);
+            }
         } catch (Throwable t) {
             t.printStackTrace();
             return false;
         }
     }
 
-    @SuppressWarnings("static-access")
+    @SuppressWarnings({ "static-access", "deprecation" })
     public boolean inGroup(String name, String group) {
         try {
             Player player = server.getPlayer(name);
             if (player == null) return false;
-            return api.Security.inGroup(name, group);
+            try {
+                return api.getHandler().inGroup(player.getWorld().getName(), name, group);
+            } catch (Throwable t) {
+                return api.Security.inGroup(name, group);
+            }
         } catch (Throwable t) {
             t.printStackTrace();
             return false;
         }
     }
 
-    @SuppressWarnings("static-access")
+    @SuppressWarnings({ "static-access", "deprecation" })
     public String[] getGroups(String name) {
         try {
             Player player = server.getPlayer(name);
             if (player == null) return new String[0];
-            String group = api.Security.getGroup(player.getName());
+            String group;
+            try {
+                group = api.getHandler().getGroup(player.getWorld().getName(), player.getName());
+            } catch (Throwable t) {
+                group = api.Security.getGroup(player.getName());
+            }
             if (group == null) {
                 return new String[0];
             } else {
