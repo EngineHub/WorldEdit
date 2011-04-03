@@ -24,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import com.nijikokun.bukkit.Permissions.Permissions;
+import com.nijiko.permissions.PermissionHandler;
 
 public class NijiPermissionsResolver implements PermissionsResolver {
     private Server server;
@@ -66,8 +67,9 @@ public class NijiPermissionsResolver implements PermissionsResolver {
     public boolean inGroup(String name, String group) {
         try {
             Player player = server.getPlayer(name);
+            String world = player.getWorld().getName();
             if (player == null) return false;
-            return api.Security.inGroup(name, group);
+            return api.Security.inGroup(world, name, group);
         } catch (Throwable t) {
             t.printStackTrace();
             return false;
@@ -78,8 +80,9 @@ public class NijiPermissionsResolver implements PermissionsResolver {
     public String[] getGroups(String name) {
         try {
             Player player = server.getPlayer(name);
+            String world = player.getWorld().getName();
             if (player == null) return new String[0];
-            String group = api.Security.getGroup(player.getName());
+            String group = api.Security.getGroup(world, player.getName());
             if (group == null) {
                 return new String[0];
             } else {
