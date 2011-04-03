@@ -267,10 +267,9 @@ public class Polygonal2DRegion implements Region {
         if (points.size() < 3) {
             return false;
         }
-        
-        int targetX = pt.getBlockX();
-        int targetY = pt.getBlockY();
-        int targetZ = pt.getBlockZ();
+        int targetX = pt.getBlockX(); //wide
+        int targetY = pt.getBlockY(); //height
+        int targetZ = pt.getBlockZ(); //depth
         
         if (targetY < minY || targetY > maxY) {
             return false;
@@ -286,36 +285,34 @@ public class Polygonal2DRegion implements Region {
 
         xOld = points.get(npoints - 1).getBlockX();
         zOld = points.get(npoints - 1).getBlockZ();
-        
+
         for (i = 0; i < npoints; i++) {
             xNew = points.get(i).getBlockX();
             zNew = points.get(i).getBlockZ();
-            
+            //Check for corner
+            if (xNew == targetX && zNew == targetZ) {
+                return true;
+            }
             if (xNew > xOld) {
-                x1 = xOld - 1;
+                x1 = xOld;
                 x2 = xNew;
                 z1 = zOld;
-                z2 = zNew + 1;
+                z2 = zNew;
             } else {
-                x1 = xNew - 1;
+                x1 = xNew;
                 x2 = xOld;
                 z1 = zNew;
-                z2 = zOld + 1;
+                z2 = zOld;
             }
-            
-            if (xNew < targetX == targetX <= xOld) {
-                long v1 = ((long) targetZ - (long) z1) * (long) (x2 - x1);
-                long v2 = ((long) z2 - (long) z1) * (long) (targetX - x1);
-                
-                if (v1 < v2) {
-                    inside = !inside;
-                }
+            if ((xNew < targetX) == (targetX <= xOld)
+                    && ((long) targetZ - (long) z1) * (long) (x2 - x1) <= ((long) z2 - (long) z1)
+                    * (long) (targetX - x1)) {
+                inside = !inside;
             }
-            
             xOld = xNew;
             zOld = zNew;
         }
-        
+
         return inside;
     }
     
