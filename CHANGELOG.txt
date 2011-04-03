@@ -1,3 +1,14 @@
+4.3:
+- Updated for Minecraft 1.4.
+- Added support for newer versions of Permissions.
+- Took polygon-in-point algorithm from WorldGuard, which is a minor
+    improvement. Please submit a better algorithm that properly handles edges!
+- Fixed WorldEdit unpacking the wrong config.yml.
+- Added improved selection getting/setting API.
+- Diagonal stacking added (not up or down yet) (thanks Valentin Stahlmann!)
+- Palette option added to draw.js (thanks J0s3f!)
+- CraftScripts: Made EditSession.rawSetBlock() public.
+
 4.2:
 Bukkit users: Minimum build #: 541
 - Changed the compass so that left click is /jumpto and
