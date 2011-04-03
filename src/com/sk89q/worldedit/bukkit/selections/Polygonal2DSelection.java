@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.bukkit.selections;
 
+import java.util.Collections;
 import java.util.List;
 import org.bukkit.World;
 import com.sk89q.worldedit.BlockVector2D;
@@ -28,13 +29,38 @@ public class Polygonal2DSelection extends RegionSelection {
 
     protected Polygonal2DRegion poly2d;
     
-    public Polygonal2DSelection(World world, Polygonal2DRegion region) {
-        super(world, region);
-        this.world = world;
+    public Polygonal2DSelection(World world, RegionSelector sel, Polygonal2DRegion region) {
+        super(world, sel, region);
         this.poly2d = region;
     }
     
+    public Polygonal2DSelection(World world, List<BlockVector2D> points, int minY, int maxY) {        
+        super(world);
+
+        minY = Math.min(Math.max(0, minY), 127);
+        maxY = Math.min(Math.max(0, maxY), 127);
+
+        Polygonal2DRegionSelector sel = new Polygonal2DRegionSelector();
+        poly2d = sel.getIncompleteRegion();
+        
+        for (BlockVector2D pt : points) {
+            if (pt == null) {
+                throw new IllegalArgumentException("Null point not permitted");
+            }
+            
+            poly2d.addPoint(pt);
+        }
+        
+        poly2d.setMinimumY(minY);
+        poly2d.setMaximumY(maxY);
+        
+        sel.learnChanges();
+
+        setRegionSelector(sel);
+        setRegion(poly2d);
+    }
+    
     public List<BlockVector2D> getNativePoints() {
-        return poly2d.getPoints();
+        return Collections.unmodifiableList(poly2d.getPoints());
     }
 }

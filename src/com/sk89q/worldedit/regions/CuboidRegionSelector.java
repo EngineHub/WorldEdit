@@ -106,11 +106,15 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         return pos1 != null && pos2 != null;
     }
 
-    public Region getRegion() throws IncompleteRegionException {
+    public CuboidRegion getRegion() throws IncompleteRegionException {
         if (pos1 == null || pos2 == null) {
             throw new IncompleteRegionException();
         }
         
+        return region;
+    }
+
+    public CuboidRegion getIncompleteRegion() {
         return region;
     }
 

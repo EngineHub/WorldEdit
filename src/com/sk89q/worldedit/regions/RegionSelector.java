@@ -94,6 +94,13 @@ public interface RegionSelector {
     public Region getRegion() throws IncompleteRegionException;
     
     /**
+     * Get the region even if it's not fully defined.
+     * 
+     * @return
+     */
+    public Region getIncompleteRegion();
+    
+    /**
      * Returns whether the region has been fully defined.
      * 
      * @return

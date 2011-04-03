@@ -87,11 +87,15 @@ public class Polygonal2DRegionSelector implements RegionSelector {
         return pos1;
     }
 
-    public Region getRegion() throws IncompleteRegionException {
+    public Polygonal2DRegion getRegion() throws IncompleteRegionException {
         if (!isDefined()) {
             throw new IncompleteRegionException();
         }
         
+        return region;
+    }
+
+    public Polygonal2DRegion getIncompleteRegion() {
         return region;
     }
 
@@ -100,6 +104,9 @@ public class Polygonal2DRegionSelector implements RegionSelector {
     }
 
     public void learnChanges() {
+        BlockVector2D pt = region.getPoints().get(0);
+        pos1 = new BlockVector(pt.getBlockX(),
+                region.getMinimumPoint().getBlockY(), pt.getBlockZ());
     }
 
     public void clear() {
@@ -123,6 +130,10 @@ public class Polygonal2DRegionSelector implements RegionSelector {
 
     public int getArea() {
         return region.getArea();
+    }
+    
+    public int getPointCount() {
+        return region.getPoints().size();
     }
 
 }

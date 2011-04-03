@@ -142,6 +142,28 @@ public class Polygonal2DRegion implements Region {
         points.add(new BlockVector2D(pt.getBlockX(), pt.getBlockZ()));
         recalculate();
     }
+    
+    /**
+     * Set the minimum Y.
+     * 
+     * @param y
+     */
+    public void setMinimumY(int y) {
+        hasY = true;
+        minY = y;
+        recalculate();
+    }
+    
+    /**
+     * Se the maximum Y.
+     * 
+     * @param y
+     */
+    public void setMaximumY(int y) {
+        hasY = true;
+        maxY = y;
+        recalculate();
+    }
 
     /**
      * Get the lower point of a region.

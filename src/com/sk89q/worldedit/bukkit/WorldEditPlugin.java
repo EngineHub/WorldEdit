@@ -353,6 +353,13 @@ public class WorldEditPlugin extends JavaPlugin {
      * @return the selection or null if there was none
      */
     public Selection getSelection(Player player) {
+        if (player == null) {
+            throw new IllegalArgumentException("Null player not allowed");
+        }
+        if (!player.isOnline()) {
+            throw new IllegalArgumentException("Offline player not allowed");
+        }
+        
         LocalSession session = controller.getSession(wrapPlayer(player));
         RegionSelector selector = session.getRegionSelector();
         
@@ -361,14 +368,37 @@ public class WorldEditPlugin extends JavaPlugin {
             World world = ((BukkitWorld) session.getSelectionWorld()).getWorld();
             
             if (region instanceof CuboidRegion) {
-                return new CuboidSelection(world, (CuboidRegion)region);
+                return new CuboidSelection(world, selector, (CuboidRegion)region);
             } else if (region instanceof Polygonal2DRegion) {
-                return new Polygonal2DSelection(world, (Polygonal2DRegion)region);
+                return new Polygonal2DSelection(world, selector, (Polygonal2DRegion)region);
             } else {
                 return null;
             }
         } catch (IncompleteRegionException e) {
             return null;
         }
+    }
+    
+    /**
+     * Sets the region selection for a player.
+     * 
+     * @param player
+     * @param selection
+     */
+    public void setSelection(Player player, Selection selection) {
+        if (player == null) {
+            throw new IllegalArgumentException("Null player not allowed");
+        }
+        if (!player.isOnline()) {
+            throw new IllegalArgumentException("Offline player not allowed");
+        }
+        if (selection == null) {
+            throw new IllegalArgumentException("Null selection not allowed");
+        }
+        
+        LocalSession session = controller.getSession(wrapPlayer(player)); 
+        RegionSelector sel = selection.getRegionSelector();
+        session.setRegionSelector(new BukkitWorld(player.getWorld()), sel);
+        session.dispatchCUISelection(wrapPlayer(player));
     }
 }
