@@ -66,7 +66,7 @@ public class BlockDataCyler implements BlockTool {
         } else if (type == BlockID.SIGN_POST) {
             data = (data + 1) % 16;
         } else if (type == BlockID.WALL_SIGN) {
-            data = (data + 1) % 4;
+            if(data == 2)  data = 5; else data--;
         } else if (type == BlockID.STEP) {
             data = (data + 1) % 3;
         } else if (type == BlockID.DOUBLE_STEP) {
