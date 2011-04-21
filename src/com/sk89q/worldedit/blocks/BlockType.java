@@ -35,27 +35,33 @@ public enum BlockType {
     DIRT(3, "Dirt", "dirt"),
     COBBLESTONE(4, "Cobblestone", new String[] {"cobblestone", "cobble"}),
     WOOD(5, "Wood", new String[] {"wood", "woodplank", "plank", "woodplanks", "planks"}),
-    SAPLING(6, "Sapling", new String[] {"tree", "sapling"}),
+    SAPLING(6, "Sapling", "sapling"),
     BEDROCK(7, "Bedrock", new String[] {"adminium", "bedrock"}),
     WATER(8, "Water", new String[] {"watermoving", "movingwater"}),
-    STATIONARY_WATER(9, "Water (stationary)", new String[] {"water", "waterstationary", "stationarywater"}),
+    STATIONARY_WATER(9, "Water (stationary)",
+             new String[] {"water", "waterstationary", "stationarywater", "stillwater"}),
     LAVA(10, "Lava", new String[] {"lavamoving", "movinglava"}),
-    STATIONARY_LAVA(11, "Lava (stationary)", new String[] {"lava", "lavastationary", "stationarylava"}),
+    STATIONARY_LAVA(11, "Lava (stationary)",
+             new String[] {"lava", "lavastationary", "stationarylava", "stilllava"}),
     SAND(12, "Sand", "sand"),
     GRAVEL(13, "Gravel", "gravel"),
     GOLD_ORE(14, "Gold ore", "goldore"),
     IRON_ORE(15, "Iron ore", "ironore"),
     COAL_ORE(16, "Coal ore", "coalore"),
-    LOG(17, "Log", new String[] {"log", "pine", "oak", "birch", "redwood"}),
-    LEAVES(18, "Leaves", new String[] {"leaves", "leaf", "tree"}),
+    LOG(17, "Log", new String[] {"log", "tree", "pine", "oak", "birch", "redwood"}),
+    LEAVES(18, "Leaves", new String[] {"leaves", "leaf"}),
     SPONGE(19, "Sponge", "sponge"),
     GLASS(20, "Glass", "glass"),
-    LAPIS_LAZULI_ORE(21, "Lapis lazuli ore", new String[] {"lapislazuliore", "blueore"}),
+    LAPIS_LAZULI_ORE(21, "Lapis lazuli ore", new String[] {"lapislazuliore", "blueore", "lapisore"}),
     LAPIS_LAZULI(22, "Lapis lazuli", new String[] {"lapislazuli", "lapislazuliblock", "bluerock"}),
     DISPENSER(23, "Dispenser", "dispenser"),
     SANDSTONE(24, "Sandstone", "sandstone"),
     NOTE_BLOCK(25, "Note block", new String[] {"musicblock", "noteblock", "note", "music", "instrument"}),
     BED(26, "Bed", "bed"),
+    POWERED_RAIL(27, "Powered Rail",
+            new String[] {"poweredrail", "boosterrail", "poweredtrack", "boostertrack"}),
+    DETECTOR_RAIL(28, "Detector Rail", "detectorrail"),
+    WEB(30, "Web", new String[] {"web", "spiderweb"}),
     CLOTH(35, "Wool", new String[] {"cloth", "wool"}),
     YELLOW_FLOWER(37, "Yellow flower", new String[] {"yellowflower", "flower"}),
     RED_FLOWER(38, "Red rose", new String[] {"redflower", "redrose", "rose"}),
@@ -70,7 +76,7 @@ public enum BlockType {
     BOOKCASE(47, "Bookcase", new String[] {"bookshelf", "bookshelves"}),
     MOSSY_COBBLESTONE(48, "Cobblestone (mossy)",
             new String[] {"mossycobblestone", "mossstone", "mossystone",
-            "mosscobble", "mossycobble", "moss", "mossy"}),
+            "mosscobble", "mossycobble", "moss", "mossy", "sossymobblecone"}),
     OBSIDIAN(49, "Obsidian", "obsidian"),
     TORCH(50, "Torch", "torch"),
     FIRE(51, "Fire", new String[] {"fire", "flame", "flames"}),
@@ -83,9 +89,9 @@ public enum BlockType {
     DIAMOND_BLOCK(57, "Diamond block", new String[] {"diamond", "diamondblock"}),
     WORKBENCH(58, "Workbench", new String[] {"workbench", "table", "craftingtable"}),
     CROPS(59, "Crops", new String[] {"crops", "crop", "plant", "plants"}),
-    SOIL(60, "Soil", "soil"),
+    SOIL(60, "Soil", new String[] {"soil", "farmland"}),
     FURNACE(61, "Furnace", "furnace"),
-    BURNING_FURNACE(62, "Furnace (burning)", "burningfurnace"),
+    BURNING_FURNACE(62, "Furnace (burning)", new String[] {"burningfurnace", "litfurnace"}),
     SIGN_POST(63, "Sign post", new String[] {"sign", "signpost"}),
     WOODEN_DOOR(64, "Wooden door", new String[] {"wooddoor", "woodendoor", "door"}),
     LADDER(65, "Ladder", "ladder"),
@@ -103,8 +109,9 @@ public enum BlockType {
     REDSTONE_ORE(73, "Redstone ore", "redstoneore"),
     GLOWING_REDSTONE_ORE(74, "Glowing redstone ore", "glowingredstoneore"),
     REDSTONE_TORCH_OFF(75, "Redstone torch (off)",
-            new String[] {"redstonetorch"," redstonetorchoff", "rstorch"}),
-    REDSTONE_TORCH_ON(76, "Redstone torch (on)", "redstonetorchon"),
+            new String[] {"redstonetorchoff", "rstorchoff"}),
+    REDSTONE_TORCH_ON(76, "Redstone torch (on)",
+            new String [] {"redstonetorch", "redstonetorchon", "rstorchon"}),
     STONE_BUTTON(77, "Stone Button", new String[] {"stonebutton", "button"}),
     SNOW(78, "Snow", "snow"),
     ICE(79, "Ice", "ice"),
@@ -126,8 +133,8 @@ public enum BlockType {
     JACK_O_LANTERN(91, "Pumpkin (on)",
             new String[] {"pumpkinlighted", "pumpkinon", "litpumpkin", "jackolantern"}),
     CAKE(92, "Cake", new String[] {"cake", "cakeblock"}),
-    REDSTONE_REPEATER_OFF(93, "Redstone repeater (off)", new String[] {"diode", "redstonerepeater", "repeater", "delayer"}),
-    REDSTONE_REPEATER_ON(94, "Redstone repeater (on)", new String[] {"diodeon", "redstonerepeateron", "repeateron", "delayeron"}),
+    REDSTONE_REPEATER_OFF(93, "Redstone repeater (off)", new String[] {"diodeoff", "redstonerepeater", "repeater", "delayer"}),
+    REDSTONE_REPEATER_ON(94, "Redstone repeater (on)", new String[] {"diode", "diodeon", "redstonerepeateron", "repeateron", "delayeron"}),
     LOCKED_CHEST(95, "Locked chest", new String[] {"lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"});
 
     /**
@@ -160,6 +167,10 @@ public enum BlockType {
         blockDrops.put(23, 23);
         blockDrops.put(24, 24);
         blockDrops.put(25, 25);
+        blockDrops.put(26, 355);
+        blockDrops.put(27, 27);
+        blockDrops.put(28, 28);
+        blockDrops.put(30, 30);
         blockDrops.put(35, 35);
         blockDrops.put(37, 37);
         blockDrops.put(38, 38);
@@ -177,7 +188,7 @@ public enum BlockType {
         blockDrops.put(53, 53);
         blockDrops.put(54, 54);
         blockDrops.put(55, 331);
-        blockDrops.put(56, 56);
+        blockDrops.put(56, 264);
         blockDrops.put(57, 57);
         blockDrops.put(58, 58);
         blockDrops.put(59, 295);
@@ -199,17 +210,22 @@ public enum BlockType {
         blockDrops.put(75, 76);
         blockDrops.put(76, 76);
         blockDrops.put(77, 77);
+        blockDrops.put(78, 332);
         blockDrops.put(80, 80);
         blockDrops.put(81, 81);
         blockDrops.put(82, 82);
-        blockDrops.put(83, 83);
+        blockDrops.put(83, 338);
         blockDrops.put(84, 84);
         blockDrops.put(85, 85);
         blockDrops.put(86, 86);
         blockDrops.put(87, 87);
         blockDrops.put(88, 88);
-        blockDrops.put(89, 248);
+        blockDrops.put(89, 348);
         blockDrops.put(91, 91);
+        blockDrops.put(92, 354);
+        blockDrops.put(93, 356);
+        blockDrops.put(94, 356);
+        blockDrops.put(95, 95);
     }
 
     /**
@@ -315,6 +331,8 @@ public enum BlockType {
     public static boolean shouldPlaceLast(int id) {
         return id == 6 // Saplings
                 || id == 26 // Beds
+                || id == 27 // Powered rails
+                || id == 28 // Detector rails
                 || id == 37 // Yellow flower
                 || id == 38 // Red flower
                 || id == 39 // Brown mushroom
@@ -338,7 +356,10 @@ public enum BlockType {
                 || id == 78 // Snow
                 || id == 81 // Cactus
                 || id == 83 // Reed
-                || id == 90; // Portal
+                || id == 90 // Portal
+                || id == 92 // Cake
+                || id == 93 // Repeater (off)
+                || id == 94; // Repeater (on)
     }
 
     /**
@@ -352,6 +373,9 @@ public enum BlockType {
                 || id == 8 // Water
                 || id == 9 // Water
                 || id == 6 // Saplings
+                || id == 27 // Powered rails
+                || id == 28 // Detector rails
+                || id == 30 // Web <- someone will hate me for this
                 || id == 37 // Yellow flower
                 || id == 38 // Red flower
                 || id == 39 // Brown mushroom
@@ -372,7 +396,9 @@ public enum BlockType {
                 || id == 77 // Stone button
                 || id == 78 // Snow
                 || id == 83 // Reed
-                || id == 90; // Portal
+                || id == 90 // Portal
+                || id == 93 // Diode (off)
+                || id == 94; // Diode (on)
     }
 
     /**
@@ -390,7 +416,10 @@ public enum BlockType {
                 || id == 17 // Wood
                 || id == 18 // Leaves
                 || id == 23 // Dispenser
+                || id == 25 // Note Block
                 || id == 26 // Bed
+                || id == 27 // Powered rails
+                || id == 28 // Detector rails
                 || id == 35 // Wool
                 || id == 43 // Double slab
                 || id == 44 // Slab
@@ -442,7 +471,9 @@ public enum BlockType {
      * @return
      */
     public static boolean isRedstoneBlock(int id) {
-        return id == 69 // Lever
+        return id == 27 // Powered rail
+                || id == 28 // Detector rail
+                || id == 69 // Lever
                 || id == 70 // Stone pressure plate
                 || id == 72 // Wood pressure plate
                 || id == 76 // Redstone torch
@@ -450,7 +481,43 @@ public enum BlockType {
                 || id == 77 // Stone button
                 || id == 55 // Redstone wire
                 || id == 64 // Wooden door
-                || id == 71; // Iron door
+                || id == 71 // Iron door
+                || id == 46 // TNT
+                || id == 23 // Dispenser
+                || id == 25 // Note block
+                || id == 93 // Diode (off)
+                || id == 94; // Diode (on)
+    }
+
+   /**
+     * Returns true if a block can transfer redstone.
+     * Made this since isRedstoneBlock was getting big.
+     *
+     * @param id
+     * @return
+     */
+    public static boolean canTransferRedstone(int id) {
+        return id == 75 // Redstone torch (off)
+                || id == 76 // Redstone torch (on)
+                || id == 55 // Redstone wire
+                || id == 93 // Diode (off)
+                || id == 94; // Diode (on)
+    }
+
+    /**
+     * Yay for convenience methods.
+     *
+     * @param id
+     * @return
+     */
+    public static boolean isRedstoneSource(int id) {
+        return id == 28 // Detector rail
+                || id == 75 // Redstone torch (off)
+                || id == 76 // Redstone torch (on)
+                || id == 69 // Lever
+                || id == 70 // Stone plate
+                || id == 72 // Wood plate
+                || id == 77; // Button
     }
 
     /**

@@ -52,6 +52,9 @@ public final class BlockID {
     public static final int SANDSTONE = 24;
     public static final int NOTE_BLOCK = 25;
     public static final int BED = 26;
+    public static final int POWERED_RAIL = 27;
+    public static final int DETECTOR_RAIL = 28;
+    public static final int WEB = 30;
     public static final int CLOTH = 35;
     public static final int YELLOW_FLOWER = 37;
     public static final int RED_FLOWER = 38;
@@ -112,4 +115,5 @@ public final class BlockID {
     public static final int CAKE_BLOCK = 92;
     public static final int REDSTONE_REPEATER_OFF = 93;
     public static final int REDSTONE_REPEATER_ON = 94;
+    public static final int LOCKED_CHEST = 95;
 }
