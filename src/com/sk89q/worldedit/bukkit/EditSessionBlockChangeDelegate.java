@@ -30,14 +30,14 @@ import com.sk89q.worldedit.blocks.BaseBlock;
  *
  * @author sk89q
  */
-public class EditSessionBlockChangeDegate implements BlockChangeDelegate {
+public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
     private EditSession editSession;
 
-    public EditSessionBlockChangeDegate(EditSession editSession) {
+    public EditSessionBlockChangeDelegate(EditSession editSession) {
         this.editSession = editSession;
     }
 
-    public boolean setTypeId(int x, int y, int z, int typeId) {
+    public boolean setRawTypeId(int x, int y, int z, int typeId) {
         try {
             return editSession.setBlock(new Vector(x, y, z), new BaseBlock(typeId));
         } catch (MaxChangedBlocksException ex) {
@@ -45,7 +45,7 @@ public class EditSessionBlockChangeDegate implements BlockChangeDelegate {
         }
     }
     
-    public boolean setTypeIdAndData(int x, int y, int z, int typeId, int data) {
+    public boolean setRawTypeIdAndData(int x, int y, int z, int typeId, int data) {
         try {
             return editSession.setBlock(new Vector(x, y, z), new BaseBlock(typeId, data));
         } catch (MaxChangedBlocksException ex) {
