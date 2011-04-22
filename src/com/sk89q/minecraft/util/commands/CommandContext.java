@@ -20,6 +20,7 @@ package com.sk89q.minecraft.util.commands;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.ArrayList;
 
 public class CommandContext {
     protected String[] args;
@@ -30,8 +31,15 @@ public class CommandContext {
     }
     
     public CommandContext(String[] args) {
+        ArrayList<String> splitArgs = new ArrayList<String>();
+        for (String arg : args) {
+            if (!arg.equals(null) && !arg.equals("")) {
+               splitArgs.add(arg);
+            }
+        }
+        args = splitArgs.toArray(new String[0]);
+
         int i = 1;
-        
         for (; i < args.length; i++) {
             if (args[i].charAt(0) == '-' && args[i].matches("^-[a-zA-Z]+$")) {
                 for (int k = 1; k < args[i].length(); k++) {
