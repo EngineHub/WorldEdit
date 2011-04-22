@@ -150,7 +150,7 @@ public class EditSession {
         }
         
         // No invalid blocks
-        if ((type > 26 && type < 35) || type == 36 || type > 95) {
+        if ((type > 30 && type < 35) || type == 36 || type > 95) {
             return false;
         }
         
