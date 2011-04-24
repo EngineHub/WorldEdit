@@ -1,3 +1,10 @@
+4.4:
+- Updated for Minecraft 1.5.
+- Updated for latest Bukkit.
+- Add cycling for wall signs and steps.
+- Fixed rotating wall signs.
+- Fixed exception thrown by commands with multiple spaces between arguments.
+
 4.3:
 - Updated for Minecraft 1.4.
 - Added support for newer versions of Permissions.
