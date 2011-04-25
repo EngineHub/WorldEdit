@@ -1,7 +1,7 @@
 // $Id$
 /*
  * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com>
+ * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,16 +19,20 @@
 
 package com.sk89q.worldedit.tools;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.WorldVector;
 
 /**
- * Represents a tool that uses a block..
- * 
+ * Represents a block tool that also has a secondary/primary function.
+ *
  * @author sk89q
  */
-public interface BlockTool extends Tool {
+public interface DoubleActionBlockTool extends BlockTool {
     /**
-     * Perform the action. Should return true to deny the default
+     * Perform the secondary action. Should return true to deny the default
      * action.
      * 
      * @param server 
@@ -38,6 +42,6 @@ public interface BlockTool extends Tool {
      * @param clicked
      * @return true to deny
      */
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
+    public boolean actSecondary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked);
 }

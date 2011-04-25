@@ -40,7 +40,7 @@ public class RecursivePickaxe implements BlockTool {
     }
     
     @Override
-    public boolean act(ServerInterface server, LocalConfiguration config,
+    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         LocalWorld world = clicked.getWorld();
         

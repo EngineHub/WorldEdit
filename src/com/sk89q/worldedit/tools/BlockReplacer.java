@@ -36,7 +36,7 @@ public class BlockReplacer implements BlockTool {
     }
     
     @Override
-    public boolean act(ServerInterface server, LocalConfiguration config,
+    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
 
         BlockBag bag = session.getBlockBag(player);

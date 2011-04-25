@@ -27,10 +27,10 @@ import com.sk89q.worldedit.blocks.BlockID;
  * 
  * @author sk89q
  */
-public class BlockDataCyler implements BlockTool {
-    @Override
-    public boolean act(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, WorldVector clicked) {
+public class BlockDataCyler implements DoubleActionBlockTool {
+    
+    private boolean handleCycle(ServerInterface server, LocalConfiguration config,
+            LocalPlayer player, LocalSession session, WorldVector clicked, boolean forward) {
         
         LocalWorld world = clicked.getWorld();
         
@@ -44,40 +44,50 @@ public class BlockDataCyler implements BlockTool {
             return true;
         }
         
+        int increment = forward ? 1 : -1;
+        
         if (type == BlockID.LOG) {
-            data = (data + 1) % 3;
+            data = (data + increment) % 3;
         } else if (type == BlockID.LEAVES) {
-            data = (data + 1) % 3;
+            data = (data + increment) % 3;
+        } else if (type == BlockID.SAPLING) {
+            int saplingType = data & 0x03;
+            int age = data & 0x0c;
+            data = (saplingType + increment) % 4 | age;
         } else if (type == BlockID.CACTUS) {
-            data = (data + 1) % 16;
+            data = (data + increment) % 16;
         } else if (type == BlockID.SOIL) {
-            data = (data + 1) % 9;
+            data = (data + increment) % 9;
         } else if (type == BlockID.CROPS) {
-            data = (data + 1) % 6;
+            data = (data + increment) % 6;
         } else if (type == BlockID.MINECART_TRACKS) {
             if (data >= 6 && data <= 9) {
-                data = (data + 1) % 4 + 6;
+                data = (data + increment) % 4 + 6;
             } else {
                 player.printError("This minecart track orientation is not supported.");
                 return true;
             }
         } else if (type == BlockID.WOODEN_STAIRS || type == BlockID.COBBLESTONE_STAIRS) {
-            data = (data + 1) % 4;
+            data = (data + increment) % 4;
         } else if (type == BlockID.SIGN_POST) {
-            data = (data + 1) % 16;
+            data = (data + increment) % 16;
         } else if (type == BlockID.WALL_SIGN) {
-            if(data == 2)  data = 5; else data--;
+            data = ((data + increment) - 2) % 4 + 2;
         } else if (type == BlockID.STEP) {
-            data = (data + 1) % 3;
+            data = (data + increment) % 3;
         } else if (type == BlockID.DOUBLE_STEP) {
-            data = (data + 1) % 3;
+            data = (data + increment) % 3;
         } else if (type == BlockID.FURNACE || type == BlockID.BURNING_FURNACE
                 || type == BlockID.DISPENSER) {
-            data = (data + 1) % 4 + 2;
+            data = (data + increment) % 4 + 2;
         } else if (type == BlockID.PUMPKIN || type == BlockID.JACKOLANTERN) {
-            data = (data + 1) % 4;
+            data = (data + increment) % 4;
         } else if (type == BlockID.CLOTH) {
-            data = nextClothColor(data);
+            if (forward) {
+                data = nextClothColor(data);
+            } else {
+                data = prevClothColor(data);
+            }
         } else {
             player.printError("That block's data cannot be cycled.");
             return true;
@@ -86,6 +96,19 @@ public class BlockDataCyler implements BlockTool {
         world.setBlockData(clicked, data);
         
         return true;
+    }
+    
+    @Override
+    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
+            LocalPlayer player, LocalSession session, WorldVector clicked) {
+        return handleCycle(server, config, player, session, clicked, true);
+    }
+
+    @Override
+    public boolean actSecondary(ServerInterface server,
+            LocalConfiguration config, LocalPlayer player,
+            LocalSession session, WorldVector clicked) {
+        return handleCycle(server, config, player, session, clicked, false);
     }
     
     private static int nextClothColor(int data) {
@@ -106,6 +129,29 @@ public class BlockDataCyler implements BlockTool {
             case 10: return 2;
             case 2: return 6;
             case 6: return 0;
+        }
+    
+        return 0;
+    }
+    
+    private static int prevClothColor(int data) {
+        switch (data) {
+            case 8: return 0;
+            case 7: return 8;
+            case 15: return 7;
+            case 12: return 15;
+            case 14: return 12;
+            case 1: return 14;
+            case 4: return 1;
+            case 5: return 4;
+            case 13: return 5;
+            case 9: return 13;
+            case 3: return 9;
+            case 11: return 3;
+            case 10: return 11;
+            case 2: return 10;
+            case 6: return 2;
+            case 0: return 6;
         }
     
         return 0;
