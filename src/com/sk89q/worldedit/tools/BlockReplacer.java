@@ -22,13 +22,14 @@ package com.sk89q.worldedit.tools;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockType;
 
 /**
  * A mode that replaces one block.
  * 
  * @author sk89q
  */
-public class BlockReplacer implements BlockTool {
+public class BlockReplacer implements DoubleActionBlockTool {
     private BaseBlock targetBlock;
     
     public BlockReplacer(BaseBlock targetBlock) {
@@ -52,6 +53,22 @@ public class BlockReplacer implements BlockTool {
                 bag.flushChanges();
             }
             session.remember(editSession);
+        }
+        
+        return true;
+    }
+
+    @Override
+    public boolean actSecondary(ServerInterface server,
+            LocalConfiguration config, LocalPlayer player,
+            LocalSession session, WorldVector clicked) {
+
+        LocalWorld world = clicked.getWorld();
+        targetBlock = (new EditSession(world, -1)).getBlock(clicked);
+        BlockType type = BlockType.fromID(targetBlock.getType());
+        
+        if (type != null) {
+            player.print("Replacer tool switched to: " + type.getName());
         }
         
         return true;
