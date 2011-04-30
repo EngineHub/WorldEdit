@@ -79,6 +79,14 @@ public abstract class LocalWorld {
      * @return
      */
     public abstract int getBlockData(Vector pt);
+
+    /**
+     * Get block light level.
+     * 
+     * @param pt
+     * @return
+     */
+    public abstract int getBlockLightLevel(Vector pt);
     
     /**
      * Regenerate an area.

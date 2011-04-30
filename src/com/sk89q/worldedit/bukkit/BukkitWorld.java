@@ -114,6 +114,17 @@ public class BukkitWorld extends LocalWorld {
     }
 
     /**
+     * Get block light level.
+     * 
+     * @param pt
+     * @return
+     */
+    @Override
+    public int getBlockLightLevel(Vector pt) {
+        return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getLightLevel();
+    }
+
+    /**
      * Regenerate an area.
      * 
      * @param region

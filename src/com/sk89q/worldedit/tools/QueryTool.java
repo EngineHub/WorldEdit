@@ -37,10 +37,10 @@ public class QueryTool implements BlockTool {
         BaseBlock block = (new EditSession(world, 0)).rawGetBlock(clicked);
 
         player.print("\u00A79@" + clicked + ": " + "\u00A7e"
-                + "Type: " + block.getType() + "\u00A77" + " ("
+                + "#" + block.getType() + "\u00A77" + " ("
                 + BlockType.fromID(block.getType()).getName() + ") "
                 + "\u00A7f"
-                + "[" + block.getData() + "]");
+                + "[" + block.getData() + "]" + " (" + world.getBlockLightLevel(clicked) + "/" + world.getBlockLightLevel(clicked.add(0, 1, 0)) + ")");
 
         if (block instanceof MobSpawnerBlock) {
             player.printRaw("\u00A7e" + "Mob Type: "
