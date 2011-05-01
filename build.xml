@@ -3,7 +3,7 @@
     en-masse, de-griefing, and fixing issues.</description>
 
   <property name="src.dir" location="src/main"/>
-  <property name="resources.dir" location="src/resources"/>
+  <property name="resources.dir" location="src/main/resources"/>
   <property name="build.dir" location="build"/>
   <property name="dist.dir" location="dist"/>
   <property name="release.dir" location="release"/>
