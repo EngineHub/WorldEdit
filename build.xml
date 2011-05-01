@@ -2,7 +2,7 @@
   <description>WorldEdit allows for editing the Minecraft SMP world
     en-masse, de-griefing, and fixing issues.</description>
 
-  <property name="src.dir" location="src/main"/>
+  <property name="src.dir" location="src/main/java"/>
   <property name="resources.dir" location="src/main/resources"/>
   <property name="build.dir" location="build"/>
   <property name="dist.dir" location="dist"/>

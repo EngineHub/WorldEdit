@@ -74,7 +74,7 @@
   </dependencies>
 
   <build>
-    <sourceDirectory>${basedir}/src/main</sourceDirectory>
+    <sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
 
     <!-- Resources -->
     <resources>
