@@ -1,0 +1,171 @@
+<!-- Maven build file for WorldEdit Copyright (c) 2011 sk89q <http://www.sk89q.com> 
+  WorldEdit is available under the GNU General Public License v3 -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.sk89q</groupId>
+  <artifactId>worldedit</artifactId>
+  <version>4.4.0-SNAPSHOT</version>
+  <name>WorldEdit</name>
+  <description>WorldEdit allows for editing the Minecraft SMP world
+    en-masse, de-griefing, and fixing issues.</description>
+
+  <scm>
+    <connection>scm:git:git://github.com/sk89q/worldedit.git</connection>
+    <url>https://github.com/sk89q/worldedit</url>
+    <developerConnection>scm:git:git@github.com:sk89q/worldedit.git</developerConnection>
+  </scm>
+
+  <repositories>
+    <!-- Repository for other dependencies of SK's -->
+    <repository>
+      <id>sk89q-mvn2</id>
+      <url>http://mvn2.sk89q.com/repo</url>
+    </repository>
+    <!-- Repository for Bukkit -->
+    <repository>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/artifactory/repo</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- Used for Permissions support (this version has both the legacy API 
+      and the new Permissions API to compile against -->
+    <dependency>
+      <groupId>com.sk89q</groupId>
+      <artifactId>dummypermscompat</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <!-- Bukkit -->
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>bukkit</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
+    <!-- Archive reading library for snapshots -->
+    <dependency>
+      <groupId>de.schlichtherle</groupId>
+      <artifactId>truezip</artifactId>
+      <version>6.8.3</version>
+    </dependency>
+
+    <!-- JavaScript library -->
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.7R2</version>
+    </dependency>
+
+    <!-- Time related functions, used for snapshots. This is NOT the original 
+      jchronic as it has been modified to have some extra timezone related methods 
+      (which were hacked in) -->
+    <dependency>
+      <groupId>com.sk89q</groupId>
+      <artifactId>jchronic</artifactId>
+      <version>0.2.4a </version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>${basedir}/src/main</sourceDirectory>
+
+    <!-- Resources -->
+    <resources>
+      <resource>
+        <targetPath></targetPath>
+        <filtering>true</filtering>
+        <directory>${basedir}</directory>
+        <includes>
+          <include>src/resources/plugin.yml</include>
+        </includes>
+      </resource>
+      <resource>
+        <targetPath>defaults/</targetPath>
+        <filtering>true</filtering>
+        <directory>${basedir}</directory>
+        <includes>
+          <include>src/resources/config.yml</include>
+        </includes>
+      </resource>
+    </resources>
+
+    <!-- Plugins -->
+    <plugins>
+      <!-- Compile plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+      </plugin>
+
+      <!-- JAR creation plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
+        <configuration>
+          <archive>
+            <addMavenDescriptor>true</addMavenDescriptor>
+            <pomPropertiesFile>true</pomPropertiesFile>
+            <manifest>
+              <addClasspath>truezip.jar WorldEdit/truezip.jar js.jar
+                WorldEdit/js.jar</addClasspath>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <!-- This is a legacy manifest entry for older versions of 
+                WorldEdit (like really old) -->
+              <WorldEdit-Version>${project.version}</WorldEdit-Version>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <!-- Assembly -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-2</version>
+        <configuration>
+          <descriptor>${basedir}/src/assembly/default.xml</descriptor>
+        </configuration>
+      </plugin>
+
+      <!-- Shade -->
+      <!-- We want to bundle in some dependencies -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <!-- We want to bundle in the modified jchronic library -->
+                <includes>
+                  <include>com.sk89q:jchronic</include>
+                </includes>
+              </artifactSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Release -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.1</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>
