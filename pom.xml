@@ -115,12 +115,11 @@
             <addMavenDescriptor>true</addMavenDescriptor>
             <pomPropertiesFile>true</pomPropertiesFile>
             <manifest>
-              <addClasspath>truezip.jar WorldEdit/truezip.jar js.jar
-                WorldEdit/js.jar</addClasspath>
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
             <manifestEntries>
+              <Class-Path>truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar</Class-Path>
               <!-- This is a legacy manifest entry for older versions of 
                 WorldEdit (like really old) -->
               <WorldEdit-Version>${project.version}</WorldEdit-Version>
