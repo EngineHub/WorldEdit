@@ -72,8 +72,8 @@
     <copy tofile="${release.dir}/CHANGELOG.txt" file="CHANGELOG.txt"/>
     <copy tofile="${release.dir}/LICENSE.txt" file="LICENSE.txt"/>
     <copy tofile="${release.dir}/NOTICE.txt" file="NOTICE.txt"/>
-    <copy tofile="${release.dir}/README.txt" file="README.txt"/>
-    <replace file="${release.dir}/README.txt" token="$${project.version}" value="${version}"/>
+    <copy tofile="${release.dir}/README.html" file="README.html"/>
+    <replace file="${release.dir}/README.html" token="$${project.version}" value="${version}"/>
     <copy tofile="${release.dir}/WorldEdit.jar" file="${dist.dir}/WorldEdit.jar"/>
     <zip destfile="${release.dir}/worldedit-${version}.zip" basedir="${release.dir}" excludes="*.zip plugin.yml"/>
     <mkdir dir="${release.dir}/src"/>
