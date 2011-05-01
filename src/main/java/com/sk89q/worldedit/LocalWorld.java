@@ -31,18 +31,6 @@ import com.sk89q.worldedit.regions.Region;
  */
 public abstract class LocalWorld {
     /**
-     * List of removable entity types.
-     */
-    public enum EntityType {
-        ARROWS,
-        ITEMS,
-        PAINTINGS,
-        BOATS,
-        MINECARTS,
-        TNT,
-    }
-    
-    /**
      * Random generator.
      */
     protected Random random = new Random();

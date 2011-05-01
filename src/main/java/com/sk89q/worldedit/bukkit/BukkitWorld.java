@@ -421,7 +421,7 @@ public class BukkitWorld extends LocalWorld {
      * @return
      */
     @Override
-    public int removeEntities(EntityType type, Vector origin, int radius) {
+    public int removeEntities(LocalWorld.EntityType type, Vector origin, int radius) {
         int num = 0;
         double radiusSq = Math.pow(radius, 2);
         
