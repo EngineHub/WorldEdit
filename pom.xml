@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sk89q</groupId>
   <artifactId>worldedit</artifactId>
-  <version>4.4.2</version>
+  <version>4.4.3-SNAPSHOT</version>
   <name>WorldEdit</name>
   <description>WorldEdit allows for editing the Minecraft SMP world
     en-masse, de-griefing, and fixing issues.</description>
