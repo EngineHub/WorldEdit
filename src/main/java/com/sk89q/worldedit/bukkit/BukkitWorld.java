@@ -45,6 +45,7 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.EntityType;
 import com.sk89q.worldedit.regions.Region;
 
 public class BukkitWorld extends LocalWorld {
@@ -421,7 +422,7 @@ public class BukkitWorld extends LocalWorld {
      * @return
      */
     @Override
-    public int removeEntities(LocalWorld.EntityType type, Vector origin, int radius) {
+    public int removeEntities(EntityType type, Vector origin, int radius) {
         int num = 0;
         double radiusSq = Math.pow(radius, 2);
         
