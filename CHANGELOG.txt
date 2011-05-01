@@ -1,3 +1,7 @@
+4.4.1:
+- Maven-built release.
+- Sun Rhino removed.
+
 4.4:
 - Updated for Minecraft 1.5.
 - Updated for latest Bukkit.
