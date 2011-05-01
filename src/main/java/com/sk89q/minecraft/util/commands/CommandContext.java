@@ -31,14 +31,6 @@ public class CommandContext {
     }
     
     public CommandContext(String[] args) {
-        ArrayList<String> splitArgs = new ArrayList<String>();
-        for (String arg : args) {
-            if (!arg.equals(null) && !arg.equals("")) {
-               splitArgs.add(arg);
-            }
-        }
-        args = splitArgs.toArray(new String[0]);
-
         int i = 1;
         for (; i < args.length; i++) {
             if (args[i].length() == 0) {
