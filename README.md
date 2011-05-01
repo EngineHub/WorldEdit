@@ -8,23 +8,13 @@ are available.
 Compiling
 ---------
 
-Some dependencies are required:
+You need to have Maven installed (http://maven.apache.org). Once installed,
+simply run:
 
-- [TrueZip](http://java.net/projects/truezip) provides snapshot reading
-- [Bukkit](http://bukkit.org/) is a SMP plugin API
-- [Rhino](http://www.mozilla.org/rhino/) provides a JavaScript engine
-- [GroupUsers](http://forums.bukkit.org/threads/639/) provides an
-    permission system for Bukkit
-- [Permissions](http://forums.bukkit.org/threads/1403/) provides an
-    permission system for Bukkit
-- worldeditsunrhino.jar is included
-
-For links to downloads, check out
-[http://wiki.sk89q.com/wiki/WorldEdit/Development](http://wiki.sk89q.com/wiki/WorldEdit/Development)
-
-To compile a .jar, use the Ant build file with the 'jar' target.
-
-    ant jar
+    mvn clean package install
+    
+Maven will automatically download dependencies for you. Note: For that to work,
+be sure to add Maven to your "PATH".
 
 Contributing
 ------------
