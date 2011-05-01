@@ -17,7 +17,7 @@
       <filtered>false</filtered>
     </file>
     <file>
-      <source>README.txt</source>
+      <source>README.html</source>
       <outputDirectory>/</outputDirectory>
       <filtered>true</filtered>
     </file>
