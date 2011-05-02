@@ -1,3 +1,14 @@
+4.5:
+- Fixed the IllegalAccessException with /remove (hopefully).
+- Removed wolves from /butcher. There's no way to check if a wolf is owned
+    or not in Bukkit yet.
+- Added permission checks for tools on use, so now if you switch world or
+    lose your permissions, you lose your tools.
+- Added expiration timer to sessions. Sessions will now last up to 10 minutes
+    (by default) before removed, so you can quickly disconnect (or crash) and
+    come back and still maintain your history.
+- Removed minimum cap on history size (now you have history sizes under 15).
+
 4.4.1:
 - Maven-built release.
 - Sun Rhino removed.
