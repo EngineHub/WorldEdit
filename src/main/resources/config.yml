@@ -52,6 +52,7 @@ saving:
 
 history:
     size: 15
+    expiration: 10
 
 wand-item: 271
 shell-save-type: 

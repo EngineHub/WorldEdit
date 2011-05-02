@@ -101,6 +101,9 @@ public class WorldEditPlugin extends JavaPlugin {
 
         // Now we can register events!
         registerEvents();
+        
+        getServer().getScheduler().scheduleAsyncRepeatingTask(this, 
+                new SessionTimer(controller, getServer()), 120, 120);
     }
 
     /**

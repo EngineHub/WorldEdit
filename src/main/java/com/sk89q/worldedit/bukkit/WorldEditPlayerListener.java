@@ -79,7 +79,7 @@ public class WorldEditPlayerListener extends PlayerListener {
      */
     @Override
     public void onPlayerQuit(PlayerQuitEvent event) {
-        plugin.getWorldEdit().handleDisconnect(wrapPlayer(event.getPlayer()));
+        plugin.getWorldEdit().markExpire(wrapPlayer(event.getPlayer()));
     }
 
     /**

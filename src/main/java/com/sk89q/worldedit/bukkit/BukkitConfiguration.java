@@ -82,6 +82,7 @@ public class BukkitConfiguration extends LocalConfiguration {
         noOpPermissions = config.getBoolean("no-op-permissions", false);
         
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, config.getInt("history.size", 15));
+        LocalSession.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;
         
         String snapshotsDir = config.getString("snapshots.directory", "");
         if (!snapshotsDir.trim().equals("")) {

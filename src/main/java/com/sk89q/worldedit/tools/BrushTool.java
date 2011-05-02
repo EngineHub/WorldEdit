@@ -83,6 +83,7 @@ public class BrushTool implements TraceTool {
      * Set the brush.
      * 
      * @param brush
+     * @param perm 
      */
     public void setBrush(Brush brush, String perm) {
         this.brush = brush;

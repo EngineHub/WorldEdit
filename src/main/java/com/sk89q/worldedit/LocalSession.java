@@ -51,9 +51,11 @@ import com.sk89q.worldedit.regions.RegionSelector;
  */
 public class LocalSession {
     public static int MAX_HISTORY_SIZE = 15;
+    public static int EXPIRATION_GRACE = 600000;
     
     private LocalConfiguration config;
     
+    private long expirationTime = 0;
     private LocalWorld selectionWorld;
     private RegionSelector selector = new CuboidRegionSelector();
     private boolean placeAtPos1 = false;
@@ -614,5 +616,21 @@ public class LocalSession {
         } else {
             return date.getBeginCalendar();
         }
+    }
+    
+    /**
+     * Update the last update time for calculating expiration.
+     */
+    public void update() {
+        expirationTime = System.currentTimeMillis();
+    }
+    
+    /**
+     * Returns whether this session has expired.
+     * 
+     * @return
+     */
+    public boolean hasExpired() {
+        return System.currentTimeMillis() - expirationTime > EXPIRATION_GRACE;
     }
 }

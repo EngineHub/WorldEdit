@@ -129,41 +129,45 @@ public class WorldEdit {
      * @return
      */
     public LocalSession getSession(LocalPlayer player) {
-        if (sessions.containsKey(player.getName())) {
-            return sessions.get(player.getName());
-        }
+        LocalSession session;
         
-        LocalSession session = new LocalSession(config);
-        
-        // Set the limit on the number of blocks that an operation can
-        // change at once, or don't if the player has an override or there
-        // is no limit. There is also a default limit
-        if (!player.hasPermission("worldedit.limit.unrestricted")
-                && config.maxChangeLimit > -1) {
-            
-            // If the default limit is infinite but there is a maximum
-            // limit, make sure to not have it be overridden
-            if (config.defaultChangeLimit < 0) {
-                session.setBlockChangeLimit(config.maxChangeLimit);
-            } else {
-                // Bound the change limit
-                int limit = Math.min(config.defaultChangeLimit,
-                        config.maxChangeLimit);
-                session.setBlockChangeLimit(limit);
+        synchronized (sessions) {
+            if (sessions.containsKey(player.getName())) {
+                return sessions.get(player.getName());
             }
-        } else {
-            // No change limit or override
-            session.setBlockChangeLimit(config.defaultChangeLimit);
+            
+            session = new LocalSession(config);
+            
+            // Set the limit on the number of blocks that an operation can
+            // change at once, or don't if the player has an override or there
+            // is no limit. There is also a default limit
+            if (!player.hasPermission("worldedit.limit.unrestricted")
+                    && config.maxChangeLimit > -1) {
+                
+                // If the default limit is infinite but there is a maximum
+                // limit, make sure to not have it be overridden
+                if (config.defaultChangeLimit < 0) {
+                    session.setBlockChangeLimit(config.maxChangeLimit);
+                } else {
+                    // Bound the change limit
+                    int limit = Math.min(config.defaultChangeLimit,
+                            config.maxChangeLimit);
+                    session.setBlockChangeLimit(limit);
+                }
+            } else {
+                // No change limit or override
+                session.setBlockChangeLimit(config.defaultChangeLimit);
+            }
+            
+            // Have the session use inventory if it's enabled and the player
+            // doesn't have an override
+            session.setUseInventory(config.useInventory
+                    && (!config.useInventoryOverride
+                            || !player.hasPermission("worldedit.inventory.unrestricted")));
+            
+            // Remember the session
+            sessions.put(player.getName(), session);
         }
-        
-        // Have the session use inventory if it's enabled and the player
-        // doesn't have an override
-        session.setUseInventory(config.useInventory
-                && (!config.useInventoryOverride
-                        || !player.hasPermission("worldedit.inventory.unrestricted")));
-        
-        // Remember the session
-        sessions.put(player.getName(), session);
         
         return session;
     }
@@ -175,7 +179,9 @@ public class WorldEdit {
      * @return
      */
     public boolean hasSession(LocalPlayer player) {
-        return sessions.containsKey(player.getName());
+        synchronized (sessions) {
+            return sessions.containsKey(player.getName());
+        }
     }
 
     /**
@@ -726,14 +732,18 @@ public class WorldEdit {
      * @param player
      */
     public void removeSession(LocalPlayer player) {
-        sessions.remove(player.getName());
+        synchronized (sessions) {
+            sessions.remove(player.getName());
+        }
     }
 
     /**
      * Remove all sessions.
      */
     public void clearSessions() {
-        sessions.clear();
+        synchronized (sessions) {
+            sessions.clear();
+        }
     }
     
     /**
@@ -788,8 +798,48 @@ public class WorldEdit {
      *
      * @param player
      */
+    @Deprecated
     public void handleDisconnect(LocalPlayer player) {
+        forgetPlayer(player);
+    }
+    
+    /**
+     *
+     * @param player
+     */
+    public void markExpire(LocalPlayer player) {
+        synchronized (sessions) {
+            LocalSession session = sessions.get(player.getName());
+            if (session != null) {
+                session.update();
+            }
+        }
+    }
+    
+    /**
+     * Forget a player.
+     *
+     * @param player
+     */
+    public void forgetPlayer(LocalPlayer player) {
         removeSession(player);
+    }
+    
+    /*
+     * Flush expired sessions.
+     */
+    public void flushExpiredSessions(SessionCheck checker) {
+        synchronized (sessions) {
+            Iterator<Map.Entry<String, LocalSession>> it = sessions.entrySet().iterator();
+            
+            while (it.hasNext()) {
+                Map.Entry<String, LocalSession> entry = it.next();
+                if (entry.getValue().hasExpired()
+                        && !checker.isOnlinePlayer(entry.getKey())) {
+                    it.remove();
+                }
+            }
+        }
     }
 
     /**
