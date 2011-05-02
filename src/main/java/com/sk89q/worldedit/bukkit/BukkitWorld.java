@@ -434,45 +434,36 @@ public class BukkitWorld extends LocalWorld {
                 continue;
             }
             
-            switch (type) {
-                case ARROWS:
-                    if (ent instanceof Arrow) {
-                        ent.remove();
-                        num++;
-                    }
-                    break;
-                case BOATS:
-                    if (ent instanceof Boat) {
-                        ent.remove();
-                        num++;
-                    }
-                    break;
-                case ITEMS:
-                    if (ent instanceof Item) {
-                        ent.remove();
-                        num++;
-                    }
-                    break;
-                case MINECARTS:
-                    if (ent instanceof Minecart) {
-                        ent.remove();
-                        num++;
-                    }
-                    break;
-                case PAINTINGS:
-                    if (ent instanceof Painting) {
-                        ent.remove();
-                        num++;
-                    }
-                    break;
-                case TNT:
-                    if (ent instanceof TNTPrimed) {
-                        ent.remove();
-                        num++;
-                    }
-                    break;
-                default:
-                    continue;
+            if (type == EntityType.ARROWS) {
+                if (ent instanceof Arrow) {
+                    ent.remove();
+                    num++;
+                }
+            } else if (type == EntityType.BOATS) {
+                if (ent instanceof Boat) {
+                    ent.remove();
+                    num++;
+                }
+            } else if (type == EntityType.ITEMS) {
+                if (ent instanceof Item) {
+                    ent.remove();
+                    num++;
+                }
+            } else if (type == EntityType.MINECARTS) {
+                if (ent instanceof Minecart) {
+                    ent.remove();
+                    num++;
+                }
+            } else if (type == EntityType.PAINTINGS) {
+                if (ent instanceof Painting) {
+                    ent.remove();
+                    num++;
+                }
+            } else if (type == EntityType.TNT) {
+                if (ent instanceof TNTPrimed) {
+                    ent.remove();
+                    num++;
+                }
             }
         }
         
