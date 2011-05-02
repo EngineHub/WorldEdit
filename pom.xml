@@ -167,6 +167,7 @@
         <artifactId>maven-release-plugin</artifactId>
         <version>2.1</version>
         <configuration>
+          <preparationGoals>assembly:assembly</preparationGoals>
           <goals>assembly:assembly</goals>
         </configuration>
       </plugin>
