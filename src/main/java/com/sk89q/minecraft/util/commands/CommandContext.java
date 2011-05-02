@@ -20,7 +20,6 @@ package com.sk89q.minecraft.util.commands;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.ArrayList;
 
 public class CommandContext {
     protected String[] args;

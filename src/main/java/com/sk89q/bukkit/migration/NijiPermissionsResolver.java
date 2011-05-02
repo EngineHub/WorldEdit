@@ -66,7 +66,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         }
     }
 
-    @SuppressWarnings({ "static-access", "deprecation" })
+    @SuppressWarnings({ "static-access" })
     public boolean inGroup(String name, String group) {
         try {
             Player player = server.getPlayer(name);
@@ -82,7 +82,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         }
     }
 
-    @SuppressWarnings({ "static-access", "deprecation" })
+    @SuppressWarnings({ "static-access" })
     public String[] getGroups(String name) {
         try {
             Player player = server.getPlayer(name);
