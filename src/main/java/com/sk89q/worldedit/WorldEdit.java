@@ -834,8 +834,10 @@ public class WorldEdit {
         Tool tool = session.getTool(player.getItemInHand());
         
         if (tool != null && tool instanceof TraceTool) {
-            ((TraceTool)tool).act(server, config, player, session);
-            return true;
+            if (tool.canUse(player)) {
+                ((TraceTool)tool).act(server, config, player, session);
+                return true;
+            }
         }
         
         return false;
@@ -866,8 +868,10 @@ public class WorldEdit {
         Tool tool = session.getTool(player.getItemInHand());
         
         if (tool != null && tool instanceof BlockTool) {
-            ((BlockTool)tool).actPrimary(server, config, player, session, clicked);
-            return true;
+            if (tool.canUse(player)) {
+                ((BlockTool)tool).actPrimary(server, config, player, session, clicked);
+                return true;
+            }
         }
 
         return false;
@@ -901,16 +905,20 @@ public class WorldEdit {
             }
         } else if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
             if (session.getSuperPickaxe() != null) {
-                return session.getSuperPickaxe().actPrimary(server, config,
-                        player, session, clicked);
+                if (session.getSuperPickaxe().canUse(player)) {
+                    return session.getSuperPickaxe().actPrimary(server, config,
+                            player, session, clicked);
+                }
             }
         }
 
         Tool tool = session.getTool(player.getItemInHand());
         
         if (tool != null && tool instanceof DoubleActionBlockTool) {
-            ((DoubleActionBlockTool)tool).actSecondary(server, config, player, session, clicked);
-            return true;
+            if (tool.canUse(player)) {
+                ((DoubleActionBlockTool)tool).actSecondary(server, config, player, session, clicked);
+                return true;
+            }
         }
 
         return false;

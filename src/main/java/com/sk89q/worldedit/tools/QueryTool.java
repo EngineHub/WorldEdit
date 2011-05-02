@@ -28,6 +28,10 @@ import com.sk89q.worldedit.blocks.*;
  * @author sk89q
  */
 public class QueryTool implements BlockTool {
+    
+    public boolean canUse(LocalPlayer player) {
+        return player.hasPermission("worldedit.tool.info");
+    }
 
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {

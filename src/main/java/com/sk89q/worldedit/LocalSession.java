@@ -455,7 +455,7 @@ public class LocalSession {
         Tool tool = getTool(item);
         
         if (tool == null || !(tool instanceof BrushTool)) {
-            tool = new BrushTool();
+            tool = new BrushTool("worldedit.brush.sphere");
             setTool(item, tool);
         }
         

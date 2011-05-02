@@ -39,6 +39,10 @@ public class RecursivePickaxe implements BlockTool {
         this.range = range;
     }
     
+    public boolean canUse(LocalPlayer player) {
+        return player.hasPermission("worldedit.superpickaxe.recursive");
+    }
+    
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         LocalWorld world = clicked.getWorld();

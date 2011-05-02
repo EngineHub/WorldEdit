@@ -29,6 +29,10 @@ import com.sk89q.worldedit.blocks.BlockID;
  */
 public class BlockDataCyler implements DoubleActionBlockTool {
     
+    public boolean canUse(LocalPlayer player) {
+        return player.hasPermission("worldedit.tool.data-cycler");
+    }
+    
     private boolean handleCycle(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked, boolean forward) {
         

@@ -39,6 +39,27 @@ public class BrushTool implements TraceTool {
     private Brush brush = new SphereBrush();
     private Pattern material = new SingleBlockPattern(new BaseBlock(BlockID.COBBLESTONE));
     private int size = 1;
+    private String permission;
+    
+    /**
+     * Construct the tool.
+     * 
+     * @param permission
+     */
+    public BrushTool(String permission) {
+        this.permission = permission;
+    }
+    
+    /**
+     * Checks to see if the player can still be using this tool (considering
+     * permissions and such).
+     * 
+     * @param player
+     * @return
+     */
+    public boolean canUse(LocalPlayer player) {
+        return player.hasPermission(permission);
+    }
     
     /**
      * Get the filter.
@@ -63,8 +84,9 @@ public class BrushTool implements TraceTool {
      * 
      * @param brush
      */
-    public void setBrush(Brush brush) {
+    public void setBrush(Brush brush, String perm) {
         this.brush = brush;
+        this.permission = perm;
     }
     
     /**

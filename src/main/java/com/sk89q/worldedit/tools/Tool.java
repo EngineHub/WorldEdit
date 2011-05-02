@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.tools;
 
+import com.sk89q.worldedit.LocalPlayer;
+
 /**
  * Represents a tool. This interface alone defines nothing. A tool also
  * has to implement <code>BlockTool</code> or <code>TraceTool</code>.
@@ -26,4 +28,14 @@ package com.sk89q.worldedit.tools;
  * @author sk89q
  */
 public abstract interface Tool {
+    
+    /**
+     * Checks to see if the player can still be using this tool (considering
+     * permissions and such).
+     * 
+     * @param player
+     * @return
+     */
+    public boolean canUse(LocalPlayer player);
+    
 }

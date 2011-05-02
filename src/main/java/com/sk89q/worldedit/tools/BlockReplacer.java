@@ -36,6 +36,10 @@ public class BlockReplacer implements DoubleActionBlockTool {
         this.targetBlock = targetBlock;
     }
     
+    public boolean canUse(LocalPlayer player) {
+        return player.hasPermission("worldedit.tool.replacer");
+    }
+    
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
 

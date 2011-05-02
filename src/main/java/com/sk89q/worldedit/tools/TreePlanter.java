@@ -34,6 +34,10 @@ public class TreePlanter implements BlockTool {
         this.gen = gen;
     }
     
+    public boolean canUse(LocalPlayer player) {
+        return player.hasPermission("worldedit.tool.tree");
+    }
+    
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         

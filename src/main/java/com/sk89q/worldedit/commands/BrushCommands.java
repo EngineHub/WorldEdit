@@ -77,9 +77,9 @@ public class BrushCommands {
         tool.setSize(radius);
         
         if (args.hasFlag('h')) {
-            tool.setBrush(new HollowSphereBrush());
+            tool.setBrush(new HollowSphereBrush(), "worldedit.brush.sphere");
         } else {
-            tool.setBrush(new SphereBrush());
+            tool.setBrush(new SphereBrush(), "worldedit.brush.sphere");
         }
 
         player.print(String.format("Sphere brush shape equipped (%d).",
@@ -121,9 +121,9 @@ public class BrushCommands {
         tool.setSize(radius);
         
         if (args.hasFlag('h')) {
-            tool.setBrush(new HollowCylinderBrush(height));
+            tool.setBrush(new HollowCylinderBrush(height), "worldedit.brush.cylinder");
         } else {
-            tool.setBrush(new CylinderBrush(height));
+            tool.setBrush(new CylinderBrush(height), "worldedit.brush.cylinder");
         }
         
         player.print(String.format("Cylinder brush shape equipped (%d by %d).",
@@ -163,7 +163,7 @@ public class BrushCommands {
         }
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
-        tool.setBrush(new ClipboardBrush(clipboard, args.hasFlag('a')));
+        tool.setBrush(new ClipboardBrush(clipboard, args.hasFlag('a')), "worldedit.brush.clipboard");
         
         player.print("Clipboard brush shape equipped.");
     }
@@ -193,7 +193,7 @@ public class BrushCommands {
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
         tool.setSize(radius);
-        tool.setBrush(new SmoothBrush(iterations));
+        tool.setBrush(new SmoothBrush(iterations), "worldedit.brush.smooth");
 
         player.print(String.format("Smooth brush equipped (%d x %dx).",
                 radius, iterations));
@@ -225,7 +225,7 @@ public class BrushCommands {
         tool.setFill(fill);
         tool.setSize(radius);
         tool.setMask(new BlockTypeMask(BlockID.FIRE));
-        tool.setBrush(new SphereBrush());
+        tool.setBrush(new SphereBrush(), "worldedit.brush.ex");
 
         player.print(String.format("Extinguisher equipped (%d).",
                 radius));

@@ -29,6 +29,10 @@ import com.sk89q.worldedit.blocks.BlockID;
  */
 public class SinglePickaxe implements BlockTool {
     
+    public boolean canUse(LocalPlayer player) {
+        return player.hasPermission("worldedit.superpickaxe");
+    }
+    
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         LocalWorld world = clicked.getWorld();
