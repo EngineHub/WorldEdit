@@ -111,6 +111,7 @@ public class WorldEditPlugin extends JavaPlugin {
      */
     public void onDisable() {
         controller.clearSessions();
+        config.unload();
     }
     
     /**
@@ -118,6 +119,7 @@ public class WorldEditPlugin extends JavaPlugin {
      */
     protected void loadConfiguration() {
         getConfiguration().load();
+        config.unload();
         config.load();
         perms.load();
     }
