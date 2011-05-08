@@ -34,6 +34,7 @@ import com.sk89q.worldedit.snapshots.SnapshotRepository;
 public class BukkitConfiguration extends LocalConfiguration {
     private Configuration config;
     private Logger logger;
+    private FileHandler logFileHandler;
     
     public boolean noOpPermissions = false;
     
@@ -97,9 +98,9 @@ public class BukkitConfiguration extends LocalConfiguration {
         String logFile = config.getString("logging.file", "");
         if (!logFile.equals("")) {
             try {
-                FileHandler handler = new FileHandler(logFile, true);
-                handler.setFormatter(new LogFormat());
-                logger.addHandler(handler);
+                logFileHandler = new FileHandler(logFile, true);
+                logFileHandler.setFormatter(new LogFormat());
+                logger.addHandler(logFileHandler);
             } catch (IOException e) {
                 logger.log(Level.WARNING, "Could not use log file " + logFile + ": "
                         + e.getMessage());
@@ -110,4 +111,11 @@ public class BukkitConfiguration extends LocalConfiguration {
             }
         }
     }
+    
+    public void unload() {
+        if (logFileHandler != null) {
+            logFileHandler.close();
+        }
+    } 
+    
 }
