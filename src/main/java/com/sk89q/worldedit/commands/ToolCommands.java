@@ -132,4 +132,21 @@ public class ToolCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
     }
+    
+    @Command(
+            aliases = {"deltree"},
+            usage = "",
+            desc = "Floating tree remover tool",
+            min = 0,
+            max = 0
+        )
+    @CommandPermissions({"worldedit.tool.deltree"})
+    public static void deltree(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+    session.setTool(player.getItemInHand(), new FloatingTreeRemover());
+    player.print("Floating tree remover tool bound to "
+            + ItemType.toHeldName(player.getItemInHand()) + ".");
+    }
 }
