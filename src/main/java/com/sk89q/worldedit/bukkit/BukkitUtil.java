@@ -66,6 +66,10 @@ public class BukkitUtil {
     public static Location toLocation(WorldVector pt) {
         return new Location(toWorld(pt), pt.getX(), pt.getY(), pt.getZ());
     }
+
+    public static Location toLocation(World world, Vector pt) {
+        return new Location(world, pt.getX(), pt.getY(), pt.getZ());
+    }
     
     public static Player matchSinglePlayer(Server server, String name) {
         List<Player> players = server.matchPlayer(name);
