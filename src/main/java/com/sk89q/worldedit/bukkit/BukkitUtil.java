@@ -19,25 +19,40 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import java.util.List;
-import org.bukkit.block.Block;
+import java.util.*;
+
+import org.bukkit.block.*;
 import org.bukkit.entity.Player;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
-import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.Vector;
 
 public class BukkitUtil {
     private BukkitUtil()  {
     }
     
-    public static Location toLocation(World world, Vector loc) {
-        return new Location(world, loc.getX(), loc.getY(), loc.getZ());
+    private static final Map<World,LocalWorld> wlw = new HashMap<World,LocalWorld>();
+    public static LocalWorld getLocalWorld(World w) {
+        LocalWorld lw = wlw.get(w);
+        if (lw == null) {
+            lw = new BukkitWorld(w);
+            wlw.put(w, lw);
+        }
+        return lw;
     }
     
     public static BlockVector toVector(Block block) {
         return new BlockVector(block.getX(), block.getY(), block.getZ());
+    }
+    
+    public static BlockVector toVector(BlockFace face) {
+        return new BlockVector(face.getModX(), face.getModY(), face.getModZ());
+    }
+    
+    public static BlockWorldVector toWorldVector(Block block) {
+        return new BlockWorldVector(getLocalWorld(block.getWorld()), block.getX(), block.getY(), block.getZ());
     }
     
     public static Vector toVector(Location loc) {
@@ -48,11 +63,23 @@ public class BukkitUtil {
         return new Vector(vector.getX(), vector.getY(), vector.getZ());
     }
     
+    public static Location toLocation(WorldVector pt) {
+        return new Location(toWorld(pt), pt.getX(), pt.getY(), pt.getZ());
+    }
+    
     public static Player matchSinglePlayer(Server server, String name) {
         List<Player> players = server.matchPlayer(name);
         if (players.size() == 0) {
             return null;
         }
         return players.get(0);
+    }
+
+    public static Block toBlock(BlockWorldVector pt) {
+        return toWorld(pt).getBlockAt(toLocation(pt));
+    }
+
+    public static World toWorld(WorldVector pt) {
+        return ((BukkitWorld)pt.getWorld()).getWorld();
     }
 }

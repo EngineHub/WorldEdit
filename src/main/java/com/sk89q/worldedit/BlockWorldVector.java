@@ -52,6 +52,28 @@ public class BlockWorldVector extends WorldVector {
      * @param y 
      * @param z 
      */
+    public BlockWorldVector(WorldVector world, int x, int y, int z) {
+        super(world.getWorld(), x, y, z);
+    }
+
+    /**
+     * Construct the Vector object.
+     * 
+     * @param world 
+     * @param v
+     */
+    public BlockWorldVector(WorldVector world, Vector v) {
+        super(world.getWorld(), v.x, v.y, v.z);
+    }
+
+    /**
+     * Construct the Vector object.
+     * 
+     * @param world 
+     * @param x 
+     * @param y 
+     * @param z 
+     */
     public BlockWorldVector(LocalWorld world, int x, int y, int z) {
         super(world, x, y, z);
     }
