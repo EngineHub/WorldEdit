@@ -230,6 +230,9 @@ commands:
     tree:
         description: Tree generator tool
         usage: /<command> [type]
+    deltree:
+        description: Floating tree remover tool
+        usage: /<command>
     /fillr:
         description: Fill a hole recursively
         usage: /<command>  <block> <radius> [depth] 
