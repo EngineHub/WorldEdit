@@ -521,6 +521,18 @@ public enum BlockType {
     }
 
     /**
+     * Checks if the id is that of one of the rail types
+     *
+     * @param id
+     * @return
+     */
+    public static boolean isRailBlock(int id) {
+       return id == 27 // Powered rail
+               || id == 28 // Detector rail
+               || id == 66; // Normal rail
+    }
+
+    /**
      * Get the block or item that would have been dropped. If nothing is
      * dropped, 0 will be returned. If the block should not be destroyed
      * (i.e. bedrock), -1 will be returned.
