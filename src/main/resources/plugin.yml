@@ -35,6 +35,9 @@ commands:
     /paste:
         description: Paste the clipboard's contents
         usage: /<command> [-ao] 
+    /spaste:
+        description: Paste the clipboard's contents using boolean operations
+        usage: /<command> [-uo] <REPLACE|UNION|INTERSECT|MASK|DIFFERENCE|UPDATE|ERASE>
     we:
         description: WorldEdit commands
         usage: /<command> 

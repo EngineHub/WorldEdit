@@ -129,7 +129,7 @@ public class ClipboardCommands {
             aliases = {"/spaste"},
             usage = "REPLACE|UNION|INTERSECT|MASK|DIFFERENCE|UPDATE|ERASE",
             flags = "uo",
-            desc = "Paste the clipboard's contents",
+            desc = "Paste the clipboard's contents using boolean operations",
             min = 1,
             max = 2
         )
