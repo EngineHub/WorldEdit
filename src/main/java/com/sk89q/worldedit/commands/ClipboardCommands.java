@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -126,9 +127,8 @@ public class ClipboardCommands {
     
         @Command(
             aliases = {"/spaste"},
-            usage = "<INTERSECT|MASK|DIFFERENCE|UNION|UPDATE|REPLACE|ERASE>",
-            flags = "u",
-            //flags = "uo",
+            usage = "REPLACE|UNION|INTERSECT|MASK|DIFFERENCE|UPDATE|ERASE",
+            flags = "uo",
             desc = "Paste the clipboard's contents",
             min = 1,
             max = 2
@@ -136,16 +136,30 @@ public class ClipboardCommands {
         @CommandPermissions({"worldedit.clipboard.paste"})
         public static void spaste(CommandContext args, WorldEdit we,
                 LocalSession session, LocalPlayer player, EditSession editSession)
-                throws WorldEditException {
+                throws WorldEditException, CommandException {
 
             boolean under = args.hasFlag('u');
-            Vector pos = session.getPlacementPosition(player);
-            player.print("Under: " + under);
+            boolean atOrigin = args.hasFlag('o');
+            CuboidClipboard.SetOperation op;
+            try {
+                op = CuboidClipboard.SetOperation.valueOf(args.getString(0).toUpperCase());
+            }
+            catch (java.lang.IllegalArgumentException e) {
+                throw new CommandException("Unknown set operation: " + args.getString(0));
+            }
             
-            CuboidClipboard.SetOperation op = CuboidClipboard.SetOperation.valueOf(args.getString(0));
-            session.getClipboard().paste(editSession, pos, op, under);
+            if (atOrigin) {
+                Vector pos = session.getClipboard().getOrigin();
+                session.getClipboard().place(editSession, pos, op, under);
+                player.print("Pasted to copy origin. Undo with //undo");
+            }
+            else {
+                Vector pos = session.getPlacementPosition(player);
+                session.getClipboard().paste(editSession, pos, op, under);
+                player.print("Pasted relative to you. Undo with //undo");
+            }
+            
             player.findFreePosition();
-            player.print("Pasted");
         }
 
     @Command(

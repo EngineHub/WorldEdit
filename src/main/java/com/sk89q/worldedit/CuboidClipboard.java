@@ -46,12 +46,12 @@ public class CuboidClipboard {
         UP_DOWN
     }
     public enum SetOperation {
+        /* [#|#|#] */ UNION,
+        /* [#|#| ] */ REPLACE,
         /* [ |#| ] */ INTERSECT,
         /* [#| | ] */ MASK,
         /* [#| |#] */ DIFFERENCE,
-        /* [#|#|#] */ UNION,
         /* [#|#| ] */ UPDATE,
-        /* [#|#| ] */ REPLACE,
         /* [ | | ] */ ERASE
     }
 
