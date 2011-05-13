@@ -257,7 +257,10 @@ public class CuboidClipboard {
             throws MaxChangedBlocksException {
         place(editSession, newOrigin.add(offset), noAir);
     }
-
+    public void paste(EditSession editSession, Vector newOrigin, SetOperation op, boolean under)
+        throws MaxChangedBlocksException {
+        place(editSession, newOrigin.add(offset), op, under);
+    }
     /**
      * Places the blocks in a position from the minimum corner.
      * 
@@ -285,12 +288,12 @@ public class CuboidClipboard {
                     }
                     switch (op) {
                         case INTERSECT:
-                            if (!(target.isAir() && source.isAir())) {
+                            if (!target.isAir() && !source.isAir()) {
                                 result = source;
                             }
                             break;
                         case MASK:
-                            if (!source.isAir()) {
+                            if (source.isAir()) {
                                 result = target;
                             }
                             break;
@@ -313,8 +316,11 @@ public class CuboidClipboard {
                             }
                             break;
                         case UPDATE:
-                            if (!target.isAir()) {
+                            if (!target.isAir() && !source.isAir()) {
                                 result = source;
+                            }
+                            else {
+                                result = target;
                             }
                             break;
                         case REPLACE:

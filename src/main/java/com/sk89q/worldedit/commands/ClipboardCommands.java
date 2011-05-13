@@ -109,6 +109,7 @@ public class ClipboardCommands {
 
         boolean atOrigin = args.hasFlag('o');
         boolean pasteNoAir = args.hasFlag('a');
+        
                 
         if (atOrigin) {
             Vector pos = session.getClipboard().getOrigin();
@@ -122,6 +123,30 @@ public class ClipboardCommands {
             player.print("Pasted relative to you. Undo with //undo");
         }
     }
+    
+        @Command(
+            aliases = {"/spaste"},
+            usage = "<INTERSECT|MASK|DIFFERENCE|UNION|UPDATE|REPLACE|ERASE>",
+            flags = "u",
+            //flags = "uo",
+            desc = "Paste the clipboard's contents",
+            min = 1,
+            max = 2
+        )
+        @CommandPermissions({"worldedit.clipboard.paste"})
+        public static void spaste(CommandContext args, WorldEdit we,
+                LocalSession session, LocalPlayer player, EditSession editSession)
+                throws WorldEditException {
+
+            boolean under = args.hasFlag('u');
+            Vector pos = session.getPlacementPosition(player);
+            player.print("Under: " + under);
+            
+            CuboidClipboard.SetOperation op = CuboidClipboard.SetOperation.valueOf(args.getString(0));
+            session.getClipboard().paste(editSession, pos, op, under);
+            player.findFreePosition();
+            player.print("Pasted");
+        }
 
     @Command(
         aliases = {"/rotate"},
