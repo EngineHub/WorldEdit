@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import org.bukkit.Material;
 
 /**
  * The clipboard remembers the state of a cuboid region.
@@ -252,6 +251,7 @@ public class CuboidClipboard {
      * @param newOrigin Position to paste it from
      * @param noAir True to not paste air
      * @throws MaxChangedBlocksException
+     * @author purpleposeidon
      */
     public void paste(EditSession editSession, Vector newOrigin, boolean noAir)
             throws MaxChangedBlocksException {
@@ -269,10 +269,11 @@ public class CuboidClipboard {
      * @param op How to join the clipboard with the world
      * @param under If true, act as if pasting world into clipboard
      * @throws MaxChangedBlocksException
+     * @author purpleposeidon
      */
     public void place(EditSession editSession, Vector pos, SetOperation op, boolean under)
             throws MaxChangedBlocksException {
-        final int AIR = Material.AIR.getId();
+        final int AIR = BlockID.AIR;
         for (int x = 0; x < size.getBlockX(); x++) {
             for (int y = 0; y < size.getBlockY(); y++) {
                 for (int z = 0; z < size.getBlockZ(); z++) {
