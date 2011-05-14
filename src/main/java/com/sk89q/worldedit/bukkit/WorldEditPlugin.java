@@ -38,6 +38,7 @@ import com.sk89q.bukkit.migration.PermissionsResolverServerListener;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.bukkit.selections.*;
+import com.sk89q.worldedit.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.regions.*;
 
 /**
@@ -111,6 +112,9 @@ public class WorldEditPlugin extends JavaPlugin {
      */
     public void onDisable() {
         controller.clearSessions();
+        for (Player player : getServer().getOnlinePlayers()) {
+            wrapPlayer(player).dispatchCUIEvent(new SelectionShapeEvent("cuboid"));
+        }
         config.unload();
     }
     
