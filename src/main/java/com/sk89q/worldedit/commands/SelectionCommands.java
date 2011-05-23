@@ -229,6 +229,7 @@ public class SelectionCommands {
                 region.expand(new Vector(0, -128, 0));
                 session.getRegionSelector().learnChanges();
                 int newSize = region.getArea();
+                session.getRegionSelector().explainRegionAdjust(player, session);
                 player.print("Region expanded " + (newSize - oldSize)
                         + " blocks [top-to-bottom].");
             } catch (RegionOperationException e) {
