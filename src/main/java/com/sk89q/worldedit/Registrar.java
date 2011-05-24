@@ -14,18 +14,21 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-//import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+
 
 /**
  * Registers all of the commands, in all of the classes, in all of the jars, in 
  * all of all of the directories and subdirectories in the WorldEdit directory.
- * This class catches Throwables, because some lookup failures throw objects 
- * other then RuntimeException. Also, the available Logger does not seem to 
- * support the default Loggers formatting functionality, so logs concatenate 
- * strings instead of using {}.
+ * Currently,autoRegister uses the hard-coded value {@code "plugins/WorldEdit"}
+ * as the directory to search. Im looking for the correct API to use.
+ * The {@code  Registrar} class catches {@code Throwable}, because some lookup
+ * failures throw objects other then RuntimeException. Also, the available 
+ * Logger does not seem to  support the default Loggers formatting 
+ * functionality, so logs concatenate strings instead of using <code>{}</code>.
  * @param <T> command sender class
- * @author chymes
- */
+ * @author charles@hymes.name
+ **/
+
 public class Registrar<T> {
 
     private static class ClasspathJarAppender {
@@ -281,7 +284,7 @@ public class Registrar<T> {
         registerExtensionCommandsInDir(getExtenensionsDir());
     }
 
-    public void registerExtensionCommandsInDir(File extDir) {
+    private void registerExtensionCommandsInDir(File extDir) {
         LOGGER.log(Level.FINE, extDir.toString());
 
         if (!DIR_FILTER.accept(extDir)) {
@@ -295,7 +298,7 @@ public class Registrar<T> {
         }
     }
 
-    public void registerExtensionCommandsInJar(File someJar) {
+    private void registerExtensionCommandsInJar(File someJar) {
         String entryName;
         Class<?> entryClass;
         LOGGER.log(Level.FINE, someJar.toString());
