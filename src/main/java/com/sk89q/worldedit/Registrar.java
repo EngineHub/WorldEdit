@@ -396,7 +396,25 @@ public class Registrar<T> {
         }
         return result;
     }
+    
+    public static void autoRegister(LocalConfiguration config, CommandsManager<LocalPlayer> commandManager){
+        File wcPluginDir;
+        File saveDir = new File("WorldEdit");
+        if (saveDir.isAbsolute()) {
+            wcPluginDir = saveDir;
+        }
+        else {           
+            wcPluginDir = new File(config.getWorkingDirectory(), "plugins/WorldEdit");//FIXME how do I really find the plugins directory?
+        }
 
+        if (wcPluginDir.exists()) {
+            Registrar<LocalPlayer> jarRegistrar = new Registrar<LocalPlayer>(commandManager, wcPluginDir);
+            jarRegistrar.registerExtensionCommands();
+        }
+        else {
+            LOGGER.log(Level.WARNING, "Plugin directory "+wcPluginDir.toString()+" does not (yet) exist." );/** Logger does not support {} **/
+        }        
+    }
     /**
      * @return the commandManager
      */
