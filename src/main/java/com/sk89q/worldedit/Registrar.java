@@ -35,12 +35,11 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- * Registers all of the commands, in all of the classes, in all of the jars, in 
- * all of all of the directories and subdirectories in the WorldEdit directory.
+ * Registers all of the commands, in all of the jars, in the WorldEdit directory.
  * <p>
- * Usage: Build a package that includes a Class or classes that has at least 
- * one method that is annotated with the  <code> Command </code>  <code>Annotation </code>.<br/>
- * Bundle the package int a jar and usual. Then place the jar in the 
+ * Usage: Obtain a jar that has a class or classes that has methods annotated
+ * with the <code>Command</code>  <code>Annotation</code>.<br/>
+ * Then place the jar in the 
  *  <code>"plugins/WorldEdit"</code> directory of your Bukkit server installation.<br/>
  * Restart your Bukkit server.<br/> That's it!<br/>
  * <p>
