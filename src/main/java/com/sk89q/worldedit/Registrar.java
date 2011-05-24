@@ -1,3 +1,21 @@
+// $Id$
+/*
+ * Registrar
+ * Copyright (C) 2011 Charles Hymes <http://www.hymerfania.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.sk89q.worldedit;
 
 import com.sk89q.minecraft.util.commands.Command;
@@ -20,13 +38,22 @@ import java.net.URLClassLoader;
  * Registers all of the commands, in all of the classes, in all of the jars, in 
  * all of all of the directories and subdirectories in the WorldEdit directory.
  * <p>
- * The {@code  Registrar} class catches {@code Throwable}, because some lookup
- * failures throw objects other then RuntimeException.
+ * Usage: Build a package that includes a Class or classes that has at least 
+ * one method that is annotated with the  <code> Command </code>  <code>Annotation </code>.<br/>
+ * Bundle the package int a jar and usual. Then place the jar in the 
+ *  <code>"plugins/WorldEdit"</code> directory of your Bukkit server installation.<br/>
+ * Restart your Bukkit server.<br/> That's it!<br/>
  * <p>
- * Also, the available Logger does not seem to  support the default Loggers formatting 
- * functionality, so logs concatenate strings instead of using <code>{}</code>.
+ * Developer Notes:
+ * The <code>Registrar</code> class catches <code>Throwable</code>, because some
+ * lookup failures throw objects other then <code>RuntimeException</code>.
+ * <p>
+ * Also, the available <code>Logger</code> does not seem to  support the 
+ * default Loggers formatting functionality, so logs concatenate strings instead
+ * of using <code>{}</code>.
  * @param <T> command sender class
  * @author charles@hymes.name
+ * @see com.sk89q.minecraft.util.commands.Command
  **/
 public class Registrar<T> {
 
@@ -272,11 +299,25 @@ public class Registrar<T> {
         }
     }
 
+    /**
+     * Creates an instance of Registrar. Only needed in special cases, because
+     * the static method
+     * {@code autoRegister(BukkitServerInterface serverInterface, CommandsManager<LocalPlayer> commandManager)}
+     * will typically be easier to use.
+     * @param commandManager the CommandsManager that will register the command.
+     * @param extenensionsDir the location of the jars that contain the classes
+     * with {@code Command}s.
+     * @see autoRegister(BukkitServerInterface, CommandsManager)
+     */
     public Registrar(CommandsManager<T> commandManager, File extenensionsDir) {
         this._commandManager = commandManager;
         this._extenensionsDir = extenensionsDir;
     }
 
+    /**
+     * Registers all of the commands, in all of the classes, in all of the jars, in 
+     * all of all of the directories and subdirectories in the WorldEdit directory.
+     */
     public void registerExtensionCommands() {
         LOGGER.log(Level.FINE, getExtenensionsDir().toString());
         registerExtensionCommandsInDir(getExtenensionsDir());
@@ -404,7 +445,7 @@ public class Registrar<T> {
  * <p>
  * This is a convenience wrapper for {@code  autoRegister(BukkitServerInterface server, CommandsManager<LocalPlayer> commandManager)}
  * Note, however, that the argument {@code server} must be an instance of {@code BukkitServerInterface}.
- * @param server The ServerInterface that manages the WorldEdit plugin. MUST be an instance of {@code BukkitServerInterface}.
+ * @param serverInterface The BukkitServerInterface that manages the WorldEdit plugin.
  * @param commandManager the CommandsManager that will register the command. 
  */    
     public static void autoRegister(ServerInterface serverInterface, CommandsManager<LocalPlayer> commandManager) {
@@ -418,7 +459,7 @@ public class Registrar<T> {
  * all of all of the directories and subdirectories in the WorldEdit directory.
  * <p>
  * @param serverInterface The BukkitServerInterface that manages the WorldEdit plugin.
- * @param commandManager the CommandsManager that will register the command.  
+ * @param commandManager   
  */
     public static void autoRegister(BukkitServerInterface serverInterface, CommandsManager<LocalPlayer> commandManager) {
         try {
