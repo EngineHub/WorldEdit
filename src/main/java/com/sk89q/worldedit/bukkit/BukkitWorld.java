@@ -391,7 +391,7 @@ public class BukkitWorld extends LocalWorld {
     }
 
     /**
-     * Kill mobs in an area.
+     * Kill mobs in an area, excluding tamed wolves.
      * 
      * @param origin
      * @param radius -1 for all mobs
@@ -399,12 +399,27 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public int killMobs(Vector origin, int radius) {
+        return killMobs(origin, radius, false);
+    }
+
+    /**
+     * Kill mobs in an area.
+     * 
+     * @param origin
+     * @param radius -1 for all mobs
+     * @param killPets true to kill tames wolves
+     * @return
+     */
+    @Override
+    public int killMobs(Vector origin, int radius, boolean killPets) {
         int num = 0;
         double radiusSq = Math.pow(radius, 2);
         
         for (LivingEntity ent : world.getLivingEntities()) {
-            if ((ent instanceof Creature || ent instanceof Ghast || ent instanceof Slime)
-                    && !(ent instanceof Wolf)) {
+            if (!killPets && ent instanceof Wolf && ((Wolf) ent).isTamed()) {
+                continue; // tamed wolf
+            }
+            if (ent instanceof Creature || ent instanceof Ghast || ent instanceof Slime) {
                 if (radius == -1
                         || origin.distanceSq(BukkitUtil.toVector(ent.getLocation())) <= radiusSq) {
                     ent.remove();
