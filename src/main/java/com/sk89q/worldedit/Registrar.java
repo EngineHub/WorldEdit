@@ -2,6 +2,7 @@ package com.sk89q.worldedit;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.worldedit.bukkit.BukkitServerInterface;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.jar.JarEntry;
@@ -15,20 +16,18 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-
 /**
  * Registers all of the commands, in all of the classes, in all of the jars, in 
  * all of all of the directories and subdirectories in the WorldEdit directory.
- * Currently,autoRegister uses the hard-coded value {@code "plugins/WorldEdit"}
- * as the directory to search. Im looking for the correct API to use.
+ * <p>
  * The {@code  Registrar} class catches {@code Throwable}, because some lookup
- * failures throw objects other then RuntimeException. Also, the available 
- * Logger does not seem to  support the default Loggers formatting 
+ * failures throw objects other then RuntimeException.
+ * <p>
+ * Also, the available Logger does not seem to  support the default Loggers formatting 
  * functionality, so logs concatenate strings instead of using <code>{}</code>.
  * @param <T> command sender class
  * @author charles@hymes.name
  **/
-
 public class Registrar<T> {
 
     private static class ClasspathJarAppender {
@@ -72,23 +71,23 @@ public class Registrar<T> {
             }
             /**May have different handling of these exceptions someday***/
             catch (IllegalAccessException ex) {
-                LOGGER.log(Level.SEVERE,ex.getMessage(),ex);
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 throw new IOException(FAIL_PREFIX + u.toString() + FAIL_SUFFIX, ex);
             }
             catch (IllegalArgumentException ex) {
-                LOGGER.log(Level.SEVERE,ex.getMessage(),ex);
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 throw new IOException(FAIL_PREFIX + u.toString() + FAIL_SUFFIX, ex);
             }
             catch (InvocationTargetException ex) {
-                LOGGER.log(Level.SEVERE,ex.getMessage(),ex);
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 throw new IOException(FAIL_PREFIX + u.toString() + FAIL_SUFFIX, ex);
             }
             catch (NoSuchMethodException ex) {
-                LOGGER.log(Level.SEVERE,ex.getMessage(),ex);
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 throw new IOException(FAIL_PREFIX + u.toString() + FAIL_SUFFIX, ex);
             }
             catch (SecurityException ex) {
-                LOGGER.log(Level.SEVERE,ex.getMessage(),ex);
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 throw new IOException(FAIL_PREFIX + u.toString() + FAIL_SUFFIX, ex);
             }
             catch (Exception ex) {
@@ -113,24 +112,24 @@ public class Registrar<T> {
             }
             /**May have different handling of these exceptions someday***/
             catch (IllegalAccessException ex) {
-                LOGGER.log(Level.SEVERE,ex.getMessage(),ex);
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ex);
             }
             catch (IllegalArgumentException ex) {
-                LOGGER.log(Level.SEVERE,ex.getMessage(),ex);
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ex);
             }
             catch (InvocationTargetException ex) {
-                LOGGER.log(Level.SEVERE,ex.getMessage(),ex);
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ex);
             }
             catch (NoSuchMethodException ex) {
-                LOGGER.log(Level.SEVERE,ex.getMessage(),ex);
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ex);
             }
             catch (SecurityException ex) {
-                LOGGER.log(Level.SEVERE,ex.getMessage(),ex);
-                throw new ClassNotFoundException(FAIL_PREFIX+ name + FAIL_SUFFIX, ex);
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+                throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ex);
             }
             catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
@@ -142,15 +141,14 @@ public class Registrar<T> {
             }
             return result;
         }
-        
         /**
          * Parameters of the method to add an URL to the System classes. 
          */
         private static final Class<?>[] URL_PARAMETER = new Class<?>[]{URL.class};
         private static final Class<?>[] CLASSNAME_PARAMETER = new Class<?>[]{String.class};
         private static final URLClassLoader CLASS_LOADER = (URLClassLoader) Registrar.class.getClassLoader();
-        private static final String FAIL_PREFIX = "Error, could not load class from URL " ;
-        private static final String FAIL_SUFFIX =  " via local ClassLoader";        
+        private static final String FAIL_PREFIX = "Error, could not load class from URL ";
+        private static final String FAIL_SUFFIX = " via local ClassLoader";
     }
 
     /***
@@ -191,7 +189,7 @@ public class Registrar<T> {
 
         /*****
          * @param file
-         * @return true is the file is a symbolic link. However this often fails to 
+         * @return {@code true} if the file is a symbolic link. However this often fails to 
          * correctly return true on JVMs before 1.7, especially on Windows.
          * @throws IOException  
          * @deprecated There is no good way to do this on Windows without a 1.7 JVM
@@ -243,7 +241,7 @@ public class Registrar<T> {
                 result = result && !isSymlink(pathname);
             }
             catch (IOException ex) {
-                LOGGER.log(Level.SEVERE,ex.getMessage(),ex);
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
             }
 
             return result;
@@ -336,7 +334,7 @@ public class Registrar<T> {
             LOGGER.log(Level.SEVERE, null, ze);
         }
         catch (IOException ex) {
-            LOGGER.log(Level.SEVERE,ex.getMessage(),ex);
+            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
@@ -399,25 +397,48 @@ public class Registrar<T> {
         }
         return result;
     }
-    
-    public static void autoRegister(LocalConfiguration config, CommandsManager<LocalPlayer> commandManager){
-        File wcPluginDir;
-        File saveDir = new File("WorldEdit");
-        if (saveDir.isAbsolute()) {
-            wcPluginDir = saveDir;
-        }
-        else {           
-            wcPluginDir = new File(config.getWorkingDirectory(), "plugins/WorldEdit");//FIXME how do I really find the plugins directory?
-        }
 
-        if (wcPluginDir.exists()) {
-            Registrar<LocalPlayer> jarRegistrar = new Registrar<LocalPlayer>(commandManager, wcPluginDir);
-            jarRegistrar.registerExtensionCommands();
+/***
+ * Registers all of the commands, in all of the classes, in all of the jars, in 
+ * all of all of the directories and subdirectories in the WorldEdit directory.
+ * <p>
+ * This is a convenience wrapper for {@code  autoRegister(BukkitServerInterface server, CommandsManager<LocalPlayer> commandManager)}
+ * Note, however, that the argument {@code server} must be an instance of {@code BukkitServerInterface}.
+ * @param server The ServerInterface that manages the WorldEdit plugin. MUST be an instance of {@code BukkitServerInterface}.
+ * @param commandManager the CommandsManager that will register the command. 
+ */    
+    public static void autoRegister(ServerInterface serverInterface, CommandsManager<LocalPlayer> commandManager) {
+        if (!(serverInterface instanceof BukkitServerInterface)) {
+            throw new IllegalArgumentException("server argument must be an instance of BukkitServerInterface");
         }
-        else {
-            LOGGER.log(Level.WARNING, "Plugin directory "+wcPluginDir.toString()+" does not (yet) exist." );/** Logger does not support {} **/
-        }        
+        autoRegister((BukkitServerInterface)serverInterface,commandManager);
     }
+/***
+ * Registers all of the commands, in all of the classes, in all of the jars, in 
+ * all of all of the directories and subdirectories in the WorldEdit directory.
+ * <p>
+ * @param serverInterface The BukkitServerInterface that manages the WorldEdit plugin.
+ * @param commandManager the CommandsManager that will register the command.  
+ */
+    public static void autoRegister(BukkitServerInterface serverInterface, CommandsManager<LocalPlayer> commandManager) {
+        try {
+            File wcPluginDir = serverInterface.plugin.getDataFolder();
+            LOGGER.log(Level.INFO, "Searching directory \"" + wcPluginDir.toString() + "\" for Commands");
+            /** Logger does not support {} **/
+            if (wcPluginDir.exists()) {
+                Registrar<LocalPlayer> jarRegistrar = new Registrar<LocalPlayer>(commandManager, wcPluginDir);
+                jarRegistrar.registerExtensionCommands();
+            }
+            else {
+                LOGGER.log(Level.WARNING, "Plugin directory \"" + wcPluginDir.toString() + "\" does not (yet) exist.");
+                /** Logger does not support {} **/
+            }
+        }
+        catch (Throwable ex) {
+            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+    }
+
     /**
      * @return the commandManager
      */
