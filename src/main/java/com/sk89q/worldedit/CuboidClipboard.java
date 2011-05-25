@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-
 /**
  * The clipboard remembers the state of a cuboid region.
  *
@@ -43,15 +42,6 @@ public class CuboidClipboard {
         NORTH_SOUTH,
         WEST_EAST,
         UP_DOWN
-    }
-    public enum SetOperation {
-        /* [#|#|#] */ UNION,
-        /* [#|#| ] */ REPLACE,
-        /* [ |#| ] */ INTERSECT,
-        /* [#| | ] */ MASK,
-        /* [#| |#] */ DIFFERENCE,
-        /* [#|#| ] */ UPDATE,
-        /* [ | | ] */ ERASE
     }
 
     private BaseBlock[][][] data;
@@ -251,92 +241,12 @@ public class CuboidClipboard {
      * @param newOrigin Position to paste it from
      * @param noAir True to not paste air
      * @throws MaxChangedBlocksException
-     * @author purpleposeidon
      */
     public void paste(EditSession editSession, Vector newOrigin, boolean noAir)
             throws MaxChangedBlocksException {
         place(editSession, newOrigin.add(offset), noAir);
     }
-    public void paste(EditSession editSession, Vector newOrigin, SetOperation op, boolean under)
-        throws MaxChangedBlocksException {
-        place(editSession, newOrigin.add(offset), op, under);
-    }
-    /**
-     * Places the blocks in a position from the minimum corner.
-     * 
-     * @param editSession
-     * @param pos
-     * @param op How to join the clipboard with the world
-     * @param under If true, act as if pasting world into clipboard
-     * @throws MaxChangedBlocksException
-     * @author purpleposeidon
-     */
-    public void place(EditSession editSession, Vector pos, SetOperation op, boolean under)
-            throws MaxChangedBlocksException {
-        final int AIR = BlockID.AIR;
-        for (int x = 0; x < size.getBlockX(); x++) {
-            for (int y = 0; y < size.getBlockY(); y++) {
-                for (int z = 0; z < size.getBlockZ(); z++) {
-                    Vector destination = new Vector(x, y, z).add(pos);
-                    BaseBlock target, source, result = new BaseBlock(AIR);
-                    if (under) {
-                        source = editSession.getBlock(destination);
-                        target = data[x][y][z];
-                    }
-                    else {
-                        target = editSession.getBlock(destination);
-                        source = data[x][y][z];
-                    }
-                    switch (op) {
-                        case INTERSECT:
-                            if (!target.isAir() && !source.isAir()) {
-                                result = source;
-                            }
-                            break;
-                        case MASK:
-                            if (source.isAir()) {
-                                result = target;
-                            }
-                            break;
-                        case DIFFERENCE:
-                            if (!source.isAir()) {
-                                if (target.isAir()) {
-                                    result = source;
-                                }
-                            }
-                            else {
-                                result = target;
-                            }
-                            break;
-                        case UNION:
-                            if (target.isAir()) {
-                                result = source;
-                            }
-                            else {
-                                result = target;
-                            }
-                            break;
-                        case UPDATE:
-                            if (!target.isAir() && !source.isAir()) {
-                                result = source;
-                            }
-                            else {
-                                result = target;
-                            }
-                            break;
-                        case REPLACE:
-                            result = source;
-                            break;
-                        case ERASE:
-                            break;
-                    }
-                    
-                    editSession.setBlock(destination, result);
-                }
-            }
-        }
-    }
-    
+
     /**
      * Places the blocks in a position from the minimum corner.
      * 
@@ -347,11 +257,16 @@ public class CuboidClipboard {
      */
     public void place(EditSession editSession, Vector pos, boolean noAir)
             throws MaxChangedBlocksException {
-        if (noAir) {
-            place(editSession, pos, SetOperation.UNION, false);
-        }
-        else {
-            place(editSession, pos, SetOperation.REPLACE, false);
+        for (int x = 0; x < size.getBlockX(); x++) {
+            for (int y = 0; y < size.getBlockY(); y++) {
+                for (int z = 0; z < size.getBlockZ(); z++) {
+                    if (noAir && data[x][y][z].isAir())
+                        continue;
+
+                    editSession.setBlock(new Vector(x, y, z).add(pos),
+                            data[x][y][z]);
+                }
+            }
         }
     }
     

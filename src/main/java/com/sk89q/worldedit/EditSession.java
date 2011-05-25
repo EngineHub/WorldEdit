@@ -100,6 +100,20 @@ public class EditSession {
      * List of missing blocks;
      */
     private Set<Integer> missingBlocks = new HashSet<Integer>();
+    /**
+     * Affects how blocks will be placed
+     */
+    public enum BooleanOperation {
+        /* [#|#|#] */ UNION,
+        /* [#|#| ] */ REPLACE,
+        /* [ |#| ] */ INTERSECT,
+        /* [#| | ] */ MASK,
+        /* [#| |#] */ DIFFERENCE,
+        /* [#|#| ] */ UPDATE,
+        /* [ | | ] */ ERASE
+    }
+    private BooleanOperation boolOp;
+    private boolean reverseOp;  
 
     /**
      * Construct the object with a maximum number of blocks.
@@ -114,6 +128,8 @@ public class EditSession {
 
         this.maxBlocks = maxBlocks;
         this.world = world;
+        setBooleanOperation(BooleanOperation.REPLACE);
+        setReverseOperation(true);
     }
 
     /**
@@ -132,6 +148,8 @@ public class EditSession {
         this.maxBlocks = maxBlocks;
         this.blockBag = blockBag;
         this.world = world;
+        setBooleanOperation(BooleanOperation.REPLACE);
+        setReverseOperation(true);
     }
 
     /**
@@ -223,6 +241,44 @@ public class EditSession {
     }
 
     /**
+     * Get the boolean operation used by setBlock()
+     * @return The operation used
+     */
+    public BooleanOperation getBooleanOperation() {
+    	return boolOp;
+    }
+    
+    /**
+     * Set the boolean operation for setBlock().
+     * 
+     * @param op
+     */
+    public void setBooleanOperation(BooleanOperation op) {
+    	boolOp = op;
+    }
+    
+    public void setReverseOperation(boolean reverse) {
+    	reverseOp = reverse;
+    }
+    
+    public boolean getReverseOperation() {
+    	return reverseOp;
+    }
+    
+    /**
+     * Set a block with a pattern.
+     * 
+     * @param pt
+     * @param pat
+     * @return Whether the block changed -- not entirely dependable
+     * @throws MaxChangedBlocksException 
+     */
+    public boolean setBlock(Vector pt, Pattern pat)
+            throws MaxChangedBlocksException {
+        return setBlock(pt, pat.next(pt));
+    }
+    
+    /**
      * Sets the block at position x, y, z with a block type. If queue mode is
      * enabled, blocks may not be actually set in world until flushQueue() is
      * called.
@@ -243,10 +299,63 @@ public class EditSession {
             throw new MaxChangedBlocksException(maxBlocks);
         }
         // }
+        
+        BaseBlock target, source, result = new BaseBlock(BlockID.AIR);
+        if (reverseOp) {
+            source = getBlock(pt);
+            target = block;
+        }
+        else {
+            target = getBlock(pt);
+            source = block;
+        }
+        switch (boolOp) {
+            case INTERSECT:
+                if (!target.isAir() && !source.isAir()) {
+                    result = source;
+                }
+                break;
+            case MASK:
+                if (source.isAir()) {
+                    result = target;
+                }
+                break;
+            case DIFFERENCE:
+                if (!source.isAir()) {
+                    if (target.isAir()) {
+                        result = source;
+                    }
+                }
+                else {
+                    result = target;
+                }
+                break;
+            case UNION:
+                if (target.isAir()) {
+                    result = source;
+                }
+                else {
+                    result = target;
+                }
+                break;
+            case UPDATE:
+                if (!target.isAir() && !source.isAir()) {
+                    result = source;
+                }
+                else {
+                    result = target;
+                }
+                break;
+            case REPLACE:
+                result = source;
+                break;
+            case ERASE:
+                break;
+        }
 
-        current.put(pt.toBlockVector(), block);
+        current.put(pt.toBlockVector(), result);
 
-        return smartSetBlock(pt, block);
+        return smartSetBlock(pt, result);
     }
 
     /**
@@ -262,20 +371,7 @@ public class EditSession {
         original.put(blockPt, existing);
         current.put(pt.toBlockVector(), block);
     }
-
-    /**
-     * Set a block with a pattern.
-     * 
-     * @param pt
-     * @param pat
-     * @return Whether the block changed -- not entirely dependable
-     * @throws MaxChangedBlocksException 
-     */
-    public boolean setBlock(Vector pt, Pattern pat)
-            throws MaxChangedBlocksException {
-        return setBlock(pt, pat.next(pt));
-    }
-
+    
     /**
      * Set a block only if there's no block already there.
      * 
