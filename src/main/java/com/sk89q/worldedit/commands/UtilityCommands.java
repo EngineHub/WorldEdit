@@ -307,6 +307,7 @@ public class UtilityCommands {
     @Command(
         aliases = {"butcher"},
         usage = "[radius]",
+        flags = "p",
         desc = "Kill all or nearby mobs",
         min = 0,
         max = 1
@@ -320,7 +321,7 @@ public class UtilityCommands {
             Math.max(1, args.getInteger(0)) : -1;
 
         Vector origin = session.getPlacementPosition(player);
-        int killed = player.getWorld().killMobs(origin, radius);
+        int killed = player.getWorld().killMobs(origin, radius, args.hasFlag('p'));
         player.print("Killed " + killed + " mobs.");
     }
 
