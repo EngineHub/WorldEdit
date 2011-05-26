@@ -62,6 +62,8 @@ public enum BlockType {
             new String[] {"poweredrail", "boosterrail", "poweredtrack", "boostertrack"}),
     DETECTOR_RAIL(28, "Detector Rail", "detectorrail"),
     WEB(30, "Web", new String[] {"web", "spiderweb"}),
+    LONG_GRASS(31, "Long grass", new String[] {"longgrass", "tallgrass"}),
+    DEAD_BUSH(32, "Shrub", new String[] {"deadbush", "shrub", "deadshrub", "tumbleweed"}),
     CLOTH(35, "Wool", new String[] {"cloth", "wool"}),
     YELLOW_FLOWER(37, "Yellow flower", new String[] {"yellowflower", "flower"}),
     RED_FLOWER(38, "Red rose", new String[] {"redflower", "redrose", "rose"}),
@@ -135,7 +137,8 @@ public enum BlockType {
     CAKE(92, "Cake", new String[] {"cake", "cakeblock"}),
     REDSTONE_REPEATER_OFF(93, "Redstone repeater (off)", new String[] {"diodeoff", "redstonerepeater", "repeater", "delayer"}),
     REDSTONE_REPEATER_ON(94, "Redstone repeater (on)", new String[] {"diode", "diodeon", "redstonerepeateron", "repeateron", "delayeron"}),
-    LOCKED_CHEST(95, "Locked chest", new String[] {"lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"});
+    LOCKED_CHEST(95, "Locked chest", new String[] {"lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"}),
+    TRAP_DOOR(96, "Trap door", new String[] {"trapdoor", "hatch"});
 
     /**
      * Stores a list of dropped blocks for blocks.
@@ -226,6 +229,7 @@ public enum BlockType {
         blockDrops.put(93, 356);
         blockDrops.put(94, 356);
         blockDrops.put(95, 95);
+        blockDrops.put(96, 96);
     }
 
     /**
@@ -333,6 +337,8 @@ public enum BlockType {
                 || id == 26 // Beds
                 || id == 27 // Powered rails
                 || id == 28 // Detector rails
+                || id == 31 // Long grass
+                || id == 32 // Shrub
                 || id == 37 // Yellow flower
                 || id == 38 // Red flower
                 || id == 39 // Brown mushroom
@@ -359,7 +365,8 @@ public enum BlockType {
                 || id == 90 // Portal
                 || id == 92 // Cake
                 || id == 93 // Repeater (off)
-                || id == 94; // Repeater (on)
+                || id == 94 // Repeater (on)
+                || id == 96; // Trap door
     }
 
     /**
@@ -376,6 +383,8 @@ public enum BlockType {
                 || id == 27 // Powered rails
                 || id == 28 // Detector rails
                 || id == 30 // Web <- someone will hate me for this
+                || id == 31 // Long grass
+                || id == 32 // Shrub
                 || id == 37 // Yellow flower
                 || id == 38 // Red flower
                 || id == 39 // Brown mushroom
@@ -420,6 +429,7 @@ public enum BlockType {
                 || id == 26 // Bed
                 || id == 27 // Powered rails
                 || id == 28 // Detector rails
+                || id == 31 // Tall grass
                 || id == 35 // Wool
                 || id == 43 // Double slab
                 || id == 44 // Slab
@@ -448,7 +458,8 @@ public enum BlockType {
                 || id == 91 // Jack-o-lantern
                 || id == 92 // Cake
                 || id == 93 // Redstone repeater (off)
-                || id == 94; // Redstone repeater (on)
+                || id == 94 // Redstone repeater (on)
+                || id == 96; // Trap door
     }
     
     /**

@@ -63,6 +63,8 @@ public enum ItemType {
             new String[] {"poweredrail", "boosterrail", "poweredtrack", "boostertrack"}),
     DETECTOR_RAIL(28, "Detector Rail", "detectorrail"),
     WEB(30, "Web", new String[] {"web", "spiderweb"}),
+    LONG_GRASS(31, "Long grass", new String[] {"longgrass", "tallgrass"}),
+    DEAD_BUSH(32, "Shrub", new String[] {"deadbush", "shrub", "deadshrub", "tumbleweed"}),
     CLOTH(35, "Wool", new String[] {"cloth", "wool"}),
     YELLOW_FLOWER(37, "Yellow flower", new String[] {"yellowflower", "flower"}),
     RED_FLOWER(38, "Red rose", new String[] {"redflower", "redrose", "rose"}),
@@ -137,7 +139,8 @@ public enum ItemType {
     REDSTONE_REPEATER_OFF(93, "Redstone repeater (off)", new String[] {"diodeoff", "redstonerepeater", "repeater", "delayer"}),
     REDSTONE_REPEATER_ON(94, "Redstone repeater (on)", new String[] {"diode", "diodeon", "redstonerepeateron", "repeateron", "delayeron"}),
     LOCKED_CHEST(95, "Locked chest", new String[] {"lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"}),
-
+    TRAP_DOOR(96, "Trap door", new String[] {"trapdoor", "hatch"}),
+    
     // Items
     IRON_SHOVEL(256, "Iron shovel", "ironshovel"),
     IRON_PICK(257, "Iron pick", new String[] {"ironpick", "ironpickaxe"}),
@@ -247,6 +250,7 @@ public enum ItemType {
     BED_ITEM(355, "Bed", "bed"),
     REDSTONE_REPEATER(356, "Redstone repeater", new String[] {"redstonerepeater", "diode", "delayer"}),
     COOKIE(357, "Cookie", "cookie"),
+    MAP(358, "Map", "map"),
     GOLD_RECORD(2256, "Gold Record", new String[] {"goldrecord", "golddisc"}),
     GREEN_RECORD(2257, "Green Record", new String[] {"greenrecord", "greenddisc"});
 
