@@ -171,7 +171,7 @@ public class DocumentationPrinter {
 
         stream.println("name: WorldEdit");
         stream.println("main: com.sk89q.worldedit.bukkit.WorldEditPlugin");
-        stream.println("version: \"WEVERSIONMACRO\"");
+        stream.println("version: ${project.version}");
         stream.println("commands:");
         
         for (Class<?> cls : commandClasses) {
@@ -192,6 +192,12 @@ public class DocumentationPrinter {
                             + StringUtil.joinQuotedString(cmd.aliases(), ", ", 1, "'")
                             + "]");
                 }
+                if (!method.isAnnotationPresent(CommandPermissions.class)) {
+                    continue;
+                }
+                CommandPermissions cmdPerms = method.getAnnotation(CommandPermissions.class);
+                stream.println("        permissions: "
+                        + StringUtil.joinQuotedString(cmdPerms.value(), ", ", 0, "'"));
             }
         }
     }
