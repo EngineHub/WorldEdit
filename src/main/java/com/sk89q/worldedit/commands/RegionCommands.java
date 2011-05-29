@@ -29,6 +29,7 @@ import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.patterns.*;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionOperationException;
 
 /**
  * Region related commands.
@@ -182,6 +183,7 @@ public class RegionCommands {
     @Command(
         aliases = {"/move"},
         usage = "[count] [direction] [leave-id]",
+        flags = "s",
         desc = "Move the contents of the selection",
         min = 0,
         max = 3
@@ -205,6 +207,20 @@ public class RegionCommands {
 
         int affected = editSession.moveCuboidRegion(session.getSelection(player.getWorld()),
                 dir, count, true, replace);
+
+        if (args.hasFlag('s')) {
+            try {
+                Region region = session.getSelection(player.getWorld());
+                region.expand(dir.multiply(count));
+                region.contract(dir.multiply(count));
+
+                session.getRegionSelector().learnChanges();
+                session.getRegionSelector().explainRegionAdjust(player, session);
+            } catch (RegionOperationException e) {
+                player.printError(e.getMessage());
+            }
+        }
+
         player.print(affected + " blocks moved.");
     }
     
@@ -212,7 +228,7 @@ public class RegionCommands {
     @Command(
         aliases = {"/stack"},
         usage = "[count] [direction]",
-        flags = "a",
+        flags = "sa",
         desc = "Repeat the contents of the selection",
         min = 0,
         max = 2
@@ -228,6 +244,20 @@ public class RegionCommands {
 
         int affected = editSession.stackCuboidRegion(session.getSelection(player.getWorld()),
                 dir, count, !args.hasFlag('a'));
+
+        if (args.hasFlag('s')) {
+            try {
+                Region region = session.getSelection(player.getWorld());
+                region.expand(dir.multiply(count));
+                region.contract(dir.multiply(count));
+
+                session.getRegionSelector().learnChanges();
+                session.getRegionSelector().explainRegionAdjust(player, session);
+            } catch (RegionOperationException e) {
+                player.printError(e.getMessage());
+            }
+        }
+
         player.print(affected + " blocks changed. Undo with //undo");
     }
 

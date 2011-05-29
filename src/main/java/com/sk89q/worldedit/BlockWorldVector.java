@@ -63,7 +63,7 @@ public class BlockWorldVector extends WorldVector {
      * @param v
      */
     public BlockWorldVector(WorldVector world, Vector v) {
-        super(world.getWorld(), v.x, v.y, v.z);
+        super(world.getWorld(), v.getX(), v.getY(), v.getZ());
     }
 
     /**
