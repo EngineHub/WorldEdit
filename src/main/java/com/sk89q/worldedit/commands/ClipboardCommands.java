@@ -25,6 +25,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession.BooleanOperation;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.data.DataException;
 import com.sk89q.worldedit.regions.Region;
@@ -123,6 +124,46 @@ public class ClipboardCommands {
         }
     }
 
+    @Command(
+        aliases = {"/spaste"},
+        usage = "UNION|REPLACE|INTERSECT|MASK|DIFFERENCE|UPDATE|ERASE",
+        flags = "ro",
+        desc = "Paste the clipboard's contents using boolean operations",
+        min = 1,
+        max = 2 
+    )   
+    @CommandPermissions({"worldedit.clipboard.spaste"})
+    public static void spaste(CommandContext args, WorldEdit we, 
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        boolean reverse = args.hasFlag('r');
+        boolean atOrigin = args.hasFlag('o');
+        BooleanOperation op; 
+        try {
+            op = BooleanOperation.valueOf(args.getString(0).toUpperCase());
+        }   
+        catch (java.lang.IllegalArgumentException e) {
+            player.print("Unknown boolean operation: " + args.getString(0)); //Would be nice to have usage printed
+            return;
+        }   
+             
+        if (atOrigin) {
+            Vector pos = session.getClipboard().getOrigin();
+            session.getClipboard().place(editSession, pos, op, reverse);
+            player.print("Pasted to copy origin. Undo with //undo");
+        }   
+        else {
+            Vector pos = session.getPlacementPosition(player);
+            session.getClipboard().paste(editSession, pos, op, reverse);
+            player.print("Pasted relative to you. Undo with //undo");
+        }   
+             
+        player.findFreePosition();
+    }   
+
+    
+    
     @Command(
         aliases = {"/rotate"},
         usage = "<angle-in-degrees>",

@@ -100,21 +100,28 @@ public class EditSession {
      * List of missing blocks;
      */
     private Set<Integer> missingBlocks = new HashSet<Integer>();
+    
     /**
-     * Affects how blocks will be placed
+     * Controls how blocks will be placed.
+     * Expected behavior:
+     * 	 UNION: Destination's air blocks are replaced with what's being pasted (henceforth 'source').
+     *   REPLACE: Destination becomes whatever the source specifies
+     *   INTERSECT: Destination blocks that correspond to an air block in the source are removed
+     *   MASK: Destination blocks that correspond to a solid block in the source are removed
+     *   DIFFERENCE: If both source and destination specify a block, the result is air
+     *   UPDATE: Solid blocks in the destination are replaced with the source's block
+     *   ERASE: All blocks in the destination become air. Included for completeness.
+     * 
+     * Test these by laying out some wool like so:
+     *  RR__
+     *  B_B_
+     * and spasting the top row onto the bottom.
+     * The combinations of results are [red, blue, air] + [red, air] + [blue, air]. The above operations,
+     * in combination with the option 'reverse', which swaps which block is considered the source and destination,
+     * allow all possible combinations.
      */
-    public enum BooleanOperation {
-        /* [#|#|#] */ UNION,
-        /* [#|#| ] */ REPLACE,
-        /* [ |#| ] */ INTERSECT,
-        /* [#| | ] */ MASK,
-        /* [#| |#] */ DIFFERENCE,
-        /* [#|#| ] */ UPDATE,
-        /* [ | | ] */ ERASE
-    }
-    private BooleanOperation boolOp;
-    private boolean reverseOp;  
-
+    public enum BooleanOperation {UNION, REPLACE, INTERSECT, MASK, DIFFERENCE, UPDATE, ERASE}
+    
     /**
      * Construct the object with a maximum number of blocks.
      * 
@@ -128,8 +135,6 @@ public class EditSession {
 
         this.maxBlocks = maxBlocks;
         this.world = world;
-        setBooleanOperation(BooleanOperation.REPLACE);
-        setReverseOperation(true);
     }
 
     /**
@@ -148,8 +153,6 @@ public class EditSession {
         this.maxBlocks = maxBlocks;
         this.blockBag = blockBag;
         this.world = world;
-        setBooleanOperation(BooleanOperation.REPLACE);
-        setReverseOperation(true);
     }
 
     /**
@@ -240,30 +243,6 @@ public class EditSession {
         return result;
     }
 
-    /**
-     * Get the boolean operation used by setBlock()
-     * @return The operation used
-     */
-    public BooleanOperation getBooleanOperation() {
-    	return boolOp;
-    }
-    
-    /**
-     * Set the boolean operation for setBlock().
-     * 
-     * @param op
-     */
-    public void setBooleanOperation(BooleanOperation op) {
-    	boolOp = op;
-    }
-    
-    public void setReverseOperation(boolean reverse) {
-    	reverseOp = reverse;
-    }
-    
-    public boolean getReverseOperation() {
-    	return reverseOp;
-    }
     
     /**
      * Set a block with a pattern.
@@ -288,7 +267,21 @@ public class EditSession {
      * @return Whether the block changed -- not entirely dependable
      * @throws MaxChangedBlocksException 
      */
-    public boolean setBlock(Vector pt, BaseBlock block)
+    public boolean setBlock(Vector pt, BaseBlock block) 
+    		throws MaxChangedBlocksException {
+    	return setBlock(pt, block, BooleanOperation.REPLACE, false);
+    }
+    
+    /**
+     * Use boolean operations to determine how to set the block
+     * @param pt
+     * @param block
+     * @param boolOp A BooleanOperation
+     * @param reverseOp If true, the roles of source and destination will be reversed
+     * @return
+     * @throws MaxChangedBlocksException
+     */
+    public boolean setBlock(Vector pt, BaseBlock block, BooleanOperation boolOp, boolean reverseOp)
             throws MaxChangedBlocksException {
         BlockVector blockPt = pt.toBlockVector();
 
@@ -312,7 +305,7 @@ public class EditSession {
         switch (boolOp) {
             case INTERSECT:
                 if (!target.isAir() && !source.isAir()) {
-                    result = source;
+                    result = target;
                 }
                 break;
             case MASK:
