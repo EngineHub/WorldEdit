@@ -592,6 +592,15 @@ public class LocalSession {
     }
     
     /**
+     * Gets the status of CUI support.
+     * 
+     * @return
+     */
+    public boolean hasCUISupport() {
+        return hasCUISupport;
+    }
+    
+    /**
      * Sets the status of CUI support.
      * 
      * @param support
