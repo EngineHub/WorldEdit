@@ -110,10 +110,13 @@ public class WorldEditPlugin extends JavaPlugin {
      * Called on plugin disable.
      */
     public void onDisable() {
-        controller.clearSessions();
         for (Player player : getServer().getOnlinePlayers()) {
-            wrapPlayer(player).dispatchCUIHandshake();
+            LocalPlayer lPlayer = wrapPlayer(player);
+            if (controller.getSession(lPlayer).hasCUISupport()) {
+                lPlayer.dispatchCUIHandshake();
+            }
         }
+        controller.clearSessions();
         config.unload();
     }
     
