@@ -227,7 +227,7 @@ public final class BlockData {
             int open = data & 0x4;
             int withoutOpen = data ^ 0x4;
             switch (withoutOpen) {
-                case 3: return 9 | open;
+                case 3: return 0 | open;
                 case 2: return 1 | open;
                 case 0: return 2 | open;
                 case 1: return 3 | open;
