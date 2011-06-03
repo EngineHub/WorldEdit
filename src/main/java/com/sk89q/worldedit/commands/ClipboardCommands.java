@@ -126,8 +126,8 @@ public class ClipboardCommands {
 
     @Command(
         aliases = {"/spaste"},
-        usage = "UNION|REPLACE|INTERSECT|MASK|DIFFERENCE|UPDATE|ERASE",
-        flags = "ro",
+        usage = "[~]UNION|REPLACE|INTERSECT|MASK|DIFFERENCE|UPDATE|ERASE",
+        flags = "o",
         desc = "Paste the clipboard's contents using boolean operations",
         min = 1,
         max = 2 
@@ -137,11 +137,10 @@ public class ClipboardCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        boolean reverse = args.hasFlag('r');
         boolean atOrigin = args.hasFlag('o');
         BooleanOperation op; 
         try {
-            op = BooleanOperation.valueOf(args.getString(0).toUpperCase());
+            op = BooleanOperation.fromString(args.getString(0).toUpperCase());
         }   
         catch (java.lang.IllegalArgumentException e) {
             player.print("Unknown boolean operation: " + args.getString(0)); //Would be nice to have usage printed
@@ -150,12 +149,12 @@ public class ClipboardCommands {
              
         if (atOrigin) {
             Vector pos = session.getClipboard().getOrigin();
-            session.getClipboard().place(editSession, pos, op, reverse);
+            session.getClipboard().place(editSession, pos, op);
             player.print("Pasted to copy origin. Undo with //undo");
         }   
         else {
             Vector pos = session.getPlacementPosition(player);
-            session.getClipboard().paste(editSession, pos, op, reverse);
+            session.getClipboard().paste(editSession, pos, op);
             player.print("Pasted relative to you. Undo with //undo");
         }   
              

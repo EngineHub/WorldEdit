@@ -120,7 +120,57 @@ public class EditSession {
      * in combination with the option 'reverse', which swaps which block is considered the source and destination,
      * allow all possible combinations.
      */
-    public enum BooleanOperation {UNION, REPLACE, INTERSECT, MASK, DIFFERENCE, UPDATE, ERASE}
+    public enum BooleanOperation {UNION, REPLACE, INTERSECT, MASK, DIFFERENCE, UPDATE, ERASE,
+        R_UNION, R_REPLACE, R_INTERSECT, R_MASK, R_UPDATE;
+            
+            public static BooleanOperation fromString(String src) {
+                if (src.length() == 0) return UNION;
+                boolean do_reverse = false;
+                if (src.charAt(0) == '~') {
+                    do_reverse = true;
+                    src = src.substring(1);
+                }
+                BooleanOperation ret = BooleanOperation.valueOf(src);
+                if (do_reverse) {
+                    return BooleanOperation.reverse(ret);
+                }
+                return ret;
+            }
+            
+            public static BooleanOperation reverse(BooleanOperation r) {
+                switch (r) {
+                case UNION: return R_UNION;
+                case R_UNION: return UNION;
+                case REPLACE: return R_REPLACE;
+                case R_REPLACE: return REPLACE;
+                case INTERSECT: return R_INTERSECT;
+                case R_INTERSECT: return INTERSECT;
+                case MASK: return R_MASK;
+                case R_MASK: return MASK;
+                case DIFFERENCE: return DIFFERENCE;
+                case UPDATE: return R_UPDATE;
+                case R_UPDATE: return UPDATE;
+                case ERASE: return ERASE;
+                }
+                return r;
+            }
+            
+            public BooleanOperation reverse() {
+                return reverse(this);
+            }
+            
+            public boolean isReversed() {
+                switch(this) {
+                case R_UNION:
+                case R_REPLACE:
+                case R_INTERSECT:
+                case R_MASK:
+                case R_UPDATE:
+                    return true;
+                }
+                return false;
+            }
+        }
     
     /**
      * Construct the object with a maximum number of blocks.
@@ -269,7 +319,7 @@ public class EditSession {
      */
     public boolean setBlock(Vector pt, BaseBlock block) 
     		throws MaxChangedBlocksException {
-    	return setBlock(pt, block, BooleanOperation.REPLACE, false);
+    	return setBlock(pt, block, BooleanOperation.REPLACE);
     }
     
     /**
@@ -281,7 +331,7 @@ public class EditSession {
      * @return
      * @throws MaxChangedBlocksException
      */
-    public boolean setBlock(Vector pt, BaseBlock block, BooleanOperation boolOp, boolean reverseOp)
+    public boolean setBlock(Vector pt, BaseBlock block, BooleanOperation boolOp)
             throws MaxChangedBlocksException {
         BlockVector blockPt = pt.toBlockVector();
 
@@ -294,9 +344,10 @@ public class EditSession {
         // }
         
         BaseBlock target, source, result = new BaseBlock(BlockID.AIR);
-        if (reverseOp) {
+        if (boolOp.isReversed()) {
             source = getBlock(pt);
             target = block;
+            boolOp = boolOp.reverse();
         }
         else {
             target = getBlock(pt);

@@ -248,9 +248,9 @@ public class CuboidClipboard {
         place(editSession, newOrigin.add(offset), noAir);
     }
 
-    public void paste(EditSession editSession, Vector newOrigin, BooleanOperation bop, boolean reverse)
+    public void paste(EditSession editSession, Vector newOrigin, BooleanOperation bop)
 	    	throws MaxChangedBlocksException {
-    	place(editSession, newOrigin.add(offset), bop, reverse);
+    	place(editSession, newOrigin.add(offset), bop);
 	}
     
     /**
@@ -264,19 +264,19 @@ public class CuboidClipboard {
     public void place(EditSession editSession, Vector pos, boolean noAir)
             throws MaxChangedBlocksException {
     	if (noAir) {
-    		place(editSession, pos, BooleanOperation.REPLACE, false);
+    		place(editSession, pos, BooleanOperation.REPLACE);
     	}
     	else {
-    		place(editSession, pos, BooleanOperation.UNION, true);
+    		place(editSession, pos, BooleanOperation.R_UNION);
     	}
     }
     
-    public void place(EditSession editSession, Vector pos, BooleanOperation bop, boolean reverse)
+    public void place(EditSession editSession, Vector pos, BooleanOperation bop)
 	    throws MaxChangedBlocksException {
 		for (int x = 0; x < size.getBlockX(); x++) {
 		    for (int y = 0; y < size.getBlockY(); y++) {
 		        for (int z = 0; z < size.getBlockZ(); z++) {
-		            editSession.setBlock(new Vector(x, y, z).add(pos), data[x][y][z], bop, reverse);
+		            editSession.setBlock(new Vector(x, y, z).add(pos), data[x][y][z], bop);
 		        }
 		    }
 		}
