@@ -41,9 +41,7 @@ public class TreePlanter implements BlockTool {
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         
-        LocalWorld world = clicked.getWorld();
-        EditSession editSession =
-                new EditSession(world, session.getBlockChangeLimit());
+        EditSession editSession = session.createEditSession(player);
     
         try {
             if (!gen.generate(editSession, clicked.add(0, 1, 0))) {

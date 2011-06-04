@@ -38,6 +38,7 @@ import com.sk89q.worldedit.cui.CUIPointBasedRegion;
 import com.sk89q.worldedit.cui.CUIEvent;
 import com.sk89q.worldedit.cui.SelectionPointEvent;
 import com.sk89q.worldedit.cui.SelectionShapeEvent;
+import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -73,6 +74,8 @@ public class LocalSession {
     private String lastScript;
     private boolean beenToldVersion = false;
     private boolean hasCUISupport = false;
+    private boolean fastMode = false;
+    private Mask mask;
     private TimeZone timezone = TimeZone.getDefault();
 
     /**
@@ -144,6 +147,7 @@ public class LocalSession {
             EditSession newEditSession =
                     new EditSession(editSession.getWorld(), -1, newBlockBag);
             newEditSession.enableQueue();
+            newEditSession.setFastMode(fastMode);
             editSession.undo(newEditSession);
             return editSession;
         } else {
@@ -164,6 +168,7 @@ public class LocalSession {
             EditSession newEditSession =
                 new EditSession(editSession.getWorld(), -1, newBlockBag);
             newEditSession.enableQueue();
+            newEditSession.setFastMode(fastMode);
             editSession.redo(newEditSession);
             historyPointer++;
             return editSession;
@@ -641,5 +646,60 @@ public class LocalSession {
      */
     public boolean hasExpired() {
         return System.currentTimeMillis() - expirationTime > EXPIRATION_GRACE;
+    }
+    
+    /**
+     * Construct a new edit session.
+     * 
+     * @param player
+     * @return
+     */
+    public EditSession createEditSession(LocalPlayer player) {
+        BlockBag blockBag = getBlockBag(player);
+        
+        // Create an edit session
+        EditSession editSession =
+                new EditSession(player.getWorld(),
+                        getBlockChangeLimit(), blockBag);
+        editSession.setFastMode(fastMode);
+        editSession.setMask(mask);
+        
+        return editSession;
+    }
+
+    /**
+     * Checks if the session has fast mode enabled.
+     * 
+     * @return
+     */
+    public boolean hasFastMode() {
+        return fastMode;
+    }
+
+    /**
+     * Set fast mode.
+     * 
+     * @param fastMode
+     */
+    public void setFastMode(boolean fastMode) {
+        this.fastMode = fastMode;
+    }
+
+    /**
+     * Get the mask.
+     * 
+     * @return mask, may be null
+     */
+    public Mask getMask() {
+        return mask;
+    }
+
+    /**
+     * Set a mask.
+     * 
+     * @param mask mask or null
+     */
+    public void setMask(Mask mask) {
+        this.mask = mask;
     }
 }

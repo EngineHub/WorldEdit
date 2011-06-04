@@ -50,9 +50,8 @@ public class FloatingTreeRemover implements BlockTool {
         
         int initialType = world.getBlockType(clicked);
         int block;
-        
-        EditSession editSession =
-            new EditSession(world, session.getBlockChangeLimit());
+
+        EditSession editSession = session.createEditSession(player);
 
         if (initialType != BlockID.LEAVES && initialType != BlockID.LOG) {
             player.printError("That's not a floating tree.");
