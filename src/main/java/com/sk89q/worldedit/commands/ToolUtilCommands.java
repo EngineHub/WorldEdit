@@ -77,7 +77,7 @@ public class ToolUtilCommands {
         usage = "[mask]",
         desc = "Set the brush mask",
         min = 0,
-        max = 1
+        max = -1
     )
     @CommandPermissions({"worldedit.brush.options.mask"})
     public static void mask(CommandContext args, WorldEdit we,
@@ -87,7 +87,7 @@ public class ToolUtilCommands {
             session.getBrushTool(player.getItemInHand()).setMask(null);
             player.print("Brush mask disabled.");
         } else {
-            Mask mask = we.getBlockMask(player, args.getJoinedStrings(0));
+            Mask mask = we.getBlockMask(player, session, args.getJoinedStrings(0));
             session.getBrushTool(player.getItemInHand()).setMask(mask);
             player.print("Brush mask set.");
         }

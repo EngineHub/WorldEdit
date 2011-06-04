@@ -403,13 +403,13 @@ public class WorldEdit {
      * blocks to include when replacing.
      * 
      * @param player
+     * @param session
      * @param maskString
      * @return
-     * @throws UnknownItemException
-     * @throws DisallowedItemException
+     * @throws WorldEditException 
      */
-    public Mask getBlockMask(LocalPlayer player, String maskString)
-            throws UnknownItemException, DisallowedItemException {
+    public Mask getBlockMask(LocalPlayer player, LocalSession session,
+            String maskString) throws WorldEditException {
         Mask mask = null;
         
         for (String component : maskString.split(" ")) {
@@ -418,6 +418,10 @@ public class WorldEdit {
             if (component.charAt(0) == '#') {
                 if (component.equalsIgnoreCase("#existing")) {
                     current = new ExistingBlockMask();
+                } else if (component.equalsIgnoreCase("#selection")
+                        || component.equalsIgnoreCase("#region")
+                        || component.equalsIgnoreCase("#sel")) {
+                    current = new RegionMask(session.getSelection(player.getWorld()));
                 } else {
                     throw new UnknownItemException(component);
                 }
