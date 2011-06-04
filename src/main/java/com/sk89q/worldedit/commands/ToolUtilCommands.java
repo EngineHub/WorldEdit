@@ -87,7 +87,7 @@ public class ToolUtilCommands {
             session.getBrushTool(player.getItemInHand()).setMask(null);
             player.print("Brush mask disabled.");
         } else {
-            Mask mask = we.getBlockMask(player, args.getString(0));
+            Mask mask = we.getBlockMask(player, args.getJoinedStrings(0));
             session.getBrushTool(player.getItemInHand()).setMask(mask);
             player.print("Brush mask set.");
         }

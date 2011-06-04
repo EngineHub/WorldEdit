@@ -403,33 +403,50 @@ public class WorldEdit {
      * blocks to include when replacing.
      * 
      * @param player
-     * @param list
+     * @param maskString
      * @return
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public Mask getBlockMask(LocalPlayer player, String list)
+    public Mask getBlockMask(LocalPlayer player, String maskString)
             throws UnknownItemException, DisallowedItemException {
-        if (list.charAt(0) == '#') {
-            if (list.equalsIgnoreCase("#existing")) {
-                return new ExistingBlockMask();
+        Mask mask = null;
+        
+        for (String component : maskString.split(" ")) {
+            Mask current = null;
+            
+            if (component.charAt(0) == '#') {
+                if (component.equalsIgnoreCase("#existing")) {
+                    current = new ExistingBlockMask();
+                } else {
+                    throw new UnknownItemException(component);
+                }
             } else {
-                throw new UnknownItemException(list);
+                if (component.charAt(0) == '!' && component.length() > 1) {
+                    current = new InvertedBlockTypeMask(
+                            getBlockIDs(player, component.substring(1), true));
+                } else {
+                    current = new BlockTypeMask(getBlockIDs(player, component, true));
+                }
             }
-        } else {
-            if (list.charAt(0) == '!' && list.length() > 1) {
-                return new InvertedBlockTypeMask(
-                        getBlockIDs(player, list.substring(1), true));
+            
+            if (mask == null) {
+                mask = current;
+            } else if (mask instanceof CombinedMask) {
+                ((CombinedMask) mask).add(current);
             } else {
-                return new BlockTypeMask(getBlockIDs(player, list, true));
+                mask = new CombinedMask(mask);
+                ((CombinedMask) mask).add(current);
             }
         }
+        
+        return mask;
     }
 
     /**
      * Get a list of blocks as a set.
      *
-     *@param player
+     * @param player
      * @param list
      * @param allBlocksAllowed
      * @return set
