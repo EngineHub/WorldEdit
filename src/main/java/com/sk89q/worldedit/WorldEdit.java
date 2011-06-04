@@ -415,6 +415,10 @@ public class WorldEdit {
         for (String component : maskString.split(" ")) {
             Mask current = null;
             
+            if (component.length() == 0) {
+                continue;
+            }
+            
             if (component.charAt(0) == '#') {
                 if (component.equalsIgnoreCase("#existing")) {
                     current = new ExistingBlockMask();
