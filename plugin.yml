@@ -65,6 +65,11 @@ commands:
         description: Modify block change limit
         usage: /<command> <limit>
         permissions: 'worldedit.limit'
+    /gmask:
+        description: Set the global mask
+        usage: /<command> [mask]
+        aliases: ['gmask']
+        permissions: 'worldedit.global-mask'
     /hcyl:
         description: Generate a hollow cylinder
         usage: /<command> <block> <radius> [height] 

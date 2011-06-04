@@ -38,6 +38,7 @@ import com.sk89q.worldedit.cui.CUIPointBasedRegion;
 import com.sk89q.worldedit.cui.CUIEvent;
 import com.sk89q.worldedit.cui.SelectionPointEvent;
 import com.sk89q.worldedit.cui.SelectionShapeEvent;
+import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -74,6 +75,7 @@ public class LocalSession {
     private boolean beenToldVersion = false;
     private boolean hasCUISupport = false;
     private boolean fastMode = false;
+    private Mask mask;
     private TimeZone timezone = TimeZone.getDefault();
 
     /**
@@ -660,6 +662,7 @@ public class LocalSession {
                 new EditSession(player.getWorld(),
                         getBlockChangeLimit(), blockBag);
         editSession.setFastMode(fastMode);
+        editSession.setMask(mask);
         
         return editSession;
     }
@@ -680,5 +683,23 @@ public class LocalSession {
      */
     public void setFastMode(boolean fastMode) {
         this.fastMode = fastMode;
+    }
+
+    /**
+     * Get the mask.
+     * 
+     * @return mask, may be null
+     */
+    public Mask getMask() {
+        return mask;
+    }
+
+    /**
+     * Set a mask.
+     * 
+     * @param mask mask or null
+     */
+    public void setMask(Mask mask) {
+        this.mask = mask;
     }
 }

@@ -25,6 +25,7 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.ItemType;
+import com.sk89q.worldedit.masks.Mask;
 
 /**
  * General WorldEdit commands.
@@ -78,6 +79,27 @@ public class GeneralCommands {
             player.print("Fast mode enabled. You may need to rejoin to see changes.");
         } else {
             player.print("Fast mode disabled.");
+        }
+    }
+
+    @Command(
+        aliases = {"/gmask", "gmask"},
+        usage = "[mask]",
+        desc = "Set the global mask",
+        min = 0,
+        max = -1
+    )
+    @CommandPermissions({"worldedit.global-mask"})
+    public static void mask(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        if (args.argsLength() == 0) {
+            session.setMask(null);
+            player.print("Global mask disabled.");
+        } else {
+            Mask mask = we.getBlockMask(player, session, args.getJoinedStrings(0));
+            session.setMask(mask);
+            player.print("Global mask set.");
         }
     }
 

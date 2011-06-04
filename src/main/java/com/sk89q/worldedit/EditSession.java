@@ -33,6 +33,7 @@ import com.sk89q.worldedit.regions.*;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.bags.*;
 import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.*;
 
 /**
@@ -108,6 +109,11 @@ public class EditSession {
      * List of missing blocks;
      */
     private Set<Integer> missingBlocks = new HashSet<Integer>();
+    
+    /**
+     * Mask to cover operations.
+     */
+    private Mask mask;
 
     /**
      * Construct the object with a maximum number of blocks.
@@ -160,6 +166,12 @@ public class EditSession {
         // No invalid blocks
         if ((type > 32 && type < 35) || type == 36 || type == 29 || type > 96) {
             return false;
+        }
+        
+        if (mask != null) {
+            if (!mask.matches(this, pt)) {
+                return false;
+            }
         }
         
         int existing = world.getBlockType(pt);
@@ -2244,5 +2256,23 @@ public class EditSession {
      */
     public int getBlockChangeCount() {
         return original.size();
+    }
+
+    /**
+     * Get the mask.
+     * 
+     * @return mask, may be null
+     */
+    public Mask getMask() {
+        return mask;
+    }
+
+    /**
+     * Set a mask.
+     * 
+     * @param mask mask or null
+     */
+    public void setMask(Mask mask) {
+        this.mask = mask;
     }
 }
