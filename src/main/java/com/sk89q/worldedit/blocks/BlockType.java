@@ -453,6 +453,7 @@ public enum BlockType {
                 || id == 75 // Redstone torch (off)
                 || id == 76 // Redstone torch (on)
                 || id == 77 // Stone button
+                || id == 78 // Snow tile
                 || id == 81 // Cactus
                 || id == 86 // Pumpkin
                 || id == 91 // Jack-o-lantern

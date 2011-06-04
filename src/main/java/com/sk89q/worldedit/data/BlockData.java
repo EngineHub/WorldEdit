@@ -115,6 +115,25 @@ public final class BlockData {
                 case 2: return 3;
                 case 3: return 0;
             }
+        } else if (type == BlockID.REDSTONE_REPEATER_OFF
+                || type == BlockID.REDSTONE_REPEATER_ON) {
+            int dir = data & 0x03;
+            int delay = data - dir;
+            switch (dir) {
+                case 0: return 1 | delay;
+                case 1: return 2 | delay;
+                case 2: return 3 | delay;
+                case 3: return 0 | delay;
+            }
+        } else if (type == BlockID.TRAP_DOOR) {
+            int open = data & 0x4;
+            int withoutOpen = data ^ 0x4;
+            switch (withoutOpen) {
+                case 0: return 3 | open;
+                case 1: return 2 | open;
+                case 2: return 0 | open;
+                case 3: return 1 | open;
+            }
         }
         
         return data;
@@ -213,6 +232,25 @@ public final class BlockData {
                 case 2: return 1;
                 case 3: return 2;
                 case 0: return 3;
+            }
+        } else if (type == BlockID.REDSTONE_REPEATER_OFF
+                || type == BlockID.REDSTONE_REPEATER_ON) {
+            int dir = data & 0x03;
+            int delay = data ^ 0x03;
+            switch (dir) {
+                case 1: return 0 | delay;
+                case 2: return 1 | delay;
+                case 3: return 2 | delay;
+                case 0: return 3 | delay;
+            }
+        } else if (type == BlockID.TRAP_DOOR) {
+            int open = data & 0x4;
+            int withoutOpen = data ^ 0x4;
+            switch (withoutOpen) {
+                case 3: return 0 | open;
+                case 2: return 1 | open;
+                case 0: return 2 | open;
+                case 1: return 3 | open;
             }
         }
         

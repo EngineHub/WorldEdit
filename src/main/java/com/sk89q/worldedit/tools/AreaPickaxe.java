@@ -56,8 +56,7 @@ public class AreaPickaxe implements BlockTool {
             return true;
         }
 
-        EditSession editSession =
-                new EditSession(world, session.getBlockChangeLimit());
+        EditSession editSession = session.createEditSession(player);
         
         try {
             for (int x = ox - range; x <= ox + range; x++) {

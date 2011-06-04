@@ -33,6 +33,7 @@ import com.sk89q.worldedit.regions.*;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.bags.*;
 import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.*;
 
 /**
@@ -87,15 +88,23 @@ public class EditSession {
      * indicates no limit.
      */
     private int maxBlocks = -1;
+    
     /**
      * Indicates whether some types of blocks should be queued for best
      * reproduction.
      */
     private boolean queued = false;
+    
+    /**
+     * Use the fast mode, which may leave chunks not flagged "dirty".
+     */
+    private boolean fastMode = false;
+    
     /**
      * Block bag to use for getting blocks.
      */
     private BlockBag blockBag;
+    
     /**
      * List of missing blocks;
      */
@@ -173,6 +182,11 @@ public class EditSession {
         }
     
     /**
+     * Mask to cover operations.
+     */
+    private Mask mask;
+
+    /**
      * Construct the object with a maximum number of blocks.
      * 
      * @param world
@@ -225,6 +239,12 @@ public class EditSession {
             return false;
         }
         
+        if (mask != null) {
+            if (!mask.matches(this, pt)) {
+                return false;
+            }
+        }
+        
         int existing = world.getBlockType(pt);
 
         // Clear the container block so that it doesn't drop items
@@ -256,11 +276,22 @@ public class EditSession {
                 }
             }
         }
+        
+        boolean result;
 
-        boolean result = world.setBlockType(pt, id);
+        if (fastMode) {
+            result = world.setBlockTypeFast(pt, id);
+        } else {
+            result = world.setBlockType(pt, id);
+        }
+        
         if (id != 0) {
-            if (BlockType.usesData(id)) {
-                world.setBlockData(pt, block.getData());
+            if (existing != type && block.getData() > 0 && BlockType.usesData(id)) {
+                if (fastMode) {
+                    world.setBlockDataFast(pt, block.getData());
+                } else {
+                    world.setBlockData(pt, block.getData());
+                }
             }
 
             // Signs
@@ -627,6 +658,24 @@ public class EditSession {
             flushQueue();
         }
         queued = false;
+    }
+    
+    /**
+     * Set fast mode.
+     * 
+     * @param fastMode
+     */
+    public void setFastMode(boolean fastMode) {
+        this.fastMode = fastMode;
+    }
+    
+    /**
+     * Return fast mode status.
+     * 
+     * @return
+     */
+    public boolean hasFastMode() {
+        return fastMode;
     }
 
     /**
@@ -2347,5 +2396,23 @@ public class EditSession {
      */
     public int getBlockChangeCount() {
         return original.size();
+    }
+
+    /**
+     * Get the mask.
+     * 
+     * @return mask, may be null
+     */
+    public Mask getMask() {
+        return mask;
+    }
+
+    /**
+     * Set a mask.
+     * 
+     * @param mask mask or null
+     */
+    public void setMask(Mask mask) {
+        this.mask = mask;
     }
 }

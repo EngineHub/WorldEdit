@@ -82,6 +82,18 @@ public class BukkitWorld extends LocalWorld {
     }
 
     /**
+     * Set block type.
+     * 
+     * @param pt
+     * @param type
+     * @return
+     */
+    @Override
+    public boolean setBlockTypeFast(Vector pt, int type) {
+        return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setTypeId(type, false);
+    }
+
+    /**
      * Get block type.
      * 
      * @param pt
@@ -101,7 +113,17 @@ public class BukkitWorld extends LocalWorld {
     @Override
     public void setBlockData(Vector pt, int data) {
         world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setData((byte)data);
-        
+    }
+
+    /**
+     * Set block data.
+     * 
+     * @param pt
+     * @param data
+     */
+    @Override
+    public void setBlockDataFast(Vector pt, int data) {
+        world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setData((byte)data, false);
     }
 
     /**

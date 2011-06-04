@@ -403,33 +403,54 @@ public class WorldEdit {
      * blocks to include when replacing.
      * 
      * @param player
-     * @param list
+     * @param session
+     * @param maskString
      * @return
-     * @throws UnknownItemException
-     * @throws DisallowedItemException
+     * @throws WorldEditException 
      */
-    public Mask getBlockMask(LocalPlayer player, String list)
-            throws UnknownItemException, DisallowedItemException {
-        if (list.charAt(0) == '#') {
-            if (list.equalsIgnoreCase("#existing")) {
-                return new ExistingBlockMask();
+    public Mask getBlockMask(LocalPlayer player, LocalSession session,
+            String maskString) throws WorldEditException {
+        Mask mask = null;
+        
+        for (String component : maskString.split(" ")) {
+            Mask current = null;
+            
+            if (component.charAt(0) == '#') {
+                if (component.equalsIgnoreCase("#existing")) {
+                    current = new ExistingBlockMask();
+                } else if (component.equalsIgnoreCase("#selection")
+                        || component.equalsIgnoreCase("#region")
+                        || component.equalsIgnoreCase("#sel")) {
+                    current = new RegionMask(session.getSelection(player.getWorld()));
+                } else {
+                    throw new UnknownItemException(component);
+                }
             } else {
-                throw new UnknownItemException(list);
+                if (component.charAt(0) == '!' && component.length() > 1) {
+                    current = new InvertedBlockTypeMask(
+                            getBlockIDs(player, component.substring(1), true));
+                } else {
+                    current = new BlockTypeMask(getBlockIDs(player, component, true));
+                }
             }
-        } else {
-            if (list.charAt(0) == '!' && list.length() > 1) {
-                return new InvertedBlockTypeMask(
-                        getBlockIDs(player, list.substring(1), true));
+            
+            if (mask == null) {
+                mask = current;
+            } else if (mask instanceof CombinedMask) {
+                ((CombinedMask) mask).add(current);
             } else {
-                return new BlockTypeMask(getBlockIDs(player, list, true));
+                mask = new CombinedMask(mask);
+                ((CombinedMask) mask).add(current);
             }
         }
+        
+        return mask;
     }
 
     /**
      * Get a list of blocks as a set.
      *
-     *@param player
+     * @param player
      * @param list
      * @param allBlocksAllowed
      * @return set
@@ -1010,15 +1031,10 @@ public class WorldEdit {
             }
         
             LocalSession session = getSession(player);
-            BlockBag blockBag = session.getBlockBag(player);
-            
-            session.tellVersion(player);
-            
-            // Create an edit session
-            EditSession editSession =
-                    new EditSession(player.getWorld(),
-                            session.getBlockChangeLimit(), blockBag);
+            EditSession editSession = session.createEditSession(player);
             editSession.enableQueue();
+
+            session.tellVersion(player);
 
             long start = System.currentTimeMillis();
 
