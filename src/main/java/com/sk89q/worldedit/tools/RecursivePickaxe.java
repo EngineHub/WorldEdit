@@ -56,9 +56,8 @@ public class RecursivePickaxe implements BlockTool {
         if (initialType == BlockID.BEDROCK && !player.canDestroyBedrock()) {
             return true;
         }
-        
-        EditSession editSession =
-                new EditSession(world, session.getBlockChangeLimit());
+
+        EditSession editSession = session.createEditSession(player);
 
         try {
             recurse(server, editSession, world, clicked.toBlockVector(),

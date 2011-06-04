@@ -45,6 +45,17 @@ public abstract class LocalWorld {
     public abstract boolean setBlockType(Vector pt, int type);
 
     /**
+     * Set block type.
+     * 
+     * @param pt
+     * @param type
+     * @return
+     */
+    public boolean setBlockTypeFast(Vector pt, int type) {
+        return setBlockType(pt, type);
+    }
+
+    /**
      * Get block type.
      * 
      * @param pt
@@ -59,6 +70,16 @@ public abstract class LocalWorld {
      * @param data
      */
     public abstract void setBlockData(Vector pt, int data);
+
+    /**
+     * Set block data.
+     * 
+     * @param pt
+     * @param data
+     */
+    public void setBlockDataFast(Vector pt, int data) {
+        setBlockData(pt, data);
+    }
 
     /**
      * Get block data.

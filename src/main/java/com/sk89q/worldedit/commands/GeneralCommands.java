@@ -61,6 +61,27 @@ public class GeneralCommands {
     }
 
     @Command(
+        aliases = {"/fast"},
+        usage = "",
+        desc = "Toggle fast mode",
+        min = 0,
+        max = 0
+    )
+    @CommandPermissions({"worldedit.fast"})
+    public static void fast(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        
+        session.setFastMode(!session.hasFastMode());
+        
+        if (session.hasFastMode()) {
+            player.print("Fast mode enabled. You may need to rejoin to see changes.");
+        } else {
+            player.print("Fast mode disabled.");
+        }
+    }
+
+    @Command(
         aliases = {"toggleplace"},
         usage = "",
         desc = "",

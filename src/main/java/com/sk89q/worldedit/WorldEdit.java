@@ -1010,15 +1010,10 @@ public class WorldEdit {
             }
         
             LocalSession session = getSession(player);
-            BlockBag blockBag = session.getBlockBag(player);
-            
-            session.tellVersion(player);
-            
-            // Create an edit session
-            EditSession editSession =
-                    new EditSession(player.getWorld(),
-                            session.getBlockChangeLimit(), blockBag);
+            EditSession editSession = session.createEditSession(player);
             editSession.enableQueue();
+
+            session.tellVersion(player);
 
             long start = System.currentTimeMillis();
 
