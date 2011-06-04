@@ -23,6 +23,7 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.masks.CombinedMask;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
@@ -154,14 +155,16 @@ public class BrushTool implements TraceTool {
         
         BlockBag bag = session.getBlockBag(player);
         
-        EditSession editSession;
-        
-        if (mask == null) {
-            editSession = new EditSession(target.getWorld(),
-                    session.getBlockChangeLimit(), bag);
+        EditSession editSession = session.createEditSession(player);
+        Mask existingMask = editSession.getMask();
+        if (existingMask == null) {
+            editSession.setMask(mask);
+        } else if (existingMask instanceof CombinedMask) {
+            ((CombinedMask) existingMask).add(mask);
         } else {
-            editSession = new ReplacingEditSession(target.getWorld(),
-                    session.getBlockChangeLimit(), bag, mask);
+            CombinedMask newMask = new CombinedMask(existingMask);
+            newMask.add(mask);
+            editSession.setMask(newMask);
         }
         
         try {
