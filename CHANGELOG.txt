@@ -1,3 +1,31 @@
+4.6:
+- Updated for Minecraft 1.6.
+- Added flood fill tool. Use /floodfill <block> <radius> and right click blocks
+    to flood fill them.
+- Added //gmask to set a *GLOBAL* mask that affects nearly ALL operations.
+    Now you can confine //sphere to a region or create //walls that do not
+    replace existing blocks.
+- Added a region-based mask that confines changes to the current region
+    (when the mask is set).
+- Added support for combining masks, i.e. /mask #region rock,brick
+- Added //fast mode, which allows the server to skip the dirtying of chunks.
+    This means that you have to rejoin to see changes though, but most
+    operations are doubled in speed. This only applies to the Bukkit version
+    at the moment.
+- Changed the block type check to be implementation-dependent. The Bukkit
+    plugin now checks Bukkit's Material.
+- Added -p flag to //butcher to kill pet wolves. Thanks to wizjany.
+- Added -s flag to //move and //stack to move the selection along with the
+    blocks. Thanks to wizjany.
+- Made CUI selection clear on disable (including Bukkit's /reload).
+    Thanks to wizjany.
+- Added "deltree" tool for removing floating trees. Thanks to moo0.
+- Added rotation support to redstone repeaters.
+- Fixed //expand vert not updating client.
+- Fixed the issue with log files not being closed on unload in Bukkit.
+    Thanks to stoneLeaf.
+- Fixed history size being 0 with old config files.
+
 4.5:
 - Fixed the IllegalAccessException with /remove (hopefully).
 - Removed wolves from /butcher. There's no way to check if a wolf is owned
