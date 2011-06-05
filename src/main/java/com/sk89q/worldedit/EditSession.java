@@ -164,7 +164,7 @@ public class EditSession {
         }
         
         // No invalid blocks
-        if ((type > 32 && type < 35) || type == 36 || type == 29 || type > 96) {
+        if (!world.isValidBlockType(type)) {
             return false;
         }
         

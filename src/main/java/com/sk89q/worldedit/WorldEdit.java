@@ -202,13 +202,15 @@ public class WorldEdit {
         String[] args0 = arg.split("\\|");
         String[] args1 = args0[0].split(":", 2);
         String testID = args1[0];
+        int blockId = -1;
         
         int data = -1;
 
         // Attempt to parse the item ID or otherwise resolve an item/block
         // name to its numeric ID
         try {
-            blockType = BlockType.fromID(Integer.parseInt(testID));
+            blockId = Integer.parseInt(testID);
+            blockType = BlockType.fromID(blockId);
         } catch (NumberFormatException e) {
             blockType = BlockType.lookup(testID);
             if (blockType == null) {
@@ -219,7 +221,7 @@ public class WorldEdit {
             }
         }
 
-        if (blockType == null) {
+        if (blockId == -1 && blockType == null) {
             // Maybe it's a cloth
             ClothColor col = ClothColor.lookup(testID);
             
@@ -229,6 +231,15 @@ public class WorldEdit {
             } else {
                 throw new UnknownItemException(arg);
             }
+        }
+        
+        // Read block ID
+        if (blockId == -1) {
+            blockId = blockType.getID();
+        }
+        
+        if (!server.isValidBlockType(blockId)) {
+            throw new UnknownItemException(arg);
         }
         
         if (data == -1) { // Block data not yet detected
@@ -274,7 +285,7 @@ public class WorldEdit {
 
         // Check if the item is allowed
         if (allAllowed || player.hasPermission("worldedit.anyblock")
-                || !config.disallowedBlocks.contains(blockType.getID())) {
+                || !config.disallowedBlocks.contains(blockId)) {
             
             // Allow special sign text syntax
             if (blockType == BlockType.SIGN_POST
@@ -317,7 +328,7 @@ public class WorldEdit {
                 }
             }
 
-            return new BaseBlock(blockType.getID(), data);
+            return new BaseBlock(blockId, data);
         }
 
         throw new DisallowedItemException(arg);

@@ -304,6 +304,16 @@ public abstract class LocalWorld {
      * @return
      */
     public abstract int removeEntities(EntityType type, Vector origin, int radius);
+    
+    /**
+     * Returns whether a block has a valid ID.
+     * 
+     * @param type
+     * @return
+     */
+    public boolean isValidBlockType(int type) {
+        return !((type > 32 && type < 35) || type == 36 || type == 29 || type > 96);
+    }
 
     /**
      * Compare if the other world is equal.

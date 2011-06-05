@@ -39,6 +39,7 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.TreeType;
 import org.bukkit.World;
 import com.sk89q.worldedit.EditSession;
@@ -626,6 +627,17 @@ public class BukkitWorld extends LocalWorld {
         }
         
         return true;
+    }
+    
+    /**
+     * Returns whether a block has a valid ID.
+     * 
+     * @param type
+     * @return
+     */
+    @Override
+    public boolean isValidBlockType(int type) {
+        return Material.getMaterial(type) != null;
     }
 
     @Override
