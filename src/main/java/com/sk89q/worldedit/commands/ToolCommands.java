@@ -26,6 +26,7 @@ import com.sk89q.minecraft.util.commands.NestedCommand;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.ItemType;
+import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.tools.*;
 import com.sk89q.worldedit.util.TreeGenerator;
 
@@ -120,6 +121,32 @@ public class ToolCommands {
 
         session.setTool(player.getItemInHand(), new BlockDataCyler());
         player.print("Block data cycler tool bound to "
+                + ItemType.toHeldName(player.getItemInHand()) + ".");
+    }
+
+    @Command(
+        aliases = {"floodfill", "flood"},
+        usage = "",
+        desc = "Flood fill tool",
+        min = 2,
+        max = 2
+    )
+    @CommandPermissions({"worldedit.tool.flood-fill"})
+    public static void floodFill(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        LocalConfiguration config = we.getConfiguration();
+        int range = args.getInteger(1);
+        
+        if (range > config.maxSuperPickaxeSize) {
+            player.printError("Maximum range: " + config.maxSuperPickaxeSize);
+            return;
+        }
+
+        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        session.setTool(player.getItemInHand(), new FloodFillTool(range, pattern));
+        player.print("Block flood fill tool bound to "
                 + ItemType.toHeldName(player.getItemInHand()) + ".");
     }
 

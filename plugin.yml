@@ -290,6 +290,11 @@ commands:
         description: Block data cycler tool
         usage: /<command> 
         permissions: 'worldedit.tool.data-cycler'
+    floodfill:
+        description: Flood fill tool
+        usage: /<command> 
+        aliases: ['flood']
+        permissions: 'worldedit.tool.flood-fill'
     brush:
         description: Brush tool
         usage: /<command> 

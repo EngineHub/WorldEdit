@@ -215,7 +215,7 @@ public class EditSession {
         }
         
         if (id != 0) {
-            if (existing != type && block.getData() > 0 && BlockType.usesData(id)) {
+            if (BlockType.usesData(id)) {
                 if (fastMode) {
                     world.setBlockDataFast(pt, block.getData());
                 } else {
