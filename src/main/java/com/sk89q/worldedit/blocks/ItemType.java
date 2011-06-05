@@ -208,7 +208,7 @@ public enum ItemType {
     WOOD_BOAT(333, "Wooden boat", "woodboat", "woodenboat", "boat"),
     LEATHER(334, "Leather", "leather", "cowhide"),
     MILK_BUCKET(335, "Milk bucket", "milkbucket", "milk", "milkbukkit"),
-    BRICK_BAR(336, "Brick", "brick"),
+    BRICK_BAR(336, "Brick", "brickbar"),
     CLAY_BALL(337, "Clay", "clay"),
     SUGAR_CANE_ITEM(338, "Sugar cane", "sugarcane", "reed", "reeds"),
     PAPER(339, "Paper", "paper"),
