@@ -22,6 +22,8 @@ package com.sk89q.worldedit.blocks;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumSet;
+import java.util.Map.Entry;
+import com.sk89q.util.StringUtil;
 
 /**
  * Block types.
@@ -30,115 +32,98 @@ import java.util.EnumSet;
  */
 public enum BlockType {
     AIR(0, "Air", "air"),
-    STONE(1, "Stone", new String[] {"stone", "rock"}),
+    STONE(1, "Stone", "stone", "rock"),
     GRASS(2, "Grass", "grass"),
     DIRT(3, "Dirt", "dirt"),
-    COBBLESTONE(4, "Cobblestone", new String[] {"cobblestone", "cobble"}),
-    WOOD(5, "Wood", new String[] {"wood", "woodplank", "plank", "woodplanks", "planks"}),
-    SAPLING(6, "Sapling", "sapling"),
-    BEDROCK(7, "Bedrock", new String[] {"adminium", "bedrock"}),
-    WATER(8, "Water", new String[] {"watermoving", "movingwater"}),
-    STATIONARY_WATER(9, "Water (stationary)",
-             new String[] {"water", "waterstationary", "stationarywater", "stillwater"}),
-    LAVA(10, "Lava", new String[] {"lavamoving", "movinglava"}),
-    STATIONARY_LAVA(11, "Lava (stationary)",
-             new String[] {"lava", "lavastationary", "stationarylava", "stilllava"}),
+    COBBLESTONE(4, "Cobblestone", "cobblestone", "cobble"),
+    WOOD(5, "Wood", "wood", "woodplank", "plank", "woodplanks", "planks"),
+    SAPLING(6, "Sapling", "sapling", "seedling"),
+    BEDROCK(7, "Bedrock", "adminium", "bedrock"),
+    WATER(8, "Water", "watermoving", "movingwater", "flowingwater", "waterflowing"),
+    STATIONARY_WATER(9, "Water (stationary)", "water", "waterstationary", "stationarywater", "stillwater"),
+    LAVA(10, "Lava", "lavamoving", "movinglava", "flowinglava", "lavaflowing"),
+    STATIONARY_LAVA(11, "Lava (stationary)", "lava", "lavastationary", "stationarylava", "stilllava"),
     SAND(12, "Sand", "sand"),
     GRAVEL(13, "Gravel", "gravel"),
     GOLD_ORE(14, "Gold ore", "goldore"),
     IRON_ORE(15, "Iron ore", "ironore"),
     COAL_ORE(16, "Coal ore", "coalore"),
-    LOG(17, "Log", new String[] {"log", "tree", "pine", "oak", "birch", "redwood"}),
-    LEAVES(18, "Leaves", new String[] {"leaves", "leaf"}),
+    LOG(17, "Log", "log", "tree", "pine", "oak", "birch", "redwood"),
+    LEAVES(18, "Leaves", "leaves", "leaf"),
     SPONGE(19, "Sponge", "sponge"),
     GLASS(20, "Glass", "glass"),
-    LAPIS_LAZULI_ORE(21, "Lapis lazuli ore", new String[] {"lapislazuliore", "blueore", "lapisore"}),
-    LAPIS_LAZULI(22, "Lapis lazuli", new String[] {"lapislazuli", "lapislazuliblock", "bluerock"}),
+    LAPIS_LAZULI_ORE(21, "Lapis lazuli ore", "lapislazuliore", "blueore", "lapisore"),
+    LAPIS_LAZULI(22, "Lapis lazuli", "lapislazuli", "lapislazuliblock", "bluerock"),
     DISPENSER(23, "Dispenser", "dispenser"),
     SANDSTONE(24, "Sandstone", "sandstone"),
-    NOTE_BLOCK(25, "Note block", new String[] {"musicblock", "noteblock", "note", "music", "instrument"}),
+    NOTE_BLOCK(25, "Note block", "musicblock", "noteblock", "note", "music", "instrument"),
     BED(26, "Bed", "bed"),
-    POWERED_RAIL(27, "Powered Rail",
-            new String[] {"poweredrail", "boosterrail", "poweredtrack", "boostertrack"}),
-    DETECTOR_RAIL(28, "Detector Rail", "detectorrail"),
-    WEB(30, "Web", new String[] {"web", "spiderweb"}),
-    LONG_GRASS(31, "Long grass", new String[] {"longgrass", "tallgrass"}),
-    DEAD_BUSH(32, "Shrub", new String[] {"deadbush", "shrub", "deadshrub", "tumbleweed"}),
-    CLOTH(35, "Wool", new String[] {"cloth", "wool"}),
-    YELLOW_FLOWER(37, "Yellow flower", new String[] {"yellowflower", "flower"}),
-    RED_FLOWER(38, "Red rose", new String[] {"redflower", "redrose", "rose"}),
-    BROWN_MUSHROOM(39, "Brown mushroom", new String[] {"brownmushroom", "mushroom"}),
+    POWERED_RAIL(27, "Powered Rail", "poweredrail", "boosterrail", "poweredtrack", "boostertrack", "booster"),
+    DETECTOR_RAIL(28, "Detector Rail", "detectorrail", "detector"),
+    WEB(30, "Web", "web", "spiderweb"),
+    LONG_GRASS(31, "Long grass", "longgrass", "tallgrass"),
+    DEAD_BUSH(32, "Shrub", "deadbush", "shrub", "deadshrub", "tumbleweed"),
+    CLOTH(35, "Wool", "cloth", "wool"),
+    YELLOW_FLOWER(37, "Yellow flower", "yellowflower", "flower"),
+    RED_FLOWER(38, "Red rose", "redflower", "redrose", "rose"),
+    BROWN_MUSHROOM(39, "Brown mushroom", "brownmushroom", "mushroom"),
     RED_MUSHROOM(40, "Red mushroom", "redmushroom"),
-    GOLD_BLOCK(41, "Gold block", new String[] {"gold", "goldblock"}),
-    IRON_BLOCK(42, "Iron block", new String[] {"iron", "ironblock"}),
-    DOUBLE_STEP(43, "Double step", new String[] {"doubleslab", "doublestoneslab", "doublestep"}),
-    STEP(44, "Step", new String[] {"slab", "stoneslab", "step", "halfstep"}),
-    BRICK(45, "Brick", new String[] {"brick", "brickblock"}),
-    TNT(46, "TNT", "tnt"),
-    BOOKCASE(47, "Bookcase", new String[] {"bookshelf", "bookshelves"}),
-    MOSSY_COBBLESTONE(48, "Cobblestone (mossy)",
-            new String[] {"mossycobblestone", "mossstone", "mossystone",
-            "mosscobble", "mossycobble", "moss", "mossy", "sossymobblecone"}),
+    GOLD_BLOCK(41, "Gold block", "gold", "goldblock"),
+    IRON_BLOCK(42, "Iron block", "iron", "ironblock"),
+    DOUBLE_STEP(43, "Double step", "doubleslab", "doublestoneslab", "doublestep"),
+    STEP(44, "Step", "slab", "stoneslab", "step", "halfstep"),
+    BRICK(45, "Brick", "brick", "brickblock"),
+    TNT(46, "TNT", "tnt", "c4", "explosive"),
+    BOOKCASE(47, "Bookcase", "bookshelf", "bookshelves", "bookcase", "bookcases"),
+    MOSSY_COBBLESTONE(48, "Cobblestone (mossy)", "mossycobblestone", "mossstone", "mossystone", "mosscobble", "mossycobble", "moss", "mossy", "sossymobblecone"),
     OBSIDIAN(49, "Obsidian", "obsidian"),
-    TORCH(50, "Torch", "torch"),
-    FIRE(51, "Fire", new String[] {"fire", "flame", "flames"}),
-    MOB_SPAWNER(52, "Mob spawner", new String[] {"mobspawner", "spawner"}),
-    WOODEN_STAIRS(53, "Wooden stairs",
-            new String[] {"woodstair", "woodstairs", "woodenstair", "woodenstairs"}),
-    CHEST(54, "Chest", new String[] {"chest", "storage"}),
-    REDSTONE_WIRE(55, "Redstone wire", "redstone"),
+    TORCH(50, "Torch", "torch", "light", "candle"),
+    FIRE(51, "Fire", "fire", "flame", "flames"),
+    MOB_SPAWNER(52, "Mob spawner", "mobspawner", "spawner"),
+    WOODEN_STAIRS(53, "Wooden stairs", "woodstair", "woodstairs", "woodenstair", "woodenstairs"),
+    CHEST(54, "Chest", "chest", "storage", "storagechest"),
+    REDSTONE_WIRE(55, "Redstone wire", "redstone", "redstoneblock"),
     DIAMOND_ORE(56, "Diamond ore", "diamondore"),
-    DIAMOND_BLOCK(57, "Diamond block", new String[] {"diamond", "diamondblock"}),
-    WORKBENCH(58, "Workbench", new String[] {"workbench", "table", "craftingtable"}),
-    CROPS(59, "Crops", new String[] {"crops", "crop", "plant", "plants"}),
-    SOIL(60, "Soil", new String[] {"soil", "farmland"}),
+    DIAMOND_BLOCK(57, "Diamond block", "diamond", "diamondblock"),
+    WORKBENCH(58, "Workbench", "workbench", "table", "craftingtable", "crafting"),
+    CROPS(59, "Crops", "crops", "crop", "plant", "plants"),
+    SOIL(60, "Soil", "soil", "farmland"),
     FURNACE(61, "Furnace", "furnace"),
-    BURNING_FURNACE(62, "Furnace (burning)", new String[] {"burningfurnace", "litfurnace"}),
-    SIGN_POST(63, "Sign post", new String[] {"sign", "signpost"}),
-    WOODEN_DOOR(64, "Wooden door", new String[] {"wooddoor", "woodendoor", "door"}),
+    BURNING_FURNACE(62, "Furnace (burning)", "burningfurnace", "litfurnace"),
+    SIGN_POST(63, "Sign post", "sign", "signpost"),
+    WOODEN_DOOR(64, "Wooden door", "wooddoor", "woodendoor", "door"),
     LADDER(65, "Ladder", "ladder"),
-    MINECART_TRACKS(66, "Minecart tracks",
-            new String[] {"track", "tracks", "minecrattrack", "minecarttracks", "rails", "rail"}),
-    COBBLESTONE_STAIRS(67, "Cobblestone stairs",
-            new String[] {"cobblestonestair", "cobblestonestairs", "cobblestair", "cobblestairs"}),
+    MINECART_TRACKS(66, "Minecart tracks", "track", "tracks", "minecrattrack", "minecarttracks", "rails", "rail"),
+    COBBLESTONE_STAIRS(67, "Cobblestone stairs", "cobblestonestair", "cobblestonestairs", "cobblestair", "cobblestairs"),
     WALL_SIGN(68, "Wall sign", "wallsign"),
-    LEVER(69, "Lever", new String[] {"lever", "switch", "stonelever", "stoneswitch"}),
-    STONE_PRESSURE_PLATE(70, "Stone pressure plate",
-            new String[] {"stonepressureplate", "stoneplate"}),
+    LEVER(69, "Lever", "lever", "switch", "stonelever", "stoneswitch"),
+    STONE_PRESSURE_PLATE(70, "Stone pressure plate", "stonepressureplate", "stoneplate"),
     IRON_DOOR(71, "Iron Door", "irondoor"),
-    WOODEN_PRESSURE_PLATE(72, "Wooden pressure plate",
-            new String[] {"woodpressureplate", "woodplate", "woodenpressureplate", "woodenplate"}),
+    WOODEN_PRESSURE_PLATE(72, "Wooden pressure plate", "woodpressureplate", "woodplate", "woodenpressureplate", "woodenplate", "plate", "pressureplate"),
     REDSTONE_ORE(73, "Redstone ore", "redstoneore"),
     GLOWING_REDSTONE_ORE(74, "Glowing redstone ore", "glowingredstoneore"),
-    REDSTONE_TORCH_OFF(75, "Redstone torch (off)",
-            new String[] {"redstonetorchoff", "rstorchoff"}),
-    REDSTONE_TORCH_ON(76, "Redstone torch (on)",
-            new String [] {"redstonetorch", "redstonetorchon", "rstorchon"}),
-    STONE_BUTTON(77, "Stone Button", new String[] {"stonebutton", "button"}),
+    REDSTONE_TORCH_OFF(75, "Redstone torch (off)", "redstonetorchoff", "rstorchoff"),
+    REDSTONE_TORCH_ON(76, "Redstone torch (on)", "redstonetorch", "redstonetorchon", "rstorchon", "redtorch"),
+    STONE_BUTTON(77, "Stone Button", "stonebutton", "button"),
     SNOW(78, "Snow", "snow"),
     ICE(79, "Ice", "ice"),
     SNOW_BLOCK(80, "Snow block", "snowblock"),
-    CACTUS(81, "Cactus", new String[] {"cactus", "cacti"}),
+    CACTUS(81, "Cactus", "cactus", "cacti"),
     CLAY(82, "Clay", "clay"),
-    SUGAR_CANE(83, "Reed", new String[] {"reed", "cane", "sugarcane", "sugarcanes"}),
-    JUKEBOX(84, "Jukebox", new String[] {"jukebox", "stereo", "recordplayer"}),
+    SUGAR_CANE(83, "Reed", "reed", "cane", "sugarcane", "sugarcanes", "vine", "vines"),
+    JUKEBOX(84, "Jukebox", "jukebox", "stereo", "recordplayer"),
     FENCE(85, "Fence", "fence"),
     PUMPKIN(86, "Pumpkin", "pumpkin"),
-    NETHERRACK(87, "Netherrack", 
-            new String[] {"redmossycobblestone", "redcobblestone", "redmosstone",
-            "redcobble", "netherstone", "netherrack", "nether", "hellstone"}),
-    SOUL_SAND(88, "Soul sand", 
-            new String[] {"slowmud", "mud", "soulsand", "hellmud"}),
-    GLOWSTONE(89, "Glowstone",
-            new String[] {"brittlegold", "glowstone", "lightstone", "brimstone", "australium"}),
+    NETHERRACK(87, "Netherrack", "redmossycobblestone", "redcobblestone", "redmosstone", "redcobble", "netherstone", "netherrack", "nether", "hellstone"),
+    SOUL_SAND(88, "Soul sand", "slowmud", "mud", "soulsand", "hellmud"),
+    GLOWSTONE(89, "Glowstone", "brittlegold", "glowstone", "lightstone", "brimstone", "australium"),
     PORTAL(90, "Portal", "portal"),
-    JACK_O_LANTERN(91, "Pumpkin (on)",
-            new String[] {"pumpkinlighted", "pumpkinon", "litpumpkin", "jackolantern"}),
-    CAKE(92, "Cake", new String[] {"cake", "cakeblock"}),
-    REDSTONE_REPEATER_OFF(93, "Redstone repeater (off)", new String[] {"diodeoff", "redstonerepeater", "repeater", "delayer"}),
-    REDSTONE_REPEATER_ON(94, "Redstone repeater (on)", new String[] {"diode", "diodeon", "redstonerepeateron", "repeateron", "delayeron"}),
-    LOCKED_CHEST(95, "Locked chest", new String[] {"lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"}),
-    TRAP_DOOR(96, "Trap door", new String[] {"trapdoor", "hatch"});
+    JACK_O_LANTERN(91, "Pumpkin (on)", "pumpkinlighted", "pumpkinon", "litpumpkin", "jackolantern"),
+    CAKE(92, "Cake", "cake", "cakeblock"),
+    REDSTONE_REPEATER_OFF(93, "Redstone repeater (off)", "diodeoff", "redstonerepeater", "repeater", "delayer"),
+    REDSTONE_REPEATER_ON(94, "Redstone repeater (on)", "diode", "diodeon", "redstonerepeateron", "repeateron", "delayeron"),
+    LOCKED_CHEST(95, "Locked chest", "lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"),
+    TRAP_DOOR(96, "Trap door", "trapdoor", "hatch", "floordoor");
 
     /**
      * Stores a list of dropped blocks for blocks.
@@ -273,7 +258,7 @@ public enum BlockType {
      * @param id
      * @param name
      */
-    BlockType(int id, String name, String[] lookupKeys) {
+    BlockType(int id, String name, String ... lookupKeys) {
         this.id = id;
         this.name = name;
         this.lookupKeys = lookupKeys;
@@ -296,7 +281,45 @@ public enum BlockType {
      * @return
      */
     public static BlockType lookup(String name) {
-        return lookup.get(name.toLowerCase());
+        return lookup(name, true);
+    }
+
+    /**
+     * Return type from name. May return null.
+     *
+     * @param name
+     * @param fuzzy
+     * @return
+     */
+    public static BlockType lookup(String name, boolean fuzzy) {
+        String testName = name.replace(" ", "").toLowerCase();
+        
+        BlockType type = lookup.get(testName);
+        
+        if (type != null) {
+            return type;
+        }
+        
+        if (!fuzzy) {
+            return null;
+        }
+        
+        int minDist = -1;
+        
+        for (Entry<String, BlockType> entry : lookup.entrySet()) {
+            if (entry.getKey().charAt(0) != testName.charAt(0)) {
+                continue;
+            }
+            
+            int dist = StringUtil.getLevenshteinDistance(entry.getKey(), testName);
+            
+            if ((dist < minDist || minDist == -1) && dist < 2) {
+                minDist = dist;
+                type = entry.getValue();
+            }
+        }
+        
+        return type;
     }
 
     /**
