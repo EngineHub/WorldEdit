@@ -86,4 +86,16 @@ public class BukkitUtil {
     public static World toWorld(WorldVector pt) {
         return ((BukkitWorld)pt.getWorld()).getWorld();
     }
+    
+    /**
+     * Bukkit's Location class has serious problems with floating point
+     * precision.
+     */
+    public static boolean equals(Location a, Location b) {
+        if (Math.abs(a.getX()-b.getX()) > EQUALS_PRECISION) return false;
+        if (Math.abs(a.getY()-b.getY()) > EQUALS_PRECISION) return false;
+        if (Math.abs(a.getZ()-b.getZ()) > EQUALS_PRECISION) return false;
+        return true;
+    }
+    public static final double EQUALS_PRECISION = 0.0001;
 }
