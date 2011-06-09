@@ -34,6 +34,10 @@ public class PluginPermissionsResolver implements PermissionsResolver {
         return resolver.hasPermission(name, permission);
     }
 
+    public boolean hasPermission(String worldName, String name, String permission) {
+        return resolver.hasPermission(worldName, name, permission);
+    }
+
     public boolean inGroup(String player, String group) {
         return resolver.inGroup(player, group);
     }

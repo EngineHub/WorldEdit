@@ -102,6 +102,10 @@ public class PermissionsResolverManager implements PermissionsResolver {
         return perms.hasPermission(name, permission);
     }
 
+    public boolean hasPermission(String worldName, String name, String permission) {
+        return perms.hasPermission(worldName, name, permission);
+    }
+
     public boolean inGroup(String player, String group) {
         return perms.inGroup(player, group);
     }

@@ -20,6 +20,7 @@
 package com.sk89q.bukkit.migration;
 
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -60,6 +61,15 @@ public class NijiPermissionsResolver implements PermissionsResolver {
             } catch (Throwable t) {
                 return api.Security.permission(player, permission);
             }
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean hasPermission(String worldName, String name, String permission) {
+        try {
+            return api.getHandler().has(worldName, name, permission);
         } catch (Throwable t) {
             t.printStackTrace();
             return false;

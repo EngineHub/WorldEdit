@@ -109,7 +109,12 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
         
         return perms.contains("*") || perms.contains(permission);        
     }
-    
+
+    public boolean hasPermission(String worldName, String player, String permission) {
+        return hasPermission(player, "worlds." + worldName +  "." + permission)
+            || hasPermission(player, permission);
+    }
+
     public boolean inGroup(String player, String group) {
         Set<String> groups = userGroups.get(player.toLowerCase());
         if (groups == null) {
