@@ -61,14 +61,15 @@ no-op-permissions: false
 debug: false
 
 # See http://wiki.sk89q.com/wiki/WorldEdit/Permissions/Bukkit
+# Now with multiworld support (see example)
 permissions:
     groups:
         default:
             permissions:
-                - /reloadwe
-                - /worldeditselect
+                - worldedit.reload
+                - worldedit.selection.*
+                - worlds.creative.worldedit.region.*
     users:
         sk89q:
             permissions:
-                - /worldedit
-                - /reloadwe
+                - worldedit.*
