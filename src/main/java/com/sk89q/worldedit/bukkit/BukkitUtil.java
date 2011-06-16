@@ -71,6 +71,17 @@ public class BukkitUtil {
         return new Location(world, pt.getX(), pt.getY(), pt.getZ());
     }
     
+    public static Location center(Location loc) {
+        return new Location(
+                loc.getWorld(),
+                loc.getBlockX()+0.5,
+                loc.getBlockY()+0.5,
+                loc.getBlockZ()+0.5,
+                loc.getPitch(),
+                loc.getYaw()
+        );
+    }
+    
     public static Player matchSinglePlayer(Server server, String name) {
         List<Player> players = server.matchPlayer(name);
         if (players.size() == 0) {
