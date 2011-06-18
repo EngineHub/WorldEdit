@@ -21,65 +21,110 @@ package com.sk89q.minecraft.util.commands;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.sk89q.util.StringUtil;
 
 /**
- * Manager for handling commands. This allows you to easily process commands,
- * including nested commands, by correctly annotating methods of a class.
- * The commands are thus declaratively defined, and it's easy to spot
- * how permissions and commands work out, and it decreases the opportunity
- * for errors because the consistency would cause any odd balls to show. 
- * The manager also handles some boilerplate code such as number of arguments
- * checking and printing usage.
+ * <p>Manager for handling commands. This allows you to easily process commands,
+ * including nested commands, by correctly annotating methods of a class.</p>
  * 
  * <p>To use this, it is merely a matter of registering classes containing
  * the commands (as methods with the proper annotations) with the
  * manager. When you want to process a command, use one of the
  * <code>execute</code> methods. If something is wrong, such as incorrect
  * usage, insufficient permissions, or a missing command altogether, an
- * exception will be raised for upstream handling.
+ * exception will be raised for upstream handling.</p>
+ *
+ * <p>Methods of a class to be registered can be static, but if an injector
+ * is registered with the class, the instances of the command classes
+ * will be created automatically and methods will be called non-statically.</p>
  * 
  * <p>To mark a method as a command, use {@link Command}. For nested commands,
  * see {@link NestedCommand}. To handle permissions, use
- * {@link CommandPermissions}.
+ * {@link CommandPermissions}.</p>
  * 
  * <p>This uses Java reflection extensively, but to reduce the overhead of
  * reflection, command lookups are completely cached on registration. This
  * allows for fast command handling. Method invocation still has to be done
- * with reflection, but this is quite fast in that of itself.
+ * with reflection, but this is quite fast in that of itself.</p>
  * 
  * @author sk89q
  * @param <T> command sender class
  */
 public abstract class CommandsManager<T> {
+
+    /**
+     * Logger for general errors.
+     */
+    protected static final Logger logger =
+            Logger.getLogger(CommandsManager.class.getCanonicalName());
     
     /**
      * Mapping of commands (including aliases) with a description. Root
      * commands are stored under a key of null, whereas child commands are
-     * cached under their respective {@link Method}.
+     * cached under their respective {@link Method}. The child map has
+     * the key of the command name (one for each alias) with the
+     * method.
      */
     protected Map<Method, Map<String, Method>> commands
             = new HashMap<Method, Map<String, Method>>();
+
+    /**
+     * Used to store the instances associated with a method.
+     */
+    protected Map<Method, Object> instances = new HashMap<Method, Object>();
     
     /**
-     * Mapping of commands (not including aliases) with a description.
+     * Mapping of commands (not including aliases) with a description. This
+     * is only for top level commands.
      */
     protected Map<String, String> descs = new HashMap<String, String>();
+
+    /**
+     * Stores the injector used to getInstance.
+     */
+    protected Injector injector;
     
     /**
-     * Register an object that contains commands (denoted by
-     * {@link Command}. The methods are
-     * cached into a map for later usage and it reduces the overhead of
-     * reflection (method lookup via reflection is relatively slow).
+     * Register an class that contains commands (denoted by {@link Command}.
+     * If no dependency injector is specified, then the methods of the
+     * class will be registered to be called statically. Otherwise, new
+     * instances will be created of the command classes and methods will
+     * not be called statically.
      * 
      * @param cls
      */
     public void register(Class<?> cls) {
         registerMethods(cls, null);
+    }
+
+    /**
+     * Register the methods of a class. This will automatically construct
+     * instances as necessary.
+     *
+     * @param cls
+     * @param parent
+     */
+    private void registerMethods(Class<?> cls, Method parent) {
+        try {
+            if (getInjector() == null) {
+                registerMethods(cls, parent, null);
+            } else {
+                Object obj = null;
+                obj = getInjector().getInstance(cls);
+                registerMethods(cls, parent, obj);
+            }
+        } catch (InvocationTargetException e) {
+            logger.log(Level.SEVERE, "Failed to register commands", e);
+        } catch (IllegalAccessException e) {
+            logger.log(Level.SEVERE, "Failed to register commands", e);
+        } catch (InstantiationException e) {
+            logger.log(Level.SEVERE, "Failed to register commands", e);
+        }
     }
     
     /**
@@ -88,7 +133,7 @@ public abstract class CommandsManager<T> {
      * @param cls
      * @param parent
      */
-    private void registerMethods(Class<?> cls, Method parent) {
+    private void registerMethods(Class<?> cls, Method parent, Object obj) {
         Map<String, Method> map;
         
         // Make a new hash map to cache the commands for this class
@@ -105,11 +150,23 @@ public abstract class CommandsManager<T> {
                 continue;
             }
 
+            boolean isStatic = Modifier.isStatic(method.getModifiers());
+
             Command cmd = method.getAnnotation(Command.class);
             
             // Cache the aliases too
             for (String alias : cmd.aliases()) {
                 map.put(alias, method);
+            }
+
+            // We want to be able invoke with an instance
+            if (!isStatic) {
+                // Can't register this command if we don't have an instance
+                if (obj == null) {
+                    continue;
+                }
+                
+                instances.put(method, obj);
             }
             
             // Build a list of commands and their usage details, at least for
@@ -338,13 +395,15 @@ public abstract class CommandsManager<T> {
             }
             
             methodArgs[0] = context;
+
+            Object instance = instances.get(method);
             
             try {
-                method.invoke(null, methodArgs);
+                method.invoke(instance, methodArgs);
             } catch (IllegalArgumentException e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "Failed to execute command", e);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "Failed to execute command", e);
             } catch (InvocationTargetException e) {
                 if (e.getCause() instanceof CommandException) {
                     throw (CommandException) e.getCause();
@@ -385,4 +444,21 @@ public abstract class CommandsManager<T> {
      * @return
      */
     public abstract boolean hasPermission(T player, String perm);
+
+    /**
+     * Get the injector used to create new instances. This can be
+     * null, in which case only classes will be registered statically.
+     */
+    public Injector getInjector() {
+        return injector;
+    }
+
+    /**
+     * Set the injector for creating new instances.
+     *
+     * @param injector injector or null
+     */
+    public void setInjector(Injector injector) {
+        this.injector = injector;
+    }
 }
