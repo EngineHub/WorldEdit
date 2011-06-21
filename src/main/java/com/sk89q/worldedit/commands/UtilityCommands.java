@@ -236,8 +236,9 @@ public class UtilityCommands {
             to = we.getBlock(player, args.getString(2));
         }
 
-        Vector min = player.getBlockIn().subtract(size, size, size);
-        Vector max = player.getBlockIn().add(size, size, size);
+        Vector base = session.getPlacementPosition(player);
+        Vector min = base.subtract(size, size, size);
+        Vector max = base.add(size, size, size);
         Region region = new CuboidRegion(min, max);
 
         int affected = editSession.replaceBlocks(region, from, to);
@@ -258,7 +259,7 @@ public class UtilityCommands {
 
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 10;
 
-        int affected = editSession.simulateSnow(player.getBlockIn(), size);
+        int affected = editSession.simulateSnow(session.getPlacementPosition(player), size);
         player.print(affected + " surfaces covered. Let it snow~");
     }
 
@@ -276,7 +277,7 @@ public class UtilityCommands {
 
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 10;
 
-        int affected = editSession.thaw(player.getBlockIn(), size);
+        int affected = editSession.thaw(session.getPlacementPosition(player), size);
         player.print(affected + " surfaces thawed.");
     }
     

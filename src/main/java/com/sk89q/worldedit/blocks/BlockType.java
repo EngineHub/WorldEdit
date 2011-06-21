@@ -532,7 +532,8 @@ public enum BlockType {
      * @return
      */
     public static boolean canTransferRedstone(int id) {
-        return id == 75 // Redstone torch (off)
+        return id == 27 // Powered rail
+                || id == 75 // Redstone torch (off)
                 || id == 76 // Redstone torch (on)
                 || id == 55 // Redstone wire
                 || id == 93 // Diode (off)
