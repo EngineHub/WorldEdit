@@ -275,6 +275,10 @@ commands:
         description: Set the brush size
         usage: /<command> [pattern]
         permissions: 'worldedit.brush.options.size'
+    range:
+    	description: Set the brush range
+    	usage: /<command> [range]
+    	permissions: 'worldedit.brush.options.range'
     mask:
         description: Set the brush mask
         usage: /<command> [mask]

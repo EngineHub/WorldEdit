@@ -108,7 +108,23 @@ public class ToolUtilCommands {
         session.getBrushTool(player.getItemInHand()).setFill(pattern);
         player.print("Brush material set.");
     }
-
+    
+    @Command(
+            aliases = {"range"},
+            usage = "[pattern]",
+            desc = "Set the brush range",
+            min = 1,
+            max = 1
+        )
+    @CommandPermissions({"worldedit.brush.options.range"})
+    public static void range(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+    	int range = args.getInteger(0);
+        session.getBrushTool(player.getItemInHand()).setRange(range);
+        player.print("Brush range set.");
+    }
+    
     @Command(
         aliases = {"size"},
         usage = "[pattern]",

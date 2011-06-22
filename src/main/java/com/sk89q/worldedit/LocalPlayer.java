@@ -304,13 +304,25 @@ public abstract class LocalPlayer {
 
     /**
      * Get the point of the block being looked at. May return null.
+     * Will return the farthest away air block if useLastBlock is true and no other block is found.
+     * 
+     * @param range
+     * @param useLastBlock
+     * @return point
+     */
+    public WorldVector getBlockTrace(int range, boolean useLastBlock) {
+    	TargetBlock tb = new TargetBlock(this, range, 0.2);
+        return (useLastBlock ? tb.getAnyTargetBlock() : tb.getTargetBlock());
+    }
+    
+    /**
+     * Get the point of the block being looked at. May return null.
      *
      * @param range
      * @return point
      */
     public WorldVector getBlockTrace(int range) {
-        TargetBlock tb = new TargetBlock(this, range, 0.2);
-        return tb.getTargetBlock();
+    	return getBlockTrace(range, false);
     }
 
     /**
