@@ -101,6 +101,31 @@ public class TargetBlock {
     }
 
     /**
+     * Returns any block at the sight. Returns null if out of range or if no
+     * viable target was found. Will try to return the last valid air block it finds.
+     * 
+     * @return Block
+     */
+    public BlockWorldVector getAnyTargetBlock() {
+        boolean searchForLastBlock = true;
+        BlockWorldVector lastBlock = null;
+        while (getNextBlock() != null) {
+            if (world.getBlockType(getCurrentBlock()) == 0) {
+                if(searchForLastBlock) {
+                    lastBlock = getCurrentBlock();
+                    if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= 127) {
+                        searchForLastBlock = false;
+                    }
+                }
+            } else {
+                break;
+            }
+        }
+        BlockWorldVector currentBlock = getCurrentBlock();
+        return (currentBlock != null ? currentBlock : lastBlock);
+    }
+    
+    /**
      * Returns the block at the sight. Returns null if out of range or if no
      * viable target was found
      * 
