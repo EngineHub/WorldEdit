@@ -36,6 +36,8 @@ import com.sk89q.worldedit.tools.brushes.SphereBrush;
  * @author sk89q
  */
 public class BrushTool implements TraceTool {
+	private static int MAX_RANGE = 500;
+	private int range = -1;
     private Mask mask = null;
     private Brush brush = new SphereBrush();
     private Pattern material = new SingleBlockPattern(new BaseBlock(BlockID.COBBLESTONE));
@@ -135,6 +137,24 @@ public class BrushTool implements TraceTool {
     public void setSize(int size) {
         this.size = size;
     }
+    
+    /**
+     * Get the set brush range.
+     * 
+     * @return
+     */
+    public int getRange() {
+        return (range < 0) ? MAX_RANGE : Math.min(range, MAX_RANGE);
+    }
+
+    /**
+     * Set the set brush range.
+     * 
+     * @param size
+     */
+    public void setRange(int range) {
+        this.range = range;
+    }
 
     /**
      * Perform the action. Should return true to deny the default
@@ -146,7 +166,12 @@ public class BrushTool implements TraceTool {
      */
     public boolean act(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session) {
-        WorldVector target = player.getBlockTrace(500);
+    	WorldVector target = null;
+    	if (this.range > -1) {
+    		target = player.getBlockTrace(getRange(), true);
+    	} else {
+    		target = player.getBlockTrace(MAX_RANGE);
+    	}
         
         if (target == null) {
             player.printError("No block in sight!");
