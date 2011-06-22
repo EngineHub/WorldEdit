@@ -11,6 +11,9 @@
   <name>WorldEdit</name>
   <description>WorldEdit allows for editing the Minecraft SMP world
     en-masse, de-griefing, and fixing issues.</description>
+  <properties>
+  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
   <scm>
     <connection>scm:git:git://github.com/sk89q/worldedit.git</connection>
