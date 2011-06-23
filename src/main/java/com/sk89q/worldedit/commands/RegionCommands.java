@@ -99,6 +99,7 @@ public class RegionCommands {
     @Command(
         aliases = {"/overlay"},
         usage = "<block>",
+        flags = "r",
         desc = "Set a block on top of blocks in the region",
         min = 1,
         max = 1
@@ -114,9 +115,9 @@ public class RegionCommands {
         int affected = 0;
         if (pat instanceof SingleBlockPattern) {
             affected = editSession.overlayCuboidBlocks(region,
-                    ((SingleBlockPattern)pat).getBlock());
+                    ((SingleBlockPattern)pat).getBlock(), args.hasFlag('r'));
         } else {
-            affected = editSession.overlayCuboidBlocks(region, pat);
+            affected = editSession.overlayCuboidBlocks(region, pat, args.hasFlag('r'));
         }
         player.print(affected + " block(s) have been overlayed.");
     }

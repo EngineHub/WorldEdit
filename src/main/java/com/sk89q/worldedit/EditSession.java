@@ -1200,10 +1200,11 @@ public class EditSession {
      * 
      * @param region
      * @param block
+     * @param replace
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int overlayCuboidBlocks(Region region, BaseBlock block)
+    public int overlayCuboidBlocks(Region region, BaseBlock block, boolean replace)
             throws MaxChangedBlocksException {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
@@ -1222,10 +1223,10 @@ public class EditSession {
             for (int z = minZ; z <= maxZ; z++) {
                 for (int y = upperY; y >= lowerY; y--) {
                     Vector above = new Vector(x, y + 1, z);
-
-                    if (y + 1 <= 127 && !getBlock(new Vector(x, y, z)).isAir()
+                    Vector target = new Vector (x, y, z);
+                    if (y + 1 <= 127 && !getBlock(target).isAir()
                             && getBlock(above).isAir()) {
-                        if (setBlock(above, block)) {
+                        if (setBlock((replace ? target : above), block)) {
                             affected++;
                         }
                         break;
@@ -1242,10 +1243,11 @@ public class EditSession {
      * 
      * @param region
      * @param pattern
+     * @param replace
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int overlayCuboidBlocks(Region region, Pattern pattern)
+    public int overlayCuboidBlocks(Region region, Pattern pattern, boolean replace)
             throws MaxChangedBlocksException {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
@@ -1264,10 +1266,10 @@ public class EditSession {
             for (int z = minZ; z <= maxZ; z++) {
                 for (int y = upperY; y >= lowerY; y--) {
                     Vector above = new Vector(x, y + 1, z);
-
-                    if (y + 1 <= 127 && !getBlock(new Vector(x, y, z)).isAir()
+                    Vector target = new Vector (x, y, z);
+                    if (y + 1 <= 127 && !getBlock(target).isAir()
                             && getBlock(above).isAir()) {
-                        if (setBlock(above, pattern.next(above))) {
+                        if (setBlock((replace ? target : above), pattern.next(above))) {
                             affected++;
                         }
                         break;
