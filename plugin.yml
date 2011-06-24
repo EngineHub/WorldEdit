@@ -1,6 +1,6 @@
 name: WorldEdit
 main: com.sk89q.worldedit.bukkit.WorldEditPlugin
-version: ${project.version}
+version: "${project.version}"
 commands:
     chunkinfo:
         description: Get information about the chunk that you are inside
