@@ -185,7 +185,7 @@ public class CylindricalRegion implements Region {
             this.center.setY(this.center.getY() + height);
             height = -height;
         }
-        radius += Math.abs(Math.round(Math.pow(change.getBlockX(), 2) + Math.pow(change.getBlockZ(), 2)));
+        radius -= Math.abs(Math.round(Math.pow(change.getBlockX(), 2) + Math.pow(change.getBlockZ(), 2)));
     }
 
     /**
