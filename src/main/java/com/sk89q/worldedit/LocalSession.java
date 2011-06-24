@@ -142,6 +142,9 @@ public class LocalSession {
      */
     public EditSession undo(BlockBag newBlockBag) {
         historyPointer--;
+        if (history == null) {
+            return null;
+        }
         if (historyPointer >= 0) {
             EditSession editSession = history.get(historyPointer);
             EditSession newEditSession =

@@ -76,7 +76,7 @@ public class CylindricalRegion implements Region {
         this.center = new Vector(center);
         this.height = outer.getBlockY() - this.center.getBlockY();
         if(height < 0) {
-            this.center.setY(this.center.getY() + height);
+            this.center.add(0, height, 0);
             height = -height;
         }
         this.radius = (int)Math.round(Math.sqrt(Math.pow(outer.getBlockX() - this.center.getBlockX(), 2) +
@@ -165,10 +165,9 @@ public class CylindricalRegion implements Region {
      */
     public void expand(Vector change) {
         changed = true;
-        height += change.getBlockY();
-        if(height < 0) {
-            this.center.setY(this.center.getY() + height);
-            height = -height;
+        height += Math.abs(change.getBlockY());
+        if(change.getX() < 0) {
+            this.center.add(0, change.getX(), 0);
         }
         radius += Math.abs(Math.round(Math.pow(change.getBlockX(), 2) + Math.pow(change.getBlockZ(), 2)));
     }
@@ -180,9 +179,12 @@ public class CylindricalRegion implements Region {
      */
     public void contract(Vector change) {
         changed = true;
-        height -= change.getBlockY();
+        height -= Math.abs(change.getBlockY());
+        if(change.getX() > 0) {
+            this.center.add(0, change.getX(), 0);
+        }
         if(height < 0) {
-            this.center.setY(this.center.getY() + height);
+            this.center.add(0, height, 0);
             height = -height;
         }
         radius -= Math.abs(Math.round(Math.pow(change.getBlockX(), 2) + Math.pow(change.getBlockZ(), 2)));
@@ -207,7 +209,7 @@ public class CylindricalRegion implements Region {
         this.height += this.center.getBlockY() - center.getBlockY();
         this.center = center;
         if(height < 0) {
-            this.center.setY(this.center.getY() + height);
+            this.center.add(0, height, 0);
             height = -height;
         }
     }
@@ -263,33 +265,32 @@ public class CylindricalRegion implements Region {
         int cx = this.center.getBlockX();
         int cy = this.center.getBlockY();
         int cz = this.center.getBlockZ();
-        HashSet<BlockVector> currentSet; 
         base = new ArrayList<HashSet<BlockVector>>(this.radius * 2 + 1);
         for(int i = 0; i <= this.radius * 2; i++) {
             base.add(new HashSet<BlockVector>());
         }
         do
         {
-            currentSet = base.get(this.radius);
             for(int i = x; i <= -x; i++) {
-                if(currentSet.add(new BlockVector(cx + i, cy, cz + z))) {
+                if(base.get(this.radius + z).add(new BlockVector(cx + i, cy, cz + z))) {
                     count++;
                 }
-            }
-            for(int i = x; i <= -x; i++) {
-                if(currentSet.add(new BlockVector(cx + i, cy, cz - z))) {
+                if(base.get(this.radius - z).add(new BlockVector(cx + i, cy, cz - z))) {
                     count++;
                 }
             }
             radius = error;
             if(radius > x) {
-                error += ++x*2+1;
+                x++;
+                error += x*2+1;
             }
             if(radius <= z) {
-                error += ++z*2+1;
+                z++;
+                error += z*2+1;
             }
-        } while (x < 0);
+        } while (x <= 0);
         area = count * (height + 1);
+        this.changed = false;
     }
     
     public Iterator<BlockVector> baseIterator() {
@@ -297,10 +298,10 @@ public class CylindricalRegion implements Region {
             calculateBase();
         }
         return new Iterator<BlockVector>() {
-            Iterator<HashSet<BlockVector>> yIterator = base.iterator();
-            Iterator<BlockVector> xIterator = yIterator.next().iterator(); //yIterator should never be empty
+            Iterator<HashSet<BlockVector>> zIterator = base.iterator();
+            Iterator<BlockVector> xIterator = zIterator.next().iterator(); //zIterator should never be empty
             public boolean hasNext() {
-                return xIterator.hasNext() || yIterator.hasNext();
+                return xIterator.hasNext() || zIterator.hasNext();
             }
 
             public BlockVector next() {
@@ -308,7 +309,7 @@ public class CylindricalRegion implements Region {
                 if(xIterator.hasNext()) {
                     return new BlockVector(xIterator.next());
                 }
-                xIterator = yIterator.next().iterator();
+                xIterator = zIterator.next().iterator();
                 return new BlockVector(xIterator.next());
             }
 

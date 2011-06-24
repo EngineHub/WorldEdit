@@ -1198,7 +1198,7 @@ public class EditSession {
 
     /**
      * @param region
-     * @param pattern
+     * @param block
      * @param replace
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
@@ -1374,6 +1374,19 @@ public class EditSession {
      * Overlays a layer of blocks over a cuboid area.
      * 
      * @param region
+     * @param block
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int overlayCuboidBlocks(Region region, BaseBlock block)
+        throws MaxChangedBlocksException {
+        return overlayCuboidBlocks(region, block, false);
+    }
+    
+    /**
+     * Overlays a layer of blocks over a cuboid area.
+     * 
+     * @param region
      * @param pattern
      * @param replace
      * @return number of blocks affected
@@ -1429,6 +1442,19 @@ public class EditSession {
         }
 
         return affected;
+    }
+    
+    /**
+     * Overlays a layer of blocks over a cuboid area.
+     * 
+     * @param region
+     * @param pattern
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int overlayCuboidBlocks(Region region, Pattern pattern)
+        throws MaxChangedBlocksException {
+        return overlayCuboidBlocks(region, pattern, false);
     }
 
     /**
