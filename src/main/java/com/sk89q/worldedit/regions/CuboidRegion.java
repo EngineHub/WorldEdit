@@ -276,11 +276,9 @@ public class CuboidRegion implements Region {
         Vector max = getMaximumPoint();
 
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-            for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    Vector pt = new Vector(x, y, z);
-                    chunks.add(ChunkStore.toChunk(pt));
-                }
+            for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                Vector pt = new Vector(x, 0, z);
+                chunks.add(ChunkStore.toChunk(pt));
             }
         }
 
