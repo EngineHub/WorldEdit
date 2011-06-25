@@ -206,12 +206,7 @@ public class CylindricalRegion implements Region {
      */
     public void setCenter(Vector center) {
         changed = true;
-        this.height += this.center.getBlockY() - center.getBlockY();
         this.center = center;
-        if(height < 0) {
-            this.center.add(0, height, 0);
-            height = -height;
-        }
     }
 
     /**
