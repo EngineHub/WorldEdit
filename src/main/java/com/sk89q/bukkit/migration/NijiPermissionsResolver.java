@@ -69,7 +69,11 @@ public class NijiPermissionsResolver implements PermissionsResolver {
 
     public boolean hasPermission(String worldName, String name, String permission) {
         try {
-            return api.getHandler().has(worldName, name, permission);
+            try {
+                return api.getHandler().has(worldName, name, permission);
+            } catch (Throwable t) {
+                return api.getHandler().has(server.getPlayer(name), permission);
+            }
         } catch (Throwable t) {
             t.printStackTrace();
             return false;
