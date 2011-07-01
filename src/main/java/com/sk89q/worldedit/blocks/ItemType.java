@@ -62,10 +62,14 @@ public enum ItemType {
     BED(26, "Bed", "bed"),
     POWERED_RAIL(27, "Powered Rail", "poweredrail", "boosterrail", "poweredtrack", "boostertrack", "booster"),
     DETECTOR_RAIL(28, "Detector Rail", "detectorrail", "detector"),
+    PISTON_STICKY_BASE(29, "Sticky Piston", "stickypiston"),
     WEB(30, "Web", "web", "spiderweb"),
     LONG_GRASS(31, "Long grass", "longgrass", "tallgrass"),
     DEAD_BUSH(32, "Shrub", "deadbush", "shrub", "deadshrub", "tumbleweed"),
+    PISTON_BASE(33, "Piston", "piston"),
+    PISTON_EXTENSION(34, "Piston extension", "pistonhead"),
     CLOTH(35, "Wool", "cloth", "wool"),
+    PISTON_MOVING_PIECE(36, "Piston moving piece", "movingpiston"),
     YELLOW_FLOWER(37, "Yellow flower", "yellowflower", "flower"),
     RED_FLOWER(38, "Red rose", "redflower", "redrose", "rose"),
     BROWN_MUSHROOM(39, "Brown mushroom", "brownmushroom", "mushroom"),
@@ -231,6 +235,7 @@ public enum ItemType {
     REDSTONE_REPEATER(356, "Redstone repeater", "redstonerepeater", "diode", "delayer", "repeater"),
     COOKIE(357, "Cookie", "cookie"),
     MAP(358, "Map", "map"),
+    SHEARS(359, "Shears", "shears", "scissors"),
     GOLD_RECORD(2256, "Gold Record", "goldrecord", "golddisc"),
     GREEN_RECORD(2257, "Green Record", "greenrecord", "greenddisc");
 

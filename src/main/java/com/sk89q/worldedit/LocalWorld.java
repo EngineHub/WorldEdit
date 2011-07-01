@@ -312,7 +312,7 @@ public abstract class LocalWorld {
      * @return
      */
     public boolean isValidBlockType(int type) {
-        return !((type > 32 && type < 35) || type == 36 || type == 29 || type > 96);
+        return type >= 0 && type < 96;
     }
 
     /**

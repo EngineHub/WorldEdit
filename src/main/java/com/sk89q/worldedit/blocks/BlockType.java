@@ -60,10 +60,14 @@ public enum BlockType {
     BED(26, "Bed", "bed"),
     POWERED_RAIL(27, "Powered Rail", "poweredrail", "boosterrail", "poweredtrack", "boostertrack", "booster"),
     DETECTOR_RAIL(28, "Detector Rail", "detectorrail", "detector"),
+    PISTON_STICKY_BASE(29, "Sticky Piston", "stickypiston"),
     WEB(30, "Web", "web", "spiderweb"),
     LONG_GRASS(31, "Long grass", "longgrass", "tallgrass"),
     DEAD_BUSH(32, "Shrub", "deadbush", "shrub", "deadshrub", "tumbleweed"),
+    PISTON_BASE(33, "Piston", "piston"),
+    PISTON_EXTENSION(34, "Piston extension", "pistonextendsion", "pistonhead"),
     CLOTH(35, "Wool", "cloth", "wool"),
+    PISTON_MOVING_PIECE(36, "Piston moving piece", "movingpiston"),
     YELLOW_FLOWER(37, "Yellow flower", "yellowflower", "flower"),
     RED_FLOWER(38, "Red rose", "redflower", "redrose", "rose"),
     BROWN_MUSHROOM(39, "Brown mushroom", "brownmushroom", "mushroom"),
@@ -159,7 +163,9 @@ public enum BlockType {
         blockDrops.put(27, 27);
         blockDrops.put(28, 28);
         blockDrops.put(30, 30);
+        blockDrops.put(34, -1);
         blockDrops.put(35, 35);
+        blockDrops.put(36, -1);
         blockDrops.put(37, 37);
         blockDrops.put(38, 38);
         blockDrops.put(39, 39);
