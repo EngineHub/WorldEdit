@@ -458,7 +458,10 @@ public enum BlockType {
                 || id == 26 // Bed
                 || id == 27 // Powered rails
                 || id == 28 // Detector rails
+                || id == 29 // Sticky piston
                 || id == 31 // Tall grass
+                || id == 33 // Piston
+                || id == 34 // Piston extension
                 || id == 35 // Wool
                 || id == 43 // Double slab
                 || id == 44 // Slab
@@ -514,6 +517,8 @@ public enum BlockType {
     public static boolean isRedstoneBlock(int id) {
         return id == 27 // Powered rail
                 || id == 28 // Detector rail
+                || id == 29 // Sticky piston
+                || id == 33 // Piston
                 || id == 69 // Lever
                 || id == 70 // Stone pressure plate
                 || id == 72 // Wood pressure plate
