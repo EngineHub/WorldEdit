@@ -111,6 +111,77 @@ public class EditSession {
     private Set<Integer> missingBlocks = new HashSet<Integer>();
     
     /**
+     * Controls how blocks will be placed.
+     * Expected behavior:
+     * 	 UNION: Destination's air blocks are replaced with what's being pasted (henceforth 'source').
+     *   REPLACE: Destination becomes whatever the source specifies
+     *   INTERSECT: Destination blocks that correspond to an air block in the source are removed
+     *   MASK: Destination blocks that correspond to a solid block in the source are removed
+     *   DIFFERENCE: If both source and destination specify a block, the result is air
+     *   UPDATE: Solid blocks in the destination are replaced with the source's block
+     *   ERASE: All blocks in the destination become air. Included for completeness.
+     * 
+     * Test these by laying out some wool like so:
+     *  RR__
+     *  B_B_
+     * and spasting the top row onto the bottom.
+     * The combinations of results are [red, blue, air] + [red, air] + [blue, air]. The above operations,
+     * in combination with the option 'reverse', which swaps which block is considered the source and destination,
+     * allow all possible combinations.
+     */
+    public enum BooleanOperation {UNION, REPLACE, INTERSECT, MASK, DIFFERENCE, UPDATE, ERASE,
+        R_UNION, R_REPLACE, R_INTERSECT, R_MASK, R_UPDATE;
+            
+            public static BooleanOperation fromString(String src) {
+                if (src.length() == 0) return UNION;
+                boolean do_reverse = false;
+                if (src.charAt(0) == '~') {
+                    do_reverse = true;
+                    src = src.substring(1);
+                }
+                BooleanOperation ret = BooleanOperation.valueOf(src);
+                if (do_reverse) {
+                    return BooleanOperation.reverse(ret);
+                }
+                return ret;
+            }
+            
+            public static BooleanOperation reverse(BooleanOperation r) {
+                switch (r) {
+                case UNION: return R_UNION;
+                case R_UNION: return UNION;
+                case REPLACE: return R_REPLACE;
+                case R_REPLACE: return REPLACE;
+                case INTERSECT: return R_INTERSECT;
+                case R_INTERSECT: return INTERSECT;
+                case MASK: return R_MASK;
+                case R_MASK: return MASK;
+                case DIFFERENCE: return DIFFERENCE;
+                case UPDATE: return R_UPDATE;
+                case R_UPDATE: return UPDATE;
+                case ERASE: return ERASE;
+                }
+                return r;
+            }
+            
+            public BooleanOperation reverse() {
+                return reverse(this);
+            }
+            
+            public boolean isReversed() {
+                switch(this) {
+                case R_UNION:
+                case R_REPLACE:
+                case R_INTERSECT:
+                case R_MASK:
+                case R_UPDATE:
+                    return true;
+                }
+                return false;
+            }
+        }
+    
+    /**
      * Mask to cover operations.
      */
     private Mask mask;
@@ -253,6 +324,20 @@ public class EditSession {
         return result;
     }
 
+    
+    /**
+     * Set a block with a pattern.
+     * 
+     * @param pt
+     * @param pat
+     * @return Whether the block changed -- not entirely dependable
+     * @throws MaxChangedBlocksException 
+     */
+    public boolean setBlock(Vector pt, Pattern pat)
+            throws MaxChangedBlocksException {
+        return setBlock(pt, pat.next(pt));
+    }
+    
     /**
      * Sets the block at position x, y, z with a block type. If queue mode is
      * enabled, blocks may not be actually set in world until flushQueue() is
@@ -263,7 +348,21 @@ public class EditSession {
      * @return Whether the block changed -- not entirely dependable
      * @throws MaxChangedBlocksException 
      */
-    public boolean setBlock(Vector pt, BaseBlock block)
+    public boolean setBlock(Vector pt, BaseBlock block) 
+    		throws MaxChangedBlocksException {
+    	return setBlock(pt, block, BooleanOperation.REPLACE);
+    }
+    
+    /**
+     * Use boolean operations to determine how to set the block
+     * @param pt
+     * @param block
+     * @param boolOp A BooleanOperation
+     * @param reverseOp If true, the roles of source and destination will be reversed
+     * @return
+     * @throws MaxChangedBlocksException
+     */
+    public boolean setBlock(Vector pt, BaseBlock block, BooleanOperation boolOp)
             throws MaxChangedBlocksException {
         BlockVector blockPt = pt.toBlockVector();
 
@@ -274,10 +373,64 @@ public class EditSession {
             throw new MaxChangedBlocksException(maxBlocks);
         }
         // }
+        
+        BaseBlock target, source, result = new BaseBlock(BlockID.AIR);
+        if (boolOp.isReversed()) {
+            source = getBlock(pt);
+            target = block;
+            boolOp = boolOp.reverse();
+        }
+        else {
+            target = getBlock(pt);
+            source = block;
+        }
+        switch (boolOp) {
+            case INTERSECT:
+                if (!target.isAir() && !source.isAir()) {
+                    result = target;
+                }
+                break;
+            case MASK:
+                if (source.isAir()) {
+                    result = target;
+                }
+                break;
+            case DIFFERENCE:
+                if (!source.isAir()) {
+                    if (target.isAir()) {
+                        result = source;
+                    }
+                }
+                else {
+                    result = target;
+                }
+                break;
+            case UNION:
+                if (target.isAir()) {
+                    result = source;
+                }
+                else {
+                    result = target;
+                }
+                break;
+            case UPDATE:
+                if (!target.isAir() && !source.isAir()) {
+                    result = source;
+                }
+                else {
+                    result = target;
+                }
+                break;
+            case REPLACE:
+                result = source;
+                break;
+            case ERASE:
+                break;
+        }
 
-        current.put(pt.toBlockVector(), block);
+        current.put(pt.toBlockVector(), result);
 
-        return smartSetBlock(pt, block);
+        return smartSetBlock(pt, result);
     }
 
     /**
@@ -293,20 +446,7 @@ public class EditSession {
         original.put(blockPt, existing);
         current.put(pt.toBlockVector(), block);
     }
-
-    /**
-     * Set a block with a pattern.
-     * 
-     * @param pt
-     * @param pat
-     * @return Whether the block changed -- not entirely dependable
-     * @throws MaxChangedBlocksException 
-     */
-    public boolean setBlock(Vector pt, Pattern pat)
-            throws MaxChangedBlocksException {
-        return setBlock(pt, pat.next(pt));
-    }
-
+    
     /**
      * Set a block only if there's no block already there.
      * 

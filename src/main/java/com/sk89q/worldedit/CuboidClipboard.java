@@ -20,6 +20,7 @@
 package com.sk89q.worldedit;
 
 import com.sk89q.jnbt.*;
+import com.sk89q.worldedit.EditSession.BooleanOperation;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
 import java.io.*;
@@ -247,6 +248,11 @@ public class CuboidClipboard {
         place(editSession, newOrigin.add(offset), noAir);
     }
 
+    public void paste(EditSession editSession, Vector newOrigin, BooleanOperation bop)
+	    	throws MaxChangedBlocksException {
+    	place(editSession, newOrigin.add(offset), bop);
+	}
+    
     /**
      * Places the blocks in a position from the minimum corner.
      * 
@@ -257,18 +263,25 @@ public class CuboidClipboard {
      */
     public void place(EditSession editSession, Vector pos, boolean noAir)
             throws MaxChangedBlocksException {
-        for (int x = 0; x < size.getBlockX(); x++) {
-            for (int y = 0; y < size.getBlockY(); y++) {
-                for (int z = 0; z < size.getBlockZ(); z++) {
-                    if (noAir && data[x][y][z].isAir())
-                        continue;
-
-                    editSession.setBlock(new Vector(x, y, z).add(pos),
-                            data[x][y][z]);
-                }
-            }
-        }
+    	if (noAir) {
+    		place(editSession, pos, BooleanOperation.REPLACE);
+    	}
+    	else {
+    		place(editSession, pos, BooleanOperation.R_UNION);
+    	}
     }
+    
+    public void place(EditSession editSession, Vector pos, BooleanOperation bop)
+	    throws MaxChangedBlocksException {
+		for (int x = 0; x < size.getBlockX(); x++) {
+		    for (int y = 0; y < size.getBlockY(); y++) {
+		        for (int z = 0; z < size.getBlockZ(); z++) {
+		            editSession.setBlock(new Vector(x, y, z).add(pos), data[x][y][z], bop);
+		        }
+		    }
+		}
+	}
+    
     
     /**
      * Get one point in the copy. The point is relative to the origin
