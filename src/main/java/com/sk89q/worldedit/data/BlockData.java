@@ -134,6 +134,15 @@ public final class BlockData {
                 case 2: return 0 | open;
                 case 3: return 1 | open;
             }
+        } else if (type == BlockID.PISTON_BASE || type == BlockID.PISTON_STICKY_BASE || type == BlockID.PISTON_EXTENSION) {
+            switch(data) {
+                case 0: return 0;
+                case 1: return 1;
+                case 2: return 5;
+                case 3: return 4;
+                case 4: return 2;
+                case 5: return 3;
+            }
         }
         
         return data;
@@ -251,6 +260,16 @@ public final class BlockData {
                 case 2: return 1 | open;
                 case 0: return 2 | open;
                 case 1: return 3 | open;
+            }
+        } else if (type == BlockID.PISTON_BASE || type == BlockID.PISTON_STICKY_BASE || type == BlockID.PISTON_EXTENSION) {
+            int dir = data & 0x8;
+            switch(dir) {
+                case 0: return 0;
+                case 1: return 1;
+                case 2: return 4;
+                case 3: return 5;
+                case 4: return 3;
+                case 5: return 2;
             }
         }
         
