@@ -57,26 +57,23 @@ public class NavigationCommands {
     public static void ascend(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
-        if (args.argsLength() == 0) { 
-            if (player.ascendLevel()) {
-                player.print("Ascended a level.");
+            int levelsToAscend = 0;
+            if (args.argsLength() == 0) {
+                levelsToAscend = 1;
             } else {
-                player.printError("No free spot above you found.");
+                levelsToAscend = args.getInteger(0);
             }
-        } else {
-            Boolean ascentDone = false;
             int ascentLevels = 1;
-            int levelsToAscend = args.getInteger(0);
             while (player.ascendLevel() && levelsToAscend != ascentLevels) {
                 ascentLevels++;
             }
             if (ascentLevels == 0) {
             player.printError("No free spot above you found.");
             } else {
-            player.print("Ascended " + Integer.toString(ascentLevels) + " levels.");
+            player.print((ascentLevels != 1) ? "Ascended " + Integer.toString(ascentLevels) + " levels." : "Ascended a level.");
             }
+        
         }
-    }
 
     @Command(
         aliases = {"descend"},
@@ -89,25 +86,23 @@ public class NavigationCommands {
     public static void descend(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
-        
-        if (args.argsLength() == 0) { 
-            if (player.descendLevel()) {
-                player.print("Descended a level.");
-            } else {
-                player.printError("No free spot above you found.");
-            }
+        int levelsToDescend = 0;
+        if (args.argsLength() == 0) {
+            levelsToDescend = 1;
         } else {
-            int descentLevels = 1;
-            int levelsToDescend = args.getInteger(0);
-            while (player.descendLevel() && levelsToDescend != descentLevels) {
-                descentLevels++;
-            }
-            if (descentLevels == 0) {
-            player.printError("No free spot above you found.");
-            } else {
-            player.print("Descended " + Integer.toString(descentLevels) + " levels.");
-            }
+            levelsToDescend = args.getInteger(0);
         }
+        
+        int descentLevels = 1;
+        while (player.descendLevel() && levelsToDescend != descentLevels) {
+            descentLevels++;
+        }
+        if (descentLevels == 0) {
+        player.printError("No free spot above you found.");
+        } else {
+        player.print((descentLevels != 1) ? "Descended " + Integer.toString(descentLevels) + " levels." : "Descended a level.");
+        }
+        
     }
 
     @Command(
