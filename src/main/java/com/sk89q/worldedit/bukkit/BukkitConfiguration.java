@@ -30,6 +30,8 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LogFormat;
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
+import java.io.File;
+import java.util.HashMap;
 
 public class BukkitConfiguration extends LocalConfiguration {
     private Configuration config;
@@ -86,10 +88,11 @@ public class BukkitConfiguration extends LocalConfiguration {
         LocalSession.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;
         
         String snapshotsDir = config.getString("snapshots.directory", "");
+        snapshotRepositories = new HashMap();
         if (!snapshotsDir.trim().equals("")) {
-            snapshotRepo = new SnapshotRepository(snapshotsDir);
-        } else {
-            snapshotRepo = null;
+            for (File repository : new File(snapshotsDir).listFiles()) {
+                snapshotRepositories.put(repository.getName(), new SnapshotRepository(repository));
+            }
         }
 
         String type = config.getString("shell-save-type", "").trim();

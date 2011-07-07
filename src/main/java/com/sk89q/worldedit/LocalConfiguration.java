@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
+import java.util.Map;
 
 /**
  * Represents WorldEdit's configuration.
@@ -42,7 +43,7 @@ public abstract class LocalConfiguration {
     public int defaultChangeLimit = -1;
     public int maxChangeLimit = -1;
     public String shellSaveType = "";
-    public SnapshotRepository snapshotRepo = null;
+    public Map<String, SnapshotRepository> snapshotRepositories = null;
     public int maxRadius = -1;
     public int maxSuperPickaxeSize = 5;
     public int maxBrushRadius = 6;

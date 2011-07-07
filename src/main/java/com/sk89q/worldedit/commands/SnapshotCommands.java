@@ -32,6 +32,7 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.snapshots.InvalidSnapshotException;
 import com.sk89q.worldedit.snapshots.Snapshot;
+import com.sk89q.worldedit.snapshots.SnapshotRepository;
 
 /**
  * Snapshot commands.
@@ -58,33 +59,37 @@ public class SnapshotCommands {
         
         int num = args.argsLength() > 0 ?
             Math.min(40, Math.max(5, args.getInteger(0))) : 5;
+        
+        String worldName = player.getWorld().getName();
+        SnapshotRepository repo = config.snapshotRepositories.get(worldName);
+        
+        if (repo == null) {
+            player.printError("Snapshot/backup restore is not configured for this world.");
+            return;
+        }
+        
+        List<Snapshot> snapshots = repo.getSnapshots(true);
 
-        if (config.snapshotRepo != null) {
-            List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true);
-
-            if (snapshots.size() > 0) {
-                for (byte i = 0; i < Math.min(num, snapshots.size()); i++) {
-                    player.print((i + 1) + ". " + snapshots.get(i).getName());
-                }
-
-                player.print("Use /snap use [snapshot] or /snap use latest.");
-            } else {
-                player.printError("No snapshots are available. See console for details.");
-                
-                // Okay, let's toss some debugging information!
-                File dir = config.snapshotRepo.getDirectory();
-                
-                try {
-                    logger.info("WorldEdit found no snapshots: looked in: " +
-                            dir.getCanonicalPath());
-                } catch (IOException e) {
-                    logger.info("WorldEdit found no snapshots: looked in "
-                            + "(NON-RESOLVABLE PATH - does it exist?): " +
-                            dir.getPath());
-                }
+        if (snapshots.size() > 0) {
+            for (byte i = 0; i < Math.min(num, snapshots.size()); i++) {
+                player.print((i + 1) + ". " + snapshots.get(i).getName());
             }
+
+            player.print("Use /snap use [snapshot] or /snap use latest.");
         } else {
-            player.printError("Snapshot/backup restore is not configured.");
+            player.printError("No snapshots are available. See console for details.");
+
+            // Okay, let's toss some debugging information!
+            File dir = repo.getDirectory();
+
+            try {
+                logger.info("WorldEdit found no snapshots: looked in: " +
+                        dir.getCanonicalPath());
+            } catch (IOException e) {
+                logger.info("WorldEdit found no snapshots: looked in "
+                        + "(NON-RESOLVABLE PATH - does it exist?): " +
+                        dir.getPath());
+            }
         }
     }
     
@@ -101,9 +106,11 @@ public class SnapshotCommands {
             throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
+        String worldName = player.getWorld().getName();
+        SnapshotRepository repo = config.snapshotRepositories.get(worldName);
         
-        if (config.snapshotRepo == null) {
-            player.printError("Snapshot/backup restore is not configured.");
+        if (repo == null) {
+            player.printError("Snapshot/backup restore is not configured for this world.");
             return;
         }
 
@@ -111,17 +118,17 @@ public class SnapshotCommands {
 
         // Want the latest snapshot?
         if (name.equalsIgnoreCase("latest")) {
-            Snapshot snapshot = config.snapshotRepo.getDefaultSnapshot();
+            Snapshot snapshot = repo.getDefaultSnapshot();
 
             if (snapshot != null) {
-                session.setSnapshot(null);
+                session.setSnapshot(player.getWorld(), null);
                 player.print("Now using newest snapshot.");
             } else {
                 player.printError("No snapshots were found.");
             }
         } else {
             try {
-                session.setSnapshot(config.snapshotRepo.getSnapshot(name));
+                session.setSnapshot(player.getWorld(), repo.getSnapshot(name));
                 player.print("Snapshot set to: " + name);
             } catch (InvalidSnapshotException e) {
                 player.printError("That snapshot does not exist or is not available.");
@@ -142,9 +149,11 @@ public class SnapshotCommands {
             throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
+        String worldName = player.getWorld().getName();
+        SnapshotRepository repo = config.snapshotRepositories.get(worldName);
         
-        if (config.snapshotRepo == null) {
-            player.printError("Snapshot/backup restore is not configured.");
+        if (repo == null) {
+            player.printError("Snapshot/backup restore is not configured for this world.");
             return;
         }
         
@@ -155,12 +164,12 @@ public class SnapshotCommands {
         } else {
             dateFormat.setTimeZone(session.getTimeZone());
             
-            Snapshot snapshot = config.snapshotRepo.getSnapshotBefore(date);
+            Snapshot snapshot = repo.getSnapshotBefore(date);
             if (snapshot == null) {
                 player.printError("Couldn't find a snapshot before "
                         + dateFormat.format(date.getTime()) + ".");
             } else {
-                session.setSnapshot(snapshot);
+                session.setSnapshot(player.getWorld(), snapshot);
                 player.print("Snapshot set to: " + snapshot.getName());
             }
         }
@@ -179,9 +188,11 @@ public class SnapshotCommands {
             throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
+        String worldName = player.getWorld().getName();
+        SnapshotRepository repo = config.snapshotRepositories.get(worldName);
         
-        if (config.snapshotRepo == null) {
-            player.printError("Snapshot/backup restore is not configured.");
+        if (repo == null) {
+            player.printError("Snapshot/backup restore is not configured for this world.");
             return;
         }
         
@@ -192,12 +203,12 @@ public class SnapshotCommands {
         } else {
             dateFormat.setTimeZone(session.getTimeZone());
             
-            Snapshot snapshot = config.snapshotRepo.getSnapshotAfter(date);
+            Snapshot snapshot = repo.getSnapshotAfter(date);
             if (snapshot == null) {
                 player.printError("Couldn't find a snapshot after "
                         + dateFormat.format(date.getTime()) + ".");
             } else {
-                session.setSnapshot(snapshot);
+                session.setSnapshot(player.getWorld(), snapshot);
                 player.print("Snapshot set to: " + snapshot.getName());
             }
         }
