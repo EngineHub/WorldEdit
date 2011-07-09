@@ -27,6 +27,7 @@ import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
+import java.util.HashMap;
 
 /**
  * Simple LocalConfiguration that loads settings using
@@ -93,10 +94,11 @@ public class PropertiesConfiguration extends LocalConfiguration {
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
         
         String snapshotsDir = getString("snapshots-dir", "");
+        snapshotRepositories = new HashMap();
         if (!snapshotsDir.trim().equals("")) {
-            snapshotRepo = new SnapshotRepository(snapshotsDir);
-        } else {
-            snapshotRepo = null;
+            for (File repository : new File(snapshotsDir).listFiles()) {
+                snapshotRepositories.put(repository.getName(), new SnapshotRepository(repository));
+            }
         }
         
         OutputStream output = null;

@@ -70,7 +70,7 @@ public class LocalSession {
             = new HashMap<Integer, Tool>();
     private int maxBlocksChanged = -1;
     private boolean useInventory;
-    private Snapshot snapshot;
+    private Map<LocalWorld, Snapshot> snapshots = new HashMap();
     private String lastScript;
     private boolean beenToldVersion = false;
     private boolean hasCUISupport = false;
@@ -410,8 +410,8 @@ public class LocalSession {
      * 
      * @return the snapshot
      */
-    public Snapshot getSnapshot() {
-        return snapshot;
+    public Snapshot getSnapshot(LocalWorld world) {
+        return snapshots.get(world);
     }
 
     /**
@@ -419,8 +419,12 @@ public class LocalSession {
      * 
      * @param snapshot
      */
-    public void setSnapshot(Snapshot snapshot) {
-        this.snapshot = snapshot;
+    public void setSnapshot(LocalWorld world, Snapshot snapshot) {
+        if (snapshot == null && snapshots.containsKey(world)) {
+            snapshots.remove(world);
+        } else {
+            snapshots.put(world, snapshot);
+        }
     }
 
     /**

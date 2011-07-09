@@ -37,6 +37,7 @@ import com.sk89q.worldedit.data.DataException;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.snapshots.InvalidSnapshotException;
 import com.sk89q.worldedit.snapshots.Snapshot;
+import com.sk89q.worldedit.snapshots.SnapshotRepository;
 import com.sk89q.worldedit.snapshots.SnapshotRestore;
 
 public class SnapshotUtilCommands {
@@ -65,9 +66,11 @@ public class SnapshotUtilCommands {
             throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
+        String worldName = player.getWorld().getName();
+        SnapshotRepository repo = config.snapshotRepositories.get(worldName);
 
-        if (config.snapshotRepo == null) {
-            player.printError("Snapshot/backup restore is not configured.");
+        if (repo == null) {
+            player.printError("Snapshot/backup restore is not configured for this world.");
             return;
         }
 
@@ -76,26 +79,26 @@ public class SnapshotUtilCommands {
 
         if (args.argsLength() > 0) {
             try {
-                snapshot = config.snapshotRepo.getSnapshot(args.getString(0));
+                snapshot = repo.getSnapshot(args.getString(0));
             } catch (InvalidSnapshotException e) {
                 player.printError("That snapshot does not exist or is not available.");
                 return;
             }
         } else {
-            snapshot = session.getSnapshot();
+            snapshot = session.getSnapshot(player.getWorld());
         }
         
         ChunkStore chunkStore = null;
 
         // No snapshot set?
         if (snapshot == null) {
-            snapshot = config.snapshotRepo.getDefaultSnapshot();
+            snapshot = repo.getDefaultSnapshot();
 
             if (snapshot == null) {
                 player.printError("No snapshots were found. See console for details.");
                 
                 // Okay, let's toss some debugging information!
-                File dir = config.snapshotRepo.getDirectory();
+                File dir = repo.getDirectory();
                 
                 try {
                     logger.info("WorldEdit found no snapshots: looked in: " +
