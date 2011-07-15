@@ -65,7 +65,7 @@ public class NavigationCommands {
         }
         int ascentLevels = 1;
         while (player.ascendLevel() && levelsToAscend != ascentLevels) {
-            ascentLevels++;
+            ++ascentLevels;
         }
         if (ascentLevels == 0) {
             player.printError("No free spot above you found.");
@@ -94,7 +94,7 @@ public class NavigationCommands {
         }
         int descentLevels = 1;
         while (player.descendLevel() && levelsToDescend != descentLevels) {
-            descentLevels++;
+            ++descentLevels;
         }
         if (descentLevels == 0) {
             player.printError("No free spot above you found.");

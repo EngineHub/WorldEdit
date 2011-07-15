@@ -141,7 +141,7 @@ public class LocalSession {
      * @return whether anything was undone
      */
     public EditSession undo(BlockBag newBlockBag) {
-        historyPointer--;
+        --historyPointer;
         if (historyPointer >= 0) {
             EditSession editSession = history.get(historyPointer);
             EditSession newEditSession =
@@ -170,7 +170,7 @@ public class LocalSession {
             newEditSession.enableQueue();
             newEditSession.setFastMode(fastMode);
             editSession.redo(newEditSession);
-            historyPointer++;
+            ++historyPointer;
             return editSession;
         }
 
@@ -591,7 +591,7 @@ public class LocalSession {
                     player.dispatchCUIEvent(
                             new SelectionPointEvent(i, pt, size));
                 }
-                i++;
+                ++i;
             }
         }
     }

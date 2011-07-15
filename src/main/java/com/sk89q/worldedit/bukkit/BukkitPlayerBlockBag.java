@@ -76,7 +76,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
         
         boolean found = false;
         
-        for (int slot = 0; slot < items.length; slot++) {
+        for (int slot = 0; slot < items.length; ++slot) {
             ItemStack item = items[slot];
             
             if (item == null) continue;
@@ -123,7 +123,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
         boolean found = false;
         int freeSlot = -1;
         
-        for (int slot = 0; slot < items.length; slot++) {
+        for (int slot = 0; slot < items.length; ++slot) {
             ItemStack item = items[slot];
             
             // Delay using up a free slot until we know there are no stacks

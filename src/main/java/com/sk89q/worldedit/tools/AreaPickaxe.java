@@ -59,9 +59,9 @@ public class AreaPickaxe implements BlockTool {
         EditSession editSession = session.createEditSession(player);
         
         try {
-            for (int x = ox - range; x <= ox + range; x++) {
-                for (int y = oy - range; y <= oy + range; y++) {
-                    for (int z = oz - range; z <= oz + range; z++) {
+            for (int x = ox - range; x <= ox + range; ++x) {
+                for (int y = oy - range; y <= oy + range; ++y) {
+                    for (int z = oz - range; z <= oz + range; ++z) {
                         Vector pos = new Vector(x, y, z);
                         if (world.getBlockType(pos) == initialType) {
                             if (config.superPickaxeManyDrop) {

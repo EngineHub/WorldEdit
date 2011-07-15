@@ -31,11 +31,11 @@ public class CommandContext {
     
     public CommandContext(String[] args) {
         int i = 1;
-        for (; i < args.length; i++) {
+        for (; i < args.length; ++i) {
             if (args[i].length() == 0) {
                 // Ignore this
             } else if (args[i].charAt(0) == '-' && args[i].matches("^-[a-zA-Z]+$")) {
-                for (int k = 1; k < args[i].length(); k++) {
+                for (int k = 1; k < args[i].length(); ++k) {
                     flags.add(args[i].charAt(k));
                 }
             } else {
@@ -70,7 +70,7 @@ public class CommandContext {
     public String getJoinedStrings(int initialIndex) {
         initialIndex = initialIndex + 1;
         StringBuilder buffer = new StringBuilder(args[initialIndex]);
-        for (int i = initialIndex + 1; i < args.length; i++) {
+        for (int i = initialIndex + 1; i < args.length; ++i) {
             buffer.append(" ").append(args[i]);
         }
         return buffer.toString();

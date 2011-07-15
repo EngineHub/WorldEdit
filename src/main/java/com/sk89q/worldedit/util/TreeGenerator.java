@@ -181,7 +181,7 @@ public class TreeGenerator {
         BaseBlock leavesBlock = new BaseBlock(18);
 
         // Create trunk
-        for (int i = 0; i < trunkHeight; i++) {
+        for (int i = 0; i < trunkHeight; ++i) {
             if (!editSession.setBlockIfAir(basePos.add(0, i, 0), logBlock)) {
                 return;
             }
@@ -191,7 +191,7 @@ public class TreeGenerator {
         basePos = basePos.add(0, trunkHeight, 0);
 
         // Create tree + leaves
-        for (int i = 0; i < height; i++) {
+        for (int i = 0; i < height; ++i) {
             editSession.setBlockIfAir(basePos.add(0, i, 0), logBlock);
 
             // Less leaves at these levels
@@ -208,16 +208,16 @@ public class TreeGenerator {
             editSession.setChanceBlockIfAir(basePos.add(-1, i, -1), leavesBlock, chance);
 
             if (!(i == 0 || i == height - 1)) {
-                for (int j = -2; j <= 2; j++) {
+                for (int j = -2; j <= 2; ++j) {
                     editSession.setChanceBlockIfAir(basePos.add(-2, i, j), leavesBlock, 0.6);
                 }
-                for (int j = -2; j <= 2; j++) {
+                for (int j = -2; j <= 2; ++j) {
                     editSession.setChanceBlockIfAir(basePos.add(2, i, j), leavesBlock, 0.6);
                 }
-                for (int j = -2; j <= 2; j++) {
+                for (int j = -2; j <= 2; ++j) {
                     editSession.setChanceBlockIfAir(basePos.add(j, i, -2), leavesBlock, 0.6);
                 }
-                for (int j = -2; j <= 2; j++) {
+                for (int j = -2; j <= 2; ++j) {
                     editSession.setChanceBlockIfAir(basePos.add(j, i, 2), leavesBlock, 0.6);
                 }
             }

@@ -34,7 +34,7 @@ public class ForwardSeekableInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         int ret = parent.read();
-        position++;
+        ++position;
         return ret;
     }
 

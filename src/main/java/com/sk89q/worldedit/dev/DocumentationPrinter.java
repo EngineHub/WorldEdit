@@ -129,7 +129,7 @@ public class DocumentationPrinter {
                         method.getAnnotation(CommandPermissions.class);
                     
                     String[] permKeys = perms.value();
-                    for (int i = 0; i < permKeys.length; i++) {
+                    for (int i = 0; i < permKeys.length; ++i) {
                         if (i > 0) {
                             stream.print(", ");
                         }

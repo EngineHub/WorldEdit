@@ -69,6 +69,7 @@ public abstract class LocalWorld {
      * @param pt
      * @param data
      */
+
     public abstract void setBlockData(Vector pt, int data);
 
     /**
@@ -77,10 +78,26 @@ public abstract class LocalWorld {
      * @param pt
      * @param data
      */
-    public void setBlockDataFast(Vector pt, int data) {
-        setBlockData(pt, data);
-    }
+    public abstract void setBlockDataFast(Vector pt, int data);
 
+    /**
+     * set block type & data
+     * @param pt
+     * @param type
+     * @param data
+     * @return
+     */
+    public abstract boolean setTypeIdAndData(Vector pt, int type, int data);
+    
+    /**
+     * set block type & data
+     * @param pt
+     * @param type
+     * @param data
+     * @return 
+     */
+    public abstract boolean setTypeIdAndDataFast(Vector pt, int type, int data);
+    
     /**
      * Get block data.
      * 
@@ -195,7 +212,7 @@ public abstract class LocalWorld {
      * @param times
      */
     public void dropItem(Vector pt, BaseItemStack item, int times) {
-        for (int i = 0; i < times; i++) {
+        for (int i = 0; i < times; ++i) {
             dropItem(pt, item);
         }
     }
