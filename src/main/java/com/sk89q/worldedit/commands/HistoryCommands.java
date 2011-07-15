@@ -44,7 +44,7 @@ public class HistoryCommands {
         
         int times = Math.max(1, args.getInteger(0, 1));
         
-        for (int i = 0; i < times; i++) {
+        for (int i = 0; i < times; ++i) {
             EditSession undone = session.undo(session.getBlockBag(player));
             if (undone != null) {
                 player.print("Undo successful.");
@@ -70,7 +70,7 @@ public class HistoryCommands {
         
         int times = Math.max(1, args.getInteger(0, 1));
         
-        for (int i = 0; i < times; i++) {
+        for (int i = 0; i < times; ++i) {
             EditSession redone = session.redo(session.getBlockBag(player));
             if (redone != null) {
                 player.print("Redo successful.");

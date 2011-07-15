@@ -225,7 +225,7 @@ public abstract class CommandsManager<T> {
         
         command.append("/");
         
-        for (int i = 0; i <= level; i++) {
+        for (int i = 0; i <= level; ++i) {
             command.append(args[i] + " ");
         }
         
@@ -252,7 +252,7 @@ public abstract class CommandsManager<T> {
         
         command.append("/");
         
-        for (int i = 0; i <= level; i++) {
+        for (int i = 0; i <= level; ++i) {
             command.append(args[i] + " ");
         }
 

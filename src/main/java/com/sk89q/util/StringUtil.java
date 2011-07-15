@@ -55,7 +55,7 @@ public class StringUtil {
             return "";
         }
         StringBuilder buffer = new StringBuilder(str[initialIndex]);
-        for (int i = initialIndex + 1; i < str.length; i++) {
+        for (int i = initialIndex + 1; i < str.length; ++i) {
             buffer.append(delimiter).append(str[i]);
         }
         return buffer.toString();
@@ -79,7 +79,7 @@ public class StringUtil {
         buffer.append(quote);
         buffer.append(str[initialIndex]);
         buffer.append(quote);
-        for (int i = initialIndex + 1; i < str.length; i++) {
+        for (int i = initialIndex + 1; i < str.length; ++i) {
             buffer.append(delimiter).append(quote).append(str[i]).append(quote);
         }
         return buffer.toString();
@@ -110,7 +110,7 @@ public class StringUtil {
             return "";
         }
         StringBuilder buffer = new StringBuilder(str[initialIndex].toString());
-        for (int i = initialIndex + 1; i < str.length; i++) {
+        for (int i = initialIndex + 1; i < str.length; ++i) {
             buffer.append(delimiter).append(str[i].toString());
         }
         return buffer.toString();
@@ -130,7 +130,7 @@ public class StringUtil {
             return "";
         }
         StringBuilder buffer = new StringBuilder(Integer.toString(str[initialIndex]));
-        for (int i = initialIndex + 1; i < str.length; i++) {
+        for (int i = initialIndex + 1; i < str.length; ++i) {
             buffer.append(delimiter).append(Integer.toString(str[i]));
         }
         return buffer.toString();
@@ -159,7 +159,7 @@ public class StringUtil {
                 
                 buffer.append(o.toString());
             }
-            i++;
+            ++i;
         }
         return buffer.toString();
     }
@@ -244,15 +244,15 @@ public class StringUtil {
 
         int cost; // cost
 
-        for (i = 0; i <= n; i++) {
+        for (i = 0; i <= n; ++i) {
             p[i] = i;
         }
 
-        for (j = 1; j <= m; j++) {
+        for (j = 1; j <= m; ++j) {
             t_j = t.charAt(j - 1);
             d[0] = j;
 
-            for (i = 1; i <= n; i++) {
+            for (i = 1; i <= n; ++i) {
                 cost = s.charAt(i - 1) == t_j ? 0 : 1;
                 // minimum of cell to the left+1, to the top+1, diagonally left
                 // and up +cost

@@ -58,8 +58,8 @@ public class HeightMap {
 
         // Store current heightmap data
         data = new int[width * height];
-        for (int z = 0; z < height; z++) {
-            for (int x = 0; x < width; x++) {
+        for (int z = 0; z < height; ++z) {
+            for (int x = 0; x < width; ++x) {
                 data[z * width + x] = session.getHighestTerrainBlock(x + minX, z + minZ, minY, maxY);
             }
         }
@@ -78,7 +78,7 @@ public class HeightMap {
         int[] newData = new int[data.length];
         System.arraycopy(data, 0, newData, 0, data.length);
 
-        for (int i = 0; i < iterations; i++)
+        for (int i = 0; i < iterations; ++i)
             newData = filter.filter(newData, width, height);
 
         return apply(newData);
@@ -104,8 +104,8 @@ public class HeightMap {
         int blocksChanged = 0;
 
         // Apply heightmap
-        for (int z = 0; z < height; z++) {
-            for (int x = 0; x < width; x++) {
+        for (int z = 0; z < height; ++z) {
+            for (int x = 0; x < width; ++x) {
                 int index = z * width + x;
                 int curHeight = this.data[index];
 
@@ -127,32 +127,32 @@ public class HeightMap {
                     // Skip water/lava
                     if (existing.getType() < 8 || existing.getType() > 11) {
                         session.setBlock(new Vector(X, newHeight, Z), existing);
-                        blocksChanged++;
+                        ++blocksChanged;
 
                         // Grow -- start from 1 below top replacing airblocks
-                        for (int y = newHeight - 1 - originY; y >= 0; y--) {
+                        for (int y = newHeight - 1 - originY; y >= 0; --y) {
                             int copyFrom = (int) (y * scale);
                             session.setBlock(new Vector(X, originY + y, Z), session.getBlock(new Vector(X, originY + copyFrom, Z)));
-                            blocksChanged++;
+                            ++blocksChanged;
                         }
                     }
                 } else if (curHeight > newHeight) {
                     // Shrink -- start from bottom
-                    for (int y = 0; y < newHeight - originY; y++) {
+                    for (int y = 0; y < newHeight - originY; ++y) {
                         int copyFrom = (int) (y * scale);
                         session.setBlock(new Vector(X, originY + y, Z), session.getBlock(new Vector(X, originY + copyFrom, Z)));
-                        blocksChanged++;
+                        ++blocksChanged;
                     }
 
                     // Set the top block of the column to be the same type
                     // (this could otherwise go wrong with rounding)
                     session.setBlock(new Vector(X, newHeight, Z), session.getBlock(new Vector(X, curHeight, Z)));
-                    blocksChanged++;
+                    ++blocksChanged;
 
                     // Fill rest with air
-                    for (int y = newHeight + 1; y <= curHeight; y++) {
+                    for (int y = newHeight + 1; y <= curHeight; ++y) {
                         session.setBlock(new Vector(X, y, Z), fillerAir);
-                        blocksChanged++;
+                        ++blocksChanged;
                     }
                 }
             }

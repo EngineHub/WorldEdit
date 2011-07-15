@@ -77,14 +77,14 @@ public class Countable<T> implements Comparable<Countable<T>> {
      * Decrement the amount.
      */
     public void decrement() {
-        this.amount--;
+        --this.amount;
     }
 
     /**
      * Increment the amount.
      */
     public void increment() {
-        this.amount++;
+        ++this.amount;
     }
 
     /**

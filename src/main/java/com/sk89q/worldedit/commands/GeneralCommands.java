@@ -187,7 +187,7 @@ public class GeneralCommands {
             for (String alias : type.getAliases()) {
                 if (alias.contains(query)) {
                     player.print("#" + type.getID() + " (" + type.getName() + ")");
-                    found++;
+                    ++found;
                     break;
                 }
             }

@@ -63,7 +63,7 @@ public class SnapshotCommands {
             List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true);
 
             if (snapshots.size() > 0) {
-                for (byte i = 0; i < Math.min(num, snapshots.size()); i++) {
+                for (byte i = 0; i < Math.min(num, snapshots.size()); ++i) {
                     player.print((i + 1) + ". " + snapshots.get(i).getName());
                 }
 

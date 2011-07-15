@@ -79,7 +79,7 @@ public class RhinoScriptEngineFactory implements ScriptEngineFactory {
         s.append(m);
         s.append("(");
         
-        for (int i = 0; i < args.length; i++) {
+        for (int i = 0; i < args.length; ++i) {
             s.append(args[i]);
             if (i < args.length - 1) {
                 s.append(",");
