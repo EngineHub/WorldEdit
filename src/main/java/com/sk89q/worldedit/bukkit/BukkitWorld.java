@@ -95,6 +95,30 @@ public class BukkitWorld extends LocalWorld {
     }
 
     /**
+     * set block type & data
+     * @param pt
+     * @param type
+     * @param data
+     * @return 
+     */
+    @Override
+    public boolean setTypeIdAndData(Vector pt, int type, int data){
+        return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setTypeIdAndData(type, (byte) data, true);
+    }
+    
+    /**
+     * set block type & data
+     * @param pt
+     * @param type
+     * @param data
+     * @return 
+     */
+    @Override
+    public boolean setTypeIdAndDataFast(Vector pt, int type, int data){
+        return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setTypeIdAndData(type, (byte) data, false);
+    }
+    
+    /**
      * Get block type.
      * 
      * @param pt
@@ -164,9 +188,9 @@ public class BukkitWorld extends LocalWorld {
             Vector min = new Vector(chunk.getBlockX() * 16, 0, chunk.getBlockZ() * 16);
             
             // First save all the blocks inside
-            for (int x = 0; x < 16; x++) {
-                for (int y = 0; y < 128; y++) {
-                    for (int z = 0; z < 16; z++) {
+            for (int x = 0; x < 16; ++x) {
+                for (int y = 0; y < 128; ++y) {
+                    for (int z = 0; z < 16; ++z) {
                         Vector pt = min.add(x, y, z);
                         int index = y * 16 * 16 + z * 16 + x;
                         history[index] = editSession.getBlock(pt);
@@ -181,9 +205,9 @@ public class BukkitWorld extends LocalWorld {
             }
             
             // Then restore 
-            for (int x = 0; x < 16; x++) {
-                for (int y = 0; y < 128; y++) {
-                    for (int z = 0; z < 16; z++) {
+            for (int x = 0; x < 16; ++x) {
+                for (int y = 0; y < 128; ++y) {
+                    for (int z = 0; z < 16; ++z) {
                         Vector pt = min.add(x, y, z);
                         int index = y * 16 * 16 + z * 16 + x;
                         
@@ -446,7 +470,7 @@ public class BukkitWorld extends LocalWorld {
                 if (radius == -1
                         || origin.distanceSq(BukkitUtil.toVector(ent.getLocation())) <= radiusSq) {
                     ent.remove();
-                    num++;
+                    ++num;
                 }
             }
         }
@@ -475,32 +499,32 @@ public class BukkitWorld extends LocalWorld {
             if (type == EntityType.ARROWS) {
                 if (ent instanceof Arrow) {
                     ent.remove();
-                    num++;
+                    ++num;
                 }
             } else if (type == EntityType.BOATS) {
                 if (ent instanceof Boat) {
                     ent.remove();
-                    num++;
+                    ++num;
                 }
             } else if (type == EntityType.ITEMS) {
                 if (ent instanceof Item) {
                     ent.remove();
-                    num++;
+                    ++num;
                 }
             } else if (type == EntityType.MINECARTS) {
                 if (ent instanceof Minecart) {
                     ent.remove();
-                    num++;
+                    ++num;
                 }
             } else if (type == EntityType.PAINTINGS) {
                 if (ent instanceof Painting) {
                     ent.remove();
-                    num++;
+                    ++num;
                 }
             } else if (type == EntityType.TNT) {
                 if (ent instanceof TNTPrimed) {
                     ent.remove();
-                    num++;
+                    ++num;
                 }
             }
         }
@@ -578,7 +602,7 @@ public class BukkitWorld extends LocalWorld {
         int size = inven.getSize();
         BaseItemStack[] contents = new BaseItemStack[size];
         
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; ++i) {
             ItemStack bukkitStack = inven.getItem(i);
             if (bukkitStack.getTypeId() > 0) {
                 contents[i] = new BaseItemStack(
@@ -612,7 +636,7 @@ public class BukkitWorld extends LocalWorld {
         Inventory inven = chest.getInventory();
         int size = inven.getSize();
         
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; ++i) {
             if (i >= contents.length) {
                 break;
             }

@@ -140,21 +140,21 @@ public class CuboidClipboard {
                 [Math.abs(sizeRotated.getBlockY())]
                 [Math.abs(sizeRotated.getBlockZ())];
 
-        for (int x = 0; x < width; x++) {
-            for (int z = 0; z < length; z++) {
+        for (int x = 0; x < width; ++x) {
+            for (int z = 0; z < length; ++z) {
                 Vector v = (new Vector(x, 0, z)).transform2D(angle, 0, 0, 0, 0);
                 int newX = v.getBlockX();
                 int newZ = v.getBlockZ();
-                for (int y = 0; y < height; y++) {
+                for (int y = 0; y < height; ++y) {
                     BaseBlock block = data[x][y][z];
                     newData[shiftX + newX][y][shiftZ + newZ] = block;
                     
                     if (reverse) {
-                        for (int i = 0; i < numRotations; i++) {
+                        for (int i = 0; i < numRotations; ++i) {
                             block.rotate90Reverse();
                         }
                     } else {
-                        for (int i = 0; i < numRotations; i++) {
+                        for (int i = 0; i < numRotations; ++i) {
                             block.rotate90();
                         }
                     }
@@ -182,9 +182,9 @@ public class CuboidClipboard {
 
         if (dir == FlipDirection.NORTH_SOUTH) {
             int len = (int)Math.floor(width / 2);
-            for (int xs = 0; xs < len; xs++) {
-                for (int z = 0; z < length; z++) {
-                    for (int y = 0; y < height; y++) {
+            for (int xs = 0; xs < len; ++xs) {
+                for (int z = 0; z < length; ++z) {
+                    for (int y = 0; y < height; ++y) {
                         BaseBlock old = data[xs][y][z];
                         old.flip();
                         data[xs][y][z] = data[width - xs - 1][y][z];
@@ -194,9 +194,9 @@ public class CuboidClipboard {
             }
         } else if (dir == FlipDirection.WEST_EAST) {
             int len = (int)Math.floor(length / 2);
-            for (int zs = 0; zs < len; zs++) {
-                for (int x = 0; x < width; x++) {
-                    for (int y = 0; y < height; y++) {
+            for (int zs = 0; zs < len; ++zs) {
+                for (int x = 0; x < width; ++x) {
+                    for (int y = 0; y < height; ++y) {
                         BaseBlock old = data[x][y][zs];
                         old.flip();
                         data[x][y][zs] = data[x][y][length - zs - 1];
@@ -206,9 +206,9 @@ public class CuboidClipboard {
             }
         } else if (dir == FlipDirection.UP_DOWN) {
             int len = (int)Math.floor(height / 2);
-            for (int ys = 0; ys < len; ys++) {
-                for (int x = 0; x < width; x++) {
-                    for (int z = 0; z < length; z++) {
+            for (int ys = 0; ys < len; ++ys) {
+                for (int x = 0; x < width; ++x) {
+                    for (int z = 0; z < length; ++z) {
                         BaseBlock old = data[x][ys][z];
                         data[x][ys][z] = data[x][height - ys - 1][z];
                         data[x][height - ys - 1][z] = old;
@@ -224,9 +224,9 @@ public class CuboidClipboard {
      * @param editSession
      */
     public void copy(EditSession editSession) {
-        for (int x = 0; x < size.getBlockX(); x++) {
-            for (int y = 0; y < size.getBlockY(); y++) {
-                for (int z = 0; z < size.getBlockZ(); z++) {
+        for (int x = 0; x < size.getBlockX(); ++x) {
+            for (int y = 0; y < size.getBlockY(); ++y) {
+                for (int z = 0; z < size.getBlockZ(); ++z) {
                     data[x][y][z] =
                         editSession.getBlock(new Vector(x, y, z).add(getOrigin()));
                 }
@@ -257,9 +257,9 @@ public class CuboidClipboard {
      */
     public void place(EditSession editSession, Vector pos, boolean noAir)
             throws MaxChangedBlocksException {
-        for (int x = 0; x < size.getBlockX(); x++) {
-            for (int y = 0; y < size.getBlockY(); y++) {
-                for (int z = 0; z < size.getBlockZ(); z++) {
+        for (int x = 0; x < size.getBlockX(); ++x) {
+            for (int y = 0; y < size.getBlockY(); ++y) {
+                for (int z = 0; z < size.getBlockZ(); ++z) {
                     if (noAir && data[x][y][z].isAir())
                         continue;
 
@@ -330,9 +330,9 @@ public class CuboidClipboard {
         byte[] blockData = new byte[width * height * length];
         ArrayList<Tag> tileEntities = new ArrayList<Tag>();
 
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                for (int z = 0; z < length; z++) {
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                for (int z = 0; z < length; ++z) {
                     int index = y * width * length + z * width + x;
                     blocks[index] = (byte)data[x][y][z].getType();
                     blockData[index] = (byte)data[x][y][z].getData();
@@ -476,9 +476,9 @@ public class CuboidClipboard {
         clipboard.setOrigin(origin);
         clipboard.setOffset(offset);
 
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                for (int z = 0; z < length; z++) {
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                for (int z = 0; z < length; ++z) {
                     int index = y * width * length + z * width + x;
                     BlockVector pt = new BlockVector(x, y, z);
                     BaseBlock block;

@@ -46,8 +46,8 @@ public class GaussianKernel extends Kernel {
 
         double sigma22 = 2 * sigma * sigma;
         double constant = Math.PI * sigma22;
-        for (int y = -radius; y <= radius; y++) {
-            for (int x = -radius; x <= radius; x++) {
+        for (int y = -radius; y <= radius; ++y) {
+            for (int x = -radius; x <= radius; ++x) {
                 data[(y+radius) * diameter + x+radius] = (float) (Math.exp(-(x * x + y * y) / sigma22) / constant);
             }
         }

@@ -119,9 +119,9 @@ public class FloatingTreeRemover implements BlockTool {
             
         }
 
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                for (int k = -1; k <= 1; k++) {
+        for (int i = -1; i <= 1; ++i) {
+            for (int j = -1; j <= 1; ++j) {
+                for (int k = -1; k <= 1; ++k) {
                     if (Math.abs(i) + Math.abs(j) + Math.abs(k) == 1) {
                         if (!recurse(server, editSession, world, pos.add(i, j, k).toBlockVector(),
                                 origin, size, visited, block)) {

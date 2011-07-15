@@ -275,9 +275,9 @@ public class CuboidRegion implements Region {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
 
-        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-            for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+        for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
+            for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
+                for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
                     Vector pt = new Vector(x, y, z);
                     chunks.add(ChunkStore.toChunk(pt));
                 }
@@ -325,14 +325,11 @@ public class CuboidRegion implements Region {
             public BlockVector next() {
                 if (!hasNext()) throw new java.util.NoSuchElementException();
                 BlockVector answer = new BlockVector(nextX, nextY, nextZ);
-                nextX++;
-                if (nextX > max.getBlockX()) {
+                if (++nextX > max.getBlockX()) {
                     nextX = min.getBlockX();
-                    nextY++;
-                    if (nextY > max.getBlockY()) {
+                    if (++nextY > max.getBlockY()) {
                         nextY = min.getBlockY();
-                        nextZ++;
-                        if (nextZ > max.getBlockZ()) {
+                        if (++nextZ > max.getBlockZ()) {
                             nextX = Integer.MIN_VALUE;
                         }
                     }

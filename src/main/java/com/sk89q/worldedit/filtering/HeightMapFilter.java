@@ -85,11 +85,11 @@ public class HeightMapFilter {
         int kox = kernel.getXOrigin();
         int koy = kernel.getYOrigin();
         
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
                 float z = 0;
 
-                for (int ky = 0; ky < kh; ky++) {
+                for (int ky = 0; ky < kh; ++ky) {
                     int offsetY = y + ky - koy;
                     // Clamp coordinates inside data
                     if (offsetY < 0 || offsetY >= height)
@@ -98,7 +98,7 @@ public class HeightMapFilter {
                     offsetY *= width;
 
                     int matrixOffset = ky * kw;
-                    for (int kx = 0; kx < kw; kx++) {
+                    for (int kx = 0; kx < kw; ++kx) {
                         float f = matrix[matrixOffset + kx];
                         if (f == 0) continue;
 

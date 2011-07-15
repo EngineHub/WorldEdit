@@ -69,6 +69,7 @@ public abstract class LocalWorld {
      * @param pt
      * @param data
      */
+
     public abstract void setBlockData(Vector pt, int data);
 
     /**
@@ -77,10 +78,26 @@ public abstract class LocalWorld {
      * @param pt
      * @param data
      */
-    public void setBlockDataFast(Vector pt, int data) {
-        setBlockData(pt, data);
-    }
+    public abstract void setBlockDataFast(Vector pt, int data);
 
+    /**
+     * set block type & data
+     * @param pt
+     * @param type
+     * @param data
+     * @return
+     */
+    public abstract boolean setTypeIdAndData(Vector pt, int type, int data);
+    
+    /**
+     * set block type & data
+     * @param pt
+     * @param type
+     * @param data
+     * @return 
+     */
+    public abstract boolean setTypeIdAndDataFast(Vector pt, int type, int data);
+    
     /**
      * Get block data.
      * 
@@ -195,7 +212,7 @@ public abstract class LocalWorld {
      * @param times
      */
     public void dropItem(Vector pt, BaseItemStack item, int times) {
-        for (int i = 0; i < times; i++) {
+        for (int i = 0; i < times; ++i) {
             dropItem(pt, item);
         }
     }
@@ -225,10 +242,10 @@ public abstract class LocalWorld {
         else if (type == 10) { } // Lava
         else if (type == 11) { } // Lava
         else if (type == 13) { // Gravel
-            dropItem(pt, new BaseItemStack(type));
-
             if (random.nextDouble() >= 0.9) {
                 dropItem(pt, new BaseItemStack(318));
+            } else {
+                dropItem(pt, new BaseItemStack(type));
             }
         }
         else if (type == 16) { dropItem(pt, new BaseItemStack(263)); } // Coal ore
@@ -239,8 +256,9 @@ public abstract class LocalWorld {
             }
         }
         else if (type == 20) { } // Glass
-        else if (type == 21) { dropItem(pt, new BaseItemStack(351, 1, (short)4), (random.nextInt(5)+4)); }
+        else if (type == 21) { dropItem(pt, new BaseItemStack(351, 1, (short)4), (random.nextInt(5)+4)); } // Lapis Lazuli ore
         else if (type == 26) { dropItem(pt, new BaseItemStack(355)); } // Bed
+        else if (type == 34) { } // Piston Head
         else if (type == 35) { dropItem(pt, new BaseItemStack(35, 1, (short)getBlockData(pt))); } // Cloth
         else if (type == 43) { // Double step
             dropItem(pt, new BaseItemStack(44, 1, (short)getBlockData(pt)), 2);
@@ -267,7 +285,7 @@ public abstract class LocalWorld {
         else if (type == 79) { } // Ice
         else if (type == 82) { dropItem(pt, new BaseItemStack(337), 4); } // Clay
         else if (type == 83) { dropItem(pt, new BaseItemStack(338)); } // Reed
-        else if (type == 89) { dropItem(pt, new BaseItemStack(348)); } // Lightstone
+        else if (type == 89) { dropItem(pt, new BaseItemStack(348), (random.nextInt(3)+2)); } // Lightstone
         else if (type == 90) { } // Portal
         else if (type == 93) { dropItem(pt, new BaseItemStack(356)); } // Repeater
         else if (type == 94) { dropItem(pt, new BaseItemStack(356)); } // Repeater

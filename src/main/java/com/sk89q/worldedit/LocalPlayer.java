@@ -74,7 +74,7 @@ public abstract class LocalPlayer {
 
         while (y <= 129) {
             if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
-                free++;
+                ++free;
             } else {
                 free = 0;
             }
@@ -87,7 +87,7 @@ public abstract class LocalPlayer {
                 return;
             }
 
-            y++;
+            ++y;
         }
     }
     
@@ -108,7 +108,7 @@ public abstract class LocalPlayer {
                 return;
             }
 
-            y--;
+            --y;
         }
     }
 
@@ -139,13 +139,13 @@ public abstract class LocalPlayer {
 
         while (y <= 129) {
             if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
-                free++;
+                ++free;
             } else {
                 free = 0;
             }
 
             if (free == 2) {
-                spots++;
+                ++spots;
                 if (spots == 2) {
                     int type = world.getBlockType(new Vector(x, y - 2, z));
                     
@@ -159,7 +159,7 @@ public abstract class LocalPlayer {
                 }
             }
 
-            y++;
+            ++y;
         }
 
         return false;
@@ -181,7 +181,7 @@ public abstract class LocalPlayer {
 
         while (y >= 1) {
             if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
-                free++;
+                ++free;
             } else {
                 free = 0;
             }
@@ -200,13 +200,13 @@ public abstract class LocalPlayer {
                         return true;
                     }
                     
-                    y--;
+                    --y;
                 }
 
                 return false;
             }
 
-            y--;
+            --y;
         }
 
         return false;
@@ -241,7 +241,7 @@ public abstract class LocalPlayer {
                 return true;
             }
 
-            y++;
+            ++y;
         }
 
         return false;
@@ -274,7 +274,7 @@ public abstract class LocalPlayer {
                 return true;
             }
 
-            y++;
+            ++y;
         }
 
         return false;
@@ -462,19 +462,19 @@ public abstract class LocalPlayer {
                 firstBlock = false;
                 
                 if (!free) {
-                    freeToFind--;
+                    --freeToFind;
                     continue;
                 }
             }
             
-            searchDist++;
+            ++searchDist;
             if (searchDist > 20) {
                 return false;
             }
             
             if (inFree != free) {
                 if (free) {
-                    freeToFind--;
+                    --freeToFind;
                 }
             }
             

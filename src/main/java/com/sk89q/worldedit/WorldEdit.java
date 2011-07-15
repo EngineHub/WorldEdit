@@ -812,7 +812,7 @@ public class WorldEdit {
                         ? type.getName() + " (" + id + ")"
                         : id.toString());
                 
-                i++;
+                ++i;
                 
                 if (i != size) {
                     str.append(", ");

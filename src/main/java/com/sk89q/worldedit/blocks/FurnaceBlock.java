@@ -142,7 +142,7 @@ public class FurnaceBlock extends BaseBlock implements TileEntityBlock, Containe
     public Map<String,Tag> toTileEntityNBT()
             throws DataException {
         List<Tag> itemsList = new ArrayList<Tag>();
-        for (int i = 0; i < items.length; i++) {
+        for (int i = 0; i < items.length; ++i) {
             BaseItemStack item = items[i];
             if (item != null) {
                 Map<String,Tag> data = new HashMap<String,Tag>();

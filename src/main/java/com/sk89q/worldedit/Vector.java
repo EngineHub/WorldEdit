@@ -230,7 +230,7 @@ public class Vector {
     public Vector add(Vector ... others) {
         double newX = x, newY = y, newZ = z;
 
-        for (int i = 0; i < others.length; i++) {
+        for (int i = 0; i < others.length; ++i) {
             newX += others[i].x;
             newY += others[i].y;
             newZ += others[i].z;
@@ -281,7 +281,7 @@ public class Vector {
     public Vector subtract(Vector ... others) {
         double newX = x, newY = y, newZ = z;
 
-        for (int i = 0; i < others.length; i++) {
+        for (int i = 0; i < others.length; ++i) {
             newX -= others[i].x;
             newY -= others[i].y;
             newZ -= others[i].z;
@@ -332,7 +332,7 @@ public class Vector {
     public Vector multiply(Vector ... others) {
         double newX = x, newY = y, newZ = z;
 
-        for (int i = 0; i < others.length; i++) {
+        for (int i = 0; i < others.length; ++i) {
             newX *= others[i].x;
             newY *= others[i].y;
             newZ *= others[i].z;
