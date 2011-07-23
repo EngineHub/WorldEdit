@@ -87,16 +87,17 @@ public class WorldEditPlayerListener extends PlayerListener {
      */
     @Override
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_AIR) {
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             LocalWorld world = new BukkitWorld(event.getClickedBlock().getWorld());
             WorldVector pos = new WorldVector(world, event.getClickedBlock().getX(),
                     event.getClickedBlock().getY(), event.getClickedBlock().getZ());
             LocalPlayer player = wrapPlayer(event.getPlayer());
 
-            if (!(event.getAction() == Action.LEFT_CLICK_BLOCK  && plugin.getWorldEdit().handleBlockLeftClick(player, pos))) {
-                plugin.getWorldEdit().handleArmSwing(player);
+            if (plugin.getWorldEdit().handleBlockLeftClick(player, pos)) {
+                event.setCancelled(true);
+            } else if (plugin.getWorldEdit().handleLeftClick(wrapPlayer(event.getPlayer()))) {
+                event.setCancelled(true);
             }
-            event.setCancelled(true);
         } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             LocalWorld world = new BukkitWorld(event.getClickedBlock().getWorld());
             WorldVector pos = new WorldVector(world, event.getClickedBlock().getX(),
@@ -105,13 +106,15 @@ public class WorldEditPlayerListener extends PlayerListener {
             
             if (plugin.getWorldEdit().handleBlockRightClick(player, pos)) {
                 event.setCancelled(true);
-            }
-
-            if (plugin.getWorldEdit().handleRightClick(wrapPlayer(event.getPlayer()))) {
+            } else if (plugin.getWorldEdit().handleRightClick(wrapPlayer(event.getPlayer()))) {
                 event.setCancelled(true);
             }
         } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
             if (plugin.getWorldEdit().handleRightClick(wrapPlayer(event.getPlayer()))) {
+                event.setCancelled(true);
+            }
+        } else if (event.getAction() == Action.LEFT_CLICK_AIR) {
+            if (plugin.getWorldEdit().handleLeftClick(wrapPlayer(event.getPlayer()))) {
                 event.setCancelled(true);
             }
         }
