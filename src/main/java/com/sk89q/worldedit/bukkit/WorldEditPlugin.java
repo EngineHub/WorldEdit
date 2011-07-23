@@ -138,7 +138,6 @@ public class WorldEditPlugin extends JavaPlugin {
         PlayerListener criticalPlayerListener = new WorldEditCriticalPlayerListener(this);
         
         registerEvent(Event.Type.PLAYER_QUIT, playerListener);
-        registerEvent(Event.Type.PLAYER_ANIMATION, playerListener);
         registerEvent(Event.Type.PLAYER_INTERACT, playerListener);
         registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, playerListener);
         registerEvent(Event.Type.PLAYER_JOIN, criticalPlayerListener, Priority.Lowest);

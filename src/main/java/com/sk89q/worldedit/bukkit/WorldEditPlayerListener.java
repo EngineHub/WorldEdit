@@ -46,22 +46,6 @@ public class WorldEditPlayerListener extends PlayerListener {
      * 
      * @param event Relevant event details
      */
-    @Override
-    public void onPlayerAnimation(PlayerAnimationEvent event) {
-        LocalPlayer localPlayer = wrapPlayer(event.getPlayer());
-        
-        if (event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
-            plugin.getWorldEdit().handleArmSwing(localPlayer);
-        }
-        
-        // As of Minecraft 1.3, a block dig packet is no longer sent for
-        // bedrock, so we have to do an (inaccurate) detection ourself
-        WorldVector pt = localPlayer.getBlockTrace(5);
-        if (pt != null && pt.getWorld().getBlockType(pt) == BlockID.BEDROCK) {
-            if (plugin.getWorldEdit().handleBlockLeftClick(localPlayer, pt)) {
-            }
-        }
-    }
     
     /**
      * Construct the object;
@@ -103,15 +87,16 @@ public class WorldEditPlayerListener extends PlayerListener {
      */
     @Override
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_AIR) {
             LocalWorld world = new BukkitWorld(event.getClickedBlock().getWorld());
             WorldVector pos = new WorldVector(world, event.getClickedBlock().getX(),
                     event.getClickedBlock().getY(), event.getClickedBlock().getZ());
             LocalPlayer player = wrapPlayer(event.getPlayer());
-            
-            if (plugin.getWorldEdit().handleBlockLeftClick(player, pos)) {
-                event.setCancelled(true);
+
+            if (!(event.getAction() == Action.LEFT_CLICK_BLOCK  && plugin.getWorldEdit().handleBlockLeftClick(player, pos))) {
+                plugin.getWorldEdit().handleArmSwing(localPlayer);
             }
+            event.setCancelled(true);
         } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             LocalWorld world = new BukkitWorld(event.getClickedBlock().getWorld());
             WorldVector pos = new WorldVector(world, event.getClickedBlock().getX(),
