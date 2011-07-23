@@ -94,7 +94,7 @@ public class WorldEditPlayerListener extends PlayerListener {
             LocalPlayer player = wrapPlayer(event.getPlayer());
 
             if (!(event.getAction() == Action.LEFT_CLICK_BLOCK  && plugin.getWorldEdit().handleBlockLeftClick(player, pos))) {
-                plugin.getWorldEdit().handleArmSwing(localPlayer);
+                plugin.getWorldEdit().handleArmSwing(player);
             }
             event.setCancelled(true);
         } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
