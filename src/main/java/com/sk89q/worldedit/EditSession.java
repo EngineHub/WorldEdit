@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -1213,6 +1214,180 @@ public class EditSession {
     }
 
     /**
+     * @param region
+     * @param block
+     * @param replace
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     * Overlays a layer of blocks over a cylindrical area. 
+     */
+    public int overlayBlocks(CylindricalRegion region, BaseBlock block, boolean replace)
+            throws MaxChangedBlocksException {
+        Iterator<BlockVector> blockIter = region.baseIterator();
+        int height = region.getHeight();
+        int maxY = region.baseIterator().next().getBlockY() + height;
+        int affected = 0;
+        
+        if(replace) {
+            while(blockIter.hasNext()) {
+                Vector target = blockIter.next();
+                target.add(0, 1, 0);
+                int x = target.getBlockX();
+                int z = target.getBlockZ();
+                for (int i = 0; i <= height; i++) {
+                    Vector above = target;
+                    target = new Vector(x, maxY - i, z);
+                    if (maxY - i <= 127 && !getBlock(target).isAir()
+                            && getBlock(above).isAir()) {
+                        if (setBlock(target, block)) {
+                            affected++;
+                        }
+                        break;
+                    }
+                }
+            }
+        } else {
+            while(blockIter.hasNext()) {
+                Vector target = blockIter.next();
+                target.add(0, 1, 0);
+                int x = target.getBlockX();
+                int z = target.getBlockZ();
+                for (int i = 0; i <= height; i++) {
+                    Vector above = target;
+                    target = new Vector(x, maxY - i, z);
+                    if (maxY - i + 1 <= 127 && !getBlock(target).isAir()
+                            && getBlock(above).isAir()) {
+                        if (setBlock(above, block)) {
+                            affected++;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return affected;
+    }
+    
+    /**
+     * @param region
+     * @param pattern
+     * @param replace
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     * Overlays a layer of blocks over a cylindrical area. 
+     */
+    public int overlayBlocks(CylindricalRegion region, Pattern pattern, boolean replace)
+            throws MaxChangedBlocksException {
+        Iterator<BlockVector> blockIter = region.baseIterator();
+        int height = region.getHeight();
+        int maxY = region.baseIterator().next().getBlockY() + height;
+        int affected = 0;
+        
+        if(replace) {
+            while(blockIter.hasNext()) {
+                Vector target = blockIter.next();
+                target.add(0, 1, 0);
+                int x = target.getBlockX();
+                int z = target.getBlockZ();
+                for (int i = 0; i <= height; i++) {
+                    Vector above = target;
+                    target = new Vector(x, maxY - i, z);
+                    if (maxY - i <= 127 && !getBlock(target).isAir()
+                            && getBlock(above).isAir()) {
+                        if (setBlock(target, pattern.next(target))) {
+                            affected++;
+                        }
+                        break;
+                    }
+                }
+            }
+        } else {
+            while(blockIter.hasNext()) {
+                Vector target = blockIter.next();
+                target.add(0, 1, 0);
+                int x = target.getBlockX();
+                int z = target.getBlockZ();
+                for (int i = 0; i <= height; i++) {
+                    Vector above = target;
+                    target = new Vector(x, maxY - i, z);
+                    if (maxY - i + 1 <= 127 && !getBlock(target).isAir()
+                            && getBlock(above).isAir()) {
+                        if (setBlock(above, pattern.next(target))) {
+                            affected++;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return affected;
+    }
+    
+    /**
+     * Overlays a layer of blocks over a cuboid area.
+     * 
+     * @param region
+     * @param block
+     * @param replace
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int overlayCuboidBlocks(Region region, BaseBlock block, boolean replace)
+            throws MaxChangedBlocksException {
+        Vector min = region.getMinimumPoint();
+        Vector max = region.getMaximumPoint();
+
+        int upperY = Math.min(127, max.getBlockY() + 1);
+        int lowerY = Math.max(0, min.getBlockY() - 1);
+
+        int affected = 0;
+
+        int minX = min.getBlockX();
+        int minZ = min.getBlockZ();
+        int maxX = max.getBlockX();
+        int maxZ = max.getBlockZ();
+        
+        if(replace) {
+            for (int x = minX; x <= maxX; x++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    for (int y = upperY; y >= lowerY; y--) {
+                        Vector above = new Vector(x, y + 1, z);
+                        Vector target = new Vector (x, y, z);
+                        if (y <= 127 && !getBlock(target).isAir()
+                                && getBlock(above).isAir()) {
+                            if (setBlock(target, block)) {
+                                affected++;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            for (int x = minX; x <= maxX; x++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    for (int y = upperY; y >= lowerY; y--) {
+                        Vector above = new Vector(x, y + 1, z);
+                        Vector target = new Vector (x, y, z);
+                        if ((y + 1 <= 127 && !getBlock(target).isAir()
+                                && getBlock(above).isAir())) {
+                            if (setBlock(above, block)) {
+                                affected++;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return affected;
+    }
+        
+    
+    /**
      * Overlays a layer of blocks over a cuboid area.
      * 
      * @param region
@@ -1221,6 +1396,20 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int overlayCuboidBlocks(Region region, BaseBlock block)
+        throws MaxChangedBlocksException {
+        return overlayCuboidBlocks(region, block, false);
+    }
+    
+    /**
+     * Overlays a layer of blocks over a cuboid area.
+     * 
+     * @param region
+     * @param pattern
+     * @param replace
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int overlayCuboidBlocks(Region region, Pattern pattern, boolean replace)
             throws MaxChangedBlocksException {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
@@ -1235,17 +1424,35 @@ public class EditSession {
         int maxX = max.getBlockX();
         int maxZ = max.getBlockZ();
 
-        for (int x = minX; x <= maxX; ++x) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                for (int y = upperY; y >= lowerY; --y) {
-                    Vector above = new Vector(x, y + 1, z);
-
-                    if (y + 1 <= 127 && !getBlock(new Vector(x, y, z)).isAir()
-                            && getBlock(above).isAir()) {
-                        if (setBlock(above, block)) {
-                            ++affected;
+        if(replace) {
+            for (int x = minX; x <= maxX; x++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    for (int y = upperY; y >= lowerY; y--) {
+                        Vector above = new Vector(x, y + 1, z);
+                        Vector target = new Vector (x, y, z);
+                        if (y <= 127 && !getBlock(target).isAir()
+                                && getBlock(above).isAir()) {
+                            if (setBlock(target, pattern.next(target))) {
+                                affected++;
+                            }
+                            break;
                         }
-                        break;
+                    }
+                }
+            }
+        } else {
+            for (int x = minX; x <= maxX; x++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    for (int y = upperY; y >= lowerY; y--) {
+                        Vector above = new Vector(x, y + 1, z);
+                        Vector target = new Vector (x, y, z);
+                        if ((y + 1 <= 127 && !getBlock(target).isAir()
+                                && getBlock(above).isAir())) {
+                            if (setBlock(above, pattern.next(above))) {
+                                affected++;
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -1253,7 +1460,7 @@ public class EditSession {
 
         return affected;
     }
-
+    
     /**
      * Overlays a layer of blocks over a cuboid area.
      * 
@@ -1263,37 +1470,8 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int overlayCuboidBlocks(Region region, Pattern pattern)
-            throws MaxChangedBlocksException {
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
-
-        int upperY = Math.min(127, max.getBlockY() + 1);
-        int lowerY = Math.max(0, min.getBlockY() - 1);
-
-        int affected = 0;
-
-        int minX = min.getBlockX();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxZ = max.getBlockZ();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                for (int y = upperY; y >= lowerY; --y) {
-                    Vector above = new Vector(x, y + 1, z);
-
-                    if (y + 1 <= 127 && !getBlock(new Vector(x, y, z)).isAir()
-                            && getBlock(above).isAir()) {
-                        if (setBlock(above, pattern.next(above))) {
-                            ++affected;
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-
-        return affected;
+        throws MaxChangedBlocksException {
+        return overlayCuboidBlocks(region, pattern, false);
     }
 
     /**
