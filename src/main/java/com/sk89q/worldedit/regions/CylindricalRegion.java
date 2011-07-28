@@ -288,6 +288,10 @@ public class CylindricalRegion implements Region {
         this.changed = false;
     }
     
+    
+    /**
+     * @return An iterator which will return every base block of the cylinder
+     */
     public Iterator<BlockVector> baseIterator() {
         if (this.changed) {
             calculateBase();
@@ -319,10 +323,10 @@ public class CylindricalRegion implements Region {
             calculateBase();
         }
         return new Iterator<BlockVector>() {
-            Iterator<HashSet<BlockVector>> yIterator = base.iterator();
-            Iterator<BlockVector> xIterator = yIterator.next().iterator(); //yIterator should never be empty
+            Iterator<HashSet<BlockVector>> zIterator = base.iterator();
+            Iterator<BlockVector> xIterator = zIterator.next().iterator(); //zIterator should never be empty
             public boolean hasNext() {
-                return xIterator.hasNext() || yIterator.hasNext();
+                return xIterator.hasNext() || zIterator.hasNext();
             }
 
             public BlockVector next() {
@@ -330,7 +334,7 @@ public class CylindricalRegion implements Region {
                 if(xIterator.hasNext()) {
                     return xIterator.next();
                 }
-                xIterator = yIterator.next().iterator();
+                xIterator = zIterator.next().iterator();
                 return xIterator.next();
             }
 
