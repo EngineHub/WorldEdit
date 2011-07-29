@@ -2,8 +2,15 @@ package com.sk89q.bukkit.migration;
 
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionAttachmentInfo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DinnerPermsResolver implements PermissionsResolver {
+
+    private static final String GROUP_PREFIX = "group.";
     private final Server server;
 
     public DinnerPermsResolver(Server server) {
@@ -44,11 +51,21 @@ public class DinnerPermsResolver implements PermissionsResolver {
         Player player = server.getPlayer(name);
         if (player == null)
             return false;
-        return player.hasPermission("group." + group);
+        return player.hasPermission(GROUP_PREFIX + group);
     }
 
     @Override
     public String[] getGroups(String name) {
-        return new String[0]; // No way to get every group
+        Player player = server.getPlayer(name);
+        if (player == null)
+            return new String[0];
+        List<String> groupNames = new ArrayList<String>();
+        for (PermissionAttachmentInfo permAttach : player.getEffectivePermissions()) {
+            String perm = permAttach.getPermission();
+            if (!perm.startsWith(GROUP_PREFIX))
+                continue;
+            groupNames.add(perm.substring(perm.indexOf(GROUP_PREFIX), perm.length()));
+        }
+        return groupNames.toArray(new String[groupNames.size()]);
     }
 }
