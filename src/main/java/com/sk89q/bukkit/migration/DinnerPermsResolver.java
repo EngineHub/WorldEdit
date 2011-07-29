@@ -3,8 +3,6 @@ package com.sk89q.bukkit.migration;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
-import java.util.logging.Logger;
-
 public class DinnerPermsResolver implements PermissionsResolver {
     private final Server server;
 
@@ -42,12 +40,15 @@ public class DinnerPermsResolver implements PermissionsResolver {
     }
 
     @Override
-    public boolean inGroup(String player, String group) {
-        return false; // No group support
+    public boolean inGroup(String name, String group) {
+        Player player = server.getPlayer(name);
+        if (player == null)
+            return false;
+        return player.hasPermission("group." + group);
     }
 
     @Override
-    public String[] getGroups(String player) {
-        return new String[0]; // There are no groups in dinnerperms
+    public String[] getGroups(String name) {
+        return new String[0]; // No way to get every group
     }
 }

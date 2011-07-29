@@ -76,7 +76,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 perms = new PluginPermissionsResolver(
                         (PermissionsProvider) plugin);
                 logger.info(name + ": Using plugin '"
-                        + plugin.getDescription().getName() + " for permissions.");
+                        + plugin.getDescription().getName() + "' for permissions.");
                 return true;
             }
         }
@@ -85,13 +85,11 @@ public class PermissionsResolverManager implements PermissionsResolver {
     }
 
     private boolean tryDinnerPerms() {
-        if (config.getBoolean("permissions.dinner-perms", true)) {
-            perms = new DinnerPermsResolver(server);
-            logger.info(name + ": Using DinnerPerms (Bukkit Permissions API).");
-            return true;
-        } else {
+        if (!config.getBoolean("permissions.dinner-perms", true))
             return false;
-        }
+        perms = new DinnerPermsResolver(server);
+        logger.info(name + ": Using the Bukkit Permissions API.");
+        return true;
     }
     
     public void setPluginPermissionsResolver(Plugin plugin) {
