@@ -276,7 +276,7 @@ public class BukkitWorld extends LocalWorld {
             if (!(state instanceof org.bukkit.block.NoteBlock)) return false;
             org.bukkit.block.NoteBlock bukkit = (org.bukkit.block.NoteBlock)state;
             NoteBlock we = (NoteBlock)block;
-            bukkit.setNote(we.getNote());
+            bukkit.setRawNote(we.getNote());
             return true;
         }
         
@@ -335,7 +335,7 @@ public class BukkitWorld extends LocalWorld {
             if (!(state instanceof org.bukkit.block.NoteBlock)) return false;
             org.bukkit.block.NoteBlock bukkit = (org.bukkit.block.NoteBlock)state;
             NoteBlock we = (NoteBlock)block;
-            we.setNote(bukkit.getNote());
+            we.setNote(bukkit.getRawNote());
         }
         
         return false;
