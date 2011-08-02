@@ -122,6 +122,23 @@ public class RegionCommands {
     }
 
     @Command(
+        aliases = {"/naturalize"},
+        usage = "",
+        desc = "3 layers of dirt on top then rock below",
+        min = 0,
+        max = 0
+    )
+    @CommandPermissions({"worldedit.region.naturalize"})
+    public static void naturalize(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        Region region = session.getSelection(player.getWorld());
+        int affected = editSession.naturalizeCuboidBlocks(region);
+        player.print(affected + " block(s) have been naturalized.");
+    }
+
+    @Command(
         aliases = {"/walls"},
         usage = "<block>",
         desc = "Build the four sides of the selection",
