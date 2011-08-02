@@ -41,10 +41,10 @@ public class PermissionsResolverManager implements PermissionsResolver {
     }
     
     public void findResolver() {
+        if (tryDinnerPerms()) return;
         if (tryPluginPermissionsResolver()) return;
         if (tryNijiPermissions()) return;
         if (tryFlatFilePermissions()) return;
-        if (tryDinnerPerms()) return;
         
         perms = new ConfigurationPermissionsResolver(config);
         logger.info(name + ": No known permissions plugin detected. Using configuration file for permissions.");
