@@ -44,6 +44,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         if (tryPluginPermissionsResolver()) return;
         if (tryNijiPermissions()) return;
         if (tryFlatFilePermissions()) return;
+        if (tryDinnerPerms()) return;
         
         perms = new ConfigurationPermissionsResolver(config);
         logger.info(name + ": No known permissions plugin detected. Using configuration file for permissions.");
@@ -75,12 +76,20 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 perms = new PluginPermissionsResolver(
                         (PermissionsProvider) plugin);
                 logger.info(name + ": Using plugin '"
-                        + plugin.getDescription().getName() + " for permissions.");
+                        + plugin.getDescription().getName() + "' for permissions.");
                 return true;
             }
         }
         
         return false;
+    }
+
+    private boolean tryDinnerPerms() {
+        if (!config.getBoolean("permissions.dinner-perms", true))
+            return false;
+        perms = new DinnerPermsResolver(server);
+        logger.info(name + ": Using the Bukkit Permissions API.");
+        return true;
     }
     
     public void setPluginPermissionsResolver(Plugin plugin) {
@@ -91,7 +100,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         perms = new PluginPermissionsResolver(
                 (PermissionsProvider) plugin);
         logger.info(name + ": Using plugin '"
-                + plugin.getDescription().getName() + " for permissions.");
+                + plugin.getDescription().getName() + "' for permissions.");
     }
 
     public void load() {
