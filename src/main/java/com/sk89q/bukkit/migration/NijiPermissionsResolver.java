@@ -101,16 +101,16 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         try {
             Player player = server.getPlayer(name);
             if (player == null) return new String[0];
-            String group;
+            String[] group;
             try {
-                group = api.getHandler().getGroup(player.getWorld().getName(), player.getName());
+                group = api.getHandler().getGroups(player.getWorld().getName(), player.getName());
             } catch (Throwable t) {
-                group = api.Security.getGroup(player.getName());
+                group = new String[] {api.Security.getGroup(player.getName())};
             }
             if (group == null) {
                 return new String[0];
             } else {
-                return new String[]{ group };
+                return group;
             }
         } catch (Throwable t) {
             t.printStackTrace();

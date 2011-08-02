@@ -63,6 +63,7 @@ debug: false
 # See http://wiki.sk89q.com/wiki/WorldEdit/Permissions/Bukkit
 # Now with multiworld support (see example)
 permissions:
+    dinner-perms: true
     groups:
         default:
             permissions:
