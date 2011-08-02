@@ -2276,7 +2276,7 @@ public class EditSession {
             Vector pt = new Vector(x, y, z);
             int id = getBlockType(pt);
 
-            if (id == 1 // stone
+            if (!BlockType.canPassThrough(id) /*id == 1 // stone
                     || id == 2 // grass
                     || id == 3 // dirt
                     || id == 7 // bedrock
@@ -2293,7 +2293,7 @@ public class EditSession {
                     || id == 16 // gold ore
                     || id == 56 // diamond ore
                     || id == 73 // redstone ore
-                    || id == 74 // redstone ore (active)
+                    || id == 74 // redstone ore (active)*/
             ) {
                 return y;
             }
