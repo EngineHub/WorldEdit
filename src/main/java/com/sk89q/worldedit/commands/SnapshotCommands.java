@@ -39,7 +39,6 @@ import com.sk89q.worldedit.snapshots.Snapshot;
  * @author sk89q
  */
 public class SnapshotCommands {
-
     private static Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
 
