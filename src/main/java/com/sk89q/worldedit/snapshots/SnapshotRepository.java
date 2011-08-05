@@ -15,10 +15,10 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+ */
 package com.sk89q.worldedit.snapshots;
 
+import com.sk89q.worldedit.data.MissingWorldException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,16 +30,15 @@ import java.util.List;
  * @author sk89q
  */
 public class SnapshotRepository {
+
     /**
      * Stores the directory the snapshots come from.
      */
     protected File dir;
-    
     /**
      * List of date parsers.
      */
-    protected List<SnapshotDateParser> dateParsers
-            = new ArrayList<SnapshotDateParser>();
+    protected List<SnapshotDateParser> dateParsers = new ArrayList<SnapshotDateParser>();
 
     /**
      * Create a new instance of a repository.
@@ -48,6 +47,8 @@ public class SnapshotRepository {
      */
     public SnapshotRepository(File dir) {
         this.dir = dir;
+        // If folder dont exist, make it.
+        dir.mkdirs();
 
         dateParsers.add(new YYMMDDHHIISSParser());
         dateParsers.add(new ModificationTimerParser());
@@ -69,7 +70,7 @@ public class SnapshotRepository {
      * @param newestFirst 
      * @return
      */
-    public List<Snapshot> getSnapshots(boolean newestFirst) {
+    public List<Snapshot> getSnapshots(boolean newestFirst, String worldname) throws MissingWorldException {
         FilenameFilter filter = new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 File f = new File(dir, name);
@@ -77,13 +78,23 @@ public class SnapshotRepository {
             }
         };
 
-        String[] snapshotNames = dir.list(filter);
-        List<Snapshot> list = new ArrayList<Snapshot>(snapshotNames.length);
-        
-        for (String name : snapshotNames) {
-            Snapshot snapshot = new Snapshot(this, name);
-            detectDate(snapshot);
-            list.add(snapshot);
+        File[] snapshotFiles = dir.listFiles();
+        List<Snapshot> list = new ArrayList<Snapshot>(snapshotFiles.length);
+
+        for (File file : snapshotFiles) {
+            if (isValidSnapshot(file)) {
+                Snapshot snapshot = new Snapshot(this, file.getName());
+                if (snapshot.containsWorld(worldname)) {
+                    detectDate(snapshot);
+                    list.add(snapshot);
+                }
+            } else if (file.isDirectory() && file.getName().equalsIgnoreCase(worldname)) {
+                for (String name : file.list(filter)) {
+                    Snapshot snapshot = new Snapshot(this, file.getName() + "/" + name);
+                    detectDate(snapshot);
+                    list.add(snapshot);
+                }
+            }
         }
 
         if (newestFirst) {
@@ -94,50 +105,50 @@ public class SnapshotRepository {
 
         return list;
     }
-    
+
     /**
      * Get the first snapshot after a date.
      * 
      * @param date
      * @return
      */
-    public Snapshot getSnapshotAfter(Calendar date) {
-        List<Snapshot> snapshots = getSnapshots(true);
+    public Snapshot getSnapshotAfter(Calendar date, String world) throws MissingWorldException {
+        List<Snapshot> snapshots = getSnapshots(true, world);
         Snapshot last = null;
-        
+
         for (Snapshot snapshot : snapshots) {
             if (snapshot.getDate() != null
                     && snapshot.getDate().before(date)) {
                 return last;
             }
-            
+
             last = snapshot;
         }
-        
+
         return last;
     }
-    
+
     /**
      * Get the first snapshot before a date.
      * 
      * @param date
      * @return
      */
-    public Snapshot getSnapshotBefore(Calendar date) {
-        List<Snapshot> snapshots = getSnapshots(false);
+    public Snapshot getSnapshotBefore(Calendar date, String world) throws MissingWorldException {
+        List<Snapshot> snapshots = getSnapshots(false, world);
         Snapshot last = null;
-        
+
         for (Snapshot snapshot : snapshots) {
             if (snapshot.getDate().after(date)) {
                 return last;
             }
-            
+
             last = snapshot;
         }
-        
+
         return last;
     }
-    
+
     /**
      * Attempt to detect a snapshot's date and assign it.
      * 
@@ -151,7 +162,7 @@ public class SnapshotRepository {
                 return;
             }
         }
-        
+
         snapshot.setDate(null);
     }
 
@@ -160,8 +171,8 @@ public class SnapshotRepository {
      *
      * @return
      */
-    public Snapshot getDefaultSnapshot() {
-        List<Snapshot> snapshots = getSnapshots(true);
+    public Snapshot getDefaultSnapshot(String world) throws MissingWorldException {
+        List<Snapshot> snapshots = getSnapshots(true, world);
 
         if (snapshots.size() == 0) {
             return null;
@@ -186,18 +197,16 @@ public class SnapshotRepository {
      * @param f
      * @return whether it is a valid snapshot
      */
-    public boolean isValidSnapshot(File f) {
+    protected boolean isValidSnapshot(File f) {
         if (!f.getName().matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+$")) {
             return false;
         }
 
         return (f.isDirectory() && (new File(f, "level.dat")).exists())
-                || (f.isFile() && (
-                    f.getName().toLowerCase().endsWith(".zip")
-                    || f.getName().toLowerCase().endsWith(".tar.bz2")
-                    || f.getName().toLowerCase().endsWith(".tar.gz")
-                    || f.getName().toLowerCase().endsWith(".tar")
-                    ));
+                || (f.isFile() && (f.getName().toLowerCase().endsWith(".zip")
+                || f.getName().toLowerCase().endsWith(".tar.bz2")
+                || f.getName().toLowerCase().endsWith(".tar.gz")
+                || f.getName().toLowerCase().endsWith(".tar")));
     }
 
     /**

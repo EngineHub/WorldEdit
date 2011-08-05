@@ -86,10 +86,8 @@ public class BukkitConfiguration extends LocalConfiguration {
         LocalSession.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;
         
         String snapshotsDir = config.getString("snapshots.directory", "");
-        if (!snapshotsDir.trim().equals("")) {
+        if (!snapshotsDir.isEmpty()){
             snapshotRepo = new SnapshotRepository(snapshotsDir);
-        } else {
-            snapshotRepo = null;
         }
 
         String type = config.getString("shell-save-type", "").trim();

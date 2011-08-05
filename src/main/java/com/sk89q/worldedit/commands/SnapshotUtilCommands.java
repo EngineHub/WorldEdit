@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.worldedit.commands;
 
@@ -34,36 +34,34 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.data.ChunkStore;
 import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.data.MissingWorldException;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.snapshots.InvalidSnapshotException;
 import com.sk89q.worldedit.snapshots.Snapshot;
 import com.sk89q.worldedit.snapshots.SnapshotRestore;
 
 public class SnapshotUtilCommands {
+
     private static Logger logger = Logger.getLogger("Minecraft.WorldEdit");
-    
-    @Command(
-        aliases = {"snapshot", "snap"},
-        desc = "Snapshot commands"
-    )
+
+    @Command(aliases = {"snapshot", "snap"},
+    desc = "Snapshot commands")
     @NestedCommand({SnapshotCommands.class})
     public static void snapshot(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
     }
 
-    @Command(
-        aliases = {"restore", "/restore"},
-        usage = "[snapshot]",
-        desc = "Restore the selection from a snapshot",
-        min = 0,
-        max = 1
-    )
+    @Command(aliases = {"restore", "/restore"},
+    usage = "[snapshot]",
+    desc = "Restore the selection from a snapshot",
+    min = 0,
+    max = 1)
     @CommandPermissions({"worldedit.snapshots.restore"})
     public static void restore(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
-        
+
         LocalConfiguration config = we.getConfiguration();
 
         if (config.snapshotRepo == null) {
@@ -84,31 +82,36 @@ public class SnapshotUtilCommands {
         } else {
             snapshot = session.getSnapshot();
         }
-        
-        ChunkStore chunkStore = null;
 
         // No snapshot set?
         if (snapshot == null) {
-            snapshot = config.snapshotRepo.getDefaultSnapshot();
+            try {
+                snapshot = config.snapshotRepo.getDefaultSnapshot(player.getWorld().getName());
 
-            if (snapshot == null) {
-                player.printError("No snapshots were found. See console for details.");
-                
-                // Okay, let's toss some debugging information!
-                File dir = config.snapshotRepo.getDirectory();
-                
-                try {
-                    logger.info("WorldEdit found no snapshots: looked in: " +
-                            dir.getCanonicalPath());
-                } catch (IOException e) {
-                    logger.info("WorldEdit found no snapshots: looked in "
-                            + "(NON-RESOLVABLE PATH - does it exist?): " +
-                            dir.getPath());
+                if (snapshot == null) {
+                    player.printError("No snapshots were found. See console for details.");
+
+                    // Okay, let's toss some debugging information!
+                    File dir = config.snapshotRepo.getDirectory();
+
+                    try {
+                        logger.info("WorldEdit found no snapshots: looked in: "
+                                + dir.getCanonicalPath());
+                    } catch (IOException e) {
+                        logger.info("WorldEdit found no snapshots: looked in "
+                                + "(NON-RESOLVABLE PATH - does it exist?): "
+                                + dir.getPath());
+                    }
+
+                    return;
                 }
-                
+            } catch (MissingWorldException ex) {
+                player.printError("No snapshots were found for this world.");
                 return;
             }
         }
+
+        ChunkStore chunkStore = null;
 
         // Load chunk store
         try {

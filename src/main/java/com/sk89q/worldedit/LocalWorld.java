@@ -34,6 +34,13 @@ public abstract class LocalWorld {
      * Random generator.
      */
     protected Random random = new Random();
+    
+    /**
+     * Get the name of the world.
+     * 
+     * @return
+     */
+    public abstract String getName();
 
     /**
      * Set block type.

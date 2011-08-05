@@ -42,13 +42,16 @@ public class FileMcRegionChunkStore extends McRegionChunkStore {
     }
 
     @Override
-    protected InputStream getInputStream(String name) throws IOException,
+    protected InputStream getInputStream(String name, String world) throws IOException,
             DataException {
-        
-        String file = "region" + File.separator + name;
+        String fileName = "region" + File.separator + name;
+        File file = new File(path, fileName);
+        if (!file.exists()) {
+            file = new File(path, "DIM-1" + File.separator + fileName);
+        }
         
         try {
-            return new FileInputStream(new File(path, file));
+            return new FileInputStream(file);
         } catch (FileNotFoundException e) {
             throw new MissingChunkException();
         }
@@ -56,7 +59,8 @@ public class FileMcRegionChunkStore extends McRegionChunkStore {
 
     @Override
     public boolean isValid() {
-        return new File(path, "region").isDirectory();
+        return new File(path, "region").isDirectory() ||
+                new File(path, "DIM-1" + File.separator + "region").isDirectory();
     }
 
 }
