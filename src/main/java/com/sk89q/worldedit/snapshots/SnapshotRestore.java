@@ -147,7 +147,7 @@ public class SnapshotRestore {
             Chunk chunk;
 
             try {
-                chunk = chunkStore.getChunk(chunkPos);
+                chunk = chunkStore.getChunk(chunkPos, editSession.getWorld().getName());
                 // Good, the chunk could be at least loaded
 
                 // Now just copy blocks!
@@ -157,6 +157,9 @@ public class SnapshotRestore {
                 }
             } catch (MissingChunkException me) {
                 missingChunks.add(chunkPos);
+            } catch (MissingWorldException me) {
+                errorChunks.add(chunkPos);
+                lastErrorMessage = me.getMessage();
             } catch (DataException de) {
                 errorChunks.add(chunkPos);
                 lastErrorMessage = de.getMessage();

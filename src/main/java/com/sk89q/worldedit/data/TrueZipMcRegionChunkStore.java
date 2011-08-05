@@ -15,8 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+ */
 package com.sk89q.worldedit.data;
 
 import java.io.*;
@@ -32,6 +31,7 @@ import de.schlichtherle.util.zip.*;
  * @author sk89q
  */
 public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
+
     /**
      * ZIP file.
      */
@@ -59,7 +59,7 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
             throws IOException, ZipException {
         this.zipFile = zipFile;
         this.folder = folder;
-        
+
         zip = new ZipFile(zipFile);
     }
 
@@ -88,57 +88,49 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
      */
     @Override
     @SuppressWarnings("unchecked")
-    protected InputStream getInputStream(String name)
+    protected InputStream getInputStream(String name, String worldname)
             throws IOException, DataException {
-        String file = "region/" + name;
 
         // Detect subfolder for the world's files
         if (folder != null) {
             if (!folder.equals("")) {
-                file = folder + "/" + file;
+                name = folder + "/" + name;
             }
         } else {
-            ZipEntry testEntry = zip.getEntry("level.dat");
-
-            // So, the data is not in the root directory
-            if (testEntry == null) {
-                // Let's try a world/ sub-directory
-                testEntry = getEntry("world/level.dat");
-                
-                Pattern pattern = Pattern.compile(".*[\\\\/]level\\.dat$");
-
-                // So not there either...
-                if (testEntry == null) {
-                    for (Enumeration<? extends ZipEntry> e = zip.entries();
-                            e.hasMoreElements(); ) {
-                        
-                        testEntry = e.nextElement();
-
-                        // Whoo, found level.dat!
-                        if (pattern.matcher(testEntry.getName()).matches()) {
-                            folder = testEntry.getName().replaceAll("level\\.dat$", "");
-                            folder = folder.substring(0, folder.length() - 1);
-                            file = folder + file;
-                            break;
-                        }
+            Pattern pattern = Pattern.compile(".*\\.mcr$");
+            // World pattern
+            Pattern worldPattern = Pattern.compile(worldname + "\\$");
+            for (Enumeration<? extends ZipEntry> e = zip.entries();
+                    e.hasMoreElements();) {
+                ZipEntry testEntry = (ZipEntry) e.nextElement();
+                // Check for world
+                if (worldPattern.matcher(worldname).matches()) {
+                    // Check for file
+                    if (pattern.matcher(testEntry.getName()).matches()) {
+                        folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf("/"));
+                        name = folder + "/" + name;
+                        break;
                     }
-                } else {
-                    file = "world/" + file;
                 }
+            }
+
+            // Check if world is found
+            if (folder == null) {
+                throw new MissingWorldException("Target world is not present in ZIP.", worldname);
             }
         }
 
-        ZipEntry entry = getEntry(file);
+        ZipEntry entry = getEntry(name);
         if (entry == null) {
             throw new MissingChunkException();
         }
         try {
             return zip.getInputStream(entry);
         } catch (ZipException e) {
-            throw new IOException("Failed to read " + file + " in ZIP");
+            throw new IOException("Failed to read " + name + " in ZIP");
         }
     }
-    
+
     /**
      * Get an entry from the ZIP, trying both types of slashes.
      * 
@@ -167,15 +159,15 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
     @SuppressWarnings("unchecked")
     public boolean isValid() {
         for (Enumeration<? extends ZipEntry> e = zip.entries();
-                e.hasMoreElements(); ) {
-            
+                e.hasMoreElements();) {
+
             ZipEntry testEntry = e.nextElement();
-            
+
             if (testEntry.getName().matches(".*\\.mcr$")) {
                 return true;
             }
         }
-        
+
         return false;
     }
 }

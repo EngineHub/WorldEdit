@@ -46,7 +46,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
         return filename;
     }
     
-    protected McRegionReader getReader(Vector2D pos) throws DataException, IOException {
+    protected McRegionReader getReader(Vector2D pos, String worldname) throws DataException, IOException {
         String filename = getFilename(pos);
         if (curFilename != null) {
             if (curFilename.equals(filename)) {
@@ -58,17 +58,17 @@ public abstract class McRegionChunkStore extends ChunkStore {
                 }
             }
         }
-        InputStream stream = getInputStream(filename);
+        InputStream stream = getInputStream(filename, worldname);
         cachedReader = new McRegionReader(stream);
         //curFilename = filename;
         return cachedReader;
     }
 
     @Override
-    public CompoundTag getChunkTag(Vector2D pos) throws DataException,
+    public CompoundTag getChunkTag(Vector2D pos, String worldname) throws DataException,
             IOException {
         
-        McRegionReader reader = getReader(pos);
+        McRegionReader reader = getReader(pos, worldname);
         InputStream stream = reader.getChunkInputStream(pos);
         NBTInputStream nbt = new NBTInputStream(stream);
         Tag tag;
@@ -113,7 +113,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
      * @return
      * @throws IOException
      */
-    protected abstract InputStream getInputStream(String name)
+    protected abstract InputStream getInputStream(String name, String worldname)
             throws IOException, DataException;
     
 

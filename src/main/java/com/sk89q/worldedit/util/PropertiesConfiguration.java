@@ -15,8 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+ */
 package com.sk89q.worldedit.util;
 
 import java.io.*;
@@ -35,9 +34,10 @@ import com.sk89q.worldedit.snapshots.SnapshotRepository;
  * @author sk89q
  */
 public class PropertiesConfiguration extends LocalConfiguration {
+
     protected Properties properties;
     protected File path;
-    
+
     /**
      * Construct the object. The configuration isn't loaded yet.
      * 
@@ -45,10 +45,10 @@ public class PropertiesConfiguration extends LocalConfiguration {
      */
     public PropertiesConfiguration(File path) {
         this.path = path;
-        
+
         properties = new Properties();
     }
-    
+
     /**
      * Load the configuration file.
      */
@@ -69,7 +69,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
                 }
             }
         }
-        
+
         profile = getBool("profile", profile);
         disallowedBlocks = getIntSet("disallowed-blocks", defaultDisallowedBlocks);
         defaultChangeLimit = getInt("default-max-changed-blocks", defaultChangeLimit);
@@ -89,16 +89,14 @@ public class PropertiesConfiguration extends LocalConfiguration {
         navigationWand = getInt("nav-wand-item", navigationWand);
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);
         scriptTimeout = getInt("scripting-timeout", scriptTimeout);
-        
+
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
-        
+
         String snapshotsDir = getString("snapshots-dir", "");
-        if (!snapshotsDir.trim().equals("")) {
+        if (!snapshotsDir.isEmpty()) {
             snapshotRepo = new SnapshotRepository(snapshotsDir);
-        } else {
-            snapshotRepo = null;
         }
-        
+
         OutputStream output = null;
         path.getParentFile().mkdirs();
         try {
@@ -117,7 +115,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
             }
         }
     }
-    
+
     /**
      * Get a string value.
      * 
@@ -137,7 +135,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
             return val;
         }
     }
-    
+
     /**
      * Get a boolean value.
      * 
@@ -229,5 +227,4 @@ public class PropertiesConfiguration extends LocalConfiguration {
             return set;
         }
     }
-    
 }

@@ -69,6 +69,15 @@ public class BukkitWorld extends LocalWorld {
     public World getWorld() {
         return world;
     }
+    
+    /**
+     * Get the name of the world
+     * 
+     * @return
+     */
+    public String getName() {
+        return world.getName();
+    }
 
     /**
      * Set block type.
