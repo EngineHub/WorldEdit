@@ -98,11 +98,11 @@ public class RegionCommands {
     
     @Command(
         aliases = {"/overlay"},
-        usage = "<block>",
+        usage = "<block> [layer]",
         flags = "r",
         desc = "Set a block on top of blocks in the region",
         min = 1,
-        max = 1
+        max = 2
     )
     @CommandPermissions({"worldedit.region.overlay"})
     public static void overlay(CommandContext args, WorldEdit we,
@@ -110,14 +110,20 @@ public class RegionCommands {
             throws WorldEditException {
 
         Pattern pat = we.getBlockPattern(player, args.getString(0));
-
+        int layer = -1;
+        
+        
+        if (args.argsLength() > 1) {
+            layer = args.getInteger(1);
+        }
+        
         Region region = session.getSelection(player.getWorld());
         int affected = 0;
         if (pat instanceof SingleBlockPattern) {
             affected = editSession.overlayCuboidBlocks(region,
-                    ((SingleBlockPattern)pat).getBlock(), args.hasFlag('r'));
+                    ((SingleBlockPattern)pat).getBlock(), args.hasFlag('r'), layer);
         } else {
-            affected = editSession.overlayCuboidBlocks(region, pat, args.hasFlag('r'));
+            affected = editSession.overlayCuboidBlocks(region, pat, args.hasFlag('r'), layer);
         }
         player.print(affected + " block(s) have been overlayed.");
     }

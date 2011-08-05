@@ -38,23 +38,32 @@ public class OverlayBrush implements Brush {
     boolean replace = false;
     private static final RegionType[] supportedRegionTypes = {RegionType.CUBOID, RegionType.CYLINDER};
     private RegionType regionType = RegionType.CUBOID;
+    private boolean flat = false;
     
     public OverlayBrush() {
     }
     
+    public OverlayBrush(RegionType regionType, boolean replace, boolean flat) throws UnsupportedRegionTypeException {
+        setRegionType(regionType);
+        setReplace(replace);
+        setFlat(flat);
+    }
+    
     public OverlayBrush(RegionType regionType, boolean replace) throws UnsupportedRegionTypeException {
         setRegionType(regionType);
+        setReplace(replace);
     }
 
     public void build(EditSession editSession, Vector pos, Pattern mat, int size)
             throws MaxChangedBlocksException {
+        int layer = flat ? pos.getBlockY() : -1;
         if(regionType == RegionType.CYLINDER) {
             CylindricalRegion region = new CylindricalRegion(new Vector(pos.getX(), 0, pos.getZ()), size, 127);
-            editSession.overlayBlocks(region, mat, replace);
+            editSession.overlayBlocks(region, mat, replace, layer);
         } else if(regionType == RegionType.CUBOID) {
             CuboidRegion region = new CuboidRegion(new Vector(pos.getX() - size, 0, pos.getZ() - size),
                     new Vector(pos.getX() + size, 127, pos.getZ() + size));
-            editSession.overlayCuboidBlocks(region, mat, replace);
+            editSession.overlayCuboidBlocks(region, mat, replace, layer);
         }        
     }
     public void build(EditSession editSession, Vector pos)
@@ -88,5 +97,13 @@ public class OverlayBrush implements Brush {
 
     public void setReplace(boolean replace) {
         this.replace = replace;
+    }
+
+    public boolean getFlat() {
+        return this.flat;
+    }
+    
+    public void setFlat(boolean flat) {
+        this.flat = flat;
     }
 }

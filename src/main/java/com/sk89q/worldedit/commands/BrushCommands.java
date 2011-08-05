@@ -236,7 +236,7 @@ public class BrushCommands {
     @Command(
             aliases = {"overlay", "o"},
             usage = "<block> [radius]",
-            flags = "cr",
+            flags = "crf",
             desc = "Choose the overlay brush",
             min = 0,
             max = 2
@@ -263,6 +263,7 @@ public class BrushCommands {
                 return;
             }
             
+            brush.setFlat(args.hasFlag('f'));
             brush.setReplace(args.hasFlag('r'));
             
             if (args.hasFlag('c')) {
