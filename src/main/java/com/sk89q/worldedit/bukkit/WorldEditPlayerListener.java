@@ -95,7 +95,13 @@ public class WorldEditPlayerListener extends PlayerListener {
 
             if (plugin.getWorldEdit().handleBlockLeftClick(player, pos)) {
                 event.setCancelled(true);
-            } else if (plugin.getWorldEdit().handleLeftClick(wrapPlayer(event.getPlayer()))) {
+            }
+
+            if (plugin.getWorldEdit().handleArmSwing(wrapPlayer(event.getPlayer()))) {
+                event.setCancelled(true);
+            }
+        } else if (event.getAction() == Action.LEFT_CLICK_AIR) {
+            if (plugin.getWorldEdit().handleArmSwing(wrapPlayer(event.getPlayer()))) {
                 event.setCancelled(true);
             }
         } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -106,15 +112,13 @@ public class WorldEditPlayerListener extends PlayerListener {
             
             if (plugin.getWorldEdit().handleBlockRightClick(player, pos)) {
                 event.setCancelled(true);
-            } else if (plugin.getWorldEdit().handleRightClick(wrapPlayer(event.getPlayer()))) {
+            }
+
+            if (plugin.getWorldEdit().handleRightClick(wrapPlayer(event.getPlayer()))) {
                 event.setCancelled(true);
             }
         } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
             if (plugin.getWorldEdit().handleRightClick(wrapPlayer(event.getPlayer()))) {
-                event.setCancelled(true);
-            }
-        } else if (event.getAction() == Action.LEFT_CLICK_AIR) {
-            if (plugin.getWorldEdit().handleLeftClick(wrapPlayer(event.getPlayer()))) {
                 event.setCancelled(true);
             }
         }

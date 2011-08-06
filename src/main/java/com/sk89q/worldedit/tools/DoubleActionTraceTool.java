@@ -23,15 +23,14 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.WorldVector;
 
 /**
- * Represents a tool that does not require a block.
- *
- * @author sk89q
+ * Represents a trace tool that also has a secondary/primary function.
  */
-public interface TraceTool extends Tool {
+public interface DoubleActionTraceTool extends TraceTool {
     /**
-     * Perform the action. Should return true to deny the default
+     * Perform the secondary action. Should return true to deny the default
      * action.
      * 
      * @param server 
@@ -40,6 +39,6 @@ public interface TraceTool extends Tool {
      * @param session
      * @return true to deny
      */
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
+    public boolean actSecondary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session);
 }
