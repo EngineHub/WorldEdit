@@ -112,7 +112,11 @@ public class ChunkCommands {
                 writer.write("PAUSE\r\n");
 
                 for (Vector2D chunk : chunks) {
-                    String filename = LegacyChunkStore.getFilename(chunk);
+                    if (config.ChunkStoreType != null AND config.ChunkStoreType.equalsIgnoreCase("mcr")) {
+                        String filename = McRegionChunkStore.getFilename(chunk);
+                    } else {
+                        String filename = LegacyChunkStore.getFilename(chunk);
+                    }
                     writer.write("ECHO " + filename + "\r\n");
                     writer.write("DEL \"world/" + filename + "\"\r\n");
                 }
@@ -141,7 +145,11 @@ public class ChunkCommands {
                 writer.write("read -p \"Press any key to continue...\"\n");
 
                 for (Vector2D chunk : chunks) {
-                    String filename = LegacyChunkStore.getFilename(chunk);
+                    if (config.ChunkStoreType != null AND config.ChunkStoreType.equalsIgnoreCase("mcr")) {
+                        String filename = McRegionChunkStore.getFilename(chunk);
+                    } else {
+                        String filename = LegacyChunkStore.getFilename(chunk);
+                    }
                     writer.write("echo " + filename + "\n");
                     writer.write("rm \"world/" + filename + "\"\n");
                 }
