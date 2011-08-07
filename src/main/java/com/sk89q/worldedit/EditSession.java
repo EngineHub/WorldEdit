@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.sk89q.worldedit;
 
 import java.util.Map;
@@ -47,39 +46,38 @@ import com.sk89q.worldedit.patterns.*;
  * @author sk89q
  */
 public class EditSession {
+
     /**
      * Random number generator.
      */
     private static Random prng = new Random();
-
     /**
      * World.
      */
     protected LocalWorld world;
-
     /**
      * Stores the original blocks before modification.
      */
     private DoubleArrayList<BlockVector, BaseBlock> original =
-        new DoubleArrayList<BlockVector, BaseBlock>(
+            new DoubleArrayList<BlockVector, BaseBlock>(
             true);
     /**
      * Stores the current blocks.
      */
     private DoubleArrayList<BlockVector, BaseBlock> current =
-        new DoubleArrayList<BlockVector, BaseBlock>(
+            new DoubleArrayList<BlockVector, BaseBlock>(
             false);
     /**
      * Blocks that should be placed before last.
      */
     private DoubleArrayList<BlockVector, BaseBlock> queueAfter =
-        new DoubleArrayList<BlockVector, BaseBlock>(
+            new DoubleArrayList<BlockVector, BaseBlock>(
             false);
     /**
      * Blocks that should be placed last.
      */
     private DoubleArrayList<BlockVector, BaseBlock> queueLast =
-        new DoubleArrayList<BlockVector, BaseBlock>(
+            new DoubleArrayList<BlockVector, BaseBlock>(
             false);
     
     /**
@@ -158,28 +156,28 @@ public class EditSession {
     public boolean rawSetBlock(Vector pt, BaseBlock block) {
         int y = pt.getBlockY();
         int type = block.getType();
-        
+
         if (y < 0 || y > 127) {
             return false;
         }
-        
+
         // No invalid blocks
         if (!world.isValidBlockType(type)) {
             return false;
         }
-        
+
         if (mask != null) {
             if (!mask.matches(this, pt)) {
                 return false;
             }
         }
-        
+
         int existing = world.getBlockType(pt);
 
         // Clear the container block so that it doesn't drop items
         if (BlockType.isContainerBlock(existing) && blockBag == null) {
             world.clearContainerBlockContents(pt);
-        // Ice turns until water so this has to be done first
+            // Ice turns until water so this has to be done first
         } else if (existing == BlockID.ICE) {
             world.setBlockType(pt, 0);
         }
@@ -205,7 +203,7 @@ public class EditSession {
                 }
             }
         }
-        
+
         boolean result;
 
         if (BlockType.usesData(id)) {
@@ -222,30 +220,30 @@ public class EditSession {
             }
         }
         //System.out.println(pt + "" +result);
-        
+
         if (id != 0) {
 
             // Signs
             if (block instanceof SignBlock) {
                 SignBlock signBlock = (SignBlock) block;
                 world.copyToWorld(pt, signBlock);
-            // Chests
+                // Chests
             } else if (block instanceof ChestBlock && blockBag == null) {
                 ChestBlock chestBlock = (ChestBlock) block;
                 world.copyToWorld(pt, chestBlock);
-            // Furnaces
+                // Furnaces
             } else if (block instanceof FurnaceBlock && blockBag == null) {
                 FurnaceBlock furnaceBlock = (FurnaceBlock) block;
                 world.copyToWorld(pt, furnaceBlock);
-            // Dispenser
+                // Dispenser
             } else if (block instanceof DispenserBlock && blockBag == null) {
                 DispenserBlock dispenserBlock = (DispenserBlock) block;
                 world.copyToWorld(pt, dispenserBlock);
-            // Mob spawners
+                // Mob spawners
             } else if (block instanceof MobSpawnerBlock) {
                 MobSpawnerBlock mobSpawnerblock = (MobSpawnerBlock) block;
                 world.copyToWorld(pt, mobSpawnerblock);
-            // Note blocks
+                // Note blocks
             } else if (block instanceof NoteBlock) {
                 NoteBlock noteBlock = (NoteBlock) block;
                 world.copyToWorld(pt, noteBlock);
@@ -337,14 +335,14 @@ public class EditSession {
             // Place torches, etc. last
             if (BlockType.shouldPlaceLast(block.getType())) {
                 queueLast.put(pt.toBlockVector(), block);
-                return !(getBlockType(pt) == block.getType() 
+                return !(getBlockType(pt) == block.getType()
                         && getBlockData(pt) == block.getData());
                 // Destroy torches, etc. first
             } else if (BlockType.shouldPlaceLast(getBlockType(pt))) {
                 rawSetBlock(pt, new BaseBlock(0));
             } else {
                 queueAfter.put(pt.toBlockVector(), block);
-                return !(getBlockType(pt) == block.getType() 
+                return !(getBlockType(pt) == block.getType()
                         && getBlockData(pt) == block.getData());
             }
         }
@@ -393,7 +391,7 @@ public class EditSession {
 
         return world.getBlockType(pt);
     }
-    
+
     public int getBlockData(Vector pt) {
         // In the case of the queue, the block may have not actually been
         // changed yet
@@ -423,27 +421,27 @@ public class EditSession {
             SignBlock block = new SignBlock(type, data);
             world.copyFromWorld(pt, block);
             return block;
-        // Chest
+            // Chest
         } else if (type == BlockID.CHEST) {
             ChestBlock block = new ChestBlock(data);
             world.copyFromWorld(pt, block);
             return block;
-        // Furnace
+            // Furnace
         } else if (type == BlockID.FURNACE || type == BlockID.BURNING_FURNACE) {
             FurnaceBlock block = new FurnaceBlock(type, data);
             world.copyFromWorld(pt, block);
             return block;
-        // Dispenser
+            // Dispenser
         } else if (type == BlockID.DISPENSER) {
             DispenserBlock block = new DispenserBlock(data);
             world.copyFromWorld(pt, block);
             return block;
-        // Mob spawner
+            // Mob spawner
         } else if (type == BlockID.MOB_SPAWNER) {
             MobSpawnerBlock block = new MobSpawnerBlock(data);
             world.copyFromWorld(pt, block);
             return block;
-        // Note block
+            // Note block
         } else if (type == BlockID.NOTE_BLOCK) {
             NoteBlock block = new NoteBlock(data);
             world.copyFromWorld(pt, block);
@@ -536,7 +534,7 @@ public class EditSession {
         }
         queued = false;
     }
-    
+
     /**
      * Set fast mode.
      * 
@@ -545,7 +543,7 @@ public class EditSession {
     public void setFastMode(boolean fastMode) {
         this.fastMode = fastMode;
     }
-    
+
     /**
      * Return fast mode status.
      * 
@@ -1603,7 +1601,7 @@ public class EditSession {
             if (setBlock(cur, stationaryBlock)){
                 ++affected;
             }
-
+            
             // Check radius
             if (pos.distance(cur) > radius) {
                 continue;
@@ -1852,6 +1850,49 @@ public class EditSession {
     }
 
     /**
+     * Makes a pyramid.
+     * 
+     * @param pos
+     * @param block
+     * @param size
+     * @param filled
+     * @return number of blocks changed
+     * @throws MaxChangedBlocksException
+     */
+    public int makePyramid(Vector pos, Pattern block, int size,
+            boolean filled) throws MaxChangedBlocksException {
+        int affected = 0;
+
+        int height = size;
+        
+        for (int y = 0; y <= height; ++y) {
+            size--;
+            for (int x = 0; x <= size; ++x) {
+                for (int z = 0; z <= size; ++z) {
+                    
+                    if ((filled && z <= size && x <= size) || z == size || x == size) {
+                        
+                        if (setBlock(pos.add(x, y, z), block)) {
+                            ++affected;
+                        }
+                        if (setBlock(pos.add(-x, y, z), block)) {
+                            ++affected;
+                        }
+                        if (setBlock(pos.add(x, y, -z), block)) {
+                            ++affected;
+                        }
+                        if (setBlock(pos.add(-x, y, -z), block)) {
+                            ++affected;
+                        }
+                    }
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
      * Thaw.
      * 
      * @param pos
@@ -1944,7 +1985,7 @@ public class EditSession {
                             || id == 55 // Redstone wire
                             || id == 59 // Crops
                             || (id >= 63 && id <= 72) || id == 75 // Redstone
-                                                                  // torch
+                            // torch
                             || id == 76 // Redstone torch
                             || id == 77 // Stone button
                             || id == 78 // Snow
@@ -2026,9 +2067,9 @@ public class EditSession {
      */
     private void makePumpkinPatchVine(Vector basePos, Vector pos)
             throws MaxChangedBlocksException {
-        if (pos.distance(basePos) > 4)
+        if (pos.distance(basePos) > 4) 
             return;
-        if (getBlockType(pos) != 0)
+        if (getBlockType(pos) != 0) 
             return;
 
         for (int i = -1; i > -3; --i) {
@@ -2046,27 +2087,27 @@ public class EditSession {
         int h = prng.nextInt(3) - 1;
 
         if (t == 0) {
-            if (prng.nextBoolean())
+            if (prng.nextBoolean()) 
                 makePumpkinPatchVine(basePos, pos.add(1, 0, 0));
-            if (prng.nextBoolean())
+            if (prng.nextBoolean()) 
                 setBlockIfAir(pos.add(1, h, -1), new BaseBlock(18));
             setBlockIfAir(pos.add(0, 0, -1), new BaseBlock(86));
         } else if (t == 1) {
-            if (prng.nextBoolean())
+            if (prng.nextBoolean()) 
                 makePumpkinPatchVine(basePos, pos.add(0, 0, 1));
-            if (prng.nextBoolean())
+            if (prng.nextBoolean()) 
                 setBlockIfAir(pos.add(1, h, 0), new BaseBlock(18));
             setBlockIfAir(pos.add(1, 0, 1), new BaseBlock(86));
         } else if (t == 2) {
-            if (prng.nextBoolean())
+            if (prng.nextBoolean()) 
                 makePumpkinPatchVine(basePos, pos.add(0, 0, -1));
-            if (prng.nextBoolean())
+            if (prng.nextBoolean()) 
                 setBlockIfAir(pos.add(-1, h, 0), new BaseBlock(18));
             setBlockIfAir(pos.add(-1, 0, 1), new BaseBlock(86));
         } else if (t == 3) {
-            if (prng.nextBoolean())
+            if (prng.nextBoolean()) 
                 makePumpkinPatchVine(basePos, pos.add(-1, 0, 0));
-            if (prng.nextBoolean())
+            if (prng.nextBoolean()) 
                 setBlockIfAir(pos.add(-1, h, -1), new BaseBlock(18));
             setBlockIfAir(pos.add(-1, 0, -1), new BaseBlock(86));
         }
@@ -2089,7 +2130,7 @@ public class EditSession {
             for (int z = basePos.getBlockZ() - size; z <= basePos.getBlockZ()
                     + size; ++z) {
                 // Don't want to be in the ground
-                if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir())
+                if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir()) 
                     continue;
                 // The gods don't want a pumpkin patch here
                 if (Math.random() < 0.98) {
@@ -2270,7 +2311,6 @@ public class EditSession {
      *            maximal height
      * @return height of highest block found or 'minY'
      */
-
     public int getHighestTerrainBlock(int x, int z, int minY, int maxY) {
         for (int y = maxY; y >= minY; --y) {
             Vector pt = new Vector(x, y, z);
@@ -2327,7 +2367,7 @@ public class EditSession {
     public void setBlockBag(BlockBag blockBag) {
         this.blockBag = blockBag;
     }
-    
+
     /**
      * Get the world.
      * 
@@ -2336,7 +2376,7 @@ public class EditSession {
     public LocalWorld getWorld() {
         return world;
     }
-    
+
     /**
      * Get the number of blocks changed, including repeated block changes.
      * 

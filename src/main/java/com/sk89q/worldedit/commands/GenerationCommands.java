@@ -178,4 +178,48 @@ public class GenerationCommands {
         int affected = editSession.makePumpkinPatches(player.getPosition(), size);
         player.print(affected + " pumpkin patches created.");
     }
+    
+    @Command(
+        aliases = {"/pyramid"},
+        usage = "<block> <range>",
+        desc = "Generate a filled pyramid",
+        min = 2,
+        max = 2
+    )
+    @CommandPermissions({"worldedit.generation.pyramid"})
+    public static void pyramid(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        Pattern block = we.getBlockPattern(player, args.getString(0));
+        int size = Math.max(1, args.getInteger(1));
+        Vector pos = session.getPlacementPosition(player);
+        
+        int affected = editSession.makePyramid(pos, block, size, true);
+        
+        player.findFreePosition();
+        player.print(affected + " block(s) have been created.");
+    }
+    
+    @Command(
+        aliases = {"/hpyramid"},
+        usage = "<block> <range>",
+        desc = "Generate a hollow pyramid",
+        min = 2,
+        max = 2
+    )
+    @CommandPermissions({"worldedit.generation.pyramid"})
+    public static void hpyramid(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        Pattern block = we.getBlockPattern(player, args.getString(0));
+        int size = Math.max(1, args.getInteger(1));
+        Vector pos = session.getPlacementPosition(player);
+        
+        int affected = editSession.makePyramid(pos, block, size, false);
+        
+        player.findFreePosition();
+        player.print(affected + " block(s) have been created.");
+    }
 }
