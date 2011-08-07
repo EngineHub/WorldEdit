@@ -1329,7 +1329,7 @@ public class EditSession {
 
                 for (int y = upperY; y >= lowerY; --y) {
                     Vector pt = new Vector(x, y, z);
-                    Vector above = new Vector(x, y + 1, z);
+                    //Vector above = new Vector(x, y + 1, z);
                     int blockType = getBlockType(pt);
 
                     boolean isTransformable =
