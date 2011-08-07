@@ -15,12 +15,11 @@ public class DinnerPermsResolver implements PermissionsResolver {
     public DinnerPermsResolver(Server server) {
         this.server = server;
     }
-    @Override
+
     public void load() {
         // Permissions are already loaded
     }
 
-    @Override
     public boolean hasPermission(String name, String permission) {
         Player player = server.getPlayer(name);
         if (player == null)
@@ -41,12 +40,10 @@ public class DinnerPermsResolver implements PermissionsResolver {
         return false;
     }
 
-    @Override
     public boolean hasPermission(String worldName, String name, String permission) {
         return hasPermission(name, permission); // no per-world ability to check permissions in dinnerperms
     }
 
-    @Override
     public boolean inGroup(String name, String group) {
         Player player = server.getPlayer(name);
         if (player == null)
@@ -54,7 +51,6 @@ public class DinnerPermsResolver implements PermissionsResolver {
         return player.hasPermission(GROUP_PREFIX + group);
     }
 
-    @Override
     public String[] getGroups(String name) {
         Player player = server.getPlayer(name);
         if (player == null)

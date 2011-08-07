@@ -19,7 +19,9 @@
 
 package com.sk89q.bukkit.migration;
 
+import com.sun.xml.internal.fastinfoset.algorithm.BooleanEncodingAlgorithm;
 import org.bukkit.Server;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -33,7 +35,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         
     }
     
-    public NijiPermissionsResolver(Server server)
+    public NijiPermissionsResolver(Server server, boolean ignoreBridges)
             throws PluginAccessException, MissingPluginException {
         this.server = server;
         PluginManager manager = server.getPluginManager();
@@ -42,6 +44,8 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         if (plugin == null) {
             throw new MissingPluginException();
         }
+        if (!checkRealNijiPerms(plugin, ignoreBridges))
+            throw new MissingPluginException();
         
         try {
             api = (Permissions)plugin;
@@ -125,5 +129,16 @@ public class NijiPermissionsResolver implements PermissionsResolver {
     
     public static class MissingPluginException extends Exception {
         private static final long serialVersionUID = 7044832912491608706L;
+    }
+
+    public static boolean checkRealNijiPerms(Plugin plugin, boolean ignoreBridges) {
+        if (!ignoreBridges)
+            return true;
+        PluginCommand permsCommand = plugin.getServer().getPluginCommand("permissions");
+        if (permsCommand == null)
+            return false;
+        if (!permsCommand.getPlugin().getDescription().getName().equals("Permissions"))
+            return false;
+        return true;
     }
 }

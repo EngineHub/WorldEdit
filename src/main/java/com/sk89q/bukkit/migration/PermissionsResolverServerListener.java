@@ -26,6 +26,8 @@ import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 import org.bukkit.plugin.Plugin;
 
+import java.util.Map;
+
 public class PermissionsResolverServerListener extends ServerListener {
     private PermissionsResolverManager manager;
     
@@ -42,10 +44,10 @@ public class PermissionsResolverServerListener extends ServerListener {
     public void onPluginEnable(PluginEnableEvent event) {
         Plugin plugin = event.getPlugin();
         String name = plugin.getDescription().getName();
-        
         if (plugin instanceof PermissionsProvider) {
             manager.setPluginPermissionsResolver(plugin);
-        } else if (name.equalsIgnoreCase("GroupUsers") || name.equalsIgnoreCase("Permissions")) {
+        } else if (name.equalsIgnoreCase("Permissions") &&
+                NijiPermissionsResolver.checkRealNijiPerms(plugin, manager.ignoreNijiPermsBridges)) {
             manager.findResolver();
             manager.load();
         }
@@ -62,8 +64,8 @@ public class PermissionsResolverServerListener extends ServerListener {
         String name = plugin.getDescription().getName();
         
         if (plugin instanceof PermissionsProvider
-                || name.equalsIgnoreCase("GroupUsers")
-                || name.equalsIgnoreCase("Permissions")) {
+                || (name.equalsIgnoreCase("Permissions") &&
+                NijiPermissionsResolver.checkRealNijiPerms(plugin, manager.ignoreNijiPermsBridges))) {
             manager.findResolver();
             manager.load();
         }

@@ -56,6 +56,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     private Configuration permsConfig;
     private String name;
     private Logger logger;
+    protected boolean ignoreNijiPermsBridges;
 
     public PermissionsResolverManager(Configuration config, Server server, String name, Logger logger) {
         this.server = server;
@@ -65,9 +66,9 @@ public class PermissionsResolverManager implements PermissionsResolver {
         findResolver();
     }
     public void findResolver() {
-        if (tryDinnerPerms()) return;
         if (tryPluginPermissionsResolver()) return;
         if (tryNijiPermissions()) return;
+        if (tryDinnerPerms()) return;
         if (tryFlatFilePermissions()) return;
         
         perms = new ConfigurationPermissionsResolver(permsConfig);
@@ -76,7 +77,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     
     private boolean tryNijiPermissions() {
         try {
-            perms = new NijiPermissionsResolver(server);
+            perms = new NijiPermissionsResolver(server, ignoreNijiPermsBridges);
             logger.info(name + ": Permissions plugin detected! Using Permissions plugin for permissions.");
             return true;
         } catch (Throwable e) {
@@ -164,6 +165,11 @@ public class PermissionsResolverManager implements PermissionsResolver {
             permsConfig.setProperty("dinnerperms", permsConfig.getBoolean("dinner-perms", true));
             isUpdated = true;
         }
+        if (!keys.contains("ignore-nijiperms-bridges")) {
+            permsConfig.setProperty("ignore-nijiperms-bridges", true);
+            isUpdated = true;
+        }
+        ignoreNijiPermsBridges = permsConfig.getBoolean("ignore-nijiperms-bridges", true);
         if (keys.contains("dinner-perms")) {
             permsConfig.removeProperty("dinner-perms");
             isUpdated = true;
