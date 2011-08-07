@@ -20,9 +20,6 @@
 package com.sk89q.worldedit.tools;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.regions.RegionSelector;
 
 /**

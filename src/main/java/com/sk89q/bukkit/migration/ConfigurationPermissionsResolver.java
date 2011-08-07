@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
 import org.bukkit.util.config.Configuration;
-import org.bukkit.util.config.ConfigurationNode;
 
 public class ConfigurationPermissionsResolver implements PermissionsResolver {
     private Configuration config;

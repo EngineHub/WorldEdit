@@ -23,7 +23,6 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.ServerInterface;
-import com.sk89q.worldedit.WorldVector;
 
 /**
  * Represents a trace tool that also has a secondary/primary function.
