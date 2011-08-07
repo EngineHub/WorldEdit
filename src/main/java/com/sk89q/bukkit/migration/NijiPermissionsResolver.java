@@ -19,7 +19,6 @@
 
 package com.sk89q.bukkit.migration;
 
-import com.sun.xml.internal.fastinfoset.algorithm.BooleanEncodingAlgorithm;
 import org.bukkit.Server;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
@@ -53,7 +52,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
             throw new PluginAccessException();
         }
     }
-    
+
     @SuppressWarnings("static-access")
     public boolean hasPermission(String name, String permission) {
         try {
@@ -137,8 +136,6 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         PluginCommand permsCommand = plugin.getServer().getPluginCommand("permissions");
         if (permsCommand == null)
             return false;
-        if (!permsCommand.getPlugin().getDescription().getName().equals("Permissions"))
-            return false;
-        return true;
+        return !permsCommand.getPlugin().getDescription().getName().equals("Permissions");
     }
 }

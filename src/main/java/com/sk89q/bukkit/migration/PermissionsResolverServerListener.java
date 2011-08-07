@@ -26,8 +26,6 @@ import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Map;
-
 public class PermissionsResolverServerListener extends ServerListener {
     private PermissionsResolverManager manager;
     
