@@ -21,8 +21,6 @@ package com.sk89q.worldedit.bukkit;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
@@ -30,7 +28,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.blocks.BlockID;
 
 /**
  * Handles all events thrown in relation to a Player
@@ -95,7 +92,13 @@ public class WorldEditPlayerListener extends PlayerListener {
 
             if (plugin.getWorldEdit().handleBlockLeftClick(player, pos)) {
                 event.setCancelled(true);
-            } else if (plugin.getWorldEdit().handleLeftClick(wrapPlayer(event.getPlayer()))) {
+            }
+
+            if (plugin.getWorldEdit().handleArmSwing(wrapPlayer(event.getPlayer()))) {
+                event.setCancelled(true);
+            }
+        } else if (event.getAction() == Action.LEFT_CLICK_AIR) {
+            if (plugin.getWorldEdit().handleArmSwing(wrapPlayer(event.getPlayer()))) {
                 event.setCancelled(true);
             }
         } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -106,15 +109,13 @@ public class WorldEditPlayerListener extends PlayerListener {
             
             if (plugin.getWorldEdit().handleBlockRightClick(player, pos)) {
                 event.setCancelled(true);
-            } else if (plugin.getWorldEdit().handleRightClick(wrapPlayer(event.getPlayer()))) {
+            }
+
+            if (plugin.getWorldEdit().handleRightClick(wrapPlayer(event.getPlayer()))) {
                 event.setCancelled(true);
             }
         } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
             if (plugin.getWorldEdit().handleRightClick(wrapPlayer(event.getPlayer()))) {
-                event.setCancelled(true);
-            }
-        } else if (event.getAction() == Action.LEFT_CLICK_AIR) {
-            if (plugin.getWorldEdit().handleLeftClick(wrapPlayer(event.getPlayer()))) {
                 event.setCancelled(true);
             }
         }

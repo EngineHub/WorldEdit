@@ -1327,7 +1327,7 @@ public class EditSession {
 
                 for (int y = upperY; y >= lowerY; --y) {
                     Vector pt = new Vector(x, y, z);
-                    Vector above = new Vector(x, y + 1, z);
+                    //Vector above = new Vector(x, y + 1, z);
                     int blockType = getBlockType(pt);
 
                     boolean isTransformable =
@@ -1687,7 +1687,8 @@ public class EditSession {
             pos = pos.subtract(0, height, 0);
         }
 
-        if (pos.getBlockY() - height - 1 < 0) {
+        // Only do this check if height is negative --Elizabeth
+        if (height < 0 && pos.getBlockY() - height - 1 < 0) {
             height = pos.getBlockY() + 1;
         } else if (pos.getBlockY() + height - 1 > 127) {
             height = 127 - pos.getBlockY() + 1;

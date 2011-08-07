@@ -294,6 +294,9 @@ commands:
     none:
         description: Turn off all superpickaxe alternate modes
         usage: /<command> 
+    farwand:
+        description: Wand tool at a distance
+        usage: /<command> 
     tree:
         description: Tree generator tool
         usage: /<command> [type]

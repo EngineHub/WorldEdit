@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
 import org.bukkit.util.config.Configuration;
+import org.bukkit.util.config.ConfigurationNode;
 
 public class ConfigurationPermissionsResolver implements PermissionsResolver {
     private Configuration config;
@@ -34,6 +35,16 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
     
     public ConfigurationPermissionsResolver(Configuration config) {
         this.config = config;
+    }
+
+    public static void generateDefaultPerms(Configuration config) {
+        config.setProperty("permissions.groups.default.permissions", new String[] {
+                "worldedit.reload",
+                "worldedit.selection.*",
+                "worlds.creative.worldedit.region.*"});
+        config.setProperty("permissions.groups.admins.permissions", new String[]{"*"});
+        config.setProperty("permissions.users.sk89q.permissions", new String[]{"worldedit.*"});
+        config.setProperty("permissions.users.sk89q.groups", new String[]{"admins"});
     }
     
     public void load() {
