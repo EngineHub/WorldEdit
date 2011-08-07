@@ -45,7 +45,7 @@ public class GenerationCommands {
             throws WorldEditException {
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
-        int radius = Math.max(1, args.getInteger(1));
+        double radius = Math.max(1, args.getDouble(1));
         int height = args.argsLength() > 2 ? args.getInteger(2) : 1;
 
         Vector pos = session.getPlacementPosition(player);
@@ -66,7 +66,7 @@ public class GenerationCommands {
             throws WorldEditException {
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
-        int radius = Math.max(1, args.getInteger(1));
+        double radius = Math.max(1, args.getDouble(1));
         int height = args.argsLength() > 2 ? args.getInteger(2) : 1;
 
         Vector pos = session.getPlacementPosition(player);
@@ -87,7 +87,7 @@ public class GenerationCommands {
             throws WorldEditException {
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
-        int radius = Math.max(1, args.getInteger(1));
+        double radius = Math.max(1, args.getDouble(1));
         boolean raised = args.argsLength() > 2
                 ? (args.getString(2).equalsIgnoreCase("true")
                         || args.getString(2).equalsIgnoreCase("yes"))
@@ -116,7 +116,7 @@ public class GenerationCommands {
             throws WorldEditException {
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
-        int radius = Math.max(1, args.getInteger(1));
+        double radius = Math.max(1, args.getDouble(1));
         boolean raised = args.argsLength() > 2
                 ? (args.getString(2).equalsIgnoreCase("true")
                         || args.getString(2).equalsIgnoreCase("yes"))
