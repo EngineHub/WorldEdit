@@ -118,6 +118,7 @@ public class WorldEditPlugin extends JavaPlugin {
         }
         controller.clearSessions();
         config.unload();
+        this.getServer().getScheduler().cancelTasks(this);
     }
     
     /**
