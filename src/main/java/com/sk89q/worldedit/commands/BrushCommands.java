@@ -64,7 +64,7 @@ public class BrushCommands {
         
         LocalConfiguration config = we.getConfiguration();
 
-        int radius = args.argsLength() > 1 ? args.getInteger(1) : 2;
+        double radius = args.argsLength() > 1 ? args.getDouble(1) : 2;
         if (radius > config.maxBrushRadius) {
             player.printError("Maximum allowed brush radius: "
                     + config.maxBrushRadius);
@@ -101,7 +101,7 @@ public class BrushCommands {
         
         LocalConfiguration config = we.getConfiguration();
 
-        int radius = args.argsLength() > 1 ? args.getInteger(1) : 2;
+        double radius = args.argsLength() > 1 ? args.getDouble(1) : 2;
         if (radius > config.maxBrushRadius) {
             player.printError("Maximum allowed brush radius: "
                     + config.maxBrushRadius);
@@ -182,7 +182,7 @@ public class BrushCommands {
         
         LocalConfiguration config = we.getConfiguration();
 
-        int radius = args.argsLength() > 0 ? args.getInteger(0) : 2;
+        double radius = args.argsLength() > 1 ? args.getDouble(1) : 2;
         if (radius > config.maxBrushRadius) {
             player.printError("Maximum allowed brush radius: "
                     + config.maxBrushRadius);
@@ -213,7 +213,7 @@ public class BrushCommands {
         
         LocalConfiguration config = we.getConfiguration();
 
-        int radius = args.argsLength() > 1 ? args.getInteger(1) : 5;
+        double radius = args.argsLength() > 1 ? args.getDouble(1) : 2;
         if (radius > config.maxBrushRadius) {
             player.printError("Maximum allowed brush radius: "
                     + config.maxBrushRadius);
