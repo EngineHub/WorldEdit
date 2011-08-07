@@ -31,7 +31,7 @@ public class HollowCylinderBrush implements Brush {
         this.height = height;
     }
     
-    public void build(EditSession editSession, Vector pos, Pattern mat, int size)
+    public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
         editSession.makeHollowCylinder(pos, mat, size, height);
     }

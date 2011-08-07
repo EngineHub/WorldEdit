@@ -41,7 +41,7 @@ public class BrushTool implements TraceTool {
     private Mask mask = null;
     private Brush brush = new SphereBrush();
     private Pattern material = new SingleBlockPattern(new BaseBlock(BlockID.COBBLESTONE));
-    private int size = 1;
+    private double size = 1;
     private String permission;
     
     /**
@@ -125,17 +125,17 @@ public class BrushTool implements TraceTool {
      * 
      * @return
      */
-    public int getSize() {
+    public double getSize() {
         return size;
     }
 
     /**
      * Set the set brush size.
      * 
-     * @param size
+     * @param radius
      */
-    public void setSize(int size) {
-        this.size = size;
+    public void setSize(double radius) {
+        this.size = radius;
     }
     
     /**

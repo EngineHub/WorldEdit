@@ -1626,36 +1626,37 @@ public class EditSession {
      * @param block
      * @throws MaxChangedBlocksException
      */
-    private int makeHCylinderPoints(Vector center, int x, int z, int height,
+    private int makeHCylinderPoints(Vector center, int x, double z, int height,
             Pattern block) throws MaxChangedBlocksException {
+        int ceilZ = (int) Math.ceil(z);
         int affected = 0;
 
         if (x == 0) {
             for (int y = 0; y < height; ++y) {
-                setBlock(center.add(0, y, z), block);
-                setBlock(center.add(0, y, -z), block);
-                setBlock(center.add(z, y, 0), block);
-                setBlock(center.add(-z, y, 0), block);
+                setBlock(center.add(0, y, ceilZ), block);
+                setBlock(center.add(0, y, -ceilZ), block);
+                setBlock(center.add(ceilZ, y, 0), block);
+                setBlock(center.add(-ceilZ, y, 0), block);
                 affected += 4;
             }
         } else if (x == z) {
             for (int y = 0; y < height; ++y) {
-                setBlock(center.add(x, y, z), block);
-                setBlock(center.add(-x, y, z), block);
-                setBlock(center.add(x, y, -z), block);
-                setBlock(center.add(-x, y, -z), block);
+                setBlock(center.add(x, y, ceilZ), block);
+                setBlock(center.add(-x, y, ceilZ), block);
+                setBlock(center.add(x, y, -ceilZ), block);
+                setBlock(center.add(-x, y, -ceilZ), block);
                 affected += 4;
             }
         } else if (x < z) {
             for (int y = 0; y < height; ++y) {
-                setBlock(center.add(x, y, z), block);
-                setBlock(center.add(-x, y, z), block);
-                setBlock(center.add(x, y, -z), block);
-                setBlock(center.add(-x, y, -z), block);
-                setBlock(center.add(z, y, x), block);
-                setBlock(center.add(-z, y, x), block);
-                setBlock(center.add(z, y, -x), block);
-                setBlock(center.add(-z, y, -x), block);
+                setBlock(center.add(x, y, ceilZ), block);
+                setBlock(center.add(-x, y, ceilZ), block);
+                setBlock(center.add(x, y, -ceilZ), block);
+                setBlock(center.add(-x, y, -ceilZ), block);
+                setBlock(center.add(ceilZ, y, x), block);
+                setBlock(center.add(-ceilZ, y, x), block);
+                setBlock(center.add(ceilZ, y, -x), block);
+                setBlock(center.add(-ceilZ, y, -x), block);
                 affected += 8;
             }
         }
@@ -1673,11 +1674,11 @@ public class EditSession {
      * @return number of blocks set
      * @throws MaxChangedBlocksException
      */
-    public int makeHollowCylinder(Vector pos, Pattern block, int radius,
+    public int makeHollowCylinder(Vector pos, Pattern block, double radius,
             int height) throws MaxChangedBlocksException {
         int x = 0;
-        int z = radius;
-        int d = (5 - radius * 4) / 4;
+        double z = radius;
+        double d = (5 - radius * 4) / 4;
         int affected = 0;
 
         if (height == 0) {
@@ -1721,13 +1722,14 @@ public class EditSession {
      * @param block
      * @throws MaxChangedBlocksException
      */
-    private int makeCylinderPoints(Vector center, int x, int z, int height,
+    private int makeCylinderPoints(Vector center, int x, double z, int height,
             Pattern block) throws MaxChangedBlocksException {
-        int affected = 0;
+        int ceilZ = (int) Math.ceil(z);
+    	int affected = 0;
 
         if (x == z) {
             for (int y = 0; y < height; ++y) {
-                for (int z2 = -z; z2 <= z; ++z2) {
+                for (int z2 = -ceilZ; z2 <= ceilZ; ++z2) {
                     setBlock(center.add(x, y, z2), block);
                     setBlock(center.add(-x, y, z2), block);
                     affected += 2;
@@ -1736,12 +1738,12 @@ public class EditSession {
         } else if (x < z) {
             for (int y = 0; y < height; ++y) {
                 for (int x2 = -x; x2 <= x; ++x2) {
-                    for (int z2 = -z; z2 <= z; ++z2) {
+                    for (int z2 = -ceilZ; z2 <= ceilZ; ++z2) {
                         setBlock(center.add(x2, y, z2), block);
                         ++affected;
                     }
-                    setBlock(center.add(z, y, x2), block);
-                    setBlock(center.add(-z, y, x2), block);
+                    setBlock(center.add(ceilZ, y, x2), block);
+                    setBlock(center.add(-ceilZ, y, x2), block);
                     affected += 2;
                 }
             }
@@ -1760,11 +1762,11 @@ public class EditSession {
      * @return number of blocks set
      * @throws MaxChangedBlocksException
      */
-    public int makeCylinder(Vector pos, Pattern block, int radius, int height)
+    public int makeCylinder(Vector pos, Pattern block, double radius, int height)
             throws MaxChangedBlocksException {
         int x = 0;
-        int z = radius;
-        int d = (5 - radius * 4) / 4;
+        double z = radius;
+        double d = (5 - radius * 4) / 4;
         int affected = 0;
 
         if (height == 0) {
@@ -1807,13 +1809,14 @@ public class EditSession {
      * @return number of blocks changed
      * @throws MaxChangedBlocksException
      */
-    public int makeSphere(Vector pos, Pattern block, int radius,
+    public int makeSphere(Vector pos, Pattern block, double radius,
             boolean filled) throws MaxChangedBlocksException {
         int affected = 0;
 
-        for (int x = 0; x <= radius; ++x) {
-            for (int y = 0; y <= radius; ++y) {
-                for (int z = 0; z <= radius; ++z) {
+        int ceilRadius = (int) Math.ceil(radius);
+        for (int x = 0; x <= ceilRadius; ++x) {
+            for (int y = 0; y <= ceilRadius; ++y) {
+                for (int z = 0; z <= ceilRadius; ++z) {
                     Vector vec = pos.add(x, y, z);
                     double d = vec.distance(pos);
 

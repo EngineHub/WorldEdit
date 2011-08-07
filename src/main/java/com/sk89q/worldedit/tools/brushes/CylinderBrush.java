@@ -31,7 +31,7 @@ public class CylinderBrush implements Brush {
         this.height = height;
     }
     
-    public void build(EditSession editSession, Vector pos, Pattern mat, int size)
+    public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
         editSession.makeCylinder(pos, mat, size, height);
     }

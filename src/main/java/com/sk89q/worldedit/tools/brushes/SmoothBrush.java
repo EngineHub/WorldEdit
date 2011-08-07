@@ -36,9 +36,9 @@ public class SmoothBrush implements Brush {
         this.iterations = iterations;
     }
     
-    public void build(EditSession editSession, Vector pos, Pattern mat, int size)
+    public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
-        int rad = size;
+        double rad = size;
         Vector min = pos.subtract(rad, rad, rad);
         Vector max = pos.add(rad, rad + 10, rad);
         Region region = new CuboidRegion(min, max);
