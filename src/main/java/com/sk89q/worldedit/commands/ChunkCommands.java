@@ -24,6 +24,8 @@ import java.util.Set;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Logging;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.data.LegacyChunkStore;
 import com.sk89q.worldedit.data.McRegionChunkStore;
@@ -88,6 +90,7 @@ public class ChunkCommands {
         max = 0
     )
     @CommandPermissions({"worldedit.delchunks"})
+    @Logging(REGION)
     public static void deleteChunks(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

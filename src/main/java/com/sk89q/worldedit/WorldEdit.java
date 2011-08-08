@@ -22,10 +22,15 @@ package com.sk89q.worldedit;
 import java.util.*;
 import java.util.logging.Logger;
 import java.io.*;
+import java.lang.reflect.Method;
+
 import javax.script.ScriptException;
+
+import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissionsException;
 import com.sk89q.minecraft.util.commands.CommandUsageException;
 import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
 import com.sk89q.minecraft.util.commands.UnhandledCommandException;
 import com.sk89q.minecraft.util.commands.WrappedCommandException;
@@ -96,7 +101,7 @@ public class WorldEdit {
      * @param server
      * @param config
      */
-    public WorldEdit(ServerInterface server, LocalConfiguration config) {
+    public WorldEdit(ServerInterface server, final LocalConfiguration config) {
         this.server = server;
         this.config = config;
         
@@ -104,6 +109,50 @@ public class WorldEdit {
             @Override
             public boolean hasPermission(LocalPlayer player, String perm) {
                 return player.hasPermission(perm);
+            }
+            
+            @Override
+            public void invokeMethod(Method parent, String[] args,
+                    LocalPlayer player, Method method, Object instance,
+                    Object[] methodArgs, int level) throws CommandException {
+                if (config.logCommands) {
+                    final Logging loggingAnnotation = method.getAnnotation(Logging.class);
+
+                    final Logging.LogMode logMode;
+                    if (loggingAnnotation == null)
+                        logMode = null;
+                    else
+                        logMode = loggingAnnotation.value();
+
+                    String msg = "WorldEdit: " + player.getName() + ": " + StringUtil.joinString(args, " ");
+                    if (logMode != null) {
+                        Vector position = player.getPosition();
+                        final LocalSession session = getSession(player);
+                        switch (logMode) {
+                        case PLACEMENT:
+                            try {
+                                position = session.getPlacementPosition(player);
+                            } catch (IncompleteRegionException e) {
+                                break;
+                            }
+                            /* FALL-THROUGH */
+                            
+                        case POSITION:
+                            msg += " - Position: "+position;
+                            break;
+                            
+                        case REGION:
+                            try {
+                                msg += " - Region: "+session.getSelection(player.getWorld());
+                            } catch (IncompleteRegionException e) {
+                                break;
+                            }
+                            break;
+                        }
+                    }
+                    logger.info(msg);
+                }
+                super.invokeMethod(parent, args, player, method, instance, methodArgs, level);
             }
         };
 
@@ -1062,11 +1111,6 @@ public class WorldEdit {
             long start = System.currentTimeMillis();
 
             try {
-                if (config.logCommands) {
-                    logger.info("WorldEdit: " + player.getName() + ": "
-                            + StringUtil.joinString(split, " "));
-                }
-
                 commands.execute(split, player, this, session, player, editSession);
             } catch (CommandPermissionsException e) {
                 player.printError("You don't have permission to do this.");

@@ -19,10 +19,13 @@
 
 package com.sk89q.worldedit.commands;
 
+
 import java.util.Set;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Logging;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.filtering.GaussianKernel;
@@ -45,6 +48,7 @@ public class RegionCommands {
         max = 1
     )
     @CommandPermissions({"worldedit.region.set"})
+    @Logging(REGION)
     public static void set(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -71,6 +75,7 @@ public class RegionCommands {
         max = 2
     )
     @CommandPermissions({"worldedit.region.replace"})
+    @Logging(REGION)
     public static void replace(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -104,6 +109,7 @@ public class RegionCommands {
         max = 1
     )
     @CommandPermissions({"worldedit.region.overlay"})
+    @Logging(REGION)
     public static void overlay(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -129,6 +135,7 @@ public class RegionCommands {
         max = 0
     )
     @CommandPermissions({"worldedit.region.naturalize"})
+    @Logging(REGION)
     public static void naturalize(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -146,6 +153,7 @@ public class RegionCommands {
         max = 1
     )
     @CommandPermissions({"worldedit.region.walls"})
+    @Logging(REGION)
     public static void walls(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -164,6 +172,7 @@ public class RegionCommands {
         max = 1
     )
     @CommandPermissions({"worldedit.region.faces"})
+    @Logging(REGION)
     public static void faces(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -181,6 +190,7 @@ public class RegionCommands {
         max = 1
     )
     @CommandPermissions({"worldedit.region.smooth"})
+    @Logging(REGION)
     public static void smooth(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -206,6 +216,7 @@ public class RegionCommands {
         max = 3
     )
     @CommandPermissions({"worldedit.region.move"})
+    @Logging(REGION) // TODO: Add view direction
     public static void move(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -251,6 +262,7 @@ public class RegionCommands {
         max = 2
     )
     @CommandPermissions({"worldedit.region.stack"})
+    @Logging(REGION) // TODO: Add view direction
     public static void stack(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -286,6 +298,7 @@ public class RegionCommands {
         max = 0
     )
     @CommandPermissions({"worldedit.regen"})
+    @Logging(REGION)
     public static void regenerateChunk(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

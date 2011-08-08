@@ -19,10 +19,13 @@
 
 package com.sk89q.worldedit.commands;
 
+
 import java.util.Set;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Logging;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.patterns.*;
@@ -43,6 +46,7 @@ public class UtilityCommands {
         max = 3
     )
     @CommandPermissions({"worldedit.fill"})
+    @Logging(PLACEMENT)
     public static void fill(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -72,6 +76,7 @@ public class UtilityCommands {
         max = 3
     )
     @CommandPermissions({"worldedit.fill.recursive"})
+    @Logging(PLACEMENT)
     public static void fillr(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -101,6 +106,7 @@ public class UtilityCommands {
         max = 1
     )
     @CommandPermissions({"worldedit.drain"})
+    @Logging(PLACEMENT)
     public static void drain(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -120,6 +126,7 @@ public class UtilityCommands {
         max = 1
     )
     @CommandPermissions({"worldedit.fixlava"})
+    @Logging(PLACEMENT)
     public static void fixLava(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -139,6 +146,7 @@ public class UtilityCommands {
         max = 1
     )
     @CommandPermissions({"worldedit.fixwater"})
+    @Logging(PLACEMENT)
     public static void fixWater(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -158,6 +166,7 @@ public class UtilityCommands {
         max = 2
     )
     @CommandPermissions({"worldedit.removeabove"})
+    @Logging(PLACEMENT)
     public static void removeAbove(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -179,6 +188,7 @@ public class UtilityCommands {
         max = 2
     )
     @CommandPermissions({"worldedit.removebelow"})
+    @Logging(PLACEMENT)
     public static void removeBelow(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -200,6 +210,7 @@ public class UtilityCommands {
         max = 2
     )
     @CommandPermissions({"worldedit.removenear"})
+    @Logging(PLACEMENT)
     public static void removeNear(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -221,6 +232,7 @@ public class UtilityCommands {
         max = 3
     )
     @CommandPermissions({"worldedit.replacenear"})
+    @Logging(PLACEMENT)
     public static void replaceNear(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -253,6 +265,7 @@ public class UtilityCommands {
         max = 1
     )
     @CommandPermissions({"worldedit.snow"})
+    @Logging(PLACEMENT)
     public static void snow(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -271,6 +284,7 @@ public class UtilityCommands {
         max = 1
     )
     @CommandPermissions({"worldedit.thaw"})
+    @Logging(PLACEMENT)
     public static void thaw(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -289,6 +303,7 @@ public class UtilityCommands {
             max = 1
         )
     @CommandPermissions({"worldedit.extinguish"})
+    @Logging(PLACEMENT)
     public static void extinguish(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -314,6 +329,7 @@ public class UtilityCommands {
         max = 1
     )
     @CommandPermissions({"worldedit.butcher"})
+    @Logging(PLACEMENT)
     public static void butcher(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -334,6 +350,7 @@ public class UtilityCommands {
         max = 2
     )
     @CommandPermissions({"worldedit.remove"})
+    @Logging(PLACEMENT)
     public static void remove(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

@@ -22,6 +22,8 @@ package com.sk89q.worldedit.commands;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Logging;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.util.TreeGenerator;
@@ -40,6 +42,7 @@ public class GenerationCommands {
         max = 3
     )
     @CommandPermissions({"worldedit.generation.cylinder"})
+    @Logging(PLACEMENT)
     public static void hcyl(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -61,6 +64,7 @@ public class GenerationCommands {
         max = 3
     )
     @CommandPermissions({"worldedit.generation.cylinder"})
+    @Logging(PLACEMENT)
     public static void cyl(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -82,6 +86,7 @@ public class GenerationCommands {
         max = 3
     )
     @CommandPermissions({"worldedit.generation.sphere"})
+    @Logging(PLACEMENT)
     public static void hsphere(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -111,6 +116,7 @@ public class GenerationCommands {
         max = 3
     )
     @CommandPermissions({"worldedit.generation.sphere"})
+    @Logging(PLACEMENT)
     public static void sphere(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -140,6 +146,7 @@ public class GenerationCommands {
         max = 3
     )
     @CommandPermissions({"worldedit.generation.forest"})
+    @Logging(POSITION)
     public static void forestGen(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -169,6 +176,7 @@ public class GenerationCommands {
         max = 1
     )
     @CommandPermissions({"worldedit.generation.pumpkins"})
+    @Logging(POSITION)
     public static void pumpkins(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -187,6 +195,7 @@ public class GenerationCommands {
         max = 2
     )
     @CommandPermissions({"worldedit.generation.pyramid"})
+    @Logging(PLACEMENT)
     public static void pyramid(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -209,6 +218,7 @@ public class GenerationCommands {
         max = 2
     )
     @CommandPermissions({"worldedit.generation.pyramid"})
+    @Logging(PLACEMENT)
     public static void hpyramid(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

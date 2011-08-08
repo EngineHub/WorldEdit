@@ -24,6 +24,8 @@ import java.io.IOException;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Logging;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.data.DataException;
@@ -69,6 +71,7 @@ public class ClipboardCommands {
         max = 1
     )
     @CommandPermissions({"worldedit.clipboard.cut"})
+    @Logging(REGION)
     public static void cut(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -103,6 +106,7 @@ public class ClipboardCommands {
         max = 0
     )
     @CommandPermissions({"worldedit.clipboard.paste"})
+    @Logging(PLACEMENT)
     public static void paste(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
