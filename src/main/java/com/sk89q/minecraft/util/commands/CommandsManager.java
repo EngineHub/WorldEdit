@@ -398,19 +398,23 @@ public abstract class CommandsManager<T> {
 
             Object instance = instances.get(method);
             
-            try {
-                method.invoke(instance, methodArgs);
-            } catch (IllegalArgumentException e) {
-                logger.log(Level.SEVERE, "Failed to execute command", e);
-            } catch (IllegalAccessException e) {
-                logger.log(Level.SEVERE, "Failed to execute command", e);
-            } catch (InvocationTargetException e) {
-                if (e.getCause() instanceof CommandException) {
-                    throw (CommandException) e.getCause();
-                }
-                
-                throw new WrappedCommandException(e.getCause());
+            invokeMethod(parent, args, player, method, instance, methodArgs, argsCount);
+        }
+    }
+
+    public void invokeMethod(Method parent, String[] args, T player, Method method, Object instance, Object[] methodArgs, int level) throws CommandException {
+        try {
+            method.invoke(instance, methodArgs);
+        } catch (IllegalArgumentException e) {
+            logger.log(Level.SEVERE, "Failed to execute command", e);
+        } catch (IllegalAccessException e) {
+            logger.log(Level.SEVERE, "Failed to execute command", e);
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof CommandException) {
+                throw (CommandException) e.getCause();
             }
+            
+            throw new WrappedCommandException(e.getCause());
         }
     }
     
