@@ -32,11 +32,13 @@ public @interface Logging {
     public enum LogMode {
         POSITION, // Player position
         REGION, // Region selection
-        PLACEMENT // Either the player position or pos1, depending on the placeAtPos1 flag
+        ORIENTATION_REGION, // player orientation and Region selection 
+        PLACEMENT, // Either the player position or pos1, depending on the placeAtPos1 flag
+        ALL // Log all information available
     }
 
     /**
-     * Log mode. Can be either POSITION, REGION or PLACEMENT.
+     * Log mode. Can be either POSITION, REGION, ORIENTATION_REGION, PLACEMENT or ALL.
      */
     LogMode value();
 }

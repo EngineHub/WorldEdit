@@ -136,11 +136,19 @@ public class WorldEdit {
                                 break;
                             }
                             /* FALL-THROUGH */
-                            
+
                         case POSITION:
                             msg += " - Position: "+position;
                             break;
-                            
+
+                        case ALL:
+                            msg += " - Position: "+position;
+                            /* FALL-THROUGH */
+
+                        case ORIENTATION_REGION:
+                            msg += " - Orientation: "+player.getCardinalDirection().name();
+                            /* FALL-THROUGH */
+
                         case REGION:
                             try {
                                 msg += " - Region: "+session.getSelection(player.getWorld());
