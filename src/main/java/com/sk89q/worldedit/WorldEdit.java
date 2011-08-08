@@ -745,13 +745,13 @@ public class WorldEdit {
             dir = player.getCardinalDirection();
         }
 
-        if (dirStr.charAt(0) == 'w' || dir == PlayerDirection.EAST) {
+        if (dirStr.charAt(0) == 'w' || dir == PlayerDirection.WEST) {
             return CuboidClipboard.FlipDirection.WEST_EAST;
         } else if (dirStr.charAt(0) == 'e' || dir == PlayerDirection.EAST) {
             return CuboidClipboard.FlipDirection.WEST_EAST;
         } else if (dirStr.charAt(0) == 's' || dir == PlayerDirection.SOUTH) {
             return CuboidClipboard.FlipDirection.NORTH_SOUTH;
-        } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.SOUTH) {
+        } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.NORTH) {
             return CuboidClipboard.FlipDirection.NORTH_SOUTH;
         } else if (dirStr.charAt(0) == 'u') {
             return CuboidClipboard.FlipDirection.UP_DOWN;
