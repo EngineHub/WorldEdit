@@ -35,11 +35,13 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.masks.BlockTypeMask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
+import com.sk89q.worldedit.regions.RegionType;
 import com.sk89q.worldedit.tools.BrushTool;
 import com.sk89q.worldedit.tools.brushes.ClipboardBrush;
 import com.sk89q.worldedit.tools.brushes.CylinderBrush;
 import com.sk89q.worldedit.tools.brushes.HollowCylinderBrush;
 import com.sk89q.worldedit.tools.brushes.HollowSphereBrush;
+import com.sk89q.worldedit.tools.brushes.OverlayBrush;
 import com.sk89q.worldedit.tools.brushes.SmoothBrush;
 import com.sk89q.worldedit.tools.brushes.SphereBrush;
 
@@ -230,4 +232,49 @@ public class BrushCommands {
         player.print(String.format("Extinguisher equipped (%.0f).",
                 radius));
     }
+    
+    @Command(
+            aliases = {"overlay", "o"},
+            usage = "<block> [radius]",
+            flags = "crf",
+            desc = "Choose the overlay brush",
+            min = 0,
+            max = 2
+        )
+        @CommandPermissions({"worldedit.brush.overlay"})
+        public static void overlay(CommandContext args, WorldEdit we,
+                LocalSession session, LocalPlayer player, EditSession editSession)
+                throws WorldEditException {
+            
+            LocalConfiguration config = we.getConfiguration();
+            
+            OverlayBrush brush = new OverlayBrush();
+            
+            BrushTool tool = session.getBrushTool(player.getItemInHand());
+                        
+            tool.setFill(we.getBlockPattern(player, args.getString(0)));
+            if(args.argsLength() > 1) {
+                tool.setSize(args.getInteger(1));
+            }
+
+            if (tool.getSize() > config.maxBrushRadius) {
+                player.printError("Maximum allowed brush radius: "
+                        + config.maxBrushRadius);
+                return;
+            }
+            
+            brush.setFlat(args.hasFlag('f'));
+            brush.setReplace(args.hasFlag('r'));
+            
+            if (args.hasFlag('c')) {
+                brush.setRegionType(RegionType.CYLINDER);
+            } else {
+                brush.setRegionType(RegionType.CUBOID);
+            }
+            
+            tool.setBrush(brush, "worldedit.brush.overlay");
+
+            player.print(String.format("Overlay brush equipped (%d).",
+                    tool.getSize()));
+        }
 }
