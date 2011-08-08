@@ -159,7 +159,7 @@ public class RegionCommands {
     @Command(
         aliases = {"/faces", "/outline"},
         usage = "<block>",
-        desc = "Build the walls, ceiling, and roof of a selection",
+        desc = "Build the walls, ceiling, and floor of a selection",
         min = 1,
         max = 1
     )
