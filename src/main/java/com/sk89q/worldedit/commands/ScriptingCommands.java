@@ -23,6 +23,8 @@ import java.io.File;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Logging;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
 
 /**
@@ -39,6 +41,7 @@ public class ScriptingCommands {
         max = -1
     )
     @CommandPermissions({"worldedit.scripting.execute"})
+    @Logging(ALL)
     public static void execute(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -63,6 +66,7 @@ public class ScriptingCommands {
         max = -1
     )
     @CommandPermissions({"worldedit.scripting.execute"})
+    @Logging(ALL)
     public static void executeLast(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

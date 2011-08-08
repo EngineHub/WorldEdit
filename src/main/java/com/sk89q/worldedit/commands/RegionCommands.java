@@ -216,7 +216,7 @@ public class RegionCommands {
         max = 3
     )
     @CommandPermissions({"worldedit.region.move"})
-    @Logging(REGION) // TODO: Add view direction
+    @Logging(ORIENTATION_REGION)
     public static void move(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -262,7 +262,7 @@ public class RegionCommands {
         max = 2
     )
     @CommandPermissions({"worldedit.region.stack"})
-    @Logging(REGION) // TODO: Add view direction
+    @Logging(ORIENTATION_REGION)
     public static void stack(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
