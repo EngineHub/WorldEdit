@@ -35,21 +35,35 @@ import com.sk89q.worldedit.patterns.Pattern;
 public class ToolUtilCommands {
     @Command(
         aliases = {"/", ","},
-        usage = "",
+        usage = "[on|off]",
         desc = "Toggle the super pickaxe pickaxe function",
         min = 0,
-        max = 0
+        max = 1
     )
     @CommandPermissions({"worldedit.superpickaxe"})
     public static void togglePickaxe(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        if (session.toggleSuperPickAxe()) {
-            player.print("Super pick axe enabled.");
-        } else {
+        String newState = args.getString(0, null);
+        if (session.hasSuperPickAxe()) {
+            if ("on".equals(newState)) {
+                player.printError("Super pick axe already enabled.");
+                return;
+            }
+
+            session.disableSuperPickAxe();
             player.print("Super pick axe disabled.");
         }
+        else {
+            if ("off".equals(newState)) {
+                player.printError("Super pick axe already disabled.");
+                return;
+            }
+            session.enableSuperPickAxe();
+            player.print("Super pick axe enabled.");
+        }
+
     }
 
     @Command(
