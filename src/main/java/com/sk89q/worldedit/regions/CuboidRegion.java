@@ -342,4 +342,14 @@ public class CuboidRegion implements Region {
             }
         };
     }
+    
+    /**
+     * Returns string representation "( (x, y, z) - (x, y, z) )".
+     *
+     * @return string
+     */
+    @Override
+    public String toString() {
+        return "( "+getMinimumPoint()+" - "+getMaximumPoint()+" )";
+    }
 }
