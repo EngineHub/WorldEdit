@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.commands;
 
+import java.util.HashSet;
+import java.util.Set;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
@@ -26,13 +28,19 @@ import com.sk89q.minecraft.util.commands.NestedCommand;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.tools.brushes.Brush;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithFlags;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithIterations;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithPattern;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithSize;
+import com.sk89q.worldedit.tools.enums.ToolFlag;
 
 /**
  * Tool commands.
  * 
  * @author sk89q
  */
-public class ToolUtilCommands {
+public class ToolUtilCommands {   
     @Command(
         aliases = {"/", ","},
         usage = "[on|off]",
@@ -109,7 +117,7 @@ public class ToolUtilCommands {
 
     @Command(
         aliases = {"mat", "material", "fill"},
-        usage = "[pattern]",
+        usage = "<pattern>",
         desc = "Set the brush material",
         min = 1,
         max = 1
@@ -119,13 +127,18 @@ public class ToolUtilCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
-        session.getBrushTool(player.getItemInHand()).setFill(pattern);
-        player.print("Brush material set.");
+        Brush brush = session.getBrushTool(player.getItemInHand()).getBrush();
+        if(brush instanceof ToolWithPattern) {
+            ((ToolWithPattern) brush).pattern().set(pattern);
+            player.print("Brush material set.");
+        } else {
+            player.print("Your brush doesn't support this command");
+        }
     }
 
     @Command(
             aliases = {"range"},
-            usage = "[pattern]",
+            usage = "<range>",
             desc = "Set the brush range",
             min = 1,
             max = 1
@@ -140,27 +153,160 @@ public class ToolUtilCommands {
     }
 
     @Command(
-        aliases = {"size"},
-        usage = "[pattern]",
+        aliases = {"size, sizeX, width"},
+        usage = "<size>",
         desc = "Set the brush size",
         min = 1,
         max = 1
     )
     @CommandPermissions({"worldedit.brush.options.size"})
-    public static void size(CommandContext args, WorldEdit we,
+    public static void sizeX(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
+                
+        Brush brush = session.getBrushTool(player.getItemInHand()).getBrush();
+        if(brush instanceof ToolWithSize) {
+            long size = args.getLong(0);
+            if (size > config.maxBrushRadius) {
+                player.printError("Maximum allowed brush radius: "
+                        + config.maxBrushRadius);
+                return;
+            }
+            ((ToolWithSize) brush).size().setX(size);
+            player.print("Brush size set.");
+        } else {
+            player.print("Your brush doesn't support this command");
+        }
+    }
+    
+    @Command(
+            aliases = {"sizeY, height"},
+            usage = "<size>",
+            desc = "Set the brush size",
+            min = 1,
+            max = 1
+        )
+    @CommandPermissions({"worldedit.brush.options.size"})
+    public static void sizeY(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
         
-        int radius = args.getInteger(0);
-        if (radius > config.maxBrushRadius) {
-            player.printError("Maximum allowed brush radius: "
-                    + config.maxBrushRadius);
+        LocalConfiguration config = we.getConfiguration();
+                
+        Brush brush = session.getBrushTool(player.getItemInHand()).getBrush();
+        if(brush instanceof ToolWithSize) {
+            long size = args.getLong(0);
+            if (size > config.maxBrushRadius) {
+                player.printError("Maximum allowed brush radius: "
+                        + config.maxBrushRadius);
+                return;
+            }
+            ((ToolWithSize) brush).size().setY(size);
+            player.print("Brush size set.");
+        } else {
+            player.print("Your brush doesn't support this command");
+        }
+    }
+    
+    @Command(
+            aliases = {"sizeZ, length"},
+            usage = "<size>",
+            desc = "Set the brush size",
+            min = 1,
+            max = 1
+        )
+    @CommandPermissions({"worldedit.brush.options.size"})
+    public static void sizeZ(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        
+        LocalConfiguration config = we.getConfiguration();
+                
+        Brush brush = session.getBrushTool(player.getItemInHand()).getBrush();
+        if(brush instanceof ToolWithSize) {
+            long size = args.getLong(0);
+            if (size > config.maxBrushRadius) {
+                player.printError("Maximum allowed brush radius: "
+                        + config.maxBrushRadius);
+                return;
+            }
+            ((ToolWithSize) brush).size().setZ(size);
+            player.print("Brush size set.");
+        } else {
+            player.print("Your brush doesn't support this command");
+        }
+    }
+    
+    @Command(
+            aliases = {"iterations"},
+            usage = "<iterations>",
+            desc = "Set the brush size",
+            min = 1,
+            max = 1
+        )
+    @CommandPermissions({"worldedit.brush.options.iterations"})
+    public static void iterations(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+                
+        Brush brush = session.getBrushTool(player.getItemInHand()).getBrush();
+        if(brush instanceof ToolWithIterations) {
+            int iterations = args.getInteger(0);
+            ((ToolWithIterations) brush).iterations().set(iterations);
+            player.print("Brush iterations set.");
+        } else {
+            player.print("Your brush doesn't support this command");
+        }
+    }
+      
+    @Command(
+            aliases = {"flags"},
+            usage = "[flags]",
+            flags = "h",
+            desc = "Set the brush flags",
+            min = 0,
+            max = -1
+        )
+    @CommandPermissions({"worldedit.brush.options.flags"})
+    public static void flags(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        
+        StringBuilder sb = new StringBuilder();
+                
+        if (args.hasFlag('h')) {
+            sb.append("Available flags [name|aliases]: ");
+            for(ToolFlag flag : ToolFlag.values()) {
+                sb.append("[" +flag.toString().toLowerCase() + " |");
+                int i = flag.getAliases().length - 1;
+                for(String s : flag.getAliases()) {
+                    sb.append(s);
+                    if(i > 0) {
+                        sb.append(",");
+                    }
+                    i--;
+                }
+                sb.append("]");
+            }
+            player.print(sb.toString());
             return;
         }
         
-        session.getBrushTool(player.getItemInHand()).setSize(radius);
-        player.print("Brush size set.");
+        Brush brush = session.getBrushTool(player.getItemInHand()).getBrush();
+        if(brush instanceof ToolWithFlags) {
+            Set<ToolFlag> flags = new HashSet<ToolFlag>();
+            for(int i = args.argsLength() - 1; i >= 0; i--) {
+                ToolFlag t = ToolFlag.getFlag(args.getString(i));
+                if(t != null) {
+                    flags.add(t);
+                }
+            }
+            ((ToolWithFlags) brush).flags().set(flags);
+            player.print("Brush flags set.");
+        } else {
+            player.print("Your brush doesn't support this command");
+        }
     }
 }

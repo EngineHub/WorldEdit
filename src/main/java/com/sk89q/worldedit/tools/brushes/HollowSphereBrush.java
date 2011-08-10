@@ -21,15 +21,34 @@ package com.sk89q.worldedit.tools.brushes;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.UnsupportedFlagException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.tools.enums.ToolFlag;
 
-public class HollowSphereBrush implements Brush {
+@Deprecated
+public class HollowSphereBrush extends SphereBrush {
     public HollowSphereBrush() {
+        try {
+            this.flags.add(ToolFlag.HOLLOW);
+        } catch (UnsupportedFlagException e) {
+            
+        }
     }
     
+    @Override
+    @Deprecated
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
-        editSession.makeSphere(pos, mat, size, false);
+        boolean hollow = flags.contains(ToolFlag.HOLLOW);
+        try {
+            this.flags.add(ToolFlag.HOLLOW);
+        } catch (UnsupportedFlagException e) {
+            
+        }
+        super.build(editSession, pos, mat, size);
+        if(!hollow) {
+            this.flags.remove(ToolFlag.HOLLOW);
+        }
     }
 }

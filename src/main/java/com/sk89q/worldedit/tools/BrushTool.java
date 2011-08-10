@@ -21,12 +21,8 @@ package com.sk89q.worldedit.tools;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.masks.CombinedMask;
 import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.tools.brushes.Brush;
 import com.sk89q.worldedit.tools.brushes.SphereBrush;
 
@@ -40,8 +36,6 @@ public class BrushTool implements TraceTool {
     protected int range = -1;
     private Mask mask = null;
     private Brush brush = new SphereBrush();
-    private Pattern material = new SingleBlockPattern(new BaseBlock(BlockID.COBBLESTONE));
-    private double size = 1;
     private String permission;
     
     /**
@@ -101,43 +95,7 @@ public class BrushTool implements TraceTool {
     public Brush getBrush() {
         return brush;
     }
-    
-    /**
-     * Set the material.
-     * 
-     * @param material
-     */
-    public void setFill(Pattern material) {
-        this.material = material;
-    }
-    
-    /**
-     * Get the material.
-     * 
-     * @return
-     */
-    public Pattern getMaterial() {
-        return material;
-    }
-
-    /**
-     * Get the set brush size.
-     * 
-     * @return
-     */
-    public double getSize() {
-        return size;
-    }
-
-    /**
-     * Set the set brush size.
-     * 
-     * @param radius
-     */
-    public void setSize(double radius) {
-        this.size = radius;
-    }
-    
+        
     /**
      * Get the set brush range.
      * 
@@ -193,7 +151,7 @@ public class BrushTool implements TraceTool {
         }
         
         try {
-            brush.build(editSession, target, material, size);
+            brush.build(editSession, target);
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {

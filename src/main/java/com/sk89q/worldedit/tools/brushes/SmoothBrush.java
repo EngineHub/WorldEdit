@@ -28,14 +28,27 @@ import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.tools.delegates.ToolIterationsDelegate;
+import com.sk89q.worldedit.tools.delegates.ToolSizeDelegate;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolIterations;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolSize;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithIterations;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithSize;
 
-public class SmoothBrush implements Brush {
-    private int iterations;
+public class SmoothBrush implements Brush,
+                                    ToolWithSize,
+                                    ToolWithIterations {
+    protected ToolIterations iterations = new ToolIterationsDelegate(1);
+    protected ToolSize size = new ToolSizeDelegate(true, true, true);
     
-    public SmoothBrush(int iterations) {
-        this.iterations = iterations;
+    public SmoothBrush() { 
     }
     
+    public SmoothBrush(int iterations) {
+        this.iterations.set(iterations);
+    }
+    
+    @Deprecated
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
         double rad = size;
@@ -44,6 +57,25 @@ public class SmoothBrush implements Brush {
         Region region = new CuboidRegion(min, max);
         HeightMap heightMap = new HeightMap(editSession, region);
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
-        heightMap.applyFilter(filter, iterations);
+        heightMap.applyFilter(filter, iterations.get());
+    }
+
+    public ToolIterations iterations() {
+        return iterations;
+    }
+
+    public ToolSize size() {
+        return size;
+    }
+
+    public void build(EditSession editSession, Vector pos)
+            throws MaxChangedBlocksException {
+        double rad = this.size().getX();
+        Vector min = pos.subtract(rad, rad, rad);
+        Vector max = pos.add(rad, rad + 10, rad);
+        Region region = new CuboidRegion(min, max);
+        HeightMap heightMap = new HeightMap(editSession, region);
+        HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
+        heightMap.applyFilter(filter, iterations.get());
     }
 }
