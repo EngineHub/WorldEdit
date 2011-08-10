@@ -30,6 +30,7 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
+import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.*;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
@@ -304,7 +305,10 @@ public class RegionCommands {
             throws WorldEditException {
         
         Region region = session.getSelection(player.getWorld());
+        Mask mask = session.getMask();
+        session.setMask(null);
         player.getWorld().regenerate(region, editSession);
+        session.setMask(mask);
         player.print("Region regenerated.");
     }
 }
