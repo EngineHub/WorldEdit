@@ -161,9 +161,6 @@ public class EditSession {
      * @return Whether the block changed
      */
     public boolean rawSetBlock(Vector pt, BaseBlock block) {
-        // Fire the block event
-        player.fireBlockEvent(pt);
-        
         int y = pt.getBlockY();
         int type = block.getType();
 
@@ -261,6 +258,9 @@ public class EditSession {
                 world.copyToWorld(pt, noteBlock);
             }
         }
+        // Fire the block event
+        if (result) 
+            player.fireBlockEvent(pt);
         return result;
     }
 
@@ -278,13 +278,16 @@ public class EditSession {
             throws MaxChangedBlocksException {
         BlockVector blockPt = pt.toBlockVector();
 
-        // if (!original.containsKey(blockPt)) {
+        // Check if it is already changed
+        if (original.containsKey(blockPt)) {
+            return false;
+        }
+        
         original.put(blockPt, getBlock(pt));
 
         if (maxBlocks != -1 && original.size() > maxBlocks) {
             throw new MaxChangedBlocksException(maxBlocks);
         }
-        // }
 
         current.put(pt.toBlockVector(), block);
 

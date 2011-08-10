@@ -185,4 +185,13 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
             throw new UnsupportedOperationException();
         }
     }
+    
+    /**
+     * Checks if the list contains the key
+     * @param a
+     * @return true if it contains the key
+     */
+    public boolean containsKey(A a){
+        return listA.contains(a);
+    }
 }

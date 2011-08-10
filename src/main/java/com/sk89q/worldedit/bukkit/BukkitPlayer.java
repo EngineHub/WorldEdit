@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.bukkit;
 
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
@@ -140,8 +139,8 @@ public class BukkitPlayer extends LocalPlayer {
     @Override
     public void fireBlockEvent(Vector loc) {
         if (plugin.getLocalConfiguration().useBlockEvents) {
-            Block block = player.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-            BlockBreakEvent event = new BlockBreakEvent(block, player);
+            BlockBreakEvent event = new WorldEditBlockEvent(loc, player);
+            event.setCancelled(true);
             plugin.getServer().getPluginManager().callEvent(event);
         }
     }
