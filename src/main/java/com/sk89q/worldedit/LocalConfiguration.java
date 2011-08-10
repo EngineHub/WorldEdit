@@ -61,6 +61,7 @@ public abstract class LocalConfiguration {
     public String saveDir = "schematics";
     public String scriptsDir = "craftscripts";
     public boolean showFirstUseVersion = true;
+    public boolean useBlockEvents = false;
     
     /**
      * Loads the configuration.

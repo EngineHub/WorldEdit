@@ -606,6 +606,13 @@ public abstract class LocalPlayer {
      */
     public void dispatchCUIHandshake() {
     }
+    
+    /**
+     * Creates and calls a block event.
+     * @param location
+     * @return false if cancelled
+     */
+    public abstract void fireBlockEvent(Vector location);
 
     /**
      * Returns true if equal.
