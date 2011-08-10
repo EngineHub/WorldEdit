@@ -43,6 +43,7 @@ import com.sk89q.worldedit.scripting.*;
 import com.sk89q.worldedit.tools.*;
 import com.sk89q.worldedit.masks.*;
 import com.sk89q.worldedit.patterns.*;
+import com.sk89q.worldedit.util.TargetBlock;
 
 /**
  * This class is the main entry point for WorldEdit. All events are routed
@@ -946,12 +947,19 @@ public class WorldEdit {
         if (player.getItemInHand() == config.navigationWand
                 && config.navigationWandMaxDistance > 0
                 && player.hasPermission("worldedit.navigation.jumpto")) {
-            WorldVector pos = player.getSolidBlockTrace(config.navigationWandMaxDistance);
+            // Bug workaround
+            // Blocks this from being used after the thru function
+            if (!session.canUseJumpto()){
+                session.toggleJumptoBlock();
+                return false;
+            }
+            WorldVector pos = player.getSolidBlockTrace(config.navigationWandMaxDistance);            
             if (pos != null) {
                 player.findFreePosition(pos);
             } else {
                 player.printError("No block in sight (or too far)!");
             }
+            return true;
         }
 
         Tool tool = session.getTool(player.getItemInHand());
@@ -980,6 +988,11 @@ public class WorldEdit {
             if (!player.passThroughForwardWall(40)) {
                 player.printError("Nothing to pass through!");
             }
+            // Bug workaround, so it wont do the Jumpto compass function
+            // Right after this teleport
+            if (session.canUseJumpto())
+                session.toggleJumptoBlock();
+            return true;
         }
         
         Tool tool = session.getTool(player.getItemInHand());
