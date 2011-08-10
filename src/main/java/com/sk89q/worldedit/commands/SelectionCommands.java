@@ -50,28 +50,22 @@ public class SelectionCommands {
     public static void pos1(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
-    	
-    	Vector pos;
-    	
-    	if(args.argsLength() == 1)
-    	{
-    		if(args.getString(0).matches("-?\\d+,-?\\d+,-?\\d+"))
-    		{
-    			String[] coords = args.getString(0).split(",");
-    			pos = new Vector(Integer.parseInt(coords[0]), 
-    					Integer.parseInt(coords[1]), 
-    					Integer.parseInt(coords[2]));
-    		}
-    		else
-    		{
-    			player.printError("Invalid coordinates " + args.getString(0));
-    			return;
-    		}
-    	}
-    	else pos = player.getBlockIn();
-        
-        if (!session.getRegionSelector(player.getWorld())
-                .selectPrimary(pos)) {
+
+        Vector pos;
+
+        if (args.argsLength() == 1) {
+            if (args.getString(0).matches("-?\\d+,-?\\d+,-?\\d+")) {
+                String[] coords = args.getString(0).split(",");
+                pos = new Vector(Integer.parseInt(coords[0]), Integer.parseInt(coords[1]), Integer.parseInt(coords[2]));
+            } else {
+                player.printError("Invalid coordinates " + args.getString(0));
+                return;
+            }
+        } else {
+            pos = player.getBlockIn();
+        }
+
+        if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos)) {
             player.printError("Position already set.");
             return;
         }
@@ -91,27 +85,23 @@ public class SelectionCommands {
     public static void pos2(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
-    	
-    	Vector pos;
-    	if(args.argsLength() == 1)
-    	{
-    		if(args.getString(0).matches("-?\\d+,-?\\d+,-?\\d+"))
-    		{
-    			String[] coords = args.getString(0).split(",");
-    			pos = new Vector(Integer.parseInt(coords[0]), 
-    					Integer.parseInt(coords[1]), 
-    					Integer.parseInt(coords[2]));
-    		}
-    		else
-    		{
-    			player.printError("Invalid coordinates " + args.getString(0));
-    			return;
-    		}
-    	}
-    	else pos = player.getBlockIn();
 
-        if (!session.getRegionSelector(player.getWorld())
-                .selectSecondary(pos)) {
+        Vector pos;
+        if(args.argsLength() == 1) {
+            if(args.getString(0).matches("-?\\d+,-?\\d+,-?\\d+")) {
+                String[] coords = args.getString(0).split(",");
+                pos = new Vector(Integer.parseInt(coords[0]), 
+                        Integer.parseInt(coords[1]), 
+                        Integer.parseInt(coords[2]));
+            } else {
+                player.printError("Invalid coordinates " + args.getString(0));
+                return;
+            }
+        } else {
+            pos = player.getBlockIn();
+        }
+
+        if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos)) {
             player.printError("Position already set.");
             return;
         }
