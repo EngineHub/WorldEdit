@@ -496,7 +496,7 @@ public class WorldEdit {
             else  if (component.charAt(0) == '>') {
                 LocalWorld world = player.getWorld();
             	Set<Integer> set = new HashSet<Integer>();
-                    String ids = component.replaceAll(">,", "");
+                    String ids = component.replaceAll(">", "");
                     if(ids.equalsIgnoreCase("*")){
                     	current = new UnderOverlayMask(set,true,true);
                     }
@@ -530,7 +530,7 @@ public class WorldEdit {
                 	Set<Integer> set = new HashSet<Integer>();
                 	
                    
-                        String ids = component.replaceAll("<,", "");
+                        String ids = component.replaceAll("<", "");
                         if(ids.equalsIgnoreCase("*")){
                         	current = new UnderOverlayMask(set,false,true);
                         }
