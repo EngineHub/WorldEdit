@@ -26,14 +26,8 @@ import java.lang.reflect.Method;
 
 import javax.script.ScriptException;
 
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandPermissionsException;
-import com.sk89q.minecraft.util.commands.CommandUsageException;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
-import com.sk89q.minecraft.util.commands.UnhandledCommandException;
-import com.sk89q.minecraft.util.commands.WrappedCommandException;
+import com.sk89q.minecraft.util.commands.*;
+
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.*;
@@ -467,7 +461,7 @@ public class WorldEdit {
         return new RandomFillPattern(blockChances);
     }
     
-    /**
+     /**
      * Get a block mask. Block masks are used to determine which
      * blocks to include when replacing.
      * 
@@ -480,11 +474,10 @@ public class WorldEdit {
     public Mask getBlockMask(LocalPlayer player, LocalSession session,
             String maskString) throws WorldEditException {
         Mask mask = null;
-        
+    
         for (String component : maskString.split(" ")) {
             Mask current = null;
-            
-            if (component.length() == 0) {
+                  if (component.length() == 0) {
                 continue;
             }
             
@@ -495,10 +488,82 @@ public class WorldEdit {
                         || component.equalsIgnoreCase("#region")
                         || component.equalsIgnoreCase("#sel")) {
                     current = new RegionMask(session.getSelection(player.getWorld()));
-                } else {
+                } 
+                else {
                     throw new UnknownItemException(component);
                 }
-            } else {
+            } 
+            else  if (component.charAt(0) == '>') {
+                LocalWorld world = player.getWorld();
+            	Set<Integer> set = new HashSet<Integer>();
+                    String ids = component.replaceAll(">,", "");
+                    if(ids.equalsIgnoreCase("*")){
+                    	current = new UnderOverlayMask(set,true,true);
+                    }
+                    else{
+                    String[] split = ids.split(",");
+                    for(String sid :split){
+                       try{
+                    	   int pid = Integer.parseInt(sid);
+                    	   if(!world.isValidBlockType(pid)){
+                    		   throw new UnknownItemException(sid);
+                    	   }
+                    	   else{
+                    		   set.add(pid);
+                    	   }
+                       }catch(NumberFormatException e){
+                    	   BlockType type = BlockType.lookup(sid);
+                    	   int id = type.getID();
+                    	   if(!world.isValidBlockType(id)){
+                    		   throw new UnknownItemException(sid);
+                    	   }
+                    	   else{
+                    		   set.add(id);
+                       }
+                }
+                    current = new UnderOverlayMask(set, true, false);  
+                }
+                }
+         }
+            else if (component.charAt(0) == '<') {
+                LocalWorld world = player.getWorld();
+                	Set<Integer> set = new HashSet<Integer>();
+                	
+                   
+                        String ids = component.replaceAll("<,", "");
+                        if(ids.equalsIgnoreCase("*")){
+                        	current = new UnderOverlayMask(set,false,true);
+                        }
+                        else{
+                        String[] split = ids.split(",");
+                        for(String sid :split){
+                           try{
+                        	   int pid = Integer.parseInt(sid);
+                        	   if(!world.isValidBlockType(pid)){
+                        		   throw new UnknownItemException(sid);
+                        	   }
+                        	   else{
+                        		   set.add(pid);
+                        	   }
+                           }catch(NumberFormatException e){
+                        	   BlockType type = BlockType.lookup(sid);
+                        	   int id = type.getID();
+                        	   if(!world.isValidBlockType(id)){
+                        		   throw new UnknownItemException(sid);
+                        	   }
+                        	   else{
+                        		   set.add(id);
+                        	   
+                           }
+                            
+                    }
+                        current = new UnderOverlayMask(set, false, false);  
+                    }
+                    }
+             }
+            	
+            	else {
+            
                 if (component.charAt(0) == '!' && component.length() > 1) {
                     current = new InvertedBlockTypeMask(
                             getBlockIDs(player, component.substring(1), true));
@@ -519,7 +584,6 @@ public class WorldEdit {
         
         return mask;
     }
-
     /**
      * Get a list of blocks as a set.
      *
