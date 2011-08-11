@@ -265,6 +265,7 @@ public abstract class LocalWorld {
         else if (type == 20) { } // Glass
         else if (type == 21) { dropItem(pt, new BaseItemStack(351, 1, (short)4), (random.nextInt(5)+4)); } // Lapis Lazuli ore
         else if (type == 26) { dropItem(pt, new BaseItemStack(355)); } // Bed
+        else if (type == 31) { if(random.nextInt(8) == 0) dropItem(pt, new BaseItemStack(295)); } // Tall Grass
         else if (type == 34) { } // Piston Head
         else if (type == 35) { dropItem(pt, new BaseItemStack(35, 1, (short)getBlockData(pt))); } // Cloth
         else if (type == 43) { // Double step
