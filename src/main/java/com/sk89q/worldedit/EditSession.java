@@ -1813,44 +1813,60 @@ public class EditSession {
             boolean filled) throws MaxChangedBlocksException {
         int affected = 0;
 
-        int ceilRadius = (int) Math.ceil(radius);
+        radius += 0.5;
+        final double radiusSq = radius*radius;
+        final double radius1Sq = (radius - 1)*(radius - 1);
+
+        final int ceilRadius = (int) Math.ceil(radius);
         for (int x = 0; x <= ceilRadius; ++x) {
             for (int y = 0; y <= ceilRadius; ++y) {
                 for (int z = 0; z <= ceilRadius; ++z) {
-                    Vector vec = pos.add(x, y, z);
-                    double d = vec.distance(pos);
+                    double dSq = lengthSq(x, y, z);
 
-                    if (d <= radius + 0.5 && (filled || d >= radius - 0.5)) {
-                        if (setBlock(vec, block)) {
-                            ++affected;
-                        }
-                        if (setBlock(pos.add(-x, y, z), block)) {
-                            ++affected;
-                        }
-                        if (setBlock(pos.add(x, -y, z), block)) {
-                            ++affected;
-                        }
-                        if (setBlock(pos.add(x, y, -z), block)) {
-                            ++affected;
-                        }
-                        if (setBlock(pos.add(-x, -y, z), block)) {
-                            ++affected;
-                        }
-                        if (setBlock(pos.add(x, -y, -z), block)) {
-                            ++affected;
-                        }
-                        if (setBlock(pos.add(-x, y, -z), block)) {
-                            ++affected;
-                        }
-                        if (setBlock(pos.add(-x, -y, -z), block)) {
-                            ++affected;
-                        }
+                    if (dSq > radiusSq)
+                        continue;
+
+                    if (!filled) {
+                        if (dSq < radius1Sq)
+                            continue;
+
+                        if (lengthSq(x+1, y, z) <= radiusSq && lengthSq(x, y+1, z) <= radiusSq && lengthSq(x, y, z+1) <= radiusSq)
+                            continue;
+                    }
+
+                    if (setBlock(pos.add(x, y, z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(-x, y, z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(x, -y, z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(x, y, -z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(-x, -y, z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(x, -y, -z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(-x, y, -z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(-x, -y, -z), block)) {
+                        ++affected;
                     }
                 }
             }
         }
 
         return affected;
+    }
+
+    private static final double lengthSq(int x, int y, int z) {
+        return x*x + y*y + z*z;
     }
 
     /**
