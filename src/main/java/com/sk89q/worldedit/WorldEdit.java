@@ -473,13 +473,13 @@ public class WorldEdit {
     public Mask getBlockMask(LocalPlayer player, LocalSession session,
             String maskString) throws WorldEditException {
         Mask mask = null;
-    
+
         for (String component : maskString.split(" ")) {
             Mask current = null;
-                  if (component.length() == 0) {
+            if (component.length() == 0) {
                 continue;
             }
-            
+
             if (component.charAt(0) == '#') {
                 if (component.equalsIgnoreCase("#existing")) {
                     current = new ExistingBlockMask();
@@ -487,82 +487,36 @@ public class WorldEdit {
                         || component.equalsIgnoreCase("#region")
                         || component.equalsIgnoreCase("#sel")) {
                     current = new RegionMask(session.getSelection(player.getWorld()));
-                } 
-                else {
+                } else {
                     throw new UnknownItemException(component);
                 }
-            } 
-            else  if (component.charAt(0) == '>') {
+            } else if (component.charAt(0) == '>'
+                    || component.charAt(0) == '<') {
                 LocalWorld world = player.getWorld();
-            	Set<Integer> set = new HashSet<Integer>();
-                    String ids = component.replaceAll(">", "");
-                    if(ids.equalsIgnoreCase("*")){
-                    	current = new UnderOverlayMask(set,true,true);
-                    }
-                    else{
-                    String[] split = ids.split(",");
-                    for(String sid :split){
-                       try{
-                    	   int pid = Integer.parseInt(sid);
-                    	   if(!world.isValidBlockType(pid)){
-                    		   throw new UnknownItemException(sid);
-                    	   }
-                    	   else{
-                    		   set.add(pid);
-                    	   }
-                       }catch(NumberFormatException e){
-                    	   BlockType type = BlockType.lookup(sid);
-                    	   int id = type.getID();
-                    	   if(!world.isValidBlockType(id)){
-                    		   throw new UnknownItemException(sid);
-                    	   }
-                    	   else{
-                    		   set.add(id);
-                       }
-                }
-                    current = new UnderOverlayMask(set, true, false);  
-                }
-                }
-         }
-            else if (component.charAt(0) == '<') {
-                LocalWorld world = player.getWorld();
-                	Set<Integer> set = new HashSet<Integer>();
-                	
-                   
-                        String ids = component.replaceAll("<", "");
-                        if(ids.equalsIgnoreCase("*")){
-                        	current = new UnderOverlayMask(set,false,true);
+                boolean over = component.charAt(0) == '>';
+                Set<Integer> set = new HashSet<Integer>();
+                String ids = component.replaceAll(">", "").replaceAll("<", "");
+
+                if (!(ids.equals("*") || ids.equals(""))) {
+                    for (String sid : ids.split(",")) {
+                        try {
+                            int pid = Integer.parseInt(sid);
+                            if (!world.isValidBlockType(pid)) {
+                                throw new UnknownItemException(sid);
+                            }
+                            set.add(pid);
+                        } catch (NumberFormatException e) {
+                            BlockType type = BlockType.lookup(sid);
+                            int id = type.getID();
+                            if (!world.isValidBlockType(id)) {
+                                throw new UnknownItemException(sid);
+                            }
+                            set.add(id);
                         }
-                        else{
-                        String[] split = ids.split(",");
-                        for(String sid :split){
-                           try{
-                        	   int pid = Integer.parseInt(sid);
-                        	   if(!world.isValidBlockType(pid)){
-                        		   throw new UnknownItemException(sid);
-                        	   }
-                        	   else{
-                        		   set.add(pid);
-                        	   }
-                           }catch(NumberFormatException e){
-                        	   BlockType type = BlockType.lookup(sid);
-                        	   int id = type.getID();
-                        	   if(!world.isValidBlockType(id)){
-                        		   throw new UnknownItemException(sid);
-                        	   }
-                        	   else{
-                        		   set.add(id);
-                        	   
-                           }
-                            
                     }
-                        current = new UnderOverlayMask(set, false, false);  
-                    }
-                    }
-             }
-            	
-            	else {
-            
+                }
+                current = new UnderOverlayMask(set, over);
+            } else {
                 if (component.charAt(0) == '!' && component.length() > 1) {
                     current = new InvertedBlockTypeMask(
                             getBlockIDs(player, component.substring(1), true));
