@@ -94,7 +94,11 @@ public abstract class LocalWorld {
      * @param data
      * @return
      */
-    public abstract boolean setTypeIdAndData(Vector pt, int type, int data);
+    public boolean setTypeIdAndData(Vector pt, int type, int data) {
+        boolean ret = setBlockType(pt, type);
+        setBlockData(pt, data);
+        return ret;
+    }
     
     /**
      * set block type & data
@@ -103,7 +107,11 @@ public abstract class LocalWorld {
      * @param data
      * @return 
      */
-    public abstract boolean setTypeIdAndDataFast(Vector pt, int type, int data);
+    public boolean setTypeIdAndDataFast(Vector pt, int type, int data) {
+        boolean ret = setBlockTypeFast(pt, type);
+        setBlockDataFast(pt, data);
+        return ret;
+    }
     
     /**
      * Get block data.
