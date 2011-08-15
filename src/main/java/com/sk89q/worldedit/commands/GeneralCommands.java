@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.commands;
 
+import java.io.File;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
@@ -206,5 +208,31 @@ public class GeneralCommands {
     public static void we(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
+    }
+    
+    @Command(aliases = {"/list"},
+    usage = "",
+    desc = "Lists saved schematics",
+    min = 0,
+    max = 0)
+    @CommandPermissions({"worldedit.schematic.list"})
+    public static void listSchematics(CommandContext args, WorldEdit we, 
+            LocalSession session, LocalPlayer player, EditSession editsession) 
+            throws WorldEditException {
+
+        LocalConfiguration config = we.getConfiguration();
+
+        File dir = we.getWorkingDirectoryFile(config.saveDir);
+
+        if (dir.exists()) {
+            String name = "";
+            for (File schematics : dir.listFiles()) {
+                name = name.replace(".schematic", "") + 
+                        schematics.getName().replace(".schematic", "") + " ";
+            }
+            player.print(name);
+        } else {
+            player.print("You have no saved schematics. Use //save to create one");
+        }
     }
 }
