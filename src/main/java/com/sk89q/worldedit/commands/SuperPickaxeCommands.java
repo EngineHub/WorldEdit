@@ -88,7 +88,7 @@ public class SuperPickaxeCommands {
             throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
-        int range = args.getInteger(0);
+        double range = args.getDouble(0);
         
         if (range > config.maxSuperPickaxeSize) {
             player.printError("Maximum range: " + config.maxSuperPickaxeSize);

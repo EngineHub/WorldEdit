@@ -33,9 +33,9 @@ import com.sk89q.worldedit.blocks.BlockID;
  */
 public class RecursivePickaxe implements BlockTool {
     private static final BaseBlock air = new BaseBlock(0);
-    private int range;
+    private double range;
     
-    public RecursivePickaxe(int range) {
+    public RecursivePickaxe(double range) {
         this.range = range;
     }
     
@@ -84,9 +84,9 @@ public class RecursivePickaxe implements BlockTool {
      * @param initialType
      * @param visited
      */
-    private void recurse(ServerInterface server, EditSession editSession,
+    private static void recurse(ServerInterface server, EditSession editSession,
             LocalWorld world, BlockVector pos,
-            Vector origin, int size, int initialType,
+            Vector origin, double size, int initialType,
             Set<BlockVector> visited, boolean drop)
             throws MaxChangedBlocksException {
         
