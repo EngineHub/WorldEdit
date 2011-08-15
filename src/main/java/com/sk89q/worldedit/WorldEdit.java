@@ -727,9 +727,9 @@ public class WorldEdit {
             xm += 1;
         } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.NORTH) {
             xm -= 1;
-        } else if (dirStr.charAt(0) == 'u') {
+        } else if (dirStr.charAt(0) == 'u' || dir == PlayerDirection.UP) {
             ym += 1;
-        } else if (dirStr.charAt(0) == 'd') {
+        } else if (dirStr.charAt(0) == 'd' || dir == PlayerDirection.DOWN) {
             ym -= 1;
         } else {
             if (wasDetected) {
@@ -787,9 +787,9 @@ public class WorldEdit {
             xm += 1;
         } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.NORTH) {
             xm -= 1;
-        } else if (dirStr.charAt(0) == 'u') {
+        } else if (dirStr.charAt(0) == 'u' || dir == PlayerDirection.UP) {
             ym += 1;
-        } else if (dirStr.charAt(0) == 'd') {
+        } else if (dirStr.charAt(0) == 'd' || dir == PlayerDirection.DOWN) {
             ym -= 1;
         } else {
             if (wasDetected) {
@@ -828,9 +828,9 @@ public class WorldEdit {
             return CuboidClipboard.FlipDirection.NORTH_SOUTH;
         } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.NORTH) {
             return CuboidClipboard.FlipDirection.NORTH_SOUTH;
-        } else if (dirStr.charAt(0) == 'u') {
+        } else if (dirStr.charAt(0) == 'u' || dir == PlayerDirection.UP) {
             return CuboidClipboard.FlipDirection.UP_DOWN;
-        } else if (dirStr.charAt(0) == 'd') {
+        } else if (dirStr.charAt(0) == 'd' || dir == PlayerDirection.DOWN) {
             return CuboidClipboard.FlipDirection.UP_DOWN;
         } else {
             throw new UnknownDirectionException(dir.name());

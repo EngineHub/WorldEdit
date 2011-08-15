@@ -342,6 +342,11 @@ public abstract class LocalPlayer {
      * @return
      */
     public PlayerDirection getCardinalDirection() {
+        if (getPitch() > 67.5)
+            return PlayerDirection.DOWN;
+        if (getPitch() < -67.5)
+            return PlayerDirection.UP;
+
         // From hey0's code
         double rot = (getYaw() - 90) % 360;
         if (rot < 0) {

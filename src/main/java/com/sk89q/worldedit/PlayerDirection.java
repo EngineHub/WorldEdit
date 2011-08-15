@@ -30,7 +30,9 @@ public enum PlayerDirection {
     SOUTH(new Vector(1, 0, 0), new Vector(0, 0, -1), true),
     SOUTH_WEST((new Vector(1, 0, 1)).normalize(), (new Vector(1, 0, -1)).normalize(), false),
     WEST(new Vector(0, 0, 1), new Vector(1, 0, 0), true),
-    NORTH_WEST((new Vector(-1, 0, 1)).normalize(), (new Vector(1, 0, 1)).normalize(), false);
+    NORTH_WEST((new Vector(-1, 0, 1)).normalize(), (new Vector(1, 0, 1)).normalize(), false),
+    UP(new Vector(0, 1, 0), new Vector(0, 0, 1), true),
+    DOWN(new Vector(0, -1, 0), new Vector(0, 0, 1), true);
     
     private Vector dir;
     private Vector leftDir;
@@ -46,6 +48,7 @@ public enum PlayerDirection {
         return dir;
     }
     
+    @Deprecated
     public Vector leftVector() {
         return leftDir;
     }
