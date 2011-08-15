@@ -52,7 +52,7 @@ public class UtilityCommands {
             throws WorldEditException {
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
-        int radius = Math.max(1, args.getInteger(1));
+        double radius = Math.max(1, args.getDouble(1));
         we.checkMaxRadius(radius);
         int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : 1;
 
@@ -82,7 +82,7 @@ public class UtilityCommands {
             throws WorldEditException {
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
-        int radius = Math.max(1, args.getInteger(1));
+        double radius = Math.max(1, args.getDouble(1));
         we.checkMaxRadius(radius);
         int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : 1;
 
@@ -111,7 +111,7 @@ public class UtilityCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        int radius = Math.max(0, args.getInteger(0));
+        double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
         int affected = editSession.drainArea(
                 session.getPlacementPosition(player), radius);
@@ -131,7 +131,7 @@ public class UtilityCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        int radius = Math.max(0, args.getInteger(0));
+        double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
         int affected = editSession.fixLiquid(
                 session.getPlacementPosition(player), radius, 10, 11);
@@ -151,7 +151,7 @@ public class UtilityCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        int radius = Math.max(0, args.getInteger(0));
+        double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
         int affected = editSession.fixLiquid(
                 session.getPlacementPosition(player), radius, 8, 9);
@@ -270,7 +270,7 @@ public class UtilityCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 10;
+        double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
 
         int affected = editSession.simulateSnow(session.getPlacementPosition(player), size);
         player.print(affected + " surfaces covered. Let it snow~");
@@ -289,7 +289,7 @@ public class UtilityCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 10;
+        double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
 
         int affected = editSession.thaw(session.getPlacementPosition(player), size);
         player.print(affected + " surfaces thawed.");

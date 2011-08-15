@@ -590,7 +590,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException 
      */
-    public int fillXZ(Vector origin, BaseBlock block, int radius, int depth,
+    public int fillXZ(Vector origin, BaseBlock block, double radius, int depth,
             boolean recursive) throws MaxChangedBlocksException {
 
         int affected = 0;
@@ -695,7 +695,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException 
      */
-    public int fillXZ(Vector origin, Pattern pattern, int radius, int depth,
+    public int fillXZ(Vector origin, Pattern pattern, double radius, int depth,
             boolean recursive) throws MaxChangedBlocksException {
 
         int affected = 0;
@@ -1492,7 +1492,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int drainArea(Vector pos, int radius)
+    public int drainArea(Vector pos, double radius)
             throws MaxChangedBlocksException {
         int affected = 0;
 
@@ -1559,7 +1559,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int fixLiquid(Vector pos, int radius, int moving, int stationary)
+    public int fixLiquid(Vector pos, double radius, int moving, int stationary)
             throws MaxChangedBlocksException {
         int affected = 0;
 
@@ -1920,7 +1920,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int thaw(Vector pos, int radius)
+    public int thaw(Vector pos, double radius)
             throws MaxChangedBlocksException {
         int affected = 0;
         int radiusSq = (int)Math.pow(radius, 2);
@@ -1932,8 +1932,9 @@ public class EditSession {
         BaseBlock air = new BaseBlock(0);
         BaseBlock water = new BaseBlock(BlockID.STATIONARY_WATER);
 
-        for (int x = ox - radius; x <= ox + radius; ++x) {
-            for (int z = oz - radius; z <= oz + radius; ++z) {
+        int ceilRadius = (int) Math.ceil(radius);
+        for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
+            for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
                 if ((new Vector(x, oy, z)).distanceSq(pos) > radiusSq) {
                     continue;
                 }
@@ -1968,7 +1969,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int simulateSnow(Vector pos, int radius)
+    public int simulateSnow(Vector pos, double radius)
             throws MaxChangedBlocksException {
         int affected = 0;
         int radiusSq = (int)Math.pow(radius, 2);
@@ -1980,8 +1981,9 @@ public class EditSession {
         BaseBlock ice = new BaseBlock(79);
         BaseBlock snow = new BaseBlock(78);
 
-        for (int x = ox - radius; x <= ox + radius; ++x) {
-            for (int z = oz - radius; z <= oz + radius; ++z) {
+        int ceilRadius = (int) Math.ceil(radius);
+        for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
+            for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
                 if ((new Vector(x, oy, z)).distanceSq(pos) > radiusSq) {
                     continue;
                 }

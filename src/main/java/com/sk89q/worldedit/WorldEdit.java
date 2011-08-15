@@ -661,7 +661,7 @@ public class WorldEdit {
      * @param radius
      * @throws MaxRadiusException
      */
-    public void checkMaxRadius(int radius) throws MaxRadiusException {
+    public void checkMaxRadius(double radius) throws MaxRadiusException {
         if (config.maxRadius > 0 && radius > config.maxRadius) {
             throw new MaxRadiusException();
         }
