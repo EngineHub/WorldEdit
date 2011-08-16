@@ -670,7 +670,7 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean isValidBlockType(int type) {
-        return Material.getMaterial(type) != null;
+        return type <= 255 && Material.getMaterial(type) != null;
     }
 
     @Override
