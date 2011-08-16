@@ -2046,6 +2046,51 @@ public class EditSession {
     }
 
     /**
+     * Green.
+     * 
+     * @param pos
+     * @param radius
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int green(Vector pos, double radius)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+        double radiusSq = radius*radius;
+
+        int ox = pos.getBlockX();
+        int oy = pos.getBlockY();
+        int oz = pos.getBlockZ();
+
+        BaseBlock grass = new BaseBlock(BlockID.GRASS);
+
+        int ceilRadius = (int) Math.ceil(radius);
+        for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
+            for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
+                if ((new Vector(x, oy, z)).distanceSq(pos) > radiusSq) {
+                    continue;
+                }
+
+                for (int y = 127; y >= 1; --y) {
+                    Vector pt = new Vector(x, y, z);
+                    int id = getBlockType(pt);
+
+                    if (id == 0)
+                        continue;
+
+                    if (id == BlockID.DIRT) {
+                        if (setBlock(pt, grass)) {
+                            ++affected;
+                        }
+                    }
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
      * Set a block by chance.
      * 
      * @param pos

@@ -294,7 +294,26 @@ public class UtilityCommands {
         int affected = editSession.thaw(session.getPlacementPosition(player), size);
         player.print(affected + " surfaces thawed.");
     }
-    
+
+    @Command(
+        aliases = {"green"},
+        usage = "[radius]",
+        desc = "Greens the area",
+        min = 0,
+        max = 1
+    )
+    @CommandPermissions({"worldedit.green"})
+    @Logging(PLACEMENT)
+    public static void green(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
+
+        int affected = editSession.green(session.getPlacementPosition(player), size);
+        player.print(affected + " surfaces greened.");
+    }
+
     @Command(
             aliases = {"ex", "ext", "extinguish"},
             usage = "[radius]",
