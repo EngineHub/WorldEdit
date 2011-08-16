@@ -1923,7 +1923,7 @@ public class EditSession {
     public int thaw(Vector pos, double radius)
             throws MaxChangedBlocksException {
         int affected = 0;
-        int radiusSq = (int)Math.pow(radius, 2);
+        double radiusSq = radius*radius;
 
         int ox = pos.getBlockX();
         int oy = pos.getBlockY();
@@ -1972,7 +1972,7 @@ public class EditSession {
     public int simulateSnow(Vector pos, double radius)
             throws MaxChangedBlocksException {
         int affected = 0;
-        int radiusSq = (int)Math.pow(radius, 2);
+        double radiusSq = radius*radius;
 
         int ox = pos.getBlockX();
         int oy = pos.getBlockY();
