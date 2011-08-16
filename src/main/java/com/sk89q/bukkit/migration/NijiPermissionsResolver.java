@@ -19,6 +19,7 @@
 
 package com.sk89q.bukkit.migration;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
@@ -43,7 +44,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         if (plugin == null) {
             throw new MissingPluginException();
         }
-        if (!checkRealNijiPerms(plugin, ignoreBridges))
+        if (!checkRealNijiPerms(ignoreBridges))
             throw new MissingPluginException();
         
         try {
@@ -130,12 +131,12 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         private static final long serialVersionUID = 7044832912491608706L;
     }
 
-    public static boolean checkRealNijiPerms(Plugin plugin, boolean ignoreBridges) {
+    public static boolean checkRealNijiPerms(boolean ignoreBridges) {
         if (!ignoreBridges)
             return true;
-        PluginCommand permsCommand = plugin.getServer().getPluginCommand("permissions");
+        PluginCommand permsCommand = Bukkit.getServer().getPluginCommand("permissions");
         if (permsCommand == null)
             return false;
-        return !permsCommand.getPlugin().getDescription().getName().equals("Permissions");
+        return permsCommand.getPlugin().getDescription().getName().equals("Permissions");
     }
 }

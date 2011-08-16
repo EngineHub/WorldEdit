@@ -60,7 +60,7 @@ public class DinnerPermsResolver implements PermissionsResolver {
             String perm = permAttach.getPermission();
             if (!perm.startsWith(GROUP_PREFIX))
                 continue;
-            groupNames.add(perm.substring(perm.indexOf(GROUP_PREFIX), perm.length()));
+            groupNames.add(perm.substring(GROUP_PREFIX.length(), perm.length()));
         }
         return groupNames.toArray(new String[groupNames.size()]);
     }
