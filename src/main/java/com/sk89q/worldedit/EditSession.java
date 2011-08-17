@@ -2082,6 +2082,7 @@ public class EditSession {
                         if (setBlock(pt, grass)) {
                             ++affected;
                         }
+                        break;
                     }
                 }
             }
