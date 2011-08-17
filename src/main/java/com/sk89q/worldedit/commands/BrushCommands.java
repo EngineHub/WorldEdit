@@ -171,6 +171,7 @@ public class BrushCommands {
     @Command(
         aliases = {"smooth"},
         usage = "[size] [iterations]",
+        flags = "n",
         desc = "Choose the terrain softener brush",
         min = 0,
         max = 2
@@ -193,9 +194,9 @@ public class BrushCommands {
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
         tool.setSize(radius);
-        tool.setBrush(new SmoothBrush(iterations), "worldedit.brush.smooth");
+        tool.setBrush(new SmoothBrush(iterations, args.hasFlag('n')), "worldedit.brush.smooth");
 
-        player.print(String.format("Smooth brush equipped (%.0f x %dx).",
+        player.print(String.format("Smooth brush equipped (%.0f x %dx, using " + (args.hasFlag('n') ? "natural blocks only" : "any block") + ").",
                 radius, iterations));
     }
     

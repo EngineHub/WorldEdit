@@ -186,6 +186,7 @@ public class RegionCommands {
     @Command(
         aliases = {"/smooth"},
         usage = "[iterations]",
+        flags = "n",
         desc = "Smooth the elevation in the selection",
         min = 0,
         max = 1
@@ -201,7 +202,7 @@ public class RegionCommands {
             iterations = args.getInteger(0);
         }
 
-        HeightMap heightMap = new HeightMap(editSession, session.getSelection(player.getWorld()));
+        HeightMap heightMap = new HeightMap(editSession, session.getSelection(player.getWorld()), args.hasFlag('n'));
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         int affected = heightMap.applyFilter(filter, iterations);
         player.print("Terrain's height map smoothed. " + affected + " block(s) changed.");

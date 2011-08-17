@@ -2378,12 +2378,12 @@ public class EditSession {
      *            maximal height
      * @return height of highest block found or 'minY'
      */
-    public int getHighestTerrainBlock(int x, int z, int minY, int maxY) {
+    public int getHighestTerrainBlock(int x, int z, int minY, int maxY, boolean naturalOnly) {
         for (int y = maxY; y >= minY; --y) {
             Vector pt = new Vector(x, y, z);
             int id = getBlockType(pt);
-
-            if (!BlockType.canPassThrough(id) /*id == 1 // stone
+            if (naturalOnly ?
+                    id == 1 // stone
                     || id == 2 // grass
                     || id == 3 // dirt
                     || id == 7 // bedrock
@@ -2400,8 +2400,8 @@ public class EditSession {
                     || id == 16 // gold ore
                     || id == 56 // diamond ore
                     || id == 73 // redstone ore
-                    || id == 74 // redstone ore (active)*/
-            ) {
+                    || id == 74 // redstone ore (active)
+                    : !BlockType.canPassThrough(id)) {
                 return y;
             }
         }

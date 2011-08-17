@@ -44,7 +44,7 @@ public class HeightMap {
      * @param region
      */
 
-    public HeightMap(EditSession session, Region region) {
+    public HeightMap(EditSession session, Region region, boolean naturalOnly) {
         this.session = session;
         this.region = region;
 
@@ -60,7 +60,7 @@ public class HeightMap {
         data = new int[width * height];
         for (int z = 0; z < height; ++z) {
             for (int x = 0; x < width; ++x) {
-                data[z * width + x] = session.getHighestTerrainBlock(x + minX, z + minZ, minY, maxY);
+                data[z * width + x] = session.getHighestTerrainBlock(x + minX, z + minZ, minY, maxY, naturalOnly);
             }
         }
     }
