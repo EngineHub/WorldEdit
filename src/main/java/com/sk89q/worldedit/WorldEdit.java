@@ -289,7 +289,7 @@ public class WorldEdit {
             blockId = blockType.getID();
         }
         
-        if (!server.isValidBlockType(blockId)) {
+        if (!player.getWorld().isValidBlockType(blockId)) {
             throw new UnknownItemException(arg);
         }
         

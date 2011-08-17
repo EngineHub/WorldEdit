@@ -42,11 +42,6 @@ public class BukkitServerInterface extends ServerInterface {
     public boolean isValidMobType(String type) {
         return CreatureType.fromName(type) != null;
     }
-    
-    @Override
-    public boolean isValidBlockType(int type) {
-        return Material.getMaterial(type) != null;
-    }
 
     @Override
     public void reload() {
