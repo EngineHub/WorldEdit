@@ -23,13 +23,50 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.tools.delegates.ToolFlagsDelegate;
+import com.sk89q.worldedit.tools.delegates.ToolPatternDelegate;
+import com.sk89q.worldedit.tools.delegates.ToolSizeDelegate;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolFlags;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolPattern;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolSize;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithFlags;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithPattern;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithSize;
+import com.sk89q.worldedit.tools.enums.ToolFlag;
 
-public class SphereBrush implements Brush {
+public class SphereBrush implements Brush,
+                                    ToolWithSize,
+                                    ToolWithPattern,
+                                    ToolWithFlags {
+    
+    protected ToolSize size = new ToolSizeDelegate(true, true, true);
+    protected ToolPattern pattern = new ToolPatternDelegate();
+    protected ToolFlags flags = new ToolFlagsDelegate(new ToolFlag[]{ToolFlag.HOLLOW});
+        
     public SphereBrush() {
+        this.size.setX(1);
     }
     
+    @Deprecated
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
         editSession.makeSphere(pos, mat, size, true);
+    }
+
+    public void build(EditSession editSession, Vector pos)
+            throws MaxChangedBlocksException {
+        editSession.makeSphere(pos, pattern.get(), size.getX(), true);
+    }
+    
+    public ToolFlags flags() {
+        return flags;
+    }
+
+    public ToolPattern pattern() {
+        return pattern;
+    }
+
+    public ToolSize size() {
+        return size;
     }
 }

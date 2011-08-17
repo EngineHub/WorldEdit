@@ -92,6 +92,22 @@ public class CommandContext {
         return index + 1 < args.length ? Double.parseDouble(args[index + 1]) : def;
     }
     
+    public long getLong(int index) {
+        return Long.parseLong(args[index + 1]);
+    }
+    
+    public long getLong(int index, long def) throws NumberFormatException {
+        return index + 1 < args.length ? Long.parseLong(args[index + 1]) : def;
+    }
+    
+    public float getFloat(int index) {
+        return Float.parseFloat(args[index + 1]);
+    }
+    
+    public float getFloat(int index, float def) throws NumberFormatException {
+        return index + 1 < args.length ? Float.parseFloat(args[index + 1]) : def;
+    }
+    
     public String[] getSlice(int index) {
         String[] slice = new String[args.length - index];
         System.arraycopy(args, index, slice, 0, args.length - index);

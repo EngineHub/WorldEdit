@@ -23,16 +23,52 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.tools.delegates.ToolFlagsDelegate;
+import com.sk89q.worldedit.tools.delegates.ToolPatternDelegate;
+import com.sk89q.worldedit.tools.delegates.ToolSizeDelegate;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolFlags;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolPattern;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolSize;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithFlags;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithPattern;
+import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithSize;
+import com.sk89q.worldedit.tools.enums.ToolFlag;
 
-public class CylinderBrush implements Brush {
-    private int height;
+public class CylinderBrush implements Brush,
+                                      ToolWithSize,
+                                      ToolWithPattern,
+                                      ToolWithFlags {
+    protected ToolFlags flags = new ToolFlagsDelegate(new ToolFlag[]{ToolFlag.HOLLOW});
+    protected ToolSize size = new ToolSizeDelegate(true, false, true);
+    protected ToolPattern pattern = new ToolPatternDelegate();
     
-    public CylinderBrush(int height) {
-        this.height = height;
+    public CylinderBrush() {
     }
     
+    public CylinderBrush(int height) {
+        this.size.setY(height);
+    }
+    
+    @Deprecated
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
-        editSession.makeCylinder(pos, mat, size, height);
+        editSession.makeCylinder(pos, mat, size, (int)this.size.getY());
+    }
+    
+    public void build(EditSession editSession, Vector pos)
+            throws MaxChangedBlocksException {
+        editSession.makeCylinder(pos, pattern.get(), size.getX(), (int)size.getY(), flags.contains(ToolFlag.HOLLOW));
+    }
+
+    public ToolPattern pattern() {
+        return pattern;
+    }
+
+    public ToolFlags flags() {
+        return flags;
+    }
+
+    public ToolSize size() {
+        return size;
     }
 }

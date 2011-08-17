@@ -34,7 +34,13 @@ public class ClipboardBrush implements Brush {
         this.noAir = noAir;
     }
     
+    @Deprecated
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
+            throws MaxChangedBlocksException {
+        build(editSession, pos);
+    }
+    
+    public void build(EditSession editSession, Vector pos)
             throws MaxChangedBlocksException {
         clipboard.place(editSession,
                 pos.subtract(clipboard.getSize().divide(2)), noAir);

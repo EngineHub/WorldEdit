@@ -1799,6 +1799,15 @@ public class EditSession {
         return affected;
     }
 
+    public void makeCylinder(Vector pos, Pattern pattern, double radius,
+            int height, boolean hollow) throws MaxChangedBlocksException {
+        if(hollow) {
+            this.makeHollowCylinder(pos, pattern, radius, height);
+        } else {
+            this.makeCylinder(pos, pattern, radius, height);
+        }
+    }
+    
     /**
      * Makes a sphere.
      * 

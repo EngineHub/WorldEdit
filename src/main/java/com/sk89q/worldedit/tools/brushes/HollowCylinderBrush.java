@@ -21,18 +21,39 @@ package com.sk89q.worldedit.tools.brushes;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.UnsupportedFlagException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.tools.enums.ToolFlag;
 
-public class HollowCylinderBrush implements Brush {
-    private int height;
-    
-    public HollowCylinderBrush(int height) {
-        this.height = height;
+@Deprecated
+public class HollowCylinderBrush extends CylinderBrush {
+    public HollowCylinderBrush() {
+        
     }
     
+    public HollowCylinderBrush(int height) {
+        super(height);
+        try {
+            this.flags.add(ToolFlag.HOLLOW);
+        } catch (UnsupportedFlagException e) {
+            
+        }
+    }
+    
+    @Override
+    @Deprecated
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
-        editSession.makeHollowCylinder(pos, mat, size, height);
+        boolean hollow = flags.contains(ToolFlag.HOLLOW);
+        try {
+            this.flags.add(ToolFlag.HOLLOW);
+        } catch (UnsupportedFlagException e) {
+            
+        }
+        super.build(editSession, pos, mat, size);
+        if(!hollow) {
+            this.flags.remove(ToolFlag.HOLLOW);
+        }
     }
 }
