@@ -32,7 +32,8 @@ import com.sk89q.worldedit.tools.delegates.interfaces.ToolSize;
 import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithFlags;
 import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithPattern;
 import com.sk89q.worldedit.tools.delegates.interfaces.ToolWithSize;
-import com.sk89q.worldedit.tools.enums.ToolFlag;
+
+import static com.sk89q.worldedit.tools.enums.ToolFlag.HOLLOW;;
 
 public class SphereBrush implements Brush,
                                     ToolWithSize,
@@ -41,7 +42,7 @@ public class SphereBrush implements Brush,
     
     protected ToolSize size = new ToolSizeDelegate(true, true, true);
     protected ToolPattern pattern = new ToolPatternDelegate();
-    protected ToolFlags flags = new ToolFlagsDelegate(new ToolFlag[]{ToolFlag.HOLLOW});
+    protected ToolFlags flags = new ToolFlagsDelegate(HOLLOW);
         
     public SphereBrush() {
         this.size.setX(1);

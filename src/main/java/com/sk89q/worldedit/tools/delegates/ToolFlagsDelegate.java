@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.sk89q.worldedit.UnsupportedFlagException;
 import com.sk89q.worldedit.tools.delegates.interfaces.ToolFlags;
 import com.sk89q.worldedit.tools.enums.ToolFlag;
 
@@ -17,16 +16,16 @@ public class ToolFlagsDelegate implements ToolFlags {
         this.allowedFlags = allowedFlags;
     }
     
-    public ToolFlagsDelegate(ToolFlag[] allowedFlags) {
+    public ToolFlagsDelegate(ToolFlag... allowedFlags) {
         this(new HashSet<ToolFlag>(Arrays.asList(allowedFlags)));
     }
     
-    public boolean add(ToolFlag flag) throws UnsupportedFlagException {
+    public boolean add(ToolFlag flag) {
         if (allowedFlags.contains(flag)) {
-            return this.flags.add(flag);
-        } else {
-            throw new UnsupportedFlagException(flag);
+            this.flags.add(flag);
+            return true;
         }
+        return false;
     }
     
     public boolean remove(ToolFlag flag) {
