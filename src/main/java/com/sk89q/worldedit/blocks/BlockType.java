@@ -594,4 +594,32 @@ public enum BlockType {
         }
         return dropped;
     }
+
+    /**
+     * Checks if the block type is "natural"
+     *
+     * @param id
+     * @return
+     */
+    public static boolean isNaturalBlock(int id) {
+        return id == 1 // stone
+                || id == 2 // grass
+                || id == 3 // dirt
+                || id == 7 // bedrock
+                || id == 12 // sand
+                || id == 13 // gravel
+                || id == 82 // clay
+                // hell
+                || id == 87 // netherstone
+                || id == 88 // slowsand
+                || id == 89 // lightstone
+                // ores
+                || id == 14 // coal ore
+                || id == 15 // iron ore
+                || id == 16 // gold ore
+                || id == 21 // lapis ore
+                || id == 56 // diamond ore
+                || id == 73 // redstone ore
+                || id == 74; // redstone ore (active)
+    }
 }
