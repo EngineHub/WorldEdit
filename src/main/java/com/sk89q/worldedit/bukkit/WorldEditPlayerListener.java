@@ -87,7 +87,7 @@ public class WorldEditPlayerListener extends PlayerListener {
      */
     @Override
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.isCancelled())
+        if (event.isCancelled() && event.hasBlock())
             return;
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             LocalWorld world = new BukkitWorld(event.getClickedBlock().getWorld());
