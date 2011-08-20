@@ -2075,15 +2075,15 @@ public class EditSession {
                     Vector pt = new Vector(x, y, z);
                     int id = getBlockType(pt);
 
-                    if (id == 0)
+                    if (id == 0 || id == BlockID.SNOW)
                         continue;
 
                     if (id == BlockID.DIRT) {
                         if (setBlock(pt, grass)) {
                             ++affected;
                         }
-                        break;
                     }
+                    break;
                 }
             }
         }
