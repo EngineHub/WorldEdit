@@ -18,6 +18,7 @@
  */
 package com.sk89q.worldedit;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -2045,6 +2046,42 @@ public class EditSession {
         return affected;
     }
 
+    private static final Set<Integer> greenIgnoreBlockIds = new HashSet<Integer>(Arrays.asList(
+            BlockID.AIR,
+            BlockID.BROWN_MUSHROOM,
+            BlockID.DEAD_BUSH,
+            BlockID.DETECTOR_RAIL,
+            BlockID.FENCE,
+            BlockID.FIRE,
+            BlockID.IRON_DOOR,
+            BlockID.LADDER,
+            BlockID.LEVER,
+            BlockID.LONG_GRASS,
+            BlockID.MINECART_TRACKS,
+            BlockID.PORTAL,
+            BlockID.POWERED_RAIL,
+            BlockID.RED_FLOWER,
+            BlockID.RED_MUSHROOM,
+            BlockID.REDSTONE_REPEATER_OFF,
+            BlockID.REDSTONE_REPEATER_ON,
+            BlockID.REDSTONE_TORCH_OFF,
+            BlockID.REDSTONE_TORCH_ON,
+            BlockID.REDSTONE_WIRE,
+            BlockID.REED,
+            BlockID.SAPLING,
+            BlockID.SIGN_POST,
+            BlockID.SNOW,
+            BlockID.STONE_BUTTON,
+            BlockID.STONE_PRESSURE_PLATE,
+            BlockID.TORCH,
+            BlockID.TRAP_DOOR,
+            BlockID.WALL_SIGN,
+            BlockID.WEB,
+            BlockID.WOODEN_DOOR,
+            BlockID.WOODEN_PRESSURE_PLATE,
+            BlockID.YELLOW_FLOWER
+    ));
+
     /**
      * Green.
      * 
@@ -2075,7 +2112,7 @@ public class EditSession {
                     Vector pt = new Vector(x, y, z);
                     int id = getBlockType(pt);
 
-                    if (id == 0 || id == BlockID.SNOW)
+                    if (greenIgnoreBlockIds.contains(id))
                         continue;
 
                     if (id == BlockID.DIRT) {
