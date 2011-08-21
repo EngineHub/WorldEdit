@@ -51,6 +51,10 @@ public class WorldEditPlayerListener extends PlayerListener {
      */
     public WorldEditPlayerListener(WorldEditPlugin plugin) {
         this.plugin = plugin;
+
+        plugin.registerEvent("PLAYER_QUIT", this);
+        plugin.registerEvent("PLAYER_INTERACT", this);
+        plugin.registerEvent("PLAYER_COMMAND_PREPROCESS", this);
     }
     
     /**
