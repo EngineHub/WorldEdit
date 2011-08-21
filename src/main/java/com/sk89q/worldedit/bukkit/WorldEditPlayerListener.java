@@ -70,9 +70,10 @@ public class WorldEditPlayerListener extends PlayerListener {
      */
     @Override
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        if (event.isCancelled())
+        if (event.isCancelled()) {
             return;
-        
+        }
+
         String[] split = event.getMessage().split(" ");
         
         if (plugin.getWorldEdit().handleCommand(wrapPlayer(event.getPlayer()), split)) {
@@ -87,8 +88,6 @@ public class WorldEditPlayerListener extends PlayerListener {
      */
     @Override
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.isCancelled() && event.hasBlock())
-            return;
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             LocalWorld world = new BukkitWorld(event.getClickedBlock().getWorld());
             WorldVector pos = new WorldVector(world, event.getClickedBlock().getX(),
