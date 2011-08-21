@@ -82,7 +82,7 @@ public class HistoryCommands {
     }
 
     @Command(
-        aliases = {"clearhistory"},
+        aliases = { "/clearhistory", "clearhistory" },
         usage = "",
         desc = "Clear your history",
         min = 0,

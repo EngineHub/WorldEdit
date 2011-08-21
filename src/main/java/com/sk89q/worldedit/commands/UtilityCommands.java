@@ -119,7 +119,7 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"fixlava"},
+        aliases = { "/fixlava", "fixlava" },
         usage = "<radius>",
         desc = "Fix lava to be stationary",
         min = 1,
@@ -139,7 +139,7 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"fixwater"},
+        aliases = { "/fixwater", "fixwater" },
         usage = "<radius>",
         desc = "Fix water to be stationary",
         min = 1,
@@ -159,7 +159,7 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"removeabove"},
+        aliases = { "/removeabove", "removeabove" },
         usage = "[size] [height] ",
         desc = "Remove blocks above your head. ",
         min = 0,
@@ -181,7 +181,7 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"removebelow"},
+        aliases = { "/removebelow", "removebelow" },
         usage = "[size] [height] ",
         desc = "Remove blocks below your head. ",
         min = 0,
@@ -203,7 +203,7 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"removenear"},
+        aliases = { "/removenear", "removenear" },
         usage = "<block> [size] ",
         desc = "Remove blocks near you.",
         min = 1,
@@ -225,7 +225,7 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"replacenear"},
+        aliases = { "/replacenear", "replacenear" },
         usage = "<size> <from-id> <to-id> ",
         desc = "Replace nearby blocks",
         min = 3,
@@ -258,7 +258,7 @@ public class UtilityCommands {
     }
     
     @Command(
-        aliases = {"snow"},
+        aliases = { "/snow", "snow" },
         usage = "[radius]",
         desc = "Simulates snow",
         min = 0,
@@ -277,7 +277,7 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"thaw"},
+        aliases = { "/thaw", "thaw" },
         usage = "[radius]",
         desc = "Thaws the area",
         min = 0,
@@ -296,7 +296,7 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"green"},
+        aliases = { "/green", "green" },
         usage = "[radius]",
         desc = "Greens the area",
         min = 0,
@@ -315,7 +315,7 @@ public class UtilityCommands {
     }
 
     @Command(
-            aliases = {"ex", "ext", "extinguish"},
+            aliases = { "/ex", "/ext", "/extinguish", "ex", "ext", "extinguish" },
             usage = "[radius]",
             desc = "Extinguish nearby fire",
             min = 0,
