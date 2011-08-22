@@ -126,7 +126,7 @@ public class ToolCommands {
 
     @Command(
         aliases = {"floodfill", "flood"},
-        usage = "",
+        usage = "<pattern> <range>",
         desc = "Flood fill tool",
         min = 2,
         max = 2
