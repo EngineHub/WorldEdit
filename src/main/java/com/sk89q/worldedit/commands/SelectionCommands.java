@@ -79,7 +79,7 @@ public class SelectionCommands {
         usage = "[coordinates]",
         desc = "Set position 2",
         min = 0,
-        max = 2
+        max = 1
     )
     @CommandPermissions({"worldedit.selection.pos"})
     public static void pos2(CommandContext args, WorldEdit we,
