@@ -159,8 +159,13 @@ public class RegionCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        BaseBlock block = we.getBlock(player, args.getString(0));
-        int affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), block);
+        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        int affected;
+        if (pattern instanceof SingleBlockPattern) {
+            affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), ((SingleBlockPattern) pattern).getBlock());
+        } else {
+            affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), pattern);
+        }
         
         player.print(affected + " block(s) have been changed.");
     }
@@ -177,9 +182,15 @@ public class RegionCommands {
     public static void faces(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
+        
+        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        int affected;
+        if (pattern instanceof SingleBlockPattern) {
+            affected = editSession.makeCuboidFaces(session.getSelection(player.getWorld()), ((SingleBlockPattern) pattern).getBlock());
+        } else {
+            affected = editSession.makeCuboidFaces(session.getSelection(player.getWorld()), pattern);
+        }
 
-        BaseBlock block = we.getBlock(player, args.getString(0));
-        int affected = editSession.makeCuboidFaces(session.getSelection(player.getWorld()), block);
         player.print(affected + " block(s) have been changed.");
     }
 

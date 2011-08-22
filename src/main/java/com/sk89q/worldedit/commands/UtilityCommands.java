@@ -238,14 +238,15 @@ public class UtilityCommands {
             throws WorldEditException {
         
         int size = Math.max(1, args.getInteger(0));
+        int affected;
         Set<Integer> from;
-        BaseBlock to;
+        Pattern to;
         if (args.argsLength() == 2) {
             from = null;
-            to = we.getBlock(player, args.getString(1));
+            to = we.getBlockPattern(player, args.getString(1));
         } else {
             from = we.getBlockIDs(player, args.getString(1), true);
-            to = we.getBlock(player, args.getString(2));
+            to = we.getBlockPattern(player, args.getString(2));
         }
 
         Vector base = session.getPlacementPosition(player);
@@ -253,7 +254,11 @@ public class UtilityCommands {
         Vector max = base.add(size, size, size);
         Region region = new CuboidRegion(min, max);
 
-        int affected = editSession.replaceBlocks(region, from, to);
+        if (to instanceof SingleBlockPattern) {
+            affected = editSession.replaceBlocks(region, from, ((SingleBlockPattern) to).getBlock());
+        } else {
+            affected = editSession.replaceBlocks(region, from, to);
+        }
         player.print(affected + " block(s) have been replaced.");
     }
     
