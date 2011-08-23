@@ -328,11 +328,11 @@ public class Polygonal2DRegion implements Region {
             }
             if (x1 <= targetX && targetX <= x2) {
                 crossproduct = ((long) targetZ - (long) z1) * (long) (x2 - x1) - ((long) z2 - (long) z1) * (long) (targetX - x1);
-	            if (crossproduct == 0) {
+                if (crossproduct == 0) {
                     if ((z1 <= targetZ) == (targetZ <= z2)) return true; //on edge
                 } else if (crossproduct < 0 && (x1 != targetX)) {
                     inside = !inside;
-	            }
+                }
             }
             xOld = xNew;
             zOld = zNew;
