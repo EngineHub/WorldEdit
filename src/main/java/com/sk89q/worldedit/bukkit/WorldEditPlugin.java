@@ -222,7 +222,7 @@ public class WorldEditPlugin extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
         // Since WorldEdit is primarily made for use in-game, we're going
-        // to ignore the situation where the command sender is not aplayer.
+        // to ignore the situation where the command sender is not a player.
         if (!(sender instanceof Player)) {
             return true;
         }

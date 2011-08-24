@@ -59,18 +59,3 @@ shell-save-type:
 no-double-slash: false
 no-op-permissions: false
 debug: false
-
-# See http://wiki.sk89q.com/wiki/WorldEdit/Permissions/Bukkit
-# Now with multiworld support (see example)
-permissions:
-    dinner-perms: true
-    groups:
-        default:
-            permissions:
-                - worldedit.reload
-                - worldedit.selection.*
-                - worlds.creative.worldedit.region.*
-    users:
-        sk89q:
-            permissions:
-                - worldedit.*
