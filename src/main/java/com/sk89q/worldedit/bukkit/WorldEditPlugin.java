@@ -32,7 +32,6 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerListener;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.bukkit.migration.PermissionsResolverManager;
 import com.sk89q.bukkit.migration.PermissionsResolverServerListener;
@@ -135,16 +134,14 @@ public class WorldEditPlugin extends JavaPlugin {
     /**
      * Register the events used by WorldEdit.
      */
-    protected void registerEvents() {        
-        @SuppressWarnings("unused")
+    protected void registerEvents() {
         PlayerListener playerListener = new WorldEditPlayerListener(this);
-        @SuppressWarnings("unused")
         PlayerListener criticalPlayerListener = new WorldEditCriticalPlayerListener(this);
-        
+
         // The permissions resolver has some hooks of its own
         (new PermissionsResolverServerListener(perms)).register(this);
     }
-    
+
     /**
      * Register an event.
      * 
@@ -152,28 +149,25 @@ public class WorldEditPlugin extends JavaPlugin {
      * @param listener
      * @param priority
      */
-    protected void registerEvent(String typeName, Listener listener, Priority priority) {
+    public void registerEvent(String typeName, Listener listener, Priority priority) {
         try {
             Event.Type type = Event.Type.valueOf(typeName);
-            PluginManager pm = getServer().getPluginManager();
-            pm.registerEvent(type, listener, priority, this);
+            this.getServer().getPluginManager().registerEvent(type, listener, priority, this);
         } catch (IllegalArgumentException e) {
-            logger.info("WorldGuard: Unable to register missing event type " + typeName);
+            logger.info("WorldEdit: Unable to register missing event type " + typeName);
         }
-        /*getServer().getPluginManager()
-                .registerEvent(type, listener, priority, this);*/
     }
-    
+
     /**
      * Register an event at normal priority.
      * 
      * @param type
      * @param listener
      */
-    protected void registerEvent(String typeName, Listener listener) {
+    public void registerEvent(String typeName, Listener listener) {
         registerEvent(typeName, listener, Event.Priority.Normal);
     }
-    
+
     /**
      * Create a default configuration file from the .jar.
      * 

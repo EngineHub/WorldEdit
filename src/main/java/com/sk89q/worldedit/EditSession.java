@@ -1162,7 +1162,8 @@ public class EditSession {
 
         return affected;
     }
-        /**
+
+    /**
      * Make faces of the region (as if it was a cuboid if it's not).
      *
      * @param region

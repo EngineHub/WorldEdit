@@ -118,7 +118,8 @@ public class WorldEdit {
                     else
                         logMode = loggingAnnotation.value();
 
-                    String msg = "WorldEdit: " + player.getName() + ": " + StringUtil.joinString(args, " ");
+                    String msg = "WorldEdit: " + player.getName() + "(in " + player.getWorld().getName() + ")"
+                            + ": " + StringUtil.joinString(args, " ");
                     if (logMode != null) {
                         Vector position = player.getPosition();
                         final LocalSession session = getSession(player);

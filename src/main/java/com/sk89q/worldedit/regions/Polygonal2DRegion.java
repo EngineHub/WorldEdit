@@ -464,7 +464,26 @@ public class Polygonal2DRegion implements Region {
         
         return items.iterator();*/
     }
-    
+
+    /**
+     * Returns string representation in the format
+     * "(x1, z1) - ... - (xN, zN) * (minY - maxY)"
+     * 
+     * @return string
+     */
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        List<BlockVector2D> pts = getPoints();
+        Iterator<BlockVector2D> it = pts.iterator();
+        while (it.hasNext()) {
+            BlockVector2D current = it.next();
+            sb.append("(" + current.getBlockX() + ", " + current.getBlockZ() + ")");
+            if (it.hasNext()) sb.append(" - ");
+        }
+        sb.append(" * (" + minY + " - " + maxY + ")");
+        return sb.toString();
+    }
+
     /**
      * A terrible polygonal region iterator.
      */
