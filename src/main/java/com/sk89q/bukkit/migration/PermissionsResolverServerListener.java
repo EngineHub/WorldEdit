@@ -44,8 +44,9 @@ public class PermissionsResolverServerListener extends ServerListener {
         String name = plugin.getDescription().getName();
         if (plugin instanceof PermissionsProvider) {
             manager.setPluginPermissionsResolver(plugin);
-        } else if (name.equalsIgnoreCase("Permissions") &&
-                NijiPermissionsResolver.checkRealNijiPerms(manager.ignoreNijiPermsBridges)) {
+        } else if ((name.equalsIgnoreCase("Permissions") &&
+                NijiPermissionsResolver.checkRealNijiPerms(manager.ignoreNijiPermsBridges)) ||
+                name.equalsIgnoreCase("PermissionsEx")) {
             manager.findResolver();
             manager.load();
         }
@@ -63,7 +64,8 @@ public class PermissionsResolverServerListener extends ServerListener {
         
         if (plugin instanceof PermissionsProvider
                 || (name.equalsIgnoreCase("Permissions") &&
-                NijiPermissionsResolver.checkRealNijiPerms(manager.ignoreNijiPermsBridges))) {
+                NijiPermissionsResolver.checkRealNijiPerms(manager.ignoreNijiPermsBridges)) ||
+                name.equalsIgnoreCase("PermissionsEx")) {
             manager.findResolver();
             manager.load();
         }

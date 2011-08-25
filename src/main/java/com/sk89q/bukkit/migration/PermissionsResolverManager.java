@@ -68,6 +68,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     public void findResolver() {
         if (tryPluginPermissionsResolver()) return;
         if (tryNijiPermissions()) return;
+        if (tryPermissionsEx()) return;
         if (tryDinnerPerms()) return;
         if (tryFlatFilePermissions()) return;
         
@@ -79,6 +80,16 @@ public class PermissionsResolverManager implements PermissionsResolver {
         try {
             perms = new NijiPermissionsResolver(server, ignoreNijiPermsBridges);
             logger.info(name + ": Permissions plugin detected! Using Permissions plugin for permissions.");
+            return true;
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+    
+    private boolean tryPermissionsEx() {
+        try {
+            perms = new PermissionsExResolver(server);
+            logger.info(name + ": PermissionsEx detected! Using PermissionsEx for permissions.");
             return true;
         } catch (Throwable e) {
             return false;
@@ -183,6 +194,10 @@ public class PermissionsResolverManager implements PermissionsResolver {
             permsConfig.save();
         }
         return isUpdated;
+    }
+    
+    public static class MissingPluginException extends Exception {
+        private static final long serialVersionUID = 7044832912491608706L;
     }
 
 }

@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import com.nijikokun.bukkit.Permissions.Permissions;
+import com.sk89q.bukkit.migration.PermissionsResolverManager.MissingPluginException;
 
 public class NijiPermissionsResolver implements PermissionsResolver {
     private Server server;
@@ -124,10 +125,6 @@ public class NijiPermissionsResolver implements PermissionsResolver {
     }
     
     public static class PluginAccessException extends Exception {
-        private static final long serialVersionUID = 7044832912491608706L;
-    }
-    
-    public static class MissingPluginException extends Exception {
         private static final long serialVersionUID = 7044832912491608706L;
     }
 
