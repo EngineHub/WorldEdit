@@ -2630,4 +2630,16 @@ public class EditSession {
     public void setMask(Mask mask) {
         this.mask = mask;
     }
+
+    public enum Shape {
+        SPHERE,
+        SPHERE_HOLLOW,
+        CYLINDER,
+        CYLINDER_HOLLOW,
+        PYRAMID,
+        PYRAMID_HOLLOW,
+        CUBOID_WALLS,
+        CUBOID_FACES;
+    }
+
 }
