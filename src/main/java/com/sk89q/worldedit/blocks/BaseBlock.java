@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.data.BlockData;
 
 /**
@@ -109,8 +110,9 @@ public class BaseBlock {
     
     /**
      * Flip this block.
+     * @param direction
      */
-    public void flip() {
-        data = (char)BlockData.flip(type, data);
+    public void flip(FlipDirection direction) {
+        data = (char)BlockData.flip(type, data, direction);
     }
 }
