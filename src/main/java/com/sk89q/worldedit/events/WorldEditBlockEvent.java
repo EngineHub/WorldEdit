@@ -1,34 +1,30 @@
 package com.sk89q.worldedit.events;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 
 public class WorldEditBlockEvent implements WorldEditEvent {
 
-    private WorldEdit we;
-    private EditSession editSession;
-    private LocalSession localSession;
-    private Vector block;
-    private boolean cancelled;
+    protected WorldEdit we;
+    protected LocalSession localSession;
+    protected Vector vector;
+    protected boolean cancelled;
+    protected WorldEditEvent.Type type;
 
-    public WorldEditBlockEvent(Vector block, WorldEdit we, EditSession eS, LocalSession lS) {
+    public WorldEditBlockEvent(Type type, Vector vector, WorldEdit we, LocalSession lS) {
+        this.type = type;
+        this.vector = vector;
         this.we = we;
-        this.editSession = eS;
         this.localSession = lS;
     }
 
-    public Vector getBlock() {
-        return block;
+    public Vector getVector() {
+        return vector;
     }
 
     public WorldEdit getWorldEdit() {
         return we;
-    }
-
-    public EditSession getEditSession() {
-        return editSession;
     }
 
     public LocalSession getLocalSession() {
@@ -41,6 +37,10 @@ public class WorldEditBlockEvent implements WorldEditEvent {
 
     public void setCancelled(boolean cancel) {
         cancelled = cancel;
+    }
+
+    public Type getType() {
+        return type;
     }
 
 }

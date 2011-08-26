@@ -9,12 +9,14 @@ import com.sk89q.worldedit.WorldEdit;
 
 public class WorldEditGenerationEvent implements WorldEditEvent {
 
-    private Set<Vector> blocks;
-    private WorldEdit we;
-    private EditSession editSession;
-    private LocalSession localSession;
+    protected Set<Vector> blocks;
+    protected WorldEdit we;
+    protected EditSession editSession;
+    protected LocalSession localSession;
+    protected WorldEditEvent.Type type;
 
-    public WorldEditGenerationEvent(Set<Vector> blocks, WorldEdit we, EditSession eS, LocalSession lS) {
+    public WorldEditGenerationEvent(Type type, Set<Vector> blocks, WorldEdit we, EditSession eS, LocalSession lS) {
+        this.type = type;
         this.blocks = blocks;
         this.we = we;
         this.editSession = eS;
@@ -37,4 +39,7 @@ public class WorldEditGenerationEvent implements WorldEditEvent {
         return localSession;
     }
 
+    public Type getType() {
+        return type;
+    }
 }

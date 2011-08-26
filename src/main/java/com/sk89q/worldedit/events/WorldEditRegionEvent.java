@@ -7,12 +7,14 @@ import com.sk89q.worldedit.regions.Region;
 
 public class WorldEditRegionEvent implements WorldEditEvent {
 
-    private Region region;
-    private WorldEdit we;
-    private EditSession editSession;
-    private LocalSession localSession;
+    protected Region region;
+    protected WorldEdit we;
+    protected EditSession editSession;
+    protected LocalSession localSession;
+    protected WorldEditEvent.Type type;
 
-    public WorldEditRegionEvent(Region region, WorldEdit we, EditSession eS, LocalSession lS) {
+    public WorldEditRegionEvent(Type type, Region region, WorldEdit we, EditSession eS, LocalSession lS) {
+        this.type = type;
         this.region = region;
         this.we = we;
         this.editSession = eS;
@@ -35,4 +37,7 @@ public class WorldEditRegionEvent implements WorldEditEvent {
         return localSession;
     }
 
+    public Type getType() {
+        return type;
+    }
 }

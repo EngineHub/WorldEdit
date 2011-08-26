@@ -32,6 +32,7 @@ import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.commands.*;
+import com.sk89q.worldedit.events.WorldEditBlockBreakEvent;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.scripting.*;
 import com.sk89q.worldedit.tools.*;
@@ -1084,8 +1085,10 @@ public class WorldEdit {
         } else if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
             if (session.getSuperPickaxe() != null) {
                 if (session.getSuperPickaxe().canUse(player)) {
-                    return session.getSuperPickaxe().actPrimary(server, config,
-                            player, session, clicked);
+                    if (server.callEvent(player, new WorldEditBlockBreakEvent(clicked, this, session))) {
+                        return session.getSuperPickaxe().actPrimary(server, config,
+                                player, session, clicked);
+                    }
                 }
             }
         }
