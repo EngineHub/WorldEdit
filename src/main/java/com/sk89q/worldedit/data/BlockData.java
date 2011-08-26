@@ -390,6 +390,7 @@ public final class BlockData {
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
+            data ^= flipZ << 3;
             switch (data & 0x3) {
             case 0: return data + flipX + 3*flipY;
             case 1: return data - flipX +   flipY;
