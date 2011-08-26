@@ -400,7 +400,13 @@ public final class BlockData {
             break;
 
         case BlockID.SIGN_POST:
-            return (data + 8) % 16; // broken!
+            switch (direction) {
+            case NORTH_SOUTH:
+                return (16-data) & 0xf;
+            case WEST_EAST:
+                return (8-data) & 0xf;
+            }
+            break;
 
         case BlockID.LADDER:
         case BlockID.WALL_SIGN:
