@@ -1,9 +1,8 @@
-package com.sk89q.worldedit.bukkit.events;
+package com.sk89q.worldedit.events;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditEvent;
 import com.sk89q.worldedit.regions.Region;
 
 public class WorldEditRegionEvent implements WorldEditEvent {

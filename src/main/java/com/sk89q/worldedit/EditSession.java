@@ -2631,15 +2631,4 @@ public class EditSession {
         this.mask = mask;
     }
 
-    public enum Shape {
-        SPHERE,
-        SPHERE_HOLLOW,
-        CYLINDER,
-        CYLINDER_HOLLOW,
-        PYRAMID,
-        PYRAMID_HOLLOW,
-        CUBOID_WALLS,
-        CUBOID_FACES;
-    }
-
 }

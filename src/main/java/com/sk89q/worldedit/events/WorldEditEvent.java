@@ -1,4 +1,6 @@
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.events;
+
+import com.sk89q.worldedit.WorldEdit;
 
 
 public interface WorldEditEvent {
