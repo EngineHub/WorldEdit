@@ -167,7 +167,7 @@ public class CuboidClipboard {
                           Math.abs(sizeRotated.getBlockY()),
                           Math.abs(sizeRotated.getBlockZ()));
         offset = offset.transform2D(angle, 0, 0, 0, 0)
-                .subtract(shiftX, 0, shiftZ);;
+                .subtract(shiftX, 0, shiftZ);
     }
 
     /**
@@ -175,14 +175,15 @@ public class CuboidClipboard {
      *
      * @param dir
      */
-    public void flip(FlipDirection dir) {
+    public void flip(FlipDirection dir, boolean aroundPlayer) {
         int width = getWidth();
         int length = getLength();
         int height = getHeight();
 
-        if (dir == FlipDirection.NORTH_SOUTH) {
-            int len = (int)Math.floor(width / 2);
-            for (int xs = 0; xs < len; ++xs) {
+        switch (dir) {
+        case NORTH_SOUTH:
+            int wid = (int)Math.floor(width / 2);
+            for (int xs = 0; xs < wid; ++xs) {
                 for (int z = 0; z < length; ++z) {
                     for (int y = 0; y < height; ++y) {
                         BaseBlock old = data[xs][y][z];
@@ -192,7 +193,13 @@ public class CuboidClipboard {
                     }
                 }
             }
-        } else if (dir == FlipDirection.WEST_EAST) {
+
+            if (aroundPlayer)
+                offset = offset.setX(1 - offset.getX() - width);
+
+            break;
+
+        case WEST_EAST:
             int len = (int)Math.floor(length / 2);
             for (int zs = 0; zs < len; ++zs) {
                 for (int x = 0; x < width; ++x) {
@@ -204,9 +211,15 @@ public class CuboidClipboard {
                     }
                 }
             }
-        } else if (dir == FlipDirection.UP_DOWN) {
-            int len = (int)Math.floor(height / 2);
-            for (int ys = 0; ys < len; ++ys) {
+
+            if (aroundPlayer)
+                offset = offset.setZ(1 - offset.getZ() - length);
+
+            break;
+
+        case UP_DOWN:
+            int hei = (int)Math.floor(height / 2);
+            for (int ys = 0; ys < hei; ++ys) {
                 for (int x = 0; x < width; ++x) {
                     for (int z = 0; z < length; ++z) {
                         BaseBlock old = data[x][ys][z];
@@ -215,6 +228,11 @@ public class CuboidClipboard {
                     }
                 }
             }
+
+            if (aroundPlayer)
+                offset = offset.setY(1 - offset.getY() - height);
+
+            break;
         }
     }
 

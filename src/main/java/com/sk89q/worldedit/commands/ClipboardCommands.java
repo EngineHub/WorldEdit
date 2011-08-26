@@ -153,7 +153,8 @@ public class ClipboardCommands {
     @Command(
         aliases = {"/flip"},
         usage = "[dir]",
-        desc = "Flip the contents of the clipboard",
+        flags = "p",
+        desc = "Flip the contents of the clipboard. To flip it around yourself, use the -p flag.",
         min = 0,
         max = 1
     )
@@ -166,7 +167,7 @@ public class ClipboardCommands {
                 args.argsLength() > 0 ? args.getString(0).toLowerCase() : "me");
 
         CuboidClipboard clipboard = session.getClipboard();
-        clipboard.flip(dir);
+        clipboard.flip(dir, args.hasFlag('p'));
         player.print("Clipboard flipped.");
     }
     
