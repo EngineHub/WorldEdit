@@ -55,11 +55,22 @@ public class CommandContext {
         this.args = newArgs;
     }
 
-    public CommandContext(String[] args, Set<Character> isValueFlag) throws CommandException {
-        int nextArg = 0;
+    public CommandContext(String args, Set<Character> isValueFlag) throws CommandException {
+        this(args.split(" "), isValueFlag);
+    }
 
-        booleanFlags.clear();
-        valueFlags.clear();
+    /**
+     * @param args An array with arguments empty strings will be ignored by most things
+     * @param isValueFlag A set containing all value flags. Pass null to disable flag parsing altogether.
+     * @throws CommandException This is thrown if a value flag was passed without a value.
+     */
+    public CommandContext(String[] args, Set<Character> isValueFlag) throws CommandException {
+        if (isValueFlag == null) {
+            this.args = args;
+            return;
+        }
+        
+        int nextArg = 1;
 
         while (nextArg < args.length) {
             // Fetch argument
@@ -70,7 +81,7 @@ public class CommandContext {
                 continue;
 
             // No more flags?
-            if (arg.charAt(0) != '-' || arg.length() == 1) {
+            if (arg.charAt(0) != '-' || arg.length() == 1 || !arg.matches("^-[a-zA-Z]+$")) {
                 --nextArg;
                 break;
             }
@@ -89,7 +100,7 @@ public class CommandContext {
                         ++nextArg;
 
                     if (nextArg >= args.length)
-                        throw new CommandException("No value specified for "+flagName+" flag.");
+                        throw new CommandException("No value specified for the '-"+flagName+"' flag.");
 
                     // If it is a value flag, read another argument and add it
                     valueFlags.put(flagName, args[nextArg++]);
@@ -100,7 +111,8 @@ public class CommandContext {
             }
         }
 
-        this.args = Arrays.copyOfRange(args, nextArg, args.length);
+        this.args = Arrays.copyOfRange(args, nextArg-1, args.length);
+        this.args[0] = args[0];
     }
 
     public String getCommand() {
