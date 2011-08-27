@@ -25,6 +25,7 @@ import java.util.Map;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector2D;
 
 public abstract class McRegionChunkStore extends ChunkStore {
@@ -65,10 +66,10 @@ public abstract class McRegionChunkStore extends ChunkStore {
     }
 
     @Override
-    public CompoundTag getChunkTag(Vector2D pos, String worldname) throws DataException,
+    public CompoundTag getChunkTag(Vector2D pos, LocalWorld world) throws DataException,
             IOException {
         
-        McRegionReader reader = getReader(pos, worldname);
+        McRegionReader reader = getReader(pos, world.getName());
         InputStream stream = reader.getChunkInputStream(pos);
         NBTInputStream nbt = new NBTInputStream(stream);
         Tag tag;

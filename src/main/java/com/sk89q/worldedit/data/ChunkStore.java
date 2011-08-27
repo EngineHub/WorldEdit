@@ -50,7 +50,7 @@ public abstract class ChunkStore {
      * @throws DataException
      * @throws IOException
      */
-    public abstract CompoundTag getChunkTag(Vector2D pos, String world)
+    public abstract CompoundTag getChunkTag(Vector2D pos, LocalWorld world)
             throws DataException, IOException;
 
     /**
@@ -62,9 +62,9 @@ public abstract class ChunkStore {
      * @throws IOException
      * @throws DataException
      */
-    public Chunk getChunk(Vector2D pos, String world)
+    public Chunk getChunk(Vector2D pos, LocalWorld world)
             throws DataException, IOException {
-        return new Chunk(getChunkTag(pos, world));
+        return new Chunk(world, getChunkTag(pos, world));
     }
 
     /**

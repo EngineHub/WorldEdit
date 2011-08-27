@@ -173,7 +173,8 @@ public class UtilityCommands {
         
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
-        int height = args.argsLength() > 1 ? Math.min(128, args.getInteger(1) + 2) : 128;
+        LocalWorld world = player.getWorld();
+        int height = args.argsLength() > 1 ? Math.min((world.getHeight() + 1), args.getInteger(1) + 2) : (world.getHeight() + 1);
 
         int affected = editSession.removeAbove(
                 session.getPlacementPosition(player), size, height);
@@ -195,7 +196,8 @@ public class UtilityCommands {
 
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
-        int height = args.argsLength() > 1 ? Math.min(128, args.getInteger(1) + 2) : 128;
+        LocalWorld world = player.getWorld();
+        int height = args.argsLength() > 1 ? Math.min((world.getHeight() + 1), args.getInteger(1) + 2) : (world.getHeight() + 1);
 
         int affected = editSession.removeBelow(
                 session.getPlacementPosition(player), size, height);
@@ -252,7 +254,7 @@ public class UtilityCommands {
         Vector base = session.getPlacementPosition(player);
         Vector min = base.subtract(size, size, size);
         Vector max = base.add(size, size, size);
-        Region region = new CuboidRegion(min, max);
+        Region region = new CuboidRegion(player.getWorld(), min, max);
 
         if (to instanceof SingleBlockPattern) {
             affected = editSession.replaceBlocks(region, from, ((SingleBlockPattern) to).getBlock());

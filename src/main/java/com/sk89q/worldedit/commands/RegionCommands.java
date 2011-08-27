@@ -255,8 +255,8 @@ public class RegionCommands {
                 region.expand(dir.multiply(count));
                 region.contract(dir.multiply(count));
 
-                session.getRegionSelector().learnChanges();
-                session.getRegionSelector().explainRegionAdjust(player, session);
+                session.getRegionSelector(player.getWorld()).learnChanges();
+                session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
             } catch (RegionOperationException e) {
                 player.printError(e.getMessage());
             }
@@ -293,8 +293,8 @@ public class RegionCommands {
                 region.expand(dir.multiply(count));
                 region.contract(dir.multiply(count));
 
-                session.getRegionSelector().learnChanges();
-                session.getRegionSelector().explainRegionAdjust(player, session);
+                session.getRegionSelector(player.getWorld()).learnChanges();
+                session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
             } catch (RegionOperationException e) {
                 player.printError(e.getMessage());
             }

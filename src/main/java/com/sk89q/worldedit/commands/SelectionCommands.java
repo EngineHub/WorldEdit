@@ -189,7 +189,7 @@ public class SelectionCommands {
             final Vector2D max2D = ChunkStore.toChunk(region.getMaximumPoint());
 
             min = new Vector(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
-            max = new Vector(max2D.getBlockX() * 16 + 15, 127, max2D.getBlockZ() * 16 + 15);
+            max = new Vector(max2D.getBlockX() * 16 + 15, player.getWorld().getHeight(), max2D.getBlockZ() * 16 + 15);
 
             player.print("Chunks selected: ("
                     + min2D.getBlockX() + ", " + min2D.getBlockZ() + ") - ("
@@ -199,13 +199,13 @@ public class SelectionCommands {
             final Vector2D min2D = ChunkStore.toChunk(player.getBlockIn());
 
             min = new Vector(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
-            max = min.add(15, 127, 15);
+            max = min.add(15, player.getWorld().getHeight(), 15);
 
             player.print("Chunk selected: "
                     + min2D.getBlockX() + ", " + min2D.getBlockZ());
         }
 
-        CuboidRegionSelector selector = new CuboidRegionSelector();
+        CuboidRegionSelector selector = new CuboidRegionSelector(player.getWorld());
         selector.selectPrimary(min);
         selector.selectSecondary(max);
         session.setRegionSelector(player.getWorld(), selector);
@@ -272,11 +272,11 @@ public class SelectionCommands {
             Region region = session.getSelection(player.getWorld());
             try {
                 int oldSize = region.getArea();
-                region.expand(new Vector(0, 128, 0));
-                region.expand(new Vector(0, -128, 0));
-                session.getRegionSelector().learnChanges();
+                region.expand(new Vector(0, (player.getWorld().getHeight() + 1), 0));
+                region.expand(new Vector(0, -(player.getWorld().getHeight() + 1), 0));
+                session.getRegionSelector(player.getWorld()).learnChanges();
                 int newSize = region.getArea();
-                session.getRegionSelector().explainRegionAdjust(player, session);
+                session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
                 player.print("Region expanded " + (newSize - oldSize)
                         + " blocks [top-to-bottom].");
             } catch (RegionOperationException e) {
@@ -315,10 +315,10 @@ public class SelectionCommands {
             region.expand(dir.multiply(reverseChange));
         }
 
-        session.getRegionSelector().learnChanges();
+        session.getRegionSelector(player.getWorld()).learnChanges();
         int newSize = region.getArea();
         
-        session.getRegionSelector().explainRegionAdjust(player, session);
+        session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
         
         player.print("Region expanded " + (newSize - oldSize) + " blocks.");
     }
@@ -364,10 +364,10 @@ public class SelectionCommands {
             if (reverseChange != 0) {
                 region.contract(dir.multiply(reverseChange));
             }
-            session.getRegionSelector().learnChanges();
+            session.getRegionSelector(player.getWorld()).learnChanges();
             int newSize = region.getArea();
             
-            session.getRegionSelector().explainRegionAdjust(player, session);
+            session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
             
             player.print("Region contracted " + (oldSize - newSize) + " blocks.");
         } catch (RegionOperationException e) {
@@ -400,9 +400,9 @@ public class SelectionCommands {
             Region region = session.getSelection(player.getWorld());
             region.expand(dir.multiply(change));
             region.contract(dir.multiply(change));
-            session.getRegionSelector().learnChanges();
+            session.getRegionSelector(player.getWorld()).learnChanges();
             
-            session.getRegionSelector().explainRegionAdjust(player, session);
+            session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
             
             player.print("Region shifted.");
         } catch (RegionOperationException e) {
@@ -439,9 +439,9 @@ public class SelectionCommands {
                 region.expand((new Vector(0, 0, -1)).multiply(change));
             }
 
-            session.getRegionSelector().learnChanges();
+            session.getRegionSelector(player.getWorld()).learnChanges();
             
-            session.getRegionSelector().explainRegionAdjust(player, session);
+            session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
             
             player.print("Region outset.");
         } catch (RegionOperationException e) {
@@ -477,9 +477,9 @@ public class SelectionCommands {
             region.contract((new Vector(0, 0, -1)).multiply(change));
         }
 
-        session.getRegionSelector().learnChanges();
+        session.getRegionSelector(player.getWorld()).learnChanges();
         
-        session.getRegionSelector().explainRegionAdjust(player, session);
+        session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
         
         player.print("Region inset.");
     }
@@ -501,9 +501,9 @@ public class SelectionCommands {
                 .subtract(region.getMinimumPoint())
                 .add(1, 1, 1);
 
-        player.print("Type: " + session.getRegionSelector().getTypeName());
+        player.print("Type: " + session.getRegionSelector(player.getWorld()).getTypeName());
         
-        for (String line : session.getRegionSelector().getInformationLines()) {
+        for (String line : session.getRegionSelector(player.getWorld()).getInformationLines()) {
             player.print(line);
         }
         
@@ -587,11 +587,11 @@ public class SelectionCommands {
 
         String typeName = args.getString(0);
         if (typeName.equalsIgnoreCase("cuboid")) {
-            session.setRegionSelector(player.getWorld(), new CuboidRegionSelector());
+            session.setRegionSelector(player.getWorld(), new CuboidRegionSelector(player.getWorld()));
             session.dispatchCUISelection(player);
             player.print("Cuboid: left click for point 1, right click for point 2");
         } else if (typeName.equalsIgnoreCase("poly")) {
-            session.setRegionSelector(player.getWorld(), new Polygonal2DRegionSelector());
+            session.setRegionSelector(player.getWorld(), new Polygonal2DRegionSelector(player.getWorld()));
             session.dispatchCUISelection(player);
             player.print("2D polygon selector: Left/right click to add a point.");
         } else {

@@ -74,7 +74,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
      * @throws IOException
      */
     @Override
-    public CompoundTag getChunkTag(Vector2D pos, String world)
+    public CompoundTag getChunkTag(Vector2D pos, LocalWorld world)
             throws DataException, IOException {
         int x = pos.getBlockX();
         int z = pos.getBlockZ();

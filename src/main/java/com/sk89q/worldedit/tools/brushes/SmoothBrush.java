@@ -23,6 +23,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.HeightMap;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.patterns.Pattern;
@@ -41,9 +42,9 @@ public class SmoothBrush implements Brush {
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
         double rad = size;
-        Vector min = pos.subtract(rad, rad, rad);
+        WorldVector min = new WorldVector(editSession.getWorld(), pos.subtract(rad, rad, rad));
         Vector max = pos.add(rad, rad + 10, rad);
-        Region region = new CuboidRegion(min, max);
+        Region region = new CuboidRegion(editSession.getWorld(), min, max);
         HeightMap heightMap = new HeightMap(editSession, region, naturalOnly);
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         heightMap.applyFilter(filter, iterations);

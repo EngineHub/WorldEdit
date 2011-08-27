@@ -20,8 +20,10 @@
 package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.data.ChunkStore;
 import java.util.Iterator;
 import java.util.Set;
@@ -40,15 +42,32 @@ public class CuboidRegion implements Region {
      * Store the second point.
      */
     private Vector pos2;
+    /**
+     * Stores the world.
+     */
+    private LocalWorld world;
 
     /**
      * Construct a new instance of this cuboid region.
      * 
+     * @param world
      * @param pos1
      * @param pos2
      */
     public CuboidRegion(Vector pos1, Vector pos2) {
+        this(null, pos1, pos2);
+    }
+    
+    /**
+     * Construct a new instance of this cuboid region.
+     * 
+     * @param world
+     * @param pos1
+     * @param pos2
+     */
+    public CuboidRegion(LocalWorld world, Vector pos1, Vector pos2) {
         this.pos1 = pos1;
+        this.world = world;
         this.pos2 = pos2;
     }
 
@@ -172,8 +191,8 @@ public class CuboidRegion implements Region {
             }
         }
 
-        pos1 = pos1.clampY(0, 127);
-        pos2 = pos2.clampY(0, 127);
+        pos1 = pos1.clampY(0, world.getHeight());
+        pos2 = pos2.clampY(0, world.getHeight());
     }
 
     /**
@@ -224,8 +243,8 @@ public class CuboidRegion implements Region {
             }
         }
 
-        pos1 = pos1.clampY(0, 127);
-        pos2 = pos2.clampY(0, 127);
+        pos1 = pos1.clampY(0, world.getHeight());
+        pos2 = pos2.clampY(0, world.getHeight());
     }
 
     /**
@@ -352,5 +371,13 @@ public class CuboidRegion implements Region {
     @Override
     public String toString() {
         return getMinimumPoint() + " - " + getMaximumPoint();
+    }
+
+    public LocalWorld getWorld() {
+        return world;
+    }
+
+    public void setWorld(LocalWorld world) {
+        this.world = world;
     }
 }

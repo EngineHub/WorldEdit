@@ -372,7 +372,7 @@ public class WorldEditPlugin extends JavaPlugin {
         }
         
         LocalSession session = controller.getSession(wrapPlayer(player));
-        RegionSelector selector = session.getRegionSelector();
+        RegionSelector selector = session.getRegionSelector(BukkitUtil.getLocalWorld(player.getWorld()));
         
         try {
             Region region = selector.getRegion();

@@ -6,6 +6,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class DinnerPermsResolver implements PermissionsResolver {
 
@@ -27,11 +28,16 @@ public class DinnerPermsResolver implements PermissionsResolver {
         if ( player.hasPermission("*")  || player.hasPermission(permission))
             return true;
         int i = 0;
+        Set<PermissionAttachmentInfo> perms = player.getEffectivePermissions();
         while (i <= permission.length() + 1) {
             int dotPos = permission.indexOf(".", i);
             if (dotPos > -1) {
                 if (player.hasPermission(permission.substring(0, dotPos + 1) + "*"))
                     return true;
+                for (PermissionAttachmentInfo info : perms) {
+                    if (info.getPermission().equals(permission.substring(0, dotPos + 1) + "*"))
+                        return false;
+                }
                 i += dotPos;
             } else {
                 break;

@@ -95,7 +95,7 @@ public class BukkitConfiguration extends LocalConfiguration {
         shellSaveType = type.equals("") ? null : type;
 
         String logFile = config.getString("logging.file", "");
-        if (!logFile.equals("")) {
+        if (!logFile.equals("") && logCommands) {
             try {
                 logFileHandler = new FileHandler(logFile, true);
                 logFileHandler.setFormatter(new LogFormat());

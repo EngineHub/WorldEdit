@@ -26,6 +26,7 @@ import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 
 /**
@@ -35,14 +36,18 @@ import com.sk89q.worldedit.Vector;
  */
 public class Polygonal2DRegionSelector implements RegionSelector {
     protected BlockVector pos1;
-    protected Polygonal2DRegion region = new Polygonal2DRegion();
+    protected Polygonal2DRegion region;
+    
+    public Polygonal2DRegionSelector(LocalWorld world) {
+        region = new Polygonal2DRegion(world);
+    }
     
     public boolean selectPrimary(Vector pos) {
         if (pos1 != null && pos1.equals(pos)) {
             return false;
         }
         pos1 = pos.toBlockVector();
-        region = new Polygonal2DRegion();
+        region = new Polygonal2DRegion(region.getWorld());
         region.addPoint(pos);
         region.expandY(pos.getBlockY());
         return true;
@@ -111,7 +116,7 @@ public class Polygonal2DRegionSelector implements RegionSelector {
 
     public void clear() {
         pos1 = null;
-        region = new Polygonal2DRegion();
+        region = new Polygonal2DRegion(region.getWorld());
     }
 
     public String getTypeName() {

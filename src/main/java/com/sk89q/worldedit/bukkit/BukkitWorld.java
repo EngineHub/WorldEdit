@@ -191,14 +191,14 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
-        BaseBlock[] history = new BaseBlock[16 * 16 * 128];
+        BaseBlock[] history = new BaseBlock[16 * 16 * (getHeight() + 1)];
         
         for (Vector2D chunk : region.getChunks()) {
             Vector min = new Vector(chunk.getBlockX() * 16, 0, chunk.getBlockZ() * 16);
             
             // First save all the blocks inside
             for (int x = 0; x < 16; ++x) {
-                for (int y = 0; y < 128; ++y) {
+                for (int y = 0; y < (getHeight() + 1); ++y) {
                     for (int z = 0; z < 16; ++z) {
                         Vector pt = min.add(x, y, z);
                         int index = y * 16 * 16 + z * 16 + x;
@@ -215,7 +215,7 @@ public class BukkitWorld extends LocalWorld {
             
             // Then restore 
             for (int x = 0; x < 16; ++x) {
-                for (int y = 0; y < 128; ++y) {
+                for (int y = 0; y < (getHeight() + 1); ++y) {
                     for (int z = 0; z < 16; ++z) {
                         Vector pt = min.add(x, y, z);
                         int index = y * 16 * 16 + z * 16 + x;
@@ -693,4 +693,13 @@ public class BukkitWorld extends LocalWorld {
     public int hashCode() {
         return world.hashCode();
     }
+    
+    /**
+     * Get world height
+     * 
+     * @return
+     */
+   public int getHeight() {
+       return world.getMaxHeight() - 1;
+   }
 }

@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import java.util.Set;
@@ -92,4 +93,18 @@ public interface Region extends Iterable<BlockVector> {
      * @return
      */
     public Set<Vector2D> getChunks();
+    
+    /**
+     * Get the world the selection is in
+     * 
+     * @return
+     */
+    public LocalWorld getWorld();
+    
+    /**
+     * Sets the world the selection is in
+     * 
+     * @return
+     */
+    public void setWorld(LocalWorld world);
 }

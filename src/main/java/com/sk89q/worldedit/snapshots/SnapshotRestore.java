@@ -147,7 +147,7 @@ public class SnapshotRestore {
             Chunk chunk;
 
             try {
-                chunk = chunkStore.getChunk(chunkPos, editSession.getWorld().getName());
+                chunk = chunkStore.getChunk(chunkPos, editSession.getWorld());
                 // Good, the chunk could be at least loaded
 
                 // Now just copy blocks!
