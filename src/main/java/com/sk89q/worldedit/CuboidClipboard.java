@@ -176,24 +176,24 @@ public class CuboidClipboard {
      * @param dir
      */
     public void flip(FlipDirection dir, boolean aroundPlayer) {
-        int width = getWidth();
-        int length = getLength();
-        int height = getHeight();
+        final int width = getWidth();
+        final int length = getLength();
+        final int height = getHeight();
 
         switch (dir) {
         case NORTH_SOUTH:
-            int wid = (int)Math.ceil(width / 2.0f);
+            final int wid = (int) Math.ceil(width / 2.0f);
             for (int xs = 0; xs < wid; ++xs) {
                 for (int z = 0; z < length; ++z) {
                     for (int y = 0; y < height; ++y) {
-                        BaseBlock a = data[xs][y][z];
+                        final BaseBlock a = data[xs][y][z];
                         //System.out.println(xs+"/"+y+"/"+z+": "+a.getType());
                         a.flip(dir);
 
                         if (xs == width - xs - 1)
                             continue;
 
-                        BaseBlock b = data[width - xs - 1][y][z];
+                        final BaseBlock b = data[width - xs - 1][y][z];
                         b.flip(dir);
 
                         data[xs][y][z] = b;
@@ -208,17 +208,17 @@ public class CuboidClipboard {
             break;
 
         case WEST_EAST:
-            int len = (int)Math.ceil(length / 2.0f);
+            final int len = (int) Math.ceil(length / 2.0f);
             for (int zs = 0; zs < len; ++zs) {
                 for (int x = 0; x < width; ++x) {
                     for (int y = 0; y < height; ++y) {
-                        BaseBlock a = data[x][y][zs];
+                        final BaseBlock a = data[x][y][zs];
                         a.flip(dir);
 
                         if (zs == length - zs - 1)
                             continue;
 
-                        BaseBlock b = data[x][y][length - zs - 1];
+                        final BaseBlock b = data[x][y][length - zs - 1];
                         b.flip(dir);
 
                         data[x][y][zs] = b;
@@ -233,17 +233,17 @@ public class CuboidClipboard {
             break;
 
         case UP_DOWN:
-            int hei = (int)Math.ceil(height / 2.0f);
+            final int hei = (int) Math.ceil(height / 2.0f);
             for (int ys = 0; ys < hei; ++ys) {
                 for (int x = 0; x < width; ++x) {
                     for (int z = 0; z < length; ++z) {
-                        BaseBlock a = data[x][ys][z];
+                        final BaseBlock a = data[x][ys][z];
                         a.flip(dir);
 
                         if (ys == height - ys - 1)
                             continue;
 
-                        BaseBlock b = data[x][height - ys - 1][z];
+                        final BaseBlock b = data[x][height - ys - 1][z];
                         b.flip(dir);
 
                         data[x][ys][z] = b;
