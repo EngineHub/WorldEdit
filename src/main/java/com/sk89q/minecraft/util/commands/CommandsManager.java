@@ -369,7 +369,10 @@ public abstract class CommandsManager<T> {
             } else {
                 executeMethod(method, args, player, methodArgs, level + 1);
             }
-        } else {
+        } else if (method.isAnnotationPresent(AliasCommand.class)) {
+            AliasCommand aCmd = method.getAnnotation(AliasCommand.class);
+            executeMethod(parent, aCmd.aliasTo(), player, methodArgs, level);
+        } else  {
             Command cmd = method.getAnnotation(Command.class);
             
             String[] newArgs = new String[args.length - level];

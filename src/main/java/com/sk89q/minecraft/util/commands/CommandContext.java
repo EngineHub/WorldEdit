@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class CommandContext {
+    protected static final String QUOTE_CHARS = "\'\"";
     protected final String[] args;
     protected final Set<Character> booleanFlags = new HashSet<Character>();
     protected final Map<Character, String> valueFlags = new HashMap<Character, String>();
@@ -34,25 +35,34 @@ public class CommandContext {
     }
 
     public CommandContext(String[] args) {
-        int i = 1;
-        for (; i < args.length; ++i) {
+        char quotedChar;
+        for (int i = 1; i < args.length; ++i) {
             if (args[i].length() == 0) {
-                // Ignore this
+                args = removePortionOfArray(args, i, i, null);
+            } else if (QUOTE_CHARS.indexOf(String.valueOf(args[i].charAt(0))) != -1) {
+                StringBuilder build = new StringBuilder();
+                quotedChar = args[i].charAt(0);
+                int endIndex = i;
+                for (; endIndex < args.length; endIndex++) {
+                    if (args[endIndex].charAt(args[endIndex].length() - 1) == quotedChar) {
+                        if (endIndex != i) build.append(" ");
+                        build.append(args[endIndex].substring(endIndex == i ? 1 : 0, args[endIndex].length() - 1));
+                        break;
+                    } else if (endIndex == i) {
+                        build.append(args[endIndex].substring(1));
+                    } else {
+                        build.append(" ").append(args[endIndex]);
+                    }
+                }
+                args = removePortionOfArray(args, i, endIndex, build.toString());
             } else if (args[i].charAt(0) == '-' && args[i].matches("^-[a-zA-Z]+$")) {
                 for (int k = 1; k < args[i].length(); ++k) {
                     booleanFlags.add(args[i].charAt(k));
                 }
-            } else {
-                break;
+                args = removePortionOfArray(args, i, i, null);
             }
         }
-
-        String[] newArgs = new String[args.length - i + 1];
-
-        System.arraycopy(args, i, newArgs, 1, args.length - i);
-        newArgs[0] = args[0];
-
-        this.args = newArgs;
+        this.args = args;
     }
 
     public CommandContext(String args, Set<Character> isValueFlag) throws CommandException {
@@ -222,5 +232,14 @@ public class CommandContext {
 
     public int argsLength() {
         return args.length - 1;
+    }
+
+    public static String[] removePortionOfArray(String[] array, int from, int to, String replace) {
+        String[] newArray = new String[from + array.length - to - (replace == null ? 1 : 0)];
+        System.arraycopy(array, 0, newArray, 0, from);
+        if (replace != null) newArray[from] = replace;
+        System.arraycopy(array, to + (replace == null ? 0 : 1), newArray, from + (replace == null ? 0 : 1),
+                    array.length - to - 1);
+        return newArray;
     }
 }
