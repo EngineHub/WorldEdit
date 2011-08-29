@@ -374,33 +374,34 @@ public abstract class CommandsManager<T> {
             executeMethod(parent, aCmd.aliasTo(), player, methodArgs, level);
         } else  {
             Command cmd = method.getAnnotation(Command.class);
-            
+
             String[] newArgs = new String[args.length - level];
             System.arraycopy(args, level, newArgs, 0, args.length - level);
-            
-            CommandContext context = new CommandContext(newArgs);
-            
-            if (context.argsLength() < cmd.min()) {
-                throw new CommandUsageException("Too few arguments.",
-                        getUsage(args, level, cmd));
+
+            final String valueFlags = cmd.valueFlags();
+            final Set<Character> isValueFlag = new HashSet<Character>();
+
+            for (int i = 0; i < valueFlags.length(); ++i) {
+                isValueFlag.add(valueFlags.charAt(i));
             }
-            
-            if (cmd.max() != -1 && context.argsLength() > cmd.max()) {
-                throw new CommandUsageException("Too many arguments.",
-                        getUsage(args, level, cmd));
-            }
-            
+
+            CommandContext context = new CommandContext(newArgs, isValueFlag);
+
+            if (context.argsLength() < cmd.min())
+                throw new CommandUsageException("Too few arguments.", getUsage(args, level, cmd));
+
+            if (cmd.max() != -1 && context.argsLength() > cmd.max())
+                throw new CommandUsageException("Too many arguments.", getUsage(args, level, cmd));
+
             for (char flag : context.getFlags()) {
-                if (cmd.flags().indexOf(String.valueOf(flag)) == -1) {
-                    throw new CommandUsageException("Unknown flag: " + flag,
-                            getUsage(args, level, cmd));
-                }
+                if (cmd.flags().indexOf(String.valueOf(flag)) == -1)
+                    throw new CommandUsageException("Unknown flag: " + flag, getUsage(args, level, cmd));
             }
-            
+
             methodArgs[0] = context;
 
             Object instance = instances.get(method);
-            
+
             invokeMethod(parent, args, player, method, instance, methodArgs, argsCount);
         }
     }
