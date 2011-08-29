@@ -65,4 +65,13 @@ public @interface Command {
      * each character being a flag. Use A-Z and a-z as possible flags.
      */
     String flags() default "";
+
+    /**
+     * Value flags are special flags, that take a value after the flag.
+     * The semantics are the same as with the flags parameter.
+     * They aren't automatically documented and thus need to be added
+     * to the "usage" parameter separately.
+     */
+    String valueFlags() default "";
+    
 }
