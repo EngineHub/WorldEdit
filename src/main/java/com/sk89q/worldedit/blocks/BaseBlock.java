@@ -35,7 +35,7 @@ public class BaseBlock {
     /**
      * BaseBlock data.
      */
-    private char data = 0;
+    private byte data = 0;
 
     /**
      * Construct the block with its type.
@@ -54,7 +54,7 @@ public class BaseBlock {
      */
     public BaseBlock(int type, int data) {
         this.type = (short)type;
-        this.data = (char)data;
+        this.data = (byte)data;
     }
 
     /**
@@ -82,7 +82,7 @@ public class BaseBlock {
      * @param data the data to set
      */
     public void setData(int data) {
-        this.data = (char)data;
+        this.data = (byte)data;
     }
 
     /**
@@ -98,14 +98,14 @@ public class BaseBlock {
      * Rotate this block 90 degrees.
      */
     public void rotate90() {
-        data = (char)BlockData.rotate90(type, data);
+        data = (byte)BlockData.rotate90(type, data);
     }
     
     /**
      * Rotate this block -90 degrees.
      */
     public void rotate90Reverse() {
-        data = (char)BlockData.rotate90Reverse(type, data);
+        data = (byte)BlockData.rotate90Reverse(type, data);
     }
     
     /**
@@ -113,7 +113,7 @@ public class BaseBlock {
      * @param direction
      */
     public void flip(FlipDirection direction) {
-        data = (char)BlockData.flip(type, data, direction);
+        data = (byte)BlockData.flip(type, data, direction);
     }
 
     @Override
