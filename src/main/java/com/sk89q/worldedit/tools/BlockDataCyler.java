@@ -78,9 +78,9 @@ public class BlockDataCyler implements DoubleActionBlockTool {
         } else if (type == BlockID.WALL_SIGN) {
             data = ((data + increment) - 2) % 4 + 2;
         } else if (type == BlockID.STEP) {
-            data = (data + increment) % 3;
+            data = (data + increment) % 4;
         } else if (type == BlockID.DOUBLE_STEP) {
-            data = (data + increment) % 3;
+            data = (data + increment) % 4;
         } else if (type == BlockID.FURNACE || type == BlockID.BURNING_FURNACE
                 || type == BlockID.DISPENSER) {
             data = (data + increment) % 4 + 2;
