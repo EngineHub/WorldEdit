@@ -1,6 +1,6 @@
 // $Id$
 /*
- * Copyright (C) 2010 sk89q <http://www.sk89q.com>
+ * Copyright (C) 2011 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,11 +30,11 @@ import java.lang.annotation.RetentionPolicy;
  */
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AliasCommand {
+public @interface CommandAlias {
 
     /**
      *
      * @return Raw {@link CommandsManager}-formatted command arg array to run
      */
-    String[] aliasTo();
+    String[] value();
 }
