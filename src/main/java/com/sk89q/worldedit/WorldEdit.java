@@ -1087,11 +1087,6 @@ public class WorldEdit {
         if (player.getItemInHand() == config.wandItem) {
             if (session.isToolControlEnabled()
                     && player.hasPermission("worldedit.selection.pos")) {
-                // Bug workaround
-                if (clicked.getBlockX() == 0 && clicked.getBlockY() == 0
-                        && clicked.getBlockZ() == 0) {
-                    return false;
-                }
 
                 RegionSelector selector = session.getRegionSelector(player.getWorld());
                 if (selector.selectPrimary(clicked)) {
