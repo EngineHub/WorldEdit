@@ -173,6 +173,16 @@ public class WorldEdit {
         commands.register(ToolCommands.class);
         commands.register(UtilityCommands.class);
     }
+    
+    /*
+     * Gets the LocalSession for a player name if it exists
+     *
+     * @param player
+     * @return The session for the player, if it exists
+     */
+    public LocalSession getSession(String player) {
+        return sessions.get(player);
+    }
 
     /**
      * Gets the WorldEdit session for a player.

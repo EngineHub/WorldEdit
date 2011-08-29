@@ -631,4 +631,10 @@ public abstract class LocalPlayer {
     public int hashCode() {
         return getName().hashCode();
     }
+
+    public void checkPermission(String permission) throws WorldEditPermissionException {
+       if (!hasPermission(permission)) {
+           throw new WorldEditPermissionException();
+       }
+    }
 }

@@ -32,10 +32,10 @@ import com.sk89q.worldedit.*;
 public class HistoryCommands {
     @Command(
         aliases = {"/undo", "undo"},
-        usage = "[times]",
+        usage = "[times] [player]",
         desc = "Undoes the last action",
         min = 0,
-        max = 1
+        max = 2
     )
     @CommandPermissions({"worldedit.history.undo"})
     public static void undo(CommandContext args, WorldEdit we,
@@ -43,9 +43,19 @@ public class HistoryCommands {
             throws WorldEditException {
         
         int times = Math.max(1, args.getInteger(0, 1));
-        
         for (int i = 0; i < times; ++i) {
-            EditSession undone = session.undo(session.getBlockBag(player));
+            EditSession undone;
+            if (args.argsLength() < 2) {
+                undone = session.undo(session.getBlockBag(player));
+            } else {
+                player.checkPermission("worldedit.history.undo.other");
+                LocalSession sess = we.getSession(args.getString(1));
+                if (sess == null){
+                    player.printError("Unable to find session for " + args.getString(1));
+                    break;
+                }
+                undone = sess.undo(session.getBlockBag(player));
+            }
             if (undone != null) {
                 player.print("Undo successful.");
                 we.flushBlockBag(player, undone);
@@ -58,10 +68,10 @@ public class HistoryCommands {
     
     @Command(
         aliases = {"/redo", "redo"},
-        usage = "[times]",
+        usage = "[times] [player]",
         desc = "Redoes the last action (from history)",
         min = 0,
-        max = 1
+        max = 2
     )
     @CommandPermissions({"worldedit.history.redo"})
     public static void redo(CommandContext args, WorldEdit we,
@@ -71,7 +81,18 @@ public class HistoryCommands {
         int times = Math.max(1, args.getInteger(0, 1));
         
         for (int i = 0; i < times; ++i) {
-            EditSession redone = session.redo(session.getBlockBag(player));
+            EditSession redone;
+            if (args.argsLength() < 2) {
+                redone = session.redo(session.getBlockBag(player));
+            } else {
+                player.checkPermission("worldedit.history.redo.other");
+                LocalSession sess = we.getSession(args.getString(1));
+                if (sess == null){
+                    player.printError("Unable to find session for " + args.getString(1));
+                    break;
+                }
+                redone = sess.redo(session.getBlockBag(player));
+            }
             if (redone != null) {
                 player.print("Redo successful.");
                 we.flushBlockBag(player, redone);
