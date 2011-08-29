@@ -81,13 +81,13 @@ public class RegionCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
         
-        Set<Integer> from;
+        Set<BaseBlock> from;
         Pattern to;
         if (args.argsLength() == 1) {
             from = null;
             to = we.getBlockPattern(player, args.getString(0));
         } else {
-            from = we.getBlockIDs(player, args.getString(0), true);
+            from = we.getBlocks(player, args.getString(0), true);
             to = we.getBlockPattern(player, args.getString(1));
         }
 

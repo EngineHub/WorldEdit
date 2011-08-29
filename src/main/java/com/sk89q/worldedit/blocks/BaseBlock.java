@@ -115,4 +115,26 @@ public class BaseBlock {
     public void flip(FlipDirection direction) {
         data = (char)BlockData.flip(type, data, direction);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof BaseBlock)) {
+            return false;
+        }
+        return (type == ((BaseBlock)o).type) && (data == ((BaseBlock)o).data);
+    }
+    
+    @Override
+    public String toString() {
+        return "BaseBlock id: " + getType() + " with damage: " + getData();
+    }
+
+    public boolean inIterable(Iterable<BaseBlock> iter) {
+        for (BaseBlock block : iter) {
+            if (block.equals(this)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

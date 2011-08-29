@@ -241,13 +241,13 @@ public class UtilityCommands {
         
         int size = Math.max(1, args.getInteger(0));
         int affected;
-        Set<Integer> from;
+        Set<BaseBlock> from;
         Pattern to;
         if (args.argsLength() == 2) {
             from = null;
             to = we.getBlockPattern(player, args.getString(1));
         } else {
-            from = we.getBlockIDs(player, args.getString(1), true);
+            from = we.getBlocks(player, args.getString(1), true);
             to = we.getBlockPattern(player, args.getString(2));
         }
 

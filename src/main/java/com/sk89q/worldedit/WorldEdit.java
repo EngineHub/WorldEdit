@@ -402,6 +402,21 @@ public class WorldEdit {
         return getBlock(player, id, false);
     }
 
+    public Set<BaseBlock> getBlocks (LocalPlayer player, String list, boolean allAllowed)
+            throws DisallowedItemException, UnknownItemException {
+        String[] items = list.split(",");
+        Set<BaseBlock> blocks = new HashSet<BaseBlock>();
+        for (String id : items) {
+            blocks.add(getBlock(player, id, allAllowed));
+        }
+        return blocks;
+    }
+
+    public Set<BaseBlock> getBlocks(LocalPlayer player, String list)
+            throws DisallowedItemException, UnknownItemException {
+        return getBlocks(player, list, false);
+    }
+
     /**
      * Get a list of blocks as a set. This returns a Pattern.
      *
