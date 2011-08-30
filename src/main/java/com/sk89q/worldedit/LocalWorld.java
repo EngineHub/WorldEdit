@@ -350,6 +350,13 @@ public abstract class LocalWorld {
     }
 
     /**
+     * Checks if the chunk pt is in is loaded. if not, loads the chunk
+     *
+     * @param pt Position to check
+     */
+    public abstract void checkLoadedChuck(Vector pt);
+
+    /**
      * Compare if the other world is equal.
      * 
      * @param other
