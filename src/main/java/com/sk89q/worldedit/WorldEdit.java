@@ -172,6 +172,7 @@ public class WorldEdit {
         commands.register(ToolUtilCommands.class);
         commands.register(ToolCommands.class);
         commands.register(UtilityCommands.class);
+        Registrar.autoRegister(server, commands);
     }
 
     /**
