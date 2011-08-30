@@ -674,6 +674,13 @@ public class BukkitWorld extends LocalWorld {
     }
 
     @Override
+    public void checkLoadedChuck(Vector pt) {
+        if (!world.isChunkLoaded(pt.getBlockX() >> 4, pt.getBlockZ() >> 4)) {
+            world.loadChunk(pt.getBlockX() >> 4, pt.getBlockZ() >> 4);
+        }
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (!(other instanceof BukkitWorld)) {
             return false;

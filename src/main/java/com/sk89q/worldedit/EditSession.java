@@ -162,6 +162,8 @@ public class EditSession {
             return false;
         }
 
+        world.checkLoadedChuck(pt);
+        
         // No invalid blocks
         if (!world.isValidBlockType(type)) {
             return false;
@@ -414,6 +416,8 @@ public class EditSession {
      * @return BaseBlock
      */
     public BaseBlock rawGetBlock(Vector pt) {
+        world.checkLoadedChuck(pt);
+
         int type = world.getBlockType(pt);
         int data = world.getBlockData(pt);
 
