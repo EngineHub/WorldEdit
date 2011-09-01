@@ -15,13 +15,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package com.sk89q.worldedit;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.bukkit.BukkitServerInterface;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -33,6 +34,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Registers all of the commands, in all of the jars, in the WorldEdit directory.
@@ -117,7 +120,7 @@ public class Registrar<T> {
             catch (RuntimeException ex) {
                 LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 throw new IOException(FAIL_PREFIX + u.toString() + FAIL_SUFFIX, ex);
-            }            
+            }
             catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 throw new IOException(FAIL_PREFIX + u.toString() + FAIL_SUFFIX, ex);
@@ -127,15 +130,15 @@ public class Registrar<T> {
         protected Class<?> findClass(String name) throws ClassNotFoundException {
             LOGGER.log(Level.FINE, "finding and loading class " + name);
             Class<?> result = null;
-            try{
+            try {
                 result = Class.forName(name);
-                LOGGER.log(Level.INFO, "Successfully found and loaded class " + name);                
+                LOGGER.log(Level.FINE, "Successfully found and loaded class " + name);
             }
-            catch(ClassNotFoundException ncfe){
-                 result = null;
+            catch (ClassNotFoundException ncfe) {
+                result = null;
             }
-            if(result == null){
-                            
+            if (result == null){
+
                 Class<URLClassLoader> urlClassLoaderClass = URLClassLoader.class;
                 try {
                     Method method = urlClassLoaderClass.getDeclaredMethod("findClass", CLASSNAME_PARAMETER);
@@ -153,13 +156,13 @@ public class Registrar<T> {
                     throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ex);
                 }
                 catch (InvocationTargetException ex) {
-                    if(ex.getCause() instanceof NoClassDefFoundError){
-                        NoClassDefFoundError ncdf = (NoClassDefFoundError)ex.getCause();
-                        throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ncdf);                   
+                    if (ex.getCause() instanceof NoClassDefFoundError){
+                        NoClassDefFoundError ncdf = (NoClassDefFoundError) ex.getCause();
+                        throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ncdf);
                     }
                     else{
-                    LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
-                    throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ex);
+                        LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+                        throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ex);
                     }
                 }
                 catch (NoSuchMethodException ex) {
@@ -173,7 +176,7 @@ public class Registrar<T> {
                 catch (RuntimeException ex) {
                     LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                     throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ex);
-                }            
+                }
                 catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                     throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ex);
@@ -238,26 +241,26 @@ public class Registrar<T> {
         public static boolean isSymlink(File file) throws IOException {
             boolean isSymbolicLink;
 
-            if (file == null) {
+            if (file == null){
                 throw new IllegalArgumentException("File must not be null");
             }
-//        java.nio.file.attribute.BasicFileAttributes attrs = Attributes.readBasicFileAttributes(file.toPath());
-//        java.nio.file.attribute.BasicFileAttributes attrs;
-//        attrs = Files.readAttributes(file.toPath(),BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-//        isSymbolicLink = attrs.isSymbolicLink();
-            else {
+            //        java.nio.file.attribute.BasicFileAttributes attrs = Attributes.readBasicFileAttributes(file.toPath());
+            //        java.nio.file.attribute.BasicFileAttributes attrs;
+            //        attrs = Files.readAttributes(file.toPath(),BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+            //        isSymbolicLink = attrs.isSymbolicLink();
+            else{
                 File canon;
-                if (file.getParent() == null) {
+                if (file.getParent() == null){
                     canon = file;
                 }
-                else {
+                else{
                     File canonDir = file.getParentFile().getCanonicalFile();
                     canon = new File(canonDir, file.getName());
                 }
                 isSymbolicLink = !canon.getCanonicalFile().equals(canon.getAbsoluteFile());
             }
 
-            if (isSymbolicLink) {
+            if (isSymbolicLink){
                 LOGGER.log(Level.WARNING, file.getPath() + " is a symbolicLink");
                 /** Logger does not support {} **/
             }
@@ -274,7 +277,7 @@ public class Registrar<T> {
 
             try {
                 result = pathname.isFile();
-                if (!result) {
+                if (!result){
                     LOGGER.log(Level.FINEST, pathname.getPath() + " is not a file ");
                     /** Logger does not support {} **/
                 }
@@ -339,13 +342,33 @@ public class Registrar<T> {
     private void registerExtensionCommandsInDir(File extDir) {
         LOGGER.log(Level.FINE, extDir.toString());
 
-        if (!DIR_FILTER.accept(extDir)) {
+        if (!DIR_FILTER.accept(extDir)){
             throw new IllegalArgumentException("File " + extDir.toString() + " is not a directory.");
         }
-        for (File someJar : extDir.listFiles(new IsJarFilter())) {
+        /**Add All Jars to the classpath before we attempt to load any class.**/
+        for(File someJar : extDir.listFiles(new IsJarFilter())) {
+            URL someJarURL;
+            try {
+                someJarURL = someJar.toURI().toURL();
+                if (!CLASS_URLS.contains(someJarURL)){
+                    CLASS_URLS.add(someJarURL);
+                    LOGGER.log(Level.INFO, "Added " + someJarURL + " to classpath");                    
+                    ClasspathJarAppender.addURL(someJarURL);
+                }
+            }
+            catch (MalformedURLException ex) {
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+            catch (IOException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        }
+
+        for(File someJar : extDir.listFiles(new IsJarFilter())) {
             registerExtensionCommandsInJar(someJar);
         }
-        for (File aSubDir : extDir.listFiles(DIR_FILTER)) {
+
+        for(File aSubDir : extDir.listFiles(DIR_FILTER)) {
             registerExtensionCommandsInDir(aSubDir);
         }
     }
@@ -355,30 +378,36 @@ public class Registrar<T> {
         Class<?> entryClass;
         LOGGER.log(Level.INFO, "Searching " + someJar.toString() + " for commands.");
 
-        if (!JAR_FILTER.accept(someJar)) {
+        if (!JAR_FILTER.accept(someJar)){
             throw new IllegalArgumentException("File " + someJar.toString() + " is not a jar file.");
         }
         try {
 
             JarFile jarfile;
-            ClasspathJarAppender.addFile(someJar);
+            URL someJarURL;
+            someJarURL = someJar.toURI().toURL();            
+            if (!CLASS_URLS.contains(someJarURL)){
+                CLASS_URLS.add(someJarURL);
+                LOGGER.log(Level.INFO, "Added " + someJarURL + " to classpath");                    
+                ClasspathJarAppender.addURL(someJarURL);
+            }            
             jarfile = new JarFile(someJar);
-            for (JarEntry someZipEntry : Collections.list(jarfile.entries())) {
+            for(JarEntry someZipEntry : Collections.list(jarfile.entries())) {
                 entryName = someZipEntry.getName();
-                if (entryName.endsWith(".class") && !entryName.contains("$")) {
+                if (entryName.endsWith(".class") && !entryName.contains("$")){
                     LOGGER.log(Level.FINE, "Found class entry " + entryName.toString());
                     /**Logger does not support {} formatting**/
                     entryClass = classFromName(entryName);
-                    if (entryClass != null) {
-                        if (hasCommands(entryClass,0)) {
+                    if (entryClass != null){
+                        if (hasCommands(entryClass, 0)){
                             LOGGER.log(Level.INFO, "Registering " + entryClass.getName() + " as Command");
                             getCommandManager().register(entryClass);
                         }
-                        else {
+                        else{
                             LOGGER.log(Level.FINE, entryName.toString() + " is not annotated as a Command");
                         }
                     }
-                    else {
+                    else{
                         LOGGER.log(Level.FINE, "Could not load " + entryName.toString());
                     }
                 }
@@ -407,7 +436,7 @@ public class Registrar<T> {
         catch (RuntimeException ex) {
             LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
             someclass = null;
-        }        
+        }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
             someclass = null;
@@ -420,12 +449,12 @@ public class Registrar<T> {
         boolean result = false;
         Method[] classMethods = null;
         Class<?>[] innerClasses = null;
-        if(depth > MAX_DEPTH){
+        if (depth > MAX_DEPTH){
             return false;
         }
         try {
             classMethods = someClass.getMethods();
-            for (Method aMethod : classMethods) {
+            for(Method aMethod : classMethods) {
                 boolean isCommand = false;
                 try {
                     isCommand = aMethod.isAnnotationPresent(Command.class);
@@ -433,7 +462,7 @@ public class Registrar<T> {
                 catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 }
-                if (isCommand) {
+                if (isCommand){
                     result = true;
                     break;
                 }
@@ -442,11 +471,11 @@ public class Registrar<T> {
         catch (RuntimeException ex) {
             LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
         }
-        if (!result && (depth < MAX_DEPTH)) {
+        if (!result && (depth < MAX_DEPTH)){
             try {
                 innerClasses = someClass.getClasses();
-                for (Class<?> innerClass : innerClasses) {
-                    if ( hasCommands(innerClass, depth+1)) {
+                for(Class<?> innerClass : innerClasses) {
+                    if (hasCommands(innerClass, depth + 1)){
                         result = true;
                         break;
                     }
@@ -460,38 +489,39 @@ public class Registrar<T> {
         return result;
     }
 
-/***
- * Registers all of the commands, in all of the classes, in all of the jars, in 
- * all of all of the directories and subdirectories in the WorldEdit directory.
- * <p>
- * This is a convenience wrapper for {@code  autoRegister(BukkitServerInterface server, CommandsManager<LocalPlayer> commandManager)}
- * Note, however, that the argument {@code server} must be an instance of {@code BukkitServerInterface}.
- * @param serverInterface The BukkitServerInterface that manages the WorldEdit plugin.
- * @param commandManager the CommandsManager that will register the command. 
- */    
+    /***
+     * Registers all of the commands, in all of the classes, in all of the jars, in 
+     * all of all of the directories and subdirectories in the WorldEdit directory.
+     * <p>
+     * This is a convenience wrapper for {@code  autoRegister(BukkitServerInterface server, CommandsManager<LocalPlayer> commandManager)}
+     * Note, however, that the argument {@code server} must be an instance of {@code BukkitServerInterface}.
+     * @param serverInterface The BukkitServerInterface that manages the WorldEdit plugin.
+     * @param commandManager the CommandsManager that will register the command. 
+     */
     public static void autoRegister(ServerInterface serverInterface, CommandsManager<LocalPlayer> commandManager) {
-        if (!(serverInterface instanceof BukkitServerInterface)) {
+        if (!(serverInterface instanceof BukkitServerInterface)){
             throw new IllegalArgumentException("server argument must be an instance of BukkitServerInterface");
         }
-        autoRegister((BukkitServerInterface)serverInterface,commandManager);
+        autoRegister((BukkitServerInterface) serverInterface, commandManager);
     }
-/***
- * Registers all of the commands, in all of the classes, in all of the jars, in 
- * all of all of the directories and subdirectories in the WorldEdit directory.
- * <p>
- * @param serverInterface The BukkitServerInterface that manages the WorldEdit plugin.
- * @param commandManager   
- */
+
+    /***
+     * Registers all of the commands, in all of the classes, in all of the jars, in 
+     * all of all of the directories and subdirectories in the WorldEdit directory.
+     * <p>
+     * @param serverInterface The BukkitServerInterface that manages the WorldEdit plugin.
+     * @param commandManager   
+     */
     public static void autoRegister(BukkitServerInterface serverInterface, CommandsManager<LocalPlayer> commandManager) {
         try {
             File wcPluginDir = serverInterface.plugin.getDataFolder();
             LOGGER.log(Level.INFO, "Searching directory \"" + wcPluginDir.toString() + "\" for Commands");
             /** Logger does not support {} **/
-            if (wcPluginDir.exists()) {
+            if (wcPluginDir.exists()){
                 Registrar<LocalPlayer> jarRegistrar = new Registrar<LocalPlayer>(commandManager, wcPluginDir);
                 jarRegistrar.registerExtensionCommands();
             }
-            else {
+            else{
                 LOGGER.log(Level.WARNING, "Plugin directory \"" + wcPluginDir.toString() + "\" does not (yet) exist.");
                 /** Logger does not support {} **/
             }
@@ -530,6 +560,7 @@ public class Registrar<T> {
     }
     private CommandsManager<T> _commandManager;
     private File _extenensionsDir = null;
+    private static final List<URL> CLASS_URLS = new ArrayList<URL>(4);
     private static final Logger LOGGER = Logger.getLogger("Minecraft.WorldEdit");
     private static final IsDirFilter DIR_FILTER = new IsDirFilter();
     private static final IsFileFilter FILE_FILTER = new IsFileFilter();
