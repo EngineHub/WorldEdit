@@ -129,6 +129,7 @@ public class Registrar<T> {
             Class<?> result = null;
             try{
                 result = Class.forName(name);
+                LOGGER.log(Level.INFO, "Successfully found and loaded class " + name);                
             }
             catch(ClassNotFoundException ncfe){
                  result = null;
