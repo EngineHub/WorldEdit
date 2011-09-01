@@ -155,7 +155,7 @@ public class Registrar<T> {
                 catch (InvocationTargetException ex) {
                     if(ex.getCause() instanceof NoClassDefFoundError){
                         NoClassDefFoundError ncdf = (NoClassDefFoundError)ex.getCause();
-                        throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ncdf);/***Breaks here **/                    
+                        throw new ClassNotFoundException(FAIL_PREFIX + name + FAIL_SUFFIX, ncdf);                   
                     }
                     else{
                     LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
@@ -353,7 +353,7 @@ public class Registrar<T> {
     private void registerExtensionCommandsInJar(File someJar) {
         String entryName;
         Class<?> entryClass;
-        LOGGER.log(Level.FINE, someJar.toString());
+        LOGGER.log(Level.INFO, "Searching " + someJar.toString() + " for commands.");
 
         if (!JAR_FILTER.accept(someJar)) {
             throw new IllegalArgumentException("File " + someJar.toString() + " is not a jar file.");
