@@ -52,7 +52,7 @@ public class ClipboardCommands {
         Region region = session.getSelection(player.getWorld());
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
-        Vector pos = player.getBlockIn();
+        Vector pos = session.getPlacementPosition(player);
 
         CuboidClipboard clipboard = new CuboidClipboard(
                 max.subtract(min).add(new Vector(1, 1, 1)),
@@ -85,7 +85,7 @@ public class ClipboardCommands {
         Region region = session.getSelection(player.getWorld());
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
-        Vector pos = player.getBlockIn();
+        Vector pos = session.getPlacementPosition(player);
 
         CuboidClipboard clipboard = new CuboidClipboard(
                 max.subtract(min).add(new Vector(1, 1, 1)),
