@@ -80,8 +80,8 @@ public class GenerationCommands {
 
     @Command(
         aliases = {"/hsphere"},
-        usage = "<block> <radius> [raised?] ",
-        desc = "Generate a hollow sphere",
+        usage = "<block> <radius>[,<radius>,<radius>] [raised?] ",
+        desc = "Generate a hollow sphere. If you specify 3 radiuses separated by commas, an ellipsoid with the dimensions x,y,z will be generated.",
         min = 2,
         max = 3
     )
@@ -91,19 +91,36 @@ public class GenerationCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        Pattern block = we.getBlockPattern(player, args.getString(0));
-        double radius = Math.max(1, args.getDouble(1));
-        boolean raised = args.argsLength() > 2
-                ? (args.getString(2).equalsIgnoreCase("true")
-                        || args.getString(2).equalsIgnoreCase("yes"))
-                : false;
+        final Pattern block = we.getBlockPattern(player, args.getString(0));
+        String[] radiuses = args.getString(1).split(",");
+        final double radiusX, radiusY, radiusZ;
+        switch (radiuses.length) {
+        case 1:
+            radiusX = radiusY = radiusZ = Math.max(1, Double.parseDouble(radiuses[0]));
+            break;
+
+        case 3:
+            radiusX = Math.max(1, Double.parseDouble(radiuses[0]));
+            radiusY = Math.max(1, Double.parseDouble(radiuses[1]));
+            radiusZ = Math.max(1, Double.parseDouble(radiuses[2]));
+            break;
+
+        default:
+            player.printError("You must either specify 1 or 3 radius values.");
+            return;
+        }
+        final boolean raised;
+        if (args.argsLength() > 2)
+            raised = args.getString(2).equalsIgnoreCase("true") || args.getString(2).equalsIgnoreCase("yes");
+        else
+            raised = false;
 
         Vector pos = session.getPlacementPosition(player);
         if (raised) {
-            pos = pos.add(0, radius, 0);
+            pos = pos.add(0, radiusY, 0);
         }
 
-        int affected = editSession.makeSphere(pos, block, radius, false);
+        int affected = editSession.makeSphere(pos, block, radiusX, radiusY, radiusZ, false);
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }
@@ -111,7 +128,7 @@ public class GenerationCommands {
     @Command(
         aliases = {"/sphere"},
         usage = "<block> <radius> [raised?] ",
-        desc = "Generate a filled sphere",
+        desc = "Generate a filled sphere. If you specify 3 radiuses separated by commas, an ellipsoid with the dimensions x,y,z will be generated.",
         min = 2,
         max = 3
     )
@@ -122,18 +139,35 @@ public class GenerationCommands {
             throws WorldEditException {
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
-        double radius = Math.max(1, args.getDouble(1));
-        boolean raised = args.argsLength() > 2
-                ? (args.getString(2).equalsIgnoreCase("true")
-                        || args.getString(2).equalsIgnoreCase("yes"))
-                : false;
+        String[] radiuses = args.getString(1).split(",");
+        final double radiusX, radiusY, radiusZ;
+        switch (radiuses.length) {
+        case 1:
+            radiusX = radiusY = radiusZ = Math.max(1, Double.parseDouble(radiuses[0]));
+            break;
+
+        case 3:
+            radiusX = Math.max(1, Double.parseDouble(radiuses[0]));
+            radiusY = Math.max(1, Double.parseDouble(radiuses[1]));
+            radiusZ = Math.max(1, Double.parseDouble(radiuses[2]));
+            break;
+
+        default:
+            player.printError("You must either specify 1 or 3 radius values.");
+            return;
+        }
+        final boolean raised;
+        if (args.argsLength() > 2)
+            raised = args.getString(2).equalsIgnoreCase("true") || args.getString(2).equalsIgnoreCase("yes");
+        else
+            raised = false;
 
         Vector pos = session.getPlacementPosition(player);
         if (raised) {
-            pos = pos.add(0, radius, 0);
+            pos = pos.add(0, radiusY, 0);
         }
 
-        int affected = editSession.makeSphere(pos, block, radius, true);
+        int affected = editSession.makeSphere(pos, block, radiusX, radiusY, radiusZ, true);
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }
