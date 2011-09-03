@@ -31,103 +31,103 @@ import com.sk89q.util.StringUtil;
  * @author sk89q
  */
 public enum BlockType {
-    AIR(0, "Air", "air"),
-    STONE(1, "Stone", "stone", "rock"),
-    GRASS(2, "Grass", "grass"),
-    DIRT(3, "Dirt", "dirt"),
-    COBBLESTONE(4, "Cobblestone", "cobblestone", "cobble"),
-    WOOD(5, "Wood", "wood", "woodplank", "plank", "woodplanks", "planks"),
-    SAPLING(6, "Sapling", "sapling", "seedling"),
-    BEDROCK(7, "Bedrock", "adminium", "bedrock"),
-    WATER(8, "Water", "watermoving", "movingwater", "flowingwater", "waterflowing"),
-    STATIONARY_WATER(9, "Water (stationary)", "water", "waterstationary", "stationarywater", "stillwater"),
-    LAVA(10, "Lava", "lavamoving", "movinglava", "flowinglava", "lavaflowing"),
-    STATIONARY_LAVA(11, "Lava (stationary)", "lava", "lavastationary", "stationarylava", "stilllava"),
-    SAND(12, "Sand", "sand"),
-    GRAVEL(13, "Gravel", "gravel"),
-    GOLD_ORE(14, "Gold ore", "goldore"),
-    IRON_ORE(15, "Iron ore", "ironore"),
-    COAL_ORE(16, "Coal ore", "coalore"),
-    LOG(17, "Log", "log", "tree", "pine", "oak", "birch", "redwood"),
-    LEAVES(18, "Leaves", "leaves", "leaf"),
-    SPONGE(19, "Sponge", "sponge"),
-    GLASS(20, "Glass", "glass"),
-    LAPIS_LAZULI_ORE(21, "Lapis lazuli ore", "lapislazuliore", "blueore", "lapisore"),
-    LAPIS_LAZULI(22, "Lapis lazuli", "lapislazuli", "lapislazuliblock", "bluerock"),
-    DISPENSER(23, "Dispenser", "dispenser"),
-    SANDSTONE(24, "Sandstone", "sandstone"),
-    NOTE_BLOCK(25, "Note block", "musicblock", "noteblock", "note", "music", "instrument"),
-    BED(26, "Bed", "bed"),
-    POWERED_RAIL(27, "Powered Rail", "poweredrail", "boosterrail", "poweredtrack", "boostertrack", "booster"),
-    DETECTOR_RAIL(28, "Detector Rail", "detectorrail", "detector"),
-    PISTON_STICKY_BASE(29, "Sticky Piston", "stickypiston"),
-    WEB(30, "Web", "web", "spiderweb"),
-    LONG_GRASS(31, "Long grass", "longgrass", "tallgrass"),
-    DEAD_BUSH(32, "Shrub", "deadbush", "shrub", "deadshrub", "tumbleweed"),
-    PISTON_BASE(33, "Piston", "piston"),
-    PISTON_EXTENSION(34, "Piston extension", "pistonextendsion", "pistonhead"),
-    CLOTH(35, "Wool", "cloth", "wool"),
-    PISTON_MOVING_PIECE(36, "Piston moving piece", "movingpiston"),
-    YELLOW_FLOWER(37, "Yellow flower", "yellowflower", "flower"),
-    RED_FLOWER(38, "Red rose", "redflower", "redrose", "rose"),
-    BROWN_MUSHROOM(39, "Brown mushroom", "brownmushroom", "mushroom"),
-    RED_MUSHROOM(40, "Red mushroom", "redmushroom"),
-    GOLD_BLOCK(41, "Gold block", "gold", "goldblock"),
-    IRON_BLOCK(42, "Iron block", "iron", "ironblock"),
-    DOUBLE_STEP(43, "Double step", "doubleslab", "doublestoneslab", "doublestep"),
-    STEP(44, "Step", "slab", "stoneslab", "step", "halfstep"),
-    BRICK(45, "Brick", "brick", "brickblock"),
-    TNT(46, "TNT", "tnt", "c4", "explosive"),
-    BOOKCASE(47, "Bookcase", "bookshelf", "bookshelves", "bookcase", "bookcases"),
-    MOSSY_COBBLESTONE(48, "Cobblestone (mossy)", "mossycobblestone", "mossstone", "mossystone", "mosscobble", "mossycobble", "moss", "mossy", "sossymobblecone"),
-    OBSIDIAN(49, "Obsidian", "obsidian"),
-    TORCH(50, "Torch", "torch", "light", "candle"),
-    FIRE(51, "Fire", "fire", "flame", "flames"),
-    MOB_SPAWNER(52, "Mob spawner", "mobspawner", "spawner"),
-    WOODEN_STAIRS(53, "Wooden stairs", "woodstair", "woodstairs", "woodenstair", "woodenstairs"),
-    CHEST(54, "Chest", "chest", "storage", "storagechest"),
-    REDSTONE_WIRE(55, "Redstone wire", "redstone", "redstoneblock"),
-    DIAMOND_ORE(56, "Diamond ore", "diamondore"),
-    DIAMOND_BLOCK(57, "Diamond block", "diamond", "diamondblock"),
-    WORKBENCH(58, "Workbench", "workbench", "table", "craftingtable", "crafting"),
-    CROPS(59, "Crops", "crops", "crop", "plant", "plants"),
-    SOIL(60, "Soil", "soil", "farmland"),
-    FURNACE(61, "Furnace", "furnace"),
-    BURNING_FURNACE(62, "Furnace (burning)", "burningfurnace", "litfurnace"),
-    SIGN_POST(63, "Sign post", "sign", "signpost"),
-    WOODEN_DOOR(64, "Wooden door", "wooddoor", "woodendoor", "door"),
-    LADDER(65, "Ladder", "ladder"),
-    MINECART_TRACKS(66, "Minecart tracks", "track", "tracks", "minecrattrack", "minecarttracks", "rails", "rail"),
-    COBBLESTONE_STAIRS(67, "Cobblestone stairs", "cobblestonestair", "cobblestonestairs", "cobblestair", "cobblestairs"),
-    WALL_SIGN(68, "Wall sign", "wallsign"),
-    LEVER(69, "Lever", "lever", "switch", "stonelever", "stoneswitch"),
-    STONE_PRESSURE_PLATE(70, "Stone pressure plate", "stonepressureplate", "stoneplate"),
-    IRON_DOOR(71, "Iron Door", "irondoor"),
-    WOODEN_PRESSURE_PLATE(72, "Wooden pressure plate", "woodpressureplate", "woodplate", "woodenpressureplate", "woodenplate", "plate", "pressureplate"),
-    REDSTONE_ORE(73, "Redstone ore", "redstoneore"),
-    GLOWING_REDSTONE_ORE(74, "Glowing redstone ore", "glowingredstoneore"),
-    REDSTONE_TORCH_OFF(75, "Redstone torch (off)", "redstonetorchoff", "rstorchoff"),
-    REDSTONE_TORCH_ON(76, "Redstone torch (on)", "redstonetorch", "redstonetorchon", "rstorchon", "redtorch"),
-    STONE_BUTTON(77, "Stone Button", "stonebutton", "button"),
-    SNOW(78, "Snow", "snow"),
-    ICE(79, "Ice", "ice"),
-    SNOW_BLOCK(80, "Snow block", "snowblock"),
-    CACTUS(81, "Cactus", "cactus", "cacti"),
-    CLAY(82, "Clay", "clay"),
-    SUGAR_CANE(83, "Reed", "reed", "cane", "sugarcane", "sugarcanes", "vine", "vines"),
-    JUKEBOX(84, "Jukebox", "jukebox", "stereo", "recordplayer"),
-    FENCE(85, "Fence", "fence"),
-    PUMPKIN(86, "Pumpkin", "pumpkin"),
-    NETHERRACK(87, "Netherrack", "redmossycobblestone", "redcobblestone", "redmosstone", "redcobble", "netherstone", "netherrack", "nether", "hellstone"),
-    SOUL_SAND(88, "Soul sand", "slowmud", "mud", "soulsand", "hellmud"),
-    GLOWSTONE(89, "Glowstone", "brittlegold", "glowstone", "lightstone", "brimstone", "australium"),
-    PORTAL(90, "Portal", "portal"),
-    JACK_O_LANTERN(91, "Pumpkin (on)", "pumpkinlighted", "pumpkinon", "litpumpkin", "jackolantern"),
-    CAKE(92, "Cake", "cake", "cakeblock"),
-    REDSTONE_REPEATER_OFF(93, "Redstone repeater (off)", "diodeoff", "redstonerepeater", "repeater", "delayer"),
-    REDSTONE_REPEATER_ON(94, "Redstone repeater (on)", "diode", "diodeon", "redstonerepeateron", "repeateron", "delayeron"),
-    LOCKED_CHEST(95, "Locked chest", "lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"),
-    TRAP_DOOR(96, "Trap door", "trapdoor", "hatch", "floordoor");
+    AIR(BlockID.AIR, "Air", "air"),
+    STONE(BlockID.STONE, "Stone", "stone", "rock"),
+    GRASS(BlockID.GRASS, "Grass", "grass"),
+    DIRT(BlockID.DIRT, "Dirt", "dirt"),
+    COBBLESTONE(BlockID.COBBLESTONE, "Cobblestone", "cobblestone", "cobble"),
+    WOOD(BlockID.WOOD, "Wood", "wood", "woodplank", "plank", "woodplanks", "planks"),
+    SAPLING(BlockID.SAPLING, "Sapling", "sapling", "seedling"),
+    BEDROCK(BlockID.BEDROCK, "Bedrock", "adminium", "bedrock"),
+    WATER(BlockID.WATER, "Water", "watermoving", "movingwater", "flowingwater", "waterflowing"),
+    STATIONARY_WATER(BlockID.STATIONARY_WATER, "Water (stationary)", "water", "waterstationary", "stationarywater", "stillwater"),
+    LAVA(BlockID.LAVA, "Lava", "lavamoving", "movinglava", "flowinglava", "lavaflowing"),
+    STATIONARY_LAVA(BlockID.STATIONARY_LAVA, "Lava (stationary)", "lava", "lavastationary", "stationarylava", "stilllava"),
+    SAND(BlockID.SAND, "Sand", "sand"),
+    GRAVEL(BlockID.GRAVEL, "Gravel", "gravel"),
+    GOLD_ORE(BlockID.GOLD_ORE, "Gold ore", "goldore"),
+    IRON_ORE(BlockID.IRON_ORE, "Iron ore", "ironore"),
+    COAL_ORE(BlockID.COAL_ORE, "Coal ore", "coalore"),
+    LOG(BlockID.LOG, "Log", "log", "tree", "pine", "oak", "birch", "redwood"),
+    LEAVES(BlockID.LEAVES, "Leaves", "leaves", "leaf"),
+    SPONGE(BlockID.SPONGE, "Sponge", "sponge"),
+    GLASS(BlockID.GLASS, "Glass", "glass"),
+    LAPIS_LAZULI_ORE(BlockID.LAPIS_LAZULI_ORE, "Lapis lazuli ore", "lapislazuliore", "blueore", "lapisore"),
+    LAPIS_LAZULI(BlockID.LAPIS_LAZULI_BLOCK, "Lapis lazuli", "lapislazuli", "lapislazuliblock", "bluerock"),
+    DISPENSER(BlockID.DISPENSER, "Dispenser", "dispenser"),
+    SANDSTONE(BlockID.SANDSTONE, "Sandstone", "sandstone"),
+    NOTE_BLOCK(BlockID.NOTE_BLOCK, "Note block", "musicblock", "noteblock", "note", "music", "instrument"),
+    BED(BlockID.BED, "Bed", "bed"),
+    POWERED_RAIL(BlockID.POWERED_RAIL, "Powered Rail", "poweredrail", "boosterrail", "poweredtrack", "boostertrack", "booster"),
+    DETECTOR_RAIL(BlockID.DETECTOR_RAIL, "Detector Rail", "detectorrail", "detector"),
+    PISTON_STICKY_BASE(BlockID.PISTON_STICKY_BASE, "Sticky Piston", "stickypiston"),
+    WEB(BlockID.WEB, "Web", "web", "spiderweb"),
+    LONG_GRASS(BlockID.LONG_GRASS, "Long grass", "longgrass", "tallgrass"),
+    DEAD_BUSH(BlockID.DEAD_BUSH, "Shrub", "deadbush", "shrub", "deadshrub", "tumbleweed"),
+    PISTON_BASE(BlockID.PISTON_BASE, "Piston", "piston"),
+    PISTON_EXTENSION(BlockID.PISTON_EXTENSION, "Piston extension", "pistonextendsion", "pistonhead"),
+    CLOTH(BlockID.CLOTH, "Wool", "cloth", "wool"),
+    PISTON_MOVING_PIECE(BlockID.PISTON_MOVING_PIECE, "Piston moving piece", "movingpiston"),
+    YELLOW_FLOWER(BlockID.YELLOW_FLOWER, "Yellow flower", "yellowflower", "flower"),
+    RED_FLOWER(BlockID.RED_FLOWER, "Red rose", "redflower", "redrose", "rose"),
+    BROWN_MUSHROOM(BlockID.BROWN_MUSHROOM, "Brown mushroom", "brownmushroom", "mushroom"),
+    RED_MUSHROOM(BlockID.RED_MUSHROOM, "Red mushroom", "redmushroom"),
+    GOLD_BLOCK(BlockID.GOLD_BLOCK, "Gold block", "gold", "goldblock"),
+    IRON_BLOCK(BlockID.IRON_BLOCK, "Iron block", "iron", "ironblock"),
+    DOUBLE_STEP(BlockID.DOUBLE_STEP, "Double step", "doubleslab", "doublestoneslab", "doublestep"),
+    STEP(BlockID.STEP, "Step", "slab", "stoneslab", "step", "halfstep"),
+    BRICK(BlockID.BRICK, "Brick", "brick", "brickblock"),
+    TNT(BlockID.TNT, "TNT", "tnt", "c4", "explosive"),
+    BOOKCASE(BlockID.BOOKCASE, "Bookcase", "bookshelf", "bookshelves", "bookcase", "bookcases"),
+    MOSSY_COBBLESTONE(BlockID.MOSSY_COBBLESTONE, "Cobblestone (mossy)", "mossycobblestone", "mossstone", "mossystone", "mosscobble", "mossycobble", "moss", "mossy", "sossymobblecone"),
+    OBSIDIAN(BlockID.OBSIDIAN, "Obsidian", "obsidian"),
+    TORCH(BlockID.TORCH, "Torch", "torch", "light", "candle"),
+    FIRE(BlockID.FIRE, "Fire", "fire", "flame", "flames"),
+    MOB_SPAWNER(BlockID.MOB_SPAWNER, "Mob spawner", "mobspawner", "spawner"),
+    WOODEN_STAIRS(BlockID.WOODEN_STAIRS, "Wooden stairs", "woodstair", "woodstairs", "woodenstair", "woodenstairs"),
+    CHEST(BlockID.CHEST, "Chest", "chest", "storage", "storagechest"),
+    REDSTONE_WIRE(BlockID.REDSTONE_WIRE, "Redstone wire", "redstone", "redstoneblock"),
+    DIAMOND_ORE(BlockID.DIAMOND_ORE, "Diamond ore", "diamondore"),
+    DIAMOND_BLOCK(BlockID.DIAMOND_BLOCK, "Diamond block", "diamond", "diamondblock"),
+    WORKBENCH(BlockID.WORKBENCH, "Workbench", "workbench", "table", "craftingtable", "crafting"),
+    CROPS(BlockID.CROPS, "Crops", "crops", "crop", "plant", "plants"),
+    SOIL(BlockID.SOIL, "Soil", "soil", "farmland"),
+    FURNACE(BlockID.FURNACE, "Furnace", "furnace"),
+    BURNING_FURNACE(BlockID.BURNING_FURNACE, "Furnace (burning)", "burningfurnace", "litfurnace"),
+    SIGN_POST(BlockID.SIGN_POST, "Sign post", "sign", "signpost"),
+    WOODEN_DOOR(BlockID.WOODEN_DOOR, "Wooden door", "wooddoor", "woodendoor", "door"),
+    LADDER(BlockID.LADDER, "Ladder", "ladder"),
+    MINECART_TRACKS(BlockID.MINECART_TRACKS, "Minecart tracks", "track", "tracks", "minecrattrack", "minecarttracks", "rails", "rail"),
+    COBBLESTONE_STAIRS(BlockID.COBBLESTONE_STAIRS, "Cobblestone stairs", "cobblestonestair", "cobblestonestairs", "cobblestair", "cobblestairs"),
+    WALL_SIGN(BlockID.WALL_SIGN, "Wall sign", "wallsign"),
+    LEVER(BlockID.LEVER, "Lever", "lever", "switch", "stonelever", "stoneswitch"),
+    STONE_PRESSURE_PLATE(BlockID.STONE_PRESSURE_PLATE, "Stone pressure plate", "stonepressureplate", "stoneplate"),
+    IRON_DOOR(BlockID.IRON_DOOR, "Iron Door", "irondoor"),
+    WOODEN_PRESSURE_PLATE(BlockID.WOODEN_PRESSURE_PLATE, "Wooden pressure plate", "woodpressureplate", "woodplate", "woodenpressureplate", "woodenplate", "plate", "pressureplate"),
+    REDSTONE_ORE(BlockID.REDSTONE_ORE, "Redstone ore", "redstoneore"),
+    GLOWING_REDSTONE_ORE(BlockID.GLOWING_REDSTONE_ORE, "Glowing redstone ore", "glowingredstoneore"),
+    REDSTONE_TORCH_OFF(BlockID.REDSTONE_TORCH_OFF, "Redstone torch (off)", "redstonetorchoff", "rstorchoff"),
+    REDSTONE_TORCH_ON(BlockID.REDSTONE_TORCH_ON, "Redstone torch (on)", "redstonetorch", "redstonetorchon", "rstorchon", "redtorch"),
+    STONE_BUTTON(BlockID.STONE_BUTTON, "Stone Button", "stonebutton", "button"),
+    SNOW(BlockID.SNOW, "Snow", "snow"),
+    ICE(BlockID.ICE, "Ice", "ice"),
+    SNOW_BLOCK(BlockID.SNOW_BLOCK, "Snow block", "snowblock"),
+    CACTUS(BlockID.CACTUS, "Cactus", "cactus", "cacti"),
+    CLAY(BlockID.CLAY, "Clay", "clay"),
+    SUGAR_CANE(BlockID.REED, "Reed", "reed", "cane", "sugarcane", "sugarcanes", "vine", "vines"),
+    JUKEBOX(BlockID.JUKEBOX, "Jukebox", "jukebox", "stereo", "recordplayer"),
+    FENCE(BlockID.FENCE, "Fence", "fence"),
+    PUMPKIN(BlockID.PUMPKIN, "Pumpkin", "pumpkin"),
+    NETHERRACK(BlockID.NETHERRACK, "Netherrack", "redmossycobblestone", "redcobblestone", "redmosstone", "redcobble", "netherstone", "netherrack", "nether", "hellstone"),
+    SOUL_SAND(BlockID.SLOW_SAND, "Soul sand", "slowmud", "mud", "soulsand", "hellmud"),
+    GLOWSTONE(BlockID.LIGHTSTONE, "Glowstone", "brittlegold", "glowstone", "lightstone", "brimstone", "australium"),
+    PORTAL(BlockID.PORTAL, "Portal", "portal"),
+    JACK_O_LANTERN(BlockID.JACKOLANTERN, "Pumpkin (on)", "pumpkinlighted", "pumpkinon", "litpumpkin", "jackolantern"),
+    CAKE(BlockID.CAKE_BLOCK, "Cake", "cake", "cakeblock"),
+    REDSTONE_REPEATER_OFF(BlockID.REDSTONE_REPEATER_OFF, "Redstone repeater (off)", "diodeoff", "redstonerepeater", "repeateroff", "delayeroff"),
+    REDSTONE_REPEATER_ON(BlockID.REDSTONE_REPEATER_ON, "Redstone repeater (on)", "diodeon", "redstonerepeateron", "repeateron", "delayeron"),
+    LOCKED_CHEST(BlockID.LOCKED_CHEST, "Locked chest", "lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"),
+    TRAP_DOOR(BlockID.TRAP_DOOR, "Trap door", "trapdoor", "hatch", "floordoor");
 
     /**
      * Stores a list of dropped blocks for blocks.
@@ -362,40 +362,40 @@ public enum BlockType {
      * @return
      */
     public static boolean shouldPlaceLast(int id) {
-        return id == 6 // Saplings
-                || id == 26 // Beds
-                || id == 27 // Powered rails
-                || id == 28 // Detector rails
-                || id == 31 // Long grass
-                || id == 32 // Shrub
-                || id == 37 // Yellow flower
-                || id == 38 // Red flower
-                || id == 39 // Brown mushroom
-                || id == 40 // Red mush room
-                || id == 50 // Torch
-                || id == 51 // Fire
-                || id == 55 // Redstone wire
-                || id == 59 // Crops
-                || id == 63 // Sign post
-                || id == 64 // Wooden door
-                || id == 65 // Ladder
-                || id == 66 // Minecart tracks
-                || id == 68 // Wall sign
-                || id == 69 // Lever
-                || id == 70 // Stone pressure plate
-                || id == 71 // Iron door
-                || id == 72 // Wooden pressure plate
-                || id == 75 // Redstone torch (off)
-                || id == 76 // Redstone torch (on)
-                || id == 77 // Stone button
-                || id == 78 // Snow
-                || id == 81 // Cactus
-                || id == 83 // Reed
-                || id == 90 // Portal
-                || id == 92 // Cake
-                || id == 93 // Repeater (off)
-                || id == 94 // Repeater (on)
-                || id == 96; // Trap door
+        return id == BlockID.SAPLING
+                || id == BlockID.BED
+                || id == BlockID.POWERED_RAIL
+                || id == BlockID.DETECTOR_RAIL
+                || id == BlockID.LONG_GRASS
+                || id == BlockID.DEAD_BUSH
+                || id == BlockID.YELLOW_FLOWER
+                || id == BlockID.RED_FLOWER
+                || id == BlockID.BROWN_MUSHROOM
+                || id == BlockID.RED_MUSHROOM
+                || id == BlockID.TORCH
+                || id == BlockID.FIRE
+                || id == BlockID.REDSTONE_WIRE
+                || id == BlockID.CROPS
+                || id == BlockID.SIGN_POST
+                || id == BlockID.WOODEN_DOOR
+                || id == BlockID.LADDER
+                || id == BlockID.MINECART_TRACKS
+                || id == BlockID.WALL_SIGN
+                || id == BlockID.LEVER
+                || id == BlockID.STONE_PRESSURE_PLATE
+                || id == BlockID.IRON_DOOR
+                || id == BlockID.WOODEN_PRESSURE_PLATE
+                || id == BlockID.REDSTONE_TORCH_OFF
+                || id == BlockID.REDSTONE_TORCH_ON
+                || id == BlockID.STONE_BUTTON
+                || id == BlockID.SNOW
+                || id == BlockID.CACTUS
+                || id == BlockID.REED
+                || id == BlockID.PORTAL
+                || id == BlockID.CAKE_BLOCK
+                || id == BlockID.REDSTONE_REPEATER_OFF
+                || id == BlockID.REDSTONE_REPEATER_ON
+                || id == BlockID.TRAP_DOOR;
     }
 
     /**
@@ -405,38 +405,38 @@ public enum BlockType {
      * @return
      */
     public static boolean canPassThrough(int id) {
-        return id == 0 // Air
-                || id == 8 // Water
-                || id == 9 // Water
-                || id == 6 // Saplings
-                || id == 27 // Powered rails
-                || id == 28 // Detector rails
-                || id == 30 // Web <- someone will hate me for this
-                || id == 31 // Long grass
-                || id == 32 // Shrub
-                || id == 37 // Yellow flower
-                || id == 38 // Red flower
-                || id == 39 // Brown mushroom
-                || id == 40 // Red mush room
-                || id == 50 // Torch
-                || id == 51 // Fire
-                || id == 55 // Redstone wire
-                || id == 59 // Crops
-                || id == 63 // Sign post
-                || id == 65 // Ladder
-                || id == 66 // Minecart tracks
-                || id == 68 // Wall sign
-                || id == 69 // Lever
-                || id == 70 // Stone pressure plate
-                || id == 72 // Wooden pressure plate
-                || id == 75 // Redstone torch (off)
-                || id == 76 // Redstone torch (on)
-                || id == 77 // Stone button
-                || id == 78 // Snow
-                || id == 83 // Reed
-                || id == 90 // Portal
-                || id == 93 // Diode (off)
-                || id == 94; // Diode (on)
+        return id == BlockID.AIR
+                || id == BlockID.WATER
+                || id == BlockID.STATIONARY_WATER
+                || id == BlockID.SAPLING
+                || id == BlockID.POWERED_RAIL
+                || id == BlockID.DETECTOR_RAIL
+                || id == BlockID.WEB
+                || id == BlockID.LONG_GRASS
+                || id == BlockID.DEAD_BUSH
+                || id == BlockID.YELLOW_FLOWER
+                || id == BlockID.RED_FLOWER
+                || id == BlockID.BROWN_MUSHROOM
+                || id == BlockID.RED_MUSHROOM
+                || id == BlockID.TORCH
+                || id == BlockID.FIRE
+                || id == BlockID.REDSTONE_WIRE
+                || id == BlockID.CROPS
+                || id == BlockID.SIGN_POST
+                || id == BlockID.LADDER
+                || id == BlockID.MINECART_TRACKS
+                || id == BlockID.WALL_SIGN
+                || id == BlockID.LEVER
+                || id == BlockID.STONE_PRESSURE_PLATE
+                || id == BlockID.WOODEN_PRESSURE_PLATE
+                || id == BlockID.REDSTONE_TORCH_OFF
+                || id == BlockID.REDSTONE_TORCH_ON
+                || id == BlockID.STONE_BUTTON
+                || id == BlockID.SNOW
+                || id == BlockID.REED
+                || id == BlockID.PORTAL
+                || id == BlockID.REDSTONE_REPEATER_OFF
+                || id == BlockID.REDSTONE_REPEATER_ON;
     }
 
     /**
@@ -446,53 +446,53 @@ public enum BlockType {
      * @return
      */
     public static boolean usesData(int id) {
-        return id == 6 // Saplings
-                || id == 8 // Water
-                || id == 9 // Water
-                || id == 10 // Lava
-                || id == 11 // Lava
-                || id == 17 // Wood
-                || id == 18 // Leaves
-                || id == 23 // Dispenser
-                || id == 25 // Note Block
-                || id == 26 // Bed
-                || id == 27 // Powered rails
-                || id == 28 // Detector rails
-                || id == 29 // Sticky piston
-                || id == 31 // Tall grass
-                || id == 33 // Piston
-                || id == 34 // Piston extension
-                || id == 35 // Wool
-                || id == 43 // Double slab
-                || id == 44 // Slab
-                || id == 50 // Torch
-                || id == 53 // Wooden stairs
-                || id == 55 // Redstone wire
-                || id == 59 // Crops
-                || id == 60 // Soil
-                || id == 61 // Furnace
-                || id == 62 // Furnace
-                || id == 63 // Sign post
-                || id == 64 // Wooden door
-                || id == 65 // Ladder
-                || id == 66 // Minecart track
-                || id == 67 // Cobblestone stairs
-                || id == 68 // Wall sign
-                || id == 69 // Lever
-                || id == 70 // Stone pressure plate
-                || id == 71 // Iron door
-                || id == 72 // Wooden pressure plate
-                || id == 75 // Redstone torch (off)
-                || id == 76 // Redstone torch (on)
-                || id == 77 // Stone button
-                || id == 78 // Snow tile
-                || id == 81 // Cactus
-                || id == 86 // Pumpkin
-                || id == 91 // Jack-o-lantern
-                || id == 92 // Cake
-                || id == 93 // Redstone repeater (off)
-                || id == 94 // Redstone repeater (on)
-                || id == 96; // Trap door
+        return id == BlockID.SAPLING
+                || id == BlockID.WATER
+                || id == BlockID.STATIONARY_WATER
+                || id == BlockID.LAVA
+                || id == BlockID.STATIONARY_LAVA
+                || id == BlockID.LOG
+                || id == BlockID.LEAVES
+                || id == BlockID.DISPENSER
+                || id == BlockID.NOTE_BLOCK
+                || id == BlockID.BED
+                || id == BlockID.POWERED_RAIL
+                || id == BlockID.DETECTOR_RAIL
+                || id == BlockID.PISTON_STICKY_BASE
+                || id == BlockID.LONG_GRASS
+                || id == BlockID.PISTON_BASE
+                || id == BlockID.PISTON_EXTENSION
+                || id == BlockID.CLOTH
+                || id == BlockID.DOUBLE_STEP
+                || id == BlockID.STEP
+                || id == BlockID.TORCH
+                || id == BlockID.WOODEN_STAIRS
+                || id == BlockID.REDSTONE_WIRE
+                || id == BlockID.CROPS
+                || id == BlockID.SOIL
+                || id == BlockID.FURNACE
+                || id == BlockID.BURNING_FURNACE
+                || id == BlockID.SIGN_POST
+                || id == BlockID.WOODEN_DOOR
+                || id == BlockID.LADDER
+                || id == BlockID.MINECART_TRACKS
+                || id == BlockID.COBBLESTONE_STAIRS
+                || id == BlockID.WALL_SIGN
+                || id == BlockID.LEVER
+                || id == BlockID.STONE_PRESSURE_PLATE
+                || id == BlockID.IRON_DOOR
+                || id == BlockID.WOODEN_PRESSURE_PLATE
+                || id == BlockID.REDSTONE_TORCH_OFF
+                || id == BlockID.REDSTONE_TORCH_ON
+                || id == BlockID.STONE_BUTTON
+                || id == BlockID.SNOW
+                || id == BlockID.CACTUS
+                || id == BlockID.PUMPKIN
+                || id == BlockID.JACKOLANTERN
+                || id == BlockID.CAKE_BLOCK
+                || id == BlockID.REDSTONE_REPEATER_OFF
+                || id == BlockID.REDSTONE_REPEATER_ON
+                || id == BlockID.TRAP_DOOR;
     }
     
     /**
@@ -502,10 +502,10 @@ public enum BlockType {
      * @return
      */
     public static boolean isContainerBlock(int id) {
-        return id == 23 // Dispenser
-                || id == 61 // Furnace
-                || id == 62 // Furnace
-                || id == 54; // Chest
+        return id == BlockID.DISPENSER
+                || id == BlockID.FURNACE
+                || id == BlockID.BURNING_FURNACE
+                || id == BlockID.CHEST;
     }
 
     /**
@@ -515,24 +515,24 @@ public enum BlockType {
      * @return
      */
     public static boolean isRedstoneBlock(int id) {
-        return id == 27 // Powered rail
-                || id == 28 // Detector rail
-                || id == 29 // Sticky piston
-                || id == 33 // Piston
-                || id == 69 // Lever
-                || id == 70 // Stone pressure plate
-                || id == 72 // Wood pressure plate
-                || id == 76 // Redstone torch
-                || id == 75 // Redstone torch
-                || id == 77 // Stone button
-                || id == 55 // Redstone wire
-                || id == 64 // Wooden door
-                || id == 71 // Iron door
-                || id == 46 // TNT
-                || id == 23 // Dispenser
-                || id == 25 // Note block
-                || id == 93 // Diode (off)
-                || id == 94; // Diode (on)
+        return id == BlockID.POWERED_RAIL
+                || id == BlockID.DETECTOR_RAIL
+                || id == BlockID.PISTON_STICKY_BASE
+                || id == BlockID.PISTON_BASE
+                || id == BlockID.LEVER
+                || id == BlockID.STONE_PRESSURE_PLATE
+                || id == BlockID.WOODEN_PRESSURE_PLATE
+                || id == BlockID.REDSTONE_TORCH_OFF
+                || id == BlockID.REDSTONE_TORCH_ON
+                || id == BlockID.STONE_BUTTON
+                || id == BlockID.REDSTONE_WIRE
+                || id == BlockID.WOODEN_DOOR
+                || id == BlockID.IRON_DOOR
+                || id == BlockID.TNT
+                || id == BlockID.DISPENSER
+                || id == BlockID.NOTE_BLOCK
+                || id == BlockID.REDSTONE_REPEATER_OFF
+                || id == BlockID.REDSTONE_REPEATER_ON;
     }
 
    /**
@@ -543,12 +543,11 @@ public enum BlockType {
      * @return
      */
     public static boolean canTransferRedstone(int id) {
-        return id == 27 // Powered rail
-                || id == 75 // Redstone torch (off)
-                || id == 76 // Redstone torch (on)
-                || id == 55 // Redstone wire
-                || id == 93 // Diode (off)
-                || id == 94; // Diode (on)
+        return id == BlockID.REDSTONE_TORCH_OFF
+                || id == BlockID.REDSTONE_TORCH_ON
+                || id == BlockID.REDSTONE_WIRE
+                || id == BlockID.REDSTONE_REPEATER_OFF
+                || id == BlockID.REDSTONE_REPEATER_ON;
     }
 
     /**
@@ -558,13 +557,13 @@ public enum BlockType {
      * @return
      */
     public static boolean isRedstoneSource(int id) {
-        return id == 28 // Detector rail
-                || id == 75 // Redstone torch (off)
-                || id == 76 // Redstone torch (on)
-                || id == 69 // Lever
-                || id == 70 // Stone plate
-                || id == 72 // Wood plate
-                || id == 77; // Button
+        return id == BlockID.DETECTOR_RAIL
+                || id == BlockID.REDSTONE_TORCH_OFF
+                || id == BlockID.REDSTONE_TORCH_ON
+                || id == BlockID.LEVER
+                || id == BlockID.STONE_PRESSURE_PLATE
+                || id == BlockID.WOODEN_PRESSURE_PLATE
+                || id == BlockID.STONE_BUTTON;
     }
 
     /**
@@ -574,9 +573,38 @@ public enum BlockType {
      * @return
      */
     public static boolean isRailBlock(int id) {
-       return id == 27 // Powered rail
-               || id == 28 // Detector rail
-               || id == 66; // Normal rail
+       return id == BlockID.POWERED_RAIL
+               || id == BlockID.DETECTOR_RAIL
+               || id == BlockID.MINECART_TRACKS;
+    }
+
+    /**
+     * Checks if the block type is naturally occuring
+     *
+     * @param id
+     * @return
+     */
+    public static boolean isNaturalBlock(int id) {
+        return id == BlockID.STONE
+                || id == BlockID.GRASS
+                || id == BlockID.DIRT
+                // || id == BlockID.COBBLESTONE // technically can occur next to water and lava
+                || id == BlockID.BEDROCK
+                || id == BlockID.SAND
+                || id == BlockID.GRAVEL
+                || id == BlockID.CLAY
+                // hell
+                || id == BlockID.NETHERSTONE
+                || id == BlockID.SLOW_SAND
+                || id == BlockID.LIGHTSTONE
+                // ores
+                || id == BlockID.COAL_ORE
+                || id == BlockID.IRON_ORE
+                || id == BlockID.GOLD_ORE
+                || id == BlockID.LAPIS_LAZULI_ORE
+                || id == BlockID.DIAMOND_ORE
+                || id == BlockID.REDSTONE_ORE
+                || id == BlockID.GLOWING_REDSTONE_ORE;
     }
 
     /**
@@ -590,36 +618,9 @@ public enum BlockType {
     public static int getDroppedBlock(int id) {
         Integer dropped = blockDrops.get(id);
         if (dropped == null) {
-            return 0;
+            return BlockID.AIR;
         }
         return dropped;
     }
 
-    /**
-     * Checks if the block type is "natural"
-     *
-     * @param id
-     * @return
-     */
-    public static boolean isNaturalBlock(int id) {
-        return id == 1 // stone
-                || id == 2 // grass
-                || id == 3 // dirt
-                || id == 7 // bedrock
-                || id == 12 // sand
-                || id == 13 // gravel
-                || id == 82 // clay
-                // hell
-                || id == 87 // netherstone
-                || id == 88 // slowsand
-                || id == 89 // lightstone
-                // ores
-                || id == 14 // coal ore
-                || id == 15 // iron ore
-                || id == 16 // gold ore
-                || id == 21 // lapis ore
-                || id == 56 // diamond ore
-                || id == 73 // redstone ore
-                || id == 74; // redstone ore (active)
-    }
 }

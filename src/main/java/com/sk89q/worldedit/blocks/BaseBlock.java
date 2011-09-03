@@ -110,10 +110,18 @@ public class BaseBlock {
     
     /**
      * Flip this block.
+     */
+    public BaseBlock flip() {
+        data = (byte) BlockData.flip(type, data);
+        return this;
+    }
+    /**
+     * Flip this block.
      * @param direction
      */
-    public void flip(FlipDirection direction) {
-        data = (byte)BlockData.flip(type, data, direction);
+    public BaseBlock flip(FlipDirection direction) {
+        data = (byte) BlockData.flip(type, data, direction);
+        return this;
     }
 
     @Override

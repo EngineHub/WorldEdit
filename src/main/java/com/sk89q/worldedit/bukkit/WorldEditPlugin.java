@@ -135,9 +135,7 @@ public class WorldEditPlugin extends JavaPlugin {
      * Register the events used by WorldEdit.
      */
     protected void registerEvents() {
-        @SuppressWarnings("unused")
         PlayerListener playerListener = new WorldEditPlayerListener(this);
-        @SuppressWarnings("unused")
         PlayerListener criticalPlayerListener = new WorldEditCriticalPlayerListener(this);
 
         // The permissions resolver has some hooks of its own

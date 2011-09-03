@@ -44,7 +44,7 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
      *
      */
     public MobSpawnerBlock() {
-        super(52);
+        super(BlockID.MOB_SPAWNER);
         this.mobType = "Pig";
     }
 
@@ -54,7 +54,7 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
      * @param mobType
      */
     public MobSpawnerBlock(String mobType) {
-        super(52);
+        super(BlockID.MOB_SPAWNER);
         this.mobType = mobType;
     }
 
@@ -64,7 +64,7 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
      * @param data
      */
     public MobSpawnerBlock(int data) {
-        super(52, data);
+        super(BlockID.MOB_SPAWNER, data);
     }
 
     /**
@@ -74,7 +74,7 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
      * @param mobType
      */
     public MobSpawnerBlock(int data, String mobType) {
-        super(52, data);
+        super(BlockID.MOB_SPAWNER, data);
         this.mobType = mobType;
     }
 

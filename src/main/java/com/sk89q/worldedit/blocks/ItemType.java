@@ -33,103 +33,103 @@ import com.sk89q.util.StringUtil;
  */
 public enum ItemType {
     // Blocks
-    AIR(0, "Air", "air"),
-    STONE(1, "Stone", "stone", "rock"),
-    GRASS(2, "Grass", "grass"),
-    DIRT(3, "Dirt", "dirt"),
-    COBBLESTONE(4, "Cobblestone", "cobblestone", "cobble"),
-    WOOD(5, "Wood", "wood", "woodplank", "plank", "woodplanks", "planks"),
-    SAPLING(6, "Sapling", "sapling", "seedling"),
-    BEDROCK(7, "Bedrock", "adminium", "bedrock"),
-    WATER(8, "Water", "watermoving", "movingwater", "flowingwater", "waterflowing"),
-    STATIONARY_WATER(9, "Water (stationary)", "water", "waterstationary", "stationarywater", "stillwater"),
-    LAVA(10, "Lava", "lavamoving", "movinglava", "flowinglava", "lavaflowing"),
-    STATIONARY_LAVA(11, "Lava (stationary)", "lava", "lavastationary", "stationarylava", "stilllava"),
-    SAND(12, "Sand", "sand"),
-    GRAVEL(13, "Gravel", "gravel"),
-    GOLD_ORE(14, "Gold ore", "goldore"),
-    IRON_ORE(15, "Iron ore", "ironore"),
-    COAL_ORE(16, "Coal ore", "coalore"),
-    LOG(17, "Log", "log", "tree", "pine", "oak", "birch", "redwood"),
-    LEAVES(18, "Leaves", "leaves", "leaf"),
-    SPONGE(19, "Sponge", "sponge"),
-    GLASS(20, "Glass", "glass"),
-    LAPIS_LAZULI_ORE(21, "Lapis lazuli ore", "lapislazuliore", "blueore", "lapisore"),
-    LAPIS_LAZULI(22, "Lapis lazuli", "lapislazuli", "lapislazuliblock", "bluerock"),
-    DISPENSER(23, "Dispenser", "dispenser"),
-    SANDSTONE(24, "Sandstone", "sandstone"),
-    NOTE_BLOCK(25, "Note block", "musicblock", "noteblock", "note", "music", "instrument"),
-    BED(26, "Bed", "bed"),
-    POWERED_RAIL(27, "Powered Rail", "poweredrail", "boosterrail", "poweredtrack", "boostertrack", "booster"),
-    DETECTOR_RAIL(28, "Detector Rail", "detectorrail", "detector"),
-    PISTON_STICKY_BASE(29, "Sticky Piston", "stickypiston"),
-    WEB(30, "Web", "web", "spiderweb"),
-    LONG_GRASS(31, "Long grass", "longgrass", "tallgrass"),
-    DEAD_BUSH(32, "Shrub", "deadbush", "shrub", "deadshrub", "tumbleweed"),
-    PISTON_BASE(33, "Piston", "piston"),
-    PISTON_EXTENSION(34, "Piston extension", "pistonhead"),
-    CLOTH(35, "Wool", "cloth", "wool"),
-    PISTON_MOVING_PIECE(36, "Piston moving piece", "movingpiston"),
-    YELLOW_FLOWER(37, "Yellow flower", "yellowflower", "flower"),
-    RED_FLOWER(38, "Red rose", "redflower", "redrose", "rose"),
-    BROWN_MUSHROOM(39, "Brown mushroom", "brownmushroom", "mushroom"),
-    RED_MUSHROOM(40, "Red mushroom", "redmushroom"),
-    GOLD_BLOCK(41, "Gold block", "gold", "goldblock"),
-    IRON_BLOCK(42, "Iron block", "iron", "ironblock"),
-    DOUBLE_STEP(43, "Double step", "doubleslab", "doublestoneslab", "doublestep"),
-    STEP(44, "Step", "slab", "stoneslab", "step", "halfstep"),
-    BRICK(45, "Brick", "brick", "brickblock"),
-    TNT(46, "TNT", "tnt", "c4", "explosive"),
-    BOOKCASE(47, "Bookcase", "bookshelf", "bookshelves", "bookcase", "bookcases"),
-    MOSSY_COBBLESTONE(48, "Cobblestone (mossy)", "mossycobblestone", "mossstone", "mossystone", "mosscobble", "mossycobble", "moss", "mossy", "sossymobblecone"),
-    OBSIDIAN(49, "Obsidian", "obsidian"),
-    TORCH(50, "Torch", "torch", "light", "candle"),
-    FIRE(51, "Fire", "fire", "flame", "flames"),
-    MOB_SPAWNER(52, "Mob spawner", "mobspawner", "spawner"),
-    WOODEN_STAIRS(53, "Wooden stairs", "woodstair", "woodstairs", "woodenstair", "woodenstairs"),
-    CHEST(54, "Chest", "chest", "storage", "storagechest"),
-    REDSTONE_WIRE(55, "Redstone wire", "redstone", "redstoneblock"),
-    DIAMOND_ORE(56, "Diamond ore", "diamondore"),
-    DIAMOND_BLOCK(57, "Diamond block", "diamond", "diamondblock"),
-    WORKBENCH(58, "Workbench", "workbench", "table", "craftingtable", "crafting"),
-    CROPS(59, "Crops", "crops", "crop", "plant", "plants"),
-    SOIL(60, "Soil", "soil", "farmland"),
-    FURNACE(61, "Furnace", "furnace"),
-    BURNING_FURNACE(62, "Furnace (burning)", "burningfurnace", "litfurnace"),
-    SIGN_POST(63, "Sign post", "sign", "signpost"),
-    WOODEN_DOOR(64, "Wooden door", "wooddoor", "woodendoor", "door"),
-    LADDER(65, "Ladder", "ladder"),
-    MINECART_TRACKS(66, "Minecart tracks", "track", "tracks", "minecrattrack", "minecarttracks", "rails", "rail"),
-    COBBLESTONE_STAIRS(67, "Cobblestone stairs", "cobblestonestair", "cobblestonestairs", "cobblestair", "cobblestairs"),
-    WALL_SIGN(68, "Wall sign", "wallsign"),
-    LEVER(69, "Lever", "lever", "switch", "stonelever", "stoneswitch"),
-    STONE_PRESSURE_PLATE(70, "Stone pressure plate", "stonepressureplate", "stoneplate"),
-    IRON_DOOR(71, "Iron Door", "irondoor"),
-    WOODEN_PRESSURE_PLATE(72, "Wooden pressure plate", "woodpressureplate", "woodplate", "woodenpressureplate", "woodenplate", "plate", "pressureplate"),
-    REDSTONE_ORE(73, "Redstone ore", "redstoneore"),
-    GLOWING_REDSTONE_ORE(74, "Glowing redstone ore", "glowingredstoneore"),
-    REDSTONE_TORCH_OFF(75, "Redstone torch (off)", "redstonetorchoff", "rstorchoff"),
-    REDSTONE_TORCH_ON(76, "Redstone torch (on)", "redstonetorch", "redstonetorchon", "rstorchon", "redtorch"),
-    STONE_BUTTON(77, "Stone Button", "stonebutton", "button"),
-    SNOW(78, "Snow", "snow"),
-    ICE(79, "Ice", "ice"),
-    SNOW_BLOCK(80, "Snow block", "snowblock"),
-    CACTUS(81, "Cactus", "cactus", "cacti"),
-    CLAY(82, "Clay", "clay"),
-    SUGAR_CANE(83, "Reed", "reed", "cane", "sugarcane", "sugarcanes", "vine", "vines"),
-    JUKEBOX(84, "Jukebox", "jukebox", "stereo", "recordplayer"),
-    FENCE(85, "Fence", "fence"),
-    PUMPKIN(86, "Pumpkin", "pumpkin"),
-    NETHERRACK(87, "Netherrack", "redmossycobblestone", "redcobblestone", "redmosstone", "redcobble", "netherstone", "netherrack", "nether", "hellstone"),
-    SOUL_SAND(88, "Soul sand", "slowmud", "mud", "soulsand", "hellmud"),
-    GLOWSTONE(89, "Glowstone", "brittlegold", "glowstone", "lightstone", "brimstone", "australium"),
-    PORTAL(90, "Portal", "portal"),
-    JACK_O_LANTERN(91, "Pumpkin (on)", "pumpkinlighted", "pumpkinon", "litpumpkin", "jackolantern"),
-    CAKE(92, "Cake", "cake", "cakeblock"),
-    REDSTONE_REPEATER_OFF(93, "Redstone repeater (off)", "diodeoff", "redstonerepeater", "repeater", "delayer"),
-    REDSTONE_REPEATER_ON(94, "Redstone repeater (on)", "diode", "diodeon", "redstonerepeateron", "repeateron", "delayeron"),
-    LOCKED_CHEST(95, "Locked chest", "lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"),
-    TRAP_DOOR(96, "Trap door", "trapdoor", "hatch", "floordoor"),
+    AIR(BlockID.AIR, "Air", "air"),
+    STONE(BlockID.STONE, "Stone", "stone", "rock"),
+    GRASS(BlockID.GRASS, "Grass", "grass"),
+    DIRT(BlockID.DIRT, "Dirt", "dirt"),
+    COBBLESTONE(BlockID.COBBLESTONE, "Cobblestone", "cobblestone", "cobble"),
+    WOOD(BlockID.WOOD, "Wood", "wood", "woodplank", "plank", "woodplanks", "planks"),
+    SAPLING(BlockID.SAPLING, "Sapling", "sapling", "seedling"),
+    BEDROCK(BlockID.BEDROCK, "Bedrock", "adminium", "bedrock"),
+    WATER(BlockID.WATER, "Water", "watermoving", "movingwater", "flowingwater", "waterflowing"),
+    STATIONARY_WATER(BlockID.STATIONARY_WATER, "Water (stationary)", "water", "waterstationary", "stationarywater", "stillwater"),
+    LAVA(BlockID.LAVA, "Lava", "lavamoving", "movinglava", "flowinglava", "lavaflowing"),
+    STATIONARY_LAVA(BlockID.STATIONARY_LAVA, "Lava (stationary)", "lava", "lavastationary", "stationarylava", "stilllava"),
+    SAND(BlockID.SAND, "Sand", "sand"),
+    GRAVEL(BlockID.GRAVEL, "Gravel", "gravel"),
+    GOLD_ORE(BlockID.GOLD_ORE, "Gold ore", "goldore"),
+    IRON_ORE(BlockID.IRON_ORE, "Iron ore", "ironore"),
+    COAL_ORE(BlockID.COAL_ORE, "Coal ore", "coalore"),
+    LOG(BlockID.LOG, "Log", "log", "tree", "pine", "oak", "birch", "redwood"),
+    LEAVES(BlockID.LEAVES, "Leaves", "leaves", "leaf"),
+    SPONGE(BlockID.SPONGE, "Sponge", "sponge"),
+    GLASS(BlockID.GLASS, "Glass", "glass"),
+    LAPIS_LAZULI_ORE(BlockID.LAPIS_LAZULI_ORE, "Lapis lazuli ore", "lapislazuliore", "blueore", "lapisore"),
+    LAPIS_LAZULI(BlockID.LAPIS_LAZULI_BLOCK, "Lapis lazuli", "lapislazuli", "lapislazuliblock", "bluerock"),
+    DISPENSER(BlockID.DISPENSER, "Dispenser", "dispenser"),
+    SANDSTONE(BlockID.SANDSTONE, "Sandstone", "sandstone"),
+    NOTE_BLOCK(BlockID.NOTE_BLOCK, "Note block", "musicblock", "noteblock", "note", "music", "instrument"),
+    BED(BlockID.BED, "Bed", "bed"),
+    POWERED_RAIL(BlockID.POWERED_RAIL, "Powered Rail", "poweredrail", "boosterrail", "poweredtrack", "boostertrack", "booster"),
+    DETECTOR_RAIL(BlockID.DETECTOR_RAIL, "Detector Rail", "detectorrail", "detector"),
+    PISTON_STICKY_BASE(BlockID.PISTON_STICKY_BASE, "Sticky Piston", "stickypiston"),
+    WEB(BlockID.WEB, "Web", "web", "spiderweb"),
+    LONG_GRASS(BlockID.LONG_GRASS, "Long grass", "longgrass", "tallgrass"),
+    DEAD_BUSH(BlockID.DEAD_BUSH, "Shrub", "deadbush", "shrub", "deadshrub", "tumbleweed"),
+    PISTON_BASE(BlockID.PISTON_BASE, "Piston", "piston"),
+    PISTON_EXTENSION(BlockID.PISTON_EXTENSION, "Piston extension", "pistonextendsion", "pistonhead"),
+    CLOTH(BlockID.CLOTH, "Wool", "cloth", "wool"),
+    PISTON_MOVING_PIECE(BlockID.PISTON_MOVING_PIECE, "Piston moving piece", "movingpiston"),
+    YELLOW_FLOWER(BlockID.YELLOW_FLOWER, "Yellow flower", "yellowflower", "flower"),
+    RED_FLOWER(BlockID.RED_FLOWER, "Red rose", "redflower", "redrose", "rose"),
+    BROWN_MUSHROOM(BlockID.BROWN_MUSHROOM, "Brown mushroom", "brownmushroom", "mushroom"),
+    RED_MUSHROOM(BlockID.RED_MUSHROOM, "Red mushroom", "redmushroom"),
+    GOLD_BLOCK(BlockID.GOLD_BLOCK, "Gold block", "gold", "goldblock"),
+    IRON_BLOCK(BlockID.IRON_BLOCK, "Iron block", "iron", "ironblock"),
+    DOUBLE_STEP(BlockID.DOUBLE_STEP, "Double step", "doubleslab", "doublestoneslab", "doublestep"),
+    STEP(BlockID.STEP, "Step", "slab", "stoneslab", "step", "halfstep"),
+    BRICK(BlockID.BRICK, "Brick", "brick", "brickblock"),
+    TNT(BlockID.TNT, "TNT", "tnt", "c4", "explosive"),
+    BOOKCASE(BlockID.BOOKCASE, "Bookcase", "bookshelf", "bookshelves", "bookcase", "bookcases"),
+    MOSSY_COBBLESTONE(BlockID.MOSSY_COBBLESTONE, "Cobblestone (mossy)", "mossycobblestone", "mossstone", "mossystone", "mosscobble", "mossycobble", "moss", "mossy", "sossymobblecone"),
+    OBSIDIAN(BlockID.OBSIDIAN, "Obsidian", "obsidian"),
+    TORCH(BlockID.TORCH, "Torch", "torch", "light", "candle"),
+    FIRE(BlockID.FIRE, "Fire", "fire", "flame", "flames"),
+    MOB_SPAWNER(BlockID.MOB_SPAWNER, "Mob spawner", "mobspawner", "spawner"),
+    WOODEN_STAIRS(BlockID.WOODEN_STAIRS, "Wooden stairs", "woodstair", "woodstairs", "woodenstair", "woodenstairs"),
+    CHEST(BlockID.CHEST, "Chest", "chest", "storage", "storagechest"),
+    REDSTONE_WIRE(BlockID.REDSTONE_WIRE, "Redstone wire", "redstone", "redstoneblock"),
+    DIAMOND_ORE(BlockID.DIAMOND_ORE, "Diamond ore", "diamondore"),
+    DIAMOND_BLOCK(BlockID.DIAMOND_BLOCK, "Diamond block", "diamond", "diamondblock"),
+    WORKBENCH(BlockID.WORKBENCH, "Workbench", "workbench", "table", "craftingtable", "crafting"),
+    CROPS(BlockID.CROPS, "Crops", "crops", "crop", "plant", "plants"),
+    SOIL(BlockID.SOIL, "Soil", "soil", "farmland"),
+    FURNACE(BlockID.FURNACE, "Furnace", "furnace"),
+    BURNING_FURNACE(BlockID.BURNING_FURNACE, "Furnace (burning)", "burningfurnace", "litfurnace"),
+    SIGN_POST(BlockID.SIGN_POST, "Sign post", "sign", "signpost"),
+    WOODEN_DOOR(BlockID.WOODEN_DOOR, "Wooden door", "wooddoor", "woodendoor", "door"),
+    LADDER(BlockID.LADDER, "Ladder", "ladder"),
+    MINECART_TRACKS(BlockID.MINECART_TRACKS, "Minecart tracks", "track", "tracks", "minecrattrack", "minecarttracks", "rails", "rail"),
+    COBBLESTONE_STAIRS(BlockID.COBBLESTONE_STAIRS, "Cobblestone stairs", "cobblestonestair", "cobblestonestairs", "cobblestair", "cobblestairs"),
+    WALL_SIGN(BlockID.WALL_SIGN, "Wall sign", "wallsign"),
+    LEVER(BlockID.LEVER, "Lever", "lever", "switch", "stonelever", "stoneswitch"),
+    STONE_PRESSURE_PLATE(BlockID.STONE_PRESSURE_PLATE, "Stone pressure plate", "stonepressureplate", "stoneplate"),
+    IRON_DOOR(BlockID.IRON_DOOR, "Iron Door", "irondoor"),
+    WOODEN_PRESSURE_PLATE(BlockID.WOODEN_PRESSURE_PLATE, "Wooden pressure plate", "woodpressureplate", "woodplate", "woodenpressureplate", "woodenplate", "plate", "pressureplate"),
+    REDSTONE_ORE(BlockID.REDSTONE_ORE, "Redstone ore", "redstoneore"),
+    GLOWING_REDSTONE_ORE(BlockID.GLOWING_REDSTONE_ORE, "Glowing redstone ore", "glowingredstoneore"),
+    REDSTONE_TORCH_OFF(BlockID.REDSTONE_TORCH_OFF, "Redstone torch (off)", "redstonetorchoff", "rstorchoff"),
+    REDSTONE_TORCH_ON(BlockID.REDSTONE_TORCH_ON, "Redstone torch (on)", "redstonetorch", "redstonetorchon", "rstorchon", "redtorch"),
+    STONE_BUTTON(BlockID.STONE_BUTTON, "Stone Button", "stonebutton", "button"),
+    SNOW(BlockID.SNOW, "Snow", "snow"),
+    ICE(BlockID.ICE, "Ice", "ice"),
+    SNOW_BLOCK(BlockID.SNOW_BLOCK, "Snow block", "snowblock"),
+    CACTUS(BlockID.CACTUS, "Cactus", "cactus", "cacti"),
+    CLAY(BlockID.CLAY, "Clay", "clay"),
+    SUGAR_CANE(BlockID.REED, "Reed", "reed", "cane", "sugarcane", "sugarcanes", "vine", "vines"),
+    JUKEBOX(BlockID.JUKEBOX, "Jukebox", "jukebox", "stereo", "recordplayer"),
+    FENCE(BlockID.FENCE, "Fence", "fence"),
+    PUMPKIN(BlockID.PUMPKIN, "Pumpkin", "pumpkin"),
+    NETHERRACK(BlockID.NETHERRACK, "Netherrack", "redmossycobblestone", "redcobblestone", "redmosstone", "redcobble", "netherstone", "netherrack", "nether", "hellstone"),
+    SOUL_SAND(BlockID.SLOW_SAND, "Soul sand", "slowmud", "mud", "soulsand", "hellmud"),
+    GLOWSTONE(BlockID.LIGHTSTONE, "Glowstone", "brittlegold", "glowstone", "lightstone", "brimstone", "australium"),
+    PORTAL(BlockID.PORTAL, "Portal", "portal"),
+    JACK_O_LANTERN(BlockID.JACKOLANTERN, "Pumpkin (on)", "pumpkinlighted", "pumpkinon", "litpumpkin", "jackolantern"),
+    CAKE(BlockID.CAKE_BLOCK, "Cake", "cake", "cakeblock"),
+    REDSTONE_REPEATER_OFF(BlockID.REDSTONE_REPEATER_OFF, "Redstone repeater (off)", "diodeoff", "redstonerepeater", "repeateroff", "delayeroff"),
+    REDSTONE_REPEATER_ON(BlockID.REDSTONE_REPEATER_ON, "Redstone repeater (on)", "diodeon", "redstonerepeateron", "repeateron", "delayeron"),
+    LOCKED_CHEST(BlockID.LOCKED_CHEST, "Locked chest", "lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"),
+    TRAP_DOOR(BlockID.TRAP_DOOR, "Trap door", "trapdoor", "hatch", "floordoor"),
 
     // Items
     IRON_SHOVEL(256, "Iron shovel", "ironshovel"),
@@ -411,17 +411,79 @@ public enum ItemType {
      * @return
      */
     public static boolean shouldNotStack(int id) {
-        return (id >= 256 && id <= 259)
-            || id == 261
-            || (id >= 267 && id <= 279)
-            || (id >= 281 && id <= 286)
-            || (id >= 290 && id <= 294)
-            || (id >= 298 && id <= 317)
-            || (id >= 325 && id <= 327)
-            || id == 335
-            || id == 354
-            || id == 355
-            || id >= 2256;
+        ItemType t = ItemType.fromID(id);
+        if (t == null) return false;
+        return t == ItemType.IRON_SHOVEL
+            || t == ItemType.IRON_PICK
+            || t == ItemType.IRON_AXE
+            || t == ItemType.FLINT_AND_TINDER
+            || t == ItemType.BOW
+            || t == ItemType.IRON_SWORD
+            || t == ItemType.WOOD_SWORD
+            || t == ItemType.WOOD_SHOVEL
+            || t == ItemType.WOOD_PICKAXE
+            || t == ItemType.WOOD_AXE
+            || t == ItemType.STONE_SWORD
+            || t == ItemType.STONE_SHOVEL
+            || t == ItemType.STONE_PICKAXE
+            || t == ItemType.STONE_AXE
+            || t == ItemType.DIAMOND_SWORD
+            || t == ItemType.DIAMOND_SHOVEL
+            || t == ItemType.DIAMOND_PICKAXE
+            || t == ItemType.DIAMOND_AXE
+            || t == ItemType.BOWL
+            || t == ItemType.GOLD_SWORD
+            || t == ItemType.GOLD_SHOVEL
+            || t == ItemType.GOLD_PICKAXE
+            || t == ItemType.GOLD_AXE
+            || t == ItemType.WOOD_HOE
+            || t == ItemType.STONE_HOE
+            || t == ItemType.IRON_HOE
+            || t == ItemType.DIAMOND_HOE
+            || t == ItemType.GOLD_HOE
+            || t == ItemType.BREAD
+            || t == ItemType.LEATHER_HELMET
+            || t == ItemType.LEATHER_CHEST
+            || t == ItemType.LEATHER_PANTS
+            || t == ItemType.LEATHER_BOOTS
+            || t == ItemType.CHAINMAIL_CHEST
+            || t == ItemType.CHAINMAIL_HELMET
+            || t == ItemType.CHAINMAIL_BOOTS
+            || t == ItemType.CHAINMAIL_PANTS
+            || t == ItemType.IRON_HELMET
+            || t == ItemType.IRON_CHEST
+            || t == ItemType.IRON_PANTS
+            || t == ItemType.IRON_BOOTS
+            || t == ItemType.DIAMOND_HELMET
+            || t == ItemType.DIAMOND_PANTS
+            || t == ItemType.DIAMOND_CHEST
+            || t == ItemType.DIAMOND_BOOTS
+            || t == ItemType.GOLD_HELMET
+            || t == ItemType.GOLD_CHEST
+            || t == ItemType.GOLD_PANTS
+            || t == ItemType.GOLD_BOOTS
+            || t == ItemType.RAW_PORKCHOP
+            || t == ItemType.COOKED_PORKCHOP
+            || t == ItemType.SIGN
+            || t == ItemType.WOODEN_DOOR_ITEM
+            || t == ItemType.BUCKET
+            || t == ItemType.WATER_BUCKET
+            || t == ItemType.LAVA_BUCKET
+            || t == ItemType.MINECART
+            || t == ItemType.SADDLE
+            || t == ItemType.IRON_DOOR_ITEM
+            || t == ItemType.WOOD_BOAT
+            || t == ItemType.MILK_BUCKET
+            || t == ItemType.STORAGE_MINECART
+            || t == ItemType.POWERED_MINECART
+            || t == ItemType.WATCH
+            || t == ItemType.RAW_FISH
+            || t == ItemType.COOKED_FISH
+            || t == ItemType.CAKE_ITEM
+            || t == ItemType.BED_ITEM
+            || t == ItemType.MAP
+            || t == ItemType.GOLD_RECORD
+            || t == ItemType.GREEN_RECORD;
     }
     
     /**
@@ -432,7 +494,7 @@ public enum ItemType {
      * @return
      */
     public static boolean usesDamageValue(int id) {
-        return id == 35
-            || id == 351;
+        return id == ItemType.CLOTH.getID()
+            || id == ItemType.INK_SACK.getID();
     }
 }

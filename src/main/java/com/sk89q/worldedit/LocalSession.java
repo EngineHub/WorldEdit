@@ -34,6 +34,7 @@ import com.sk89q.worldedit.tools.SinglePickaxe;
 import com.sk89q.worldedit.tools.BlockTool;
 import com.sk89q.worldedit.tools.Tool;
 import com.sk89q.worldedit.bags.BlockBag;
+import com.sk89q.worldedit.blocks.ItemType;
 import com.sk89q.worldedit.cui.CUIPointBasedRegion;
 import com.sk89q.worldedit.cui.CUIEvent;
 import com.sk89q.worldedit.cui.SelectionPointEvent;
@@ -480,8 +481,10 @@ public class LocalSession {
     public void setTool(int item, Tool tool) throws InvalidToolBindException {
         if (item > 0 && item < 255) {
             throw new InvalidToolBindException(item, "Blocks can't be used");
-        } else if (item == 263 || item == 348) {
+        /* } else if (item == ItemType.COAL.getID() || item == ItemType.LIGHTSTONE_DUST.getID()) {
             throw new InvalidToolBindException(item, "Item is not usuable");
+            // let people deal with craftbook themselves, not everyone uses it
+        */
         } else if (item == config.wandItem) {
             throw new InvalidToolBindException(item, "Already used for the wand");
         } else if (item == config.navigationWand) {

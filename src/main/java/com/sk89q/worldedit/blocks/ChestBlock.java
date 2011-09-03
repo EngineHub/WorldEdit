@@ -41,7 +41,7 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock, ContainerB
      * Construct the chest block.
      */
     public ChestBlock() {
-        super(54);
+        super(BlockID.CHEST);
         items = new BaseItemStack[27];
     }
 
@@ -51,7 +51,7 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock, ContainerB
      * @param data
      */
     public ChestBlock(int data) {
-        super(54, data);
+        super(BlockID.CHEST, data);
         items = new BaseItemStack[27];
     }
 
@@ -62,7 +62,7 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock, ContainerB
      * @param items
      */
     public ChestBlock(int data, BaseItemStack[] items) {
-        super(54, data);
+        super(BlockID.CHEST, data);
         this.items = items;
     }
 

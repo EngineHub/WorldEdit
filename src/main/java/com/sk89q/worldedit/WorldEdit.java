@@ -288,7 +288,7 @@ public class WorldEdit {
             ClothColor col = ClothColor.lookup(testID);
             
             if (col != null) {
-                blockType = BlockType.fromID(35);
+                blockType = BlockType.CLOTH;
                 data = col.getID();
             } else {
                 throw new UnknownItemException(arg);

@@ -81,7 +81,8 @@ public class GenerationCommands {
     @Command(
         aliases = {"/hsphere"},
         usage = "<block> <radius>[,<radius>,<radius>] [raised?] ",
-        desc = "Generate a hollow sphere. If you specify 3 radiuses separated by commas, an ellipsoid with the dimensions x,y,z will be generated.",
+        desc = "Generate a hollow sphere.",
+        flags = "q",
         min = 2,
         max = 3
     )
@@ -90,6 +91,29 @@ public class GenerationCommands {
     public static void hsphere(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
+
+        if (args.hasFlag('q')) {
+            Pattern block = we.getBlockPattern(player, args.getString(0));
+            String[] radiuses = args.getString(1).split(",");
+            if (radiuses.length > 1) {
+                throw new InsufficientArgumentsException("Cannot specify q flag and multiple radiuses."); 
+            }
+            double radius = Double.parseDouble(radiuses[0]);
+            boolean raised = args.argsLength() > 2
+                    ? (args.getString(2).equalsIgnoreCase("true")
+                            || args.getString(2).equalsIgnoreCase("yes"))
+                    : false;
+
+            Vector pos = session.getPlacementPosition(player);
+            if (raised) {
+                pos = pos.add(0, radius, 0);
+            }
+
+            int affected = editSession.makeSphere(pos, block, radius, false);
+            player.findFreePosition();
+            player.print(affected + " block(s) have been created.");
+            return;
+        }
 
         final Pattern block = we.getBlockPattern(player, args.getString(0));
         String[] radiuses = args.getString(1).split(",");
@@ -110,10 +134,11 @@ public class GenerationCommands {
             return;
         }
         final boolean raised;
-        if (args.argsLength() > 2)
+        if (args.argsLength() > 2) {
             raised = args.getString(2).equalsIgnoreCase("true") || args.getString(2).equalsIgnoreCase("yes");
-        else
+        } else {
             raised = false;
+        }
 
         Vector pos = session.getPlacementPosition(player);
         if (raised) {
@@ -127,8 +152,9 @@ public class GenerationCommands {
 
     @Command(
         aliases = {"/sphere"},
-        usage = "<block> <radius> [raised?] ",
-        desc = "Generate a filled sphere. If you specify 3 radiuses separated by commas, an ellipsoid with the dimensions x,y,z will be generated.",
+        usage = "<block> <radius>[,<radius>,<radius>] [raised?] ",
+        desc = "Generate a filled sphere.",
+        flags = "q",
         min = 2,
         max = 3
     )
@@ -137,6 +163,29 @@ public class GenerationCommands {
     public static void sphere(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
+
+        if (args.hasFlag('q')) {
+            Pattern block = we.getBlockPattern(player, args.getString(0));
+            String[] radiuses = args.getString(1).split(",");
+            if (radiuses.length > 1) {
+                throw new InsufficientArgumentsException("Cannot specify q flag and multiple radiuses."); 
+            }
+            double radius = Double.parseDouble(radiuses[0]);
+            boolean raised = args.argsLength() > 2
+                    ? (args.getString(2).equalsIgnoreCase("true")
+                            || args.getString(2).equalsIgnoreCase("yes"))
+                    : false;
+
+            Vector pos = session.getPlacementPosition(player);
+            if (raised) {
+                pos = pos.add(0, radius, 0);
+            }
+
+            int affected = editSession.makeSphere(pos, block, radius, true);
+            player.findFreePosition();
+            player.print(affected + " block(s) have been created.");
+            return;
+        }
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
         String[] radiuses = args.getString(1).split(",");
@@ -157,10 +206,11 @@ public class GenerationCommands {
             return;
         }
         final boolean raised;
-        if (args.argsLength() > 2)
+        if (args.argsLength() > 2) {
             raised = args.getString(2).equalsIgnoreCase("true") || args.getString(2).equalsIgnoreCase("yes");
-        else
+        } else {
             raised = false;
+        }
 
         Vector pos = session.getPlacementPosition(player);
         if (raised) {
@@ -194,7 +244,6 @@ public class GenerationCommands {
         if (type == null) {
             player.printError("Tree type '" + args.getString(1) + "' is unknown.");
             return;
-        } else {
         }
         
         int affected = editSession.makeForest(player.getPosition(),

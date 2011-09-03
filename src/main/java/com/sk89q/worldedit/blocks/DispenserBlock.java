@@ -38,31 +38,31 @@ public class DispenserBlock extends BaseBlock implements TileEntityBlock, Contai
     private BaseItemStack[] items;
 
     /**
-     * Construct the chest block.
+     * Construct the dispenser block.
      */
     public DispenserBlock() {
-        super(54);
+        super(BlockID.DISPENSER);
         items = new BaseItemStack[9];
     }
 
     /**
-     * Construct the chest block.
+     * Construct the dispenser block.
      *
      * @param data
      */
     public DispenserBlock(int data) {
-        super(23, data);
+        super(BlockID.DISPENSER, data);
         items = new BaseItemStack[9];
     }
 
     /**
-     * Construct the chest block.
+     * Construct the dispenser block.
      *
      * @param data
      * @param items
      */
     public DispenserBlock(int data, BaseItemStack[] items) {
-        super(23, data);
+        super(BlockID.DISPENSER, data);
         this.items = items;
     }
 
@@ -155,7 +155,7 @@ public class DispenserBlock extends BaseBlock implements TileEntityBlock, Contai
             byte slot = (Byte)((ByteTag)Chunk.getChildTag(itemValues, "Slot", ByteTag.class))
                     .getValue();
 
-            if (slot >= 0 && slot <= 26) {
+            if (slot >= 0 && slot <= 8) {
                 newItems[slot] = new BaseItemStack(id, count, damage);
             }
         }

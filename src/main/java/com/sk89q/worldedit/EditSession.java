@@ -18,7 +18,6 @@
  */
 package com.sk89q.worldedit;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -182,7 +181,7 @@ public class EditSession {
             world.clearContainerBlockContents(pt);
             // Ice turns until water so this has to be done first
         } else if (existing == BlockID.ICE) {
-            world.setBlockType(pt, 0);
+            world.setBlockType(pt, BlockID.AIR);
         }
 
         int id = block.getType();
@@ -342,7 +341,7 @@ public class EditSession {
                         && getBlockData(pt) == block.getData());
                 // Destroy torches, etc. first
             } else if (BlockType.shouldPlaceLast(getBlockType(pt))) {
-                rawSetBlock(pt, new BaseBlock(0));
+                rawSetBlock(pt, new BaseBlock(BlockID.AIR));
             } else {
                 queueAfter.put(pt.toBlockVector(), block);
                 return !(getBlockType(pt) == block.getType()
@@ -504,8 +503,7 @@ public class EditSession {
     /**
      * Set the maximum number of blocks that can be changed.
      * 
-     * @param maxBlocks
-     *            -1 to disable
+     * @param maxBlocks -1 to disable
      */
     public void setBlockChangeLimit(int maxBlocks) {
         if (maxBlocks < -1) {
@@ -818,8 +816,8 @@ public class EditSession {
                 for (int y = oY; y <= maxY; ++y) {
                     Vector pt = new Vector(x, y, z);
 
-                    if (getBlockType(pt) != 0) {
-                        setBlock(pt, new BaseBlock(0));
+                    if (getBlockType(pt) != BlockID.AIR) {
+                        setBlock(pt, new BaseBlock(BlockID.AIR));
                         ++affected;
                     }
                 }
@@ -853,8 +851,8 @@ public class EditSession {
                 for (int y = oY; y >= minY; --y) {
                     Vector pt = new Vector(x, y, z);
 
-                    if (getBlockType(pt) != 0) {
-                        setBlock(pt, new BaseBlock(0));
+                    if (getBlockType(pt) != BlockID.AIR) {
+                        setBlock(pt, new BaseBlock(BlockID.AIR));
                         ++affected;
                     }
                 }
@@ -876,7 +874,7 @@ public class EditSession {
     public int removeNear(Vector pos, int blockType, int size)
             throws MaxChangedBlocksException {
         int affected = 0;
-        BaseBlock air = new BaseBlock(0);
+        BaseBlock air = new BaseBlock(BlockID.AIR);
 
         int minX = pos.getBlockX() - size;
         int maxX = pos.getBlockX() + size;
@@ -1633,7 +1631,8 @@ public class EditSession {
             int type = getBlockType(cur);
 
             // Check block type
-            if (type != 8 && type != 9 && type != 10 && type != 11) {
+            if (type != BlockID.WATER && type != BlockID.STATIONARY_WATER
+                    && type != BlockID.LAVA && type != BlockID.STATIONARY_LAVA) {
                 continue;
             }
 
@@ -1661,7 +1660,7 @@ public class EditSession {
                 }
             }
 
-            if (setBlock(cur, new BaseBlock(0))) {
+            if (setBlock(cur, new BaseBlock(BlockID.AIR))) {
                 ++affected;
             }
         }
@@ -1707,7 +1706,7 @@ public class EditSession {
             int type = getBlockType(cur);
 
             // Check block type
-            if (type != moving && type != stationary && type != 0) {
+            if (type != moving && type != stationary && type != BlockID.AIR) {
                 continue;
             }
 
@@ -1931,6 +1930,74 @@ public class EditSession {
      * @return number of blocks changed
      * @throws MaxChangedBlocksException
      */
+    public int makeSphere(Vector pos, Pattern block, double radius, boolean filled) throws MaxChangedBlocksException {
+        int affected = 0;
+
+        radius += 0.5;
+        final double radiusSq = radius*radius;
+        final double radius1Sq = (radius - 1)*(radius - 1);
+
+        final int ceilRadius = (int) Math.ceil(radius);
+        for (int x = 0; x <= ceilRadius; ++x) {
+            for (int y = 0; y <= ceilRadius; ++y) {
+                for (int z = 0; z <= ceilRadius; ++z) {
+                    double dSq = lengthSq(x, y, z);
+
+                    if (dSq > radiusSq) {
+                        continue;
+                    }
+                    if (!filled) {
+                        if (dSq < radius1Sq
+                                || (lengthSq(x + 1, y, z) <= radiusSq
+                                && lengthSq(x, y + 1, z) <= radiusSq
+                                && lengthSq(x, y, z + 1) <= radiusSq)) {
+                            continue;
+                        }
+                    }
+
+                    if (setBlock(pos.add(x, y, z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(-x, y, z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(x, -y, z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(x, y, -z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(-x, -y, z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(x, -y, -z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(-x, y, -z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(-x, -y, -z), block)) {
+                        ++affected;
+                    }
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Makes a sphere or ellipsoid.
+     * 
+     * @param pos Center of the sphere or ellipsoid
+     * @param block The block pattern to use
+     * @param radiusX The sphere/ellipsoid's largest north/south extent
+     * @param radiusY The sphere/ellipsoid's largest up/down extent
+     * @param radiusZ The sphere/ellipsoid's largest east/west extent
+     * @param filled If false, only a shell will be generated.
+     * @return number of blocks changed
+     * @throws MaxChangedBlocksException
+     */
     public int makeSphere(Vector pos, Pattern block, double radiusX, double radiusY, double radiusZ, boolean filled) throws MaxChangedBlocksException {
         int affected = 0;
 
@@ -1950,31 +2017,33 @@ public class EditSession {
         forX:
         for (int x = 0; x <= ceilRadiusX; ++x) {
             final double xn = nextXn;
-            nextXn = (x+1)*invRadiusX;
+            nextXn = (x + 1) * invRadiusX;
             double nextYn = 0;
             forY:
             for (int y = 0; y <= ceilRadiusY; ++y) {
                 final double yn = nextYn;
-                nextYn = (y+1)*invRadiusY;
+                nextYn = (y + 1) * invRadiusY;
                 double nextZn = 0;
                 forZ:
                 for (int z = 0; z <= ceilRadiusZ; ++z) {
                     final double zn = nextZn;
-                    nextZn = (z+1)*invRadiusZ;
+                    nextZn = (z + 1) * invRadiusZ;
 
                     double distanceSq = lengthSq(xn, yn, zn);
                     if (distanceSq > 1) {
                         if (z == 0) {
-                            if (y == 0)
+                            if (y == 0) {
                                 break forX;
+                            }
                             break forY;
                         }
                         break forZ;
                     }
 
                     if (!filled) {
-                        if (lengthSq(nextXn, yn, zn) <= 1 && lengthSq(xn, nextYn, zn) <= 1 && lengthSq(xn, yn, nextZn) <= 1)
+                        if (lengthSq(nextXn, yn, zn) <= 1 && lengthSq(xn, nextYn, zn) <= 1 && lengthSq(xn, yn, nextZn) <= 1) {
                             continue;
+                        }
                     }
 
                     if (setBlock(pos.add(x, y, z), block)) {
@@ -2009,7 +2078,7 @@ public class EditSession {
     }
 
     private static final double lengthSq(double x, double y, double z) {
-        return x*x + y*y + z*z;
+        return (x * x) + (y * y) + (z * z);
     }
 
     /**
@@ -2121,8 +2190,8 @@ public class EditSession {
         int oy = pos.getBlockY();
         int oz = pos.getBlockZ();
 
-        BaseBlock ice = new BaseBlock(79);
-        BaseBlock snow = new BaseBlock(78);
+        BaseBlock ice = new BaseBlock(BlockID.ICE);
+        BaseBlock snow = new BaseBlock(BlockID.SNOW);
 
         int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
@@ -2136,34 +2205,13 @@ public class EditSession {
                     int id = getBlockType(pt);
 
                     // Snow should not cover these blocks
-                    if (id == 6 // Saplings
-                            || id == 10 // Lava
-                            || id == 11 // Lava
-                            || id == 37 // Yellow flower
-                            || id == 38 // Red rose
-                            || id == 39 // Brown mushroom
-                            || id == 40 // Red mushroom
-                            || id == 44 // Step
-                            || id == 50 // Torch
-                            || id == 51 // Fire
-                            || id == 53 // Wood steps
-                            || id == 55 // Redstone wire
-                            || id == 59 // Crops
-                            || (id >= 63 && id <= 72) || id == 75 // Redstone
-                            // torch
-                            || id == 76 // Redstone torch
-                            || id == 77 // Stone button
-                            || id == 78 // Snow
-                            || id == 79 // Ice
-                            || id == 81 // Cactus
-                            || id == 83 // Reed
-                            || id == 85 // Fence
-                            || id == 90) { // Portal
+                    if (BlockType.canPassThrough(id)
+                            && !(id == BlockID.WATER || id == BlockID.STATIONARY_WATER)) {
                         break;
                     }
 
                     // Ice!
-                    if (id == 8 || id == 9) {
+                    if (id == BlockID.WATER || id == BlockID.STATIONARY_WATER) {
                         if (setBlock(pt, ice)) {
                             ++affected;
                         }
@@ -2171,7 +2219,7 @@ public class EditSession {
                     }
 
                     // Cover
-                    if (id != 0) {
+                    if (id != BlockID.AIR) {
                         if (y == 127) { // Too high!
                             break;
                         }
@@ -2187,42 +2235,6 @@ public class EditSession {
 
         return affected;
     }
-
-    private static final Set<Integer> greenIgnoreBlockIds = new HashSet<Integer>(Arrays.asList(
-            BlockID.AIR,
-            BlockID.BROWN_MUSHROOM,
-            BlockID.DEAD_BUSH,
-            BlockID.DETECTOR_RAIL,
-            BlockID.FENCE,
-            BlockID.FIRE,
-            BlockID.IRON_DOOR,
-            BlockID.LADDER,
-            BlockID.LEVER,
-            BlockID.LONG_GRASS,
-            BlockID.MINECART_TRACKS,
-            BlockID.PORTAL,
-            BlockID.POWERED_RAIL,
-            BlockID.RED_FLOWER,
-            BlockID.RED_MUSHROOM,
-            BlockID.REDSTONE_REPEATER_OFF,
-            BlockID.REDSTONE_REPEATER_ON,
-            BlockID.REDSTONE_TORCH_OFF,
-            BlockID.REDSTONE_TORCH_ON,
-            BlockID.REDSTONE_WIRE,
-            BlockID.REED,
-            BlockID.SAPLING,
-            BlockID.SIGN_POST,
-            BlockID.SNOW,
-            BlockID.STONE_BUTTON,
-            BlockID.STONE_PRESSURE_PLATE,
-            BlockID.TORCH,
-            BlockID.TRAP_DOOR,
-            BlockID.WALL_SIGN,
-            BlockID.WEB,
-            BlockID.WOODEN_DOOR,
-            BlockID.WOODEN_PRESSURE_PLATE,
-            BlockID.YELLOW_FLOWER
-    ));
 
     /**
      * Green.
@@ -2254,8 +2266,9 @@ public class EditSession {
                     Vector pt = new Vector(x, y, z);
                     int id = getBlockType(pt);
 
-                    if (greenIgnoreBlockIds.contains(id))
+                    if (BlockType.canPassThrough(id)) {
                         continue;
+                    }
 
                     if (id == BlockID.DIRT) {
                         if (setBlock(pt, grass)) {
@@ -2294,8 +2307,8 @@ public class EditSession {
      */
     private void makePumpkinPatch(Vector basePos)
             throws MaxChangedBlocksException {
-        // BaseBlock logBlock = new BaseBlock(17);
-        BaseBlock leavesBlock = new BaseBlock(18);
+        // BaseBlock logBlock = new BaseBlock(BlockID.LOG);
+        BaseBlock leavesBlock = new BaseBlock(BlockID.LEAVES);
 
         // setBlock(basePos.subtract(0, 1, 0), logBlock);
         setBlockIfAir(basePos, leavesBlock);
@@ -2314,49 +2327,58 @@ public class EditSession {
      */
     private void makePumpkinPatchVine(Vector basePos, Vector pos)
             throws MaxChangedBlocksException {
-        if (pos.distance(basePos) > 4) 
-            return;
-        if (getBlockType(pos) != 0) 
-            return;
+        if (pos.distance(basePos) > 4) return;
+        if (getBlockType(pos) != 0) return;
 
         for (int i = -1; i > -3; --i) {
             Vector testPos = pos.add(0, i, 0);
-            if (getBlockType(testPos) == 0) {
+            if (getBlockType(testPos) == BlockID.AIR) {
                 pos = testPos;
             } else {
                 break;
             }
         }
 
-        setBlockIfAir(pos, new BaseBlock(18));
+        setBlockIfAir(pos, new BaseBlock(BlockID.LEAVES));
 
         int t = prng.nextInt(4);
         int h = prng.nextInt(3) - 1;
 
+        BaseBlock log = new BaseBlock(BlockID.LOG);
+        BaseBlock pumpkin = new BaseBlock(BlockID.PUMPKIN);
+
         if (t == 0) {
-            if (prng.nextBoolean()) 
+            if (prng.nextBoolean()) {
                 makePumpkinPatchVine(basePos, pos.add(1, 0, 0));
-            if (prng.nextBoolean()) 
-                setBlockIfAir(pos.add(1, h, -1), new BaseBlock(18));
-            setBlockIfAir(pos.add(0, 0, -1), new BaseBlock(86));
+            }
+            if (prng.nextBoolean()) {
+                setBlockIfAir(pos.add(1, h, -1), log);
+            }
+            setBlockIfAir(pos.add(0, 0, -1), pumpkin);
         } else if (t == 1) {
-            if (prng.nextBoolean()) 
+            if (prng.nextBoolean()) {
                 makePumpkinPatchVine(basePos, pos.add(0, 0, 1));
-            if (prng.nextBoolean()) 
-                setBlockIfAir(pos.add(1, h, 0), new BaseBlock(18));
-            setBlockIfAir(pos.add(1, 0, 1), new BaseBlock(86));
+            }
+            if (prng.nextBoolean()) {
+                setBlockIfAir(pos.add(1, h, 0), log);
+            }
+            setBlockIfAir(pos.add(1, 0, 1), pumpkin);
         } else if (t == 2) {
-            if (prng.nextBoolean()) 
+            if (prng.nextBoolean()) {
                 makePumpkinPatchVine(basePos, pos.add(0, 0, -1));
-            if (prng.nextBoolean()) 
-                setBlockIfAir(pos.add(-1, h, 0), new BaseBlock(18));
-            setBlockIfAir(pos.add(-1, 0, 1), new BaseBlock(86));
+            }
+            if (prng.nextBoolean()) {
+                setBlockIfAir(pos.add(-1, h, 0), log);
+            }
+            setBlockIfAir(pos.add(-1, 0, 1), pumpkin);
         } else if (t == 3) {
-            if (prng.nextBoolean()) 
+            if (prng.nextBoolean()) {
                 makePumpkinPatchVine(basePos, pos.add(-1, 0, 0));
-            if (prng.nextBoolean()) 
-                setBlockIfAir(pos.add(-1, h, -1), new BaseBlock(18));
-            setBlockIfAir(pos.add(-1, 0, -1), new BaseBlock(86));
+            }
+            if (prng.nextBoolean()) {
+                setBlockIfAir(pos.add(-1, h, -1), log);
+            }
+            setBlockIfAir(pos.add(-1, 0, -1), pumpkin);
         }
     }
 
@@ -2377,8 +2399,9 @@ public class EditSession {
             for (int z = basePos.getBlockZ() - size; z <= basePos.getBlockZ()
                     + size; ++z) {
                 // Don't want to be in the ground
-                if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir()) 
+                if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir()) {
                     continue;
+                }
                 // The gods don't want a pumpkin patch here
                 if (Math.random() < 0.98) {
                     continue;
@@ -2387,11 +2410,11 @@ public class EditSession {
                 for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; --y) {
                     // Check if we hit the ground
                     int t = getBlock(new Vector(x, y, z)).getType();
-                    if (t == 2 || t == 3) {
+                    if (t == BlockID.GRASS || t == BlockID.DIRT) {
                         makePumpkinPatch(new Vector(x, y + 1, z));
                         ++affected;
                         break;
-                    } else if (t != 0) { // Trees won't grow on this!
+                    } else if (t != BlockID.AIR) { // Trees won't grow on this!
                         break;
                     }
                 }
@@ -2420,8 +2443,9 @@ public class EditSession {
             for (int z = basePos.getBlockZ() - size; z <= basePos.getBlockZ()
                     + size; ++z) {
                 // Don't want to be in the ground
-                if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir())
+                if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir()) {
                     continue;
+                }
                 // The gods don't want a tree here
                 if (Math.random() >= density) {
                     continue;
@@ -2430,11 +2454,11 @@ public class EditSession {
                 for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; --y) {
                     // Check if we hit the ground
                     int t = getBlock(new Vector(x, y, z)).getType();
-                    if (t == 2 || t == 3) {
+                    if (t == BlockID.GRASS || t == BlockID.DIRT) {
                         treeGenerator.generate(this, new Vector(x, y + 1, z));
                         ++affected;
                         break;
-                    } else if (t != 0) { // Trees won't grow on this!
+                    } else if (t != BlockID.AIR) { // Trees won't grow on this!
                         break;
                     }
                 }
@@ -2551,10 +2575,22 @@ public class EditSession {
      *
      * @param x
      * @param z
-     * @param minY
-     *            minimal height
-     * @param maxY
-     *            maximal height
+     * @param minY minimal height
+     * @param maxY maximal height
+     * @param naturalOnly look at natural blocks or all blocks
+     * @return height of highest block found or 'minY'
+     */
+    public int getHighestTerrainBlock(int x, int z, int minY, int maxY) {
+        return getHighestTerrainBlock(x, z, minY, maxY, false);
+    }
+
+    /**
+     * Returns the highest solid 'terrain' block which can occur naturally.
+     *
+     * @param x
+     * @param z
+     * @param minY minimal height
+     * @param maxY maximal height
      * @param naturalOnly look at natural blocks or all blocks
      * @return height of highest block found or 'minY'
      */

@@ -84,10 +84,6 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
             return null;
         }
 
-        // Bug workaround
-        if (target.getBlockX() == 0 && target.getBlockY() == 0 && target.getBlockZ() == 0) {
-            return null;
-        }
         return target;
     }
 }

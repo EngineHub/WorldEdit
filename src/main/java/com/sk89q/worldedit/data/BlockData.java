@@ -313,6 +313,17 @@ public final class BlockData {
      * 
      * @param type
      * @param data
+     * @return
+     */
+    public static int flip(int type, int data) {
+        return rotate90(type, rotate90(type, data));
+    }
+
+    /**
+     * Flip a block's data value.
+     * 
+     * @param type
+     * @param data
      * @param direction
      * @return
      */

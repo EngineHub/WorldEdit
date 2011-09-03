@@ -49,7 +49,7 @@ public class RecursivePickaxe implements BlockTool {
         
         int initialType = world.getBlockType(clicked);
         
-        if (initialType == 0) {
+        if (initialType == BlockID.AIR) {
             return true;
         }
 

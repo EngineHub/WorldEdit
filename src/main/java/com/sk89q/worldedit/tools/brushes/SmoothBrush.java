@@ -33,6 +33,10 @@ public class SmoothBrush implements Brush {
     private int iterations;
     private boolean naturalOnly;
     
+    public SmoothBrush(int iterations) {
+        this(iterations, false);
+    }
+
     public SmoothBrush(int iterations, boolean naturalOnly) {
         this.iterations = iterations;
         this.naturalOnly = naturalOnly;

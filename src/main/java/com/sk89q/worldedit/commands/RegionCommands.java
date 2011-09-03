@@ -28,6 +28,7 @@ import com.sk89q.minecraft.util.commands.Logging;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.masks.Mask;
@@ -243,7 +244,7 @@ public class RegionCommands {
         if (args.argsLength() > 2) {
             replace = we.getBlock(player, args.getString(2));
         } else {
-            replace = new BaseBlock(0);
+            replace = new BaseBlock(BlockID.AIR);
         }
 
         int affected = editSession.moveCuboidRegion(session.getSelection(player.getWorld()),

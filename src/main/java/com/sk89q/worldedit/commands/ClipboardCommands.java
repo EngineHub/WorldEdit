@@ -28,6 +28,7 @@ import com.sk89q.minecraft.util.commands.Logging;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.data.DataException;
 import com.sk89q.worldedit.regions.Region;
 
@@ -76,7 +77,7 @@ public class ClipboardCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        BaseBlock block = new BaseBlock(0);
+        BaseBlock block = new BaseBlock(BlockID.AIR);
 
         if (args.argsLength() > 0) {
             block = we.getBlock(player, args.getString(0));

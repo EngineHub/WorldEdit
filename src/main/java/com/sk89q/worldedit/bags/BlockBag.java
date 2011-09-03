@@ -85,7 +85,7 @@ public abstract class BlockBag {
                 fetchBlock(BlockID.DIRT);
             // Look for redstone dust
             } else if (id == BlockID.REDSTONE_WIRE) {
-                fetchBlock(331);
+                fetchBlock(ItemType.REDSTONE_DUST.getID());
             // Look for furnace
             } else if (id == BlockID.BURNING_FURNACE) {
                 fetchBlock(BlockID.FURNACE);
@@ -94,7 +94,7 @@ public abstract class BlockBag {
                 fetchBlock(BlockID.REDSTONE_TORCH_ON);
             // Look for signs
             } else if (id == BlockID.WALL_SIGN || id == BlockID.SIGN_POST) {
-                fetchBlock(323);
+                fetchBlock(ItemType.SIGN.getID());
             } else {
                 throw e;
             }

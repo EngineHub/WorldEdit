@@ -21,7 +21,9 @@ package com.sk89q.worldedit;
 
 import java.io.File;
 import com.sk89q.worldedit.bags.BlockBag;
+import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.ItemType;
 import com.sk89q.worldedit.cui.CUIEvent;
 import com.sk89q.worldedit.util.TargetBlock;
 
@@ -51,8 +53,11 @@ public abstract class LocalPlayer {
      */
     public boolean isHoldingPickAxe() {
         int item = getItemInHand();
-        return item == 257 || item == 270 || item == 274 || item == 278
-                || item == 285;
+        return item == ItemType.IRON_PICK.getID()
+                || item == ItemType.WOOD_PICKAXE.getID()
+                || item == ItemType.STONE_PICKAXE.getID()
+                || item == ItemType.DIAMOND_PICKAXE.getID()
+                || item == ItemType.GOLD_PICKAXE.getID();
     }
 
     /**
@@ -150,7 +155,7 @@ public abstract class LocalPlayer {
                     int type = world.getBlockType(new Vector(x, y - 2, z));
                     
                     // Don't get put in lava!
-                    if (type == 10 || type == 11) {
+                    if (type == BlockID.LAVA || type == BlockID.STATIONARY_LAVA) {
                         return false;
                     }
 
@@ -194,7 +199,7 @@ public abstract class LocalPlayer {
                     int type = world.getBlockType(new Vector(x, y, z));
 
                     // Don't want to end up in lava
-                    if (type != 0 && type != 10 && type != 11) {
+                    if (type != BlockID.AIR && type != BlockID.LAVA && type != BlockID.STATIONARY_LAVA) {
                         // Found a block!
                         setPosition(new Vector(x + 0.5, y + 1, z + 0.5));
                         return true;
@@ -236,7 +241,7 @@ public abstract class LocalPlayer {
             if (!BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
                 world.setBlockType(new Vector(x, platformY, z),
-                        BlockType.GLASS.getID());
+                        BlockID.GLASS);
                 setPosition(new Vector(x + 0.5, platformY + 1, z + 0.5));
                 return true;
             }
@@ -269,7 +274,7 @@ public abstract class LocalPlayer {
                 break;
             } else if (y == maxY + 1) {
                 world.setBlockType(new Vector(x, y - 2, z),
-                        BlockType.GLASS.getID());
+                        BlockID.GLASS);
                 setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
                 return true;
             }
