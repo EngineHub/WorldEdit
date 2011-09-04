@@ -197,6 +197,7 @@ public class CuboidClipboard {
                 for (int z = 0; z < length; ++z) {
                     for (int y = 0; y < height; ++y) {
                         BaseBlock old = data[xs][y][z].flip(dir);
+                        if (xs == width - xs - 1) continue;
                         data[xs][y][z] = data[width - xs - 1][y][z].flip(dir);
                         data[width - xs - 1][y][z] = old;
                     }
@@ -215,6 +216,7 @@ public class CuboidClipboard {
                 for (int x = 0; x < width; ++x) {
                     for (int y = 0; y < height; ++y) {
                         BaseBlock old = data[x][y][zs].flip(dir);
+                        if (zs == length - zs - 1) continue;
                         data[x][y][zs] = data[x][y][length - zs - 1].flip(dir);
                         data[x][y][length - zs - 1] = old;
                     }
@@ -233,6 +235,7 @@ public class CuboidClipboard {
                 for (int x = 0; x < width; ++x) {
                     for (int z = 0; z < length; ++z) {
                         BaseBlock old = data[x][ys][z].flip(dir);
+                        if (ys == height - ys - 1) continue;
                         data[x][ys][z] = data[x][height - ys - 1][z].flip(dir);
                         data[x][height - ys - 1][z] = old;
                     }
