@@ -371,7 +371,7 @@ public class WorldEdit {
                     if (!server.isValidMobType(mobName)) {
                         throw new InvalidItemException(arg, "Unknown mob type '" + mobName + "'");
                     }
-                    return new MobSpawnerBlock(data, args0[1]);
+                    return new MobSpawnerBlock(data, mobName);
                 } else {
                     return new MobSpawnerBlock(data, "Pig");
                 }
