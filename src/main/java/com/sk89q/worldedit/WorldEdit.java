@@ -829,8 +829,7 @@ public class WorldEdit {
     }
 
     /**
-     * Get the flip direction for a player's direction. May return
-     * null if a direction could not be found.
+     * Get the flip direction for a player's direction.
      *
      * @param player
      * @param dirStr 
@@ -840,26 +839,42 @@ public class WorldEdit {
     public CuboidClipboard.FlipDirection getFlipDirection(
             LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
-        PlayerDirection dir = null;
         
         if (dirStr.equals("me")) {
-            dir = player.getCardinalDirection();
+            final PlayerDirection dir = player.getCardinalDirection();
+            switch (dir) {
+            case WEST:
+            case EAST:
+                return CuboidClipboard.FlipDirection.WEST_EAST;
+
+            case NORTH:
+            case SOUTH:
+                return CuboidClipboard.FlipDirection.NORTH_SOUTH;
+
+            case UP:
+            case DOWN:
+                return CuboidClipboard.FlipDirection.UP_DOWN;
+
+            default:
+                throw new UnknownDirectionException(dir.name());
+            }
         }
 
-        if (dirStr.charAt(0) == 'w' || dir == PlayerDirection.WEST) {
+        switch (dirStr.charAt(0)) {
+        case 'w':
+        case 'e':
             return CuboidClipboard.FlipDirection.WEST_EAST;
-        } else if (dirStr.charAt(0) == 'e' || dir == PlayerDirection.EAST) {
-            return CuboidClipboard.FlipDirection.WEST_EAST;
-        } else if (dirStr.charAt(0) == 's' || dir == PlayerDirection.SOUTH) {
+
+        case 'n':
+        case 's':
             return CuboidClipboard.FlipDirection.NORTH_SOUTH;
-        } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.NORTH) {
-            return CuboidClipboard.FlipDirection.NORTH_SOUTH;
-        } else if (dirStr.charAt(0) == 'u' || dir == PlayerDirection.UP) {
+
+        case 'u':
+        case 'd':
             return CuboidClipboard.FlipDirection.UP_DOWN;
-        } else if (dirStr.charAt(0) == 'd' || dir == PlayerDirection.DOWN) {
-            return CuboidClipboard.FlipDirection.UP_DOWN;
-        } else {
-            throw new UnknownDirectionException(dir.name());
+
+        default:
+            throw new UnknownDirectionException(dirStr);
         }
     }
 
