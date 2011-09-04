@@ -31,7 +31,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.bukkit.migration.PermissionsResolverManager;
 import com.sk89q.bukkit.migration.PermissionsResolverServerListener;
@@ -135,8 +134,8 @@ public class WorldEditPlugin extends JavaPlugin {
      * Register the events used by WorldEdit.
      */
     protected void registerEvents() {
-        PlayerListener playerListener = new WorldEditPlayerListener(this);
-        PlayerListener criticalPlayerListener = new WorldEditCriticalPlayerListener(this);
+        new WorldEditPlayerListener(this);
+        new WorldEditCriticalPlayerListener(this);
 
         // The permissions resolver has some hooks of its own
         (new PermissionsResolverServerListener(perms)).register(this);

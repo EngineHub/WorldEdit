@@ -34,7 +34,6 @@ import com.sk89q.worldedit.tools.SinglePickaxe;
 import com.sk89q.worldedit.tools.BlockTool;
 import com.sk89q.worldedit.tools.Tool;
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.ItemType;
 import com.sk89q.worldedit.cui.CUIPointBasedRegion;
 import com.sk89q.worldedit.cui.CUIEvent;
 import com.sk89q.worldedit.cui.SelectionPointEvent;
