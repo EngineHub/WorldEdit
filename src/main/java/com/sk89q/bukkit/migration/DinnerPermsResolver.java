@@ -26,16 +26,11 @@ public class DinnerPermsResolver implements PermissionsResolver {
             return false; // Permissions are only registered for online players
         if ( player.hasPermission("*")  || player.hasPermission(permission))
             return true;
-        int i = 0;
-        while (i <= permission.length() + 1) {
-            int dotPos = permission.indexOf(".", i);
-            if (dotPos > -1) {
-                if (player.hasPermission(permission.substring(0, dotPos + 1) + "*"))
-                    return true;
-                i += dotPos;
-            } else {
-                break;
-            }
+        int dotPos = permission.lastIndexOf(".");
+        while (dotPos > -1) {
+            if (player.hasPermission(permission.substring(0, dotPos + 1) + "*"))
+                return true;
+            dotPos = permission.lastIndexOf(".", dotPos - 1);
         }
         return false;
     }
@@ -58,10 +53,10 @@ public class DinnerPermsResolver implements PermissionsResolver {
         List<String> groupNames = new ArrayList<String>();
         for (PermissionAttachmentInfo permAttach : player.getEffectivePermissions()) {
             String perm = permAttach.getPermission();
-            if (!perm.startsWith(GROUP_PREFIX))
+            if (!(perm.startsWith(GROUP_PREFIX) || permAttach.getValue()))
                 continue;
             groupNames.add(perm.substring(GROUP_PREFIX.length(), perm.length()));
         }
-        return groupNames.toArray(new String[groupNames.size()]);
+        return groupNames.toArray(new String[0]);
     }
 }
