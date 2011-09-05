@@ -134,4 +134,8 @@ public class BukkitPlayer extends LocalPlayer {
     public void dispatchCUIHandshake() {
         player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75");
     }
+
+    public Player getPlayer() {
+        return player;
+    }
 }
