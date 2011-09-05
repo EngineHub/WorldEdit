@@ -515,20 +515,36 @@ public class CuboidClipboard {
                     BlockVector pt = new BlockVector(x, y, z);
                     BaseBlock block;
 
-                    if (blocks[index] == BlockID.WALL_SIGN || blocks[index] == BlockID.SIGN_POST) {
+                    switch (blocks[index]) {
+                    case BlockID.WALL_SIGN:
+                    case BlockID.SIGN_POST:
                         block = new SignBlock(blocks[index], blockData[index]);
-                    } else if (blocks[index] == BlockID.CHEST) {
+                        break;
+
+                    case BlockID.CHEST:
                         block = new ChestBlock(blockData[index]);
-                    } else if (blocks[index] == BlockID.FURNACE || blocks[index] == BlockID.BURNING_FURNACE) {
+                        break;
+
+                    case BlockID.FURNACE:
+                    case BlockID.BURNING_FURNACE:
                         block = new FurnaceBlock(blocks[index], blockData[index]);
-                    } else if (blocks[index] == BlockID.DISPENSER) {
+                        break;
+
+                    case BlockID.DISPENSER:
                         block = new DispenserBlock(blockData[index]);
-                    } else if (blocks[index] == BlockID.MOB_SPAWNER) {
+                        break;
+
+                    case BlockID.MOB_SPAWNER:
                         block = new MobSpawnerBlock(blockData[index]);
-                    } else if (blocks[index] == BlockID.NOTE_BLOCK) {
+                        break;
+
+                    case BlockID.NOTE_BLOCK:
                         block = new NoteBlock(blockData[index]);
-                    } else {
+                        break;
+
+                    default:
                         block = new BaseBlock(blocks[index], blockData[index]);
+                        break;
                     }
                     
                     if (block instanceof TileEntityBlock 

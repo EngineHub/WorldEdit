@@ -312,7 +312,8 @@ public class WorldEdit {
                     data = 0;
                 }
             } catch (NumberFormatException e) {
-                if (blockType == BlockType.CLOTH) {
+                switch (blockType) {
+                case CLOTH:
                     ClothColor col = ClothColor.lookup(args1[1]);
                     
                     if (col != null) {
@@ -320,26 +321,39 @@ public class WorldEdit {
                     } else {
                         throw new InvalidItemException(arg, "Unknown cloth color '" + args1[1] + "'");
                     }
-                } else if (blockType == BlockType.STEP
-                        || blockType == BlockType.DOUBLE_STEP) {
+                    break;
+
+                case STEP:
+                case DOUBLE_STEP:
                     BlockType dataType = BlockType.lookup(args1[1]);
                     
                     if (dataType != null) {
-                        if (dataType == BlockType.STONE) {
+                        switch (dataType) {
+                        case STONE:
                             data = 0;
-                        } else if (dataType == BlockType.SANDSTONE) {
+                            break;
+
+                        case SANDSTONE:
                             data = 1;
-                        } else if (dataType == BlockType.WOOD) {
+                            break;
+
+                        case WOOD:
                             data = 2;
-                        } else if (dataType == BlockType.COBBLESTONE) {
+                            break;
+
+                        case COBBLESTONE:
                             data = 3;
-                        } else {
+                            break;
+
+                        default:
                             throw new InvalidItemException(arg, "Invalid step type '" + args1[1] + "'");
                         }
                     } else {
                         throw new InvalidItemException(arg, "Unknown step type '" + args1[1] + "'");
                     }
-                } else {
+                    break;
+
+                default:
                     throw new InvalidItemException(arg, "Unknown data value '" + args1[1] + "'");
                 }
             }
@@ -731,41 +745,48 @@ public class WorldEdit {
      */
     public Vector getDirection(LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
-        int xm = 0;
-        int ym = 0;
-        int zm = 0;
-        
-        PlayerDirection dir = null;
         
         dirStr = dirStr.toLowerCase();
-        boolean wasDetected = false;
 
         if (dirStr.equals("me")) {
-            dir = player.getCardinalDirection();
-            wasDetected = true;
-        }
+            final PlayerDirection dir = player.getCardinalDirection();
+            switch (dir) {
+            case WEST:
+            case EAST:
+            case SOUTH:
+            case NORTH:
+            case UP:
+            case DOWN:
+                dirStr = dir.name().toLowerCase();
+                break;
 
-        if (dirStr.charAt(0) == 'w' || dir == PlayerDirection.WEST) {
-            zm += 1;
-        } else if (dirStr.charAt(0) == 'e' || dir == PlayerDirection.EAST) {
-            zm -= 1;
-        } else if (dirStr.charAt(0) == 's' || dir == PlayerDirection.SOUTH) {
-            xm += 1;
-        } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.NORTH) {
-            xm -= 1;
-        } else if (dirStr.charAt(0) == 'u' || dir == PlayerDirection.UP) {
-            ym += 1;
-        } else if (dirStr.charAt(0) == 'd' || dir == PlayerDirection.DOWN) {
-            ym -= 1;
-        } else {
-            if (wasDetected) {
+            default:
                 throw new UnknownDirectionException(dir.name());
-            } else {
-                throw new UnknownDirectionException(dirStr);
             }
         }
 
-        return new Vector(xm, ym, zm);
+        switch (dirStr.charAt(0)) {
+        case 'w':
+            return new Vector(0, 0, 1);
+
+        case 'e':
+            return new Vector(0, 0, -1);
+
+        case 's':
+            return new Vector(1, 0, 0);
+
+        case 'n':
+            return new Vector(-1, 0, 0);
+
+        case 'u':
+            return new Vector(0, 1, 0);
+
+        case 'd':
+            return new Vector(0, -1, 0);
+
+        default:
+            throw new UnknownDirectionException(dirStr);
+        }
     }
     
     /**
@@ -779,53 +800,51 @@ public class WorldEdit {
      */
     public Vector getDiagonalDirection( LocalPlayer player, String dirStr )
         throws UnknownDirectionException {
-        int xm = 0;
-        int ym = 0;
-        int zm = 0;
-
-        PlayerDirection dir = null;
 
         dirStr = dirStr.toLowerCase();
-        boolean wasDetected = false;
 
-        if ( dirStr.equals( "me" ) ) {
-            dir = player.getCardinalDirection();
-            wasDetected = true;
+        if (dirStr.equals("me")) {
+            dirStr = player.getCardinalDirection().name().toLowerCase();
         }
 
-        if ((dirStr.charAt(0) == 's' && dirStr.indexOf( 'w' ) > 0) || dir == PlayerDirection.SOUTH_WEST) {
-            zm += 1;
-            xm += 1;
-        } else if ((dirStr.charAt(0) == 'n' && dirStr.indexOf( 'w' ) > 0) || dir == PlayerDirection.NORTH_WEST) {
-            zm += 1;
-            xm -= 1;
-        } else if ((dirStr.charAt(0) == 's' && dirStr.indexOf( 'e' ) > 0) || dir == PlayerDirection.SOUTH_EAST) {
-            zm -= 1;
-            xm += 1;
-        } else if ((dirStr.charAt(0) == 'n' && dirStr.indexOf( 'e' ) > 0) || dir == PlayerDirection.NORTH_EAST) {
-            zm -= 1;
-            xm -= 1;
-        } else if (dirStr.charAt(0) == 'w' || dir == PlayerDirection.WEST) {
-            zm += 1;
-        } else if (dirStr.charAt(0) == 'e' || dir == PlayerDirection.EAST) {
-            zm -= 1;
-        } else if (dirStr.charAt(0) == 's' || dir == PlayerDirection.SOUTH) {
-            xm += 1;
-        } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.NORTH) {
-            xm -= 1;
-        } else if (dirStr.charAt(0) == 'u' || dir == PlayerDirection.UP) {
-            ym += 1;
-        } else if (dirStr.charAt(0) == 'd' || dir == PlayerDirection.DOWN) {
-            ym -= 1;
-        } else {
-            if (wasDetected) {
-                throw new UnknownDirectionException(dir.name());
-            } else {
-                throw new UnknownDirectionException(dirStr);
+        switch (dirStr.charAt(0)) {
+        case 'w':
+            return new Vector(0, 0, 1);
+
+        case 'e':
+            return new Vector(0, 0, -1);
+
+        case 's':
+            if (dirStr.indexOf('w') > 0) {
+                return new Vector(1, 0, 1);
             }
-        }
 
-        return new Vector( xm, ym, zm );
+            if (dirStr.indexOf('e') > 0) {
+                return new Vector(1, 0, -1);
+            }
+
+            return new Vector(1, 0, 0);
+
+        case 'n':
+            if (dirStr.indexOf('w') > 0) {
+                return new Vector(-1, 0, 1);
+            }
+
+            if (dirStr.indexOf('e') > 0) {
+                return new Vector(-1, 0, -1);
+            }
+
+            return new Vector(-1, 0, 0);
+
+        case 'u':
+            return new Vector(0, 1, 0);
+
+        case 'd':
+            return new Vector(0, -1, 0);
+
+        default:
+            throw new UnknownDirectionException(dirStr);
+        }
     }
 
     /**

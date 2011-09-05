@@ -156,7 +156,6 @@ public class EditSession {
     public boolean rawSetBlock(Vector pt, BaseBlock block) {
         int y = pt.getBlockY();
         int type = block.getType();
-
         if (y < 0 || y > 127) {
             return false;
         }
@@ -184,16 +183,14 @@ public class EditSession {
             world.setBlockType(pt, BlockID.AIR);
         }
 
-        int id = block.getType();
-
         if (blockBag != null) {
-            if (id > 0) {
+            if (type > 0) {
                 try {
-                    blockBag.fetchPlacedBlock(id);
+                    blockBag.fetchPlacedBlock(type);
                 } catch (UnplaceableBlockException e) {
                     return false;
                 } catch (BlockBagException e) {
-                    missingBlocks.add(id);
+                    missingBlocks.add(type);
                     return false;
                 }
             }
@@ -208,7 +205,7 @@ public class EditSession {
 
         boolean result;
 
-        if (BlockType.usesData(id)) {
+        if (BlockType.usesData(type)) {
             if (fastMode) {
                 result = world.setTypeIdAndDataFast(pt, type, block.getData());
             } else {
@@ -216,39 +213,21 @@ public class EditSession {
             }
         } else {
             if (fastMode) {
-                result = world.setBlockTypeFast(pt, id);
+                result = world.setBlockTypeFast(pt, type);
             } else {
-                result = world.setBlockType(pt, id);
+                result = world.setBlockType(pt, type);
             }
         }
         //System.out.println(pt + "" +result);
 
-        if (id != 0) {
-
-            // Signs
-            if (block instanceof SignBlock) {
-                SignBlock signBlock = (SignBlock) block;
-                world.copyToWorld(pt, signBlock);
-                // Chests
-            } else if (block instanceof ChestBlock && blockBag == null) {
-                ChestBlock chestBlock = (ChestBlock) block;
-                world.copyToWorld(pt, chestBlock);
-                // Furnaces
-            } else if (block instanceof FurnaceBlock && blockBag == null) {
-                FurnaceBlock furnaceBlock = (FurnaceBlock) block;
-                world.copyToWorld(pt, furnaceBlock);
-                // Dispenser
-            } else if (block instanceof DispenserBlock && blockBag == null) {
-                DispenserBlock dispenserBlock = (DispenserBlock) block;
-                world.copyToWorld(pt, dispenserBlock);
-                // Mob spawners
-            } else if (block instanceof MobSpawnerBlock) {
-                MobSpawnerBlock mobSpawnerblock = (MobSpawnerBlock) block;
-                world.copyToWorld(pt, mobSpawnerblock);
-                // Note blocks
-            } else if (block instanceof NoteBlock) {
-                NoteBlock noteBlock = (NoteBlock) block;
-                world.copyToWorld(pt, noteBlock);
+        if (type != 0) {
+            if (block instanceof ContainerBlock) {
+                if (blockBag == null) {
+                    world.copyToWorld(pt, block);
+                }
+            }
+            else if (block instanceof TileEntityBlock) {
+                world.copyToWorld(pt, block);
             }
         }
         return result;
@@ -420,37 +399,46 @@ public class EditSession {
         int type = world.getBlockType(pt);
         int data = world.getBlockData(pt);
 
-        // Sign
-        if (type == BlockID.WALL_SIGN || type == BlockID.SIGN_POST) {
+        switch (type) {
+        case BlockID.WALL_SIGN:
+        case BlockID.SIGN_POST: {
             SignBlock block = new SignBlock(type, data);
             world.copyFromWorld(pt, block);
             return block;
-            // Chest
-        } else if (type == BlockID.CHEST) {
+        }
+
+        case BlockID.CHEST: {
             ChestBlock block = new ChestBlock(data);
             world.copyFromWorld(pt, block);
             return block;
-            // Furnace
-        } else if (type == BlockID.FURNACE || type == BlockID.BURNING_FURNACE) {
+        }
+
+        case BlockID.FURNACE:
+        case BlockID.BURNING_FURNACE: {
             FurnaceBlock block = new FurnaceBlock(type, data);
             world.copyFromWorld(pt, block);
             return block;
-            // Dispenser
-        } else if (type == BlockID.DISPENSER) {
+        }
+
+        case BlockID.DISPENSER: {
             DispenserBlock block = new DispenserBlock(data);
             world.copyFromWorld(pt, block);
             return block;
-            // Mob spawner
-        } else if (type == BlockID.MOB_SPAWNER) {
+        }
+
+        case BlockID.MOB_SPAWNER: {
             MobSpawnerBlock block = new MobSpawnerBlock(data);
             world.copyFromWorld(pt, block);
             return block;
-            // Note block
-        } else if (type == BlockID.NOTE_BLOCK) {
+        }
+
+        case BlockID.NOTE_BLOCK: {
             NoteBlock block = new NoteBlock(data);
             world.copyFromWorld(pt, block);
             return block;
-        } else {
+        }
+
+        default:
             return new BaseBlock(type, data);
         }
     }
@@ -2155,17 +2143,27 @@ public class EditSession {
                     Vector pt = new Vector(x, y, z);
                     int id = getBlockType(pt);
 
-                    if (id == BlockID.ICE) { // Ice
+                    switch (id) {
+                    case BlockID.ICE:
                         if (setBlock(pt, water)) {
                             ++affected;
                         }
-                    } else if (id == BlockID.SNOW) {
+                        break;
+
+                    case BlockID.SNOW:
                         if (setBlock(pt, air)) {
                             ++affected;
                         }
-                    } else if (id != 0) {
+                        break;
+
+                    case BlockID.AIR:
+                        continue;
+
+                    default:
                         break;
                     }
+
+                    break;
                 }
             }
         }
@@ -2204,10 +2202,8 @@ public class EditSession {
                     Vector pt = new Vector(x, y, z);
                     int id = getBlockType(pt);
 
-                    // Snow should not cover these blocks
-                    if (BlockType.canPassThrough(id)
-                            && !(id == BlockID.WATER || id == BlockID.STATIONARY_WATER)) {
-                        break;
+                    if (id == BlockID.AIR) {
+                        continue;
                     }
 
                     // Ice!
@@ -2218,17 +2214,21 @@ public class EditSession {
                         break;
                     }
 
-                    // Cover
-                    if (id != BlockID.AIR) {
-                        if (y == 127) { // Too high!
-                            break;
-                        }
-
-                        if (setBlock(pt.add(0, 1, 0), snow)) {
-                            ++affected;
-                        }
+                    // Snow should not cover these blocks
+                    if (BlockType.canPassThrough(id)) {
                         break;
                     }
+
+                    // Too high?
+                    if (y == 127) {
+                        break;
+                    }
+
+                    // add snow cover
+                    if (setBlock(pt.add(0, 1, 0), snow)) {
+                        ++affected;
+                    }
+                    break;
                 }
             }
         }
@@ -2347,7 +2347,8 @@ public class EditSession {
         BaseBlock log = new BaseBlock(BlockID.LOG);
         BaseBlock pumpkin = new BaseBlock(BlockID.PUMPKIN);
 
-        if (t == 0) {
+        switch (t) {
+        case 0:
             if (prng.nextBoolean()) {
                 makePumpkinPatchVine(basePos, pos.add(1, 0, 0));
             }
@@ -2355,7 +2356,9 @@ public class EditSession {
                 setBlockIfAir(pos.add(1, h, -1), log);
             }
             setBlockIfAir(pos.add(0, 0, -1), pumpkin);
-        } else if (t == 1) {
+            break;
+
+        case 1:
             if (prng.nextBoolean()) {
                 makePumpkinPatchVine(basePos, pos.add(0, 0, 1));
             }
@@ -2363,7 +2366,9 @@ public class EditSession {
                 setBlockIfAir(pos.add(1, h, 0), log);
             }
             setBlockIfAir(pos.add(1, 0, 1), pumpkin);
-        } else if (t == 2) {
+            break;
+
+        case 2:
             if (prng.nextBoolean()) {
                 makePumpkinPatchVine(basePos, pos.add(0, 0, -1));
             }
@@ -2371,7 +2376,9 @@ public class EditSession {
                 setBlockIfAir(pos.add(-1, h, 0), log);
             }
             setBlockIfAir(pos.add(-1, 0, 1), pumpkin);
-        } else if (t == 3) {
+            break;
+
+        case 3:
             if (prng.nextBoolean()) {
                 makePumpkinPatchVine(basePos, pos.add(-1, 0, 0));
             }
