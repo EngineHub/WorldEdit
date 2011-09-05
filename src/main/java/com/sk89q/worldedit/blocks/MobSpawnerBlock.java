@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 /**
- * Represents chests.
+ * Represents mob spawners.
  *
  * @author sk89q
  */
