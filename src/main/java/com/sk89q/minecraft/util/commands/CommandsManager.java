@@ -360,10 +360,8 @@ public abstract class CommandsManager<T> {
             throw new CommandPermissionsException();
         }
         
-        int argsCount = args.length - 1 - level;
-
         if (method.isAnnotationPresent(NestedCommand.class)) {
-            if (argsCount == 0) {
+            if (args.length - level == 1) {
                 throw new MissingNestedCommandException("Sub-command required.", 
                         getNestedUsage(args, level, method, player));
             } else {
