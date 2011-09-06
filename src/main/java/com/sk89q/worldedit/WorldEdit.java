@@ -377,17 +377,18 @@ public class WorldEdit {
             } else if (blockType == BlockType.MOB_SPAWNER) {
                 if (args0.length > 1) {
                     String mobName = args0[1];
-                    if (mobName.length() > 1) {
-                        mobName = mobName.substring(0, 1).toUpperCase()
-                                + mobName.substring(1);
+                    for (MobType mobType : MobType.values()){
+                        if (mobType.getName().toLowerCase().equals(mobName.toLowerCase())){
+                            mobName = mobType.getName();
+                            break;
+                        }
                     }
-                    
                     if (!server.isValidMobType(mobName)) {
                         throw new InvalidItemException(arg, "Unknown mob type '" + mobName + "'");
                     }
-                    return new MobSpawnerBlock(data, args0[1]);
+                    return new MobSpawnerBlock(data, mobName);
                 } else {
-                    return new MobSpawnerBlock(data, "Pig");
+                    return new MobSpawnerBlock(data, MobType.PIG.getName());
                 }
             
             // Allow setting note
