@@ -37,7 +37,6 @@ import com.sk89q.worldedit.scripting.*;
 import com.sk89q.worldedit.tools.*;
 import com.sk89q.worldedit.masks.*;
 import com.sk89q.worldedit.patterns.*;
-import org.bukkit.entity.CreatureType;
 
 /**
  * This class is the main entry point for WorldEdit. All events are routed
@@ -364,7 +363,7 @@ public class WorldEdit {
             } else if (blockType == BlockType.MOB_SPAWNER) {
                 if (args0.length > 1) {
                     String mobName = args0[1];
-                    for (CreatureType mobTypes : CreatureType.values()){
+                    for (MobSpawnerType mobTypes : MobSpawnerType.values()){
                         if (mobTypes.getName().toLowerCase().equals(mobName.toLowerCase())){
                             mobName = mobTypes.getName();
                             break;
