@@ -87,8 +87,7 @@ public class WorldEditPlugin extends JavaPlugin {
         // Set up configuration and such, including the permissions
         // resolver
         config = new BukkitConfiguration(getConfiguration(), logger);
-        perms = new PermissionsResolverManager(
-                getConfiguration(), getServer(), "WorldEdit", logger);
+        perms = new PermissionsResolverManager(this, "WorldEdit", logger);
         
         // Load the configuration
         loadConfiguration();
@@ -138,13 +137,13 @@ public class WorldEditPlugin extends JavaPlugin {
         new WorldEditCriticalPlayerListener(this);
 
         // The permissions resolver has some hooks of its own
-        (new PermissionsResolverServerListener(perms)).register(this);
+        new PermissionsResolverServerListener(perms, this);
     }
 
     /**
      * Register an event.
      * 
-     * @param type
+     * @param typeName
      * @param listener
      * @param priority
      */
@@ -160,7 +159,7 @@ public class WorldEditPlugin extends JavaPlugin {
     /**
      * Register an event at normal priority.
      * 
-     * @param type
+     * @param typeName
      * @param listener
      */
     public void registerEvent(String typeName, Listener listener) {

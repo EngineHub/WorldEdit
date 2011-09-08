@@ -58,10 +58,20 @@ public class PermissionsResolverManager implements PermissionsResolver {
     private Logger logger;
     protected boolean ignoreNijiPermsBridges;
 
+    @Deprecated
     public PermissionsResolverManager(Configuration config, Server server, String name, Logger logger) {
         this.server = server;
         this.name = name;
         this.logger = logger;
+        loadConfig(new File("wepif.yml")); // TODO: config migration, maybe
+        findResolver();
+    }
+
+    public PermissionsResolverManager(Plugin plugin, String name, Logger logger) {
+        this.server = plugin.getServer();
+        this.name = name;
+        this.logger = logger;
+        new PermissionsResolverServerListener(this, plugin);
         loadConfig(new File("wepif.yml")); // TODO: config migration, maybe
         findResolver();
     }

@@ -28,9 +28,15 @@ import org.bukkit.plugin.Plugin;
 
 public class PermissionsResolverServerListener extends ServerListener {
     private PermissionsResolverManager manager;
-    
+
+    @Deprecated
     public PermissionsResolverServerListener(PermissionsResolverManager manager) {
         this.manager = manager;
+    }
+
+    public PermissionsResolverServerListener(PermissionsResolverManager manager, Plugin plugin) {
+        this.manager = manager;
+        register(plugin);
     }
     
     /**
