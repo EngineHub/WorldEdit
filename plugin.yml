@@ -157,8 +157,8 @@ commands:
         usage: /<command> [type]
         aliases: [',']
     /chunk:
-        description: Set the selection to your current chunk. The -s flag extends your current selection to the encompassed chunks.
-        usage: /<command> [-s] 
+        description: Set the selection to your current chunk.
+        usage: /<command>
     /expand:
         description: Expand the selection area
         usage: /<command> <amount> [reverse-amount] <direction>
@@ -167,10 +167,10 @@ commands:
         usage: /<command> <amount> [reverse-amount] [direction]
     /pos1:
         description: Set position 1
-        usage: /<command>
+        usage: /<command> 
     /pos2:
         description: Set position 2
-        usage: /<command>
+        usage: /<command> 
     /hpos1:
         description: Set position 1 to targeted block
         usage: /<command> 
@@ -208,7 +208,7 @@ commands:
         usage: /<command> [mask]
     /:
         description: Toggle the super pickaxe pickaxe function
-        usage: /<command>
+        usage: /<command> 
         aliases: [',']
     superpickaxe:
         description: Select super pickaxe mode
@@ -231,7 +231,7 @@ commands:
         description: Turn off all superpickaxe alternate modes
         usage: /<command> 
     farwand:
-        description: Wand at a distance tool
+        description: Wand tool at a distance
         usage: /<command> 
     tree:
         description: Tree generator tool
