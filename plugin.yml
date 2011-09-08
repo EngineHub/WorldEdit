@@ -74,12 +74,6 @@ commands:
     pumpkins:
         description: Generate pumpkin patches
         usage: /<command> [size]
-    /pyramid:
-        description: Generate a filled pyramid
-        usage: /<command> <block> <range>
-    /hpyramid:
-        description: Generate a hollow pyramid
-        usage: /<command> <block> <range>
     /undo:
         description: Undoes the last action
         usage: /<command> [times]
@@ -131,12 +125,12 @@ commands:
         description: Build the four sides of the selection
         usage: /<command> <block>
     /faces:
-        description: Build the walls, ceiling, and floor of a selection
+        description: Build the walls, ceiling, and roof of a selection
         usage: /<command> <block>
         aliases: ['/outline']
     /smooth:
         description: Smooth the elevation in the selection
-        usage: /<command> [-n] [iterations]
+        usage: /<command> [iterations]
     /move:
         description: Move the contents of the selection
         usage: /<command> [-s] [count] [direction] [leave-id]
@@ -158,9 +152,6 @@ commands:
     /shift:
         description: Shift the selection area
         usage: /<command> <amount> [direction]
-    /expand:
-        description: Expand the selection area
-        usage: /<command> <amount> [reverse-amount] <direction>
     /sel:
         description: Choose a region selector
         usage: /<command> [type]
@@ -168,15 +159,18 @@ commands:
     /chunk:
         description: Set the selection to your current chunk. The -s flag extends your current selection to the encompassed chunks.
         usage: /<command> [-s] 
+    /expand:
+        description: Expand the selection area
+        usage: /<command> <amount> [reverse-amount] <direction>
     /contract:
         description: Contract the selection area
         usage: /<command> <amount> [reverse-amount] [direction]
     /pos1:
         description: Set position 1
-        usage: /<command> [coordinates]
+        usage: /<command>
     /pos2:
         description: Set position 2
-        usage: /<command> [coordinates]
+        usage: /<command>
     /hpos1:
         description: Set position 1 to targeted block
         usage: /<command> 
@@ -212,12 +206,9 @@ commands:
     mask:
         description: Set the brush mask
         usage: /<command> [mask]
-    range:
-        description: Set the brush range
-        usage: /<command> [pattern]
     /:
         description: Toggle the super pickaxe pickaxe function
-        usage: /<command> [on|off]
+        usage: /<command>
         aliases: [',']
     superpickaxe:
         description: Select super pickaxe mode
@@ -230,11 +221,17 @@ commands:
         description: Set the brush material
         usage: /<command> [pattern]
         aliases: ['material', 'fill']
+    range:
+        description: Set the brush range
+        usage: /<command> [pattern]
     info:
         description: Block information tool
         usage: /<command> 
     none:
         description: Turn off all superpickaxe alternate modes
+        usage: /<command> 
+    farwand:
+        description: Wand at a distance tool
         usage: /<command> 
     tree:
         description: Tree generator tool
@@ -255,9 +252,6 @@ commands:
         aliases: ['br']
     deltree:
         description: Floating tree remover tool
-        usage: /<command> 
-    farwand:
-        description: Wand at a distance tool
         usage: /<command> 
     remove:
         description: Remove all entities of a type
@@ -295,9 +289,6 @@ commands:
         usage: /<command> [radius]
     thaw:
         description: Thaws the area
-        usage: /<command> [radius]
-    green:
-        description: Greens the area
         usage: /<command> [radius]
     ex:
         description: Extinguish nearby fire
@@ -367,7 +358,6 @@ permissions:
             worldedit.clipboard.save: true
     worldedit.edit.*:
         children:
-            worldedit.green: true
             worldedit.remove: true
             worldedit.removeabove: true
             worldedit.removebelow: true
