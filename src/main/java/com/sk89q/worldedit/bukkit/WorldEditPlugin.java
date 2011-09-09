@@ -135,9 +135,6 @@ public class WorldEditPlugin extends JavaPlugin {
     protected void registerEvents() {
         new WorldEditPlayerListener(this);
         new WorldEditCriticalPlayerListener(this);
-
-        // The permissions resolver has some hooks of its own
-        new PermissionsResolverServerListener(perms, this);
     }
 
     /**

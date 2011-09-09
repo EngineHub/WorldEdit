@@ -36,7 +36,9 @@ public class PermissionsResolverServerListener extends ServerListener {
 
     public PermissionsResolverServerListener(PermissionsResolverManager manager, Plugin plugin) {
         this.manager = manager;
-        register(plugin);
+        if (!manager.hasServerListener()) {
+            register(plugin);
+        }
     }
     
     /**
@@ -82,5 +84,6 @@ public class PermissionsResolverServerListener extends ServerListener {
                 this, Priority.Normal, plugin);
         plugin.getServer().getPluginManager().registerEvent(Event.Type.PLUGIN_DISABLE,
                 this, Priority.Normal, plugin);
+        manager.setServerListener(this);
     }
 }

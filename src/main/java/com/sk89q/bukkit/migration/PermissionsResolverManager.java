@@ -53,6 +53,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
 
     private Server server;
     private PermissionsResolver perms;
+    private PermissionsResolverServerListener listener;
     private Configuration permsConfig;
     private String name;
     private Logger logger;
@@ -72,7 +73,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         this.name = name;
         this.logger = logger;
         new PermissionsResolverServerListener(this, plugin);
-        loadConfig(new File("wepif.yml")); // TODO: config migration, maybe
+        loadConfig(new File("wepif.yml"));
         findResolver();
     }
     public void findResolver() {
@@ -204,6 +205,14 @@ public class PermissionsResolverManager implements PermissionsResolver {
             permsConfig.save();
         }
         return isUpdated;
+    }
+
+    boolean hasServerListener() {
+        return listener != null;
+    }
+
+    void setServerListener(PermissionsResolverServerListener listener) {
+        this.listener = listener;
     }
     
     public static class MissingPluginException extends Exception {

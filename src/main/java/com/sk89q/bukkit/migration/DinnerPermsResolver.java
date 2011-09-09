@@ -53,7 +53,7 @@ public class DinnerPermsResolver implements PermissionsResolver {
         List<String> groupNames = new ArrayList<String>();
         for (PermissionAttachmentInfo permAttach : player.getEffectivePermissions()) {
             String perm = permAttach.getPermission();
-            if (!(perm.startsWith(GROUP_PREFIX) || permAttach.getValue()))
+            if (!(perm.startsWith(GROUP_PREFIX) && permAttach.getValue()))
                 continue;
             groupNames.add(perm.substring(GROUP_PREFIX.length(), perm.length()));
         }
