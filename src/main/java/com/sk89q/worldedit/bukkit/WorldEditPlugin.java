@@ -33,7 +33,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.bukkit.migration.PermissionsResolverManager;
-import com.sk89q.bukkit.migration.PermissionsResolverServerListener;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.bukkit.selections.*;
