@@ -71,16 +71,19 @@ public class BlockDataCyler implements DoubleActionBlockTool {
                 player.printError("This minecart track orientation is not supported.");
                 return true;
             }
-        } else if (type == BlockID.WOODEN_STAIRS || type == BlockID.COBBLESTONE_STAIRS) {
+        } else if (type == BlockID.WOODEN_STAIRS
+                || type == BlockID.COBBLESTONE_STAIRS
+                || type == BlockID.BRICK_STAIRS
+                || type == BlockID.STONE_BRICK_STAIRS) {
             data = (data + increment) % 4;
         } else if (type == BlockID.SIGN_POST) {
             data = (data + increment) % 16;
         } else if (type == BlockID.WALL_SIGN) {
             data = ((data + increment) - 2) % 4 + 2;
         } else if (type == BlockID.STEP) {
-            data = (data + increment) % 4;
+            data = (data + increment) % 6;
         } else if (type == BlockID.DOUBLE_STEP) {
-            data = (data + increment) % 4;
+            data = (data + increment) % 6;
         } else if (type == BlockID.FURNACE || type == BlockID.BURNING_FURNACE
                 || type == BlockID.DISPENSER) {
             data = (data + increment) % 4 + 2;
@@ -92,6 +95,8 @@ public class BlockDataCyler implements DoubleActionBlockTool {
             } else {
                 data = prevClothColor(data);
             }
+        } else if (type == BlockID.RED_MUSHROOM_CAP || type == BlockID.BROWN_MUSHROOM_CAP) {
+            data = (data + increment) % 2;
         } else {
             player.printError("That block's data cannot be cycled.");
             return true;

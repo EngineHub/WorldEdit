@@ -123,4 +123,17 @@ public final class BlockID {
     public static final int REDSTONE_REPEATER_ON = 94;
     public static final int LOCKED_CHEST = 95;
     public static final int TRAP_DOOR = 96;
+    public static final int SILVERFISH_BLOCK = 97;
+    public static final int STONE_BRICK = 98;
+    public static final int BROWN_MUSHROOM_CAP = 99;
+    public static final int RED_MUSHROOM_CAP = 100;
+    public static final int IRON_BARS = 101;
+    public static final int GLASS_PANE = 102;
+    public static final int MELON_BLOCK = 103;
+    public static final int PUMPKIN_STEM = 104;
+    public static final int MELON_STEM = 105;
+    public static final int VINE = 106;
+    public static final int FENCE_GATE = 107;
+    public static final int BRICK_STAIRS = 108;
+    public static final int STONE_BRICK_STAIRS = 109;
 }

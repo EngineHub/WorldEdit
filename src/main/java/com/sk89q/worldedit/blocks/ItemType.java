@@ -130,6 +130,19 @@ public enum ItemType {
     REDSTONE_REPEATER_ON(BlockID.REDSTONE_REPEATER_ON, "Redstone repeater (on)", "diodeon", "redstonerepeateron", "repeateron", "delayeron"),
     LOCKED_CHEST(BlockID.LOCKED_CHEST, "Locked chest", "lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"),
     TRAP_DOOR(BlockID.TRAP_DOOR, "Trap door", "trapdoor", "hatch", "floordoor"),
+    SILVERFISH_BLOCK(BlockID.SILVERFISH_BLOCK, "Silverfish block", "silverfish", "silver"),
+    STONE_BRICK(BlockID.STONE_BRICK, "Stone brick", "stonebrick", "sbrick", "smoothstonebrick"),
+    RED_MUSHROOM_CAP(BlockID.RED_MUSHROOM_CAP, "Red mushroom cap", "giantmushroomred", "redgiantmushroom", "redmushroomcap"),
+    BROWN_MUSHROOM_CAP(BlockID.BROWN_MUSHROOM_CAP, "Brown mushroom cap", "giantmushroombrown", "browngiantmushoom", "brownmushroomcap"),
+    IRON_BARS(BlockID.IRON_BARS, "Iron bars", "ironbars", "ironfence"),
+    GLASS_PANE(BlockID.GLASS_PANE, "Glass pane", "window", "glasspane", "glasswindow"),
+    MELON_BLOCK(BlockID.MELON_BLOCK, "Melon (block)", "melonblock"),
+    PUMPKIN_STEM(BlockID.PUMPKIN_STEM, "Pumpkin stem", "pumpkinstem"),
+    MELON_STEM(BlockID.MELON_STEM, "Melon stem", "melonstem"),
+    VINE(BlockID.VINE, "Vine", "vine", "vines", "creepers"),
+    FENCE_GATE(BlockID.FENCE_GATE, "Fence gate", "fencegate", "gate"),
+    BRICK_STAIRS(BlockID.BRICK_STAIRS, "Brick stairs", "brickstairs", "bricksteps"),
+    STONE_BRICK_STAIRS(BlockID.STONE_BRICK_STAIRS, "Stone brick stairs", "stonebrickstairs", "smoothstonebrickstairs"),
 
     // Items
     IRON_SHOVEL(256, "Iron shovel", "ironshovel"),
@@ -236,6 +249,15 @@ public enum ItemType {
     COOKIE(357, "Cookie", "cookie"),
     MAP(358, "Map", "map"),
     SHEARS(359, "Shears", "shears", "scissors"),
+    MELON(360, "Melon Slice", "melon", "melonslice"),
+    PUMPKIN_SEEDS(361, "Pumpkin seeds", "pumpkinseed", "pumpkinseeds"),
+    MELON_SEEDS(362, "Melon seeds", "melonseed", "melonseeds"),
+    RAW_BEEF(363, "Raw beef", "rawbeef", "rawcow", "beef"),
+    COOKED_BEEF(364, "Steak", "steak", "cookedbeef", "cookedcow"),
+    RAW_CHICKEN(365, "Raw chicken", "rawchicken"),
+    COOKED_CHICKEN(366, "Cooked chicken", "cookedchicken", "chicken", "grilledchicken"),
+    ROTTEN_FLESH(367, "Rotten flesh", "rottenflesh", "zombiemeat", "flesh"),
+    ENDER_PEARL(368, "Ender pearl", "pearl", "enderpearl"),
     GOLD_RECORD(2256, "Gold Record", "goldrecord", "golddisc"),
     GREEN_RECORD(2257, "Green Record", "greenrecord", "greenddisc");
 
@@ -441,7 +463,6 @@ public enum ItemType {
             || t == ItemType.IRON_HOE
             || t == ItemType.DIAMOND_HOE
             || t == ItemType.GOLD_HOE
-            || t == ItemType.BREAD
             || t == ItemType.LEATHER_HELMET
             || t == ItemType.LEATHER_CHEST
             || t == ItemType.LEATHER_PANTS
@@ -462,8 +483,6 @@ public enum ItemType {
             || t == ItemType.GOLD_CHEST
             || t == ItemType.GOLD_PANTS
             || t == ItemType.GOLD_BOOTS
-            || t == ItemType.RAW_PORKCHOP
-            || t == ItemType.COOKED_PORKCHOP
             || t == ItemType.SIGN
             || t == ItemType.WOODEN_DOOR_ITEM
             || t == ItemType.BUCKET
@@ -477,8 +496,6 @@ public enum ItemType {
             || t == ItemType.STORAGE_MINECART
             || t == ItemType.POWERED_MINECART
             || t == ItemType.WATCH
-            || t == ItemType.RAW_FISH
-            || t == ItemType.COOKED_FISH
             || t == ItemType.CAKE_ITEM
             || t == ItemType.BED_ITEM
             || t == ItemType.MAP

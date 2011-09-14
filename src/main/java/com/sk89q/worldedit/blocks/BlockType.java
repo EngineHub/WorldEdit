@@ -127,7 +127,20 @@ public enum BlockType {
     REDSTONE_REPEATER_OFF(BlockID.REDSTONE_REPEATER_OFF, "Redstone repeater (off)", "diodeoff", "redstonerepeater", "repeateroff", "delayeroff"),
     REDSTONE_REPEATER_ON(BlockID.REDSTONE_REPEATER_ON, "Redstone repeater (on)", "diodeon", "redstonerepeateron", "repeateron", "delayeron"),
     LOCKED_CHEST(BlockID.LOCKED_CHEST, "Locked chest", "lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"),
-    TRAP_DOOR(BlockID.TRAP_DOOR, "Trap door", "trapdoor", "hatch", "floordoor");
+    TRAP_DOOR(BlockID.TRAP_DOOR, "Trap door", "trapdoor", "hatch", "floordoor"),
+    SILVERFISH_BLOCK(BlockID.SILVERFISH_BLOCK, "Silverfish block", "silverfish", "silver"),
+    STONE_BRICK(BlockID.STONE_BRICK, "Stone brick", "stonebrick", "sbrick", "smoothstonebrick"),
+    RED_MUSHROOM_CAP(BlockID.RED_MUSHROOM_CAP, "Red mushroom cap", "giantmushroomred", "redgiantmushroom", "redmushroomcap"),
+    BROWN_MUSHROOM_CAP(BlockID.BROWN_MUSHROOM_CAP, "Brown mushroom cap", "giantmushroombrown", "browngiantmushoom", "brownmushroomcap"),
+    IRON_BARS(BlockID.IRON_BARS, "Iron bars", "ironbars", "ironfence"),
+    GLASS_PANE(BlockID.GLASS_PANE, "Glass pane", "window", "glasspane", "glasswindow"),
+    MELON_BLOCK(BlockID.MELON_BLOCK, "Melon (block)", "melonblock"),
+    PUMPKIN_STEM(BlockID.PUMPKIN_STEM, "Pumpkin stem", "pumpkinstem"),
+    MELON_STEM(BlockID.MELON_STEM, "Melon stem", "melonstem"),
+    VINE(BlockID.VINE, "Vine", "vine", "vines", "creepers"),
+    FENCE_GATE(BlockID.FENCE_GATE, "Fence gate", "fencegate", "gate"),
+    BRICK_STAIRS(BlockID.BRICK_STAIRS, "Brick stairs", "brickstairs", "bricksteps"),
+    STONE_BRICK_STAIRS(BlockID.STONE_BRICK_STAIRS, "Stone brick stairs", "stonebrickstairs", "smoothstonebrickstairs");
 
     /**
      * Stores a list of dropped blocks for blocks.
@@ -221,6 +234,19 @@ public enum BlockType {
         blockDrops.put(94, 356);
         blockDrops.put(95, 95);
         blockDrops.put(96, 96);
+        blockDrops.put(97, -1);
+        blockDrops.put(98, 98);
+        blockDrops.put(99, 99);
+        blockDrops.put(100, 100);
+        blockDrops.put(101, 101);
+        blockDrops.put(102, 102);
+        blockDrops.put(103, 103);
+        blockDrops.put(104, 104);
+        blockDrops.put(105, 105);
+        blockDrops.put(106, -1);
+        blockDrops.put(107, 107);
+        blockDrops.put(108, 45);
+        blockDrops.put(109, 98);
     }
 
     /**
@@ -395,7 +421,10 @@ public enum BlockType {
                 || id == BlockID.CAKE_BLOCK
                 || id == BlockID.REDSTONE_REPEATER_OFF
                 || id == BlockID.REDSTONE_REPEATER_ON
-                || id == BlockID.TRAP_DOOR;
+                || id == BlockID.TRAP_DOOR
+                || id == BlockID.FENCE_GATE
+                || id == BlockID.GLASS_PANE
+                || id == BlockID.VINE;
     }
 
     /**
@@ -436,7 +465,9 @@ public enum BlockType {
                 || id == BlockID.REED
                 || id == BlockID.PORTAL
                 || id == BlockID.REDSTONE_REPEATER_OFF
-                || id == BlockID.REDSTONE_REPEATER_ON;
+                || id == BlockID.REDSTONE_REPEATER_ON
+                || id == BlockID.FENCE_GATE
+                || id == BlockID.VINE;
     }
 
     /**
@@ -492,7 +523,14 @@ public enum BlockType {
                 || id == BlockID.CAKE_BLOCK
                 || id == BlockID.REDSTONE_REPEATER_OFF
                 || id == BlockID.REDSTONE_REPEATER_ON
-                || id == BlockID.TRAP_DOOR;
+                || id == BlockID.TRAP_DOOR
+                || id == BlockID.BRICK_STAIRS
+                || id == BlockID.STONE_BRICK_STAIRS
+                || id == BlockID.VINE
+                || id == BlockID.RED_MUSHROOM_CAP
+                || id == BlockID.BROWN_MUSHROOM_CAP
+                || id == BlockID.PUMPKIN_STEM
+                || id == BlockID.MELON_STEM;
     }
     
     /**

@@ -670,7 +670,7 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean isValidBlockType(int type) {
-        return type <= 255 && Material.getMaterial(type) != null;
+        return type <= 255 && (Material.getMaterial(type) != null || BlockType.fromID(type) != null); // Bukkit isn't always updated before WorldEdit is
     }
 
     @Override
