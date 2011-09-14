@@ -18,11 +18,11 @@
 
 package com.sk89q.minecraft.util.commands;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import static com.sk89q.util.ArrayUtil.removePortionOfArray;
 
 public class CommandContext {
     protected static final String QUOTE_CHARS = "\'\"";
@@ -30,16 +30,30 @@ public class CommandContext {
     protected final Set<Character> booleanFlags = new HashSet<Character>();
     protected final Map<Character, String> valueFlags = new HashMap<Character, String>();
 
-    public CommandContext(String args) {
-        this(args.split(" "));
+    public CommandContext(String args) throws CommandException {
+        this(args.split(" "), null);
     }
 
-    public CommandContext(String[] args) {
-        char quotedChar;
-        for (int i = 1; i < args.length; ++i) {
-            if (args[i].length() == 0) {
+    public CommandContext(String[] args) throws CommandException {
+        this(args, null);
+    }
+
+    public CommandContext(String args, Set<Character> valueFlags) throws CommandException {
+        this(args.split(" "), valueFlags);
+    }
+
+    /**
+     * @param args An array with arguments empty strings will be ignored by most things
+     * @param valueFlags A set containing all value flags. Pass null to disable value flag parsing.
+     * @throws CommandException This is thrown if a value flag was passed without a value.
+     */
+    public CommandContext(String[] args, Set<Character> valueFlags) throws CommandException {
+        // Go through empty args and multiword args first
+        for (int i = 1; i < args.length; i++) {
+            char quotedChar;
+            if (args[i].length() < 1) {
                 args = removePortionOfArray(args, i, i, null);
-            } else if (QUOTE_CHARS.indexOf(String.valueOf(args[i].charAt(0))) != -1) {
+            } else if (QUOTE_CHARS.indexOf(args[i].charAt(0)) != -1) {
                 StringBuilder build = new StringBuilder();
                 quotedChar = args[i].charAt(0);
                 int endIndex = i;
@@ -55,74 +69,33 @@ public class CommandContext {
                     }
                 }
                 args = removePortionOfArray(args, i, endIndex, build.toString());
-            } else if (args[i].charAt(0) == '-' && args[i].matches("^-[a-zA-Z]+$")) {
+            }
+        }
+        // Then flags
+        for (int i = 1; i < args.length; ++i) {
+            if (args[i].charAt(0) == '-' && args[i].matches("^-[a-zA-Z]+$")) {
                 for (int k = 1; k < args[i].length(); ++k) {
-                    booleanFlags.add(args[i].charAt(k));
+                    if (valueFlags != null && valueFlags.contains(args[i].charAt(k))) {
+                        int index = i + 1;
+                        if (args.length - 1 < index) {
+                            throw new CommandException("Value flag '" + args[i].charAt(k) + "' specified without value");
+                        }
+                        if (this.valueFlags.containsKey(args[i].charAt(k))) {
+                            throw new CommandException("Value flag '" + args[i].charAt(k) + "' already given");
+                        }
+                        this.valueFlags.put(args[i].charAt(k), args[index]);
+                        args = removePortionOfArray(args, index, index, null);
+                    } else {
+                        booleanFlags.add(args[i].charAt(k));
+                    }
                 }
                 args = removePortionOfArray(args, i, i, null);
+            } else if (args[i].matches("^--$")) {
+                args = removePortionOfArray(args, i, i, null);
+                break;
             }
         }
         this.args = args;
-    }
-
-    public CommandContext(String args, Set<Character> isValueFlag) throws CommandException {
-        this(args.split(" "), isValueFlag);
-    }
-
-    /**
-     * @param args An array with arguments empty strings will be ignored by most things
-     * @param isValueFlag A set containing all value flags. Pass null to disable flag parsing altogether.
-     * @throws CommandException This is thrown if a value flag was passed without a value.
-     */
-    public CommandContext(String[] args, Set<Character> isValueFlag) throws CommandException {
-        if (isValueFlag == null) {
-            this.args = args;
-            return;
-        }
-        
-        int nextArg = 1;
-
-        while (nextArg < args.length) {
-            // Fetch argument
-            String arg = args[nextArg++];
-
-            // Empty argument? (multiple consecutive spaces)
-            if (arg.isEmpty())
-                continue;
-
-            // No more flags?
-            if (arg.charAt(0) != '-' || arg.length() == 1 || !arg.matches("^-[a-zA-Z]+$")) {
-                --nextArg;
-                break;
-            }
-
-            // Handle flag parsing terminator --
-            if (arg.equals("--"))
-                break;
-
-            // Go through the flags
-            for (int i = 1; i < arg.length(); ++i) {
-                char flagName = arg.charAt(i);
-
-                if (isValueFlag.contains(flagName)) {
-                    // Skip empty arguments...
-                    while (nextArg < args.length && args[nextArg].isEmpty())
-                        ++nextArg;
-
-                    if (nextArg >= args.length)
-                        throw new CommandException("No value specified for the '-"+flagName+"' flag.");
-
-                    // If it is a value flag, read another argument and add it
-                    valueFlags.put(flagName, args[nextArg++]);
-                }
-                else {
-                    booleanFlags.add(flagName);
-                }
-            }
-        }
-
-        this.args = Arrays.copyOfRange(args, nextArg-1, args.length);
-        this.args[0] = args[0];
     }
 
     public String getCommand() {
@@ -232,14 +205,5 @@ public class CommandContext {
 
     public int argsLength() {
         return args.length - 1;
-    }
-
-    public static String[] removePortionOfArray(String[] array, int from, int to, String replace) {
-        String[] newArray = new String[from + array.length - to - (replace == null ? 1 : 0)];
-        System.arraycopy(array, 0, newArray, 0, from);
-        if (replace != null) newArray[from] = replace;
-        System.arraycopy(array, to + (replace == null ? 0 : 1), newArray, from + (replace == null ? 0 : 1),
-                    array.length - to - 1);
-        return newArray;
     }
 }

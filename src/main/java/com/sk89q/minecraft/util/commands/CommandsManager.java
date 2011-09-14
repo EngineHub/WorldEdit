@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sk89q.util.StringUtil;
+import static com.sk89q.util.ArrayUtil.removePortionOfArray;
 
 /**
  * <p>Manager for handling commands. This allows you to easily process commands,
@@ -228,8 +229,17 @@ public abstract class CommandsManager<T> {
         for (int i = 0; i <= level; ++i) {
             command.append(args[i] + " ");
         }
-        
-        command.append(cmd.flags().length() > 0 ? "[-" + cmd.flags() + "] " : "");
+        if (cmd.flags().length() > 0) {
+        char[] flags = cmd.flags().toCharArray();
+            for (int i = 0; i < flags.length; ++i) {
+                if (flags.length > i + 1) {
+                    if (flags[i + 1] == ':') {
+                        flags = removePortionOfArray(flags, i, i + 1, null);
+                    }
+                }
+            }
+            if (flags.length > 0) command.append("[-" + String.valueOf(flags) + "] ");
+        }
         command.append(cmd.usage());
         
         return command.toString();
@@ -378,14 +388,19 @@ public abstract class CommandsManager<T> {
             String[] newArgs = new String[args.length - level];
             System.arraycopy(args, level, newArgs, 0, args.length - level);
 
-            final String valueFlags = cmd.valueFlags();
-            final Set<Character> isValueFlag = new HashSet<Character>();
+            final Set<Character> valueFlags = new HashSet<Character>();
 
-            for (int i = 0; i < valueFlags.length(); ++i) {
-                isValueFlag.add(valueFlags.charAt(i));
+            char[] flags = cmd.flags().toCharArray();
+            for (int i = 0; i < flags.length; ++i) {
+                if (flags.length > i + 1) {
+                    if (flags[i + 1] == ':') {
+                        valueFlags.add(flags[i]);
+                        flags = removePortionOfArray(flags, i + 1, i + 1, null);
+                    }
+                }
             }
 
-            CommandContext context = new CommandContext(newArgs, isValueFlag);
+            CommandContext context = new CommandContext(newArgs, valueFlags);
 
             if (context.argsLength() < cmd.min())
                 throw new CommandUsageException("Too few arguments.", getUsage(args, level, cmd));
@@ -393,8 +408,9 @@ public abstract class CommandsManager<T> {
             if (cmd.max() != -1 && context.argsLength() > cmd.max())
                 throw new CommandUsageException("Too many arguments.", getUsage(args, level, cmd));
 
+            String flagStr = String.valueOf(flags);
             for (char flag : context.getFlags()) {
-                if (cmd.flags().indexOf(String.valueOf(flag)) == -1)
+                if (flagStr.indexOf(flag) == -1)
                     throw new CommandUsageException("Unknown flag: " + flag, getUsage(args, level, cmd));
             }
 
