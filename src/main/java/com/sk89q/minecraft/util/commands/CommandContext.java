@@ -18,6 +18,7 @@
 
 package com.sk89q.minecraft.util.commands;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,7 +26,6 @@ import java.util.Set;
 import static com.sk89q.util.ArrayUtil.removePortionOfArray;
 
 public class CommandContext {
-    protected static final String QUOTE_CHARS = "\'\"";
     protected final String[] args;
     protected final Set<Character> booleanFlags = new HashSet<Character>();
     protected final Map<Character, String> valueFlags = new HashMap<Character, String>();
@@ -43,57 +43,80 @@ public class CommandContext {
     }
 
     /**
-     * @param args An array with arguments empty strings will be ignored by most things
+     * @param args An array with arguments. Empty strings outside quotes will be removed.
      * @param valueFlags A set containing all value flags. Pass null to disable value flag parsing.
-     * @throws CommandException This is thrown if a value flag was passed without a value.
+     * @throws CommandException This is thrown if flag fails for some reason.
      */
     public CommandContext(String[] args, Set<Character> valueFlags) throws CommandException {
         // Go through empty args and multiword args first
-        for (int i = 1; i < args.length; i++) {
-            char quotedChar;
-            if (args[i].length() < 1) {
+        for (int i = 1; i < args.length; ++i) {
+            final String arg = args[i];
+            if (arg.isEmpty()) {
                 args = removePortionOfArray(args, i, i, null);
-            } else if (QUOTE_CHARS.indexOf(args[i].charAt(0)) != -1) {
-                StringBuilder build = new StringBuilder();
-                quotedChar = args[i].charAt(0);
-                int endIndex = i;
-                for (; endIndex < args.length; endIndex++) {
-                    if (args[endIndex].charAt(args[endIndex].length() - 1) == quotedChar) {
-                        if (endIndex != i) build.append(" ");
-                        build.append(args[endIndex].substring(endIndex == i ? 1 : 0, args[endIndex].length() - 1));
+                continue;
+            }
+
+            switch (arg.charAt(0)) {
+            case '\'':
+            case '"':
+                final StringBuilder build = new StringBuilder();
+                final char quotedChar = arg.charAt(0);
+                int endIndex;
+                for (endIndex = i; endIndex < args.length; ++endIndex) {
+                    final String arg2 = args[endIndex];
+                    if (arg2.charAt(arg2.length() - 1) == quotedChar) {
+                        if (endIndex != i) build.append(' ');
+                        build.append(arg2.substring(endIndex == i ? 1 : 0, arg2.length() - 1));
                         break;
                     } else if (endIndex == i) {
-                        build.append(args[endIndex].substring(1));
+                        build.append(arg2.substring(1));
                     } else {
-                        build.append(" ").append(args[endIndex]);
+                        build.append(' ').append(arg2);
                     }
                 }
                 args = removePortionOfArray(args, i, endIndex, build.toString());
             }
         }
+
+        if (valueFlags == null) {
+            valueFlags = Collections.emptySet();
+        }
+
         // Then flags
         for (int i = 1; i < args.length; ++i) {
-            if (args[i].charAt(0) == '-' && args[i].matches("^-[a-zA-Z]+$")) {
-                for (int k = 1; k < args[i].length(); ++k) {
-                    if (valueFlags != null && valueFlags.contains(args[i].charAt(k))) {
-                        int index = i + 1;
-                        if (args.length - 1 < index) {
-                            throw new CommandException("Value flag '" + args[i].charAt(k) + "' specified without value");
-                        }
-                        if (this.valueFlags.containsKey(args[i].charAt(k))) {
-                            throw new CommandException("Value flag '" + args[i].charAt(k) + "' already given");
-                        }
-                        this.valueFlags.put(args[i].charAt(k), args[index]);
-                        args = removePortionOfArray(args, index, index, null);
-                    } else {
-                        booleanFlags.add(args[i].charAt(k));
-                    }
-                }
-                args = removePortionOfArray(args, i, i, null);
-            } else if (args[i].matches("^--$")) {
+            final String arg = args[i];
+            if (arg.charAt(0) != '-') {
+                break;
+            }
+
+            if (arg.equals("--")) {
                 args = removePortionOfArray(args, i, i, null);
                 break;
             }
+
+            if (!arg.matches("^-[a-zA-Z]+$")) {
+                throw new CommandException("Invalid flag character given.");
+            }
+
+            for (int k = 1; k < arg.length(); ++k) {
+                final char flagName = arg.charAt(k);
+                if (valueFlags.contains(flagName)) {
+                    if (this.valueFlags.containsKey(flagName)) {
+                        throw new CommandException("Value flag '" + flagName + "' already given");
+                    }
+
+                    final int index = i + 1;
+                    if (index >= args.length) {
+                        throw new CommandException("Value flag '" + flagName + "' specified without value");
+                    }
+
+                    this.valueFlags.put(flagName, args[index]);
+                    args = removePortionOfArray(args, index, index, null);
+                } else {
+                    booleanFlags.add(flagName);
+                }
+            }
+            args = removePortionOfArray(args, i, i, null);
         }
         this.args = args;
     }
