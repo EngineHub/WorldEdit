@@ -422,9 +422,9 @@ public enum BlockType {
                 || id == BlockID.REDSTONE_REPEATER_OFF
                 || id == BlockID.REDSTONE_REPEATER_ON
                 || id == BlockID.TRAP_DOOR
-                || id == BlockID.FENCE_GATE
                 || id == BlockID.GLASS_PANE
-                || id == BlockID.VINE;
+                || id == BlockID.VINE
+                || id == BlockID.FENCE_GATE;
     }
 
     /**
@@ -524,13 +524,15 @@ public enum BlockType {
                 || id == BlockID.REDSTONE_REPEATER_OFF
                 || id == BlockID.REDSTONE_REPEATER_ON
                 || id == BlockID.TRAP_DOOR
-                || id == BlockID.BRICK_STAIRS
-                || id == BlockID.STONE_BRICK_STAIRS
-                || id == BlockID.VINE
+                || id == BlockID.STONE_BRICK
                 || id == BlockID.RED_MUSHROOM_CAP
                 || id == BlockID.BROWN_MUSHROOM_CAP
                 || id == BlockID.PUMPKIN_STEM
-                || id == BlockID.MELON_STEM;
+                || id == BlockID.MELON_STEM
+                || id == BlockID.VINE
+                || id == BlockID.FENCE_GATE
+                || id == BlockID.BRICK_STAIRS
+                || id == BlockID.STONE_BRICK_STAIRS;
     }
     
     /**
