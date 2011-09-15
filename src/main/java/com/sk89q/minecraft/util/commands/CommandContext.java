@@ -85,9 +85,7 @@ public class CommandContext {
         // Then flags
         for (int i = 1; i < args.length; ++i) {
             final String arg = args[i];
-            if (arg.charAt(0) != '-') {
-                break;
-            }
+
 
             if (arg.equals("--")) {
                 args = removePortionOfArray(args, i, i, null);
@@ -95,28 +93,26 @@ public class CommandContext {
             }
 
             if (!arg.matches("^-[a-zA-Z]+$")) {
-                throw new CommandException("Invalid flag character given.");
+                continue;
             }
-
+            int index = i;
             for (int k = 1; k < arg.length(); ++k) {
                 final char flagName = arg.charAt(k);
                 if (valueFlags.contains(flagName)) {
                     if (this.valueFlags.containsKey(flagName)) {
                         throw new CommandException("Value flag '" + flagName + "' already given");
                     }
-
-                    final int index = i + 1;
+                    index++;
                     if (index >= args.length) {
                         throw new CommandException("Value flag '" + flagName + "' specified without value");
                     }
 
                     this.valueFlags.put(flagName, args[index]);
-                    args = removePortionOfArray(args, index, index, null);
                 } else {
                     booleanFlags.add(flagName);
                 }
             }
-            args = removePortionOfArray(args, i, i, null);
+            args = removePortionOfArray(args, i, index, null);
         }
         this.args = args;
     }
