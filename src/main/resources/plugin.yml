@@ -393,3 +393,7 @@ commands:
         description: Kill all or nearby mobs
         usage: /<command> [-p] [radius]
         permissions: 'worldedit.butcher'
+
+
+# Permissions aren't here. Read http://wiki.sk89q.com/wiki/WEPIF/DinnerPerms
+# for how WorldEdit permissions actually work
