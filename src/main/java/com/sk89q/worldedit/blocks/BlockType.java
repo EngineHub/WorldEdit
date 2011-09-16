@@ -19,10 +19,12 @@
 
 package com.sk89q.worldedit.blocks;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumSet;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.sk89q.util.StringUtil;
 
@@ -142,113 +144,6 @@ public enum BlockType {
     FENCE_GATE(BlockID.FENCE_GATE, "Fence gate", "fencegate", "gate"),
     BRICK_STAIRS(BlockID.BRICK_STAIRS, "Brick stairs", "brickstairs", "bricksteps"),
     STONE_BRICK_STAIRS(BlockID.STONE_BRICK_STAIRS, "Stone brick stairs", "stonebrickstairs", "smoothstonebrickstairs");
-
-    /**
-     * Stores a list of dropped blocks for blocks.
-     */
-    private static final Map<Integer,Integer> blockDrops = new HashMap<Integer,Integer>();
-
-    /**
-     * Static constructor.
-     */
-    static {
-        blockDrops.put(BlockID.STONE, BlockID.COBBLESTONE);
-        blockDrops.put(BlockID.GRASS, BlockID.DIRT);
-        blockDrops.put(BlockID.DIRT, BlockID.DIRT);
-        blockDrops.put(BlockID.COBBLESTONE, BlockID.COBBLESTONE);
-        blockDrops.put(BlockID.WOOD, BlockID.WOOD);
-        blockDrops.put(BlockID.SAPLING, BlockID.SAPLING);
-        blockDrops.put(BlockID.BEDROCK, -1);
-        blockDrops.put(BlockID.SAND, BlockID.SAND);
-        blockDrops.put(BlockID.GRAVEL, BlockID.GRAVEL);
-        blockDrops.put(BlockID.GOLD_ORE, BlockID.GOLD_ORE);
-        blockDrops.put(BlockID.IRON_ORE, BlockID.IRON_ORE);
-        blockDrops.put(BlockID.COAL_ORE, BlockID.COAL_ORE);
-        blockDrops.put(BlockID.LOG, BlockID.LOG);
-        blockDrops.put(BlockID.LEAVES, BlockID.LEAVES);
-        blockDrops.put(BlockID.SPONGE, BlockID.SPONGE);
-        blockDrops.put(BlockID.GLASS, BlockID.GLASS); // Have to drop glass for //undo
-        blockDrops.put(BlockID.LAPIS_LAZULI_ORE, BlockID.LAPIS_LAZULI_ORE); // Block damage drops not implemented
-        blockDrops.put(BlockID.LAPIS_LAZULI_BLOCK, BlockID.LAPIS_LAZULI_BLOCK);
-        blockDrops.put(BlockID.DISPENSER, BlockID.DISPENSER);
-        blockDrops.put(BlockID.SANDSTONE, BlockID.SANDSTONE);
-        blockDrops.put(BlockID.NOTE_BLOCK, BlockID.NOTE_BLOCK);
-        blockDrops.put(BlockID.BED, ItemType.BED_ITEM.getID());
-        blockDrops.put(BlockID.POWERED_RAIL, BlockID.POWERED_RAIL);
-        blockDrops.put(BlockID.DETECTOR_RAIL, BlockID.DETECTOR_RAIL);
-        blockDrops.put(BlockID.WEB, BlockID.WEB);
-        blockDrops.put(BlockID.PISTON_EXTENSION, -1);
-        blockDrops.put(BlockID.CLOTH, BlockID.CLOTH);
-        blockDrops.put(BlockID.PISTON_MOVING_PIECE, -1);
-        blockDrops.put(BlockID.YELLOW_FLOWER, BlockID.YELLOW_FLOWER);
-        blockDrops.put(BlockID.RED_FLOWER, BlockID.RED_FLOWER);
-        blockDrops.put(BlockID.BROWN_MUSHROOM, BlockID.BROWN_MUSHROOM);
-        blockDrops.put(BlockID.RED_MUSHROOM, BlockID.RED_MUSHROOM);
-        blockDrops.put(BlockID.GOLD_BLOCK, BlockID.GOLD_BLOCK);
-        blockDrops.put(BlockID.IRON_BLOCK, BlockID.IRON_BLOCK);
-        blockDrops.put(BlockID.DOUBLE_STEP, BlockID.DOUBLE_STEP);
-        blockDrops.put(BlockID.STEP, BlockID.STEP);
-        blockDrops.put(BlockID.BRICK, BlockID.BRICK);
-        blockDrops.put(BlockID.BOOKCASE, BlockID.BOOKCASE);
-        blockDrops.put(BlockID.MOSSY_COBBLESTONE, BlockID.MOSSY_COBBLESTONE);
-        blockDrops.put(BlockID.OBSIDIAN, BlockID.OBSIDIAN);
-        blockDrops.put(BlockID.TORCH, BlockID.TORCH);
-        blockDrops.put(BlockID.WOODEN_STAIRS, BlockID.WOODEN_STAIRS);
-        blockDrops.put(BlockID.CHEST, BlockID.CHEST);
-        blockDrops.put(BlockID.REDSTONE_WIRE, ItemType.REDSTONE_DUST.getID());
-        blockDrops.put(BlockID.DIAMOND_ORE, ItemType.DIAMOND.getID());
-        blockDrops.put(BlockID.DIAMOND_BLOCK, BlockID.DIAMOND_BLOCK);
-        blockDrops.put(BlockID.WORKBENCH, BlockID.WORKBENCH);
-        blockDrops.put(BlockID.CROPS, ItemType.SEEDS.getID());
-        blockDrops.put(BlockID.SOIL, BlockID.SOIL);
-        blockDrops.put(BlockID.FURNACE, BlockID.FURNACE);
-        blockDrops.put(BlockID.BURNING_FURNACE, BlockID.FURNACE);
-        blockDrops.put(BlockID.SIGN_POST, ItemType.SIGN.getID());
-        blockDrops.put(BlockID.WOODEN_DOOR, ItemType.WOODEN_DOOR_ITEM.getID());
-        blockDrops.put(BlockID.LADDER, BlockID.LADDER);
-        blockDrops.put(BlockID.MINECART_TRACKS, BlockID.MINECART_TRACKS);
-        blockDrops.put(BlockID.COBBLESTONE_STAIRS, BlockID.COBBLESTONE_STAIRS);
-        blockDrops.put(BlockID.WALL_SIGN, ItemType.SIGN.getID());
-        blockDrops.put(BlockID.LEVER, BlockID.LEVER);
-        blockDrops.put(BlockID.STONE_PRESSURE_PLATE, BlockID.STONE_PRESSURE_PLATE);
-        blockDrops.put(BlockID.IRON_DOOR, ItemType.IRON_DOOR_ITEM.getID());
-        blockDrops.put(BlockID.WOODEN_PRESSURE_PLATE, BlockID.WOODEN_PRESSURE_PLATE);
-        blockDrops.put(BlockID.REDSTONE_ORE, ItemType.REDSTONE_DUST.getID());
-        blockDrops.put(BlockID.GLOWING_REDSTONE_ORE, ItemType.REDSTONE_DUST.getID());
-        blockDrops.put(BlockID.REDSTONE_TORCH_OFF, BlockID.REDSTONE_TORCH_ON);
-        blockDrops.put(BlockID.REDSTONE_TORCH_ON, BlockID.REDSTONE_TORCH_ON);
-        blockDrops.put(BlockID.STONE_BUTTON, BlockID.STONE_BUTTON);
-        blockDrops.put(BlockID.SNOW, ItemType.SNOWBALL.getID());
-        blockDrops.put(BlockID.ICE, BlockID.ICE);
-        blockDrops.put(BlockID.SNOW_BLOCK, BlockID.SNOW_BLOCK);
-        blockDrops.put(BlockID.CLAY, BlockID.CLAY);
-        blockDrops.put(BlockID.REED, ItemType.SUGAR_CANE_ITEM.getID());
-        blockDrops.put(BlockID.JUKEBOX, BlockID.JUKEBOX);
-        blockDrops.put(BlockID.FENCE, BlockID.FENCE);
-        blockDrops.put(BlockID.PUMPKIN, BlockID.PUMPKIN);
-        blockDrops.put(BlockID.NETHERRACK, BlockID.NETHERRACK);
-        blockDrops.put(BlockID.SLOW_SAND, BlockID.SLOW_SAND);
-        blockDrops.put(BlockID.LIGHTSTONE, ItemType.LIGHTSTONE_DUST.getID());
-        blockDrops.put(BlockID.JACKOLANTERN, BlockID.JACKOLANTERN);
-        blockDrops.put(BlockID.CAKE_BLOCK, ItemType.CAKE_ITEM.getID());
-        blockDrops.put(BlockID.REDSTONE_REPEATER_OFF, ItemType.REDSTONE_REPEATER.getID());
-        blockDrops.put(BlockID.REDSTONE_REPEATER_ON, ItemType.REDSTONE_REPEATER.getID());
-        blockDrops.put(BlockID.LOCKED_CHEST, BlockID.LOCKED_CHEST);
-        blockDrops.put(BlockID.TRAP_DOOR, BlockID.TRAP_DOOR);
-        blockDrops.put(BlockID.SILVERFISH_BLOCK, -1);
-        blockDrops.put(BlockID.STONE_BRICK, BlockID.STONE_BRICK);
-        blockDrops.put(BlockID.BROWN_MUSHROOM_CAP, BlockID.BROWN_MUSHROOM_CAP); // the wiki has the 2 mushroom caps the other way round
-        blockDrops.put(BlockID.RED_MUSHROOM_CAP, BlockID.RED_MUSHROOM_CAP);
-        blockDrops.put(BlockID.IRON_BARS, BlockID.IRON_BARS);
-        blockDrops.put(BlockID.GLASS_PANE, BlockID.GLASS_PANE);
-        blockDrops.put(BlockID.MELON_BLOCK, BlockID.MELON_BLOCK);
-        blockDrops.put(BlockID.PUMPKIN_STEM, BlockID.PUMPKIN_STEM);
-        blockDrops.put(BlockID.MELON_STEM, BlockID.MELON_STEM);
-        blockDrops.put(BlockID.VINE, -1);
-        blockDrops.put(BlockID.FENCE_GATE, BlockID.FENCE_GATE);
-        blockDrops.put(BlockID.BRICK_STAIRS, BlockID.BRICK);
-        blockDrops.put(BlockID.STONE_BRICK_STAIRS, BlockID.STONE_BRICK);
-    }
 
     /**
      * Stores a map of the IDs for fast access.
@@ -373,13 +268,49 @@ public enum BlockType {
         return name;
     }
 
+
     /**
-     * Checks to see whether a block should be placed last.
-     *
-     * @return
+     * HashSet for shouldPlaceLast.
      */
-    public boolean shouldPlaceLast() {
-        return shouldPlaceLast(id);
+    private static final Set<Integer> shouldPlaceLast = new HashSet<Integer>();
+    static {
+        shouldPlaceLast.add(BlockID.SAPLING);
+        shouldPlaceLast.add(BlockID.BED);
+        shouldPlaceLast.add(BlockID.POWERED_RAIL);
+        shouldPlaceLast.add(BlockID.DETECTOR_RAIL);
+        shouldPlaceLast.add(BlockID.LONG_GRASS);
+        shouldPlaceLast.add(BlockID.DEAD_BUSH);
+        shouldPlaceLast.add(BlockID.YELLOW_FLOWER);
+        shouldPlaceLast.add(BlockID.RED_FLOWER);
+        shouldPlaceLast.add(BlockID.BROWN_MUSHROOM);
+        shouldPlaceLast.add(BlockID.RED_MUSHROOM);
+        shouldPlaceLast.add(BlockID.TORCH);
+        shouldPlaceLast.add(BlockID.FIRE);
+        shouldPlaceLast.add(BlockID.REDSTONE_WIRE);
+        shouldPlaceLast.add(BlockID.CROPS);
+        shouldPlaceLast.add(BlockID.SIGN_POST);
+        shouldPlaceLast.add(BlockID.WOODEN_DOOR);
+        shouldPlaceLast.add(BlockID.LADDER);
+        shouldPlaceLast.add(BlockID.MINECART_TRACKS);
+        shouldPlaceLast.add(BlockID.WALL_SIGN);
+        shouldPlaceLast.add(BlockID.LEVER);
+        shouldPlaceLast.add(BlockID.STONE_PRESSURE_PLATE);
+        shouldPlaceLast.add(BlockID.IRON_DOOR);
+        shouldPlaceLast.add(BlockID.WOODEN_PRESSURE_PLATE);
+        shouldPlaceLast.add(BlockID.REDSTONE_TORCH_OFF);
+        shouldPlaceLast.add(BlockID.REDSTONE_TORCH_ON);
+        shouldPlaceLast.add(BlockID.STONE_BUTTON);
+        shouldPlaceLast.add(BlockID.SNOW);
+        shouldPlaceLast.add(BlockID.CACTUS);
+        shouldPlaceLast.add(BlockID.REED);
+        shouldPlaceLast.add(BlockID.PORTAL);
+        shouldPlaceLast.add(BlockID.CAKE_BLOCK);
+        shouldPlaceLast.add(BlockID.REDSTONE_REPEATER_OFF);
+        shouldPlaceLast.add(BlockID.REDSTONE_REPEATER_ON);
+        shouldPlaceLast.add(BlockID.TRAP_DOOR);
+        shouldPlaceLast.add(BlockID.GLASS_PANE);
+        shouldPlaceLast.add(BlockID.VINE);
+        shouldPlaceLast.add(BlockID.FENCE_GATE);
     }
 
     /**
@@ -389,43 +320,57 @@ public enum BlockType {
      * @return
      */
     public static boolean shouldPlaceLast(int id) {
-        return id == BlockID.SAPLING
-                || id == BlockID.BED
-                || id == BlockID.POWERED_RAIL
-                || id == BlockID.DETECTOR_RAIL
-                || id == BlockID.LONG_GRASS
-                || id == BlockID.DEAD_BUSH
-                || id == BlockID.YELLOW_FLOWER
-                || id == BlockID.RED_FLOWER
-                || id == BlockID.BROWN_MUSHROOM
-                || id == BlockID.RED_MUSHROOM
-                || id == BlockID.TORCH
-                || id == BlockID.FIRE
-                || id == BlockID.REDSTONE_WIRE
-                || id == BlockID.CROPS
-                || id == BlockID.SIGN_POST
-                || id == BlockID.WOODEN_DOOR
-                || id == BlockID.LADDER
-                || id == BlockID.MINECART_TRACKS
-                || id == BlockID.WALL_SIGN
-                || id == BlockID.LEVER
-                || id == BlockID.STONE_PRESSURE_PLATE
-                || id == BlockID.IRON_DOOR
-                || id == BlockID.WOODEN_PRESSURE_PLATE
-                || id == BlockID.REDSTONE_TORCH_OFF
-                || id == BlockID.REDSTONE_TORCH_ON
-                || id == BlockID.STONE_BUTTON
-                || id == BlockID.SNOW
-                || id == BlockID.CACTUS
-                || id == BlockID.REED
-                || id == BlockID.PORTAL
-                || id == BlockID.CAKE_BLOCK
-                || id == BlockID.REDSTONE_REPEATER_OFF
-                || id == BlockID.REDSTONE_REPEATER_ON
-                || id == BlockID.TRAP_DOOR
-                || id == BlockID.GLASS_PANE
-                || id == BlockID.VINE
-                || id == BlockID.FENCE_GATE;
+        return shouldPlaceLast.contains(id);
+    }
+
+    /**
+     * Checks to see whether this block should be placed last.
+     *
+     * @return
+     */
+    public boolean shouldPlaceLast() {
+        return shouldPlaceLast.contains(id);
+    }
+
+    /**
+     * HashSet for canPassThrough.
+     */
+    private static final Set<Integer> canPassThrough = new HashSet<Integer>();
+    static {
+        canPassThrough.add(BlockID.AIR);
+        canPassThrough.add(BlockID.WATER);
+        canPassThrough.add(BlockID.STATIONARY_WATER);
+        canPassThrough.add(BlockID.SAPLING);
+        canPassThrough.add(BlockID.POWERED_RAIL);
+        canPassThrough.add(BlockID.DETECTOR_RAIL);
+        canPassThrough.add(BlockID.WEB);
+        canPassThrough.add(BlockID.LONG_GRASS);
+        canPassThrough.add(BlockID.DEAD_BUSH);
+        canPassThrough.add(BlockID.YELLOW_FLOWER);
+        canPassThrough.add(BlockID.RED_FLOWER);
+        canPassThrough.add(BlockID.BROWN_MUSHROOM);
+        canPassThrough.add(BlockID.RED_MUSHROOM);
+        canPassThrough.add(BlockID.TORCH);
+        canPassThrough.add(BlockID.FIRE);
+        canPassThrough.add(BlockID.REDSTONE_WIRE);
+        canPassThrough.add(BlockID.CROPS);
+        canPassThrough.add(BlockID.SIGN_POST);
+        canPassThrough.add(BlockID.LADDER);
+        canPassThrough.add(BlockID.MINECART_TRACKS);
+        canPassThrough.add(BlockID.WALL_SIGN);
+        canPassThrough.add(BlockID.LEVER);
+        canPassThrough.add(BlockID.STONE_PRESSURE_PLATE);
+        canPassThrough.add(BlockID.WOODEN_PRESSURE_PLATE);
+        canPassThrough.add(BlockID.REDSTONE_TORCH_OFF);
+        canPassThrough.add(BlockID.REDSTONE_TORCH_ON);
+        canPassThrough.add(BlockID.STONE_BUTTON);
+        canPassThrough.add(BlockID.SNOW);
+        canPassThrough.add(BlockID.REED);
+        canPassThrough.add(BlockID.PORTAL);
+        canPassThrough.add(BlockID.REDSTONE_REPEATER_OFF);
+        canPassThrough.add(BlockID.REDSTONE_REPEATER_ON);
+        canPassThrough.add(BlockID.FENCE_GATE);
+        canPassThrough.add(BlockID.VINE);
     }
 
     /**
@@ -435,40 +380,71 @@ public enum BlockType {
      * @return
      */
     public static boolean canPassThrough(int id) {
-        return id == BlockID.AIR
-                || id == BlockID.WATER
-                || id == BlockID.STATIONARY_WATER
-                || id == BlockID.SAPLING
-                || id == BlockID.POWERED_RAIL
-                || id == BlockID.DETECTOR_RAIL
-                || id == BlockID.WEB
-                || id == BlockID.LONG_GRASS
-                || id == BlockID.DEAD_BUSH
-                || id == BlockID.YELLOW_FLOWER
-                || id == BlockID.RED_FLOWER
-                || id == BlockID.BROWN_MUSHROOM
-                || id == BlockID.RED_MUSHROOM
-                || id == BlockID.TORCH
-                || id == BlockID.FIRE
-                || id == BlockID.REDSTONE_WIRE
-                || id == BlockID.CROPS
-                || id == BlockID.SIGN_POST
-                || id == BlockID.LADDER
-                || id == BlockID.MINECART_TRACKS
-                || id == BlockID.WALL_SIGN
-                || id == BlockID.LEVER
-                || id == BlockID.STONE_PRESSURE_PLATE
-                || id == BlockID.WOODEN_PRESSURE_PLATE
-                || id == BlockID.REDSTONE_TORCH_OFF
-                || id == BlockID.REDSTONE_TORCH_ON
-                || id == BlockID.STONE_BUTTON
-                || id == BlockID.SNOW
-                || id == BlockID.REED
-                || id == BlockID.PORTAL
-                || id == BlockID.REDSTONE_REPEATER_OFF
-                || id == BlockID.REDSTONE_REPEATER_ON
-                || id == BlockID.FENCE_GATE
-                || id == BlockID.VINE;
+        return canPassThrough.contains(id);
+
+    }
+
+    /**
+     * HashSet for usesData.
+     */
+    private static final Set<Integer> usesData = new HashSet<Integer>();
+    static {
+        usesData.add(BlockID.SAPLING);
+        usesData.add(BlockID.WATER);
+        usesData.add(BlockID.STATIONARY_WATER);
+        usesData.add(BlockID.LAVA);
+        usesData.add(BlockID.STATIONARY_LAVA);
+        usesData.add(BlockID.LOG);
+        usesData.add(BlockID.LEAVES);
+        usesData.add(BlockID.DISPENSER);
+        usesData.add(BlockID.NOTE_BLOCK);
+        usesData.add(BlockID.BED);
+        usesData.add(BlockID.POWERED_RAIL);
+        usesData.add(BlockID.DETECTOR_RAIL);
+        usesData.add(BlockID.PISTON_STICKY_BASE);
+        usesData.add(BlockID.LONG_GRASS);
+        usesData.add(BlockID.PISTON_BASE);
+        usesData.add(BlockID.PISTON_EXTENSION);
+        usesData.add(BlockID.CLOTH);
+        usesData.add(BlockID.DOUBLE_STEP);
+        usesData.add(BlockID.STEP);
+        usesData.add(BlockID.TORCH);
+        usesData.add(BlockID.WOODEN_STAIRS);
+        usesData.add(BlockID.REDSTONE_WIRE);
+        usesData.add(BlockID.CROPS);
+        usesData.add(BlockID.SOIL);
+        usesData.add(BlockID.FURNACE);
+        usesData.add(BlockID.BURNING_FURNACE);
+        usesData.add(BlockID.SIGN_POST);
+        usesData.add(BlockID.WOODEN_DOOR);
+        usesData.add(BlockID.LADDER);
+        usesData.add(BlockID.MINECART_TRACKS);
+        usesData.add(BlockID.COBBLESTONE_STAIRS);
+        usesData.add(BlockID.WALL_SIGN);
+        usesData.add(BlockID.LEVER);
+        usesData.add(BlockID.STONE_PRESSURE_PLATE);
+        usesData.add(BlockID.IRON_DOOR);
+        usesData.add(BlockID.WOODEN_PRESSURE_PLATE);
+        usesData.add(BlockID.REDSTONE_TORCH_OFF);
+        usesData.add(BlockID.REDSTONE_TORCH_ON);
+        usesData.add(BlockID.STONE_BUTTON);
+        usesData.add(BlockID.SNOW);
+        usesData.add(BlockID.CACTUS);
+        usesData.add(BlockID.PUMPKIN);
+        usesData.add(BlockID.JACKOLANTERN);
+        usesData.add(BlockID.CAKE_BLOCK);
+        usesData.add(BlockID.REDSTONE_REPEATER_OFF);
+        usesData.add(BlockID.REDSTONE_REPEATER_ON);
+        usesData.add(BlockID.TRAP_DOOR);
+        usesData.add(BlockID.STONE_BRICK);
+        usesData.add(BlockID.RED_MUSHROOM_CAP);
+        usesData.add(BlockID.BROWN_MUSHROOM_CAP);
+        usesData.add(BlockID.PUMPKIN_STEM);
+        usesData.add(BlockID.MELON_STEM);
+        usesData.add(BlockID.VINE);
+        usesData.add(BlockID.FENCE_GATE);
+        usesData.add(BlockID.BRICK_STAIRS);
+        usesData.add(BlockID.STONE_BRICK_STAIRS);
     }
 
     /**
@@ -478,64 +454,20 @@ public enum BlockType {
      * @return
      */
     public static boolean usesData(int id) {
-        return id == BlockID.SAPLING
-                || id == BlockID.WATER
-                || id == BlockID.STATIONARY_WATER
-                || id == BlockID.LAVA
-                || id == BlockID.STATIONARY_LAVA
-                || id == BlockID.LOG
-                || id == BlockID.LEAVES
-                || id == BlockID.DISPENSER
-                || id == BlockID.NOTE_BLOCK
-                || id == BlockID.BED
-                || id == BlockID.POWERED_RAIL
-                || id == BlockID.DETECTOR_RAIL
-                || id == BlockID.PISTON_STICKY_BASE
-                || id == BlockID.LONG_GRASS
-                || id == BlockID.PISTON_BASE
-                || id == BlockID.PISTON_EXTENSION
-                || id == BlockID.CLOTH
-                || id == BlockID.DOUBLE_STEP
-                || id == BlockID.STEP
-                || id == BlockID.TORCH
-                || id == BlockID.WOODEN_STAIRS
-                || id == BlockID.REDSTONE_WIRE
-                || id == BlockID.CROPS
-                || id == BlockID.SOIL
-                || id == BlockID.FURNACE
-                || id == BlockID.BURNING_FURNACE
-                || id == BlockID.SIGN_POST
-                || id == BlockID.WOODEN_DOOR
-                || id == BlockID.LADDER
-                || id == BlockID.MINECART_TRACKS
-                || id == BlockID.COBBLESTONE_STAIRS
-                || id == BlockID.WALL_SIGN
-                || id == BlockID.LEVER
-                || id == BlockID.STONE_PRESSURE_PLATE
-                || id == BlockID.IRON_DOOR
-                || id == BlockID.WOODEN_PRESSURE_PLATE
-                || id == BlockID.REDSTONE_TORCH_OFF
-                || id == BlockID.REDSTONE_TORCH_ON
-                || id == BlockID.STONE_BUTTON
-                || id == BlockID.SNOW
-                || id == BlockID.CACTUS
-                || id == BlockID.PUMPKIN
-                || id == BlockID.JACKOLANTERN
-                || id == BlockID.CAKE_BLOCK
-                || id == BlockID.REDSTONE_REPEATER_OFF
-                || id == BlockID.REDSTONE_REPEATER_ON
-                || id == BlockID.TRAP_DOOR
-                || id == BlockID.STONE_BRICK
-                || id == BlockID.RED_MUSHROOM_CAP
-                || id == BlockID.BROWN_MUSHROOM_CAP
-                || id == BlockID.PUMPKIN_STEM
-                || id == BlockID.MELON_STEM
-                || id == BlockID.VINE
-                || id == BlockID.FENCE_GATE
-                || id == BlockID.BRICK_STAIRS
-                || id == BlockID.STONE_BRICK_STAIRS;
+        return usesData.contains(id);
     }
-    
+
+    /**
+     * HashSet for isContainerBlock.
+     */
+    private static final Set<Integer> isContainerBlock = new HashSet<Integer>();
+    static {
+        isContainerBlock.add(BlockID.DISPENSER);
+        isContainerBlock.add(BlockID.FURNACE);
+        isContainerBlock.add(BlockID.BURNING_FURNACE);
+        isContainerBlock.add(BlockID.CHEST);
+    }
+
     /**
      * Returns true if the block is a container block.
      * 
@@ -543,10 +475,32 @@ public enum BlockType {
      * @return
      */
     public static boolean isContainerBlock(int id) {
-        return id == BlockID.DISPENSER
-                || id == BlockID.FURNACE
-                || id == BlockID.BURNING_FURNACE
-                || id == BlockID.CHEST;
+        return isContainerBlock.contains(id);
+    }
+
+    /**
+     * HashSet for isRedstoneBlock.
+     */
+    private static final Set<Integer> isRedstoneBlock = new HashSet<Integer>();
+    static {
+        isRedstoneBlock.add(BlockID.POWERED_RAIL);
+        isRedstoneBlock.add(BlockID.DETECTOR_RAIL);
+        isRedstoneBlock.add(BlockID.PISTON_STICKY_BASE);
+        isRedstoneBlock.add(BlockID.PISTON_BASE);
+        isRedstoneBlock.add(BlockID.LEVER);
+        isRedstoneBlock.add(BlockID.STONE_PRESSURE_PLATE);
+        isRedstoneBlock.add(BlockID.WOODEN_PRESSURE_PLATE);
+        isRedstoneBlock.add(BlockID.REDSTONE_TORCH_OFF);
+        isRedstoneBlock.add(BlockID.REDSTONE_TORCH_ON);
+        isRedstoneBlock.add(BlockID.STONE_BUTTON);
+        isRedstoneBlock.add(BlockID.REDSTONE_WIRE);
+        isRedstoneBlock.add(BlockID.WOODEN_DOOR);
+        isRedstoneBlock.add(BlockID.IRON_DOOR);
+        isRedstoneBlock.add(BlockID.TNT);
+        isRedstoneBlock.add(BlockID.DISPENSER);
+        isRedstoneBlock.add(BlockID.NOTE_BLOCK);
+        isRedstoneBlock.add(BlockID.REDSTONE_REPEATER_OFF);
+        isRedstoneBlock.add(BlockID.REDSTONE_REPEATER_ON);
     }
 
     /**
@@ -556,27 +510,22 @@ public enum BlockType {
      * @return
      */
     public static boolean isRedstoneBlock(int id) {
-        return id == BlockID.POWERED_RAIL
-                || id == BlockID.DETECTOR_RAIL
-                || id == BlockID.PISTON_STICKY_BASE
-                || id == BlockID.PISTON_BASE
-                || id == BlockID.LEVER
-                || id == BlockID.STONE_PRESSURE_PLATE
-                || id == BlockID.WOODEN_PRESSURE_PLATE
-                || id == BlockID.REDSTONE_TORCH_OFF
-                || id == BlockID.REDSTONE_TORCH_ON
-                || id == BlockID.STONE_BUTTON
-                || id == BlockID.REDSTONE_WIRE
-                || id == BlockID.WOODEN_DOOR
-                || id == BlockID.IRON_DOOR
-                || id == BlockID.TNT
-                || id == BlockID.DISPENSER
-                || id == BlockID.NOTE_BLOCK
-                || id == BlockID.REDSTONE_REPEATER_OFF
-                || id == BlockID.REDSTONE_REPEATER_ON;
+        return isRedstoneBlock.contains(id);
     }
 
-   /**
+    /**
+     * HashSet for canTransferRedstone.
+     */
+    private static final Set<Integer> canTransferRedstone = new HashSet<Integer>();
+    static {
+        canTransferRedstone.add(BlockID.REDSTONE_TORCH_OFF);
+        canTransferRedstone.add(BlockID.REDSTONE_TORCH_ON);
+        canTransferRedstone.add(BlockID.REDSTONE_WIRE);
+        canTransferRedstone.add(BlockID.REDSTONE_REPEATER_OFF);
+        canTransferRedstone.add(BlockID.REDSTONE_REPEATER_ON);
+    }
+
+    /**
      * Returns true if a block can transfer redstone.
      * Made this since isRedstoneBlock was getting big.
      *
@@ -584,11 +533,21 @@ public enum BlockType {
      * @return
      */
     public static boolean canTransferRedstone(int id) {
-        return id == BlockID.REDSTONE_TORCH_OFF
-                || id == BlockID.REDSTONE_TORCH_ON
-                || id == BlockID.REDSTONE_WIRE
-                || id == BlockID.REDSTONE_REPEATER_OFF
-                || id == BlockID.REDSTONE_REPEATER_ON;
+        return canTransferRedstone.contains(id);
+    }
+
+    /**
+     * HashSet for isRedstoneSource.
+     */
+    private static final Set<Integer> isRedstoneSource = new HashSet<Integer>();
+    static {
+        isRedstoneSource.add(BlockID.DETECTOR_RAIL);
+        isRedstoneSource.add(BlockID.REDSTONE_TORCH_OFF);
+        isRedstoneSource.add(BlockID.REDSTONE_TORCH_ON);
+        isRedstoneSource.add(BlockID.LEVER);
+        isRedstoneSource.add(BlockID.STONE_PRESSURE_PLATE);
+        isRedstoneSource.add(BlockID.WOODEN_PRESSURE_PLATE);
+        isRedstoneSource.add(BlockID.STONE_BUTTON);
     }
 
     /**
@@ -598,13 +557,17 @@ public enum BlockType {
      * @return
      */
     public static boolean isRedstoneSource(int id) {
-        return id == BlockID.DETECTOR_RAIL
-                || id == BlockID.REDSTONE_TORCH_OFF
-                || id == BlockID.REDSTONE_TORCH_ON
-                || id == BlockID.LEVER
-                || id == BlockID.STONE_PRESSURE_PLATE
-                || id == BlockID.WOODEN_PRESSURE_PLATE
-                || id == BlockID.STONE_BUTTON;
+        return isRedstoneSource.contains(id);
+    }
+
+    /**
+     * HashSet for isRailBlock.
+     */
+    private static final Set<Integer> isRailBlock = new HashSet<Integer>();
+    static {
+        isRailBlock.add(BlockID.POWERED_RAIL);
+        isRailBlock.add(BlockID.DETECTOR_RAIL);
+        isRailBlock.add(BlockID.MINECART_TRACKS);
     }
 
     /**
@@ -614,9 +577,36 @@ public enum BlockType {
      * @return
      */
     public static boolean isRailBlock(int id) {
-       return id == BlockID.POWERED_RAIL
-               || id == BlockID.DETECTOR_RAIL
-               || id == BlockID.MINECART_TRACKS;
+        return isRailBlock.contains(id);
+    }
+
+    /**
+     * HashSet for isNaturalBlock.
+     */
+    private static final Set<Integer> isNaturalBlock = new HashSet<Integer>();
+    static {
+        isNaturalBlock.add(BlockID.STONE);
+        isNaturalBlock.add(BlockID.GRASS);
+        isNaturalBlock.add(BlockID.DIRT);
+        // isNaturalBlock.add(BlockID.COBBLESTONE); // technically can occur next to water and lava
+        isNaturalBlock.add(BlockID.BEDROCK);
+        isNaturalBlock.add(BlockID.SAND);
+        isNaturalBlock.add(BlockID.GRAVEL);
+        isNaturalBlock.add(BlockID.CLAY);
+
+        // hell
+        isNaturalBlock.add(BlockID.NETHERSTONE);
+        isNaturalBlock.add(BlockID.SLOW_SAND);
+        isNaturalBlock.add(BlockID.LIGHTSTONE);
+
+        // ores
+        isNaturalBlock.add(BlockID.COAL_ORE);
+        isNaturalBlock.add(BlockID.IRON_ORE);
+        isNaturalBlock.add(BlockID.GOLD_ORE);
+        isNaturalBlock.add(BlockID.LAPIS_LAZULI_ORE);
+        isNaturalBlock.add(BlockID.DIAMOND_ORE);
+        isNaturalBlock.add(BlockID.REDSTONE_ORE);
+        isNaturalBlock.add(BlockID.GLOWING_REDSTONE_ORE);
     }
 
     /**
@@ -626,26 +616,110 @@ public enum BlockType {
      * @return
      */
     public static boolean isNaturalBlock(int id) {
-        return id == BlockID.STONE
-                || id == BlockID.GRASS
-                || id == BlockID.DIRT
-                // || id == BlockID.COBBLESTONE // technically can occur next to water and lava
-                || id == BlockID.BEDROCK
-                || id == BlockID.SAND
-                || id == BlockID.GRAVEL
-                || id == BlockID.CLAY
-                // hell
-                || id == BlockID.NETHERSTONE
-                || id == BlockID.SLOW_SAND
-                || id == BlockID.LIGHTSTONE
-                // ores
-                || id == BlockID.COAL_ORE
-                || id == BlockID.IRON_ORE
-                || id == BlockID.GOLD_ORE
-                || id == BlockID.LAPIS_LAZULI_ORE
-                || id == BlockID.DIAMOND_ORE
-                || id == BlockID.REDSTONE_ORE
-                || id == BlockID.GLOWING_REDSTONE_ORE;
+        return isNaturalBlock.contains(id);
+    }
+
+    /**
+     * HashMap for getDroppedBlock.
+     */
+    private static final Map<Integer, Integer> blockDrops = new HashMap<Integer, Integer>();
+    static {
+        blockDrops.put(BlockID.STONE, BlockID.COBBLESTONE);
+        blockDrops.put(BlockID.GRASS, BlockID.DIRT);
+        blockDrops.put(BlockID.DIRT, BlockID.DIRT);
+        blockDrops.put(BlockID.COBBLESTONE, BlockID.COBBLESTONE);
+        blockDrops.put(BlockID.WOOD, BlockID.WOOD);
+        blockDrops.put(BlockID.SAPLING, BlockID.SAPLING);
+        blockDrops.put(BlockID.BEDROCK, -1);
+        blockDrops.put(BlockID.SAND, BlockID.SAND);
+        blockDrops.put(BlockID.GRAVEL, BlockID.GRAVEL);
+        blockDrops.put(BlockID.GOLD_ORE, BlockID.GOLD_ORE);
+        blockDrops.put(BlockID.IRON_ORE, BlockID.IRON_ORE);
+        blockDrops.put(BlockID.COAL_ORE, BlockID.COAL_ORE);
+        blockDrops.put(BlockID.LOG, BlockID.LOG);
+        blockDrops.put(BlockID.LEAVES, BlockID.LEAVES);
+        blockDrops.put(BlockID.SPONGE, BlockID.SPONGE);
+        blockDrops.put(BlockID.GLASS, BlockID.GLASS); // Have to drop glass for //undo
+        blockDrops.put(BlockID.LAPIS_LAZULI_ORE, BlockID.LAPIS_LAZULI_ORE); // Block damage drops not implemented
+        blockDrops.put(BlockID.LAPIS_LAZULI_BLOCK, BlockID.LAPIS_LAZULI_BLOCK);
+        blockDrops.put(BlockID.DISPENSER, BlockID.DISPENSER);
+        blockDrops.put(BlockID.SANDSTONE, BlockID.SANDSTONE);
+        blockDrops.put(BlockID.NOTE_BLOCK, BlockID.NOTE_BLOCK);
+        blockDrops.put(BlockID.BED, ItemType.BED_ITEM.getID());
+        blockDrops.put(BlockID.POWERED_RAIL, BlockID.POWERED_RAIL);
+        blockDrops.put(BlockID.DETECTOR_RAIL, BlockID.DETECTOR_RAIL);
+        blockDrops.put(BlockID.WEB, BlockID.WEB);
+        blockDrops.put(BlockID.PISTON_EXTENSION, -1);
+        blockDrops.put(BlockID.CLOTH, BlockID.CLOTH);
+        blockDrops.put(BlockID.PISTON_MOVING_PIECE, -1);
+        blockDrops.put(BlockID.YELLOW_FLOWER, BlockID.YELLOW_FLOWER);
+        blockDrops.put(BlockID.RED_FLOWER, BlockID.RED_FLOWER);
+        blockDrops.put(BlockID.BROWN_MUSHROOM, BlockID.BROWN_MUSHROOM);
+        blockDrops.put(BlockID.RED_MUSHROOM, BlockID.RED_MUSHROOM);
+        blockDrops.put(BlockID.GOLD_BLOCK, BlockID.GOLD_BLOCK);
+        blockDrops.put(BlockID.IRON_BLOCK, BlockID.IRON_BLOCK);
+        blockDrops.put(BlockID.DOUBLE_STEP, BlockID.DOUBLE_STEP);
+        blockDrops.put(BlockID.STEP, BlockID.STEP);
+        blockDrops.put(BlockID.BRICK, BlockID.BRICK);
+        blockDrops.put(BlockID.BOOKCASE, BlockID.BOOKCASE);
+        blockDrops.put(BlockID.MOSSY_COBBLESTONE, BlockID.MOSSY_COBBLESTONE);
+        blockDrops.put(BlockID.OBSIDIAN, BlockID.OBSIDIAN);
+        blockDrops.put(BlockID.TORCH, BlockID.TORCH);
+        blockDrops.put(BlockID.WOODEN_STAIRS, BlockID.WOODEN_STAIRS);
+        blockDrops.put(BlockID.CHEST, BlockID.CHEST);
+        blockDrops.put(BlockID.REDSTONE_WIRE, ItemType.REDSTONE_DUST.getID());
+        blockDrops.put(BlockID.DIAMOND_ORE, ItemType.DIAMOND.getID());
+        blockDrops.put(BlockID.DIAMOND_BLOCK, BlockID.DIAMOND_BLOCK);
+        blockDrops.put(BlockID.WORKBENCH, BlockID.WORKBENCH);
+        blockDrops.put(BlockID.CROPS, ItemType.SEEDS.getID());
+        blockDrops.put(BlockID.SOIL, BlockID.SOIL);
+        blockDrops.put(BlockID.FURNACE, BlockID.FURNACE);
+        blockDrops.put(BlockID.BURNING_FURNACE, BlockID.FURNACE);
+        blockDrops.put(BlockID.SIGN_POST, ItemType.SIGN.getID());
+        blockDrops.put(BlockID.WOODEN_DOOR, ItemType.WOODEN_DOOR_ITEM.getID());
+        blockDrops.put(BlockID.LADDER, BlockID.LADDER);
+        blockDrops.put(BlockID.MINECART_TRACKS, BlockID.MINECART_TRACKS);
+        blockDrops.put(BlockID.COBBLESTONE_STAIRS, BlockID.COBBLESTONE_STAIRS);
+        blockDrops.put(BlockID.WALL_SIGN, ItemType.SIGN.getID());
+        blockDrops.put(BlockID.LEVER, BlockID.LEVER);
+        blockDrops.put(BlockID.STONE_PRESSURE_PLATE, BlockID.STONE_PRESSURE_PLATE);
+        blockDrops.put(BlockID.IRON_DOOR, ItemType.IRON_DOOR_ITEM.getID());
+        blockDrops.put(BlockID.WOODEN_PRESSURE_PLATE, BlockID.WOODEN_PRESSURE_PLATE);
+        blockDrops.put(BlockID.REDSTONE_ORE, ItemType.REDSTONE_DUST.getID());
+        blockDrops.put(BlockID.GLOWING_REDSTONE_ORE, ItemType.REDSTONE_DUST.getID());
+        blockDrops.put(BlockID.REDSTONE_TORCH_OFF, BlockID.REDSTONE_TORCH_ON);
+        blockDrops.put(BlockID.REDSTONE_TORCH_ON, BlockID.REDSTONE_TORCH_ON);
+        blockDrops.put(BlockID.STONE_BUTTON, BlockID.STONE_BUTTON);
+        blockDrops.put(BlockID.SNOW, ItemType.SNOWBALL.getID());
+        blockDrops.put(BlockID.ICE, BlockID.ICE);
+        blockDrops.put(BlockID.SNOW_BLOCK, BlockID.SNOW_BLOCK);
+        blockDrops.put(BlockID.CLAY, BlockID.CLAY);
+        blockDrops.put(BlockID.REED, ItemType.SUGAR_CANE_ITEM.getID());
+        blockDrops.put(BlockID.JUKEBOX, BlockID.JUKEBOX);
+        blockDrops.put(BlockID.FENCE, BlockID.FENCE);
+        blockDrops.put(BlockID.PUMPKIN, BlockID.PUMPKIN);
+        blockDrops.put(BlockID.NETHERRACK, BlockID.NETHERRACK);
+        blockDrops.put(BlockID.SLOW_SAND, BlockID.SLOW_SAND);
+        blockDrops.put(BlockID.LIGHTSTONE, ItemType.LIGHTSTONE_DUST.getID());
+        blockDrops.put(BlockID.JACKOLANTERN, BlockID.JACKOLANTERN);
+        blockDrops.put(BlockID.CAKE_BLOCK, ItemType.CAKE_ITEM.getID());
+        blockDrops.put(BlockID.REDSTONE_REPEATER_OFF, ItemType.REDSTONE_REPEATER.getID());
+        blockDrops.put(BlockID.REDSTONE_REPEATER_ON, ItemType.REDSTONE_REPEATER.getID());
+        blockDrops.put(BlockID.LOCKED_CHEST, BlockID.LOCKED_CHEST);
+        blockDrops.put(BlockID.TRAP_DOOR, BlockID.TRAP_DOOR);
+        blockDrops.put(BlockID.SILVERFISH_BLOCK, -1);
+        blockDrops.put(BlockID.STONE_BRICK, BlockID.STONE_BRICK);
+        blockDrops.put(BlockID.BROWN_MUSHROOM_CAP, BlockID.BROWN_MUSHROOM_CAP); // the wiki has the 2 mushroom caps the other way round
+        blockDrops.put(BlockID.RED_MUSHROOM_CAP, BlockID.RED_MUSHROOM_CAP);
+        blockDrops.put(BlockID.IRON_BARS, BlockID.IRON_BARS);
+        blockDrops.put(BlockID.GLASS_PANE, BlockID.GLASS_PANE);
+        blockDrops.put(BlockID.MELON_BLOCK, BlockID.MELON_BLOCK);
+        blockDrops.put(BlockID.PUMPKIN_STEM, BlockID.PUMPKIN_STEM);
+        blockDrops.put(BlockID.MELON_STEM, BlockID.MELON_STEM);
+        blockDrops.put(BlockID.VINE, -1);
+        blockDrops.put(BlockID.FENCE_GATE, BlockID.FENCE_GATE);
+        blockDrops.put(BlockID.BRICK_STAIRS, BlockID.BRICK);
+        blockDrops.put(BlockID.STONE_BRICK_STAIRS, BlockID.STONE_BRICK);
     }
 
     /**
