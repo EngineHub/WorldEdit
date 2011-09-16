@@ -275,7 +275,6 @@ public enum BlockType {
     private static final Set<Integer> shouldPlaceLast = new HashSet<Integer>();
     static {
         shouldPlaceLast.add(BlockID.SAPLING);
-        shouldPlaceLast.add(BlockID.BED);
         shouldPlaceLast.add(BlockID.POWERED_RAIL);
         shouldPlaceLast.add(BlockID.DETECTOR_RAIL);
         shouldPlaceLast.add(BlockID.LONG_GRASS);
@@ -308,9 +307,7 @@ public enum BlockType {
         shouldPlaceLast.add(BlockID.REDSTONE_REPEATER_OFF);
         shouldPlaceLast.add(BlockID.REDSTONE_REPEATER_ON);
         shouldPlaceLast.add(BlockID.TRAP_DOOR);
-        shouldPlaceLast.add(BlockID.GLASS_PANE);
         shouldPlaceLast.add(BlockID.VINE);
-        shouldPlaceLast.add(BlockID.FENCE_GATE);
     }
 
     /**
@@ -369,7 +366,6 @@ public enum BlockType {
         canPassThrough.add(BlockID.PORTAL);
         canPassThrough.add(BlockID.REDSTONE_REPEATER_OFF);
         canPassThrough.add(BlockID.REDSTONE_REPEATER_ON);
-        canPassThrough.add(BlockID.FENCE_GATE);
         canPassThrough.add(BlockID.VINE);
     }
 
