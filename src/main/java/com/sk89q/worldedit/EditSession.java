@@ -154,8 +154,8 @@ public class EditSession {
      * @return Whether the block changed
      */
     public boolean rawSetBlock(Vector pt, BaseBlock block) {
-        int y = pt.getBlockY();
-        int type = block.getType();
+        final int y = pt.getBlockY();
+        final int type = block.getType();
         if (y < 0 || y > 127) {
             return false;
         }
@@ -173,7 +173,7 @@ public class EditSession {
             }
         }
 
-        int existing = world.getBlockType(pt);
+        final int existing = world.getBlockType(pt);
 
         // Clear the container block so that it doesn't drop items
         if (BlockType.isContainerBlock(existing) && blockBag == null) {
@@ -203,7 +203,7 @@ public class EditSession {
             }
         }
 
-        boolean result;
+        final boolean result;
 
         if (BlockType.usesData(type)) {
             if (fastMode) {
