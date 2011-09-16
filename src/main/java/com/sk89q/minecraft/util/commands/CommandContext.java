@@ -86,6 +86,9 @@ public class CommandContext {
         for (int i = 1; i < args.length; ++i) {
             final String arg = args[i];
 
+            if (arg.charAt(0) != '-') {
+                continue;
+            }
 
             if (arg.equals("--")) {
                 args = removePortionOfArray(args, i, i, null);
