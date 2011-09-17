@@ -25,21 +25,23 @@ package com.sk89q.worldedit.blocks;
  * @author md_5
  */
 public enum MobSpawnerType {
+    CAVE_SPIDER("CaveSpider"),
     CHICKEN("Chicken"),
     COW("Cow"),
     CREEPER("Creeper"),
+    ENDERMAN("Enderman"),
     GHAST("Ghast"),
     GIANT("Giant"),
-    MONSTER("Monster"),
     PIG("Pig"),
     PIG_ZOMBIE("PigZombie"),
     SHEEP("Sheep"),
     SKELETON("Skeleton"),
+    SILVERFISH("Silverfish"),
     SLIME("Slime"),
     SPIDER("Spider"),
     SQUID("Squid"),
-    ZOMBIE("Zombie"),
-    WOLF("Wolf");
+    OLF("Wolf"),
+    ZOMBIE("Zombie");
 
     private String name;
 
