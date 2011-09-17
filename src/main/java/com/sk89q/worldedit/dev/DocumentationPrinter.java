@@ -179,14 +179,14 @@ public class DocumentationPrinter {
                 if (!method.isAnnotationPresent(Command.class)) {
                     continue;
                 }
-    
+
                 Command cmd = method.getAnnotation(Command.class);
 
                 stream.println("    " + cmd.aliases()[0] + ":");
                 stream.println("        description: " + cmd.desc());
-                stream.println("        usage: /<command> "
-                        + (cmd.flags().length() > 0 ? "[-" + cmd.flags() + "] " : "")
-                        + cmd.usage());
+                stream.println("        usage: /<command>"
+                        + (cmd.flags().length() > 0 ? " [-" + cmd.flags() + "]" : "")
+                        + " " + cmd.usage());
                 if (cmd.aliases().length > 1) {
                     stream.println("        aliases: ["
                             + StringUtil.joinQuotedString(cmd.aliases(), ", ", 1, "'")
@@ -200,5 +200,10 @@ public class DocumentationPrinter {
                         + StringUtil.joinQuotedString(cmdPerms.value(), ", ", 0, "'"));
             }
         }
+
+        stream.println();
+        stream.println();
+        stream.println("# Permissions aren't here. Read http://wiki.sk89q.com/wiki/WEPIF/DinnerPerms");
+        stream.println("# for how WorldEdit permissions actually work.");
     }
 }

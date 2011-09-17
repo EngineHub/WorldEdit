@@ -95,6 +95,7 @@ public class ChunkCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
+        player.print("Note that this command does not yet support the mcregion format.");
         LocalConfiguration config = we.getConfiguration();
         
         Set<Vector2D> chunks = session.getSelection(player.getWorld()).getChunks();

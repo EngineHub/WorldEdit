@@ -4,15 +4,15 @@ version: ${project.version}
 commands:
     chunkinfo:
         description: Get information about the chunk that you are inside
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.chunkinfo'
     listchunks:
         description: List chunks that your selection includes
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.listchunks'
     delchunks:
         description: Delete chunks that your selection includes
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.delchunks'
     /load:
         description: Load a schematic into your clipboard
@@ -24,11 +24,11 @@ commands:
         permissions: 'worldedit.clipboard.save'
     /copy:
         description: Copy the selection to the clipboard
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.clipboard.copy'
     /flip:
-        description: Flip the contents of the clipboard
-        usage: /<command> [dir]
+        description: Flip the contents of the clipboard.
+        usage: /<command> [-p] [dir]
         permissions: 'worldedit.clipboard.flip'
     /rotate:
         description: Rotate the contents of the clipboard
@@ -40,11 +40,11 @@ commands:
         permissions: 'worldedit.clipboard.cut'
     /paste:
         description: Paste the clipboard's contents
-        usage: /<command> [-ao] 
+        usage: /<command> [-ao]
         permissions: 'worldedit.clipboard.paste'
     clearclipboard:
         description: Clear your clipboard
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.clipboard.clear'
     /limit:
         description: Modify block change limit
@@ -57,34 +57,35 @@ commands:
         permissions: 'worldedit.global-mask'
     we:
         description: WorldEdit commands
-        usage: /<command> 
+        usage: /<command>
         aliases: ['worldedit']
     /fast:
         description: Toggle fast mode
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.fast'
-    toggleplace:
-        description: 
-        usage: /<command> 
-    searchitem:
+    /toggleplace:
+        description:
+        usage: /<command>
+        aliases: ['toggleplace']
+    /searchitem:
         description: Search for an item
         usage: /<command> [-bi] <query>
-        aliases: ['/l', 'search']
+        aliases: ['/l', '/search', 'searchitem', 'search']
     /hcyl:
         description: Generate a hollow cylinder
-        usage: /<command> <block> <radius> [height] 
+        usage: /<command> <block> <radius> [height]
         permissions: 'worldedit.generation.cylinder'
     /cyl:
         description: Generate a cylinder
-        usage: /<command> <block> <radius> [height] 
+        usage: /<command> <block> <radius> [height]
         permissions: 'worldedit.generation.cylinder'
     /hsphere:
-        description: Generate a hollow sphere
-        usage: /<command> <block> <radius> [raised?] 
+        description: Generate a hollow sphere.
+        usage: /<command> [-q] <block> <radius>[,<radius>,<radius>] [raised?]
         permissions: 'worldedit.generation.sphere'
     /sphere:
-        description: Generate a filled sphere
-        usage: /<command> <block> <radius> [raised?] 
+        description: Generate a filled sphere.
+        usage: /<command> [-q] <block> <radius>[,<radius>,<radius>] [raised?]
         permissions: 'worldedit.generation.sphere'
     forestgen:
         description: Generate a forest
@@ -104,21 +105,23 @@ commands:
         permissions: 'worldedit.generation.pyramid'
     /undo:
         description: Undoes the last action
-        usage: /<command> [times]
+        usage: /<command> [times] [player]
         aliases: ['undo']
         permissions: 'worldedit.history.undo'
     /redo:
         description: Redoes the last action (from history)
-        usage: /<command> [times]
+        usage: /<command> [times] [player]
         aliases: ['redo']
         permissions: 'worldedit.history.redo'
-    clearhistory:
+    /clearhistory:
         description: Clear your history
-        usage: /<command> 
+        usage: /<command>
+        aliases: ['clearhistory']
         permissions: 'worldedit.history.clear'
     unstuck:
         description: Escape from being stuck inside a block
-        usage: /<command> 
+        usage: /<command>
+        aliases: ['!']
         permissions: 'worldedit.navigation.unstuck'
     ascend:
         description: Go up a floor
@@ -134,11 +137,11 @@ commands:
         permissions: 'worldedit.navigation.ceiling'
     thru:
         description: Passthrough walls
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.navigation.thru'
     jumpto:
         description: Teleport to a location
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.navigation.jumpto'
     up:
         description: Go upwards some distance
@@ -162,7 +165,7 @@ commands:
         permissions: 'worldedit.region.overlay'
     /naturalize:
         description: 3 layers of dirt on top then rock below
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.region.naturalize'
     /walls:
         description: Build the four sides of the selection
@@ -183,7 +186,7 @@ commands:
         permissions: 'worldedit.region.move'
     /regen:
         description: Regenerates the contents of the selection
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.regen'
     cs:
         description: Execute a CraftScript
@@ -199,24 +202,20 @@ commands:
         permissions: 'worldedit.analysis.count'
     /size:
         description: Get information about the selection
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.selection.size'
     /shift:
         description: Shift the selection area
         usage: /<command> <amount> [direction]
         permissions: 'worldedit.selection.shift'
+    /chunk:
+        description: Set the selection to your current chunk. The -s flag extends your current selection to the encompassed chunks.
+        usage: /<command> [-s]
+        permissions: 'worldedit.selection.chunk'
     /expand:
         description: Expand the selection area
         usage: /<command> <amount> [reverse-amount] <direction>
         permissions: 'worldedit.selection.expand'
-    /sel:
-        description: Choose a region selector
-        usage: /<command> [type]
-        aliases: [',']
-    /chunk:
-        description: Set the selection to your current chunk. The -s flag extends your current selection to the encompassed chunks.
-        usage: /<command> [-s] 
-        permissions: 'worldedit.selection.chunk'
     /contract:
         description: Contract the selection area
         usage: /<command> <amount> [reverse-amount] [direction]
@@ -231,19 +230,19 @@ commands:
         permissions: 'worldedit.selection.pos'
     /hpos1:
         description: Set position 1 to targeted block
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.selection.hpos'
     /hpos2:
         description: Set position 2 to targeted block
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.selection.hpos'
     /wand:
         description: Get the wand object
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.wand'
     toggleeditwand:
         description: Toggle functionality of the edit wand
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.wand.toggle'
     /outset:
         description: Outset the selection area
@@ -255,11 +254,15 @@ commands:
         permissions: 'worldedit.selection.inset'
     /distr:
         description: Get the distribution of blocks in the selection
-        usage: /<command> [-c] 
+        usage: /<command> [-c]
         permissions: 'worldedit.analysis.distr'
+    /sel:
+        description: Choose a region selector
+        usage: /<command> [type]
+        aliases: [';']
     snapshot:
         description: Snapshot commands
-        usage: /<command> 
+        usage: /<command>
         aliases: ['snap']
     restore:
         description: Restore the selection from a snapshot
@@ -274,10 +277,6 @@ commands:
         description: Set the brush mask
         usage: /<command> [mask]
         permissions: 'worldedit.brush.options.mask'
-    range:
-        description: Set the brush range
-        usage: /<command> [pattern]
-        permissions: 'worldedit.brush.options.range'
     /:
         description: Toggle the super pickaxe pickaxe function
         usage: /<command> [on|off]
@@ -285,23 +284,27 @@ commands:
         permissions: 'worldedit.superpickaxe'
     superpickaxe:
         description: Select super pickaxe mode
-        usage: /<command> 
+        usage: /<command>
         aliases: ['pickaxe', 'sp']
     tool:
         description: Select a tool to bind
-        usage: /<command> 
+        usage: /<command>
     mat:
         description: Set the brush material
         usage: /<command> [pattern]
         aliases: ['material', 'fill']
         permissions: 'worldedit.brush.options.material'
+    range:
+        description: Set the brush range
+        usage: /<command> [pattern]
+        permissions: 'worldedit.brush.options.range'
     info:
         description: Block information tool
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.tool.info'
     none:
         description: Turn off all superpickaxe alternate modes
-        usage: /<command> 
+        usage: /<command>
     tree:
         description: Tree generator tool
         usage: /<command> [type]
@@ -312,24 +315,24 @@ commands:
         permissions: 'worldedit.tool.replacer'
     cycler:
         description: Block data cycler tool
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.tool.data-cycler'
     floodfill:
         description: Flood fill tool
-        usage: /<command> 
+        usage: /<command> <pattern> <range>
         aliases: ['flood']
         permissions: 'worldedit.tool.flood-fill'
     brush:
         description: Brush tool
-        usage: /<command> 
+        usage: /<command>
         aliases: ['br']
     deltree:
         description: Floating tree remover tool
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.tool.deltree'
     farwand:
         description: Wand at a distance tool
-        usage: /<command> 
+        usage: /<command>
         permissions: 'worldedit.tool.farwand'
     remove:
         description: Remove all entities of a type
@@ -338,62 +341,67 @@ commands:
         permissions: 'worldedit.remove'
     /fill:
         description: Fill a hole
-        usage: /<command>  <block> <radius> [depth] 
+        usage: /<command> <block> <radius> [depth]
         permissions: 'worldedit.fill'
     /fillr:
         description: Fill a hole recursively
-        usage: /<command>  <block> <radius> [depth] 
+        usage: /<command> <block> <radius> [depth]
         permissions: 'worldedit.fill.recursive'
     /drain:
         description: Drain a pool
         usage: /<command> <radius>
         permissions: 'worldedit.drain'
-    fixlava:
+    /fixlava:
         description: Fix lava to be stationary
         usage: /<command> <radius>
+        aliases: ['fixlava']
         permissions: 'worldedit.fixlava'
-    fixwater:
+    /fixwater:
         description: Fix water to be stationary
         usage: /<command> <radius>
+        aliases: ['fixwater']
         permissions: 'worldedit.fixwater'
-    removeabove:
-        description: Remove blocks above your head. 
-        usage: /<command> [size] [height] 
+    /removeabove:
+        description: Remove blocks above your head.
+        usage: /<command> [size] [height]
+        aliases: ['removeabove']
         permissions: 'worldedit.removeabove'
-    removebelow:
-        description: Remove blocks below your head. 
-        usage: /<command> [size] [height] 
+    /removebelow:
+        description: Remove blocks below your head.
+        usage: /<command> [size] [height]
+        aliases: ['removebelow']
         permissions: 'worldedit.removebelow'
-    removenear:
+    /removenear:
         description: Remove blocks near you.
-        usage: /<command> <block> [size] 
+        usage: /<command> <block> [size]
+        aliases: ['removenear']
         permissions: 'worldedit.removenear'
-    replacenear:
+    /replacenear:
         description: Replace nearby blocks
-        usage: /<command> <size> <from-id> <to-id> 
+        usage: /<command> <size> <from-id> <to-id>
+        aliases: ['replacenear']
         permissions: 'worldedit.replacenear'
-    snow:
+    /snow:
         description: Simulates snow
         usage: /<command> [radius]
+        aliases: ['snow']
         permissions: 'worldedit.snow'
-    thaw:
+    /thaw:
         description: Thaws the area
         usage: /<command> [radius]
+        aliases: ['thaw']
         permissions: 'worldedit.thaw'
-    green:
+    /green:
         description: Greens the area
         usage: /<command> [radius]
+        aliases: ['green']
         permissions: 'worldedit.green'
-    ex:
+    /ex:
         description: Extinguish nearby fire
         usage: /<command> [radius]
-        aliases: ['ext', 'extinguish']
+        aliases: ['/ext', '/extinguish', 'ex', 'ext', 'extinguish']
         permissions: 'worldedit.extinguish'
     butcher:
         description: Kill all or nearby mobs
         usage: /<command> [-p] [radius]
         permissions: 'worldedit.butcher'
-
-
-# Permissions aren't here. Read http://wiki.sk89q.com/wiki/WEPIF/DinnerPerms
-# for how WorldEdit permissions actually work

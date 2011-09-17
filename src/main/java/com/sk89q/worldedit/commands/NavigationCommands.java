@@ -33,7 +33,7 @@ import com.sk89q.worldedit.*;
  */
 public class NavigationCommands {
     @Command(
-        aliases = {"unstuck"},
+        aliases = {"unstuck", "!"},
         usage = "",
         desc = "Escape from being stuck inside a block",
         min = 0,

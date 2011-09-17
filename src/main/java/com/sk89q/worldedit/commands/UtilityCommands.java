@@ -40,7 +40,7 @@ import com.sk89q.worldedit.regions.Region;
 public class UtilityCommands {
     @Command(
         aliases = {"/fill"},
-        usage = " <block> <radius> [depth] ",
+        usage = "<block> <radius> [depth]",
         desc = "Fill a hole",
         min = 2,
         max = 3
@@ -70,7 +70,7 @@ public class UtilityCommands {
 
     @Command(
         aliases = {"/fillr"},
-        usage = " <block> <radius> [depth] ",
+        usage = "<block> <radius> [depth]",
         desc = "Fill a hole recursively",
         min = 2,
         max = 3
@@ -119,7 +119,7 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/fixlava", "fixlava" },
+        aliases = {"/fixlava", "fixlava"},
         usage = "<radius>",
         desc = "Fix lava to be stationary",
         min = 1,
@@ -139,7 +139,7 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/fixwater", "fixwater" },
+        aliases = {"/fixwater", "fixwater"},
         usage = "<radius>",
         desc = "Fix water to be stationary",
         min = 1,
@@ -159,9 +159,9 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/removeabove", "removeabove" },
-        usage = "[size] [height] ",
-        desc = "Remove blocks above your head. ",
+        aliases = {"/removeabove", "removeabove"},
+        usage = "[size] [height]",
+        desc = "Remove blocks above your head.",
         min = 0,
         max = 2
     )
@@ -181,9 +181,9 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/removebelow", "removebelow" },
+        aliases = {"/removebelow", "removebelow"},
         usage = "[size] [height] ",
-        desc = "Remove blocks below your head. ",
+        desc = "Remove blocks below you.",
         min = 0,
         max = 2
     )
@@ -203,8 +203,8 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/removenear", "removenear" },
-        usage = "<block> [size] ",
+        aliases = {"/removenear", "removenear"},
+        usage = "<block> [size]",
         desc = "Remove blocks near you.",
         min = 1,
         max = 2
@@ -225,8 +225,8 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/replacenear", "replacenear" },
-        usage = "<size> <from-id> <to-id> ",
+        aliases = {"/replacenear", "replacenear"},
+        usage = "<size> <from-id> <to-id>",
         desc = "Replace nearby blocks",
         min = 3,
         max = 3
@@ -263,7 +263,7 @@ public class UtilityCommands {
     }
     
     @Command(
-        aliases = { "/snow", "snow" },
+        aliases = {"/snow", "snow"},
         usage = "[radius]",
         desc = "Simulates snow",
         min = 0,
@@ -282,7 +282,7 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/thaw", "thaw" },
+        aliases = {"/thaw", "thaw"},
         usage = "[radius]",
         desc = "Thaws the area",
         min = 0,
@@ -301,7 +301,7 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/green", "green" },
+        aliases = {"/green", "green"},
         usage = "[radius]",
         desc = "Greens the area",
         min = 0,
@@ -320,7 +320,7 @@ public class UtilityCommands {
     }
 
     @Command(
-            aliases = { "/ex", "/ext", "/extinguish", "ex", "ext", "extinguish" },
+            aliases = {"/ex", "/ext", "/extinguish", "ex", "ext", "extinguish"},
             usage = "[radius]",
             desc = "Extinguish nearby fire",
             min = 0,

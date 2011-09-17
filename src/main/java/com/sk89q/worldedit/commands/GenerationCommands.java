@@ -36,7 +36,7 @@ import com.sk89q.worldedit.util.TreeGenerator;
 public class GenerationCommands {
     @Command(
         aliases = {"/hcyl"},
-        usage = "<block> <radius> [height] ",
+        usage = "<block> <radius> [height]",
         desc = "Generate a hollow cylinder",
         min = 2,
         max = 3
@@ -58,7 +58,7 @@ public class GenerationCommands {
 
     @Command(
         aliases = {"/cyl"},
-        usage = "<block> <radius> [height] ",
+        usage = "<block> <radius> [height]",
         desc = "Generate a cylinder",
         min = 2,
         max = 3
@@ -80,7 +80,7 @@ public class GenerationCommands {
 
     @Command(
         aliases = {"/hsphere"},
-        usage = "<block> <radius>[,<radius>,<radius>] [raised?] ",
+        usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
         desc = "Generate a hollow sphere.",
         flags = "q",
         min = 2,
@@ -152,7 +152,7 @@ public class GenerationCommands {
 
     @Command(
         aliases = {"/sphere"},
-        usage = "<block> <radius>[,<radius>,<radius>] [raised?] ",
+        usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
         desc = "Generate a filled sphere.",
         flags = "q",
         min = 2,

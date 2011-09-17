@@ -104,9 +104,9 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = { "/toggleplace", "toggleplace" },
+        aliases = {"/toggleplace", "toggleplace"},
         usage = "",
-        desc = "",
+        desc = "Switch between your position and pos1 for placement",
         min = 0,
         max = 0
     )
@@ -122,7 +122,7 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = { "/searchitem", "/l", "/search", "searchitem", "search" },
+        aliases = {"/searchitem", "/l", "/search", "searchitem", "search"},
         usage = "<query>",
         flags = "bi",
         desc = "Search for an item",

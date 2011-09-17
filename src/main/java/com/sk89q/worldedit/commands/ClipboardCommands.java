@@ -155,7 +155,7 @@ public class ClipboardCommands {
         aliases = {"/flip"},
         usage = "[dir]",
         flags = "p",
-        desc = "Flip the contents of the clipboard. To flip it around yourself, use the -p flag.",
+        desc = "Flip the contents of the clipboard.",
         min = 0,
         max = 1
     )

@@ -171,7 +171,7 @@ public class SelectionCommands {
         aliases = {"/chunk"},
         usage = "",
         flags = "s",
-        desc = "Set the selection to your current chunk. The -s flag extends your current selection to the encompassed chunks.",
+        desc = "Set the selection to your current chunk.",
         min = 0,
         max = 0
     )
@@ -575,16 +575,19 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/sel", ","},
+        aliases = {"/sel", ";"},
         usage = "[type]",
         desc = "Choose a region selector",
-        min = 1,
+        min = 0,
         max = 1
     )
     public static void select(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
+        if (args.length() == 0) {
+            session.getRegionSelector(player.getWorld()).clear();
+        }
         String typeName = args.getString(0);
         if (typeName.equalsIgnoreCase("cuboid")) {
             session.setRegionSelector(player.getWorld(), new CuboidRegionSelector());
