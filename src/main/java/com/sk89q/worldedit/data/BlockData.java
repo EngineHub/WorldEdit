@@ -477,4 +477,170 @@ public final class BlockData {
 
         return data;
     }
+
+    /**
+     * Cycle a block's data value. This usually goes through some rotational pattern
+     * depending on the block. If it returns -1, it means the id and data specified
+     * do not have anything to cycle to.
+     *
+     * @param type block id to be cycled
+     * @param data block data value that it starts at
+     * @param increment whether to go forward (1) or backward (-1) in the cycle
+     * @return the new data value for the block
+     */
+    public static int cycle(int type, int data, int increment) {
+        switch (type) {
+        case BlockID.LOG:
+        case BlockID.LONG_GRASS:
+        case BlockID.STONE_BRICK:
+            return (data + increment) % 3;
+
+        case BlockID.TORCH:
+        case BlockID.REDSTONE_TORCH_ON:
+        case BlockID.REDSTONE_TORCH_OFF:
+            if (data == 5) return -1;
+            /* FALL-THROUGH */
+        case BlockID.WOODEN_STAIRS:
+        case BlockID.COBBLESTONE_STAIRS:
+        case BlockID.BRICK_STAIRS:
+        case BlockID.STONE_BRICK_STAIRS:
+        case BlockID.PUMPKIN:
+        case BlockID.JACKOLANTERN:
+        case BlockID.TRAP_DOOR:
+            return (data + increment) % 4;
+
+        case BlockID.STEP:
+        case BlockID.DOUBLE_STEP:
+        case BlockID.CAKE_BLOCK:
+            return (data + increment) % 6;
+
+        case BlockID.CROPS:
+        case BlockID.PUMPKIN_STEM:
+        case BlockID.MELON_STEM:
+            return (data + increment) % 7;
+
+        case BlockID.SOIL:
+        case BlockID.SNOW:
+            return (data + increment) % 9;
+
+        case BlockID.RED_MUSHROOM_CAP:
+        case BlockID.BROWN_MUSHROOM_CAP:
+            return (data + increment) % 10;
+
+        case BlockID.CACTUS:
+        case BlockID.REED:
+        case BlockID.SIGN_POST:
+            return (data + increment) % 16;
+
+        case BlockID.VINE:
+            return (data - 1 + increment) % 15 + 1;
+
+        case BlockID.FURNACE:
+        case BlockID.BURNING_FURNACE:
+        case BlockID.DISPENSER:
+            return (data + increment) % 4 + 2;
+
+        case BlockID.WALL_SIGN:
+            return ((data + increment) - 2) % 4 + 2;
+
+        case BlockID.REDSTONE_REPEATER_OFF:
+        case BlockID.REDSTONE_REPEATER_ON:
+            int dir = data & 0x3;
+            int delay = data & 0x0c;
+            return (dir + increment) % 4 | delay;
+
+        case BlockID.MINECART_TRACKS:
+            if (data >= 6 && data <= 9) {
+                return (data + increment) % 4 + 6;
+            } else {
+                return -1;
+            }
+
+        case BlockID.SAPLING:
+            int saplingType = data & 0x02;
+            int age = data & 0x0c;
+            return (saplingType + increment) % 3 | age;
+
+        case BlockID.LEAVES:
+            int tree = data & 0x03;
+            int leafMeta = data & 0x0c;
+            return (tree + increment) % 4 | leafMeta;
+
+        case BlockID.CLOTH:
+            if (increment > 0) {
+                data = nextClothColor(data);
+            } else if (increment < 0) {
+                data = prevClothColor(data);
+            } else {
+                return -1; // shouldn't have a 0 increment anyway
+            }
+            return data;
+
+        case BlockID.FENCE_GATE:
+            int direction = data & 0x03;
+            int open = data & 0x04;
+            return (direction + increment) % 4 | open;
+
+        default:
+            return -1;
+        }
+    }
+
+    /**
+     * Returns the data value for the next color of cloth in the rainbow. This
+     * should not be used if you want to just increment the data value.
+     * @param data
+     * @return
+     */
+    public static int nextClothColor(int data) {
+        switch (data) {
+            case 0: return 8;
+            case 8: return 7;
+            case 7: return 15;
+            case 15: return 12;
+            case 12: return 14;
+            case 14: return 1;
+            case 1: return 4;
+            case 4: return 5;
+            case 5: return 13;
+            case 13: return 9;
+            case 9: return 3;
+            case 3: return 11;
+            case 11: return 10;
+            case 10: return 2;
+            case 2: return 6;
+            case 6: return 0;
+        }
+    
+        return 0;
+    }
+
+    /**
+     * Returns the data value for the previous ext color of cloth in the rainbow.
+     * This should not be used if you want to just increment the data value.
+     * @param data
+     * @return
+     */
+    public static int prevClothColor(int data) {
+        switch (data) {
+            case 8: return 0;
+            case 7: return 8;
+            case 15: return 7;
+            case 12: return 15;
+            case 14: return 12;
+            case 1: return 14;
+            case 4: return 1;
+            case 5: return 4;
+            case 13: return 5;
+            case 9: return 13;
+            case 3: return 9;
+            case 11: return 3;
+            case 10: return 11;
+            case 2: return 10;
+            case 6: return 2;
+            case 0: return 6;
+        }
+    
+        return 0;
+    }
 }
