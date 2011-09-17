@@ -432,6 +432,7 @@ public enum BlockType {
         usesData.add(BlockID.REDSTONE_REPEATER_OFF);
         usesData.add(BlockID.REDSTONE_REPEATER_ON);
         usesData.add(BlockID.TRAP_DOOR);
+        usesData.add(BlockID.SILVERFISH_BLOCK);
         usesData.add(BlockID.STONE_BRICK);
         usesData.add(BlockID.RED_MUSHROOM_CAP);
         usesData.add(BlockID.BROWN_MUSHROOM_CAP);

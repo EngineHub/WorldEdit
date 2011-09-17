@@ -493,6 +493,7 @@ public final class BlockData {
         case BlockID.LOG:
         case BlockID.LONG_GRASS:
         case BlockID.STONE_BRICK:
+        case BlockID.SILVERFISH_BLOCK:
             return (data + increment) % 3;
 
         case BlockID.TORCH:
