@@ -10,4 +10,5 @@ public enum EntityType {
     BOATS,
     MINECARTS,
     TNT,
+    XP_ORBS
 }

@@ -28,6 +28,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -532,6 +533,11 @@ public class BukkitWorld extends LocalWorld {
                 }
             } else if (type == EntityType.TNT) {
                 if (ent instanceof TNTPrimed) {
+                    ent.remove();
+                    ++num;
+                }
+            } else if (type == EntityType.XP_ORBS) {
+                if (ent instanceof ExperienceOrb) {
                     ent.remove();
                     ++num;
                 }

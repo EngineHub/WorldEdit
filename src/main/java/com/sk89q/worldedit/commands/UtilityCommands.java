@@ -404,8 +404,10 @@ public class UtilityCommands {
             type = EntityType.MINECARTS;
         } else if (typeStr.matches("tnt")) {
             type = EntityType.TNT;
+        } else if (typeStr.matches("xp")) {
+            type = EntityType.XP_ORBS;
         } else {
-            player.printError("Acceptable types: arrows, items, paintings, boats, minecarts, tnt");
+            player.printError("Acceptable types: arrows, items, paintings, boats, minecarts, tnt, xp");
             return;
         }
 
