@@ -585,8 +585,9 @@ public class SelectionCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        if (args.length() == 0) {
+        if (args.argsLength() == 0) {
             session.getRegionSelector(player.getWorld()).clear();
+            return;
         }
         String typeName = args.getString(0);
         if (typeName.equalsIgnoreCase("cuboid")) {

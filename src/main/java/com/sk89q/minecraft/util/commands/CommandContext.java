@@ -221,10 +221,6 @@ public class CommandContext {
         return Double.parseDouble(value);
     }
 
-    public int length() {
-        return args.length;
-    }
-
     public int argsLength() {
         return args.length - 1;
     }
