@@ -129,7 +129,8 @@ public class BaseBlock {
         if (!(o instanceof BaseBlock)) {
             return false;
         }
-        return (type == ((BaseBlock)o).type) && (data == ((BaseBlock)o).data);
+        return (type == ((BaseBlock)o).type)
+                && (data == ((BaseBlock)o).data || data == -1 || ((BaseBlock)o).data == -1);
     }
     
     @Override

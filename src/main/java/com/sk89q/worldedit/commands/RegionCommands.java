@@ -73,6 +73,7 @@ public class RegionCommands {
         aliases = {"/replace"},
         usage = "[from-block] <to-block>",
         desc = "Replace all blocks in the selection with another",
+        flags = "f",
         min = 1,
         max = 2
     )
@@ -88,7 +89,7 @@ public class RegionCommands {
             from = null;
             to = we.getBlockPattern(player, args.getString(0));
         } else {
-            from = we.getBlocks(player, args.getString(0), true);
+            from = we.getBlocks(player, args.getString(0), true, !args.hasFlag('f'));
             to = we.getBlockPattern(player, args.getString(1));
         }
 

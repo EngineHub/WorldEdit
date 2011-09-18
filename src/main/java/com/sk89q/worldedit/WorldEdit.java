@@ -246,6 +246,11 @@ public class WorldEdit {
         }
     }
 
+    public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed)
+            throws UnknownItemException, DisallowedItemException {
+        return getBlock(player, arg, allAllowed, false);
+    }
+
     /**
      * Get an item ID from an item name or an item ID number.
      *
@@ -256,7 +261,8 @@ public class WorldEdit {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed)
+    public BaseBlock getBlock(LocalPlayer player, String arg,
+                              boolean allAllowed, boolean allowNoData)
             throws UnknownItemException, DisallowedItemException {
         BlockType blockType;
         arg = arg.replace("_", " ");
@@ -307,8 +313,8 @@ public class WorldEdit {
         if (data == -1) { // Block data not yet detected
             // Parse the block data (optional)
             try {
-                data = args1.length > 1 ? Integer.parseInt(args1[1]) : 0;
-                if (data > 15 || data < 0) {
+                data = args1.length > 1 ? Integer.parseInt(args1[1]) : (allowNoData ? -1 : 0);
+                if (data > 15 || (data < 0 && !(allAllowed && data == -1))) {
                     data = 0;
                 }
             } catch (NumberFormatException e) {
@@ -344,6 +350,11 @@ public class WorldEdit {
                         case COBBLESTONE:
                             data = 3;
                             break;
+                        case BRICK:
+                            data = 4;
+                            break;
+                        case STONE_BRICK:
+                            data = 5;
 
                         default:
                             throw new InvalidItemException(arg, "Invalid step type '" + args1[1] + "'");
@@ -425,14 +436,20 @@ public class WorldEdit {
         return getBlock(player, id, false);
     }
 
-    public Set<BaseBlock> getBlocks (LocalPlayer player, String list, boolean allAllowed)
+    public Set<BaseBlock> getBlocks (LocalPlayer player, String list,
+                                     boolean allAllowed, boolean allowNoData)
             throws DisallowedItemException, UnknownItemException {
         String[] items = list.split(",");
         Set<BaseBlock> blocks = new HashSet<BaseBlock>();
         for (String id : items) {
-            blocks.add(getBlock(player, id, allAllowed));
+            blocks.add(getBlock(player, id, allAllowed, allowNoData));
         }
         return blocks;
+    }
+
+    public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed)
+            throws DisallowedItemException, UnknownItemException {
+        return getBlocks(player, list, allAllowed);
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list)

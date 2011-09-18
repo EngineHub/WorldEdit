@@ -228,6 +228,7 @@ public class UtilityCommands {
         aliases = {"/replacenear", "replacenear"},
         usage = "<size> <from-id> <to-id>",
         desc = "Replace nearby blocks",
+        flags = "f",
         min = 3,
         max = 3
     )
@@ -245,7 +246,7 @@ public class UtilityCommands {
             from = null;
             to = we.getBlockPattern(player, args.getString(1));
         } else {
-            from = we.getBlocks(player, args.getString(1), true);
+            from = we.getBlocks(player, args.getString(1), true, !args.hasFlag('f'));
             to = we.getBlockPattern(player, args.getString(2));
         }
 

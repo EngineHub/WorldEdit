@@ -207,9 +207,9 @@ public class EditSession {
 
         if (BlockType.usesData(type)) {
             if (fastMode) {
-                result = world.setTypeIdAndDataFast(pt, type, block.getData());
+                result = world.setTypeIdAndDataFast(pt, type, block.getData() > -1 ? block.getData() : 0);
             } else {
-                result = world.setTypeIdAndData(pt, type, block.getData());
+                result = world.setTypeIdAndData(pt, type, block.getData() > -1 ? block.getData() : 0);
             }
         } else {
             if (fastMode) {
