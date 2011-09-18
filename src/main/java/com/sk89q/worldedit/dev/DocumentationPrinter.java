@@ -186,18 +186,12 @@ public class DocumentationPrinter {
                 stream.println("        description: " + cmd.desc());
                 stream.println("        usage: /<command>"
                         + (cmd.flags().length() > 0 ? " [-" + cmd.flags() + "]" : "")
-                        + " " + cmd.usage());
+                        + (cmd.usage().length() > 0 ? " " + cmd.usage() : ""));
                 if (cmd.aliases().length > 1) {
                     stream.println("        aliases: ["
                             + StringUtil.joinQuotedString(cmd.aliases(), ", ", 1, "'")
                             + "]");
                 }
-                if (!method.isAnnotationPresent(CommandPermissions.class)) {
-                    continue;
-                }
-                CommandPermissions cmdPerms = method.getAnnotation(CommandPermissions.class);
-                stream.println("        permissions: "
-                        + StringUtil.joinQuotedString(cmdPerms.value(), ", ", 0, "'"));
             }
         }
 

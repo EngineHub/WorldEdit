@@ -182,7 +182,7 @@ public class UtilityCommands {
 
     @Command(
         aliases = {"/removebelow", "removebelow"},
-        usage = "[size] [height] ",
+        usage = "[size] [height]",
         desc = "Remove blocks below you.",
         min = 0,
         max = 2
