@@ -11,7 +11,6 @@ import java.util.HashSet;
 public class CommandContextTest {
     final String firstCmdString = "herpderp -opw testers \"mani world\" 'another thing'  because something";
     CommandContext firstCommand;
-    CommandContext secondCommand;
 
     @Before
     public void setUpTest(){
@@ -19,7 +18,7 @@ public class CommandContextTest {
             firstCommand = new CommandContext(firstCmdString, new HashSet<Character>(Arrays.asList('o', 'w')));
         } catch (CommandException e) {
             e.printStackTrace();
-            fail();
+            fail("Unexpected exception when creating CommandContext");
         }
     }
 
@@ -27,6 +26,50 @@ public class CommandContextTest {
     public void testInvalidFlags() throws CommandException {
         String failingCommand = "herpderp -opw testers";
         new CommandContext(failingCommand, new HashSet<Character>(Arrays.asList('o', 'w')));
+    }
+
+    @Test
+    public void testBasicArgs() {
+        String command = firstCommand.getCommand();
+        String argOne = firstCommand.getString(0);
+        String joinedArg = firstCommand.getJoinedStrings(0);
+        assertEquals(command, "herpderp");
+        assertEquals(argOne, "another thing");
+        assertEquals(joinedArg, "another thing because something");
+    }
+
+    @Test
+    public void testFlags() {
+        assertTrue(firstCommand.hasFlag('p'));
+        assertTrue(firstCommand.hasFlag('o'));
+        assertTrue(firstCommand.hasFlag('w'));
+        assertEquals(firstCommand.getFlag('o'), "testers");
+        assertEquals(firstCommand.getFlag('w'), "mani world");
+        assertNull(firstCommand.getFlag('u'));
+    }
+
+    @Test
+    public void testOnlyQuotedString() {
+        String cmd = "r \"hello goodbye have fun\"";
+        String cmd2 = "r 'hellogeedby' nnnnnee";
+        try {
+            CommandContext context = new CommandContext(cmd);
+            CommandContext context2 = new CommandContext(cmd2);
+        } catch (CommandException e) {
+            e.printStackTrace();
+            fail("Error creating CommandContext");
+        }
+    }
+
+    @Test
+    public void testHagingQuoted() {
+        String cmd = "r \"hello goodbye have fun";
+        try {
+            CommandContext context = new CommandContext(cmd);
+        } catch (CommandException e) {
+            e.printStackTrace();
+            fail("Error creating CommandContext");
+        }
     }
 
 }

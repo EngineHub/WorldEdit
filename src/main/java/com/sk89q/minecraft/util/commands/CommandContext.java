@@ -74,7 +74,7 @@ public class CommandContext {
                         build.append(' ').append(arg2);
                     }
                 }
-                args = removePortionOfArray(args, i, endIndex, build.toString());
+                if (endIndex < args.length) args = removePortionOfArray(args, i, endIndex, build.toString());
             }
         }
 
