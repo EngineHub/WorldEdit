@@ -24,9 +24,11 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumSet;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 import com.sk89q.util.StringUtil;
+import org.omg.CORBA.PRIVATE_MEMBER;
 
 /**
  * Block types.
@@ -727,12 +729,130 @@ public enum BlockType {
      * @param id
      * @return
      */
+    @Deprecated
     public static int getDroppedBlock(int id) {
         Integer dropped = blockDrops.get(id);
         if (dropped == null) {
             return BlockID.AIR;
         }
         return dropped;
+    }
+    
+    private static final Random random = new Random();
+    public static BaseItemStack getBlockDrop(int id, short data) {
+        switch (id) {
+        case BlockID.STONE:
+            return new BaseItemStack(BlockID.COBBLESTONE);
+
+        case BlockID.GRASS:
+            return new BaseItemStack(BlockID.DIRT);
+
+        case BlockID.GRAVEL:
+            if (random.nextDouble() >= 0.9) {
+                return new BaseItemStack(ItemType.FLINT.getID());
+            } else {
+                return new BaseItemStack(id);
+            }
+
+        case BlockID.COAL_ORE:
+            return new BaseItemStack(ItemType.COAL.getID());
+
+        case BlockID.LOG:
+            return new BaseItemStack(id, 1, data);
+
+        case BlockID.LEAVES:
+            if (random.nextDouble() > 0.95) {
+                return new BaseItemStack(BlockID.SAPLING, 1, data);
+            }
+
+        case BlockID.LAPIS_LAZULI_ORE:
+            return new BaseItemStack(ItemType.INK_SACK.getID(), random.nextInt(5) + 4, (short) 4);
+
+        case BlockID.BED:
+            return new BaseItemStack(ItemType.BED_ITEM.getID());
+
+        case BlockID.LONG_GRASS:
+            if (random.nextInt(8) == 0) return new BaseItemStack(ItemType.SEEDS.getID());
+
+        case BlockID.CLOTH:
+            return new BaseItemStack(id, 1, data);
+
+        case BlockID.DOUBLE_STEP:
+            return new BaseItemStack(BlockID.STEP, 2, data);
+
+        case BlockID.STEP:
+            return new BaseItemStack(id, 1, data);
+
+        case BlockID.WOODEN_STAIRS:
+            return new BaseItemStack(BlockID.WOOD);
+
+        case BlockID.REDSTONE_WIRE:
+            return new BaseItemStack(ItemType.REDSTONE_DUST.getID());
+
+        case BlockID.DIAMOND_ORE:
+            return new BaseItemStack(ItemType.DIAMOND.getID());
+
+        case BlockID.CROPS:
+            return new BaseItemStack(ItemType.SEEDS.getID());
+
+        case BlockID.SOIL:
+            return new BaseItemStack(BlockID.DIRT);
+
+        case BlockID.BURNING_FURNACE:
+            return new BaseItemStack(BlockID.FURNACE);
+
+        case BlockID.SIGN_POST:
+            return new BaseItemStack(ItemType.SIGN.getID());
+
+        case BlockID.WOODEN_DOOR:
+            return new BaseItemStack(ItemType.WOODEN_DOOR_ITEM.getID());
+
+        case BlockID.COBBLESTONE_STAIRS:
+            return new BaseItemStack(BlockID.COBBLESTONE);
+
+        case BlockID.WALL_SIGN:
+            return new BaseItemStack(ItemType.SIGN.getID());
+
+        case BlockID.IRON_DOOR:
+            return new BaseItemStack(ItemType.IRON_DOOR_ITEM.getID());
+
+        case BlockID.REDSTONE_ORE:
+        case BlockID.GLOWING_REDSTONE_ORE:
+            return new BaseItemStack(ItemType.REDSTONE_DUST.getID(), (random.nextInt(2) + 4));
+
+        case BlockID.REDSTONE_TORCH_OFF:
+            return new BaseItemStack(BlockID.REDSTONE_TORCH_ON);
+
+        case BlockID.CLAY:
+            return new BaseItemStack(ItemType.CLAY_BALL.getID(), 4);
+
+        case BlockID.REED:
+            return new BaseItemStack(ItemType.SUGAR_CANE_ITEM.getID());
+
+        case BlockID.LIGHTSTONE:
+            return new BaseItemStack(ItemType.LIGHTSTONE_DUST.getID(), (random.nextInt(3) + 2));
+
+        case BlockID.REDSTONE_REPEATER_OFF:
+        case BlockID.REDSTONE_REPEATER_ON:
+            return new BaseItemStack(ItemType.REDSTONE_REPEATER.getID());
+
+        case BlockID.BEDROCK:
+        case BlockID.WATER:
+        case BlockID.STATIONARY_WATER:
+        case BlockID.LAVA:
+        case BlockID.STATIONARY_LAVA:
+        case BlockID.GLASS:
+        case BlockID.PISTON_EXTENSION:
+        case BlockID.BOOKCASE:
+        case BlockID.FIRE:
+        case BlockID.MOB_SPAWNER:
+        case BlockID.SNOW:
+        case BlockID.ICE:
+        case BlockID.PORTAL:
+        case BlockID.AIR:
+            return null;
+        }
+        return new BaseItemStack(id);
     }
 
 }

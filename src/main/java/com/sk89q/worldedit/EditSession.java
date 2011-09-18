@@ -1012,7 +1012,7 @@ public class EditSession {
                         BaseBlock curBlockType = getBlock(pt);
 
                         if ((fromBlockTypes == null && !curBlockType.isAir())
-                                || (fromBlockTypes != null && curBlockType.inIterable(fromBlockTypes))) {
+                                || (fromBlockTypes != null && curBlockType.inIterable(fromBlockTypes))) { // Probably faster if someone adds a proper hashCode to BaseBlock
                             if (setBlock(pt, toBlock)) {
                                 ++affected;
                             }
@@ -1068,7 +1068,7 @@ public class EditSession {
                         BaseBlock curBlockType = getBlock(pt);
 
                         if ((fromBlockTypes == null && !curBlockType.isAir())
-                                || (fromBlockTypes != null && curBlockType.inIterable(fromBlockTypes))) {
+                                || (fromBlockTypes != null && curBlockType.inIterable(fromBlockTypes))) { // Probably faster if someone adds a proper hashCode to BaseBlock
                             if (setBlock(pt, pattern.next(pt))) {
                                 ++affected;
                             }
