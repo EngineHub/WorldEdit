@@ -52,9 +52,9 @@ public class CommandContextTest {
         String command = firstCommand.getCommand();
         String argOne = firstCommand.getString(0);
         String joinedArg = firstCommand.getJoinedStrings(0);
-        assertEquals(command, "herpderp");
-        assertEquals(argOne, "another thing");
-        assertEquals(joinedArg, "another thing because something");
+        assertEquals("herpderp", command);
+        assertEquals("another thing", argOne);
+        assertEquals("another thing because something", joinedArg);
     }
 
     @Test
@@ -62,8 +62,8 @@ public class CommandContextTest {
         assertTrue(firstCommand.hasFlag('p'));
         assertTrue(firstCommand.hasFlag('o'));
         assertTrue(firstCommand.hasFlag('w'));
-        assertEquals(firstCommand.getFlag('o'), "testers");
-        assertEquals(firstCommand.getFlag('w'), "mani world");
+        assertEquals("testers", firstCommand.getFlag('o'));
+        assertEquals("mani world", firstCommand.getFlag('w'));
         assertNull(firstCommand.getFlag('u'));
     }
 
@@ -72,8 +72,8 @@ public class CommandContextTest {
         String cmd = "r \"hello goodbye have fun\"";
         String cmd2 = "r 'hellogeedby' nnnnnee";
         try {
-            CommandContext context = new CommandContext(cmd);
-            CommandContext context2 = new CommandContext(cmd2);
+            new CommandContext(cmd);
+            new CommandContext(cmd2);
         } catch (CommandException e) {
             e.printStackTrace();
             fail("Error creating CommandContext");
@@ -84,11 +84,35 @@ public class CommandContextTest {
     public void testHangingQuote() {
         String cmd = "r \"hello goodbye have fun";
         try {
-            CommandContext context = new CommandContext(cmd);
+            new CommandContext(cmd);
         } catch (CommandException e) {
             e.printStackTrace();
             fail("Error creating CommandContext");
         }
     }
 
+    @Test
+    public void testMultipleSpaces() {
+        String cmd = "r hi   self";
+        try {
+            new CommandContext(cmd);
+        } catch (CommandException e) {
+            e.printStackTrace();
+            fail("Error creating CommandContext");
+        }
+    }
+
+    @Test
+    public void testflagsAnywhere() {
+        try {
+            CommandContext context = new CommandContext("r hello -f");
+            assertTrue(context.hasFlag('f'));
+
+            CommandContext context2 = new CommandContext("r hello -f world");
+            assertTrue(context2.hasFlag('f'));
+        } catch (CommandException e) {
+            e.printStackTrace();
+            fail("Error creating CommandContext");
+        }
+    }
 }

@@ -18,12 +18,13 @@
 
 package com.sk89q.minecraft.util.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import static com.sk89q.util.ArrayUtil.removePortionOfArray;
 
 public class CommandContext {
     protected final String[] args;
@@ -48,11 +49,18 @@ public class CommandContext {
      * @throws CommandException This is thrown if flag fails for some reason.
      */
     public CommandContext(String[] args, Set<Character> valueFlags) throws CommandException {
+        if (valueFlags == null) {
+            valueFlags = Collections.emptySet();
+        }
+
+        final String command = args[0];
+
+        List<String> argList = new ArrayList<String>(args.length);
+        argList.add(command);
         // Go through empty args and multiword args first
         for (int i = 1; i < args.length; ++i) {
-            final String arg = args[i];
+            String arg = args[i];
             if (arg.isEmpty()) {
-                args = removePortionOfArray(args, i, i, null);
                 continue;
             }
 
@@ -61,6 +69,7 @@ public class CommandContext {
             case '"':
                 final StringBuilder build = new StringBuilder();
                 final char quotedChar = arg.charAt(0);
+
                 int endIndex;
                 for (endIndex = i; endIndex < args.length; ++endIndex) {
                     final String arg2 = args[endIndex];
@@ -74,50 +83,62 @@ public class CommandContext {
                         build.append(' ').append(arg2);
                     }
                 }
-                if (endIndex < args.length) args = removePortionOfArray(args, i, endIndex, build.toString());
+
+                if (endIndex < args.length) {
+                    arg = build.toString();
+                    i = endIndex;
+                }
+                // else raise exception about hanging quotes?
             }
+            argList.add(arg);
         }
 
-        if (valueFlags == null) {
-            valueFlags = Collections.emptySet();
-        }
+        List<String> argList2 = new ArrayList<String>(argList.size());
+        argList2.add(command);
 
         // Then flags
-        for (int i = 1; i < args.length; ++i) {
-            final String arg = args[i];
+        int nextArg = 1;
 
-            if (arg.charAt(0) != '-') {
+        while (nextArg < argList.size()) {
+            // Fetch argument
+            String arg = argList.get(nextArg++);
+
+            // No more flags?
+            if (arg.charAt(0) != '-' || arg.length() == 1 || !arg.matches("^-[a-zA-Z]+$")) {
+                argList2.add(arg);
                 continue;
             }
 
+            // Handle flag parsing terminator --
             if (arg.equals("--")) {
-                args = removePortionOfArray(args, i, i, null);
+                while (nextArg < argList.size()) {
+                    argList2.add(argList.get(nextArg++));
+                }
                 break;
             }
 
-            if (!arg.matches("^-[a-zA-Z]+$")) {
-                continue;
-            }
-            int index = i;
-            for (int k = 1; k < arg.length(); ++k) {
-                final char flagName = arg.charAt(k);
+            // Go through the flags
+            for (int i = 1; i < arg.length(); ++i) {
+                char flagName = arg.charAt(i);
+
                 if (valueFlags.contains(flagName)) {
                     if (this.valueFlags.containsKey(flagName)) {
                         throw new CommandException("Value flag '" + flagName + "' already given");
                     }
-                    index++;
-                    if (index >= args.length) {
-                        throw new CommandException("Value flag '" + flagName + "' specified without value");
-                    }
 
-                    this.valueFlags.put(flagName, args[index]);
-                } else {
+                    if (nextArg >= argList.size())
+                        throw new CommandException("No value specified for the '-"+flagName+"' flag.");
+
+                    // If it is a value flag, read another argument and add it
+                    this.valueFlags.put(flagName, argList.get(nextArg++));
+                }
+                else {
                     booleanFlags.add(flagName);
                 }
             }
-            args = removePortionOfArray(args, i, index, null);
         }
-        this.args = args;
+
+        this.args = args = argList2.toArray(new String[argList2.size()]);
     }
 
     public String getCommand() {
