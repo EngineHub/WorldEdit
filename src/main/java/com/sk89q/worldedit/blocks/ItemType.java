@@ -145,121 +145,121 @@ public enum ItemType {
     STONE_BRICK_STAIRS(BlockID.STONE_BRICK_STAIRS, "Stone brick stairs", "stonebrickstairs", "smoothstonebrickstairs"),
 
     // Items
-    IRON_SHOVEL(256, "Iron shovel", "ironshovel"),
-    IRON_PICK(257, "Iron pick", "ironpick", "ironpickaxe"),
-    IRON_AXE(258, "Iron axe", "ironaxe"),
-    FLINT_AND_TINDER(259, "Flint and tinder", "flintandtinder", "lighter", "flintandsteel", "flintsteel", "flintandiron", "flintnsteel", "flintniron", "flintntinder"),
-    RED_APPLE(260, "Red apple", "redapple", "apple"),
-    BOW(261, "Bow", "bow"),
-    ARROW(262, "Arrow", "arrow"),
-    COAL(263, "Coal", "coal"),
-    DIAMOND(264, "Diamond", "diamond"),
-    IRON_BAR(265, "Iron bar", "ironbar", "iron"),
-    GOLD_BAR(266, "Gold bar", "goldbar", "gold"),
-    IRON_SWORD(267, "Iron sword", "ironsword"),
-    WOOD_SWORD(268, "Wooden sword", "woodsword"),
-    WOOD_SHOVEL(269, "Wooden shovel", "woodshovel"),
-    WOOD_PICKAXE(270, "Wooden pickaxe", "woodpick", "woodpickaxe"),
-    WOOD_AXE(271, "Wooden axe", "woodaxe"),
-    STONE_SWORD(272, "Stone sword", "stonesword"),
-    STONE_SHOVEL(273, "Stone shovel", "stoneshovel"),
-    STONE_PICKAXE(274, "Stone pickaxe", "stonepick", "stonepickaxe"),
-    STONE_AXE(275, "Stone pickaxe", "stoneaxe"),
-    DIAMOND_SWORD(276, "Diamond sword", "diamondsword"),
-    DIAMOND_SHOVEL(277, "Diamond shovel", "diamondshovel"),
-    DIAMOND_PICKAXE(278, "Diamond pickaxe", "diamondpick", "diamondpickaxe"),
-    DIAMOND_AXE(279, "Diamond axe", "diamondaxe"),
-    STICK(280, "Stick", "stick"),
-    BOWL(281, "Bowl", "bowl"),
-    MUSHROOM_SOUP(282, "Mushroom soup", "mushroomsoup", "soup", "brbsoup"),
-    GOLD_SWORD(283, "Golden sword", "goldsword"),
-    GOLD_SHOVEL(284, "Golden shovel", "goldshovel"),
-    GOLD_PICKAXE(285, "Golden pickaxe", "goldpick", "goldpickaxe"),
-    GOLD_AXE(286, "Golden axe", "goldaxe"),
-    STRING(287, "String", "string"),
-    FEATHER(288, "Feather", "feather"),
-    SULPHUR(289, "Sulphur", "sulphur", "sulfur", "gunpowder"),
-    WOOD_HOE(290, "Wooden hoe", "woodhoe"),
-    STONE_HOE(291, "Stone hoe", "stonehoe"),
-    IRON_HOE(292, "Iron hoe", "ironhoe"),
-    DIAMOND_HOE(293, "Diamond hoe", "diamondhoe"),
-    GOLD_HOE(294, "Golden hoe", "goldhoe"),
-    SEEDS(295, "Seeds", "seeds", "seed"),
-    WHEAT(296, "Wheat", "wheat"),
-    BREAD(297, "Bread", "bread"),
-    LEATHER_HELMET(298, "Leather helmet", "leatherhelmet", "leatherhat"),
-    LEATHER_CHEST(299, "Leather chestplate", "leatherchest", "leatherchestplate", "leathervest", "leatherbreastplate", "leatherplate", "leathercplate", "leatherbody"),
-    LEATHER_PANTS(300, "Leather pants", "leatherpants", "leathergreaves", "leatherlegs", "leatherleggings", "leatherstockings", "leatherbreeches"),
-    LEATHER_BOOTS(301, "Leather boots", "leatherboots", "leathershoes", "leatherfoot", "leatherfeet"),
-    CHAINMAIL_HELMET(302, "Chainmail helmet", "chainmailhelmet", "chainmailhat"),
-    CHAINMAIL_CHEST(303, "Chainmail chestplate", "chainmailchest", "chainmailchestplate", "chainmailvest", "chainmailbreastplate", "chainmailplate", "chainmailcplate", "chainmailbody"),
-    CHAINMAIL_PANTS(304, "Chainmail pants", "chainmailpants", "chainmailgreaves", "chainmaillegs", "chainmailleggings", "chainmailstockings", "chainmailbreeches"),
-    CHAINMAIL_BOOTS(305, "Chainmail boots", "chainmailboots", "chainmailshoes", "chainmailfoot", "chainmailfeet"),
-    IRON_HELMET(306, "Iron helmet", "ironhelmet", "ironhat"),
-    IRON_CHEST(307, "Iron chestplate", "ironchest", "ironchestplate", "ironvest", "ironbreastplate", "ironplate", "ironcplate", "ironbody"),
-    IRON_PANTS(308, "Iron pants", "ironpants", "irongreaves", "ironlegs", "ironleggings", "ironstockings", "ironbreeches"),
-    IRON_BOOTS(309, "Iron boots", "ironboots", "ironshoes", "ironfoot", "ironfeet"),
-    DIAMOND_HELMET(310, "Diamond helmet", "diamondhelmet", "diamondhat"),
-    DIAMOND_CHEST(311, "Diamond chestplate", "diamondchest", "diamondchestplate", "diamondvest", "diamondbreastplate", "diamondplate", "diamondcplate", "diamondbody"),
-    DIAMOND_PANTS(312, "Diamond pants", "diamondpants", "diamondgreaves", "diamondlegs", "diamondleggings", "diamondstockings", "diamondbreeches"),
-    DIAMOND_BOOTS(313, "Diamond boots", "diamondboots", "diamondshoes", "diamondfoot", "diamondfeet"),
-    GOLD_HELMET(314, "Gold helmet", "goldhelmet", "goldhat"),
-    GOLD_CHEST(315, "Gold chestplate", "goldchest", "goldchestplate", "goldvest", "goldbreastplate", "goldplate", "goldcplate", "goldbody"),
-    GOLD_PANTS(316, "Gold pants", "goldpants", "goldgreaves", "goldlegs", "goldleggings", "goldstockings", "goldbreeches"),
-    GOLD_BOOTS(317, "Gold boots", "goldboots", "goldshoes", "goldfoot", "goldfeet"),
-    FLINT(318, "Flint", "flint"),
-    RAW_PORKCHOP(319, "Raw porkchop", "rawpork", "rawporkchop", "rawbacon", "baconstrips", "rawmeat"),
-    COOKED_PORKCHOP(320, "Cooked porkchop", "pork", "cookedpork", "cookedporkchop", "cookedbacon", "bacon", "meat"),
-    PAINTING(321, "Painting", "painting"),
-    GOLD_APPLE(322, "Golden apple", "goldapple", "goldenapple"),
-    SIGN(323, "Wooden sign", "sign"),
-    WOODEN_DOOR_ITEM(324, "Wooden door", "wooddoor", "door"),
-    BUCKET(325, "Bucket", "bucket", "bukkit"),
-    WATER_BUCKET(326, "Water bucket", "waterbucket", "waterbukkit"),
-    LAVA_BUCKET(327, "Lava bucket", "lavabucket", "lavabukkit"),
-    MINECART(328, "Minecart", "minecart", "cart"),
-    SADDLE(329, "Saddle", "saddle"),
-    IRON_DOOR_ITEM(330, "Iron door", "irondoor"),
-    REDSTONE_DUST(331, "Redstone dust", "redstonedust", "reddust", "redstone", "dust", "wire"),
-    SNOWBALL(332, "Snowball", "snowball"),
-    WOOD_BOAT(333, "Wooden boat", "woodboat", "woodenboat", "boat"),
-    LEATHER(334, "Leather", "leather", "cowhide"),
-    MILK_BUCKET(335, "Milk bucket", "milkbucket", "milk", "milkbukkit"),
-    BRICK_BAR(336, "Brick", "brickbar"),
-    CLAY_BALL(337, "Clay", "clay"),
-    SUGAR_CANE_ITEM(338, "Sugar cane", "sugarcane", "reed", "reeds"),
-    PAPER(339, "Paper", "paper"),
-    BOOK(340, "Book", "book"),
-    SLIME_BALL(341, "Slime ball", "slimeball", "slime"),
-    STORAGE_MINECART(342, "Storage minecart", "storageminecart", "storagecart"),
-    POWERED_MINECART(343, "Powered minecart", "poweredminecart", "poweredcart"),
-    EGG(344, "Egg", "egg"),
-    COMPASS(345, "Compass", "compass"),
-    FISHING_ROD(346, "Fishing rod", "fishingrod", "fishingpole"),
-    WATCH(347, "Watch", "watch", "clock", "timer"),
-    LIGHTSTONE_DUST(348, "Glowstone dust", "lightstonedust", "glowstonedone", "brightstonedust", "brittlegolddust", "brimstonedust"),
-    RAW_FISH(349, "Raw fish", "rawfish", "fish"),
-    COOKED_FISH(350, "Cooked fish", "cookedfish"),
-    INK_SACK(351, "Ink sac", "inksac", "ink", "dye", "inksack"),
-    BONE(352, "Bone", "bone"),
-    SUGAR(353, "Sugar", "sugar"),
-    CAKE_ITEM(354, "Cake", "cake"),
-    BED_ITEM(355, "Bed", "bed"),
-    REDSTONE_REPEATER(356, "Redstone repeater", "redstonerepeater", "diode", "delayer", "repeater"),
-    COOKIE(357, "Cookie", "cookie"),
-    MAP(358, "Map", "map"),
-    SHEARS(359, "Shears", "shears", "scissors"),
-    MELON(360, "Melon Slice", "melon", "melonslice"),
-    PUMPKIN_SEEDS(361, "Pumpkin seeds", "pumpkinseed", "pumpkinseeds"),
-    MELON_SEEDS(362, "Melon seeds", "melonseed", "melonseeds"),
-    RAW_BEEF(363, "Raw beef", "rawbeef", "rawcow", "beef"),
-    COOKED_BEEF(364, "Steak", "steak", "cookedbeef", "cookedcow"),
-    RAW_CHICKEN(365, "Raw chicken", "rawchicken"),
-    COOKED_CHICKEN(366, "Cooked chicken", "cookedchicken", "chicken", "grilledchicken"),
-    ROTTEN_FLESH(367, "Rotten flesh", "rottenflesh", "zombiemeat", "flesh"),
-    ENDER_PEARL(368, "Ender pearl", "pearl", "enderpearl"),
-    GOLD_RECORD(2256, "Gold Record", "goldrecord", "golddisc"),
-    GREEN_RECORD(2257, "Green Record", "greenrecord", "greenddisc");
+    IRON_SHOVEL(ItemID.IRON_SHOVEL, "Iron shovel", "ironshovel"),
+    IRON_PICK(ItemID.IRON_PICK, "Iron pick", "ironpick", "ironpickaxe"),
+    IRON_AXE(ItemID.IRON_AXE, "Iron axe", "ironaxe"),
+    FLINT_AND_TINDER(ItemID.FLINT_AND_TINDER, "Flint and tinder", "flintandtinder", "lighter", "flintandsteel", "flintsteel", "flintandiron", "flintnsteel", "flintniron", "flintntinder"),
+    RED_APPLE(ItemID.RED_APPLE, "Red apple", "redapple", "apple"),
+    BOW(ItemID.BOW, "Bow", "bow"),
+    ARROW(ItemID.ARROW, "Arrow", "arrow"),
+    COAL(ItemID.COAL, "Coal", "coal"),
+    DIAMOND(ItemID.DIAMOND, "Diamond", "diamond"),
+    IRON_BAR(ItemID.IRON_BAR, "Iron bar", "ironbar", "iron"),
+    GOLD_BAR(ItemID.GOLD_BAR, "Gold bar", "goldbar", "gold"),
+    IRON_SWORD(ItemID.IRON_SWORD, "Iron sword", "ironsword"),
+    WOOD_SWORD(ItemID.WOOD_SWORD, "Wooden sword", "woodsword"),
+    WOOD_SHOVEL(ItemID.WOOD_SHOVEL, "Wooden shovel", "woodshovel"),
+    WOOD_PICKAXE(ItemID.WOOD_PICKAXE, "Wooden pickaxe", "woodpick", "woodpickaxe"),
+    WOOD_AXE(ItemID.WOOD_AXE, "Wooden axe", "woodaxe"),
+    STONE_SWORD(ItemID.STONE_SWORD, "Stone sword", "stonesword"),
+    STONE_SHOVEL(ItemID.STONE_SHOVEL, "Stone shovel", "stoneshovel"),
+    STONE_PICKAXE(ItemID.STONE_PICKAXE, "Stone pickaxe", "stonepick", "stonepickaxe"),
+    STONE_AXE(ItemID.STONE_AXE, "Stone pickaxe", "stoneaxe"),
+    DIAMOND_SWORD(ItemID.DIAMOND_SWORD, "Diamond sword", "diamondsword"),
+    DIAMOND_SHOVEL(ItemID.DIAMOND_SHOVEL, "Diamond shovel", "diamondshovel"),
+    DIAMOND_PICKAXE(ItemID.DIAMOND_PICKAXE, "Diamond pickaxe", "diamondpick", "diamondpickaxe"),
+    DIAMOND_AXE(ItemID.DIAMOND_AXE, "Diamond axe", "diamondaxe"),
+    STICK(ItemID.STICK, "Stick", "stick"),
+    BOWL(ItemID.BOWL, "Bowl", "bowl"),
+    MUSHROOM_SOUP(ItemID.MUSHROOM_SOUP, "Mushroom soup", "mushroomsoup", "soup", "brbsoup"),
+    GOLD_SWORD(ItemID.GOLD_SWORD, "Golden sword", "goldsword"),
+    GOLD_SHOVEL(ItemID.GOLD_SHOVEL, "Golden shovel", "goldshovel"),
+    GOLD_PICKAXE(ItemID.GOLD_PICKAXE, "Golden pickaxe", "goldpick", "goldpickaxe"),
+    GOLD_AXE(ItemID.GOLD_AXE, "Golden axe", "goldaxe"),
+    STRING(ItemID.STRING, "String", "string"),
+    FEATHER(ItemID.FEATHER, "Feather", "feather"),
+    SULPHUR(ItemID.SULPHUR, "Sulphur", "sulphur", "sulfur", "gunpowder"),
+    WOOD_HOE(ItemID.WOOD_HOE, "Wooden hoe", "woodhoe"),
+    STONE_HOE(ItemID.STONE_HOE, "Stone hoe", "stonehoe"),
+    IRON_HOE(ItemID.IRON_HOE, "Iron hoe", "ironhoe"),
+    DIAMOND_HOE(ItemID.DIAMOND_HOE, "Diamond hoe", "diamondhoe"),
+    GOLD_HOE(ItemID.GOLD_HOE, "Golden hoe", "goldhoe"),
+    SEEDS(ItemID.SEEDS, "Seeds", "seeds", "seed"),
+    WHEAT(ItemID.WHEAT, "Wheat", "wheat"),
+    BREAD(ItemID.BREAD, "Bread", "bread"),
+    LEATHER_HELMET(ItemID.LEATHER_HELMET, "Leather helmet", "leatherhelmet", "leatherhat"),
+    LEATHER_CHEST(ItemID.LEATHER_CHEST, "Leather chestplate", "leatherchest", "leatherchestplate", "leathervest", "leatherbreastplate", "leatherplate", "leathercplate", "leatherbody"),
+    LEATHER_PANTS(ItemID.LEATHER_PANTS, "Leather pants", "leatherpants", "leathergreaves", "leatherlegs", "leatherleggings", "leatherstockings", "leatherbreeches"),
+    LEATHER_BOOTS(ItemID.LEATHER_BOOTS, "Leather boots", "leatherboots", "leathershoes", "leatherfoot", "leatherfeet"),
+    CHAINMAIL_HELMET(ItemID.CHAINMAIL_HELMET, "Chainmail helmet", "chainmailhelmet", "chainmailhat"),
+    CHAINMAIL_CHEST(ItemID.CHAINMAIL_CHEST, "Chainmail chestplate", "chainmailchest", "chainmailchestplate", "chainmailvest", "chainmailbreastplate", "chainmailplate", "chainmailcplate", "chainmailbody"),
+    CHAINMAIL_PANTS(ItemID.CHAINMAIL_PANTS, "Chainmail pants", "chainmailpants", "chainmailgreaves", "chainmaillegs", "chainmailleggings", "chainmailstockings", "chainmailbreeches"),
+    CHAINMAIL_BOOTS(ItemID.CHAINMAIL_BOOTS, "Chainmail boots", "chainmailboots", "chainmailshoes", "chainmailfoot", "chainmailfeet"),
+    IRON_HELMET(ItemID.IRON_HELMET, "Iron helmet", "ironhelmet", "ironhat"),
+    IRON_CHEST(ItemID.IRON_CHEST, "Iron chestplate", "ironchest", "ironchestplate", "ironvest", "ironbreastplate", "ironplate", "ironcplate", "ironbody"),
+    IRON_PANTS(ItemID.IRON_PANTS, "Iron pants", "ironpants", "irongreaves", "ironlegs", "ironleggings", "ironstockings", "ironbreeches"),
+    IRON_BOOTS(ItemID.IRON_BOOTS, "Iron boots", "ironboots", "ironshoes", "ironfoot", "ironfeet"),
+    DIAMOND_HELMET(ItemID.DIAMOND_HELMET, "Diamond helmet", "diamondhelmet", "diamondhat"),
+    DIAMOND_CHEST(ItemID.DIAMOND_CHEST, "Diamond chestplate", "diamondchest", "diamondchestplate", "diamondvest", "diamondbreastplate", "diamondplate", "diamondcplate", "diamondbody"),
+    DIAMOND_PANTS(ItemID.DIAMOND_PANTS, "Diamond pants", "diamondpants", "diamondgreaves", "diamondlegs", "diamondleggings", "diamondstockings", "diamondbreeches"),
+    DIAMOND_BOOTS(ItemID.DIAMOND_BOOTS, "Diamond boots", "diamondboots", "diamondshoes", "diamondfoot", "diamondfeet"),
+    GOLD_HELMET(ItemID.GOLD_HELMET, "Gold helmet", "goldhelmet", "goldhat"),
+    GOLD_CHEST(ItemID.GOLD_CHEST, "Gold chestplate", "goldchest", "goldchestplate", "goldvest", "goldbreastplate", "goldplate", "goldcplate", "goldbody"),
+    GOLD_PANTS(ItemID.GOLD_PANTS, "Gold pants", "goldpants", "goldgreaves", "goldlegs", "goldleggings", "goldstockings", "goldbreeches"),
+    GOLD_BOOTS(ItemID.GOLD_BOOTS, "Gold boots", "goldboots", "goldshoes", "goldfoot", "goldfeet"),
+    FLINT(ItemID.FLINT, "Flint", "flint"),
+    RAW_PORKCHOP(ItemID.RAW_PORKCHOP, "Raw porkchop", "rawpork", "rawporkchop", "rawbacon", "baconstrips", "rawmeat"),
+    COOKED_PORKCHOP(ItemID.COOKED_PORKCHOP, "Cooked porkchop", "pork", "cookedpork", "cookedporkchop", "cookedbacon", "bacon", "meat"),
+    PAINTING(ItemID.PAINTING, "Painting", "painting"),
+    GOLD_APPLE(ItemID.GOLD_APPLE, "Golden apple", "goldapple", "goldenapple"),
+    SIGN(ItemID.SIGN, "Wooden sign", "sign"),
+    WOODEN_DOOR_ITEM(ItemID.WOODEN_DOOR_ITEM, "Wooden door", "wooddoor", "door"),
+    BUCKET(ItemID.BUCKET, "Bucket", "bucket", "bukkit"),
+    WATER_BUCKET(ItemID.WATER_BUCKET, "Water bucket", "waterbucket", "waterbukkit"),
+    LAVA_BUCKET(ItemID.LAVA_BUCKET, "Lava bucket", "lavabucket", "lavabukkit"),
+    MINECART(ItemID.MINECART, "Minecart", "minecart", "cart"),
+    SADDLE(ItemID.SADDLE, "Saddle", "saddle"),
+    IRON_DOOR_ITEM(ItemID.IRON_DOOR_ITEM, "Iron door", "irondoor"),
+    REDSTONE_DUST(ItemID.REDSTONE_DUST, "Redstone dust", "redstonedust", "reddust", "redstone", "dust", "wire"),
+    SNOWBALL(ItemID.SNOWBALL, "Snowball", "snowball"),
+    WOOD_BOAT(ItemID.WOOD_BOAT, "Wooden boat", "woodboat", "woodenboat", "boat"),
+    LEATHER(ItemID.LEATHER, "Leather", "leather", "cowhide"),
+    MILK_BUCKET(ItemID.MILK_BUCKET, "Milk bucket", "milkbucket", "milk", "milkbukkit"),
+    BRICK_BAR(ItemID.BRICK_BAR, "Brick", "brickbar"),
+    CLAY_BALL(ItemID.CLAY_BALL, "Clay", "clay"),
+    SUGAR_CANE_ITEM(ItemID.SUGAR_CANE_ITEM, "Sugar cane", "sugarcane", "reed", "reeds"),
+    PAPER(ItemID.PAPER, "Paper", "paper"),
+    BOOK(ItemID.BOOK, "Book", "book"),
+    SLIME_BALL(ItemID.SLIME_BALL, "Slime ball", "slimeball", "slime"),
+    STORAGE_MINECART(ItemID.STORAGE_MINECART, "Storage minecart", "storageminecart", "storagecart"),
+    POWERED_MINECART(ItemID.POWERED_MINECART, "Powered minecart", "poweredminecart", "poweredcart"),
+    EGG(ItemID.EGG, "Egg", "egg"),
+    COMPASS(ItemID.COMPASS, "Compass", "compass"),
+    FISHING_ROD(ItemID.FISHING_ROD, "Fishing rod", "fishingrod", "fishingpole"),
+    WATCH(ItemID.WATCH, "Watch", "watch", "clock", "timer"),
+    LIGHTSTONE_DUST(ItemID.LIGHTSTONE_DUST, "Glowstone dust", "lightstonedust", "glowstonedone", "brightstonedust", "brittlegolddust", "brimstonedust"),
+    RAW_FISH(ItemID.RAW_FISH, "Raw fish", "rawfish", "fish"),
+    COOKED_FISH(ItemID.COOKED_FISH, "Cooked fish", "cookedfish"),
+    INK_SACK(ItemID.INK_SACK, "Ink sac", "inksac", "ink", "dye", "inksack"),
+    BONE(ItemID.BONE, "Bone", "bone"),
+    SUGAR(ItemID.SUGAR, "Sugar", "sugar"),
+    CAKE_ITEM(ItemID.CAKE_ITEM, "Cake", "cake"),
+    BED_ITEM(ItemID.BED_ITEM, "Bed", "bed"),
+    REDSTONE_REPEATER(ItemID.REDSTONE_REPEATER, "Redstone repeater", "redstonerepeater", "diode", "delayer", "repeater"),
+    COOKIE(ItemID.COOKIE, "Cookie", "cookie"),
+    MAP(ItemID.MAP, "Map", "map"),
+    SHEARS(ItemID.SHEARS, "Shears", "shears", "scissors"),
+    MELON(ItemID.MELON, "Melon Slice", "melon", "melonslice"),
+    PUMPKIN_SEEDS(ItemID.PUMPKIN_SEEDS, "Pumpkin seeds", "pumpkinseed", "pumpkinseeds"),
+    MELON_SEEDS(ItemID.MELON_SEEDS, "Melon seeds", "melonseed", "melonseeds"),
+    RAW_BEEF(ItemID.RAW_BEEF, "Raw beef", "rawbeef", "rawcow", "beef"),
+    COOKED_BEEF(ItemID.COOKED_BEEF, "Steak", "steak", "cookedbeef", "cookedcow"),
+    RAW_CHICKEN(ItemID.RAW_CHICKEN, "Raw chicken", "rawchicken"),
+    COOKED_CHICKEN(ItemID.COOKED_CHICKEN, "Cooked chicken", "cookedchicken", "chicken", "grilledchicken"),
+    ROTTEN_FLESH(ItemID.ROTTEN_FLESH, "Rotten flesh", "rottenflesh", "zombiemeat", "flesh"),
+    ENDER_PEARL(ItemID.ENDER_PEARL, "Ender pearl", "pearl", "enderpearl"),
+    GOLD_RECORD(ItemID.GOLD_RECORD, "Gold Record", "goldrecord", "golddisc"),
+    GREEN_RECORD(ItemID.GREEN_RECORD, "Green Record", "greenrecord", "greenddisc");
 
     /**
      * Stores a map of the IDs for fast access.
@@ -433,74 +433,72 @@ public enum ItemType {
      * @return
      */
     public static boolean shouldNotStack(int id) {
-        ItemType t = ItemType.fromID(id);
-        if (t == null) return false;
-        return t == ItemType.IRON_SHOVEL
-            || t == ItemType.IRON_PICK
-            || t == ItemType.IRON_AXE
-            || t == ItemType.FLINT_AND_TINDER
-            || t == ItemType.BOW
-            || t == ItemType.IRON_SWORD
-            || t == ItemType.WOOD_SWORD
-            || t == ItemType.WOOD_SHOVEL
-            || t == ItemType.WOOD_PICKAXE
-            || t == ItemType.WOOD_AXE
-            || t == ItemType.STONE_SWORD
-            || t == ItemType.STONE_SHOVEL
-            || t == ItemType.STONE_PICKAXE
-            || t == ItemType.STONE_AXE
-            || t == ItemType.DIAMOND_SWORD
-            || t == ItemType.DIAMOND_SHOVEL
-            || t == ItemType.DIAMOND_PICKAXE
-            || t == ItemType.DIAMOND_AXE
-            || t == ItemType.BOWL
-            || t == ItemType.GOLD_SWORD
-            || t == ItemType.GOLD_SHOVEL
-            || t == ItemType.GOLD_PICKAXE
-            || t == ItemType.GOLD_AXE
-            || t == ItemType.WOOD_HOE
-            || t == ItemType.STONE_HOE
-            || t == ItemType.IRON_HOE
-            || t == ItemType.DIAMOND_HOE
-            || t == ItemType.GOLD_HOE
-            || t == ItemType.LEATHER_HELMET
-            || t == ItemType.LEATHER_CHEST
-            || t == ItemType.LEATHER_PANTS
-            || t == ItemType.LEATHER_BOOTS
-            || t == ItemType.CHAINMAIL_CHEST
-            || t == ItemType.CHAINMAIL_HELMET
-            || t == ItemType.CHAINMAIL_BOOTS
-            || t == ItemType.CHAINMAIL_PANTS
-            || t == ItemType.IRON_HELMET
-            || t == ItemType.IRON_CHEST
-            || t == ItemType.IRON_PANTS
-            || t == ItemType.IRON_BOOTS
-            || t == ItemType.DIAMOND_HELMET
-            || t == ItemType.DIAMOND_PANTS
-            || t == ItemType.DIAMOND_CHEST
-            || t == ItemType.DIAMOND_BOOTS
-            || t == ItemType.GOLD_HELMET
-            || t == ItemType.GOLD_CHEST
-            || t == ItemType.GOLD_PANTS
-            || t == ItemType.GOLD_BOOTS
-            || t == ItemType.SIGN
-            || t == ItemType.WOODEN_DOOR_ITEM
-            || t == ItemType.BUCKET
-            || t == ItemType.WATER_BUCKET
-            || t == ItemType.LAVA_BUCKET
-            || t == ItemType.MINECART
-            || t == ItemType.SADDLE
-            || t == ItemType.IRON_DOOR_ITEM
-            || t == ItemType.WOOD_BOAT
-            || t == ItemType.MILK_BUCKET
-            || t == ItemType.STORAGE_MINECART
-            || t == ItemType.POWERED_MINECART
-            || t == ItemType.WATCH
-            || t == ItemType.CAKE_ITEM
-            || t == ItemType.BED_ITEM
-            || t == ItemType.MAP
-            || t == ItemType.GOLD_RECORD
-            || t == ItemType.GREEN_RECORD;
+        return id == ItemID.IRON_SHOVEL
+            || id == ItemID.IRON_PICK
+            || id == ItemID.IRON_AXE
+            || id == ItemID.FLINT_AND_TINDER
+            || id == ItemID.BOW
+            || id == ItemID.IRON_SWORD
+            || id == ItemID.WOOD_SWORD
+            || id == ItemID.WOOD_SHOVEL
+            || id == ItemID.WOOD_PICKAXE
+            || id == ItemID.WOOD_AXE
+            || id == ItemID.STONE_SWORD
+            || id == ItemID.STONE_SHOVEL
+            || id == ItemID.STONE_PICKAXE
+            || id == ItemID.STONE_AXE
+            || id == ItemID.DIAMOND_SWORD
+            || id == ItemID.DIAMOND_SHOVEL
+            || id == ItemID.DIAMOND_PICKAXE
+            || id == ItemID.DIAMOND_AXE
+            || id == ItemID.BOWL
+            || id == ItemID.GOLD_SWORD
+            || id == ItemID.GOLD_SHOVEL
+            || id == ItemID.GOLD_PICKAXE
+            || id == ItemID.GOLD_AXE
+            || id == ItemID.WOOD_HOE
+            || id == ItemID.STONE_HOE
+            || id == ItemID.IRON_HOE
+            || id == ItemID.DIAMOND_HOE
+            || id == ItemID.GOLD_HOE
+            || id == ItemID.LEATHER_HELMET
+            || id == ItemID.LEATHER_CHEST
+            || id == ItemID.LEATHER_PANTS
+            || id == ItemID.LEATHER_BOOTS
+            || id == ItemID.CHAINMAIL_CHEST
+            || id == ItemID.CHAINMAIL_HELMET
+            || id == ItemID.CHAINMAIL_BOOTS
+            || id == ItemID.CHAINMAIL_PANTS
+            || id == ItemID.IRON_HELMET
+            || id == ItemID.IRON_CHEST
+            || id == ItemID.IRON_PANTS
+            || id == ItemID.IRON_BOOTS
+            || id == ItemID.DIAMOND_HELMET
+            || id == ItemID.DIAMOND_PANTS
+            || id == ItemID.DIAMOND_CHEST
+            || id == ItemID.DIAMOND_BOOTS
+            || id == ItemID.GOLD_HELMET
+            || id == ItemID.GOLD_CHEST
+            || id == ItemID.GOLD_PANTS
+            || id == ItemID.GOLD_BOOTS
+            || id == ItemID.SIGN
+            || id == ItemID.WOODEN_DOOR_ITEM
+            || id == ItemID.BUCKET
+            || id == ItemID.WATER_BUCKET
+            || id == ItemID.LAVA_BUCKET
+            || id == ItemID.MINECART
+            || id == ItemID.SADDLE
+            || id == ItemID.IRON_DOOR_ITEM
+            || id == ItemID.WOOD_BOAT
+            || id == ItemID.MILK_BUCKET
+            || id == ItemID.STORAGE_MINECART
+            || id == ItemID.POWERED_MINECART
+            || id == ItemID.WATCH
+            || id == ItemID.CAKE_ITEM
+            || id == ItemID.BED_ITEM
+            || id == ItemID.MAP
+            || id == ItemID.GOLD_RECORD
+            || id == ItemID.GREEN_RECORD;
     }
     
     /**
@@ -511,7 +509,7 @@ public enum ItemType {
      * @return
      */
     public static boolean usesDamageValue(int id) {
-        return id == ItemType.CLOTH.getID()
-            || id == ItemType.INK_SACK.getID();
+        return id == BlockID.CLOTH
+            || id == ItemID.INK_SACK;
     }
 }
