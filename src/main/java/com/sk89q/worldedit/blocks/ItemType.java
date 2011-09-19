@@ -19,11 +19,14 @@
 
 package com.sk89q.worldedit.blocks;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumSet;
 import java.util.Map.Entry;
+import java.util.Set;
+
 import com.sk89q.util.StringUtil;
 
 /**
@@ -416,7 +419,7 @@ public enum ItemType {
     public String getName() {
         return name;
     }
-    
+
     /**
      * Get a list of aliases.
      * 
@@ -425,7 +428,77 @@ public enum ItemType {
     public String[] getAliases() {
         return lookupKeys;
     }
-    
+
+    private static final Set<Integer> shouldNotStack = new HashSet<Integer>();
+    static {
+        shouldNotStack.add(ItemID.IRON_SHOVEL);
+        shouldNotStack.add(ItemID.IRON_PICK);
+        shouldNotStack.add(ItemID.IRON_AXE);
+        shouldNotStack.add(ItemID.FLINT_AND_TINDER);
+        shouldNotStack.add(ItemID.BOW);
+        shouldNotStack.add(ItemID.IRON_SWORD);
+        shouldNotStack.add(ItemID.WOOD_SWORD);
+        shouldNotStack.add(ItemID.WOOD_SHOVEL);
+        shouldNotStack.add(ItemID.WOOD_PICKAXE);
+        shouldNotStack.add(ItemID.WOOD_AXE);
+        shouldNotStack.add(ItemID.STONE_SWORD);
+        shouldNotStack.add(ItemID.STONE_SHOVEL);
+        shouldNotStack.add(ItemID.STONE_PICKAXE);
+        shouldNotStack.add(ItemID.STONE_AXE);
+        shouldNotStack.add(ItemID.DIAMOND_SWORD);
+        shouldNotStack.add(ItemID.DIAMOND_SHOVEL);
+        shouldNotStack.add(ItemID.DIAMOND_PICKAXE);
+        shouldNotStack.add(ItemID.DIAMOND_AXE);
+        shouldNotStack.add(ItemID.BOWL);
+        shouldNotStack.add(ItemID.GOLD_SWORD);
+        shouldNotStack.add(ItemID.GOLD_SHOVEL);
+        shouldNotStack.add(ItemID.GOLD_PICKAXE);
+        shouldNotStack.add(ItemID.GOLD_AXE);
+        shouldNotStack.add(ItemID.WOOD_HOE);
+        shouldNotStack.add(ItemID.STONE_HOE);
+        shouldNotStack.add(ItemID.IRON_HOE);
+        shouldNotStack.add(ItemID.DIAMOND_HOE);
+        shouldNotStack.add(ItemID.GOLD_HOE);
+        shouldNotStack.add(ItemID.LEATHER_HELMET);
+        shouldNotStack.add(ItemID.LEATHER_CHEST);
+        shouldNotStack.add(ItemID.LEATHER_PANTS);
+        shouldNotStack.add(ItemID.LEATHER_BOOTS);
+        shouldNotStack.add(ItemID.CHAINMAIL_CHEST);
+        shouldNotStack.add(ItemID.CHAINMAIL_HELMET);
+        shouldNotStack.add(ItemID.CHAINMAIL_BOOTS);
+        shouldNotStack.add(ItemID.CHAINMAIL_PANTS);
+        shouldNotStack.add(ItemID.IRON_HELMET);
+        shouldNotStack.add(ItemID.IRON_CHEST);
+        shouldNotStack.add(ItemID.IRON_PANTS);
+        shouldNotStack.add(ItemID.IRON_BOOTS);
+        shouldNotStack.add(ItemID.DIAMOND_HELMET);
+        shouldNotStack.add(ItemID.DIAMOND_PANTS);
+        shouldNotStack.add(ItemID.DIAMOND_CHEST);
+        shouldNotStack.add(ItemID.DIAMOND_BOOTS);
+        shouldNotStack.add(ItemID.GOLD_HELMET);
+        shouldNotStack.add(ItemID.GOLD_CHEST);
+        shouldNotStack.add(ItemID.GOLD_PANTS);
+        shouldNotStack.add(ItemID.GOLD_BOOTS);
+        shouldNotStack.add(ItemID.SIGN);
+        shouldNotStack.add(ItemID.WOODEN_DOOR_ITEM);
+        shouldNotStack.add(ItemID.BUCKET);
+        shouldNotStack.add(ItemID.WATER_BUCKET);
+        shouldNotStack.add(ItemID.LAVA_BUCKET);
+        shouldNotStack.add(ItemID.MINECART);
+        shouldNotStack.add(ItemID.SADDLE);
+        shouldNotStack.add(ItemID.IRON_DOOR_ITEM);
+        shouldNotStack.add(ItemID.WOOD_BOAT);
+        shouldNotStack.add(ItemID.MILK_BUCKET);
+        shouldNotStack.add(ItemID.STORAGE_MINECART);
+        shouldNotStack.add(ItemID.POWERED_MINECART);
+        shouldNotStack.add(ItemID.WATCH);
+        shouldNotStack.add(ItemID.CAKE_ITEM);
+        shouldNotStack.add(ItemID.BED_ITEM);
+        shouldNotStack.add(ItemID.MAP);
+        shouldNotStack.add(ItemID.GOLD_RECORD);
+        shouldNotStack.add(ItemID.GREEN_RECORD);
+    }
+
     /**
      * Returns true if an item should not be stacked.
      * 
@@ -433,74 +506,9 @@ public enum ItemType {
      * @return
      */
     public static boolean shouldNotStack(int id) {
-        return id == ItemID.IRON_SHOVEL
-            || id == ItemID.IRON_PICK
-            || id == ItemID.IRON_AXE
-            || id == ItemID.FLINT_AND_TINDER
-            || id == ItemID.BOW
-            || id == ItemID.IRON_SWORD
-            || id == ItemID.WOOD_SWORD
-            || id == ItemID.WOOD_SHOVEL
-            || id == ItemID.WOOD_PICKAXE
-            || id == ItemID.WOOD_AXE
-            || id == ItemID.STONE_SWORD
-            || id == ItemID.STONE_SHOVEL
-            || id == ItemID.STONE_PICKAXE
-            || id == ItemID.STONE_AXE
-            || id == ItemID.DIAMOND_SWORD
-            || id == ItemID.DIAMOND_SHOVEL
-            || id == ItemID.DIAMOND_PICKAXE
-            || id == ItemID.DIAMOND_AXE
-            || id == ItemID.BOWL
-            || id == ItemID.GOLD_SWORD
-            || id == ItemID.GOLD_SHOVEL
-            || id == ItemID.GOLD_PICKAXE
-            || id == ItemID.GOLD_AXE
-            || id == ItemID.WOOD_HOE
-            || id == ItemID.STONE_HOE
-            || id == ItemID.IRON_HOE
-            || id == ItemID.DIAMOND_HOE
-            || id == ItemID.GOLD_HOE
-            || id == ItemID.LEATHER_HELMET
-            || id == ItemID.LEATHER_CHEST
-            || id == ItemID.LEATHER_PANTS
-            || id == ItemID.LEATHER_BOOTS
-            || id == ItemID.CHAINMAIL_CHEST
-            || id == ItemID.CHAINMAIL_HELMET
-            || id == ItemID.CHAINMAIL_BOOTS
-            || id == ItemID.CHAINMAIL_PANTS
-            || id == ItemID.IRON_HELMET
-            || id == ItemID.IRON_CHEST
-            || id == ItemID.IRON_PANTS
-            || id == ItemID.IRON_BOOTS
-            || id == ItemID.DIAMOND_HELMET
-            || id == ItemID.DIAMOND_PANTS
-            || id == ItemID.DIAMOND_CHEST
-            || id == ItemID.DIAMOND_BOOTS
-            || id == ItemID.GOLD_HELMET
-            || id == ItemID.GOLD_CHEST
-            || id == ItemID.GOLD_PANTS
-            || id == ItemID.GOLD_BOOTS
-            || id == ItemID.SIGN
-            || id == ItemID.WOODEN_DOOR_ITEM
-            || id == ItemID.BUCKET
-            || id == ItemID.WATER_BUCKET
-            || id == ItemID.LAVA_BUCKET
-            || id == ItemID.MINECART
-            || id == ItemID.SADDLE
-            || id == ItemID.IRON_DOOR_ITEM
-            || id == ItemID.WOOD_BOAT
-            || id == ItemID.MILK_BUCKET
-            || id == ItemID.STORAGE_MINECART
-            || id == ItemID.POWERED_MINECART
-            || id == ItemID.WATCH
-            || id == ItemID.CAKE_ITEM
-            || id == ItemID.BED_ITEM
-            || id == ItemID.MAP
-            || id == ItemID.GOLD_RECORD
-            || id == ItemID.GREEN_RECORD;
+        return shouldNotStack.contains(id);
     }
-    
+
     /**
      * Returns true if an item uses its damage value for something
      * other than damage.
