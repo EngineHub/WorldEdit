@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 public class CommandContextTest {
-    final String firstCmdString = "herpderp -opw testers \"mani world\" 'another thing'  because something";
+    private static final String firstCmdString = "herpderp -opw testers \"mani world\" 'another thing'  because something";
     CommandContext firstCommand;
 
     @Before
@@ -43,7 +43,7 @@ public class CommandContextTest {
 
     @Test(expected = CommandException.class)
     public void testInvalidFlags() throws CommandException {
-        String failingCommand = "herpderp -opw testers";
+        final String failingCommand = "herpderp -opw testers";
         new CommandContext(failingCommand, new HashSet<Character>(Arrays.asList('o', 'w')));
     }
 
@@ -81,7 +81,7 @@ public class CommandContextTest {
     }
 
     @Test
-    public void testHagingQuoted() {
+    public void testHangingQuote() {
         String cmd = "r \"hello goodbye have fun";
         try {
             CommandContext context = new CommandContext(cmd);
