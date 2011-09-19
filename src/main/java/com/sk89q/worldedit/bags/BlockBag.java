@@ -90,7 +90,7 @@ public abstract class BlockBag {
                 break;
 
             case BlockID.REDSTONE_WIRE:
-                fetchBlock(ItemType.REDSTONE_DUST.getID());
+                fetchBlock(ItemID.REDSTONE_DUST);
                 break;
 
             case BlockID.REDSTONE_TORCH_OFF:
@@ -99,7 +99,7 @@ public abstract class BlockBag {
 
             case BlockID.WALL_SIGN:
             case BlockID.SIGN_POST:
-                fetchBlock(ItemType.SIGN.getID());
+                fetchBlock(ItemID.SIGN);
                 break;
 
             default:

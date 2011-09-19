@@ -23,7 +23,7 @@ import java.io.File;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.blocks.ItemType;
+import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.cui.CUIEvent;
 import com.sk89q.worldedit.util.TargetBlock;
 
@@ -53,11 +53,11 @@ public abstract class LocalPlayer {
      */
     public boolean isHoldingPickAxe() {
         int item = getItemInHand();
-        return item == ItemType.IRON_PICK.getID()
-                || item == ItemType.WOOD_PICKAXE.getID()
-                || item == ItemType.STONE_PICKAXE.getID()
-                || item == ItemType.DIAMOND_PICKAXE.getID()
-                || item == ItemType.GOLD_PICKAXE.getID();
+        return item == ItemID.IRON_PICK
+                || item == ItemID.WOOD_PICKAXE
+                || item == ItemID.STONE_PICKAXE
+                || item == ItemID.DIAMOND_PICKAXE
+                || item == ItemID.GOLD_PICKAXE;
     }
 
     /**

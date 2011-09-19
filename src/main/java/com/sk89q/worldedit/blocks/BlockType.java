@@ -644,7 +644,7 @@ public enum BlockType {
         blockDrops.put(BlockID.DISPENSER, BlockID.DISPENSER);
         blockDrops.put(BlockID.SANDSTONE, BlockID.SANDSTONE);
         blockDrops.put(BlockID.NOTE_BLOCK, BlockID.NOTE_BLOCK);
-        blockDrops.put(BlockID.BED, ItemType.BED_ITEM.getID());
+        blockDrops.put(BlockID.BED, ItemID.BED_ITEM);
         blockDrops.put(BlockID.POWERED_RAIL, BlockID.POWERED_RAIL);
         blockDrops.put(BlockID.DETECTOR_RAIL, BlockID.DETECTOR_RAIL);
         blockDrops.put(BlockID.WEB, BlockID.WEB);
@@ -666,44 +666,44 @@ public enum BlockType {
         blockDrops.put(BlockID.TORCH, BlockID.TORCH);
         blockDrops.put(BlockID.WOODEN_STAIRS, BlockID.WOODEN_STAIRS);
         blockDrops.put(BlockID.CHEST, BlockID.CHEST);
-        blockDrops.put(BlockID.REDSTONE_WIRE, ItemType.REDSTONE_DUST.getID());
-        blockDrops.put(BlockID.DIAMOND_ORE, ItemType.DIAMOND.getID());
+        blockDrops.put(BlockID.REDSTONE_WIRE, ItemID.REDSTONE_DUST);
+        blockDrops.put(BlockID.DIAMOND_ORE, ItemID.DIAMOND);
         blockDrops.put(BlockID.DIAMOND_BLOCK, BlockID.DIAMOND_BLOCK);
         blockDrops.put(BlockID.WORKBENCH, BlockID.WORKBENCH);
-        blockDrops.put(BlockID.CROPS, ItemType.SEEDS.getID());
+        blockDrops.put(BlockID.CROPS, ItemID.SEEDS);
         blockDrops.put(BlockID.SOIL, BlockID.SOIL);
         blockDrops.put(BlockID.FURNACE, BlockID.FURNACE);
         blockDrops.put(BlockID.BURNING_FURNACE, BlockID.FURNACE);
-        blockDrops.put(BlockID.SIGN_POST, ItemType.SIGN.getID());
-        blockDrops.put(BlockID.WOODEN_DOOR, ItemType.WOODEN_DOOR_ITEM.getID());
+        blockDrops.put(BlockID.SIGN_POST, ItemID.SIGN);
+        blockDrops.put(BlockID.WOODEN_DOOR, ItemID.WOODEN_DOOR_ITEM);
         blockDrops.put(BlockID.LADDER, BlockID.LADDER);
         blockDrops.put(BlockID.MINECART_TRACKS, BlockID.MINECART_TRACKS);
         blockDrops.put(BlockID.COBBLESTONE_STAIRS, BlockID.COBBLESTONE_STAIRS);
-        blockDrops.put(BlockID.WALL_SIGN, ItemType.SIGN.getID());
+        blockDrops.put(BlockID.WALL_SIGN, ItemID.SIGN);
         blockDrops.put(BlockID.LEVER, BlockID.LEVER);
         blockDrops.put(BlockID.STONE_PRESSURE_PLATE, BlockID.STONE_PRESSURE_PLATE);
-        blockDrops.put(BlockID.IRON_DOOR, ItemType.IRON_DOOR_ITEM.getID());
+        blockDrops.put(BlockID.IRON_DOOR, ItemID.IRON_DOOR_ITEM);
         blockDrops.put(BlockID.WOODEN_PRESSURE_PLATE, BlockID.WOODEN_PRESSURE_PLATE);
-        blockDrops.put(BlockID.REDSTONE_ORE, ItemType.REDSTONE_DUST.getID());
-        blockDrops.put(BlockID.GLOWING_REDSTONE_ORE, ItemType.REDSTONE_DUST.getID());
+        blockDrops.put(BlockID.REDSTONE_ORE, ItemID.REDSTONE_DUST);
+        blockDrops.put(BlockID.GLOWING_REDSTONE_ORE, ItemID.REDSTONE_DUST);
         blockDrops.put(BlockID.REDSTONE_TORCH_OFF, BlockID.REDSTONE_TORCH_ON);
         blockDrops.put(BlockID.REDSTONE_TORCH_ON, BlockID.REDSTONE_TORCH_ON);
         blockDrops.put(BlockID.STONE_BUTTON, BlockID.STONE_BUTTON);
-        blockDrops.put(BlockID.SNOW, ItemType.SNOWBALL.getID());
+        blockDrops.put(BlockID.SNOW, ItemID.SNOWBALL);
         blockDrops.put(BlockID.ICE, BlockID.ICE);
         blockDrops.put(BlockID.SNOW_BLOCK, BlockID.SNOW_BLOCK);
         blockDrops.put(BlockID.CLAY, BlockID.CLAY);
-        blockDrops.put(BlockID.REED, ItemType.SUGAR_CANE_ITEM.getID());
+        blockDrops.put(BlockID.REED, ItemID.SUGAR_CANE_ITEM);
         blockDrops.put(BlockID.JUKEBOX, BlockID.JUKEBOX);
         blockDrops.put(BlockID.FENCE, BlockID.FENCE);
         blockDrops.put(BlockID.PUMPKIN, BlockID.PUMPKIN);
         blockDrops.put(BlockID.NETHERRACK, BlockID.NETHERRACK);
         blockDrops.put(BlockID.SLOW_SAND, BlockID.SLOW_SAND);
-        blockDrops.put(BlockID.LIGHTSTONE, ItemType.LIGHTSTONE_DUST.getID());
+        blockDrops.put(BlockID.LIGHTSTONE, ItemID.LIGHTSTONE_DUST);
         blockDrops.put(BlockID.JACKOLANTERN, BlockID.JACKOLANTERN);
-        blockDrops.put(BlockID.CAKE_BLOCK, ItemType.CAKE_ITEM.getID());
-        blockDrops.put(BlockID.REDSTONE_REPEATER_OFF, ItemType.REDSTONE_REPEATER.getID());
-        blockDrops.put(BlockID.REDSTONE_REPEATER_ON, ItemType.REDSTONE_REPEATER.getID());
+        blockDrops.put(BlockID.CAKE_BLOCK, ItemID.CAKE_ITEM);
+        blockDrops.put(BlockID.REDSTONE_REPEATER_OFF, ItemID.REDSTONE_REPEATER);
+        blockDrops.put(BlockID.REDSTONE_REPEATER_ON, ItemID.REDSTONE_REPEATER);
         blockDrops.put(BlockID.LOCKED_CHEST, BlockID.LOCKED_CHEST);
         blockDrops.put(BlockID.TRAP_DOOR, BlockID.TRAP_DOOR);
         blockDrops.put(BlockID.SILVERFISH_BLOCK, -1);
@@ -750,11 +750,11 @@ public enum BlockType {
 
         case BlockID.GRAVEL:
             if (random.nextDouble() >= 0.9) {
-                return new BaseItemStack(ItemType.FLINT.getID());
+                return new BaseItemStack(ItemID.FLINT);
             }
 
         case BlockID.COAL_ORE:
-            return new BaseItemStack(ItemType.COAL.getID());
+            return new BaseItemStack(ItemID.COAL);
 
         case BlockID.LEAVES:
             if (random.nextDouble() > 0.95) {
@@ -764,13 +764,13 @@ public enum BlockType {
             }
 
         case BlockID.LAPIS_LAZULI_ORE:
-            return new BaseItemStack(ItemType.INK_SACK.getID(), random.nextInt(5) + 4, (short) 4);
+            return new BaseItemStack(ItemID.INK_SACK, random.nextInt(5) + 4, (short) 4);
 
         case BlockID.BED:
-            return new BaseItemStack(ItemType.BED_ITEM.getID());
+            return new BaseItemStack(ItemID.BED_ITEM);
 
         case BlockID.LONG_GRASS:
-            if (random.nextInt(8) == 0) return new BaseItemStack(ItemType.SEEDS.getID());
+            if (random.nextInt(8) == 0) return new BaseItemStack(ItemID.SEEDS);
 
         case BlockID.DOUBLE_STEP:
             return new BaseItemStack(BlockID.STEP, 2, data);
@@ -779,13 +779,13 @@ public enum BlockType {
             return new BaseItemStack(BlockID.WOOD);
 
         case BlockID.REDSTONE_WIRE:
-            return new BaseItemStack(ItemType.REDSTONE_DUST.getID());
+            return new BaseItemStack(ItemID.REDSTONE_DUST);
 
         case BlockID.DIAMOND_ORE:
-            return new BaseItemStack(ItemType.DIAMOND.getID());
+            return new BaseItemStack(ItemID.DIAMOND);
 
         case BlockID.CROPS:
-            return new BaseItemStack(ItemType.SEEDS.getID());
+            return new BaseItemStack(ItemID.SEEDS);
 
         case BlockID.SOIL:
             return new BaseItemStack(BlockID.DIRT);
@@ -794,48 +794,48 @@ public enum BlockType {
             return new BaseItemStack(BlockID.FURNACE);
 
         case BlockID.SIGN_POST:
-            return new BaseItemStack(ItemType.SIGN.getID());
+            return new BaseItemStack(ItemID.SIGN);
 
         case BlockID.WOODEN_DOOR:
-            return new BaseItemStack(ItemType.WOODEN_DOOR_ITEM.getID());
+            return new BaseItemStack(ItemID.WOODEN_DOOR_ITEM);
 
         case BlockID.COBBLESTONE_STAIRS:
             return new BaseItemStack(BlockID.COBBLESTONE);
 
         case BlockID.WALL_SIGN:
-            return new BaseItemStack(ItemType.SIGN.getID());
+            return new BaseItemStack(ItemID.SIGN);
 
         case BlockID.IRON_DOOR:
-            return new BaseItemStack(ItemType.IRON_DOOR_ITEM.getID());
+            return new BaseItemStack(ItemID.IRON_DOOR_ITEM);
 
         case BlockID.REDSTONE_ORE:
         case BlockID.GLOWING_REDSTONE_ORE:
-            return new BaseItemStack(ItemType.REDSTONE_DUST.getID(), (random.nextInt(2) + 4));
+            return new BaseItemStack(ItemID.REDSTONE_DUST, (random.nextInt(2) + 4));
 
         case BlockID.REDSTONE_TORCH_OFF:
             return new BaseItemStack(BlockID.REDSTONE_TORCH_ON);
 
         case BlockID.CLAY:
-            return new BaseItemStack(ItemType.CLAY_BALL.getID(), 4);
+            return new BaseItemStack(ItemID.CLAY_BALL, 4);
 
         case BlockID.REED:
-            return new BaseItemStack(ItemType.SUGAR_CANE_ITEM.getID());
+            return new BaseItemStack(ItemID.SUGAR_CANE_ITEM);
 
         case BlockID.LIGHTSTONE:
-            return new BaseItemStack(ItemType.LIGHTSTONE_DUST.getID(), (random.nextInt(3) + 2));
+            return new BaseItemStack(ItemID.LIGHTSTONE_DUST, (random.nextInt(3) + 2));
 
         case BlockID.REDSTONE_REPEATER_OFF:
         case BlockID.REDSTONE_REPEATER_ON:
-            return new BaseItemStack(ItemType.REDSTONE_REPEATER.getID());
+            return new BaseItemStack(ItemID.REDSTONE_REPEATER);
 
         case BlockID.MELON_BLOCK:
-            return new BaseItemStack(ItemType.MELON.getID(), (random.nextInt(5) + 3));
+            return new BaseItemStack(ItemID.MELON, (random.nextInt(5) + 3));
 
         case BlockID.PUMPKIN_STEM:
-            return new BaseItemStack(ItemType.PUMPKIN_SEEDS.getID());
+            return new BaseItemStack(ItemID.PUMPKIN_SEEDS);
 
         case BlockID.MELON_STEM:
-            return new BaseItemStack(ItemType.MELON_SEEDS.getID());
+            return new BaseItemStack(ItemID.MELON_SEEDS);
 
         case BlockID.BEDROCK:
         case BlockID.WATER:

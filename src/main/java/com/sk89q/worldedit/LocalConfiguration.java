@@ -20,7 +20,7 @@
 package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.ItemType;
+import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
 import java.io.File;
 import java.util.HashSet;
@@ -89,13 +89,13 @@ public abstract class LocalConfiguration {
     public int maxBrushRadius = 6;
     public boolean logCommands = false;
     public boolean registerHelp = true;
-    public int wandItem = ItemType.WOOD_AXE.getID();
+    public int wandItem = ItemID.WOOD_AXE;
     public boolean superPickaxeDrop = true;
     public boolean superPickaxeManyDrop = true;
     public boolean noDoubleSlash = false;
     public boolean useInventory = false;
     public boolean useInventoryOverride = false;
-    public int navigationWand = ItemType.COMPASS.getID();
+    public int navigationWand = ItemID.COMPASS;
     public int navigationWandMaxDistance = 50;
     public int scriptTimeout = 3000;
     public Set<Integer> allowedDataCycleBlocks = new HashSet<Integer>();
