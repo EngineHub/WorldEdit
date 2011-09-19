@@ -117,7 +117,7 @@ commands:
         usage: /<command> <block>
     /replace:
         description: Replace all blocks in the selection with another
-        usage: /<command> [from-block] <to-block>
+        usage: /<command> [-f] [from-block] <to-block>
     /stack:
         description: Repeat the contents of the selection
         usage: /<command> [-sa] [count] [direction]
@@ -262,6 +262,10 @@ commands:
     farwand:
         description: Wand at a distance tool
         usage: /<command>
+    lrbuild:
+        description: Long-range building tool
+        usage: /<command> <leftclick block> <rightclick block>
+        aliases: ['/lrbuild']
     remove:
         description: Remove all entities of a type
         usage: /<command> <type> <radius>
@@ -297,7 +301,7 @@ commands:
         aliases: ['removenear']
     /replacenear:
         description: Replace nearby blocks
-        usage: /<command> <size> <from-id> <to-id>
+        usage: /<command> [-f] <size> <from-id> <to-id>
         aliases: ['replacenear']
     /snow:
         description: Simulates snow
