@@ -44,20 +44,24 @@ public class SnapshotUtilCommands {
 
     private static Logger logger = Logger.getLogger("Minecraft.WorldEdit");
 
-    @Command(aliases = {"snapshot", "snap"},
-    desc = "Snapshot commands")
-    @NestedCommand({SnapshotCommands.class})
+    @Command(
+            aliases = { "snapshot", "snap" },
+            desc = "Snapshot commands"
+    )
+    @NestedCommand(SnapshotCommands.class)
     public static void snapshot(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
     }
 
-    @Command(aliases = {"restore", "/restore"},
-    usage = "[snapshot]",
-    desc = "Restore the selection from a snapshot",
-    min = 0,
-    max = 1)
-    @CommandPermissions({"worldedit.snapshots.restore"})
+    @Command(
+            aliases = { "restore", "/restore" },
+            usage = "[snapshot]",
+            desc = "Restore the selection from a snapshot",
+            min = 0,
+            max = 1
+    )
+    @CommandPermissions("worldedit.snapshots.restore")
     public static void restore(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

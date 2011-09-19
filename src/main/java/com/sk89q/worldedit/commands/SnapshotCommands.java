@@ -42,12 +42,14 @@ public class SnapshotCommands {
     private static Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
 
-    @Command(aliases = {"list"},
-    usage = "[num]",
-    desc = "List snapshots",
-    min = 0,
-    max = 1)
-    @CommandPermissions({"worldedit.snapshots.list"})
+    @Command(
+            aliases = { "list" },
+            usage = "[num]",
+            desc = "List snapshots",
+            min = 0,
+            max = 1
+    )
+    @CommandPermissions("worldedit.snapshots.list")
     public static void list(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -92,12 +94,14 @@ public class SnapshotCommands {
         }
     }
 
-    @Command(aliases = {"use"},
-    usage = "<snapshot>",
-    desc = "Choose a snapshot to use",
-    min = 1,
-    max = 1)
-    @CommandPermissions({"worldedit.snapshots.restore"})
+    @Command(
+            aliases = { "use" },
+            usage = "<snapshot>",
+            desc = "Choose a snapshot to use",
+            min = 1,
+            max = 1
+    )
+    @CommandPermissions("worldedit.snapshots.restore")
     public static void use(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -135,12 +139,14 @@ public class SnapshotCommands {
         }
     }
 
-    @Command(aliases = {"before"},
-    usage = "<date>",
-    desc = "Choose the nearest snapshot before a date",
-    min = 1,
-    max = -1)
-    @CommandPermissions({"worldedit.snapshots.restore"})
+    @Command(
+            aliases = { "before" },
+            usage = "<date>",
+            desc = "Choose the nearest snapshot before a date",
+            min = 1,
+            max = -1
+    )
+    @CommandPermissions("worldedit.snapshots.restore")
     public static void before(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -174,12 +180,14 @@ public class SnapshotCommands {
         }
     }
 
-    @Command(aliases = {"after"},
-    usage = "<date>",
-    desc = "Choose the nearest snapshot after a date",
-    min = 1,
-    max = -1)
-    @CommandPermissions({"worldedit.snapshots.restore"})
+    @Command(
+            aliases = { "after" },
+            usage = "<date>",
+            desc = "Choose the nearest snapshot after a date",
+            min = 1,
+            max = -1
+    )
+    @CommandPermissions("worldedit.snapshots.restore")
     public static void after(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

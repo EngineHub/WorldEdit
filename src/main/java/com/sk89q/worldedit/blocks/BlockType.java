@@ -728,6 +728,7 @@ public enum BlockType {
      * 
      * @param id
      * @return
+     * @deprecated This function ignores the data value.
      */
     @Deprecated
     public static int getDroppedBlock(int id) {

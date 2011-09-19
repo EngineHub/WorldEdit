@@ -35,13 +35,13 @@ import com.sk89q.worldedit.util.TreeGenerator;
  */
 public class GenerationCommands {
     @Command(
-        aliases = {"/hcyl"},
+        aliases = { "/hcyl" },
         usage = "<block> <radius> [height]",
         desc = "Generate a hollow cylinder",
         min = 2,
         max = 3
     )
-    @CommandPermissions({"worldedit.generation.cylinder"})
+    @CommandPermissions("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
     public static void hcyl(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -57,13 +57,13 @@ public class GenerationCommands {
     }
 
     @Command(
-        aliases = {"/cyl"},
+        aliases = { "/cyl" },
         usage = "<block> <radius> [height]",
         desc = "Generate a cylinder",
         min = 2,
         max = 3
     )
-    @CommandPermissions({"worldedit.generation.cylinder"})
+    @CommandPermissions("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
     public static void cyl(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -79,14 +79,14 @@ public class GenerationCommands {
     }
 
     @Command(
-        aliases = {"/hsphere"},
+        aliases = { "/hsphere" },
         usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
         desc = "Generate a hollow sphere.",
         flags = "q",
         min = 2,
         max = 3
     )
-    @CommandPermissions({"worldedit.generation.sphere"})
+    @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
     public static void hsphere(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -151,14 +151,14 @@ public class GenerationCommands {
     }
 
     @Command(
-        aliases = {"/sphere"},
+        aliases = { "/sphere" },
         usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
         desc = "Generate a filled sphere.",
         flags = "q",
         min = 2,
         max = 3
     )
-    @CommandPermissions({"worldedit.generation.sphere"})
+    @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
     public static void sphere(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -223,13 +223,13 @@ public class GenerationCommands {
     }
 
     @Command(
-        aliases = {"forestgen"},
+        aliases = { "forestgen" },
         usage = "[size] [type] [density]",
         desc = "Generate a forest",
         min = 0,
         max = 3
     )
-    @CommandPermissions({"worldedit.generation.forest"})
+    @CommandPermissions("worldedit.generation.forest")
     @Logging(POSITION)
     public static void forestGen(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -252,13 +252,13 @@ public class GenerationCommands {
     }
     
     @Command(
-        aliases = {"pumpkins"},
+        aliases = { "pumpkins" },
         usage = "[size]",
         desc = "Generate pumpkin patches",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.generation.pumpkins"})
+    @CommandPermissions("worldedit.generation.pumpkins")
     @Logging(POSITION)
     public static void pumpkins(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -271,13 +271,13 @@ public class GenerationCommands {
     }
     
     @Command(
-        aliases = {"/pyramid"},
+        aliases = { "/pyramid" },
         usage = "<block> <range>",
         desc = "Generate a filled pyramid",
         min = 2,
         max = 2
     )
-    @CommandPermissions({"worldedit.generation.pyramid"})
+    @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
     public static void pyramid(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -294,13 +294,13 @@ public class GenerationCommands {
     }
     
     @Command(
-        aliases = {"/hpyramid"},
+        aliases = { "/hpyramid" },
         usage = "<block> <range>",
         desc = "Generate a hollow pyramid",
         min = 2,
         max = 2
     )
-    @CommandPermissions({"worldedit.generation.pyramid"})
+    @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
     public static void hpyramid(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)

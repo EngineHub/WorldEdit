@@ -40,13 +40,13 @@ import com.sk89q.worldedit.blocks.*;
  */
 public class SelectionCommands {
     @Command(
-        aliases = {"/pos1"},
+        aliases = { "/pos1" },
         usage = "[coordinates]",
         desc = "Set position 1",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.selection.pos"})
+    @CommandPermissions("worldedit.selection.pos")
     public static void pos1(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -75,13 +75,13 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/pos2"},
+        aliases = { "/pos2" },
         usage = "[coordinates]",
         desc = "Set position 2",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.selection.pos"})
+    @CommandPermissions("worldedit.selection.pos")
     public static void pos2(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -112,13 +112,13 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/hpos1"},
+        aliases = { "/hpos1" },
         usage = "",
         desc = "Set position 1 to targeted block",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.selection.hpos"})
+    @CommandPermissions("worldedit.selection.hpos")
     public static void hpos1(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -140,13 +140,13 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/hpos2"},
+        aliases = { "/hpos2" },
         usage = "",
         desc = "Set position 2 to targeted block",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.selection.hpos"})
+    @CommandPermissions("worldedit.selection.hpos")
     public static void hpos2(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -168,14 +168,14 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/chunk"},
+        aliases = { "/chunk" },
         usage = "",
         flags = "s",
         desc = "Set the selection to your current chunk.",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.selection.chunk"})
+    @CommandPermissions("worldedit.selection.chunk")
     public static void chunk(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -215,13 +215,13 @@ public class SelectionCommands {
     }
     
     @Command(
-        aliases = {"/wand"},
+        aliases = { "/wand" },
         usage = "",
         desc = "Get the wand object",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.wand"})
+    @CommandPermissions("worldedit.wand")
     public static void wand(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -231,13 +231,13 @@ public class SelectionCommands {
     }
     
     @Command(
-        aliases = {"toggleeditwand"},
+        aliases = { "toggleeditwand" },
         usage = "",
         desc = "Toggle functionality of the edit wand",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.wand.toggle"})
+    @CommandPermissions("worldedit.wand.toggle")
     public static void toggleWand(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -252,13 +252,13 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/expand"},
+        aliases = { "/expand" },
         usage = "<amount> [reverse-amount] <direction>",
         desc = "Expand the selection area",
         min = 1,
         max = 3
     )
-    @CommandPermissions({"worldedit.selection.expand"})
+    @CommandPermissions("worldedit.selection.expand")
     public static void expand(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -289,8 +289,9 @@ public class SelectionCommands {
         int change = args.getInteger(0);
         int reverseChange = 0;
         
-        // Specifying a direction
-        if (args.argsLength() == 2) {
+        switch (args.argsLength()) {
+        case 2:
+            // Either a reverse amount or a direction
             try {
                 reverseChange = args.getInteger(1) * -1;
                 dir = we.getDirection(player, "me");
@@ -298,12 +299,15 @@ public class SelectionCommands {
                 dir = we.getDirection(player,
                         args.getString(1).toLowerCase());
             }
-        // Specifying a direction and a reverse amount
-        } else if (args.argsLength() == 3) {
+            break;
+
+        case 3: 
+            // Both reverse amount and direction
             reverseChange = args.getInteger(1) * -1;
             dir = we.getDirection(player,
                     args.getString(2).toLowerCase());
-        } else {
+            break;
+        default:
             dir = we.getDirection(player, "me");
         }
 
@@ -324,13 +328,13 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/contract"},
+        aliases = { "/contract" },
         usage = "<amount> [reverse-amount] [direction]",
         desc = "Contract the selection area",
         min = 1,
         max = 3
     )
-    @CommandPermissions({"worldedit.selection.contract"})
+    @CommandPermissions("worldedit.selection.contract")
     public static void contract(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -339,8 +343,9 @@ public class SelectionCommands {
         int change = args.getInteger(0);
         int reverseChange = 0;
 
-        // Either a reverse amount or a direction
-        if (args.argsLength() == 2) {
+        switch (args.argsLength()) {
+        case 2:
+            // Either a reverse amount or a direction
             try {
                 reverseChange = args.getInteger(1) * -1;
                 dir = we.getDirection(player, "me");
@@ -348,12 +353,15 @@ public class SelectionCommands {
                 dir = we.getDirection(player,
                         args.getString(1).toLowerCase());
             }
-        // Both reverse amount and direction
-        } else if (args.argsLength() == 3) {
+            break;
+
+        case 3: 
+            // Both reverse amount and direction
             reverseChange = args.getInteger(1) * -1;
             dir = we.getDirection(player,
                     args.getString(2).toLowerCase());
-        } else {
+            break;
+        default:
             dir = we.getDirection(player, "me");
         }
 
@@ -376,13 +384,13 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/shift"},
+        aliases = { "/shift" },
         usage = "<amount> [direction]",
         desc = "Shift the selection area",
         min = 1,
         max = 2
     )
-    @CommandPermissions({"worldedit.selection.shift"})
+    @CommandPermissions("worldedit.selection.shift")
     public static void shift(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -411,14 +419,14 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/outset"},
+        aliases = { "/outset" },
         usage = "<amount>",
         desc = "Outset the selection area",
         flags = "hv",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.selection.outset"})
+    @CommandPermissions("worldedit.selection.outset")
     public static void outset(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -450,14 +458,14 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/inset"},
+        aliases = { "/inset" },
         usage = "<amount>",
         desc = "Inset the selection area",
         flags = "hv",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.selection.inset"})
+    @CommandPermissions("worldedit.selection.inset")
     public static void inset(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -485,13 +493,13 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/size"},
+        aliases = { "/size" },
         usage = "",
         desc = "Get information about the selection",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.selection.size"})
+    @CommandPermissions("worldedit.selection.size")
     public static void size(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -513,13 +521,13 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/count"},
+        aliases = { "/count" },
         usage = "<block>",
         desc = "Counts the number of a certain type of block",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.analysis.count"})
+    @CommandPermissions("worldedit.analysis.count")
     public static void count(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -531,14 +539,14 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/distr"},
+        aliases = { "/distr" },
         usage = "",
         desc = "Get the distribution of blocks in the selection",
         flags = "c",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.analysis.distr"})
+    @CommandPermissions("worldedit.analysis.distr")
     public static void distr(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -575,7 +583,7 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = {"/sel", ";"},
+        aliases = { "/sel", ";" },
         usage = "[type]",
         desc = "Choose a region selector",
         min = 0,

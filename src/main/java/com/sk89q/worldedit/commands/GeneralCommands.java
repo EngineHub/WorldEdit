@@ -34,13 +34,13 @@ import com.sk89q.worldedit.masks.Mask;
  */
 public class GeneralCommands {
     @Command(
-        aliases = {"/limit"},
+        aliases = { "/limit" },
         usage = "<limit>",
         desc = "Modify block change limit",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.limit"})
+    @CommandPermissions("worldedit.limit")
     public static void limit(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -62,13 +62,13 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = {"/fast"},
+        aliases = { "/fast" },
         usage = "",
         desc = "Toggle fast mode",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.fast"})
+    @CommandPermissions("worldedit.fast")
     public static void fast(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -83,13 +83,13 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = {"/gmask", "gmask"},
+        aliases = { "/gmask", "gmask" },
         usage = "[mask]",
         desc = "Set the global mask",
         min = 0,
         max = -1
     )
-    @CommandPermissions({"worldedit.global-mask"})
+    @CommandPermissions("worldedit.global-mask")
     public static void mask(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -104,7 +104,7 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = {"/toggleplace", "toggleplace"},
+        aliases = { "/toggleplace", "toggleplace" },
         usage = "",
         desc = "Switch between your position and pos1 for placement",
         min = 0,
@@ -122,7 +122,7 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = {"/searchitem", "/l", "/search", "searchitem", "search"},
+        aliases = { "/searchitem", "/l", "/search", "searchitem", "search" },
         usage = "<query>",
         flags = "bi",
         desc = "Search for an item",
@@ -199,10 +199,10 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = {"we", "worldedit"},
+        aliases = { "we", "worldedit" },
         desc = "WorldEdit commands"
     )
-    @NestedCommand({WorldEditCommands.class})
+    @NestedCommand(WorldEditCommands.class)
     public static void we(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

@@ -31,13 +31,13 @@ import com.sk89q.worldedit.*;
  */
 public class HistoryCommands {
     @Command(
-        aliases = {"/undo", "undo"},
+        aliases = { "/undo", "undo" },
         usage = "[times] [player]",
         desc = "Undoes the last action",
         min = 0,
         max = 2
     )
-    @CommandPermissions({"worldedit.history.undo"})
+    @CommandPermissions("worldedit.history.undo")
     public static void undo(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -67,13 +67,13 @@ public class HistoryCommands {
     }
     
     @Command(
-        aliases = {"/redo", "redo"},
+        aliases = { "/redo", "redo" },
         usage = "[times] [player]",
         desc = "Redoes the last action (from history)",
         min = 0,
         max = 2
     )
-    @CommandPermissions({"worldedit.history.redo"})
+    @CommandPermissions("worldedit.history.redo")
     public static void redo(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -103,13 +103,13 @@ public class HistoryCommands {
     }
 
     @Command(
-        aliases = {"/clearhistory", "clearhistory"},
+        aliases = { "/clearhistory", "clearhistory" },
         usage = "",
         desc = "Clear your history",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.history.clear"})
+    @CommandPermissions("worldedit.history.clear")
     public static void clearHistory(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

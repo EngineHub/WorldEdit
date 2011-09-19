@@ -22,9 +22,7 @@ package com.sk89q.worldedit;
 import java.util.Random;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.blocks.ItemType;
 import com.sk89q.worldedit.regions.Region;
 
 /**

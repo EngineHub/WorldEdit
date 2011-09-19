@@ -34,13 +34,13 @@ import com.sk89q.worldedit.*;
  */
 public class ScriptingCommands {
     @Command(
-        aliases = {"cs"},
+        aliases = { "cs" },
         usage = "<filename> [args...]",
         desc = "Execute a CraftScript",
         min = 1,
         max = -1
     )
-    @CommandPermissions({"worldedit.scripting.execute"})
+    @CommandPermissions("worldedit.scripting.execute")
     @Logging(ALL)
     public static void execute(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -59,13 +59,13 @@ public class ScriptingCommands {
     }
 
     @Command(
-        aliases = {".s"},
+        aliases = { ".s" },
         usage = "[args...]",
         desc = "Execute last CraftScript",
         min = 0,
         max = -1
     )
-    @CommandPermissions({"worldedit.scripting.execute"})
+    @CommandPermissions("worldedit.scripting.execute")
     @Logging(ALL)
     public static void executeLast(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -86,6 +86,5 @@ public class ScriptingCommands {
                 new String[] {"js"});
         
         we.runScript(player, f, scriptArgs);
-        
     }
 }

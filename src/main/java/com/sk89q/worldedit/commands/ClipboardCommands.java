@@ -39,13 +39,13 @@ import com.sk89q.worldedit.regions.Region;
  */
 public class ClipboardCommands {
     @Command(
-        aliases = {"/copy"},
+        aliases = { "/copy" },
         usage = "",
         desc = "Copy the selection to the clipboard",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.clipboard.copy"})
+    @CommandPermissions("worldedit.clipboard.copy")
     public static void copy(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -65,13 +65,13 @@ public class ClipboardCommands {
     }
 
     @Command(
-        aliases = {"/cut"},
+        aliases = { "/cut" },
         usage = "[leave-id]",
         desc = "Cut the selection to the clipboard",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.clipboard.cut"})
+    @CommandPermissions("worldedit.clipboard.cut")
     @Logging(REGION)
     public static void cut(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -99,14 +99,14 @@ public class ClipboardCommands {
     }
     
     @Command(
-        aliases = {"/paste"},
+        aliases = { "/paste" },
         usage = "",
         flags = "ao",
         desc = "Paste the clipboard's contents",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.clipboard.paste"})
+    @CommandPermissions("worldedit.clipboard.paste")
     @Logging(PLACEMENT)
     public static void paste(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -129,13 +129,13 @@ public class ClipboardCommands {
     }
 
     @Command(
-        aliases = {"/rotate"},
+        aliases = { "/rotate" },
         usage = "<angle-in-degrees>",
         desc = "Rotate the contents of the clipboard",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.clipboard.rotate"})
+    @CommandPermissions("worldedit.clipboard.rotate")
     public static void rotate(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -152,14 +152,14 @@ public class ClipboardCommands {
     }
 
     @Command(
-        aliases = {"/flip"},
+        aliases = { "/flip" },
         usage = "[dir]",
         flags = "p",
         desc = "Flip the contents of the clipboard.",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.clipboard.flip"})
+    @CommandPermissions("worldedit.clipboard.flip")
     public static void flip(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -173,13 +173,13 @@ public class ClipboardCommands {
     }
     
     @Command(
-        aliases = {"/load"},
+        aliases = { "/load" },
         usage = "<filename>",
         desc = "Load a schematic into your clipboard",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.clipboard.load"})
+    @CommandPermissions("worldedit.clipboard.load")
     public static void load(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -210,13 +210,13 @@ public class ClipboardCommands {
     }
     
     @Command(
-        aliases = {"/save"},
+        aliases = { "/save" },
         usage = "<filename>",
         desc = "Save a schematic into your clipboard",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.clipboard.save"})
+    @CommandPermissions("worldedit.clipboard.save")
     public static void save(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -254,13 +254,13 @@ public class ClipboardCommands {
     }
     
     @Command(
-        aliases = {"clearclipboard"},
+        aliases = { "clearclipboard" },
         usage = "",
         desc = "Clear your clipboard",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.clipboard.clear"})
+    @CommandPermissions("worldedit.clipboard.clear")
     public static void clearClipboard(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

@@ -39,13 +39,13 @@ import com.sk89q.worldedit.regions.Region;
  */
 public class UtilityCommands {
     @Command(
-        aliases = {"/fill"},
+        aliases = { "/fill" },
         usage = "<block> <radius> [depth]",
         desc = "Fill a hole",
         min = 2,
         max = 3
     )
-    @CommandPermissions({"worldedit.fill"})
+    @CommandPermissions("worldedit.fill")
     @Logging(PLACEMENT)
     public static void fill(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -69,13 +69,13 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"/fillr"},
+        aliases = { "/fillr" },
         usage = "<block> <radius> [depth]",
         desc = "Fill a hole recursively",
         min = 2,
         max = 3
     )
-    @CommandPermissions({"worldedit.fill.recursive"})
+    @CommandPermissions("worldedit.fill.recursive")
     @Logging(PLACEMENT)
     public static void fillr(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -99,13 +99,13 @@ public class UtilityCommands {
     }
     
     @Command(
-        aliases = {"/drain"},
+        aliases = { "/drain" },
         usage = "<radius>",
         desc = "Drain a pool",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.drain"})
+    @CommandPermissions("worldedit.drain")
     @Logging(PLACEMENT)
     public static void drain(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -119,13 +119,13 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"/fixlava", "fixlava"},
+        aliases = { "/fixlava", "fixlava" },
         usage = "<radius>",
         desc = "Fix lava to be stationary",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.fixlava"})
+    @CommandPermissions("worldedit.fixlava")
     @Logging(PLACEMENT)
     public static void fixLava(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -139,13 +139,13 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"/fixwater", "fixwater"},
+        aliases = { "/fixwater", "fixwater" },
         usage = "<radius>",
         desc = "Fix water to be stationary",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.fixwater"})
+    @CommandPermissions("worldedit.fixwater")
     @Logging(PLACEMENT)
     public static void fixWater(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -159,13 +159,13 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"/removeabove", "removeabove"},
+        aliases = { "/removeabove", "removeabove" },
         usage = "[size] [height]",
         desc = "Remove blocks above your head.",
         min = 0,
         max = 2
     )
-    @CommandPermissions({"worldedit.removeabove"})
+    @CommandPermissions("worldedit.removeabove")
     @Logging(PLACEMENT)
     public static void removeAbove(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -181,13 +181,13 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"/removebelow", "removebelow"},
+        aliases = { "/removebelow", "removebelow" },
         usage = "[size] [height]",
         desc = "Remove blocks below you.",
         min = 0,
         max = 2
     )
-    @CommandPermissions({"worldedit.removebelow"})
+    @CommandPermissions("worldedit.removebelow")
     @Logging(PLACEMENT)
     public static void removeBelow(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -203,13 +203,13 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"/removenear", "removenear"},
+        aliases = { "/removenear", "removenear" },
         usage = "<block> [size]",
         desc = "Remove blocks near you.",
         min = 1,
         max = 2
     )
-    @CommandPermissions({"worldedit.removenear"})
+    @CommandPermissions("worldedit.removenear")
     @Logging(PLACEMENT)
     public static void removeNear(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -225,14 +225,14 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"/replacenear", "replacenear"},
+        aliases = { "/replacenear", "replacenear" },
         usage = "<size> <from-id> <to-id>",
         desc = "Replace nearby blocks",
         flags = "f",
         min = 3,
         max = 3
     )
-    @CommandPermissions({"worldedit.replacenear"})
+    @CommandPermissions("worldedit.replacenear")
     @Logging(PLACEMENT)
     public static void replaceNear(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -264,13 +264,13 @@ public class UtilityCommands {
     }
     
     @Command(
-        aliases = {"/snow", "snow"},
+        aliases = { "/snow", "snow" },
         usage = "[radius]",
         desc = "Simulates snow",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.snow"})
+    @CommandPermissions("worldedit.snow")
     @Logging(PLACEMENT)
     public static void snow(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -289,7 +289,7 @@ public class UtilityCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.thaw"})
+    @CommandPermissions("worldedit.thaw")
     @Logging(PLACEMENT)
     public static void thaw(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -302,13 +302,13 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"/green", "green"},
+        aliases = { "/green", "green" },
         usage = "[radius]",
         desc = "Greens the area",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.green"})
+    @CommandPermissions("worldedit.green")
     @Logging(PLACEMENT)
     public static void green(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -321,13 +321,13 @@ public class UtilityCommands {
     }
 
     @Command(
-            aliases = {"/ex", "/ext", "/extinguish", "ex", "ext", "extinguish"},
+            aliases = { "/ex", "/ext", "/extinguish", "ex", "ext", "extinguish" },
             usage = "[radius]",
             desc = "Extinguish nearby fire",
             min = 0,
             max = 1
         )
-    @CommandPermissions({"worldedit.extinguish"})
+    @CommandPermissions("worldedit.extinguish")
     @Logging(PLACEMENT)
     public static void extinguish(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -346,14 +346,14 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"butcher"},
+        aliases = { "butcher" },
         usage = "[radius]",
         flags = "p",
         desc = "Kill all or nearby mobs",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.butcher"})
+    @CommandPermissions("worldedit.butcher")
     @Logging(PLACEMENT)
     public static void butcher(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -368,13 +368,13 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"remove", "rem", "rement"},
+        aliases = { "remove", "rem", "rement" },
         usage = "<type> <radius>",
         desc = "Remove all entities of a type",
         min = 2,
         max = 2
     )
-    @CommandPermissions({"worldedit.remove"})
+    @CommandPermissions("worldedit.remove")
     @Logging(PLACEMENT)
     public static void remove(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
