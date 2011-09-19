@@ -28,7 +28,6 @@ import java.util.Random;
 import java.util.Set;
 
 import com.sk89q.util.StringUtil;
-import org.omg.CORBA.PRIVATE_MEMBER;
 
 /**
  * Block types.
@@ -277,6 +276,7 @@ public enum BlockType {
     private static final Set<Integer> shouldPlaceLast = new HashSet<Integer>();
     static {
         shouldPlaceLast.add(BlockID.SAPLING);
+        shouldPlaceLast.add(BlockID.BED);
         shouldPlaceLast.add(BlockID.POWERED_RAIL);
         shouldPlaceLast.add(BlockID.DETECTOR_RAIL);
         shouldPlaceLast.add(BlockID.LONG_GRASS);
@@ -582,30 +582,30 @@ public enum BlockType {
     /**
      * HashSet for isNaturalBlock.
      */
-    private static final Set<Integer> isNaturalBlock = new HashSet<Integer>();
+    private static final Set<Integer> isNaturalTerrainBlock = new HashSet<Integer>();
     static {
-        isNaturalBlock.add(BlockID.STONE);
-        isNaturalBlock.add(BlockID.GRASS);
-        isNaturalBlock.add(BlockID.DIRT);
+        isNaturalTerrainBlock.add(BlockID.STONE);
+        isNaturalTerrainBlock.add(BlockID.GRASS);
+        isNaturalTerrainBlock.add(BlockID.DIRT);
         // isNaturalBlock.add(BlockID.COBBLESTONE); // technically can occur next to water and lava
-        isNaturalBlock.add(BlockID.BEDROCK);
-        isNaturalBlock.add(BlockID.SAND);
-        isNaturalBlock.add(BlockID.GRAVEL);
-        isNaturalBlock.add(BlockID.CLAY);
+        isNaturalTerrainBlock.add(BlockID.BEDROCK);
+        isNaturalTerrainBlock.add(BlockID.SAND);
+        isNaturalTerrainBlock.add(BlockID.GRAVEL);
+        isNaturalTerrainBlock.add(BlockID.CLAY);
 
         // hell
-        isNaturalBlock.add(BlockID.NETHERSTONE);
-        isNaturalBlock.add(BlockID.SLOW_SAND);
-        isNaturalBlock.add(BlockID.LIGHTSTONE);
+        isNaturalTerrainBlock.add(BlockID.NETHERSTONE);
+        isNaturalTerrainBlock.add(BlockID.SLOW_SAND);
+        isNaturalTerrainBlock.add(BlockID.LIGHTSTONE);
 
         // ores
-        isNaturalBlock.add(BlockID.COAL_ORE);
-        isNaturalBlock.add(BlockID.IRON_ORE);
-        isNaturalBlock.add(BlockID.GOLD_ORE);
-        isNaturalBlock.add(BlockID.LAPIS_LAZULI_ORE);
-        isNaturalBlock.add(BlockID.DIAMOND_ORE);
-        isNaturalBlock.add(BlockID.REDSTONE_ORE);
-        isNaturalBlock.add(BlockID.GLOWING_REDSTONE_ORE);
+        isNaturalTerrainBlock.add(BlockID.COAL_ORE);
+        isNaturalTerrainBlock.add(BlockID.IRON_ORE);
+        isNaturalTerrainBlock.add(BlockID.GOLD_ORE);
+        isNaturalTerrainBlock.add(BlockID.LAPIS_LAZULI_ORE);
+        isNaturalTerrainBlock.add(BlockID.DIAMOND_ORE);
+        isNaturalTerrainBlock.add(BlockID.REDSTONE_ORE);
+        isNaturalTerrainBlock.add(BlockID.GLOWING_REDSTONE_ORE);
     }
 
     /**
@@ -614,8 +614,8 @@ public enum BlockType {
      * @param id
      * @return
      */
-    public static boolean isNaturalBlock(int id) {
-        return isNaturalBlock.contains(id);
+    public static boolean isNaturalTerrainBlock(int id) {
+        return isNaturalTerrainBlock.contains(id);
     }
 
     /**
@@ -750,19 +750,16 @@ public enum BlockType {
         case BlockID.GRAVEL:
             if (random.nextDouble() >= 0.9) {
                 return new BaseItemStack(ItemType.FLINT.getID());
-            } else {
-                return new BaseItemStack(id);
             }
 
         case BlockID.COAL_ORE:
             return new BaseItemStack(ItemType.COAL.getID());
 
-        case BlockID.LOG:
-            return new BaseItemStack(id, 1, data);
-
         case BlockID.LEAVES:
             if (random.nextDouble() > 0.95) {
                 return new BaseItemStack(BlockID.SAPLING, 1, data);
+            } else {
+                return null;
             }
 
         case BlockID.LAPIS_LAZULI_ORE:
@@ -774,14 +771,8 @@ public enum BlockType {
         case BlockID.LONG_GRASS:
             if (random.nextInt(8) == 0) return new BaseItemStack(ItemType.SEEDS.getID());
 
-        case BlockID.CLOTH:
-            return new BaseItemStack(id, 1, data);
-
         case BlockID.DOUBLE_STEP:
             return new BaseItemStack(BlockID.STEP, 2, data);
-
-        case BlockID.STEP:
-            return new BaseItemStack(id, 1, data);
 
         case BlockID.WOODEN_STAIRS:
             return new BaseItemStack(BlockID.WOOD);
@@ -836,6 +827,15 @@ public enum BlockType {
         case BlockID.REDSTONE_REPEATER_ON:
             return new BaseItemStack(ItemType.REDSTONE_REPEATER.getID());
 
+        case BlockID.MELON_BLOCK:
+            return new BaseItemStack(ItemType.MELON.getID(), (random.nextInt(5) + 3));
+
+        case BlockID.PUMPKIN_STEM:
+            return new BaseItemStack(ItemType.PUMPKIN_SEEDS.getID());
+
+        case BlockID.MELON_STEM:
+            return new BaseItemStack(ItemType.MELON_SEEDS.getID());
+
         case BlockID.BEDROCK:
         case BlockID.WATER:
         case BlockID.STATIONARY_WATER:
@@ -850,9 +850,16 @@ public enum BlockType {
         case BlockID.ICE:
         case BlockID.PORTAL:
         case BlockID.AIR:
+        case BlockID.LOCKED_CHEST:
+        case BlockID.SILVERFISH_BLOCK:
+        case BlockID.VINE:
             return null;
         }
-        return new BaseItemStack(id);
+        if (usesData(id)) {
+            return new BaseItemStack(id, 1, data);
+        } else {
+            return new BaseItemStack(id);
+        }
     }
 
 }

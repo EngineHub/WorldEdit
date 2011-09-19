@@ -2605,7 +2605,7 @@ public class EditSession {
         for (int y = maxY; y >= minY; --y) {
             Vector pt = new Vector(x, y, z);
             int id = getBlockType(pt);
-            if (naturalOnly ? BlockType.isNaturalBlock(id) : !BlockType.canPassThrough(id)) {
+            if (naturalOnly ? BlockType.isNaturalTerrainBlock(id) : !BlockType.canPassThrough(id)) {
                 return y;
             }
         }
