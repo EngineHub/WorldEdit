@@ -192,4 +192,24 @@ public class ToolCommands {
         session.setTool(player.getItemInHand(), new DistanceWand());
         player.print("Far wand tool bound to " + ItemType.toHeldName(player.getItemInHand()) + ".");
     }
+
+    @Command(
+            aliases = {"lrbuild", "/lrbuild"},
+            usage = "<leftclick block> <rightclick block>",
+            desc = "Long-range building tool",
+            min = 2,
+            max = 2
+        )
+    @CommandPermissions({"worldedit.tool.lrbuild"})
+    public static void longrangebuildtool(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        BaseBlock secondary = we.getBlock(player, args.getString(0));
+        BaseBlock primary = we.getBlock(player, args.getString(1));
+        session.setTool(player.getItemInHand(), new LongRangeBuildTool(primary, secondary));
+        player.print("Long-range building tool bound to " + ItemType.toHeldName(player.getItemInHand()) + ".");
+        player.print("Left-click set to " + ItemType.toName(secondary.getType()) + "; right-click set to "
+                + ItemType.toName(primary.getType()) + ".");
+    }
 }

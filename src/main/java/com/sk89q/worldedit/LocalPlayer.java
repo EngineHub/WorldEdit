@@ -31,7 +31,7 @@ import com.sk89q.worldedit.util.TargetBlock;
  *
  * @author sk89q
  */
-public abstract class LocalPlayer {    
+public abstract class LocalPlayer {
     /**
      * Server.
      */
@@ -319,7 +319,11 @@ public abstract class LocalPlayer {
         TargetBlock tb = new TargetBlock(this, range, 0.2);
         return (useLastBlock ? tb.getAnyTargetBlock() : tb.getTargetBlock());
     }
-    
+
+    public WorldVectorFace getBlockTraceFace(int range, boolean useLastBlock) {
+        TargetBlock tb = new TargetBlock(this, range, 0.2);
+        return (useLastBlock ? tb.getAnyTargetBlockFace() : tb.getTargetBlockFace());
+    }
     /**
      * Get the point of the block being looked at. May return null.
      *

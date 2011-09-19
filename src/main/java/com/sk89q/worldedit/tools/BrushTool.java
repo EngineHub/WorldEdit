@@ -167,11 +167,7 @@ public class BrushTool implements TraceTool {
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session) {
         WorldVector target = null;
-        if (this.range > -1) {
-            target = player.getBlockTrace(getRange(), true);
-        } else {
-            target = player.getBlockTrace(MAX_RANGE);
-        }
+        target = player.getBlockTrace(getRange(), true);
         
         if (target == null) {
             player.printError("No block in sight!");

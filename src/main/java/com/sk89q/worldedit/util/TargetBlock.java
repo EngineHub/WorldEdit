@@ -27,6 +27,8 @@ import com.sk89q.worldedit.BlockWorldVector;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldVectorFace;
+import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 
 /**
@@ -110,7 +112,7 @@ public class TargetBlock {
         boolean searchForLastBlock = true;
         BlockWorldVector lastBlock = null;
         while (getNextBlock() != null) {
-            if (world.getBlockType(getCurrentBlock()) == 0) {
+            if (world.getBlockType(getCurrentBlock()) == BlockID.AIR) {
                 if(searchForLastBlock) {
                     lastBlock = getCurrentBlock();
                     if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= 127) {
@@ -195,5 +197,15 @@ public class TargetBlock {
      */
     public BlockWorldVector getPreviousBlock() {
         return new BlockWorldVector(world, prevPos);
+    }
+
+    public WorldVectorFace getAnyTargetBlockFace() {
+        getAnyTargetBlock();
+        return WorldVectorFace.getWorldVectorFace(world, getCurrentBlock(), getPreviousBlock());
+    }
+
+    public WorldVectorFace getTargetBlockFace() {
+        getAnyTargetBlock();
+        return WorldVectorFace.getWorldVectorFace(world, getCurrentBlock(), getPreviousBlock());
     }
 }
