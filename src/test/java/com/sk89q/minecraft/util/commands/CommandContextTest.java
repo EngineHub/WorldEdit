@@ -54,7 +54,7 @@ public class CommandContextTest {
         String joinedArg = firstCommand.getJoinedStrings(0);
         assertEquals("herpderp", command);
         assertEquals("another thing", argOne);
-        assertEquals("another thing because something", joinedArg);
+        assertEquals("'another thing'  because something", joinedArg);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class CommandContextTest {
         assertTrue(firstCommand.hasFlag('w'));
         assertEquals("testers", firstCommand.getFlag('o'));
         assertEquals("mani world", firstCommand.getFlag('w'));
-        assertNull(firstCommand.getFlag('u'));
+        assertFalse(firstCommand.hasFlag('u'));
     }
 
     @Test
@@ -103,13 +103,29 @@ public class CommandContextTest {
     }
 
     @Test
-    public void testflagsAnywhere() {
+    public void testFlagsAnywhere() {
         try {
             CommandContext context = new CommandContext("r hello -f");
             assertTrue(context.hasFlag('f'));
 
             CommandContext context2 = new CommandContext("r hello -f world");
             assertTrue(context2.hasFlag('f'));
+        } catch (CommandException e) {
+            e.printStackTrace();
+            fail("Error creating CommandContext");
+        }
+    }
+
+    @Test
+    public void testExactJoinedStrings() {
+        try {
+            CommandContext context = new CommandContext("r -f \"hello world\"   foo   bar");
+            assertTrue(context.hasFlag('f'));
+            assertEquals("\"hello world\"   foo   bar", context.getJoinedStrings(0));
+            assertEquals("foo   bar", context.getJoinedStrings(1));
+
+            CommandContext context2 = new CommandContext("pm name \"hello world\"   foo   bar");
+            assertEquals("\"hello world\"   foo   bar", context2.getJoinedStrings(1));
         } catch (CommandException e) {
             e.printStackTrace();
             fail("Error creating CommandContext");
