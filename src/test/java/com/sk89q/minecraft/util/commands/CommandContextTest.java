@@ -81,7 +81,7 @@ public class CommandContextTest {
     }
 
     @Test
-    public void testHangingQuote() {
+    public void testUnmatchedQuote() {
         String cmd = "r \"hello goodbye have fun";
         try {
             new CommandContext(cmd);
@@ -126,6 +126,18 @@ public class CommandContextTest {
 
             CommandContext context2 = new CommandContext("pm name \"hello world\"   foo   bar");
             assertEquals("\"hello world\"   foo   bar", context2.getJoinedStrings(1));
+        } catch (CommandException e) {
+            e.printStackTrace();
+            fail("Error creating CommandContext");
+        }
+    }
+
+    @Test
+    public void testSlice() {
+        try {
+            CommandContext context = new CommandContext("foo bar baz");
+            assertArrayEquals(new String[] { "foo", "bar", "baz" }, context.getSlice(0));
+
         } catch (CommandException e) {
             e.printStackTrace();
             fail("Error creating CommandContext");
