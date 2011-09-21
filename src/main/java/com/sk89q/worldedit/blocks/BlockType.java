@@ -751,6 +751,8 @@ public enum BlockType {
         case BlockID.GRAVEL:
             if (random.nextDouble() >= 0.9) {
                 return new BaseItemStack(ItemID.FLINT);
+            } else {
+                return new BaseItemStack(BlockID.GRAVEL);
             }
 
         case BlockID.COAL_ORE:
@@ -770,7 +772,11 @@ public enum BlockType {
             return new BaseItemStack(ItemID.BED_ITEM);
 
         case BlockID.LONG_GRASS:
-            if (random.nextInt(8) == 0) return new BaseItemStack(ItemID.SEEDS);
+            if (random.nextInt(8) == 0) {
+                return new BaseItemStack(ItemID.SEEDS);
+            } else {
+                return null;
+            }
 
         case BlockID.DOUBLE_STEP:
             return new BaseItemStack(BlockID.STEP, 2, data);
