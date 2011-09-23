@@ -483,6 +483,72 @@ public final class BlockData {
                 return data ^ flipX;
             }
             break;
+
+        case BlockID.RED_MUSHROOM_CAP:
+        case BlockID.BROWN_MUSHROOM_CAP:
+            switch (data) {
+            case 1:
+            case 4:
+            case 7:
+                data += 2*flipX;
+                break;
+
+            case 3:
+            case 6:
+            case 9:
+                data -= 2*flipX;
+                break;
+            }
+
+            switch (data) {
+            case 1:
+            case 2:
+            case 3:
+                data += 6*flipZ;
+                break;
+
+            case 7:
+            case 8:
+            case 9:
+                data -= 6*flipZ;
+                break;
+            }
+
+            break;
+
+        case BlockID.VINE: 
+            final int bit1, bit2;
+            switch (direction) {
+            case NORTH_SOUTH:
+                bit1 = 0x2;
+                bit2 = 0x8;
+                break;
+
+            case WEST_EAST:
+                bit1 = 0x1;
+                bit2 = 0x4;
+                break;
+
+            default:
+                return data;
+            }
+            int newData = data & ~(bit1 | bit2);
+            if ((data & bit1) != 0) newData |= bit2;
+            if ((data & bit2) != 0) newData |= bit1;
+
+            return newData;
+
+        case BlockID.FENCE_GATE:
+            switch (data & 0x3) {
+            case 0:
+            case 2:
+                return data ^ 2*flipZ;
+
+            case 1:
+            case 3:
+                return data ^ 2*flipX;
+            }
+            break;
         }
 
         return data;
