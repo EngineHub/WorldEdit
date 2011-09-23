@@ -338,11 +338,11 @@ public final class BlockData {
             break;
 
         case WEST_EAST:
-            flipY = 1;
+            flipZ = 1;
             break;
 
         case UP_DOWN:
-            flipZ = 1;
+            flipY = 1;
             break;
         }
 
@@ -355,17 +355,17 @@ public final class BlockData {
             switch (data & ~0x8) {
             case 1: return data + flipX;
             case 2: return data - flipX;
-            case 3: return data + flipY;
-            case 4: return data - flipY;
+            case 3: return data + flipZ;
+            case 4: return data - flipZ;
             }
             break;
 
         case BlockID.MINECART_TRACKS:
             switch (data) {
-            case 6: return data + flipX + 3*flipY;
-            case 7: return data - flipX +   flipY;
-            case 8: return data + flipX -   flipY;
-            case 9: return data - flipX - 3*flipY;
+            case 6: return data + flipX + 3*flipZ;
+            case 7: return data - flipX +   flipZ;
+            case 8: return data + flipX -   flipZ;
+            case 9: return data - flipX - 3*flipZ;
             }
             /* FALL-THROUGH */
 
@@ -379,15 +379,18 @@ public final class BlockData {
             case 2:
             case 3:
                 return data ^ flipX;
+
             case 4:
             case 5:
-                return data ^ flipY;
+                return data ^ flipZ;
 
             }
             break;
 
         case BlockID.WOODEN_STAIRS:
         case BlockID.COBBLESTONE_STAIRS:
+        case BlockID.BRICK_STAIRS:
+        case BlockID.STONE_BRICK_STAIRS:
             switch (data) {
             case 0:
             case 1:
@@ -395,18 +398,18 @@ public final class BlockData {
 
             case 2:
             case 3:
-                return data ^ flipY;
+                return data ^ flipZ;
             }
             break;
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
-            data ^= flipZ << 3;
+            data ^= flipY << 3;
             switch (data & 0x3) {
-            case 0: return data + flipX + 3*flipY;
-            case 1: return data - flipX +   flipY;
-            case 2: return data + flipX -   flipY;
-            case 3: return data - flipX - 3*flipY;
+            case 0: return data + flipX + 3*flipZ;
+            case 1: return data - flipX +   flipZ;
+            case 2: return data + flipX -   flipZ;
+            case 3: return data - flipX - 3*flipZ;
             }
             break;
 
@@ -414,6 +417,7 @@ public final class BlockData {
             switch (direction) {
             case NORTH_SOUTH:
                 return (16-data) & 0xf;
+
             case WEST_EAST:
                 return (8-data) & 0xf;
             }
@@ -427,7 +431,8 @@ public final class BlockData {
             switch (data) {
             case 2:
             case 3:
-                return data ^ flipY;
+                return data ^ flipZ;
+
             case 4:
             case 5:
                 return data ^ flipX;
@@ -441,7 +446,8 @@ public final class BlockData {
             switch (data & 0x3) {
             case 0:
             case 2:
-                return data ^ (flipY<<1);
+                return data ^ (flipZ<<1);
+
             case 1:
             case 3:
                 return data ^ (flipX<<1);
@@ -452,7 +458,8 @@ public final class BlockData {
             switch (data & 0x3) {
             case 0:
             case 1:
-                return data ^ flipY;
+                return data ^ flipZ;
+
             case 2:
             case 3:
                 return data ^ flipX;
@@ -462,17 +469,20 @@ public final class BlockData {
         case BlockID.PISTON_BASE:
         case BlockID.PISTON_STICKY_BASE:
         case BlockID.PISTON_EXTENSION:
-            switch(data & ~0x8) {
+            switch (data & ~0x8) {
             case 0:
             case 1:
-                return data ^ flipZ;
+                return data ^ flipY;
+
             case 2:
             case 3:
-                return data ^ flipY;
+                return data ^ flipZ;
+
             case 4:
             case 5:
                 return data ^ flipX;
             }
+            break;
         }
 
         return data;
