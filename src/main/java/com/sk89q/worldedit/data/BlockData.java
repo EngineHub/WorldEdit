@@ -151,17 +151,30 @@ public final class BlockData {
             case 2: return 0 | open;
             case 3: return 1 | open;
             }
+
         case BlockID.PISTON_BASE:
         case BlockID.PISTON_STICKY_BASE:
         case BlockID.PISTON_EXTENSION:
             switch(data) {
-            case 0: return 0;
-            case 1: return 1;
             case 2: return 5;
             case 3: return 4;
             case 4: return 2;
             case 5: return 3;
             }
+
+        case BlockID.BROWN_MUSHROOM_CAP:
+        case BlockID.RED_MUSHROOM_CAP:
+            if (data >= 10)
+                return data;
+
+            return (data * 3) % 10;
+
+        case BlockID.VINE:
+            return ((data << 1) | (data >> 3)) & 0xf;
+            
+        case BlockID.FENCE_GATE:
+            return ((data+1) & 0x3) | (data & ~0x3);
+
         }
 
         return data;
@@ -292,17 +305,29 @@ public final class BlockData {
             case 0: return 2 | open;
             case 1: return 3 | open;
             }
+
         case BlockID.PISTON_BASE:
         case BlockID.PISTON_STICKY_BASE:
         case BlockID.PISTON_EXTENSION:
             switch(data) {
-            case 0: return 0;
-            case 1: return 1;
             case 5: return 2;
             case 4: return 3;
             case 2: return 4;
             case 3: return 5;
             }
+
+        case BlockID.BROWN_MUSHROOM_CAP:
+        case BlockID.RED_MUSHROOM_CAP:
+            if (data >= 10)
+                return data;
+
+            return (data * 7) % 10;
+
+        case BlockID.VINE:
+            return ((data >> 1) | (data << 3)) & 0xf;
+
+        case BlockID.FENCE_GATE:
+            return ((data+3) & 0x3) | (data & ~0x3);
         }
 
         return data;
