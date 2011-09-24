@@ -19,9 +19,27 @@
 
 package com.sk89q.worldedit.cui;
 
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.Vector;
 
-public interface CUIPointBasedRegion {
-    public void describeCUI(LocalPlayer player);
+public class SelectionMinMaxEvent implements CUIEvent {
+
+    protected int min;
+    protected int max;
+    
+    public SelectionMinMaxEvent(int min, int max) {
+        this.min = min;
+        this.max = max;
+    }
+
+    public String getTypeId() {
+        return "mm";
+    }
+
+    public String[] getParameters() {
+        return new String[] {
+                    String.valueOf(min),
+                    String.valueOf(max),
+                };
+    }
+
 }
