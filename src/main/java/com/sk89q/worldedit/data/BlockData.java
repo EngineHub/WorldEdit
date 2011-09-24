@@ -155,11 +155,12 @@ public final class BlockData {
         case BlockID.PISTON_BASE:
         case BlockID.PISTON_STICKY_BASE:
         case BlockID.PISTON_EXTENSION:
-            switch(data) {
-            case 2: return 5;
-            case 3: return 4;
-            case 4: return 2;
-            case 5: return 3;
+            final int rest = data & ~0x7;
+            switch (data & 0x7) {
+            case 2: return 5 | rest;
+            case 3: return 4 | rest;
+            case 4: return 2 | rest;
+            case 5: return 3 | rest;
             }
 
         case BlockID.BROWN_MUSHROOM_CAP:
@@ -309,11 +310,12 @@ public final class BlockData {
         case BlockID.PISTON_BASE:
         case BlockID.PISTON_STICKY_BASE:
         case BlockID.PISTON_EXTENSION:
-            switch(data) {
-            case 5: return 2;
-            case 4: return 3;
-            case 2: return 4;
-            case 3: return 5;
+            final int rest = data & ~0x7;
+            switch (data & 0x7) {
+            case 5: return 2 | rest;
+            case 4: return 3 | rest;
+            case 2: return 4 | rest;
+            case 3: return 5 | rest;
             }
 
         case BlockID.BROWN_MUSHROOM_CAP:

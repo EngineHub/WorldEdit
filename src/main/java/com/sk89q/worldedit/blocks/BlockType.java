@@ -281,6 +281,7 @@ public enum BlockType {
         shouldPlaceLast.add(BlockID.DETECTOR_RAIL);
         shouldPlaceLast.add(BlockID.LONG_GRASS);
         shouldPlaceLast.add(BlockID.DEAD_BUSH);
+        shouldPlaceLast.add(BlockID.PISTON_EXTENSION);
         shouldPlaceLast.add(BlockID.YELLOW_FLOWER);
         shouldPlaceLast.add(BlockID.RED_FLOWER);
         shouldPlaceLast.add(BlockID.BROWN_MUSHROOM);
