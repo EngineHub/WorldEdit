@@ -699,4 +699,9 @@ public class BukkitWorld extends LocalWorld {
     public int hashCode() {
         return world.hashCode();
     }
+
+    @Override
+    public int getHeight() {
+        return world.getMaxHeight() - 1;
+    }
 }

@@ -316,4 +316,13 @@ public abstract class LocalWorld {
      */
     @Override
     public abstract int hashCode();
+
+    /**
+     * Get the world's height
+     * 
+     * @return
+     */
+    public int getHeight() {
+        return 127;
+    }
 }
