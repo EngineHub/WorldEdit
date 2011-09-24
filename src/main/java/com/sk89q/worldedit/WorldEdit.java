@@ -79,8 +79,7 @@ public class WorldEdit {
      * without any WorldEdit abilities or never use WorldEdit in a session will
      * not have a session object generated for them.
      */
-    private HashMap<String,LocalSession> sessions =
-            new HashMap<String,LocalSession>();
+    private HashMap<String,LocalSession> sessions = new HashMap<String,LocalSession>();
     
     /**
      * Initialize statically.
@@ -113,13 +112,14 @@ public class WorldEdit {
                     final Logging loggingAnnotation = method.getAnnotation(Logging.class);
 
                     final Logging.LogMode logMode;
-                    if (loggingAnnotation == null)
+                    if (loggingAnnotation == null) {
                         logMode = null;
-                    else
+                    } else {
                         logMode = loggingAnnotation.value();
+                    }
 
-                    String msg = "WorldEdit: " + player.getName() + "(in " + player.getWorld().getName() + ")"
-                            + ": " + StringUtil.joinString(args, " ");
+                    String msg = "WorldEdit: " + player.getName() + " (in \"" + player.getWorld().getName()
+                            + "\")" + ": " + StringUtil.joinString(args, " ");
                     if (logMode != null) {
                         Vector position = player.getPosition();
                         final LocalSession session = getSession(player);
@@ -690,8 +690,7 @@ public class WorldEdit {
             }
             
             if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$")) {
-                throw new InvalidFilenameException(filename,
-                        "Invalid characters or extension missing");
+                throw new InvalidFilenameException(filename, "Invalid characters or extension missing");
             }
             
             f = new File(dir, filename);
@@ -749,7 +748,7 @@ public class WorldEdit {
      * @return
      */
     public static int divisorMod(int a, int n) {
-        return (int)(a - n * Math.floor(Math.floor(a) / (double)n));
+        return (int) (a - n * Math.floor(Math.floor(a) / (double) n));
     }
 
     /**
@@ -1044,6 +1043,7 @@ public class WorldEdit {
                 && player.hasPermission("worldedit.navigation.jumpto")) {
             // Bug workaround
             // Blocks this from being used after the thru function
+            // @TODO do this right or make craftbukkit do it right
             if (!session.canUseJumpto()){
                 session.toggleJumptoBlock();
                 return false;
@@ -1085,8 +1085,9 @@ public class WorldEdit {
             }
             // Bug workaround, so it wont do the Jumpto compass function
             // Right after this teleport
-            if (session.canUseJumpto())
+            if (session.canUseJumpto()) {
                 session.toggleJumptoBlock();
+            }
             return true;
         }
         

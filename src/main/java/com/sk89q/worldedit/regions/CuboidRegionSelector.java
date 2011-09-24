@@ -66,8 +66,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
             player.print("First position set to " + pos1 + ".");
         }
         
-        session.dispatchCUIEvent(player,
-                new SelectionPointEvent(0, pos, getArea()));
+        session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos, getArea()));
     }
 
     public void explainSecondarySelection(LocalPlayer player,
@@ -79,18 +78,15 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
             player.print("Second position set to " + pos2 + ".");
         }
         
-        session.dispatchCUIEvent(player,
-                new SelectionPointEvent(1, pos, getArea()));
+        session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos, getArea()));
     }
 
     public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
         if (pos1 != null) {
-            session.dispatchCUIEvent(player,
-                    new SelectionPointEvent(0, pos1, getArea()));
+            session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos1, getArea()));
         }
         if (pos2 != null) {
-            session.dispatchCUIEvent(player,
-                    new SelectionPointEvent(1, pos2, getArea()));
+            session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos2, getArea()));
         }
     }
     
@@ -151,12 +147,12 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
     }
 
     public void describeCUI(LocalPlayer player) {
-        if (pos1 != null)
-            player.dispatchCUIEvent(
-                        new SelectionPointEvent(0, pos1, getArea()));
-        if (pos2 != null)
-            player.dispatchCUIEvent(
-                        new SelectionPointEvent(1, pos2, getArea()));
+        if (pos1 != null) {
+            player.dispatchCUIEvent(new SelectionPointEvent(0, pos1, getArea()));
+        }
+        if (pos2 != null) {
+            player.dispatchCUIEvent(new SelectionPointEvent(1, pos2, getArea()));
+        }
     }
 
     public int getArea() {

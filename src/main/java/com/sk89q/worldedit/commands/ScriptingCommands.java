@@ -45,14 +45,19 @@ public class ScriptingCommands {
     public static void execute(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
-        // @TODO: Check for worldedit.scripting.execute.<script> permission
 
         String[] scriptArgs = args.getSlice(1);
+        String name = args.getString(0);
         
-        session.setLastScript(args.getString(0));
+        if (!player.hasPermission("worldedit.scripting.execute." + name)) {
+            player.printError("You don't have permission to use that script.");
+            return;
+        }
+
+        session.setLastScript(name);
 
         File dir = we.getWorkingDirectoryFile(we.getConfiguration().scriptsDir);
-        File f = we.getSafeOpenFile(player, dir, args.getString(0), "js",
+        File f = we.getSafeOpenFile(player, dir, name, "js",
                 new String[] {"js"});
         
         we.runScript(player, f, scriptArgs);
@@ -70,9 +75,13 @@ public class ScriptingCommands {
     public static void executeLast(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
-        // @TODO: Check for worldedit.scripting.execute.<script> permission
         
         String lastScript = session.getLastScript();
+        
+        if (!player.hasPermission("worldedit.scripting.execute." + lastScript)) {
+            player.printError("You don't have permission to use that script.");
+            return;
+        }
         
         if (lastScript == null) {
             player.printError("Use /cs with a script name first.");

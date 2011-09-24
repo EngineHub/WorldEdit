@@ -76,6 +76,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         loadConfig(new File("wepif.yml"));
         findResolver();
     }
+
     public void findResolver() {
         if (tryPluginPermissionsResolver()) return;
         if (tryNijiPermissions()) return;
@@ -132,8 +133,9 @@ public class PermissionsResolverManager implements PermissionsResolver {
     }
 
     private boolean tryDinnerPerms() {
-        if (!permsConfig.getBoolean("dinnerperms", true))
+        if (!permsConfig.getBoolean("dinnerperms", true)) {
             return false;
+        }
         perms = new DinnerPermsResolver(server);
         logger.info(name + ": Using the Bukkit Permissions API.");
         return true;

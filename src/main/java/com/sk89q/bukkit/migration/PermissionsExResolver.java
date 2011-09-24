@@ -34,8 +34,9 @@ public class PermissionsExResolver implements PermissionsResolver {
     public PermissionsExResolver(Server server) throws MissingPluginException {
         this.server = server;
         manager = server.getServicesManager().load(PermissionManager.class);
-        if (manager == null)
+        if (manager == null) {
             throw new MissingPluginException();
+        }
     }
     
     public void load() {

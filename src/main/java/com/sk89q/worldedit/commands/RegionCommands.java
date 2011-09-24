@@ -61,7 +61,7 @@ public class RegionCommands {
         
         if (pattern instanceof SingleBlockPattern) {
             affected = editSession.setBlocks(session.getSelection(player.getWorld()),
-                    ((SingleBlockPattern)pattern).getBlock());
+                    ((SingleBlockPattern) pattern).getBlock());
         } else {
             affected = editSession.setBlocks(session.getSelection(player.getWorld()), pattern);
         }
@@ -96,7 +96,7 @@ public class RegionCommands {
         int affected = 0;
         if (to instanceof SingleBlockPattern) {
             affected = editSession.replaceBlocks(session.getSelection(player.getWorld()), from,
-                    ((SingleBlockPattern)to).getBlock());
+                    ((SingleBlockPattern) to).getBlock());
         } else {
             affected = editSession.replaceBlocks(session.getSelection(player.getWorld()), from, to);
         }
@@ -123,7 +123,7 @@ public class RegionCommands {
         int affected = 0;
         if (pat instanceof SingleBlockPattern) {
             affected = editSession.overlayCuboidBlocks(region,
-                    ((SingleBlockPattern)pat).getBlock());
+                    ((SingleBlockPattern) pat).getBlock());
         } else {
             affected = editSession.overlayCuboidBlocks(region, pat);
         }

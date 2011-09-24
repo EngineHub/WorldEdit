@@ -89,8 +89,9 @@ public class HeightMap {
         int[] newData = new int[data.length];
         System.arraycopy(data, 0, newData, 0, data.length);
 
-        for (int i = 0; i < iterations; ++i)
+        for (int i = 0; i < iterations; ++i) {
             newData = filter.filter(newData, width, height);
+        }
 
         return apply(newData);
     }

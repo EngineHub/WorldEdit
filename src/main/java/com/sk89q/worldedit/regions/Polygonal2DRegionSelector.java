@@ -30,7 +30,6 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.cui.CUIPointBasedRegion;
 import com.sk89q.worldedit.cui.SelectionMinMaxEvent;
 import com.sk89q.worldedit.cui.SelectionPoint2DEvent;
-import com.sk89q.worldedit.cui.SelectionPointEvent;
 import com.sk89q.worldedit.cui.SelectionShapeEvent;
 
 /**
@@ -83,15 +82,12 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIPointBasedR
     public void explainSecondarySelection(LocalPlayer player,
             LocalSession session, Vector pos) {
         player.print("Added point #" + region.size() + " at " + pos + ".");
-        session.dispatchCUIEvent(player,
-                new SelectionPoint2DEvent(region.size() - 1, pos, getArea()));
-        session.dispatchCUIEvent(player,
-                new SelectionMinMaxEvent(region.minY, region.maxY));
+        session.dispatchCUIEvent(player, new SelectionPoint2DEvent(region.size() - 1, pos, getArea()));
+        session.dispatchCUIEvent(player, new SelectionMinMaxEvent(region.minY, region.maxY));
     }
 
     public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
-        session.dispatchCUIEvent(player,
-                new SelectionMinMaxEvent(region.minY, region.maxY));
+        session.dispatchCUIEvent(player, new SelectionMinMaxEvent(region.minY, region.maxY));
     }
 
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
@@ -153,11 +149,9 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIPointBasedR
     public void describeCUI(LocalPlayer player) {
         List<BlockVector2D> points = region.getPoints();
         for (int id = 0; id < points.size(); id++) {
-            player.dispatchCUIEvent(
-                    new SelectionPoint2DEvent(id, points.get(id), getArea()));
+            player.dispatchCUIEvent(new SelectionPoint2DEvent(id, points.get(id), getArea()));
         }
-        player.dispatchCUIEvent(
-                new SelectionMinMaxEvent(region.minY, region.maxY));
+        player.dispatchCUIEvent(new SelectionMinMaxEvent(region.minY, region.maxY));
     }
 
 }

@@ -36,7 +36,6 @@ import com.sk89q.worldedit.tools.Tool;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.cui.CUIPointBasedRegion;
 import com.sk89q.worldedit.cui.CUIEvent;
-import com.sk89q.worldedit.cui.SelectionPointEvent;
 import com.sk89q.worldedit.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
@@ -66,8 +65,7 @@ public class LocalSession {
     private boolean toolControl = true;
     private boolean superPickaxe = false;
     private BlockTool pickaxeMode = new SinglePickaxe();
-    private Map<Integer, Tool> tools
-            = new HashMap<Integer, Tool>();
+    private Map<Integer, Tool> tools = new HashMap<Integer, Tool>();
     private int maxBlocksChanged = -1;
     private boolean useInventory;
     private Snapshot snapshot;
@@ -122,7 +120,7 @@ public class LocalSession {
      */
     public void remember(EditSession editSession) {
         // Don't store anything if no changes were made
-        if (editSession.size() == 0) { return; }
+        if (editSession.size() == 0) return;
 
         // Destroy any sessions after this undo point
         while (historyPointer < history.size()) {
@@ -480,10 +478,6 @@ public class LocalSession {
     public void setTool(int item, Tool tool) throws InvalidToolBindException {
         if (item > 0 && item < 255) {
             throw new InvalidToolBindException(item, "Blocks can't be used");
-        /* } else if (item == ItemType.COAL.getID() || item == ItemType.LIGHTSTONE_DUST.getID()) {
-            throw new InvalidToolBindException(item, "Item is not usuable");
-            // let people deal with craftbook themselves, not everyone uses it
-        */
         } else if (item == config.wandItem) {
             throw new InvalidToolBindException(item, "Already used for the wand");
         } else if (item == config.navigationWand) {
@@ -562,10 +556,6 @@ public class LocalSession {
      * @param player
      */
     public void dispatchCUISetup(LocalPlayer player) {
-        if (!hasCUISupport) {
-            return;
-        }
-        
         if (selector != null) {
             dispatchCUISelection(player);
         }
@@ -581,8 +571,7 @@ public class LocalSession {
             return;
         }
         
-        player.dispatchCUIEvent(
-                new SelectionShapeEvent(selector.getTypeId()));
+        player.dispatchCUIEvent(new SelectionShapeEvent(selector.getTypeId()));
         
         if (selector instanceof CUIPointBasedRegion) {
             ((CUIPointBasedRegion) selector).describeCUI(player);

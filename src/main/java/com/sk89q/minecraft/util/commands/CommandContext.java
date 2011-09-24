@@ -133,8 +133,9 @@ public class CommandContext {
                         throw new CommandException("Value flag '" + flagName + "' already given");
                     }
 
-                    if (nextArg >= argList.size())
+                    if (nextArg >= argList.size()) {
                         throw new CommandException("No value specified for the '-"+flagName+"' flag.");
+                    }
 
                     // If it is a value flag, read another argument and add it
                     this.valueFlags.put(flagName, argList.get(nextArg++));
@@ -217,8 +218,9 @@ public class CommandContext {
 
     public String getFlag(char ch, String def) {
         final String value = valueFlags.get(ch);
-        if (value == null)
+        if (value == null) {
             return def;
+        }
 
         return value;
     }
@@ -229,8 +231,9 @@ public class CommandContext {
 
     public int getFlagInteger(char ch, int def) throws NumberFormatException {
         final String value = valueFlags.get(ch);
-        if (value == null)
+        if (value == null) {
             return def;
+        }
 
         return Integer.parseInt(value);
     }
@@ -241,8 +244,9 @@ public class CommandContext {
 
     public double getFlagDouble(char ch, double def) throws NumberFormatException {
         final String value = valueFlags.get(ch);
-        if (value == null)
+        if (value == null) {
             return def;
+        }
 
         return Double.parseDouble(value);
     }

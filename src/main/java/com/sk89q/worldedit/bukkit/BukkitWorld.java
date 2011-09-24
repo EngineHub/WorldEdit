@@ -304,7 +304,7 @@ public class BukkitWorld extends LocalWorld {
     public boolean copyFromWorld(Vector pt, BaseBlock block) {
         // Signs
         if (block instanceof SignBlock) {
-            ((SignBlock)block).setText(getSignText(pt));
+            ((SignBlock) block).setText(getSignText(pt));
             return true;
         
         // Furnaces
@@ -313,16 +313,16 @@ public class BukkitWorld extends LocalWorld {
             if (bukkitBlock == null) return false;
             BlockState state = bukkitBlock.getState();
             if (!(state instanceof Furnace)) return false;
-            Furnace bukkit = (Furnace)state;
-            FurnaceBlock we = (FurnaceBlock)block;
+            Furnace bukkit = (Furnace) state;
+            FurnaceBlock we = (FurnaceBlock) block;
             we.setBurnTime(bukkit.getBurnTime());
             we.setCookTime(bukkit.getCookTime());
-            ((ContainerBlock)block).setItems(getContainerBlockContents(pt));
+            ((ContainerBlock) block).setItems(getContainerBlockContents(pt));
             return true;
 
         // Chests/dispenser
         } else if (block instanceof ContainerBlock) {
-            ((ContainerBlock)block).setItems(getContainerBlockContents(pt));
+            ((ContainerBlock) block).setItems(getContainerBlockContents(pt));
             return true;
         
         // Mob spawners
@@ -331,10 +331,10 @@ public class BukkitWorld extends LocalWorld {
             if (bukkitBlock == null) return false;
             BlockState state = bukkitBlock.getState();
             if (!(state instanceof CreatureSpawner)) return false;
-            CreatureSpawner bukkit = (CreatureSpawner)state;
-            MobSpawnerBlock we = (MobSpawnerBlock)block;
+            CreatureSpawner bukkit = (CreatureSpawner) state;
+            MobSpawnerBlock we = (MobSpawnerBlock) block;
             we.setMobType(bukkit.getCreatureTypeId());
-            we.setDelay((short)bukkit.getDelay());
+            we.setDelay((short) bukkit.getDelay());
             return true;
         
         // Note block
@@ -344,7 +344,7 @@ public class BukkitWorld extends LocalWorld {
             BlockState state = bukkitBlock.getState();
             if (!(state instanceof org.bukkit.block.NoteBlock)) return false;
             org.bukkit.block.NoteBlock bukkit = (org.bukkit.block.NoteBlock)state;
-            NoteBlock we = (NoteBlock)block;
+            NoteBlock we = (NoteBlock) block;
             we.setNote(bukkit.getRawNote());
         }
         
@@ -442,7 +442,7 @@ public class BukkitWorld extends LocalWorld {
     @Override
     public void dropItem(Vector pt, BaseItemStack item) {
         ItemStack bukkitItem = new ItemStack(item.getType(), item.getAmount(),
-                (byte)item.getDamage());
+                (byte) item.getDamage());
         world.dropItemNaturally(toLocation(pt), bukkitItem);
         
     }
@@ -563,7 +563,7 @@ public class BukkitWorld extends LocalWorld {
         if (block == null) return false;
         BlockState state = block.getState();
         if (state == null || !(state instanceof Sign)) return false;
-        Sign sign = (Sign)state;
+        Sign sign = (Sign) state;
         sign.setLine(0, text[0]);
         sign.setLine(1, text[1]);
         sign.setLine(2, text[2]);
@@ -583,7 +583,7 @@ public class BukkitWorld extends LocalWorld {
         if (block == null) return new String[] { "", "", "", "" };
         BlockState state = block.getState();
         if (state == null || !(state instanceof Sign)) return new String[] { "", "", "", "" };
-        Sign sign = (Sign)state;
+        Sign sign = (Sign) state;
         String line0 = sign.getLine(0);
         String line1 = sign.getLine(1);
         String line2 = sign.getLine(2);
@@ -612,7 +612,7 @@ public class BukkitWorld extends LocalWorld {
             return new BaseItemStack[0];
         }
         
-        org.bukkit.block.ContainerBlock container = (org.bukkit.block.ContainerBlock)state;
+        org.bukkit.block.ContainerBlock container = (org.bukkit.block.ContainerBlock) state;
         Inventory inven = container.getInventory();
         int size = inven.getSize();
         BaseItemStack[] contents = new BaseItemStack[size];
@@ -659,7 +659,7 @@ public class BukkitWorld extends LocalWorld {
             if (contents[i] != null) {
                 inven.setItem(i, new ItemStack(contents[i].getType(),
                         contents[i].getAmount(), 
-                        (byte)contents[i].getDamage()));
+                        (byte) contents[i].getDamage()));
             } else {
                 inven.setItem(i, null);
             }
@@ -692,7 +692,7 @@ public class BukkitWorld extends LocalWorld {
             return false;
         }
         
-        return ((BukkitWorld)other).world.equals(world);
+        return ((BukkitWorld) other).world.equals(world);
     }
 
     @Override

@@ -60,7 +60,7 @@ public class UtilityCommands {
         int affected = 0;
         if (pattern instanceof SingleBlockPattern) {
             affected = editSession.fillXZ(pos,
-                    ((SingleBlockPattern)pattern).getBlock(),
+                    ((SingleBlockPattern) pattern).getBlock(),
                     radius, depth, false);
         } else {
             affected = editSession.fillXZ(pos, pattern, radius, depth, false);
@@ -90,7 +90,7 @@ public class UtilityCommands {
         int affected = 0;
         if (pattern instanceof SingleBlockPattern) {
             affected = editSession.fillXZ(pos,
-                    ((SingleBlockPattern)pattern).getBlock(),
+                    ((SingleBlockPattern) pattern).getBlock(),
                     radius, depth, true);
         } else {
             affected = editSession.fillXZ(pos, pattern, radius, depth, true);
@@ -197,8 +197,7 @@ public class UtilityCommands {
         we.checkMaxRadius(size);
         int height = args.argsLength() > 1 ? Math.min(128, args.getInteger(1) + 2) : 128;
 
-        int affected = editSession.removeBelow(
-                session.getPlacementPosition(player), size, height);
+        int affected = editSession.removeBelow(session.getPlacementPosition(player), size, height);
         player.print(affected + " block(s) have been removed.");
     }
 
@@ -219,8 +218,7 @@ public class UtilityCommands {
         int size = Math.max(1, args.getInteger(1, 50));
         we.checkMaxRadius(size);
 
-        int affected = editSession.removeNear(
-                session.getPlacementPosition(player), block.getType(), size);
+        int affected = editSession.removeNear(session.getPlacementPosition(player), block.getType(), size);
         player.print(affected + " block(s) have been removed.");
     }
 
@@ -340,8 +338,7 @@ public class UtilityCommands {
                 : defaultRadius;
         we.checkMaxRadius(size);
 
-        int affected = editSession.removeNear(
-                session.getPlacementPosition(player), 51, size);
+        int affected = editSession.removeNear(session.getPlacementPosition(player), 51, size);
         player.print(affected + " block(s) have been removed.");
     }
 
@@ -359,8 +356,7 @@ public class UtilityCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        int radius = args.argsLength() > 0 ?
-            Math.max(1, args.getInteger(0)) : -1;
+        int radius = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : -1;
 
         Vector origin = session.getPlacementPosition(player);
         int killed = player.getWorld().killMobs(origin, radius, args.hasFlag('p'));

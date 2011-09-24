@@ -573,7 +573,7 @@ public class Vector {
         if (!(obj instanceof Vector)) {
             return false;
         }
-        Vector other = (Vector)obj;
+        Vector other = (Vector) obj;
         return other.getX() == this.x && other.getY() == this.y && other.getZ() == this.z;
 
     }

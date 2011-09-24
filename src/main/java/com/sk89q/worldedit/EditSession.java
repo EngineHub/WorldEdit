@@ -2386,6 +2386,7 @@ public class EditSession {
                 setBlockIfAir(pos.add(-1, h, -1), log);
             }
             setBlockIfAir(pos.add(-1, 0, -1), pumpkin);
+            break;
         }
     }
 

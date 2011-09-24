@@ -45,8 +45,9 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         if (plugin == null) {
             throw new MissingPluginException();
         }
-        if (!checkRealNijiPerms(ignoreBridges))
+        if (!checkRealNijiPerms(ignoreBridges)) {
             throw new MissingPluginException();
+        }
         
         try {
             api = (Permissions)plugin;
@@ -129,11 +130,13 @@ public class NijiPermissionsResolver implements PermissionsResolver {
     }
 
     public static boolean checkRealNijiPerms(boolean ignoreBridges) {
-        if (!ignoreBridges)
+        if (!ignoreBridges) {
             return true;
+        }
         PluginCommand permsCommand = Bukkit.getServer().getPluginCommand("permissions");
-        if (permsCommand == null)
+        if (permsCommand == null) {
             return false;
+        }
         return permsCommand.getPlugin().getDescription().getName().equals("Permissions");
     }
 }

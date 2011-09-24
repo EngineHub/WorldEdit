@@ -350,16 +350,14 @@ public class SelectionCommands {
                 reverseChange = args.getInteger(1) * -1;
                 dir = we.getDirection(player, "me");
             } catch (NumberFormatException e) {
-                dir = we.getDirection(player,
-                        args.getString(1).toLowerCase());
+                dir = we.getDirection(player, args.getString(1).toLowerCase());
             }
             break;
 
         case 3: 
             // Both reverse amount and direction
             reverseChange = args.getInteger(1) * -1;
-            dir = we.getDirection(player,
-                    args.getString(2).toLowerCase());
+            dir = we.getDirection(player, args.getString(2).toLowerCase());
             break;
         default:
             dir = we.getDirection(player, "me");
@@ -398,8 +396,7 @@ public class SelectionCommands {
         
         int change = args.getInteger(0);
         if (args.argsLength() == 2) {
-            dir = we.getDirection(player,
-                    args.getString(1).toLowerCase());
+            dir = we.getDirection(player, args.getString(1).toLowerCase());
         } else {
             dir = we.getDirection(player, "me");
         }

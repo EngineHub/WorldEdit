@@ -422,7 +422,8 @@ public abstract class CommandsManager<T> {
         }
     }
 
-    public void invokeMethod(Method parent, String[] args, T player, Method method, Object instance, Object[] methodArgs, int level) throws CommandException {
+    public void invokeMethod(Method parent, String[] args, T player, Method method,
+            Object instance, Object[] methodArgs, int level) throws CommandException {
         try {
             method.invoke(instance, methodArgs);
         } catch (IllegalArgumentException e) {

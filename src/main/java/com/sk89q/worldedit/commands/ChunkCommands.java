@@ -49,8 +49,8 @@ public class ChunkCommands {
             throws WorldEditException {
         
         Vector pos = player.getBlockIn();
-        int chunkX = (int)Math.floor(pos.getBlockX() / 16.0);
-        int chunkZ = (int)Math.floor(pos.getBlockZ() / 16.0);
+        int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
+        int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
 
         String folder1 = Integer.toString(WorldEdit.divisorMod(chunkX, 64), 36);
         String folder2 = Integer.toString(WorldEdit.divisorMod(chunkZ, 64), 36);
@@ -159,7 +159,10 @@ public class ChunkCommands {
                 player.printError("Error occurred: " + e.getMessage());
             } finally {
                 if (out != null) {
-                    try { out.close(); } catch (IOException ie) {}
+                    try {
+                        out.close();
+                    } catch (IOException ie) {
+                    }
                 }
             }
         } else {

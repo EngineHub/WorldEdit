@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.cui;
 
-import com.sk89q.worldedit.Vector;
-
 public class SelectionMinMaxEvent implements CUIEvent {
 
     protected int min;

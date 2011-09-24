@@ -206,8 +206,8 @@ public abstract class LocalWorld {
      * @return
      * @throws MaxChangedBlocksException
      */
-    public abstract boolean generateRedwoodTree(EditSession editSession,
-            Vector pt) throws MaxChangedBlocksException;
+    public abstract boolean generateRedwoodTree(EditSession editSession, Vector pt)
+            throws MaxChangedBlocksException;
 
     /**
      * Generate a tall redwood tree at a location.
@@ -217,8 +217,8 @@ public abstract class LocalWorld {
      * @return
      * @throws MaxChangedBlocksException 
      */
-    public abstract boolean generateTallRedwoodTree(EditSession editSession,
-            Vector pt) throws MaxChangedBlocksException;
+    public abstract boolean generateTallRedwoodTree(EditSession editSession, Vector pt)
+            throws MaxChangedBlocksException;
 
     /**
      * Drop an item.
