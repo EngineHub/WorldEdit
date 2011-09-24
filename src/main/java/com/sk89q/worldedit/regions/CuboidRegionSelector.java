@@ -150,8 +150,13 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         return "cuboid";
     }
 
-    public Vector[] getCUIPoints() {
-        return new Vector[] { pos1, pos2 };
+    public void describeCUI(LocalPlayer player) {
+        if (pos1 != null)
+            player.dispatchCUIEvent(
+                        new SelectionPointEvent(0, pos1, getArea()));
+        if (pos2 != null)
+            player.dispatchCUIEvent(
+                        new SelectionPointEvent(1, pos2, getArea()));
     }
 
     public int getArea() {

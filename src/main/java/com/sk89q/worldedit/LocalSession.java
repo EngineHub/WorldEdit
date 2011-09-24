@@ -585,17 +585,7 @@ public class LocalSession {
                 new SelectionShapeEvent(selector.getTypeId()));
         
         if (selector instanceof CUIPointBasedRegion) {
-            Vector[] points = ((CUIPointBasedRegion) selector).getCUIPoints();
-            int size = selector.getArea();
-            
-            int i = 0;
-            for (Vector pt : points) {
-                if (pt != null) {
-                    player.dispatchCUIEvent(
-                            new SelectionPointEvent(i, pt, size));
-                }
-                ++i;
-            }
+            ((CUIPointBasedRegion) selector).describeCUI(player);
         }
     }
     
