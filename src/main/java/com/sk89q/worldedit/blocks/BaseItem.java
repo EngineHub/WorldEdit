@@ -21,7 +21,7 @@ package com.sk89q.worldedit.blocks;
 
 /**
  * Represents an item.
- * 
+ *
  * @author sk89q
  */
 public class BaseItem {
@@ -48,7 +48,7 @@ public class BaseItem {
      * Construct the object.
      *
      * @param id
-     * @param damage 
+     * @param damage
      */
     public BaseItem(int id, short damage) {
         this.id = id;

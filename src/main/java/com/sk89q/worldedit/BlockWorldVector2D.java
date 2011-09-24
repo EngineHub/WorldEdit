@@ -43,7 +43,7 @@ public class BlockWorldVector2D extends WorldVector2D {
 
     /**
      * Checks if another object is equivalent.
-     * 
+     *
      * @param obj
      * @return whether the other object is equivalent
      */

@@ -79,7 +79,7 @@ public class CuboidClipboard {
      *
      * @param size
      * @param origin
-     * @param offset 
+     * @param offset
      */
     public CuboidClipboard(Vector size, Vector origin, Vector offset) {
         this.size = size;
@@ -148,7 +148,7 @@ public class CuboidClipboard {
                 for (int y = 0; y < height; ++y) {
                     BaseBlock block = data[x][y][z];
                     newData[shiftX + newX][y][shiftZ + newZ] = block;
-                    
+
                     if (reverse) {
                         for (int i = 0; i < numRotations; ++i) {
                             block.rotate90Reverse();
@@ -172,7 +172,7 @@ public class CuboidClipboard {
 
     /**
      * Flip the clipboard.
-     * 
+     *
      * @param dir direction to flip
      */
     public void flip(FlipDirection dir) {
@@ -281,7 +281,7 @@ public class CuboidClipboard {
 
     /**
      * Places the blocks in a position from the minimum corner.
-     * 
+     *
      * @param editSession
      * @param pos
      * @param noAir
@@ -301,11 +301,11 @@ public class CuboidClipboard {
             }
         }
     }
-    
+
     /**
      * Get one point in the copy. The point is relative to the origin
      * of the copy (0, 0, 0) and not to the actual copy origin.
-     * 
+     *
      * @param pos
      * @return null
      * @throws ArrayIndexOutOfBoundsException
@@ -313,10 +313,10 @@ public class CuboidClipboard {
     public BaseBlock getPoint(Vector pos) throws ArrayIndexOutOfBoundsException {
         return data[pos.getBlockX()][pos.getBlockY()][pos.getBlockZ()];
     }
-    
+
     /**
      * Get the size of the copy.
-     * 
+     *
      * @return
      */
     public Vector getSize() {
@@ -390,7 +390,7 @@ public class CuboidClipboard {
                 }
             }
         }
-        
+
         schematic.put("Blocks", new ByteArrayTag("Blocks", blocks));
         schematic.put("Data", new ByteArrayTag("Data", blockData));
         schematic.put("Entities", new ListTag("Entities", CompoundTag.class, new ArrayList<Tag>()));
@@ -405,7 +405,7 @@ public class CuboidClipboard {
 
     /**
      * Load a .schematic file into a clipboard.
-     * 
+     *
      * @param path
      * @return clipboard
      * @throws DataException
@@ -546,8 +546,8 @@ public class CuboidClipboard {
                         block = new BaseBlock(blocks[index], blockData[index]);
                         break;
                     }
-                    
-                    if (block instanceof TileEntityBlock 
+
+                    if (block instanceof TileEntityBlock
                             && tileEntitiesMap.containsKey(pt)) {
                         ((TileEntityBlock)block).fromTileEntityNBT(
                                 tileEntitiesMap.get(pt));
@@ -563,7 +563,7 @@ public class CuboidClipboard {
 
     /**
      * Get child tag of a NBT structure.
-     * 
+     *
      * @param items
      * @param key
      * @param expected
@@ -572,7 +572,7 @@ public class CuboidClipboard {
      */
     private static Tag getChildTag(Map<String,Tag> items, String key,
             Class<? extends Tag> expected) throws DataException {
-        
+
         if (!items.containsKey(key)) {
             throw new DataException("Schematic file is missing a \"" + key + "\" tag");
         }
@@ -606,7 +606,7 @@ public class CuboidClipboard {
     }
 
     /**
-     * @param offset 
+     * @param offset
      */
     public void setOffset(Vector offset) {
         this.offset = offset;

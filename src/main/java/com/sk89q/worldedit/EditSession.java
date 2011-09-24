@@ -42,7 +42,7 @@ import com.sk89q.worldedit.patterns.*;
  * know how to handle some special types of items such as signs and torches. For
  * example, torches must be placed only after there is already a block below it,
  * otherwise the torch will be placed as an item.
- * 
+ *
  * @author sk89q
  */
 public class EditSession {
@@ -79,35 +79,35 @@ public class EditSession {
     private DoubleArrayList<BlockVector, BaseBlock> queueLast =
             new DoubleArrayList<BlockVector, BaseBlock>(
             false);
-    
+
     /**
      * The maximum number of blocks to change at a time. If this number is
      * exceeded, a MaxChangedBlocksException exception will be raised. -1
      * indicates no limit.
      */
     private int maxBlocks = -1;
-    
+
     /**
      * Indicates whether some types of blocks should be queued for best
      * reproduction.
      */
     private boolean queued = false;
-    
+
     /**
      * Use the fast mode, which may leave chunks not flagged "dirty".
      */
     private boolean fastMode = false;
-    
+
     /**
      * Block bag to use for getting blocks.
      */
     private BlockBag blockBag;
-    
+
     /**
      * List of missing blocks;
      */
     private Set<Integer> missingBlocks = new HashSet<Integer>();
-    
+
     /**
      * Mask to cover operations.
      */
@@ -115,7 +115,7 @@ public class EditSession {
 
     /**
      * Construct the object with a maximum number of blocks.
-     * 
+     *
      * @param world
      * @param maxBlocks
      */
@@ -130,7 +130,7 @@ public class EditSession {
 
     /**
      * Construct the object with a maximum number of blocks and a block bag.
-     * 
+     *
      * @param world
      * @param maxBlocks
      * @param blockBag
@@ -148,9 +148,9 @@ public class EditSession {
 
     /**
      * Sets a block without changing history.
-     * 
+     *
      * @param pt
-     * @param block 
+     * @param block
      * @return Whether the block changed
      */
     public boolean rawSetBlock(Vector pt, BaseBlock block) {
@@ -161,7 +161,7 @@ public class EditSession {
         }
 
         world.checkLoadedChuck(pt);
-        
+
         // No invalid blocks
         if (!world.isValidBlockType(type)) {
             return false;
@@ -237,11 +237,11 @@ public class EditSession {
      * Sets the block at position x, y, z with a block type. If queue mode is
      * enabled, blocks may not be actually set in world until flushQueue() is
      * called.
-     * 
+     *
      * @param pt
      * @param block
      * @return Whether the block changed -- not entirely dependable
-     * @throws MaxChangedBlocksException 
+     * @throws MaxChangedBlocksException
      */
     public boolean setBlock(Vector pt, BaseBlock block)
             throws MaxChangedBlocksException {
@@ -262,9 +262,9 @@ public class EditSession {
 
     /**
      * Insert a contrived block change into the history.
-     * 
+     *
      * @param pt
-     * @param existing 
+     * @param existing
      * @param block
      */
     public void rememberChange(Vector pt, BaseBlock existing, BaseBlock block) {
@@ -276,11 +276,11 @@ public class EditSession {
 
     /**
      * Set a block with a pattern.
-     * 
+     *
      * @param pt
      * @param pat
      * @return Whether the block changed -- not entirely dependable
-     * @throws MaxChangedBlocksException 
+     * @throws MaxChangedBlocksException
      */
     public boolean setBlock(Vector pt, Pattern pat)
             throws MaxChangedBlocksException {
@@ -289,7 +289,7 @@ public class EditSession {
 
     /**
      * Set a block only if there's no block already there.
-     * 
+     *
      * @param pt
      * @param block
      * @return if block was changed
@@ -306,7 +306,7 @@ public class EditSession {
 
     /**
      * Actually set the block. Will use queue.
-     * 
+     *
      * @param pt
      * @param block
      * @return
@@ -333,7 +333,7 @@ public class EditSession {
 
     /**
      * Gets the block type at a position x, y, z.
-     * 
+     *
      * @param pt
      * @return Block type
      */
@@ -343,7 +343,7 @@ public class EditSession {
         if (queued) {
             /*
              * BlockVector blockPt = pt.toBlockVector();
-             * 
+             *
              * if (current.containsKey(blockPt)) { return current.get(blockPt);
              * }
              */
@@ -354,7 +354,7 @@ public class EditSession {
 
     /**
      * Gets the block type at a position x, y, z.
-     * 
+     *
      * @param pt
      * @return Block type
      */
@@ -364,7 +364,7 @@ public class EditSession {
         if (queued) {
             /*
              * BlockVector blockPt = pt.toBlockVector();
-             * 
+             *
              * if (current.containsKey(blockPt)) { return current.get(blockPt);
              * }
              */
@@ -379,7 +379,7 @@ public class EditSession {
         if (queued) {
             /*
              * BlockVector blockPt = pt.toBlockVector();
-             * 
+             *
              * if (current.containsKey(blockPt)) { return current.get(blockPt);
              * }
              */
@@ -389,7 +389,7 @@ public class EditSession {
     }
     /**
      * Gets the block type at a position x, y, z.
-     * 
+     *
      * @param pt
      * @return BaseBlock
      */
@@ -445,8 +445,8 @@ public class EditSession {
 
     /**
      * Restores all blocks to their initial state.
-     * 
-     * @param sess 
+     *
+     * @param sess
      */
     public void undo(EditSession sess) {
         for (Map.Entry<BlockVector, BaseBlock> entry : original) {
@@ -458,8 +458,8 @@ public class EditSession {
 
     /**
      * Sets to new state.
-     * 
-     * @param sess 
+     *
+     * @param sess
      */
     public void redo(EditSession sess) {
         for (Map.Entry<BlockVector, BaseBlock> entry : current) {
@@ -471,8 +471,8 @@ public class EditSession {
 
     /**
      * Get the number of changed blocks.
-     * 
-     * @return 
+     *
+     * @return
      */
     public int size() {
         return original.size();
@@ -481,7 +481,7 @@ public class EditSession {
     /**
      * Get the maximum number of blocks that can be changed. -1 will be returned
      * if disabled.
-     * 
+     *
      * @return block change limit
      */
     public int getBlockChangeLimit() {
@@ -490,7 +490,7 @@ public class EditSession {
 
     /**
      * Set the maximum number of blocks that can be changed.
-     * 
+     *
      * @param maxBlocks -1 to disable
      */
     public void setBlockChangeLimit(int maxBlocks) {
@@ -502,7 +502,7 @@ public class EditSession {
 
     /**
      * Returns queue status.
-     * 
+     *
      * @return whether the queue is enabled
      */
     public boolean isQueueEnabled() {
@@ -528,7 +528,7 @@ public class EditSession {
 
     /**
      * Set fast mode.
-     * 
+     *
      * @param fastMode
      */
     public void setFastMode(boolean fastMode) {
@@ -537,7 +537,7 @@ public class EditSession {
 
     /**
      * Return fast mode status.
-     * 
+     *
      * @return
      */
     public boolean hasFastMode() {
@@ -572,14 +572,14 @@ public class EditSession {
 
     /**
      * Fills an area recursively in the X/Z directions.
-     * 
+     *
      * @param origin
      * @param block
      * @param radius
      * @param depth
      * @param recursive
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException 
+     * @throws MaxChangedBlocksException
      */
     public int fillXZ(Vector origin, BaseBlock block, double radius, int depth,
             boolean recursive) throws MaxChangedBlocksException {
@@ -648,7 +648,7 @@ public class EditSession {
 
     /**
      * Recursively fills a block and below until it hits another block.
-     * 
+     *
      * @param x
      * @param cy
      * @param z
@@ -677,14 +677,14 @@ public class EditSession {
 
     /**
      * Fills an area recursively in the X/Z directions.
-     * 
+     *
      * @param origin
      * @param pattern
      * @param radius
      * @param depth
      * @param recursive
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException 
+     * @throws MaxChangedBlocksException
      */
     public int fillXZ(Vector origin, Pattern pattern, double radius, int depth,
             boolean recursive) throws MaxChangedBlocksException {
@@ -753,7 +753,7 @@ public class EditSession {
 
     /**
      * Recursively fills a block and below until it hits another block.
-     * 
+     *
      * @param x
      * @param cy
      * @param z
@@ -782,12 +782,12 @@ public class EditSession {
 
     /**
      * Remove blocks above.
-     * 
+     *
      * @param pos
      * @param size
      * @param height
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException 
+     * @throws MaxChangedBlocksException
      */
     public int removeAbove(Vector pos, int size, int height)
             throws MaxChangedBlocksException {
@@ -817,12 +817,12 @@ public class EditSession {
 
     /**
      * Remove blocks below.
-     * 
+     *
      * @param pos
      * @param size
      * @param height
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException 
+     * @throws MaxChangedBlocksException
      */
     public int removeBelow(Vector pos, int size, int height)
             throws MaxChangedBlocksException {
@@ -852,12 +852,12 @@ public class EditSession {
 
     /**
      * Remove nearby blocks of a type.
-     * 
+     *
      * @param pos
      * @param blockType
      * @param size
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException 
+     * @throws MaxChangedBlocksException
      */
     public int removeNear(Vector pos, int blockType, int size)
             throws MaxChangedBlocksException {
@@ -890,7 +890,7 @@ public class EditSession {
 
     /**
      * Sets all the blocks inside a region to a certain block type.
-     * 
+     *
      * @param region
      * @param block
      * @return number of blocks affected
@@ -936,7 +936,7 @@ public class EditSession {
 
     /**
      * Sets all the blocks inside a region to a certain block type.
-     * 
+     *
      * @param region
      * @param pattern
      * @return number of blocks affected
@@ -982,7 +982,7 @@ public class EditSession {
 
     /**
      * Replaces all the blocks of a type inside a region to another block type.
-     * 
+     *
      * @param region
      * @param fromBlockTypes -1 for non-air
      * @param toBlock
@@ -1038,7 +1038,7 @@ public class EditSession {
 
     /**
      * Replaces all the blocks of a type inside a region to another block type.
-     * 
+     *
      * @param region
      * @param fromBlockTypes -1 for non-air
      * @param pattern
@@ -1094,7 +1094,7 @@ public class EditSession {
 
     /**
      * Make faces of the region (as if it was a cuboid if it's not).
-     * 
+     *
      * @param region
      * @param block
      * @return number of blocks affected
@@ -1218,7 +1218,7 @@ public class EditSession {
 
     /**
      * Make walls of the region (as if it was a cuboid if it's not).
-     * 
+     *
      * @param region
      * @param block
      * @return number of blocks affected
@@ -1318,7 +1318,7 @@ public class EditSession {
 
     /**
      * Overlays a layer of blocks over a cuboid area.
-     * 
+     *
      * @param region
      * @param block
      * @return number of blocks affected
@@ -1360,7 +1360,7 @@ public class EditSession {
 
     /**
      * Overlays a layer of blocks over a cuboid area.
-     * 
+     *
      * @param region
      * @param pattern
      * @return number of blocks affected
@@ -1475,7 +1475,7 @@ public class EditSession {
 
     /**
      * Stack a cuboid region.
-     * 
+     *
      * @param region
      * @param dir
      * @param count
@@ -1526,7 +1526,7 @@ public class EditSession {
 
     /**
      * Move a cuboid region.
-     * 
+     *
      * @param region
      * @param dir
      * @param distance
@@ -1592,7 +1592,7 @@ public class EditSession {
 
     /**
      * Drain nearby pools of water or lava.
-     * 
+     *
      * @param pos
      * @param radius
      * @return number of blocks affected
@@ -1658,11 +1658,11 @@ public class EditSession {
 
     /**
      * Level water.
-     * 
+     *
      * @param pos
      * @param radius
-     * @param moving 
-     * @param stationary 
+     * @param moving
+     * @param stationary
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
@@ -1708,7 +1708,7 @@ public class EditSession {
             if (setBlock(cur, stationaryBlock)){
                 ++affected;
             }
-            
+
             // Check radius
             if (pos.distance(cur) > radius) {
                 continue;
@@ -1725,7 +1725,7 @@ public class EditSession {
 
     /**
      * Helper method to draw the cylinder.
-     * 
+     *
      * @param center
      * @param x
      * @param z
@@ -1773,7 +1773,7 @@ public class EditSession {
 
     /**
      * Draw a hollow cylinder.
-     * 
+     *
      * @param pos
      * @param block
      * @param radius
@@ -1821,7 +1821,7 @@ public class EditSession {
 
     /**
      * Helper method to draw the cylinder.
-     * 
+     *
      * @param center
      * @param x
      * @param z
@@ -1861,7 +1861,7 @@ public class EditSession {
 
     /**
      * Draw a filled cylinder.
-     * 
+     *
      * @param pos
      * @param block
      * @param radius
@@ -1908,7 +1908,7 @@ public class EditSession {
 
     /**
      * Makes a sphere or ellipsoid.
-     * 
+     *
      * @param pos Center of the sphere or ellipsoid
      * @param block The block pattern to use
      * @param radiusX The sphere/ellipsoid's largest north/south extent
@@ -1976,7 +1976,7 @@ public class EditSession {
 
     /**
      * Makes a sphere or ellipsoid.
-     * 
+     *
      * @param pos Center of the sphere or ellipsoid
      * @param block The block pattern to use
      * @param radiusX The sphere/ellipsoid's largest north/south extent
@@ -2071,7 +2071,7 @@ public class EditSession {
 
     /**
      * Makes a pyramid.
-     * 
+     *
      * @param pos
      * @param block
      * @param size
@@ -2084,14 +2084,14 @@ public class EditSession {
         int affected = 0;
 
         int height = size;
-        
+
         for (int y = 0; y <= height; ++y) {
             size--;
             for (int x = 0; x <= size; ++x) {
                 for (int z = 0; z <= size; ++z) {
-                    
+
                     if ((filled && z <= size && x <= size) || z == size || x == size) {
-                        
+
                         if (setBlock(pos.add(x, y, z), block)) {
                             ++affected;
                         }
@@ -2114,7 +2114,7 @@ public class EditSession {
 
     /**
      * Thaw.
-     * 
+     *
      * @param pos
      * @param radius
      * @return number of blocks affected
@@ -2173,7 +2173,7 @@ public class EditSession {
 
     /**
      * Make snow.
-     * 
+     *
      * @param pos
      * @param radius
      * @return number of blocks affected
@@ -2238,7 +2238,7 @@ public class EditSession {
 
     /**
      * Green.
-     * 
+     *
      * @param pos
      * @param radius
      * @return number of blocks affected
@@ -2285,12 +2285,12 @@ public class EditSession {
 
     /**
      * Set a block by chance.
-     * 
+     *
      * @param pos
      * @param block
      * @param c 0-1 chance
      * @return whether a block was changed
-     * @throws MaxChangedBlocksException 
+     * @throws MaxChangedBlocksException
      */
     public boolean setChanceBlockIfAir(Vector pos, BaseBlock block, double c)
             throws MaxChangedBlocksException {
@@ -2302,7 +2302,7 @@ public class EditSession {
 
     /**
      * Makes a pumpkin patch.
-     * 
+     *
      * @param basePos
      */
     private void makePumpkinPatch(Vector basePos)
@@ -2321,7 +2321,7 @@ public class EditSession {
 
     /**
      * Make a pumpkin patch fine.
-     * 
+     *
      * @param basePos
      * @param pos
      */
@@ -2392,11 +2392,11 @@ public class EditSession {
 
     /**
      * Makes pumpkin patches.
-     * 
+     *
      * @param basePos
      * @param size
      * @return number of trees created
-     * @throws MaxChangedBlocksException 
+     * @throws MaxChangedBlocksException
      */
     public int makePumpkinPatches(Vector basePos, int size)
             throws MaxChangedBlocksException {
@@ -2434,13 +2434,13 @@ public class EditSession {
 
     /**
      * Makes a forest.
-     * 
+     *
      * @param basePos
      * @param size
      * @param density
      * @param treeGenerator
      * @return number of trees created
-     * @throws MaxChangedBlocksException 
+     * @throws MaxChangedBlocksException
      */
     public int makeForest(Vector basePos, int size, double density,
             TreeGenerator treeGenerator) throws MaxChangedBlocksException {
@@ -2478,7 +2478,7 @@ public class EditSession {
 
     /**
      * Count the number of blocks of a list of types in a region.
-     * 
+     *
      * @param region
      * @param searchIDs
      * @return
@@ -2522,7 +2522,7 @@ public class EditSession {
 
     /**
      * Get the block distribution inside a region.
-     * 
+     *
      * @param region
      * @return
      */
@@ -2616,7 +2616,7 @@ public class EditSession {
     /**
      * Gets the list of missing blocks and clears the list for the next
      * operation.
-     * 
+     *
      * @return
      */
     public Set<Integer> popMissingBlocks() {
@@ -2642,7 +2642,7 @@ public class EditSession {
 
     /**
      * Get the world.
-     * 
+     *
      * @return
      */
     public LocalWorld getWorld() {
@@ -2651,7 +2651,7 @@ public class EditSession {
 
     /**
      * Get the number of blocks changed, including repeated block changes.
-     * 
+     *
      * @return
      */
     public int getBlockChangeCount() {
@@ -2660,7 +2660,7 @@ public class EditSession {
 
     /**
      * Get the mask.
-     * 
+     *
      * @return mask, may be null
      */
     public Mask getMask() {
@@ -2669,7 +2669,7 @@ public class EditSession {
 
     /**
      * Set a mask.
-     * 
+     *
      * @param mask mask or null
      */
     public void setMask(Mask mask) {

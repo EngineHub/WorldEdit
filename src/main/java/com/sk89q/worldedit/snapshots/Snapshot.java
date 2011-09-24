@@ -46,7 +46,7 @@ public class Snapshot implements Comparable<Snapshot> {
 
     /**
      * Construct a snapshot restoration operation.
-     * 
+     *
      * @param repo
      * @param snapshot
      */
@@ -57,10 +57,10 @@ public class Snapshot implements Comparable<Snapshot> {
 
     /**
      * Get a chunk store.
-     * 
+     *
      * @return
      * @throws IOException
-     * @throws DataException 
+     * @throws DataException
      */
     public ChunkStore getChunkStore() throws IOException, DataException {
         ChunkStore chunkStore = _getChunkStore();
@@ -73,10 +73,10 @@ public class Snapshot implements Comparable<Snapshot> {
 
     /**
      * Get a chunk store.
-     * 
+     *
      * @return
      * @throws IOException
-     * @throws DataException 
+     * @throws DataException
      */
     public ChunkStore _getChunkStore() throws IOException, DataException {
         if (file.getName().toLowerCase().endsWith(".zip")) {
@@ -124,7 +124,7 @@ public class Snapshot implements Comparable<Snapshot> {
 
     /**
      * Check the zip/tar file it contains the given world.
-     * 
+     *
      * @return true if the zip/tar file contains the given world
      */
     public boolean containsWorld(String worldname) {
@@ -158,7 +158,7 @@ public class Snapshot implements Comparable<Snapshot> {
 
     /**
      * Get the snapshot's name.
-     * 
+     *
      * @return
      */
     public String getName() {
@@ -167,7 +167,7 @@ public class Snapshot implements Comparable<Snapshot> {
 
     /**
      * Get the file for the snapshot.
-     * 
+     *
      * @return
      */
     public File getFile() {
@@ -176,7 +176,7 @@ public class Snapshot implements Comparable<Snapshot> {
 
     /**
      * Get the date associated with this snapshot.
-     * 
+     *
      * @return
      */
     public Calendar getDate() {
@@ -185,7 +185,7 @@ public class Snapshot implements Comparable<Snapshot> {
 
     /**
      * Set the date of the snapshot.
-     * 
+     *
      * @param date
      */
     public void setDate(Calendar date) {

@@ -35,7 +35,7 @@ public class SingleBlockPattern implements Pattern {
 
     /**
      * Construct the object.
-     * 
+     *
      * @param block
      */
     public SingleBlockPattern(BaseBlock block) {
@@ -44,7 +44,7 @@ public class SingleBlockPattern implements Pattern {
 
     /**
      * Get next block.
-     * 
+     *
      * @param pos
      * @return
      */
@@ -54,7 +54,7 @@ public class SingleBlockPattern implements Pattern {
 
     /**
      * Get the block.
-     * 
+     *
      * @return
      */
     public BaseBlock getBlock() {

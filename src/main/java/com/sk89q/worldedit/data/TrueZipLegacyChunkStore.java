@@ -54,13 +54,13 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
      * @param zipFile
      * @param folder
      * @throws IOException
-     * @throws ZipException 
+     * @throws ZipException
      */
     public TrueZipLegacyChunkStore(File zipFile, String folder)
             throws IOException, ZipException {
         this.zipFile = zipFile;
         this.folder = folder;
-        
+
         zip = new ZipFile(zipFile);
     }
 
@@ -107,14 +107,14 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
             if (testEntry == null) {
                 // Let's try a world/ sub-directory
                 testEntry = getEntry("world/level.dat");
-                
+
                 Pattern pattern = Pattern.compile(".*[\\\\/]level\\.dat$");
 
                 // So not there either...
                 if (testEntry == null) {
                     for (Enumeration<? extends ZipEntry> e = zip.entries();
                             e.hasMoreElements(); ) {
-                        
+
                         testEntry = (ZipEntry)e.nextElement();
 
                         // Whoo, found level.dat!
@@ -141,10 +141,10 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
             throw new IOException("Failed to read " + file + " in ZIP");
         }
     }
-    
+
     /**
      * Get an entry from the ZIP, trying both types of slashes.
-     * 
+     *
      * @param file
      * @return
      */

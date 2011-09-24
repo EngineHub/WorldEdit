@@ -506,7 +506,7 @@ public class Vector {
 
     /**
      * Clamp the Y component.
-     * 
+     *
      * @param min
      * @param max
      * @return
@@ -517,7 +517,7 @@ public class Vector {
 
     /**
      * 2D transformation.
-     * 
+     *
      * @param angle in degrees
      * @param aboutX
      * @param aboutZ
@@ -539,7 +539,7 @@ public class Vector {
 
     /**
      * Get a block point from a point.
-     * 
+     *
      * @param x
      * @param y
      * @param z
@@ -553,7 +553,7 @@ public class Vector {
 
     /**
      * Get a block point from a point.
-     * 
+     *
      * @return point
      */
     public BlockVector toBlockPoint() {
@@ -564,7 +564,7 @@ public class Vector {
 
     /**
      * Checks if another object is equivalent.
-     * 
+     *
      * @param obj
      * @return whether the other object is equivalent
      */
@@ -580,7 +580,7 @@ public class Vector {
 
     /**
      * Gets the hash code.
-     * 
+     *
      * @return hash code
      */
     @Override
@@ -602,16 +602,16 @@ public class Vector {
 
     /**
      * Gets a BlockVector version.
-     * 
+     *
      * @return BlockVector
      */
     public BlockVector toBlockVector() {
         return new BlockVector(this);
     }
-    
+
     /**
      * Gets the minimum components of two vectors.
-     * 
+     *
      * @param v1
      * @param v2
      * @return minimum
@@ -622,10 +622,10 @@ public class Vector {
                 Math.min(v1.getY(), v2.getY()),
                 Math.min(v1.getZ(), v2.getZ()));
     }
-    
+
     /**
      * Gets the maximum components of two vectors.
-     * 
+     *
      * @param v1
      * @param v2
      * @return maximum

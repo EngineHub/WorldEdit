@@ -84,7 +84,7 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock, ContainerB
 
     /**
      * Get the tile entity ID.
-     * 
+     *
      * @return
      */
     public String getTileEntityID() {

@@ -38,7 +38,7 @@ public class BlockChance {
 
     /**
      * Construct the object.
-     * 
+     *
      * @param block
      * @param chance
      */

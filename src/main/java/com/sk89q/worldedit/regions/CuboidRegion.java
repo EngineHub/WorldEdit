@@ -43,7 +43,7 @@ public class CuboidRegion implements Region {
 
     /**
      * Construct a new instance of this cuboid region.
-     * 
+     *
      * @param pos1
      * @param pos2
      */
@@ -76,7 +76,7 @@ public class CuboidRegion implements Region {
 
     /**
      * Get the number of blocks in the region.
-     * 
+     *
      * @return number of blocks
      */
     public int getArea() {
@@ -230,7 +230,7 @@ public class CuboidRegion implements Region {
 
     /**
      * Get position 1.
-     * 
+     *
      * @return position 1
      */
     public Vector getPos1() {
@@ -239,7 +239,7 @@ public class CuboidRegion implements Region {
 
     /**
      * Set position 1.
-     * 
+     *
      * @param pos1
      */
     public void setPos1(Vector pos1) {
@@ -248,7 +248,7 @@ public class CuboidRegion implements Region {
 
     /**
      * Get position 2.
-     * 
+     *
      * @return position 2
      */
     public Vector getPos2() {
@@ -266,7 +266,7 @@ public class CuboidRegion implements Region {
 
     /**
      * Get a list of chunks that this region is within.
-     * 
+     *
      * @return
      */
     public Set<Vector2D> getChunks() {
@@ -299,7 +299,7 @@ public class CuboidRegion implements Region {
 
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
-        
+
         return x >= min.getBlockX() && x <= max.getBlockX()
                 && y >= min.getBlockY() && y <= max.getBlockY()
                 && z >= min.getBlockZ() && z <= max.getBlockZ();
@@ -307,7 +307,7 @@ public class CuboidRegion implements Region {
 
     /**
      * Get the iterator.
-     * 
+     *
      * @return iterator of points inside the region
      */
     public Iterator<BlockVector> iterator() {
@@ -317,11 +317,11 @@ public class CuboidRegion implements Region {
             private int nextX = min.getBlockX();
             private int nextY = min.getBlockY();
             private int nextZ = min.getBlockZ();
-            
+
             public boolean hasNext() {
                 return (nextX != Integer.MIN_VALUE);
             }
-            
+
             public BlockVector next() {
                 if (!hasNext()) throw new java.util.NoSuchElementException();
                 BlockVector answer = new BlockVector(nextX, nextY, nextZ);
@@ -336,13 +336,13 @@ public class CuboidRegion implements Region {
                 }
                 return answer;
             }
-            
+
             public void remove() {
                 throw new UnsupportedOperationException();
             }
         };
     }
-    
+
     /**
      * Returns string representation in the format
      * "(minX, minY, minZ) - (maxX, maxY, maxZ)".

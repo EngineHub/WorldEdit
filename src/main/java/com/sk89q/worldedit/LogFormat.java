@@ -59,7 +59,7 @@ public class LogFormat extends Formatter {
             t.printStackTrace(new PrintWriter(writer));
             text.append(writer.toString());
         }
-        
+
         return text.toString();
     }
 }

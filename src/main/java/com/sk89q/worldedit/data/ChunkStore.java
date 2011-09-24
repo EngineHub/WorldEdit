@@ -31,7 +31,7 @@ import com.sk89q.worldedit.*;
 public abstract class ChunkStore {
     /**
      * Convert a position to a chunk.
-     * 
+     *
      * @param pos
      * @return
      */
@@ -75,10 +75,10 @@ public abstract class ChunkStore {
     public void close() throws IOException {
 
     }
-    
+
     /**
      * Returns whether the chunk store is of this type.
-     * 
+     *
      * @return
      */
     public abstract boolean isValid();

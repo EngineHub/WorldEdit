@@ -42,9 +42,9 @@ public class Chunk {
 
     /**
      * Construct the chunk with a compound tag.
-     * 
-     * @param tag 
-     * @throws DataException 
+     *
+     * @param tag
+     * @throws DataException
      */
     public Chunk(CompoundTag tag) throws DataException {
         rootTag = tag;
@@ -117,7 +117,7 @@ public class Chunk {
 
     /**
      * Used to load the tile entities.
-     * 
+     *
      * @throws DataException
      */
     private void populateTileEntities() throws DataException {
@@ -131,7 +131,7 @@ public class Chunk {
             if (!(tag instanceof CompoundTag)) {
                 throw new InvalidFormatException("CompoundTag expected in TileEntities");
             }
-            
+
             CompoundTag t = (CompoundTag)tag;
 
             int x = 0;
@@ -167,7 +167,7 @@ public class Chunk {
      * Get the map of tags keyed to strings for a block's tile entity data. May
      * return null if there is no tile entity data. Not public yet because
      * what this function returns isn't ideal for usage.
-     * 
+     *
      * @param pos
      * @return
      * @throws DataException
@@ -206,7 +206,7 @@ public class Chunk {
         } else {
             block = new BaseBlock(id, data);
         }
-        
+
         if (block instanceof TileEntityBlock) {
             Map<String,Tag> tileEntity = getBlockTileEntity(pos);
             ((TileEntityBlock)block).fromTileEntityNBT(tileEntity);

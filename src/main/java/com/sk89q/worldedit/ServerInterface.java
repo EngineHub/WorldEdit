@@ -20,26 +20,26 @@
 package com.sk89q.worldedit;
 
 /**
- * 
+ *
  * @author sk89q
  */
 public abstract class ServerInterface {
     /**
      * Resolves an item name to its ID.
-     * 
+     *
      * @param name
      * @return
      */
     public abstract int resolveItem(String name);
-    
+
     /**
      * Checks if a mob type is valid.
-     * 
+     *
      * @param type
      * @return
      */
     public abstract boolean isValidMobType(String type);
-    
+
     /**
      * Reload WorldEdit configuration.
      */

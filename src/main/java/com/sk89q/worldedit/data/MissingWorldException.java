@@ -26,7 +26,7 @@ package com.sk89q.worldedit.data;
 public class MissingWorldException extends ChunkStoreException {
 
     private static final long serialVersionUID = 6487395784195658467L;
-    
+
     private String worldname;
 
     public MissingWorldException() {
@@ -36,7 +36,7 @@ public class MissingWorldException extends ChunkStoreException {
     public MissingWorldException(String worldname) {
         super();
         this.worldname = worldname;
-    }    
+    }
 
     public MissingWorldException(String msg, String worldname) {
         super(msg);
@@ -45,7 +45,7 @@ public class MissingWorldException extends ChunkStoreException {
 
     /**
      * Get name of the world in question. May be null if unknown.
-     * 
+     *
      * @return
      */
     public String getWorldname() {

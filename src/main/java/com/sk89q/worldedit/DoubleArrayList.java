@@ -30,8 +30,8 @@ import java.util.NoSuchElementException;
  * Double array lists to work like a Map, but not really.
  *
  * @author sk89q
- * @param <A> 
- * @param <B> 
+ * @param <A>
+ * @param <B>
  */
 public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
     /**
@@ -49,7 +49,7 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
 
     /**
      * Construct the object.
-     * 
+     *
      * @param isReversed
      */
     public DoubleArrayList(boolean isReversed) {
@@ -58,7 +58,7 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
 
     /**
      * Add an item.
-     * 
+     *
      * @param a
      * @param b
      */
@@ -102,12 +102,12 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
 
     /**
      * Entry iterator.
-     * 
-     * @param <T> 
+     *
+     * @param <T>
      */
     public class ForwardEntryIterator<T extends Map.Entry<A,B>>
             implements Iterator<Map.Entry<A,B>> {
-        
+
         private Iterator<A> keyIterator;
         private Iterator<B> valueIterator;
 
@@ -131,12 +131,12 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
 
     /**
      * Entry iterator.
-     * 
-     * @param <T> 
+     *
+     * @param <T>
      */
     public class ReverseEntryIterator<T extends Map.Entry<A,B>>
             implements Iterator<Map.Entry<A,B>> {
-        
+
         private ListIterator<A> keyIterator;
         private ListIterator<B> valueIterator;
 
@@ -160,9 +160,9 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
 
     /**
      * Class to masquerade as Map.Entry.
-     * 
-     * @param <C> 
-     * @param <D> 
+     *
+     * @param <C>
+     * @param <D>
      */
     public class Entry<C,D> implements Map.Entry<A,B> {
         private A key;

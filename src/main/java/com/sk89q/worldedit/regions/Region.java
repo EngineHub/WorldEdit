@@ -31,19 +31,19 @@ import java.util.Set;
 public interface Region extends Iterable<BlockVector> {
     /**
      * Get the lower point of a region.
-     * 
+     *
      * @return min. point
      */
     public Vector getMinimumPoint();
     /**
      * Get the upper point of a region.
-     * 
+     *
      * @return max. point
      */
     public Vector getMaximumPoint();
     /**
      * Get the number of blocks in the region.
-     * 
+     *
      * @return number of blocks
      */
     public int getArea();
@@ -69,26 +69,26 @@ public interface Region extends Iterable<BlockVector> {
      * Expand the region.
      *
      * @param change
-     * @throws RegionOperationException 
+     * @throws RegionOperationException
      */
     public void expand(Vector change) throws RegionOperationException;
     /**
      * Contract the region.
      *
      * @param change
-     * @throws RegionOperationException 
+     * @throws RegionOperationException
      */
     public void contract(Vector change) throws RegionOperationException;
     /**
      * Returns true based on whether the region contains the point,
      *
      * @param pt
-     * @return 
+     * @return
      */
     public boolean contains(Vector pt);
     /**
      * Get a list of chunks.
-     * 
+     *
      * @return
      */
     public Set<Vector2D> getChunks();

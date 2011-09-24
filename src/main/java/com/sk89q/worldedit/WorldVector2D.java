@@ -57,7 +57,7 @@ public class WorldVector2D extends Vector2D {
 
     /**
      * Checks if another object is equivalent.
-     * 
+     *
      * @param obj
      * @return whether the other object is equivalent
      */
@@ -74,7 +74,7 @@ public class WorldVector2D extends Vector2D {
 
     /**
      * Gets the hash code.
-     * 
+     *
      * @return hash code
      */
     @Override

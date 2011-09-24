@@ -67,7 +67,7 @@ public class SnapshotRepository {
      * Get a list of snapshots in a directory. The newest snapshot is
      * near the top of the array.
      *
-     * @param newestFirst 
+     * @param newestFirst
      * @return
      */
     public List<Snapshot> getSnapshots(boolean newestFirst, String worldname) throws MissingWorldException {
@@ -108,7 +108,7 @@ public class SnapshotRepository {
 
     /**
      * Get the first snapshot after a date.
-     * 
+     *
      * @param date
      * @return
      */
@@ -130,7 +130,7 @@ public class SnapshotRepository {
 
     /**
      * Get the first snapshot before a date.
-     * 
+     *
      * @param date
      * @return
      */
@@ -151,7 +151,7 @@ public class SnapshotRepository {
 
     /**
      * Attempt to detect a snapshot's date and assign it.
-     * 
+     *
      * @param snapshot
      */
     protected void detectDate(Snapshot snapshot) {
@@ -211,7 +211,7 @@ public class SnapshotRepository {
 
     /**
      * Get a snapshot.
-     * 
+     *
      * @param name
      * @return
      * @throws InvalidSnapshotException

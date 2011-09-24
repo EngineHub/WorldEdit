@@ -50,7 +50,7 @@ public class BaseBlock {
      * Construct the block with its type and data.
      *
      * @param type
-     * @param data 
+     * @param data
      */
     public BaseBlock(int type, int data) {
         this.type = (short) type;
@@ -93,21 +93,21 @@ public class BaseBlock {
     public boolean isAir() {
         return type == 0;
     }
-    
+
     /**
      * Rotate this block 90 degrees.
      */
     public void rotate90() {
         data = (byte) BlockData.rotate90(type, data);
     }
-    
+
     /**
      * Rotate this block -90 degrees.
      */
     public void rotate90Reverse() {
         data = (byte) BlockData.rotate90Reverse(type, data);
     }
-    
+
     /**
      * Flip this block.
      */
@@ -132,7 +132,7 @@ public class BaseBlock {
         return (type == ((BaseBlock) o).type)
                 && (data == ((BaseBlock) o).data || data == -1 || ((BaseBlock) o).data == -1);
     }
-    
+
     @Override
     public String toString() {
         return "BaseBlock id: " + getType() + " with damage: " + getData();

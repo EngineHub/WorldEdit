@@ -222,32 +222,32 @@ public enum BlockType {
      */
     public static BlockType lookup(String name, boolean fuzzy) {
         String testName = name.replace(" ", "").toLowerCase();
-        
+
         BlockType type = lookup.get(testName);
-        
+
         if (type != null) {
             return type;
         }
-        
+
         if (!fuzzy) {
             return null;
         }
-        
+
         int minDist = -1;
-        
+
         for (Entry<String, BlockType> entry : lookup.entrySet()) {
             if (entry.getKey().charAt(0) != testName.charAt(0)) {
                 continue;
             }
-            
+
             int dist = StringUtil.getLevenshteinDistance(entry.getKey(), testName);
-            
+
             if ((dist < minDist || minDist == -1) && dist < 2) {
                 minDist = dist;
                 type = entry.getValue();
             }
         }
-        
+
         return type;
     }
 
@@ -315,7 +315,7 @@ public enum BlockType {
 
     /**
      * Checks to see whether a block should be placed last.
-     * 
+     *
      * @param id
      * @return
      */
@@ -449,7 +449,7 @@ public enum BlockType {
 
     /**
      * Returns true if the block uses its data value.
-     * 
+     *
      * @param id
      * @return
      */
@@ -470,7 +470,7 @@ public enum BlockType {
 
     /**
      * Returns true if the block is a container block.
-     * 
+     *
      * @param id
      * @return
      */
@@ -726,7 +726,7 @@ public enum BlockType {
      * Get the block or item that would have been dropped. If nothing is
      * dropped, 0 will be returned. If the block should not be destroyed
      * (i.e. bedrock), -1 will be returned.
-     * 
+     *
      * @param id
      * @return
      * @deprecated This function ignores the data value.
@@ -739,7 +739,7 @@ public enum BlockType {
         }
         return dropped;
     }
-    
+
     private static final Random random = new Random();
     public static BaseItemStack getBlockDrop(int id, short data) {
         switch (id) {

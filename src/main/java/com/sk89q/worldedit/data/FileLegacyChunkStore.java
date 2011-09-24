@@ -35,7 +35,7 @@ public class FileLegacyChunkStore extends LegacyChunkStore {
     /**
      * Create an instance. The passed path is the folder to read the
      * chunk files from.
-     * 
+     *
      * @param path
      */
     public FileLegacyChunkStore(File path) {

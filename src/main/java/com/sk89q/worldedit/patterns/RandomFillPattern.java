@@ -73,7 +73,7 @@ public class RandomFillPattern implements Pattern {
      */
     public BaseBlock next(Vector pos) {
         double r = random.nextDouble();
-        
+
         for (BlockChance block : blocks) {
             if (r <= block.getChance()) {
                 return block.getBlock();

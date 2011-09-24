@@ -57,13 +57,13 @@ public class SnapshotRestore {
 
     /**
      * Construct the snapshot restore operation.
-     * 
-     * @param chunkStore 
+     *
+     * @param chunkStore
      * @param region
      */
     public SnapshotRestore(ChunkStore chunkStore, Region region) {
         this.chunkStore = chunkStore;
-        
+
         if (region instanceof CuboidRegion) {
             findNeededCuboidChunks(region);
         } else {
@@ -121,7 +121,7 @@ public class SnapshotRestore {
 
     /**
      * Get the number of chunks that are needed.
-     * 
+     *
      * @return
      */
     public int getChunksAffected() {
@@ -132,7 +132,7 @@ public class SnapshotRestore {
      * Restores to world.
      *
      * @param editSession
-     * @throws MaxChangedBlocksException 
+     * @throws MaxChangedBlocksException
      */
     public void restore(EditSession editSession)
             throws MaxChangedBlocksException {
@@ -193,7 +193,7 @@ public class SnapshotRestore {
     /**
      * Checks to see where the backup succeeded in any capacity. False will
      * be returned if no chunk could be successfully loaded.
-     * 
+     *
      * @return
      */
     public boolean hadTotalFailure() {

@@ -36,9 +36,9 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
 
     /**
      * Construct the sign without text.
-     * 
-     * @param type 
-     * @param data 
+     *
+     * @param type
+     * @param data
      */
     public SignBlock(int type, int data) {
         super(type, data);
@@ -47,10 +47,10 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
 
     /**
      * Construct the sign with text.
-     * 
-     * @param type 
-     * @param data 
-     * @param text 
+     *
+     * @param type
+     * @param data
+     * @param text
      */
     public SignBlock(int type, int data, String[] text) {
         super(type, data);
@@ -79,7 +79,7 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
     public String getTileEntityID() {
         return "Sign";
     }
-    
+
     /**
      * Store additional tile entity data. Returns true if the data is used.
      *
@@ -107,7 +107,7 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
         if (values == null) {
             return;
         }
-        
+
         Tag t;
 
         text = new String[]{ "", "", "", "" };
