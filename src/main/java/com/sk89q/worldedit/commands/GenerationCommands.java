@@ -26,6 +26,7 @@ import com.sk89q.minecraft.util.commands.Logging;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
@@ -312,6 +313,52 @@ public class GenerationCommands {
         
         int affected = editSession.makePyramid(pos, block, size, false);
         
+        player.findFreePosition();
+        player.print(affected + " block(s) have been created.");
+    }
+
+    @Command(
+        aliases = { "/testgen", "/tg" },
+        usage = "<block>",
+        desc = "Should work like //outline",
+        min = 1,
+        max = 1
+    )
+    @CommandPermissions("worldedit.generation.test")
+    @Logging(ALL)
+    public static void test(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        final Region region = session.getSelection(player.getWorld());
+
+        final Vector min = region.getMinimumPoint();
+        final Vector max = region.getMaximumPoint();
+        final Vector center = max.add(min).multiply(0.5);
+        final Vector stretch = max.subtract(center);
+
+        final double scale = Math.sqrt(0.5+Math.sqrt(0.25+1.0/8.0));
+
+        final ArbitraryShape shape = new ArbitraryShape(region) {
+            @Override
+            protected boolean isInside(double x, double y, double z) {
+                final Vector scaled = new Vector(x,y,z).subtract(center).divide(stretch);
+                //return scaled.length() < 1;
+
+                double xSquared = scaled.getX()*scale;
+                double ySquared = scaled.getY()*scale;
+                double zSquared = scaled.getZ()*scale;
+                xSquared *= xSquared;
+                ySquared *= ySquared;
+                zSquared *= zSquared;
+
+                return 3 + 8*(xSquared*xSquared + ySquared*ySquared + zSquared*zSquared) < 8*(xSquared + ySquared + zSquared);
+            }
+        };
+
+        int affected = shape.generate(editSession, pattern, true);
+
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }
