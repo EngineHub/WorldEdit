@@ -601,13 +601,15 @@ public final class BlockData {
         case BlockID.LONG_GRASS:
         case BlockID.STONE_BRICK:
         case BlockID.SILVERFISH_BLOCK:
+            if (data > 2) return -1;
             return (data + increment) % 3;
 
         case BlockID.TORCH:
         case BlockID.REDSTONE_TORCH_ON:
         case BlockID.REDSTONE_TORCH_OFF:
-            if (data == 5) return -1;
-            /* FALL-THROUGH */
+            if (data < 1 || data > 4) return -1;
+            return (data - 1 + increment) % 4 + 1;
+
         case BlockID.WOODEN_STAIRS:
         case BlockID.COBBLESTONE_STAIRS:
         case BlockID.BRICK_STAIRS:
@@ -615,64 +617,66 @@ public final class BlockData {
         case BlockID.PUMPKIN:
         case BlockID.JACKOLANTERN:
         case BlockID.TRAP_DOOR:
+            if (data > 3) return -1;
             return (data + increment) % 4;
 
         case BlockID.STEP:
         case BlockID.DOUBLE_STEP:
         case BlockID.CAKE_BLOCK:
+            if (data > 5) return -1;
             return (data + increment) % 6;
 
         case BlockID.CROPS:
         case BlockID.PUMPKIN_STEM:
         case BlockID.MELON_STEM:
+            if (data > 6) return -1;
             return (data + increment) % 7;
 
         case BlockID.SOIL:
         case BlockID.SNOW:
+            if (data > 8) return -1;
             return (data + increment) % 9;
 
         case BlockID.RED_MUSHROOM_CAP:
         case BlockID.BROWN_MUSHROOM_CAP:
-            return (data + increment) % 10;
+            if (data > 10) return -1;
+            return (data + increment) % 11;
 
         case BlockID.CACTUS:
         case BlockID.REED:
         case BlockID.SIGN_POST:
-            return (data + increment) % 16;
-
         case BlockID.VINE:
-            return (data - 1 + increment) % 15 + 1;
+            return (data + increment) % 16;
 
         case BlockID.FURNACE:
         case BlockID.BURNING_FURNACE:
         case BlockID.DISPENSER:
-            return (data + increment) % 4 + 2;
-
         case BlockID.WALL_SIGN:
-            return ((data + increment) - 2) % 4 + 2;
+        case BlockID.LADDER:
+        case BlockID.CHEST:
+            if (data < 2 || data > 5) return -1;
+            return (data - 2 + increment) % 4 + 2;
 
         case BlockID.REDSTONE_REPEATER_OFF:
-        case BlockID.REDSTONE_REPEATER_ON:
-            int dir = data & 0x3;
-            int delay = data & 0x0c;
-            return (dir + increment) % 4 | delay;
+        case BlockID.REDSTONE_REPEATER_ON: {
+            int orientation = data & 0x3;
+            int withoutOrientation = data & ~0x3;
+            return (orientation + increment) % 4 | withoutOrientation;
+        }
 
         case BlockID.MINECART_TRACKS:
-            if (data >= 6 && data <= 9) {
-                return (data + increment) % 4 + 6;
-            } else {
-                return -1;
-            }
+            if (data < 6 || data > 9) return -1;
+            return (data - 6 + increment) % 4 + 6;
 
         case BlockID.SAPLING:
-            int saplingType = data & 0x02;
-            int age = data & 0x0c;
-            return (saplingType + increment) % 3 | age;
+            int saplingType = data & 0x3;
+            int withoutType = data & ~0x3;
+            return (saplingType + increment) % 3 | withoutType;
 
         case BlockID.LEAVES:
-            int tree = data & 0x03;
-            int leafMeta = data & 0x0c;
-            return (tree + increment) % 4 | leafMeta;
+            int tree = data & 0x3;
+            int withoutTree = data & ~0x3;
+            return (tree + increment) % 4 | withoutTree;
 
         case BlockID.CLOTH:
             if (increment > 0) {
@@ -684,10 +688,11 @@ public final class BlockData {
             }
             return data;
 
-        case BlockID.FENCE_GATE:
-            int direction = data & 0x03;
-            int open = data & 0x04;
-            return (direction + increment) % 4 | open;
+        case BlockID.FENCE_GATE: {
+            int orientation = data & 0x3;
+            int withoutOrientation = data & ~0x3;
+            return (orientation + increment) % 4 | withoutOrientation;
+        }
 
         default:
             return -1;

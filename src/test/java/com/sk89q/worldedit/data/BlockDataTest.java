@@ -22,12 +22,13 @@ package com.sk89q.worldedit.data;
 import org.junit.*;
 
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
+import com.sk89q.worldedit.blocks.BlockID;
 
 import static org.junit.Assert.*;
 
 public class BlockDataTest {
     @Test
-    public void testSlice() {
+    public void testRotateFlip() {
         for (int type = 0; type < 256; ++type) {
             for (int data = 0; data < 16; ++data) {
                 final String message = type+"/"+data;
@@ -43,6 +44,26 @@ public class BlockDataTest {
                 assertEquals(message, data, BlockData.flip(type, BlockData.flip(type, data, FlipDirection.NORTH_SOUTH), FlipDirection.NORTH_SOUTH));
                 assertEquals(message, data, BlockData.flip(type, BlockData.flip(type, data, FlipDirection.WEST_EAST), FlipDirection.WEST_EAST));
                 assertEquals(message, data, BlockData.flip(type, BlockData.flip(type, data, FlipDirection.UP_DOWN), FlipDirection.UP_DOWN));
+            }
+        }
+    }
+
+    @Test
+    public void testCycle() {
+        for (int type = 0; type < 256; ++type) {
+            if (type == BlockID.CLOTH)
+                continue;
+
+            for (int data = 0; data < 16; ++data) {
+                final String message = type+"/"+data;
+
+                int cycled = BlockData.cycle(type, data, 1);
+
+                if (cycled <= data) {
+                    continue;
+                }
+
+                assertEquals(message, data+1, cycled); 
             }
         }
     }
