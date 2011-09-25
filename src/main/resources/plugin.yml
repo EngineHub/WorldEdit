@@ -237,7 +237,7 @@ commands:
         description: Block information tool
         usage: /<command>
     none:
-        description: Turn off all superpickaxe alternate modes
+        description: Unbind all bound tools
         usage: /<command>
     tree:
         description: Tree generator tool

@@ -174,7 +174,7 @@ public final class BlockData {
 
         case BlockID.VINE:
             return ((data << 1) | (data >> 3)) & 0xf;
-            
+
         case BlockID.FENCE_GATE:
             return ((data + 1) & 0x3) | (data & ~0x3);
 
@@ -216,13 +216,14 @@ public final class BlockData {
 
         case BlockID.POWERED_RAIL:
         case BlockID.DETECTOR_RAIL:
+            int power = data & ~0x7;
             switch (data & 0x7) {
-            case 1: return 0 | (data & ~0x7);
-            case 0: return 1 | (data & ~0x7);
-            case 5: return 2 | (data & ~0x7);
-            case 4: return 3 | (data & ~0x7);
-            case 2: return 4 | (data & ~0x7);
-            case 3: return 5 | (data & ~0x7);
+            case 1: return 0 | power;
+            case 0: return 1 | power;
+            case 5: return 2 | power;
+            case 4: return 3 | power;
+            case 2: return 4 | power;
+            case 3: return 5 | power;
             }
             break;
 
@@ -380,8 +381,7 @@ public final class BlockData {
         case BlockID.TORCH:
         case BlockID.REDSTONE_TORCH_OFF:
         case BlockID.REDSTONE_TORCH_ON:
-            if (data > 4)
-                break;
+            if (data > 4) break;
             /* FALL-THROUGH */
 
         case BlockID.LEVER:
@@ -409,11 +409,9 @@ public final class BlockData {
             case 0:
             case 1:
                 return data;
-
             case 2:
             case 3:
                 return data ^ flipX;
-
             case 4:
             case 5:
                 return data ^ flipZ;
@@ -428,7 +426,6 @@ public final class BlockData {
             case 0:
             case 1:
                 return data ^ flipX;
-
             case 2:
             case 3:
                 return data ^ flipZ;
@@ -450,7 +447,6 @@ public final class BlockData {
             switch (direction) {
             case NORTH_SOUTH:
                 return (16 - data) & 0xf;
-
             case WEST_EAST:
                 return (8 - data) & 0xf;
             }
@@ -465,7 +461,6 @@ public final class BlockData {
             case 2:
             case 3:
                 return data ^ flipZ;
-
             case 4:
             case 5:
                 return data ^ flipX;
@@ -474,8 +469,7 @@ public final class BlockData {
 
         case BlockID.PUMPKIN:
         case BlockID.JACKOLANTERN:
-            if (data > 3)
-                break;
+            if (data > 3) break;
             /* FALL-THROUGH */
 
         case BlockID.REDSTONE_REPEATER_OFF:
@@ -484,7 +478,6 @@ public final class BlockData {
             case 0:
             case 2:
                 return data ^ (flipZ << 1);
-
             case 1:
             case 3:
                 return data ^ (flipX << 1);
@@ -496,7 +489,6 @@ public final class BlockData {
             case 0:
             case 1:
                 return data ^ flipZ;
-
             case 2:
             case 3:
                 return data ^ flipX;
@@ -510,11 +502,9 @@ public final class BlockData {
             case 0:
             case 1:
                 return data ^ flipY;
-
             case 2:
             case 3:
                 return data ^ flipZ;
-
             case 4:
             case 5:
                 return data ^ flipX;
@@ -554,19 +544,16 @@ public final class BlockData {
                 bit1 = 0x2;
                 bit2 = 0x8;
                 break;
-
             case WEST_EAST:
                 bit1 = 0x1;
                 bit2 = 0x4;
                 break;
-
             default:
                 return data;
             }
             int newData = data & ~(bit1 | bit2);
             if ((data & bit1) != 0) newData |= bit2;
             if ((data & bit2) != 0) newData |= bit1;
-
             return newData;
 
         case BlockID.FENCE_GATE:
@@ -574,12 +561,12 @@ public final class BlockData {
             case 0:
             case 2:
                 return data ^ flipZ * 2;
-
             case 1:
             case 3:
                 return data ^ flipX * 2;
             }
             break;
+
         }
 
         return data;
@@ -596,12 +583,12 @@ public final class BlockData {
      * @return the new data value for the block
      */
     public static int cycle(int type, int data, int increment) {
+        int store;
         switch (type) {
         case BlockID.LOG:
         case BlockID.LONG_GRASS:
         case BlockID.STONE_BRICK:
         case BlockID.SILVERFISH_BLOCK:
-            if (data > 2) return -1;
             return (data + increment) % 3;
 
         case BlockID.TORCH:
@@ -616,30 +603,24 @@ public final class BlockData {
         case BlockID.STONE_BRICK_STAIRS:
         case BlockID.PUMPKIN:
         case BlockID.JACKOLANTERN:
-        case BlockID.TRAP_DOOR:
-            if (data > 3) return -1;
             return (data + increment) % 4;
 
         case BlockID.STEP:
         case BlockID.DOUBLE_STEP:
         case BlockID.CAKE_BLOCK:
-            if (data > 5) return -1;
             return (data + increment) % 6;
 
         case BlockID.CROPS:
         case BlockID.PUMPKIN_STEM:
         case BlockID.MELON_STEM:
-            if (data > 6) return -1;
             return (data + increment) % 7;
 
         case BlockID.SOIL:
         case BlockID.SNOW:
-            if (data > 8) return -1;
             return (data + increment) % 9;
 
         case BlockID.RED_MUSHROOM_CAP:
         case BlockID.BROWN_MUSHROOM_CAP:
-            if (data > 10) return -1;
             return (data + increment) % 11;
 
         case BlockID.CACTUS:
@@ -654,29 +635,23 @@ public final class BlockData {
         case BlockID.WALL_SIGN:
         case BlockID.LADDER:
         case BlockID.CHEST:
-            if (data < 2 || data > 5) return -1;
             return (data - 2 + increment) % 4 + 2;
 
         case BlockID.REDSTONE_REPEATER_OFF:
-        case BlockID.REDSTONE_REPEATER_ON: {
-            int orientation = data & 0x3;
-            int withoutOrientation = data & ~0x3;
-            return (orientation + increment) % 4 | withoutOrientation;
-        }
+        case BlockID.REDSTONE_REPEATER_ON:
+        case BlockID.TRAP_DOOR:
+        case BlockID.FENCE_GATE:
+        case BlockID.LEAVES:
+            store = data & ~0x3;
+            return ((data & 0x3) + increment) % 4 | store;
 
         case BlockID.MINECART_TRACKS:
             if (data < 6 || data > 9) return -1;
             return (data - 6 + increment) % 4 + 6;
 
         case BlockID.SAPLING:
-            int saplingType = data & 0x3;
-            int withoutType = data & ~0x3;
-            return (saplingType + increment) % 3 | withoutType;
-
-        case BlockID.LEAVES:
-            int tree = data & 0x3;
-            int withoutTree = data & ~0x3;
-            return (tree + increment) % 4 | withoutTree;
+            store = data & ~0x3;
+            return ((data & 0x3) + increment) % 3 | store;
 
         case BlockID.CLOTH:
             if (increment > 0) {
@@ -687,12 +662,6 @@ public final class BlockData {
                 return -1; // shouldn't have a 0 increment anyway
             }
             return data;
-
-        case BlockID.FENCE_GATE: {
-            int orientation = data & 0x3;
-            int withoutOrientation = data & ~0x3;
-            return (orientation + increment) % 4 | withoutOrientation;
-        }
 
         default:
             return -1;
