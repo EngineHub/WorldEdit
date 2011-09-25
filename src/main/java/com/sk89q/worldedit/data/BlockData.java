@@ -145,13 +145,13 @@ public final class BlockData {
             break;
 
         case BlockID.TRAP_DOOR:
-            int open = data & 0x4;
-            int withoutOpen = data & ~0x4;
-            switch (withoutOpen) {
-            case 0: return 3 | open;
-            case 1: return 2 | open;
-            case 2: return 0 | open;
-            case 3: return 1 | open;
+            int withoutOrientation = data & ~0x3;
+            int orientation = data & 0x3;
+            switch (orientation) {
+            case 0: return 3 | withoutOrientation;
+            case 1: return 2 | withoutOrientation;
+            case 2: return 0 | withoutOrientation;
+            case 3: return 1 | withoutOrientation;
             }
             break;
 
@@ -302,13 +302,13 @@ public final class BlockData {
             break;
 
         case BlockID.TRAP_DOOR:
-            int open = data & 0x4;
-            int withoutOpen = data & ~0x4;
-            switch (withoutOpen) {
-            case 3: return 0 | open;
-            case 2: return 1 | open;
-            case 0: return 2 | open;
-            case 1: return 3 | open;
+            int withoutOrientation = data & ~0x3;
+            int orientation = data & 0x3;
+            switch (orientation) {
+            case 3: return 0 | withoutOrientation;
+            case 2: return 1 | withoutOrientation;
+            case 0: return 2 | withoutOrientation;
+            case 1: return 3 | withoutOrientation;
             }
 
         case BlockID.PISTON_BASE:
@@ -380,6 +380,10 @@ public final class BlockData {
         case BlockID.TORCH:
         case BlockID.REDSTONE_TORCH_OFF:
         case BlockID.REDSTONE_TORCH_ON:
+            if (data > 4)
+                break;
+            /* FALL-THROUGH */
+
         case BlockID.LEVER:
         case BlockID.STONE_BUTTON:
             switch (data & ~0x8) {
@@ -470,6 +474,10 @@ public final class BlockData {
 
         case BlockID.PUMPKIN:
         case BlockID.JACKOLANTERN:
+            if (data > 3)
+                break;
+            /* FALL-THROUGH */
+
         case BlockID.REDSTONE_REPEATER_OFF:
         case BlockID.REDSTONE_REPEATER_ON:
             switch (data & 0x3) {
