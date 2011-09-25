@@ -60,17 +60,19 @@ public final class BlockData {
         case BlockID.POWERED_RAIL:
         case BlockID.DETECTOR_RAIL:
             switch (data & 0x7) {
-            case 0: return 1;
-            case 1: return 0;
-            case 2: return 5;
-            case 3: return 4;
-            case 4: return 2;
-            case 5: return 3;
+            case 0: return 1 | (data & ~0x7);
+            case 1: return 0 | (data & ~0x7);
+            case 2: return 5 | (data & ~0x7);
+            case 3: return 4 | (data & ~0x7);
+            case 4: return 2 | (data & ~0x7);
+            case 5: return 3 | (data & ~0x7);
             }
             break;
 
         case BlockID.WOODEN_STAIRS:
         case BlockID.COBBLESTONE_STAIRS:
+        case BlockID.BRICK_STAIRS:
+        case BlockID.STONE_BRICK_STAIRS:
             switch (data) {
             case 0: return 2;
             case 1: return 3;
@@ -215,17 +217,19 @@ public final class BlockData {
         case BlockID.POWERED_RAIL:
         case BlockID.DETECTOR_RAIL:
             switch (data & 0x7) {
-            case 1: return 0;
-            case 0: return 1;
-            case 5: return 2;
-            case 4: return 3;
-            case 2: return 4;
-            case 3: return 5;
+            case 1: return 0 | (data & ~0x7);
+            case 0: return 1 | (data & ~0x7);
+            case 5: return 2 | (data & ~0x7);
+            case 4: return 3 | (data & ~0x7);
+            case 2: return 4 | (data & ~0x7);
+            case 3: return 5 | (data & ~0x7);
             }
             break;
 
         case BlockID.WOODEN_STAIRS:
         case BlockID.COBBLESTONE_STAIRS:
+        case BlockID.BRICK_STAIRS:
+        case BlockID.STONE_BRICK_STAIRS:
             switch (data) {
             case 2: return 0;
             case 3: return 1;
