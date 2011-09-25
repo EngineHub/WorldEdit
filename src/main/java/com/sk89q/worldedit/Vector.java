@@ -585,9 +585,12 @@ public class Vector {
      */
     @Override
     public int hashCode() {
-        return ((new Double(x)).hashCode() >> 13) ^
-                ((new Double(y)).hashCode() >> 7) ^
-                (new Double(z)).hashCode();
+        int hash = 7;
+
+        hash = 79 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
+        hash = 79 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
+        hash = 79 * hash + (int) (Double.doubleToLongBits(this.z) ^ (Double.doubleToLongBits(this.z) >>> 32));
+        return hash;
     }
 
     /**
