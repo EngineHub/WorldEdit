@@ -40,11 +40,11 @@ public class DinnerPermsResolver implements PermissionsResolver {
     }
 
     public boolean hasPermission(String name, String permission) {
-        Player player = server.getPlayer(name);
+        Player player = server.getPlayerExact(name);
         if (player == null) {
             return false; // Permissions are only registered for online players
         }
-        if ( player.hasPermission("*")  || player.hasPermission(permission)) {
+        if (player.hasPermission("*") || player.hasPermission(permission)) {
             return true;
         }
         int dotPos = permission.lastIndexOf(".");
