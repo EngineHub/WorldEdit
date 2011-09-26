@@ -583,19 +583,24 @@ public final class BlockData {
      * @return the new data value for the block
      */
     public static int cycle(int type, int data, int increment) {
+        if (increment != -1 && increment != 1) {
+            throw new IllegalArgumentException("Increment must be 1 or -1.");
+        }
+
         int store;
         switch (type) {
         case BlockID.LOG:
         case BlockID.LONG_GRASS:
         case BlockID.STONE_BRICK:
         case BlockID.SILVERFISH_BLOCK:
-            return (data + increment) % 3;
+            if (data > 2) return -1;
+            return mod((data + increment), 3);
 
         case BlockID.TORCH:
         case BlockID.REDSTONE_TORCH_ON:
         case BlockID.REDSTONE_TORCH_OFF:
             if (data < 1 || data > 4) return -1;
-            return (data - 1 + increment) % 4 + 1;
+            return mod((data - 1 + increment), 4) + 1;
 
         case BlockID.WOODEN_STAIRS:
         case BlockID.COBBLESTONE_STAIRS:
@@ -603,31 +608,37 @@ public final class BlockData {
         case BlockID.STONE_BRICK_STAIRS:
         case BlockID.PUMPKIN:
         case BlockID.JACKOLANTERN:
-            return (data + increment) % 4;
+            if (data > 3) return -1;
+            return mod((data + increment), 4);
 
         case BlockID.STEP:
         case BlockID.DOUBLE_STEP:
         case BlockID.CAKE_BLOCK:
-            return (data + increment) % 6;
+            if (data > 5) return -1;
+            return mod((data + increment), 6);
 
         case BlockID.CROPS:
         case BlockID.PUMPKIN_STEM:
         case BlockID.MELON_STEM:
-            return (data + increment) % 7;
+            if (data > 6) return -1;
+            return mod((data + increment), 7);
 
         case BlockID.SOIL:
-        case BlockID.SNOW:
-            return (data + increment) % 9;
+            if (data > 8) return -1;
+            return mod((data + increment), 9);
 
         case BlockID.RED_MUSHROOM_CAP:
         case BlockID.BROWN_MUSHROOM_CAP:
-            return (data + increment) % 11;
+            if (data > 10) return -1;
+            return mod((data + increment), 11);
 
         case BlockID.CACTUS:
         case BlockID.REED:
         case BlockID.SIGN_POST:
         case BlockID.VINE:
-            return (data + increment) % 16;
+        case BlockID.SNOW:
+            if (data > 15) return -1;
+            return mod((data + increment), 16);
 
         case BlockID.FURNACE:
         case BlockID.BURNING_FURNACE:
@@ -635,37 +646,46 @@ public final class BlockData {
         case BlockID.WALL_SIGN:
         case BlockID.LADDER:
         case BlockID.CHEST:
-            return (data - 2 + increment) % 4 + 2;
+            if (data < 2 || data > 5) return -1;
+            return mod((data - 2 + increment), 4) + 2;
 
         case BlockID.REDSTONE_REPEATER_OFF:
         case BlockID.REDSTONE_REPEATER_ON:
         case BlockID.TRAP_DOOR:
         case BlockID.FENCE_GATE:
         case BlockID.LEAVES:
+            if (data > 7) return -1;
             store = data & ~0x3;
-            return ((data & 0x3) + increment) % 4 | store;
+            return mod(((data & 0x3) + increment), 4) | store;
 
         case BlockID.MINECART_TRACKS:
             if (data < 6 || data > 9) return -1;
-            return (data - 6 + increment) % 4 + 6;
+            return mod((data - 6 + increment), 4) + 6;
 
         case BlockID.SAPLING:
+            if ((data & 0x3) == 3 || data > 15) return -1;
             store = data & ~0x3;
-            return ((data & 0x3) + increment) % 3 | store;
+            return mod(((data & 0x3) + increment), 3) | store;
 
         case BlockID.CLOTH:
-            if (increment > 0) {
+            if (increment == 1) {
                 data = nextClothColor(data);
-            } else if (increment < 0) {
+            } else if (increment == -1) {
                 data = prevClothColor(data);
-            } else {
-                return -1; // shouldn't have a 0 increment anyway
             }
             return data;
 
         default:
             return -1;
         }
+    }
+
+    /**
+     * Better modulo, not just remainder.
+     */
+    private static int mod(int x, int y) {
+        int res = x % y;
+        return res < 0 ? res + y : res;
     }
 
     /**
