@@ -137,8 +137,31 @@ public class DocumentationPrinter {
                     }
                 }
     
-                stream.println();
+                stream.print(" || ");
     
+                boolean firstAlias = true;
+                if (cmd.aliases().length != 0) {
+                    for (String alias : cmd.aliases()) {
+                        if (!firstAlias) stream.print("<br />");
+                        stream.print(prefix + alias);
+                        firstAlias = false;
+                    }
+                }
+
+                stream.print(" || ");
+
+                if (cmd.flags() != null && !cmd.flags().equals("")) {
+                    stream.print(cmd.flags());
+                }
+
+                stream.print(" || ");
+
+                if (cmd.desc() != null && !cmd.desc().equals("")) {
+                    stream.print(cmd.desc());
+                }
+
+                stream.println();
+
                 if (method.isAnnotationPresent(NestedCommand.class)) {
                     NestedCommand nested =
                         method.getAnnotation(NestedCommand.class);
