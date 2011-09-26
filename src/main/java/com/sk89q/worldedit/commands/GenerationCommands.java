@@ -272,7 +272,7 @@ public class GenerationCommands {
     
     @Command(
         aliases = { "/pyramid" },
-        usage = "<block> <range>",
+        usage = "<block> <size>",
         desc = "Generate a filled pyramid",
         min = 2,
         max = 2
@@ -295,7 +295,7 @@ public class GenerationCommands {
     
     @Command(
         aliases = { "/hpyramid" },
-        usage = "<block> <range>",
+        usage = "<block> <size>",
         desc = "Generate a hollow pyramid",
         min = 2,
         max = 2
