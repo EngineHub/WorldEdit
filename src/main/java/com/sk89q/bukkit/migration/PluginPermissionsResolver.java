@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.bukkit.migration;
 
@@ -25,31 +25,31 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.util.config.Configuration;
 
 public class PluginPermissionsResolver implements PermissionsResolver {
-    
+
     protected PermissionsProvider resolver;
     protected Plugin plugin;
-    
-    public static PermissionsResolver factory(Server server, Configuration config){
+
+    public static PermissionsResolver factory(Server server, Configuration config) {
         // Looking for service
         RegisteredServiceProvider<PermissionsProvider> serviceProvider = server.getServicesManager().getRegistration(PermissionsProvider.class);
-        
-        if(serviceProvider != null){
+
+        if (serviceProvider != null) {
             return new PluginPermissionsResolver(serviceProvider.getProvider(), serviceProvider.getPlugin());
         }
-        
+
         // Looking for plugin
         for (Plugin plugin : server.getPluginManager().getPlugins()) {
-            if(plugin instanceof PermissionsProvider){
-                return new PluginPermissionsResolver((PermissionsProvider)plugin, plugin);
+            if (plugin instanceof PermissionsProvider) {
+                return new PluginPermissionsResolver((PermissionsProvider) plugin, plugin);
             }
-        }        
-        
+        }
+
         return null;
     }
-    
+
     public PluginPermissionsResolver(PermissionsProvider resolver, Plugin permissionsPlugin) {
         this.resolver = resolver;
-        this.plugin = permissionsPlugin;    
+        this.plugin = permissionsPlugin;
     }
 
     public void load() {
@@ -74,5 +74,5 @@ public class PluginPermissionsResolver implements PermissionsResolver {
     public String getDetectionMessage() {
         return "Using plugin '" + this.plugin.getDescription().getName() + "' for permissions.";
     }
-    
+
 }

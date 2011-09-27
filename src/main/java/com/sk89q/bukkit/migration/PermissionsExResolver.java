@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.bukkit.migration;
 
@@ -30,17 +30,17 @@ import org.bukkit.util.config.Configuration;
 public class PermissionsExResolver implements PermissionsResolver {
     private final PermissionManager manager;
     private final Server server;
-    
-    public static PermissionsResolver factory(Server server, Configuration config){
+
+    public static PermissionsResolver factory(Server server, Configuration config) {
         PermissionManager manager = server.getServicesManager().load(PermissionManager.class);
-        
-        if(manager == null){
+
+        if (manager == null) {
             return null;
         }
-        
+
         return new PermissionsExResolver(server, manager);
     }
-    
+
     public PermissionsExResolver(Server server, PermissionManager manager) {
         this.server = server;
         this.manager = manager;

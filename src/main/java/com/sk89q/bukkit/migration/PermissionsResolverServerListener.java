@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.bukkit.migration;
 
@@ -40,7 +40,7 @@ public class PermissionsResolverServerListener extends ServerListener {
             register(plugin);
         }
     }
-    
+
     /**
      * Called when a plugin is enabled
      *
@@ -67,13 +67,13 @@ public class PermissionsResolverServerListener extends ServerListener {
     public void onPluginDisable(PluginDisableEvent event) {
         Plugin plugin = event.getPlugin();
         String name = plugin.getDescription().getName();
-        
+
         if (plugin instanceof PermissionsProvider || "Permissions".equals(name) || "PermissionsEx".equals(name)) {
             manager.findResolver();
             manager.load();
         }
     }
-    
+
     public void register(Plugin plugin) {
         plugin.getServer().getPluginManager().registerEvent(Event.Type.PLUGIN_ENABLE,
                 this, Priority.Normal, plugin);
@@ -81,6 +81,5 @@ public class PermissionsResolverServerListener extends ServerListener {
                 this, Priority.Normal, plugin);
         manager.setServerListener(this);
     }
-    
-    
+
 }

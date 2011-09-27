@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.bukkit.migration;
 
@@ -32,40 +32,40 @@ import org.bukkit.Server;
 import org.bukkit.util.config.Configuration;
 
 public class FlatFilePermissionsResolver implements PermissionsResolver {
-    private Map<String,Set<String>> userPermissionsCache;
+    private Map<String, Set<String>> userPermissionsCache;
     private Set<String> defaultPermissionsCache;
-    private Map<String,Set<String>> userGroups;
-    
+    private Map<String, Set<String>> userGroups;
+
     protected File groupFile;
     protected File userFile;
-    
-    public static PermissionsResolver factory(Server server, Configuration config){
+
+    public static PermissionsResolver factory(Server server, Configuration config) {
         File groups = new File("perms_groups.txt");
-        File users  = new File("perms_users.txt");
-        
-        if(!groups.exists() || !users.exists()){
+        File users = new File("perms_users.txt");
+
+        if (!groups.exists() || !users.exists()) {
             return null;
         }
-        
+
         return new FlatFilePermissionsResolver(groups, users);
     }
-    
-    public FlatFilePermissionsResolver(){
+
+    public FlatFilePermissionsResolver() {
         this(new File("perms_groups.txt"), new File("perms_users.txt"));
     }
-    
+
     public FlatFilePermissionsResolver(File groupFile, File userFile) {
         this.groupFile = groupFile;
         this.userFile = userFile;
     }
-    
+
     @Deprecated
     public static boolean filesExists() {
         return (new File("perms_groups.txt")).exists() && (new File("perms_users.txt")).exists();
     }
-    
-    public Map<String,Set<String>> loadGroupPermissions() {
-        Map<String,Set<String>> userGroupPermissions = new HashMap<String,Set<String>>();
+
+    public Map<String, Set<String>> loadGroupPermissions() {
+        Map<String, Set<String>> userGroupPermissions = new HashMap<String, Set<String>>();
 
         FileReader input = null;
 
@@ -83,11 +83,11 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 } else if (line.charAt(0) == ';' || line.charAt(0) == '#') {
                     continue;
                 }
-                
+
                 String[] parts = line.split(":");
-                
+
                 String key = parts[0];
-                
+
                 if (parts.length > 1) {
                     String[] perms = parts[1].split(",");
 
@@ -105,17 +105,17 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
             } catch (IOException e2) {
             }
         }
-        
+
         return userGroupPermissions;
     }
-    
+
     public void load() {
-        userGroups = new HashMap<String,Set<String>>();
-        userPermissionsCache = new HashMap<String,Set<String>>();
+        userGroups = new HashMap<String, Set<String>>();
+        userPermissionsCache = new HashMap<String, Set<String>>();
         defaultPermissionsCache = new HashSet<String>();
 
-        Map<String,Set<String>> userGroupPermissions = loadGroupPermissions();
-        
+        Map<String, Set<String>> userGroupPermissions = loadGroupPermissions();
+
         if (userGroupPermissions.containsKey("default")) {
             defaultPermissionsCache = userGroupPermissions.get("default");
         }
@@ -129,7 +129,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
             String line;
             while ((line = buff.readLine()) != null) {
                 Set<String> permsCache = new HashSet<String>();
-                
+
                 line = line.trim();
 
                 // Blank line
@@ -138,11 +138,11 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 } else if (line.charAt(0) == ';' || line.charAt(0) == '#') {
                     continue;
                 }
-                
+
                 String[] parts = line.split(":");
-                
+
                 String key = parts[0];
-                
+
                 if (parts.length > 1) {
                     String[] groups = (parts[1] + ",default").split(",");
                     String[] perms = parts.length > 2 ? parts[2].split(",") : new String[0];
@@ -171,7 +171,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
             }
         }
     }
-    
+
     public boolean hasPermission(String player, String permission) {
         int dotPos = permission.lastIndexOf(".");
         if (dotPos > -1) {
@@ -179,19 +179,19 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 return true;
             }
         }
-        
+
         Set<String> perms = userPermissionsCache.get(player.toLowerCase());
         if (perms == null) {
             return defaultPermissionsCache.contains(permission)
                     || defaultPermissionsCache.contains("*");
         }
-        
-        return perms.contains("*") || perms.contains(permission);        
+
+        return perms.contains("*") || perms.contains(permission);
     }
 
     public boolean hasPermission(String worldName, String player, String permission) {
-        return hasPermission(player, "worlds." + worldName +  "." + permission)
-            || hasPermission(player, permission);
+        return hasPermission(player, "worlds." + worldName + "." + permission)
+                || hasPermission(player, permission);
     }
 
     public boolean inGroup(String player, String group) {
@@ -199,21 +199,21 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
         if (groups == null) {
             return false;
         }
-        
-        return groups.contains(group);        
+
+        return groups.contains(group);
     }
-    
+
     public String[] getGroups(String player) {
         Set<String> groups = userGroups.get(player.toLowerCase());
         if (groups == null) {
             return new String[0];
         }
-        
-        return groups.toArray(new String[groups.size()]);        
+
+        return groups.toArray(new String[groups.size()]);
     }
 
     public String getDetectionMessage() {
         return "perms_groups.txt and perms_users.txt detected! Using flat file permissions.";
     }
-    
+
 }

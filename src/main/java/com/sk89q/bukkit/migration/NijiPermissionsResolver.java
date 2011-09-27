@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.bukkit.migration;
 
@@ -31,29 +31,29 @@ import org.bukkit.util.config.Configuration;
 public class NijiPermissionsResolver implements PermissionsResolver {
     private Server server;
     private Permissions api;
-    
+
     public static PermissionsResolver factory(Server server, Configuration config) {
         PluginManager pluginManager = server.getPluginManager();
-        
+
         Plugin plugin = pluginManager.getPlugin("Permissions");
-        
+
         // Check if plugin is loaded and have Permissions interface
-        if(plugin == null || !(plugin instanceof Permissions)){
+        if (plugin == null || !(plugin instanceof Permissions)) {
             return null;
         }
-        
+
         // Check for fake permissions
-        if(config.getBoolean("ignore-nijiperms-bridges", true) && isFakeNijiPerms(plugin)){
+        if (config.getBoolean("ignore-nijiperms-bridges", true) && isFakeNijiPerms(plugin)) {
             return null;
         }
-        
-        return new NijiPermissionsResolver(server, (Permissions)plugin);
+
+        return new NijiPermissionsResolver(server, (Permissions) plugin);
     }
-    
+
     public void load() {
-        
+
     }
-    
+
     public NijiPermissionsResolver(Server server, Permissions plugin) {
         this.server = server;
         this.api = plugin;
@@ -88,7 +88,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         }
     }
 
-    @SuppressWarnings({ "static-access" })
+    @SuppressWarnings("static-access")
     public boolean inGroup(String name, String group) {
         try {
             Player player = server.getPlayer(name);
@@ -104,7 +104,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         }
     }
 
-    @SuppressWarnings({ "static-access" })
+    @SuppressWarnings("static-access")
     public String[] getGroups(String name) {
         try {
             Player player = server.getPlayer(name);
@@ -114,8 +114,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
                 groups = api.getHandler().getGroups(player.getWorld().getName(), player.getName());
             } catch (Throwable t) {
                 String group = api.Security.getGroup(player.getWorld().getName(), player.getName());
-                if (group != null)
-                    groups = new String[] {group};
+                if (group != null) groups = new String[] { group };
             }
             if (groups == null) {
                 return new String[0];
@@ -127,7 +126,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
             return new String[0];
         }
     }
-    
+
     public static class PluginAccessException extends Exception {
         private static final long serialVersionUID = 7044832912491608706L;
     }
@@ -143,10 +142,10 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         }
         return permsCommand.getPlugin().getDescription().getName().equals("Permissions");
     }
-    
-    public static boolean isFakeNijiPerms(Plugin plugin){
+
+    public static boolean isFakeNijiPerms(Plugin plugin) {
         PluginCommand permsCommand = Bukkit.getServer().getPluginCommand("permissions");
-        
+
         return !(permsCommand.getPlugin().equals(plugin));
     }
 

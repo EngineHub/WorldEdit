@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.bukkit.migration;
 
@@ -58,8 +58,8 @@ public class PermissionsResolverManager implements PermissionsResolver {
     private Configuration config;
     private String name;
     private Logger logger;
-        
-    protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[]{
+
+    protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[] {
         PluginPermissionsResolver.class,
         PermissionsExResolver.class,
         NijiPermissionsResolver.class,
@@ -81,19 +81,19 @@ public class PermissionsResolverManager implements PermissionsResolver {
         this.name = name;
         this.logger = logger;
         this.listener = new PermissionsResolverServerListener(this, plugin);
-        
+
         loadConfig(new File("wepif.yml"));
         findResolver();
     }
 
     public void findResolver() {
-        for (Class resolverClass : availableResolvers){
+        for (Class resolverClass : availableResolvers) {
             try {
                 Method factoryMethod = resolverClass.getMethod("factory", Server.class, Configuration.class);
-                
-                this.permissionResolver = (PermissionsResolver)factoryMethod.invoke(null, this.server, this.config);
-                
-                if(this.permissionResolver != null){
+
+                this.permissionResolver = (PermissionsResolver) factoryMethod.invoke(null, this.server, this.config);
+
+                if (this.permissionResolver != null) {
                     logger.info(name + ": " + this.permissionResolver.getDetectionMessage());
                     return;
                 }
@@ -105,12 +105,12 @@ public class PermissionsResolverManager implements PermissionsResolver {
         permissionResolver = new ConfigurationPermissionsResolver(config);
         logger.info(name + ": No known permissions plugin detected. Using configuration file for permissions.");
     }
-        
+
     public void setPluginPermissionsResolver(Plugin plugin) {
         if (!(plugin instanceof PermissionsProvider)) {
             return;
         }
-        
+
         permissionResolver = new PluginPermissionsResolver((PermissionsProvider) plugin, plugin);
         logger.info(name + ": Using plugin '" + plugin.getDescription().getName() + "' for permissions.");
     }
@@ -147,7 +147,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         config = new Configuration(file);
         config.load();
         List<String> keys = config.getKeys();
-            config.setHeader(CONFIG_HEADER);
+        config.setHeader(CONFIG_HEADER);
         if (!keys.contains("dinnerperms")) {
             config.setProperty("dinnerperms", config.getBoolean("dinner-perms", true));
             isUpdated = true;
@@ -156,7 +156,6 @@ public class PermissionsResolverManager implements PermissionsResolver {
             config.setProperty("ignore-nijiperms-bridges", true);
             isUpdated = true;
         }
-        
         if (keys.contains("dinner-perms")) {
             config.removeProperty("dinner-perms");
             isUpdated = true;
@@ -179,13 +178,13 @@ public class PermissionsResolverManager implements PermissionsResolver {
     void setServerListener(PermissionsResolverServerListener listener) {
         this.listener = listener;
     }
-    
+
     public static class MissingPluginException extends Exception {
         private static final long serialVersionUID = 7044832912491608706L;
     }
 
     public String getDetectionMessage() {
         return "Using WEPIF for permissions";
-    }    
+    }
 
 }

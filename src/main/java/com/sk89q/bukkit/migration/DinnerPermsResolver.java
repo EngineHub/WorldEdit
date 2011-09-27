@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.bukkit.migration;
 
@@ -35,15 +35,15 @@ public class DinnerPermsResolver implements PermissionsResolver {
     public DinnerPermsResolver(Server server) {
         this.server = server;
     }
-    
+
     public static PermissionsResolver factory(Server server, Configuration config) {
-        if(!config.getBoolean("dinnerperms", true)){
+        if (!config.getBoolean("dinnerperms", true)) {
             return null;
         }
-        
+
         return new DinnerPermsResolver(server);
-    }    
-    
+    }
+
     public void load() {
         // Permissions are already loaded
     }
@@ -97,6 +97,5 @@ public class DinnerPermsResolver implements PermissionsResolver {
     public String getDetectionMessage() {
         return "Using the Bukkit Permissions API.";
     }
-    
-    
+
 }
