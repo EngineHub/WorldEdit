@@ -28,28 +28,49 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
+import org.bukkit.Server;
+import org.bukkit.util.config.Configuration;
 
 public class FlatFilePermissionsResolver implements PermissionsResolver {
     private Map<String,Set<String>> userPermissionsCache;
     private Set<String> defaultPermissionsCache;
     private Map<String,Set<String>> userGroups;
     
-    public FlatFilePermissionsResolver() {
+    protected File groupFile;
+    protected File userFile;
+    
+    public static PermissionsResolver factory(Server server, Configuration config){
+        File groups = new File("perms_groups.txt");
+        File users  = new File("perms_users.txt");
+        
+        if(!groups.exists() || !users.exists()){
+            return null;
+        }
+        
+        return new FlatFilePermissionsResolver(groups, users);
     }
     
+    public FlatFilePermissionsResolver(){
+        this(new File("perms_groups.txt"), new File("perms_users.txt"));
+    }
+    
+    public FlatFilePermissionsResolver(File groupFile, File userFile) {
+        this.groupFile = groupFile;
+        this.userFile = userFile;
+    }
+    
+    @Deprecated
     public static boolean filesExists() {
-        return (new File("perms_groups.txt")).exists()
-                && (new File("perms_users.txt")).exists();
+        return (new File("perms_groups.txt")).exists() && (new File("perms_users.txt")).exists();
     }
     
     public Map<String,Set<String>> loadGroupPermissions() {
         Map<String,Set<String>> userGroupPermissions = new HashMap<String,Set<String>>();
 
-        File file = new File("perms_groups.txt");
         FileReader input = null;
 
         try {
-            input = new FileReader(file);
+            input = new FileReader(this.groupFile);
             BufferedReader buff = new BufferedReader(input);
 
             String line;
@@ -99,11 +120,10 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
             defaultPermissionsCache = userGroupPermissions.get("default");
         }
 
-        File file = new File("perms_users.txt");
         FileReader input = null;
 
         try {
-            input = new FileReader(file);
+            input = new FileReader(this.userFile);
             BufferedReader buff = new BufferedReader(input);
 
             String line;
@@ -191,4 +211,9 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
         
         return groups.toArray(new String[groups.size()]);        
     }
+
+    public String getDetectionMessage() {
+        return "perms_groups.txt and perms_users.txt detected! Using flat file permissions.";
+    }
+    
 }

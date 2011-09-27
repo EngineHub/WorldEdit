@@ -21,6 +21,7 @@ package com.sk89q.bukkit.migration;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.logging.Logger;
 import org.bukkit.Server;
@@ -52,12 +53,19 @@ public class PermissionsResolverManager implements PermissionsResolver {
             "\r\n";
 
     private Server server;
-    private PermissionsResolver perms;
+    private PermissionsResolver permissionResolver;
     private PermissionsResolverServerListener listener;
-    private Configuration permsConfig;
+    private Configuration config;
     private String name;
     private Logger logger;
-    protected boolean ignoreNijiPermsBridges;
+        
+    protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[]{
+        PluginPermissionsResolver.class,
+        PermissionsExResolver.class,
+        NijiPermissionsResolver.class,
+        DinnerPermsResolver.class,
+        FlatFilePermissionsResolver.class
+    };
 
     @Deprecated
     public PermissionsResolverManager(Configuration config, Server server, String name, Logger logger) {
@@ -72,104 +80,59 @@ public class PermissionsResolverManager implements PermissionsResolver {
         this.server = plugin.getServer();
         this.name = name;
         this.logger = logger;
-        new PermissionsResolverServerListener(this, plugin);
+        this.listener = new PermissionsResolverServerListener(this, plugin);
+        
         loadConfig(new File("wepif.yml"));
         findResolver();
     }
 
     public void findResolver() {
-        if (tryPluginPermissionsResolver()) return;
-        if (tryNijiPermissions()) return;
-        if (tryPermissionsEx()) return;
-        if (tryDinnerPerms()) return;
-        if (tryFlatFilePermissions()) return;
-        
-        perms = new ConfigurationPermissionsResolver(permsConfig);
-        logger.info(name + ": No known permissions plugin detected. Using configuration file for permissions.");
-    }
-    
-    private boolean tryNijiPermissions() {
-        try {
-            perms = new NijiPermissionsResolver(server, ignoreNijiPermsBridges);
-            logger.info(name + ": Permissions plugin detected! Using Permissions plugin for permissions.");
-            return true;
-        } catch (Throwable e) {
-            return false;
-        }
-    }
-    
-    private boolean tryPermissionsEx() {
-        try {
-            perms = new PermissionsExResolver(server);
-            logger.info(name + ": PermissionsEx detected! Using PermissionsEx for permissions.");
-            return true;
-        } catch (Throwable e) {
-            return false;
-        }
-    }
-    
-    private boolean tryFlatFilePermissions() {
-        if (FlatFilePermissionsResolver.filesExists()) {
-            perms = new FlatFilePermissionsResolver();
-            logger.info(name + ": perms_groups.txt and perms_users.txt detected! Using flat file permissions.");
-            return true;
-        }
-        
-        return false;
-    }
-    
-    private boolean tryPluginPermissionsResolver() {
-        for (Plugin plugin : server.getPluginManager().getPlugins()) {
-            if (plugin instanceof PermissionsProvider) {
-                perms = new PluginPermissionsResolver(
-                        (PermissionsProvider) plugin);
-                logger.info(name + ": Using plugin '"
-                        + plugin.getDescription().getName() + "' for permissions.");
-                return true;
+        for (Class resolverClass : availableResolvers){
+            try {
+                Method factoryMethod = resolverClass.getMethod("factory", Server.class, Configuration.class);
+                
+                this.permissionResolver = (PermissionsResolver)factoryMethod.invoke(null, this.server, this.config);
+                
+                if(this.permissionResolver != null){
+                    logger.info(name + ": " + this.permissionResolver.getDetectionMessage());
+                    return;
+                }
+            } catch (Throwable e) {
+                continue;
             }
         }
-        
-        return false;
-    }
 
-    private boolean tryDinnerPerms() {
-        if (!permsConfig.getBoolean("dinnerperms", true)) {
-            return false;
-        }
-        perms = new DinnerPermsResolver(server);
-        logger.info(name + ": Using the Bukkit Permissions API.");
-        return true;
+        permissionResolver = new ConfigurationPermissionsResolver(config);
+        logger.info(name + ": No known permissions plugin detected. Using configuration file for permissions.");
     }
-    
+        
     public void setPluginPermissionsResolver(Plugin plugin) {
         if (!(plugin instanceof PermissionsProvider)) {
             return;
         }
         
-        perms = new PluginPermissionsResolver(
-                (PermissionsProvider) plugin);
-        logger.info(name + ": Using plugin '"
-                + plugin.getDescription().getName() + "' for permissions.");
+        permissionResolver = new PluginPermissionsResolver((PermissionsProvider) plugin, plugin);
+        logger.info(name + ": Using plugin '" + plugin.getDescription().getName() + "' for permissions.");
     }
 
     public void load() {
-        perms.load();
+        permissionResolver.load();
     }
 
     public boolean hasPermission(String name, String permission) {
-        return perms.hasPermission(name, permission);
+        return permissionResolver.hasPermission(name, permission);
     }
 
     public boolean hasPermission(String worldName, String name, String permission) {
-        return perms.hasPermission(worldName, name, permission);
+        return permissionResolver.hasPermission(worldName, name, permission);
     }
 
     public boolean inGroup(String player, String group) {
-        return perms.inGroup(player, group);
+        return permissionResolver.inGroup(player, group);
     }
 
     public String[] getGroups(String player) {
-        return perms.getGroups(player);
+        return permissionResolver.getGroups(player);
     }
 
     private boolean loadConfig(File file) {
@@ -181,30 +144,30 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 e.printStackTrace();
             }
         }
-        permsConfig = new Configuration(file);
-        permsConfig.load();
-        List<String> keys = permsConfig.getKeys();
-            permsConfig.setHeader(CONFIG_HEADER);
+        config = new Configuration(file);
+        config.load();
+        List<String> keys = config.getKeys();
+            config.setHeader(CONFIG_HEADER);
         if (!keys.contains("dinnerperms")) {
-            permsConfig.setProperty("dinnerperms", permsConfig.getBoolean("dinner-perms", true));
+            config.setProperty("dinnerperms", config.getBoolean("dinner-perms", true));
             isUpdated = true;
         }
         if (!keys.contains("ignore-nijiperms-bridges")) {
-            permsConfig.setProperty("ignore-nijiperms-bridges", true);
+            config.setProperty("ignore-nijiperms-bridges", true);
             isUpdated = true;
         }
-        ignoreNijiPermsBridges = permsConfig.getBoolean("ignore-nijiperms-bridges", true);
+        
         if (keys.contains("dinner-perms")) {
-            permsConfig.removeProperty("dinner-perms");
+            config.removeProperty("dinner-perms");
             isUpdated = true;
         }
         if (!keys.contains("permissions")) {
-            ConfigurationPermissionsResolver.generateDefaultPerms(permsConfig);
+            ConfigurationPermissionsResolver.generateDefaultPerms(config);
             isUpdated = true;
         }
         if (isUpdated) {
             logger.info("WEPIF: Updated config file");
-            permsConfig.save();
+            config.save();
         }
         return isUpdated;
     }
@@ -220,5 +183,9 @@ public class PermissionsResolverManager implements PermissionsResolver {
     public static class MissingPluginException extends Exception {
         private static final long serialVersionUID = 7044832912491608706L;
     }
+
+    public String getDetectionMessage() {
+        return "Using WEPIF for permissions";
+    }    
 
 }

@@ -142,4 +142,9 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
         
         return groups.toArray(new String[groups.size()]);        
     }
+
+    public String getDetectionMessage() {
+        return "No known permissions plugin detected. Using configuration file for permissions.";
+    }
+    
 }
