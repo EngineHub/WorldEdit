@@ -19,12 +19,37 @@
 
 package com.sk89q.bukkit.migration;
 
+import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.util.config.Configuration;
+
 public class PluginPermissionsResolver implements PermissionsResolver {
     
     protected PermissionsProvider resolver;
+    protected Plugin plugin;
     
-    public PluginPermissionsResolver(PermissionsProvider resolver) {
+    public static PermissionsResolver factory(Server server, Configuration config){
+        // Looking for service
+        RegisteredServiceProvider<PermissionsProvider> serviceProvider = server.getServicesManager().getRegistration(PermissionsProvider.class);
+        
+        if(serviceProvider != null){
+            return new PluginPermissionsResolver(serviceProvider.getProvider(), serviceProvider.getPlugin());
+        }
+        
+        // Looking for plugin
+        for (Plugin plugin : server.getPluginManager().getPlugins()) {
+            if(plugin instanceof PermissionsProvider){
+                return new PluginPermissionsResolver((PermissionsProvider)plugin, plugin);
+            }
+        }        
+        
+        return null;
+    }
+    
+    public PluginPermissionsResolver(PermissionsProvider resolver, Plugin permissionsPlugin) {
         this.resolver = resolver;
+        this.plugin = permissionsPlugin;    
     }
 
     public void load() {
@@ -46,4 +71,8 @@ public class PluginPermissionsResolver implements PermissionsResolver {
         return resolver.getGroups(player);
     }
 
+    public String getDetectionMessage() {
+        return "Using plugin '" + this.plugin.getDescription().getName() + "' for permissions.";
+    }
+    
 }

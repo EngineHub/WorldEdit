@@ -25,6 +25,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.util.config.Configuration;
 
 public class DinnerPermsResolver implements PermissionsResolver {
 
@@ -34,7 +35,15 @@ public class DinnerPermsResolver implements PermissionsResolver {
     public DinnerPermsResolver(Server server) {
         this.server = server;
     }
-
+    
+    public static PermissionsResolver factory(Server server, Configuration config) {
+        if(!config.getBoolean("dinnerperms", true)){
+            return null;
+        }
+        
+        return new DinnerPermsResolver(server);
+    }    
+    
     public void load() {
         // Permissions are already loaded
     }
@@ -78,4 +87,10 @@ public class DinnerPermsResolver implements PermissionsResolver {
         }
         return groupNames.toArray(new String[0]);
     }
+
+    public String getDetectionMessage() {
+        return "Using the Bukkit Permissions API.";
+    }
+    
+    
 }

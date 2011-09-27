@@ -25,17 +25,25 @@ import org.bukkit.entity.Player;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 
-import com.sk89q.bukkit.migration.PermissionsResolverManager.MissingPluginException;
+import org.bukkit.util.config.Configuration;
 
 public class PermissionsExResolver implements PermissionsResolver {
     private final PermissionManager manager;
     private final Server server;
     
-    public PermissionsExResolver(Server server) throws MissingPluginException {
+    public static PermissionsResolver factory(Server server, Configuration config){
+        PermissionManager manager = server.getServicesManager().load(PermissionManager.class);
+        
+        if(manager == null){
+            return null;
+        }
+        
+        return new PermissionsExResolver(server, manager);
+    }
+    
+    public PermissionsExResolver(Server server, PermissionManager manager) {
         this.server = server;
-        manager = server.getServicesManager().load(PermissionManager.class);
-        if (manager == null)
-            throw new MissingPluginException();
+        this.manager = manager;
     }
     
     public void load() {
@@ -67,4 +75,7 @@ public class PermissionsExResolver implements PermissionsResolver {
         return user.getGroupsNames();
     }
 
+    public String getDetectionMessage() {
+        return "PermissionsEx detected! Using PermissionsEx for permissions.";
+    }
 }
