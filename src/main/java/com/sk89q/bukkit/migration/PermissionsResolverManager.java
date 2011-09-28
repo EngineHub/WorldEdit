@@ -59,6 +59,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     private String name;
     private Logger logger;
 
+    @SuppressWarnings("unchecked")
     protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[] {
         PluginPermissionsResolver.class,
         PermissionsExResolver.class,
@@ -87,7 +88,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     }
 
     public void findResolver() {
-        for (Class resolverClass : availableResolvers) {
+        for (Class<? extends PermissionsResolver> resolverClass : availableResolvers) {
             try {
                 Method factoryMethod = resolverClass.getMethod("factory", Server.class, Configuration.class);
 
