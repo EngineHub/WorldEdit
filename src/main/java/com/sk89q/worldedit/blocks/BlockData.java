@@ -695,25 +695,25 @@ public final class BlockData {
      */
     public static int nextClothColor(int data) {
         switch (data) {
-            case 0: return 8;
-            case 8: return 7;
-            case 7: return 15;
-            case 15: return 12;
-            case 12: return 14;
-            case 14: return 1;
-            case 1: return 4;
-            case 4: return 5;
-            case 5: return 13;
-            case 13: return 9;
-            case 9: return 3;
-            case 3: return 11;
-            case 11: return 10;
-            case 10: return 2;
-            case 2: return 6;
-            case 6: return 0;
+            case ClothColor.ID.WHITE: return ClothColor.ID.LIGHT_GRAY;
+            case ClothColor.ID.LIGHT_GRAY: return ClothColor.ID.GRAY;
+            case ClothColor.ID.GRAY: return ClothColor.ID.BLACK;
+            case ClothColor.ID.BLACK: return ClothColor.ID.BROWN;
+            case ClothColor.ID.BROWN: return ClothColor.ID.RED;
+            case ClothColor.ID.RED: return ClothColor.ID.ORANGE;
+            case ClothColor.ID.ORANGE: return ClothColor.ID.YELLOW;
+            case ClothColor.ID.YELLOW: return ClothColor.ID.LIGHT_GREEN;
+            case ClothColor.ID.LIGHT_GREEN: return ClothColor.ID.DARK_GREEN;
+            case ClothColor.ID.DARK_GREEN: return ClothColor.ID.CYAN;
+            case ClothColor.ID.CYAN: return ClothColor.ID.LIGHT_BLUE;
+            case ClothColor.ID.LIGHT_BLUE: return ClothColor.ID.BLUE;
+            case ClothColor.ID.BLUE: return ClothColor.ID.PURPLE;
+            case ClothColor.ID.PURPLE: return ClothColor.ID.MAGENTA;
+            case ClothColor.ID.MAGENTA: return ClothColor.ID.PINK;
+            case ClothColor.ID.PINK: return ClothColor.ID.WHITE;
         }
     
-        return 0;
+        return ClothColor.ID.WHITE;
     }
 
     /**
@@ -724,24 +724,24 @@ public final class BlockData {
      */
     public static int prevClothColor(int data) {
         switch (data) {
-            case 8: return 0;
-            case 7: return 8;
-            case 15: return 7;
-            case 12: return 15;
-            case 14: return 12;
-            case 1: return 14;
-            case 4: return 1;
-            case 5: return 4;
-            case 13: return 5;
-            case 9: return 13;
-            case 3: return 9;
-            case 11: return 3;
-            case 10: return 11;
-            case 2: return 10;
-            case 6: return 2;
-            case 0: return 6;
+            case ClothColor.ID.LIGHT_GRAY: return ClothColor.ID.WHITE;
+            case ClothColor.ID.GRAY: return ClothColor.ID.LIGHT_GRAY;
+            case ClothColor.ID.BLACK: return ClothColor.ID.GRAY;
+            case ClothColor.ID.BROWN: return ClothColor.ID.BLACK;
+            case ClothColor.ID.RED: return ClothColor.ID.BROWN;
+            case ClothColor.ID.ORANGE: return ClothColor.ID.RED;
+            case ClothColor.ID.YELLOW: return ClothColor.ID.ORANGE;
+            case ClothColor.ID.LIGHT_GREEN: return ClothColor.ID.YELLOW;
+            case ClothColor.ID.DARK_GREEN: return ClothColor.ID.LIGHT_GREEN;
+            case ClothColor.ID.CYAN: return ClothColor.ID.DARK_GREEN;
+            case ClothColor.ID.LIGHT_BLUE: return ClothColor.ID.CYAN;
+            case ClothColor.ID.BLUE: return ClothColor.ID.LIGHT_BLUE;
+            case ClothColor.ID.PURPLE: return ClothColor.ID.BLUE;
+            case ClothColor.ID.MAGENTA: return ClothColor.ID.PURPLE;
+            case ClothColor.ID.PINK: return ClothColor.ID.MAGENTA;
+            case ClothColor.ID.WHITE: return ClothColor.ID.PINK;
         }
     
-        return 0;
+        return ClothColor.ID.WHITE;
     }
 }
