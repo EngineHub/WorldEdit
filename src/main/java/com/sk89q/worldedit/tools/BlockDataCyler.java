@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.tools;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.data.BlockData;
+import com.sk89q.worldedit.blocks.BlockData;
 
 /**
  * A mode that cycles the data values of supported blocks.

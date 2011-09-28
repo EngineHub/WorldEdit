@@ -17,14 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.data;
+package com.sk89q.worldedit.blocks;
 
 import java.util.TreeSet;
 
 import org.junit.*;
 
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
-import com.sk89q.worldedit.blocks.BlockID;
 
 import static org.junit.Assert.*;
 

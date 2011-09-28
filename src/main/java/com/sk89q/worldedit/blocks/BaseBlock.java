@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.blocks;
 
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
-import com.sk89q.worldedit.data.BlockData;
 
 /**
  * Represents a block.
