@@ -909,7 +909,7 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.WOODEN_PRESSURE_PLATE, PlayerDirection.DOWN);
         // redstone torches: see torches
         for (int offset = 0; offset <= 8; offset += 8) {
-            addCardinals(BlockID.STONE_BUTTON, offset+2, offset+3, offset+1, offset+4);
+            addCardinals(BlockID.STONE_BUTTON, offset+4, offset+1, offset+3, offset+2);
         }
         nonDataAttachments.put(BlockID.REED, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.CAKE_BLOCK, PlayerDirection.DOWN);
@@ -921,6 +921,7 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.PUMPKIN_STEM, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.MELON_STEM, PlayerDirection.DOWN);
         // vines are complicated, but I'll list the single-attachment variants anyway
+        dataAttachments.put(attachmentKey(BlockID.VINE, 0), PlayerDirection.UP);
         addCardinals(BlockID.VINE, 1, 2, 4, 8);
         //nonDataAttachments.put(BlockID.NETHER_WART, PlayerDirection.DOWN);
     }
