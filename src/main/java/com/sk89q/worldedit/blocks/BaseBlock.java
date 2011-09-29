@@ -133,6 +133,13 @@ public class BaseBlock {
     }
 
     @Override
+    public int hashCode() {
+        int ret = type << 3;
+        if (data != (byte)-1) ret |= data;
+        return ret;
+    }
+
+    @Override
     public String toString() {
         return "BaseBlock id: " + getType() + " with damage: " + getData();
     }

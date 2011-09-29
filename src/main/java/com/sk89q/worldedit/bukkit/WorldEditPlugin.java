@@ -20,10 +20,14 @@
 package com.sk89q.worldedit.bukkit;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.jar.JarFile;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -170,9 +174,16 @@ public class WorldEditPlugin extends JavaPlugin {
     protected void createDefaultConfiguration(String name) {
         File actual = new File(getDataFolder(), name);
         if (!actual.exists()) {
-            
             InputStream input =
-                    WorldEdit.class.getResourceAsStream("/defaults/" + name);
+                    null;
+            try {
+                JarFile file = new JarFile(getFile());
+                ZipEntry copy = file.getEntry("defaults" + File.separator + name);
+                if (copy == null) throw new FileNotFoundException();
+                input = file.getInputStream(copy);
+            } catch (IOException e) {
+                logger.severe(getDescription().getName() + ": Unable to read default configuration: " + name);
+            }
             if (input != null) {
                 FileOutputStream output = null;
 
