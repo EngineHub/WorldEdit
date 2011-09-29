@@ -28,6 +28,7 @@ import java.util.Random;
 import java.util.Set;
 
 import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.PlayerDirection;
 
 /**
  * Block types.
@@ -870,4 +871,83 @@ public enum BlockType {
         }
     }
 
+    private static final Map<Integer, PlayerDirection> dataAttachments = new HashMap<Integer, PlayerDirection>();
+    private static final Map<Integer, PlayerDirection> nonDataAttachments = new HashMap<Integer, PlayerDirection>();
+    static {
+        nonDataAttachments.put(BlockID.SAPLING, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.POWERED_RAIL, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.DETECTOR_RAIL, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.LONG_GRASS, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.DEAD_BUSH, PlayerDirection.DOWN);
+        for (int offset = 0; offset <= 8; offset += 8) {
+            dataAttachments.put(attachmentKey(BlockID.PISTON_EXTENSION, offset+0), PlayerDirection.UP);
+            dataAttachments.put(attachmentKey(BlockID.PISTON_EXTENSION, offset+1), PlayerDirection.DOWN);
+            addCardinals(BlockID.PISTON_EXTENSION, offset+2, offset+5, offset+3, offset+4);
+        }
+        nonDataAttachments.put(BlockID.YELLOW_FLOWER, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.RED_FLOWER, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.BROWN_MUSHROOM, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.RED_MUSHROOM, PlayerDirection.DOWN);
+        for (int blockId : new int[] { BlockID.TORCH, BlockID.REDSTONE_TORCH_ON, BlockID.REDSTONE_TORCH_OFF }) {
+            dataAttachments.put(attachmentKey(blockId, 5), PlayerDirection.DOWN);
+            addCardinals(blockId, 4, 1, 3, 2);
+        }
+        nonDataAttachments.put(BlockID.REDSTONE_WIRE, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.CROPS, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.SIGN_POST, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.WOODEN_DOOR, PlayerDirection.DOWN);
+        addCardinals(BlockID.LADDER, 2, 5, 3, 4);
+        nonDataAttachments.put(BlockID.MINECART_TRACKS, PlayerDirection.DOWN);
+        addCardinals(BlockID.WALL_SIGN, 2, 5, 3, 4);
+        for (int offset = 0; offset <= 8; offset += 8) {
+            addCardinals(BlockID.LEVER, offset+4, offset+1, offset+3, offset+2);
+            dataAttachments.put(attachmentKey(BlockID.LEVER, offset+5), PlayerDirection.DOWN);
+            dataAttachments.put(attachmentKey(BlockID.LEVER, offset+6), PlayerDirection.DOWN);
+        }
+        nonDataAttachments.put(BlockID.STONE_PRESSURE_PLATE, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.IRON_DOOR, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.WOODEN_PRESSURE_PLATE, PlayerDirection.DOWN);
+        // redstone torches: see torches
+        for (int offset = 0; offset <= 8; offset += 8) {
+            addCardinals(BlockID.STONE_BUTTON, offset+2, offset+3, offset+1, offset+4);
+        }
+        nonDataAttachments.put(BlockID.REED, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.CAKE_BLOCK, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.REDSTONE_REPEATER_OFF, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.REDSTONE_REPEATER_ON, PlayerDirection.DOWN);
+        for (int offset = 0; offset <= 4; offset += 4) {
+            addCardinals(BlockID.TRAP_DOOR, offset+0, offset+3, offset+1, offset+2);
+        }
+        nonDataAttachments.put(BlockID.PUMPKIN_STEM, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.MELON_STEM, PlayerDirection.DOWN);
+        // vines are complicated, but I'll list the single-attachment variants anyway
+        addCardinals(BlockID.VINE, 1, 2, 4, 8);
+        //nonDataAttachments.put(BlockID.NETHER_WART, PlayerDirection.DOWN);
+    }
+
+    /**
+     * Returns the direction to the block(B) this block(A) is attached to.
+     * Attached means that if block B is destroyed, block A will pop off. 
+     *
+     * @param type The block id of block A
+     * @param data The data value of block A
+     * @return direction to block B
+     */
+    public static PlayerDirection getAttachment(int type, int data) {
+        PlayerDirection direction = nonDataAttachments.get(type);
+        if (direction != null) return direction;
+
+        return dataAttachments.get(attachmentKey(type, data));
+    }
+
+    private static int attachmentKey(int type, int data) {
+        return (type << 4) | (data & 0xf);
+    }
+
+    private static void addCardinals(int type, int west, int north, int east, int south) {
+        dataAttachments.put(attachmentKey(type, west), PlayerDirection.WEST);
+        dataAttachments.put(attachmentKey(type, north), PlayerDirection.NORTH);
+        dataAttachments.put(attachmentKey(type, east), PlayerDirection.EAST);
+        dataAttachments.put(attachmentKey(type, south), PlayerDirection.SOUTH);
+    }
 }
