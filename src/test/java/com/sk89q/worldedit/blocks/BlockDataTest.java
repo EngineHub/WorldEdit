@@ -64,6 +64,13 @@ public class BlockDataTest {
         }
     }
 
+    private static final TreeSet<Integer> datasTemplate = new TreeSet<Integer>();
+    static {
+        for (int data = 0; data < 16; ++data) {
+            datasTemplate.add(data);
+        }
+    }
+
     @Test
     public void testCycle() {
         // Test monotony
@@ -84,35 +91,14 @@ public class BlockDataTest {
             }
         }
 
-        // Test cyclicity
-        final TreeSet<Integer> datasTemplate = new TreeSet<Integer>();
-        for (int data = 0; data < 16; ++data) {
-            datasTemplate.add(data);
-        }
+        // Test cyclicity forwards
+        testCycle(1);
 
-        // Forwards...
-        for (int type = 0; type < 256; ++type) {
-            @SuppressWarnings("unchecked")
-            final TreeSet<Integer> datas = (TreeSet<Integer>) datasTemplate.clone();
-            while (!datas.isEmpty()) {
-                final int start = datas.pollFirst();
-                String message = type+"/"+start;
-                int current = start;
-                boolean first = true;
-                while (true) {
-                    current = BlockData.cycle(type, current, 1);
-                    if (first && current == -1) break;
-                    first = false;
-                    message += "->"+current;
-                    assertTrue(message, current >= 0);
-                    assertTrue(message, current < 16);
-                    if (current == start) break;
-                    assertTrue(message, datas.remove(current));
-                }
-            }
-        }
-        
         // ...and backwards
+        testCycle(-1);
+    }
+
+    private static void testCycle(final int increment) {
         for (int type = 0; type < 256; ++type) {
             @SuppressWarnings("unchecked")
             final TreeSet<Integer> datas = (TreeSet<Integer>) datasTemplate.clone();
@@ -122,7 +108,7 @@ public class BlockDataTest {
                 int current = start;
                 boolean first = true;
                 while (true) {
-                    current = BlockData.cycle(type, current, -1);
+                    current = BlockData.cycle(type, current, increment);
                     if (first && current == -1) break;
                     first = false;
                     message += "->"+current;
@@ -135,4 +121,3 @@ public class BlockDataTest {
         }
     }
 }
-
