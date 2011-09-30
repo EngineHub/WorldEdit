@@ -911,6 +911,7 @@ public enum BlockType {
         for (int offset = 0; offset <= 8; offset += 8) {
             addCardinals(BlockID.STONE_BUTTON, offset+4, offset+1, offset+3, offset+2);
         }
+        nonDataAttachments.put(BlockID.CACTUS, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.REED, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.CAKE_BLOCK, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.REDSTONE_REPEATER_OFF, PlayerDirection.DOWN);
