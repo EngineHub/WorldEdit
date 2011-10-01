@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
 import java.io.File;
 import java.util.HashSet;
@@ -32,9 +34,48 @@ import java.util.Set;
  */
 public abstract class LocalConfiguration {
     protected static final int[] defaultDisallowedBlocks = new int[] {
-                6, 7, 14, 15, 16, 21, 22, 23, 24, 25, 26, 27, 28, 29, 39, 31,
-                32, 33, 34, 36, 37, 38, 39, 40, 46, 50, 51, 56, 59, 69, 73, 74,
-                75, 76, 77, 81, 83
+                // dangerous stuff (physics/drops items)
+                BlockID.SAPLING,
+                BlockID.BED,
+                BlockID.POWERED_RAIL,
+                BlockID.DETECTOR_RAIL,
+                BlockID.LONG_GRASS,
+                BlockID.DEAD_BUSH,
+                BlockID.PISTON_EXTENSION,
+                BlockID.PISTON_MOVING_PIECE,
+                BlockID.YELLOW_FLOWER,
+                BlockID.RED_FLOWER,
+                BlockID.BROWN_MUSHROOM,
+                BlockID.RED_MUSHROOM,
+                BlockID.TNT,
+                BlockID.TORCH,
+                BlockID.FIRE,
+                BlockID.REDSTONE_WIRE,
+                BlockID.CROPS,
+                BlockID.MINECART_TRACKS,
+                BlockID.LEVER,
+                BlockID.REDSTONE_TORCH_OFF,
+                BlockID.REDSTONE_TORCH_ON,
+                BlockID.REDSTONE_REPEATER_OFF,
+                BlockID.REDSTONE_REPEATER_ON,
+                BlockID.STONE_BUTTON,
+                BlockID.CACTUS,
+                BlockID.REED,
+                // ores and stuff
+                BlockID.BEDROCK,
+                BlockID.GOLD_ORE,
+                BlockID.IRON_ORE,
+                BlockID.COAL_ORE,
+                BlockID.DIAMOND_ORE,
+
+                // @TODO rethink what should be disallowed by default
+                // Gold and iron can be legitimately obtained, but were set to disallowed by
+                // default. Diamond and coal can't be legitimately obtained. Sponges,
+                // portals, snow, and locked chests also can't, but are allowed. None of
+                // these blocks poses any immediate threat. Most of the blocks (in the first
+                // section) are disallowed because people will accidentally set a huge area
+                // of them, triggering physics and a million item drops, lagging the server.
+                // Doors also have this effect, but are not disallowed.
             };
 
     public boolean profile = false;
@@ -48,20 +89,19 @@ public abstract class LocalConfiguration {
     public int maxBrushRadius = 6;
     public boolean logCommands = false;
     public boolean registerHelp = true;
-    public int wandItem = 271;
+    public int wandItem = ItemID.WOOD_AXE;
     public boolean superPickaxeDrop = true;
     public boolean superPickaxeManyDrop = true;
     public boolean noDoubleSlash = false;
     public boolean useInventory = false;
     public boolean useInventoryOverride = false;
-    public int navigationWand = 345;
+    public int navigationWand = ItemID.COMPASS;
     public int navigationWandMaxDistance = 50;
     public int scriptTimeout = 3000;
     public Set<Integer> allowedDataCycleBlocks = new HashSet<Integer>();
     public String saveDir = "schematics";
     public String scriptsDir = "craftscripts";
     public boolean showFirstUseVersion = true;
-    public boolean useBlockEvents = false;
     
     /**
      * Loads the configuration.

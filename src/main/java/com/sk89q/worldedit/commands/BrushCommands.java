@@ -50,14 +50,14 @@ import com.sk89q.worldedit.tools.brushes.SphereBrush;
  */
 public class BrushCommands {
     @Command(
-        aliases = {"sphere", "s"},
+        aliases = { "sphere", "s" },
         usage = "<block> [radius]",
         flags = "h",
         desc = "Choose the sphere brush",
         min = 1,
         max = 2
     )
-    @CommandPermissions({"worldedit.brush.sphere"})
+    @CommandPermissions("worldedit.brush.sphere")
     public static void sphereBrush(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -87,14 +87,14 @@ public class BrushCommands {
     }
 
     @Command(
-        aliases = {"cylinder", "cyl", "c"},
+        aliases = { "cylinder", "cyl", "c" },
         usage = "<block> [radius] [height]",
         flags = "h",
         desc = "Choose the cylinder brush",
         min = 1,
         max = 3
     )
-    @CommandPermissions({"worldedit.brush.cylinder"})
+    @CommandPermissions("worldedit.brush.cylinder")
     public static void cylinderBrush(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -131,14 +131,14 @@ public class BrushCommands {
     }
 
     @Command(
-        aliases = {"clipboard", "copy"},
+        aliases = { "clipboard", "copy" },
         usage = "",
         flags = "a",
         desc = "Choose the clipboard brush",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.brush.clipboard"})
+    @CommandPermissions("worldedit.brush.clipboard")
     public static void clipboardBrush(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -169,14 +169,14 @@ public class BrushCommands {
     }
 
     @Command(
-        aliases = {"smooth"},
+        aliases = { "smooth" },
         usage = "[size] [iterations]",
         flags = "n",
         desc = "Choose the terrain softener brush",
         min = 0,
         max = 2
     )
-    @CommandPermissions({"worldedit.brush.smooth"})
+    @CommandPermissions("worldedit.brush.smooth")
     public static void smoothBrush(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -201,13 +201,13 @@ public class BrushCommands {
     }
     
     @Command(
-        aliases = {"ex", "extinguish"},
+        aliases = { "ex", "extinguish" },
         usage = "[radius]",
         desc = "Shortcut fire extinguisher brush",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.brush.ex"})
+    @CommandPermissions("worldedit.brush.ex")
     public static void extinguishBrush(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

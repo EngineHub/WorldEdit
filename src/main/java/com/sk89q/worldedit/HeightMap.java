@@ -19,6 +19,7 @@ package com.sk89q.worldedit;
 */
 
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.regions.Region;
 
@@ -43,7 +44,17 @@ public class HeightMap {
      * @param session
      * @param region
      */
+    public HeightMap(EditSession session, Region region) {
+        this(session, region, false);
+    }
 
+    /**
+     * Constructs the HeightMap
+     * 
+     * @param session
+     * @param region
+     * @param naturalOnly ignore non-natural blocks
+     */
     public HeightMap(EditSession session, Region region, boolean naturalOnly) {
         this.session = session;
         this.region = region;
@@ -78,8 +89,9 @@ public class HeightMap {
         int[] newData = new int[data.length];
         System.arraycopy(data, 0, newData, 0, data.length);
 
-        for (int i = 0; i < iterations; ++i)
+        for (int i = 0; i < iterations; ++i) {
             newData = filter.filter(newData, width, height);
+        }
 
         return apply(newData);
     }
@@ -99,7 +111,7 @@ public class HeightMap {
         int originZ = minY.getBlockZ();
 
         int maxY = region.getMaximumPoint().getBlockY();
-        BaseBlock fillerAir = new BaseBlock(0);
+        BaseBlock fillerAir = new BaseBlock(BlockID.AIR);
 
         int blocksChanged = 0;
 
@@ -125,7 +137,8 @@ public class HeightMap {
                     BaseBlock existing = session.getBlock(new Vector(X, curHeight, Z));
 
                     // Skip water/lava
-                    if (existing.getType() < 8 || existing.getType() > 11) {
+                    if (existing.getType() != BlockID.WATER && existing.getType() != BlockID.STATIONARY_WATER
+                            && existing.getType() != BlockID.LAVA && existing.getType() != BlockID.STATIONARY_LAVA) {
                         session.setBlock(new Vector(X, newHeight, Z), existing);
                         ++blocksChanged;
 

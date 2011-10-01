@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.bukkit.migration;
 
@@ -28,11 +28,19 @@ import org.bukkit.plugin.Plugin;
 
 public class PermissionsResolverServerListener extends ServerListener {
     private PermissionsResolverManager manager;
-    
+
+    @Deprecated
     public PermissionsResolverServerListener(PermissionsResolverManager manager) {
         this.manager = manager;
     }
-    
+
+    public PermissionsResolverServerListener(PermissionsResolverManager manager, Plugin plugin) {
+        this.manager = manager;
+        if (!manager.hasServerListener()) {
+            register(plugin);
+        }
+    }
+
     /**
      * Called when a plugin is enabled
      *
@@ -44,9 +52,7 @@ public class PermissionsResolverServerListener extends ServerListener {
         String name = plugin.getDescription().getName();
         if (plugin instanceof PermissionsProvider) {
             manager.setPluginPermissionsResolver(plugin);
-        } else if ((name.equalsIgnoreCase("Permissions") &&
-                NijiPermissionsResolver.checkRealNijiPerms(manager.ignoreNijiPermsBridges)) ||
-                name.equalsIgnoreCase("PermissionsEx")) {
+        } else if ("Permissions".equals(name) || "PermissionsEx".equals(name)) {
             manager.findResolver();
             manager.load();
         }
@@ -61,20 +67,19 @@ public class PermissionsResolverServerListener extends ServerListener {
     public void onPluginDisable(PluginDisableEvent event) {
         Plugin plugin = event.getPlugin();
         String name = plugin.getDescription().getName();
-        
-        if (plugin instanceof PermissionsProvider
-                || (name.equalsIgnoreCase("Permissions") &&
-                NijiPermissionsResolver.checkRealNijiPerms(manager.ignoreNijiPermsBridges)) ||
-                name.equalsIgnoreCase("PermissionsEx")) {
+
+        if (plugin instanceof PermissionsProvider || "Permissions".equals(name) || "PermissionsEx".equals(name)) {
             manager.findResolver();
             manager.load();
         }
     }
-    
+
     public void register(Plugin plugin) {
         plugin.getServer().getPluginManager().registerEvent(Event.Type.PLUGIN_ENABLE,
                 this, Priority.Normal, plugin);
         plugin.getServer().getPluginManager().registerEvent(Event.Type.PLUGIN_DISABLE,
                 this, Priority.Normal, plugin);
+        manager.setServerListener(this);
     }
+
 }

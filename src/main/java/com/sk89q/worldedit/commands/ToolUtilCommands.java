@@ -34,13 +34,13 @@ import com.sk89q.worldedit.patterns.Pattern;
  */
 public class ToolUtilCommands {
     @Command(
-        aliases = {"/", ","},
+        aliases = { "/", "," },
         usage = "[on|off]",
         desc = "Toggle the super pickaxe pickaxe function",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.superpickaxe"})
+    @CommandPermissions("worldedit.superpickaxe")
     public static void togglePickaxe(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -67,10 +67,10 @@ public class ToolUtilCommands {
     }
 
     @Command(
-        aliases = {"superpickaxe", "pickaxe", "sp"},
+        aliases = { "superpickaxe", "pickaxe", "sp" },
         desc = "Select super pickaxe mode"
     )
-    @NestedCommand({SuperPickaxeCommands.class})
+    @NestedCommand(SuperPickaxeCommands.class)
     public static void pickaxe(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -80,20 +80,20 @@ public class ToolUtilCommands {
         aliases = {"tool"},
         desc = "Select a tool to bind"
     )
-    @NestedCommand({ToolCommands.class})
+    @NestedCommand(ToolCommands.class)
     public static void tool(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
     }
 
     @Command(
-        aliases = {"mask"},
+        aliases = { "mask" },
         usage = "[mask]",
         desc = "Set the brush mask",
         min = 0,
         max = -1
     )
-    @CommandPermissions({"worldedit.brush.options.mask"})
+    @CommandPermissions("worldedit.brush.options.mask")
     public static void mask(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -108,13 +108,13 @@ public class ToolUtilCommands {
     }
 
     @Command(
-        aliases = {"mat", "material", "fill"},
+        aliases = { "mat", "material", "fill" },
         usage = "[pattern]",
         desc = "Set the brush material",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.brush.options.material"})
+    @CommandPermissions("worldedit.brush.options.material")
     public static void material(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -124,13 +124,13 @@ public class ToolUtilCommands {
     }
 
     @Command(
-            aliases = {"range"},
+            aliases = { "range" },
             usage = "[pattern]",
             desc = "Set the brush range",
             min = 1,
             max = 1
         )
-    @CommandPermissions({"worldedit.brush.options.range"})
+    @CommandPermissions("worldedit.brush.options.range")
     public static void range(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -140,13 +140,13 @@ public class ToolUtilCommands {
     }
 
     @Command(
-        aliases = {"size"},
+        aliases = { "size" },
         usage = "[pattern]",
         desc = "Set the brush size",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.brush.options.size"})
+    @CommandPermissions("worldedit.brush.options.size")
     public static void size(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

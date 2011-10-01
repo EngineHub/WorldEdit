@@ -33,7 +33,7 @@ import com.sk89q.worldedit.blocks.BlockID;
  * @author Moo0
  */
 public class FloatingTreeRemover implements BlockTool {
-    private static final BaseBlock air = new BaseBlock(0);
+    private static final BaseBlock air = new BaseBlock(BlockID.AIR);
     private int range;
     
     public FloatingTreeRemover() {
@@ -53,7 +53,10 @@ public class FloatingTreeRemover implements BlockTool {
 
         EditSession editSession = session.createEditSession(player);
 
-        if (initialType != BlockID.LEAVES && initialType != BlockID.LOG) {
+        if (initialType != BlockID.LOG
+                && initialType != BlockID.LEAVES
+                && initialType != BlockID.BROWN_MUSHROOM_CAP
+                && initialType != BlockID.RED_MUSHROOM_CAP) {
             player.printError("That's not a floating tree.");
             return true;
         }
@@ -68,7 +71,10 @@ public class FloatingTreeRemover implements BlockTool {
             for (Iterator<BlockVector> iterator = blockSet.iterator(); iterator.hasNext();) {
                 BlockVector blockVector = iterator.next();
                 block = editSession.getBlock(blockVector).getType();
-                if (block == BlockID.LEAVES || block == BlockID.LOG) {
+                if (block == BlockID.LOG
+                        || block == BlockID.LEAVES
+                        || block == BlockID.BROWN_MUSHROOM_CAP
+                        || block == BlockID.RED_MUSHROOM_CAP) {
                     editSession.setBlock(blockVector, air);
                 }
             }
@@ -85,13 +91,14 @@ public class FloatingTreeRemover implements BlockTool {
      * Helper method.
      * 
      * @param server
-     * @param superPickaxeManyDrop
+     * @param editSession
      * @param world
      * @param pos
      * @param origin
      * @param size
      * @param initialType
      * @param visited
+     * @param lastBlock
      */
     private boolean recurse(ServerInterface server, EditSession editSession,
             LocalWorld world, BlockVector pos,
@@ -109,11 +116,13 @@ public class FloatingTreeRemover implements BlockTool {
         if (block == BlockID.AIR || block == BlockID.SNOW){
             return true;
         }
-        if (block != BlockID.LEAVES && block != BlockID.LOG) {
+        if (block != BlockID.LOG
+                && block != BlockID.LEAVES
+                && block != BlockID.BROWN_MUSHROOM_CAP
+                && block != BlockID.RED_MUSHROOM_CAP) {
             if (lastBlock == BlockID.LEAVES) {
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
             

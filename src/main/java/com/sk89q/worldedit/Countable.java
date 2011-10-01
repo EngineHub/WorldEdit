@@ -22,7 +22,7 @@ package com.sk89q.worldedit;
 /**
  *
  * @author sk89q
- * @param <T> 
+ * @param <T>
  */
 public class Countable<T> implements Comparable<Countable<T>> {
     /**
@@ -36,7 +36,7 @@ public class Countable<T> implements Comparable<Countable<T>> {
 
     /**
      * Construct the object.
-     * 
+     *
      * @param id
      * @param amount
      */
@@ -89,7 +89,7 @@ public class Countable<T> implements Comparable<Countable<T>> {
 
     /**
      * Comparison.
-     * 
+     *
      * @param other
      * @return
      */

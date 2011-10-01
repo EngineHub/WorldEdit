@@ -15,13 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 package com.sk89q.worldedit.bukkit;
 
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.*;
@@ -31,7 +30,7 @@ import com.sk89q.worldedit.cui.CUIEvent;
 public class BukkitPlayer extends LocalPlayer {
     private Player player;
     private WorldEditPlugin plugin;
-
+    
     public BukkitPlayer(WorldEditPlugin plugin, ServerInterface server, Player player) {
         super(server);
         this.plugin = plugin;
@@ -111,18 +110,18 @@ public class BukkitPlayer extends LocalPlayer {
     public boolean hasPermission(String perm) {
         return (!plugin.getLocalConfiguration().noOpPermissions && player.isOp())
                 || plugin.getPermissionsResolver().hasPermission(
-                player.getWorld().getName(), player.getName(), perm);
+                        player.getWorld().getName(), player.getName(), perm);
     }
 
     @Override
     public LocalWorld getWorld() {
         return new BukkitWorld(player.getWorld());
     }
-
+    
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
         String[] params = event.getParameters();
-
+        
         if (params.length > 0) {
             player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId()
                     + "|" + StringUtil.joinString(params, "|"));
@@ -130,18 +129,13 @@ public class BukkitPlayer extends LocalPlayer {
             player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId());
         }
     }
-
+    
     @Override
     public void dispatchCUIHandshake() {
         player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75");
     }
 
-    @Override
-    public void fireBlockEvent(Vector loc) {
-        if (plugin.getLocalConfiguration().useBlockEvents) {
-            BlockBreakEvent event = new WorldEditBlockEvent(loc, player);
-            event.setCancelled(true);
-            plugin.getServer().getPluginManager().callEvent(event);
-        }
+    public Player getPlayer() {
+        return player;
     }
 }

@@ -27,7 +27,7 @@ import com.sk89q.worldedit.Vector2D;
  */
 public class MissingChunkException extends ChunkStoreException {
     private static final long serialVersionUID = 8013715483709973489L;
-    
+
     private Vector2D pos;
 
     public MissingChunkException() {
@@ -41,7 +41,7 @@ public class MissingChunkException extends ChunkStoreException {
 
     /**
      * Get chunk position in question. May be null if unknown.
-     * 
+     *
      * @return
      */
     public Vector2D getChunkPosition() {

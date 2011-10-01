@@ -31,7 +31,7 @@ import java.util.Map;
 public interface TileEntityBlock {
     /**
      * Return the name of the title entity ID.
-     * 
+     *
      * @return title entity ID
      */
     public String getTileEntityID();
@@ -45,7 +45,7 @@ public interface TileEntityBlock {
             throws DataException;
     /**
      * Get additional information from the title entity data.
-     * 
+     *
      * @param values
      * @throws DataException
      */

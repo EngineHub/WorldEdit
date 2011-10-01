@@ -36,10 +36,10 @@ public class BlockVector extends Vector {
 
     /**
      * Construct the Vector object.
-     * 
-     * @param x 
-     * @param y 
-     * @param z 
+     *
+     * @param x
+     * @param y
+     * @param z
      */
     public BlockVector(int x, int y, int z) {
         super(x, y, z);
@@ -48,10 +48,10 @@ public class BlockVector extends Vector {
     /**
      * Construct the Vector object.
      *
-     * 
-     * @param x 
-     * @param y 
-     * @param z 
+     *
+     * @param x
+     * @param y
+     * @param z
      */
     public BlockVector(float x, float y, float z) {
         super(x, y, z);
@@ -60,15 +60,15 @@ public class BlockVector extends Vector {
     /**
      * Construct the Vector object.
      *
-     * 
-     * @param x 
-     * @param y 
-     * @param z 
+     *
+     * @param x
+     * @param y
+     * @param z
      */
     public BlockVector(double x, double y, double z) {
         super(x, y, z);
     }
-    
+
     /**
      * Checks if another object is equivalent.
      *
@@ -93,8 +93,8 @@ public class BlockVector extends Vector {
      */
     @Override
     public int hashCode() {
-        return (Integer.valueOf((int)x).hashCode() >> 13) ^
-               (Integer.valueOf((int)y).hashCode() >> 7) ^
+        return (Integer.valueOf((int)x).hashCode() << 19) ^
+               (Integer.valueOf((int)y).hashCode() << 12) ^
                 Integer.valueOf((int)z).hashCode();
     }
 }

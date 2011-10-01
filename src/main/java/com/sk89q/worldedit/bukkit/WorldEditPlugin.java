@@ -20,10 +20,14 @@
 package com.sk89q.worldedit.bukkit;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.jar.JarFile;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -31,10 +35,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.bukkit.migration.PermissionsResolverManager;
-import com.sk89q.bukkit.migration.PermissionsResolverServerListener;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.bukkit.selections.*;
@@ -88,8 +90,7 @@ public class WorldEditPlugin extends JavaPlugin {
         // Set up configuration and such, including the permissions
         // resolver
         config = new BukkitConfiguration(getConfiguration(), logger);
-        perms = new PermissionsResolverManager(
-                getConfiguration(), getServer(), "WorldEdit", logger);
+        perms = new PermissionsResolverManager(this, "WorldEdit", logger);
         
         // Load the configuration
         loadConfiguration();
@@ -135,19 +136,14 @@ public class WorldEditPlugin extends JavaPlugin {
      * Register the events used by WorldEdit.
      */
     protected void registerEvents() {
-        @SuppressWarnings("unused")
-        PlayerListener playerListener = new WorldEditPlayerListener(this);
-        @SuppressWarnings("unused")
-        PlayerListener criticalPlayerListener = new WorldEditCriticalPlayerListener(this);
-
-        // The permissions resolver has some hooks of its own
-        (new PermissionsResolverServerListener(perms)).register(this);
+        new WorldEditPlayerListener(this);
+        new WorldEditCriticalPlayerListener(this);
     }
 
     /**
      * Register an event.
      * 
-     * @param type
+     * @param typeName
      * @param listener
      * @param priority
      */
@@ -163,7 +159,7 @@ public class WorldEditPlugin extends JavaPlugin {
     /**
      * Register an event at normal priority.
      * 
-     * @param type
+     * @param typeName
      * @param listener
      */
     public void registerEvent(String typeName, Listener listener) {
@@ -178,9 +174,16 @@ public class WorldEditPlugin extends JavaPlugin {
     protected void createDefaultConfiguration(String name) {
         File actual = new File(getDataFolder(), name);
         if (!actual.exists()) {
-            
             InputStream input =
-                    WorldEdit.class.getResourceAsStream("/defaults/" + name);
+                    null;
+            try {
+                JarFile file = new JarFile(getFile());
+                ZipEntry copy = file.getEntry("defaults" + File.separator + name);
+                if (copy == null) throw new FileNotFoundException();
+                input = file.getInputStream(copy);
+            } catch (IOException e) {
+                logger.severe(getDescription().getName() + ": Unable to read default configuration: " + name);
+            }
             if (input != null) {
                 FileOutputStream output = null;
 
@@ -258,7 +261,7 @@ public class WorldEditPlugin extends JavaPlugin {
         BlockBag blockBag = session.getBlockBag(wePlayer);
         
         EditSession editSession =
-            new EditSession(wePlayer, wePlayer.getWorld(),
+            new EditSession(wePlayer.getWorld(),
                     session.getBlockChangeLimit(), blockBag);
         editSession.enableQueue();
         
@@ -372,7 +375,7 @@ public class WorldEditPlugin extends JavaPlugin {
         }
         
         LocalSession session = controller.getSession(wrapPlayer(player));
-        RegionSelector selector = session.getRegionSelector(BukkitUtil.getLocalWorld(player.getWorld()));
+        RegionSelector selector = session.getRegionSelector();
         
         try {
             Region region = selector.getRegion();

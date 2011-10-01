@@ -137,8 +137,31 @@ public class DocumentationPrinter {
                     }
                 }
     
-                stream.println();
+                stream.print(" || ");
     
+                boolean firstAlias = true;
+                if (cmd.aliases().length != 0) {
+                    for (String alias : cmd.aliases()) {
+                        if (!firstAlias) stream.print("<br />");
+                        stream.print(prefix + alias);
+                        firstAlias = false;
+                    }
+                }
+
+                stream.print(" || ");
+
+                if (cmd.flags() != null && !cmd.flags().equals("")) {
+                    stream.print(cmd.flags());
+                }
+
+                stream.print(" || ");
+
+                if (cmd.desc() != null && !cmd.desc().equals("")) {
+                    stream.print(cmd.desc());
+                }
+
+                stream.println();
+
                 if (method.isAnnotationPresent(NestedCommand.class)) {
                     NestedCommand nested =
                         method.getAnnotation(NestedCommand.class);
@@ -179,26 +202,25 @@ public class DocumentationPrinter {
                 if (!method.isAnnotationPresent(Command.class)) {
                     continue;
                 }
-    
+
                 Command cmd = method.getAnnotation(Command.class);
 
                 stream.println("    " + cmd.aliases()[0] + ":");
                 stream.println("        description: " + cmd.desc());
-                stream.println("        usage: /<command> "
-                        + (cmd.flags().length() > 0 ? "[-" + cmd.flags() + "] " : "")
-                        + cmd.usage());
+                stream.println("        usage: /<command>"
+                        + (cmd.flags().length() > 0 ? " [-" + cmd.flags() + "]" : "")
+                        + (cmd.usage().length() > 0 ? " " + cmd.usage() : ""));
                 if (cmd.aliases().length > 1) {
                     stream.println("        aliases: ["
                             + StringUtil.joinQuotedString(cmd.aliases(), ", ", 1, "'")
                             + "]");
                 }
-                if (!method.isAnnotationPresent(CommandPermissions.class)) {
-                    continue;
-                }
-                CommandPermissions cmdPerms = method.getAnnotation(CommandPermissions.class);
-                stream.println("        permissions: "
-                        + StringUtil.joinQuotedString(cmdPerms.value(), ", ", 0, "'"));
             }
         }
+
+        stream.println();
+        stream.println();
+        stream.println("# Permissions aren't here. Read http://wiki.sk89q.com/wiki/WEPIF/DinnerPerms");
+        stream.println("# for how WorldEdit permissions actually work.");
     }
 }

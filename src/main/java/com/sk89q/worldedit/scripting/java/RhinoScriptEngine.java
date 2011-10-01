@@ -42,7 +42,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
         
         Scriptable scope = setupScope(cx, context);
         
-        String filename = (filename = (String)get(ScriptEngine.FILENAME)) == null
+        String filename = (filename = (String) get(ScriptEngine.FILENAME)) == null
                 ? "<unknown>" : filename;
         
         try {
@@ -52,7 +52,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
             int line = (line = e.lineNumber()) == 0 ? -1 : line;
             
             if (e instanceof JavaScriptException) {
-                msg = String.valueOf(((JavaScriptException)e).getValue());
+                msg = String.valueOf(((JavaScriptException) e).getValue());
             } else {
                 msg = e.getMessage();
             }
@@ -72,7 +72,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
         
         Scriptable scope = setupScope(cx, context);
         
-        String filename = (filename = (String)get(ScriptEngine.FILENAME)) == null
+        String filename = (filename = (String) get(ScriptEngine.FILENAME)) == null
                 ? "<unknown>" : filename;
         
         try {
@@ -82,7 +82,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
             int line = (line = e.lineNumber()) == 0 ? -1 : line;
             
             if (e instanceof JavaScriptException) {
-                msg = String.valueOf(((JavaScriptException)e).getValue());
+                msg = String.valueOf(((JavaScriptException) e).getValue());
             } else {
                 msg = e.getMessage();
             }

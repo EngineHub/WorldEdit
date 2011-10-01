@@ -88,7 +88,7 @@ public class Vector2D {
      * @return the x
      */
     public int getBlockX() {
-        return (int)Math.round(x);
+        return (int) Math.round(x);
     }
 
     /**
@@ -122,7 +122,7 @@ public class Vector2D {
      * @return the z
      */
     public int getBlockZ() {
-        return (int)Math.round(z);
+        return (int) Math.round(z);
     }
 
     /**
@@ -147,7 +147,7 @@ public class Vector2D {
 
     /**
      * Gets a BlockVector version.
-     * 
+     *
      * @return BlockVector
      */
     public BlockVector2D toBlockVector2D() {
@@ -165,7 +165,7 @@ public class Vector2D {
         if (!(obj instanceof Vector2D)) {
             return false;
         }
-        Vector other = (Vector)obj;
+        Vector other = (Vector) obj;
         return other.x == this.x && other.z == this.z;
 
     }

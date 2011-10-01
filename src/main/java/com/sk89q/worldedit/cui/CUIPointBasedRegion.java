@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.cui;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.LocalPlayer;
 
 public interface CUIPointBasedRegion {
-    public Vector[] getCUIPoints();
+    public void describeCUI(LocalPlayer player);
 }

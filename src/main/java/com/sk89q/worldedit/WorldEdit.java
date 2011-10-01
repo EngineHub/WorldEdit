@@ -32,7 +32,6 @@ import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.commands.*;
-import com.sk89q.worldedit.events.WorldEditBlockBreakEvent;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.scripting.*;
 import com.sk89q.worldedit.tools.*;
@@ -80,8 +79,7 @@ public class WorldEdit {
      * without any WorldEdit abilities or never use WorldEdit in a session will
      * not have a session object generated for them.
      */
-    private HashMap<String,LocalSession> sessions =
-            new HashMap<String,LocalSession>();
+    private HashMap<String,LocalSession> sessions = new HashMap<String,LocalSession>();
     
     /**
      * Initialize statically.
@@ -114,13 +112,14 @@ public class WorldEdit {
                     final Logging loggingAnnotation = method.getAnnotation(Logging.class);
 
                     final Logging.LogMode logMode;
-                    if (loggingAnnotation == null)
+                    if (loggingAnnotation == null) {
                         logMode = null;
-                    else
+                    } else {
                         logMode = loggingAnnotation.value();
+                    }
 
-                    String msg = "WorldEdit: " + player.getName() + "(in " + player.getWorld().getName() + ")"
-                            + ": " + StringUtil.joinString(args, " ");
+                    String msg = "WorldEdit: " + player.getName() + " (in \"" + player.getWorld().getName()
+                            + "\")" + ": " + StringUtil.joinString(args, " ");
                     if (logMode != null) {
                         Vector position = player.getPosition();
                         final LocalSession session = getSession(player);
@@ -174,6 +173,16 @@ public class WorldEdit {
         commands.register(ToolCommands.class);
         commands.register(UtilityCommands.class);
         Registrar.autoRegister(server, commands);
+    }
+    
+    /*
+     * Gets the LocalSession for a player name if it exists
+     *
+     * @param player
+     * @return The session for the player, if it exists
+     */
+    public LocalSession getSession(String player) {
+        return sessions.get(player);
     }
 
     /**
@@ -238,6 +247,11 @@ public class WorldEdit {
         }
     }
 
+    public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed)
+            throws UnknownItemException, DisallowedItemException {
+        return getBlock(player, arg, allAllowed, false);
+    }
+
     /**
      * Get an item ID from an item name or an item ID number.
      *
@@ -248,7 +262,8 @@ public class WorldEdit {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed)
+    public BaseBlock getBlock(LocalPlayer player, String arg,
+                              boolean allAllowed, boolean allowNoData)
             throws UnknownItemException, DisallowedItemException {
         BlockType blockType;
         arg = arg.replace("_", " ");
@@ -280,7 +295,7 @@ public class WorldEdit {
             ClothColor col = ClothColor.lookup(testID);
             
             if (col != null) {
-                blockType = BlockType.fromID(35);
+                blockType = BlockType.CLOTH;
                 data = col.getID();
             } else {
                 throw new UnknownItemException(arg);
@@ -299,12 +314,13 @@ public class WorldEdit {
         if (data == -1) { // Block data not yet detected
             // Parse the block data (optional)
             try {
-                data = args1.length > 1 ? Integer.parseInt(args1[1]) : 0;
-                if (data > 15 || data < 0) {
+                data = args1.length > 1 ? Integer.parseInt(args1[1]) : (allowNoData ? -1 : 0);
+                if (data > 15 || (data < 0 && !(allAllowed && data == -1))) {
                     data = 0;
                 }
             } catch (NumberFormatException e) {
-                if (blockType == BlockType.CLOTH) {
+                switch (blockType) {
+                case CLOTH:
                     ClothColor col = ClothColor.lookup(args1[1]);
                     
                     if (col != null) {
@@ -312,26 +328,44 @@ public class WorldEdit {
                     } else {
                         throw new InvalidItemException(arg, "Unknown cloth color '" + args1[1] + "'");
                     }
-                } else if (blockType == BlockType.STEP
-                        || blockType == BlockType.DOUBLE_STEP) {
+                    break;
+
+                case STEP:
+                case DOUBLE_STEP:
                     BlockType dataType = BlockType.lookup(args1[1]);
                     
                     if (dataType != null) {
-                        if (dataType == BlockType.STONE) {
+                        switch (dataType) {
+                        case STONE:
                             data = 0;
-                        } else if (dataType == BlockType.SANDSTONE) {
+                            break;
+
+                        case SANDSTONE:
                             data = 1;
-                        } else if (dataType == BlockType.WOOD) {
+                            break;
+
+                        case WOOD:
                             data = 2;
-                        } else if (dataType == BlockType.COBBLESTONE) {
+                            break;
+
+                        case COBBLESTONE:
                             data = 3;
-                        } else {
+                            break;
+                        case BRICK:
+                            data = 4;
+                            break;
+                        case STONE_BRICK:
+                            data = 5;
+
+                        default:
                             throw new InvalidItemException(arg, "Invalid step type '" + args1[1] + "'");
                         }
                     } else {
                         throw new InvalidItemException(arg, "Unknown step type '" + args1[1] + "'");
                     }
-                } else {
+                    break;
+
+                default:
                     throw new InvalidItemException(arg, "Unknown data value '" + args1[1] + "'");
                 }
             }
@@ -355,17 +389,18 @@ public class WorldEdit {
             } else if (blockType == BlockType.MOB_SPAWNER) {
                 if (args0.length > 1) {
                     String mobName = args0[1];
-                    if (mobName.length() > 1) {
-                        mobName = mobName.substring(0, 1).toUpperCase()
-                                + mobName.substring(1);
+                    for (MobType mobType : MobType.values()){
+                        if (mobType.getName().toLowerCase().equals(mobName.toLowerCase())){
+                            mobName = mobType.getName();
+                            break;
+                        }
                     }
-                    
                     if (!server.isValidMobType(mobName)) {
                         throw new InvalidItemException(arg, "Unknown mob type '" + mobName + "'");
                     }
-                    return new MobSpawnerBlock(data, args0[1]);
+                    return new MobSpawnerBlock(data, mobName);
                 } else {
-                    return new MobSpawnerBlock(data, "Pig");
+                    return new MobSpawnerBlock(data, MobType.PIG.getName());
                 }
             
             // Allow setting note
@@ -402,14 +437,20 @@ public class WorldEdit {
         return getBlock(player, id, false);
     }
 
-    public Set<BaseBlock> getBlocks (LocalPlayer player, String list, boolean allAllowed)
+    public Set<BaseBlock> getBlocks (LocalPlayer player, String list,
+                                     boolean allAllowed, boolean allowNoData)
             throws DisallowedItemException, UnknownItemException {
         String[] items = list.split(",");
         Set<BaseBlock> blocks = new HashSet<BaseBlock>();
         for (String id : items) {
-            blocks.add(getBlock(player, id, allAllowed));
+            blocks.add(getBlock(player, id, allAllowed, allowNoData));
         }
         return blocks;
+    }
+
+    public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed)
+            throws DisallowedItemException, UnknownItemException {
+        return getBlocks(player, list, allAllowed);
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list)
@@ -650,8 +691,7 @@ public class WorldEdit {
             }
             
             if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$")) {
-                throw new InvalidFilenameException(filename,
-                        "Invalid characters or extension missing");
+                throw new InvalidFilenameException(filename, "Invalid characters or extension missing");
             }
             
             f = new File(dir, filename);
@@ -709,7 +749,7 @@ public class WorldEdit {
      * @return
      */
     public static int divisorMod(int a, int n) {
-        return (int)(a - n * Math.floor(Math.floor(a) / (double)n));
+        return (int) (a - n * Math.floor(Math.floor(a) / (double) n));
     }
 
     /**
@@ -723,41 +763,48 @@ public class WorldEdit {
      */
     public Vector getDirection(LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
-        int xm = 0;
-        int ym = 0;
-        int zm = 0;
-        
-        PlayerDirection dir = null;
         
         dirStr = dirStr.toLowerCase();
-        boolean wasDetected = false;
 
         if (dirStr.equals("me")) {
-            dir = player.getCardinalDirection();
-            wasDetected = true;
-        }
+            final PlayerDirection dir = player.getCardinalDirection();
+            switch (dir) {
+            case WEST:
+            case EAST:
+            case SOUTH:
+            case NORTH:
+            case UP:
+            case DOWN:
+                dirStr = dir.name().toLowerCase();
+                break;
 
-        if (dirStr.charAt(0) == 'w' || dir == PlayerDirection.WEST) {
-            zm += 1;
-        } else if (dirStr.charAt(0) == 'e' || dir == PlayerDirection.EAST) {
-            zm -= 1;
-        } else if (dirStr.charAt(0) == 's' || dir == PlayerDirection.SOUTH) {
-            xm += 1;
-        } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.NORTH) {
-            xm -= 1;
-        } else if (dirStr.charAt(0) == 'u' || dir == PlayerDirection.UP) {
-            ym += 1;
-        } else if (dirStr.charAt(0) == 'd' || dir == PlayerDirection.DOWN) {
-            ym -= 1;
-        } else {
-            if (wasDetected) {
+            default:
                 throw new UnknownDirectionException(dir.name());
-            } else {
-                throw new UnknownDirectionException(dirStr);
             }
         }
 
-        return new Vector(xm, ym, zm);
+        switch (dirStr.charAt(0)) {
+        case 'w':
+            return new Vector(0, 0, 1);
+
+        case 'e':
+            return new Vector(0, 0, -1);
+
+        case 's':
+            return new Vector(1, 0, 0);
+
+        case 'n':
+            return new Vector(-1, 0, 0);
+
+        case 'u':
+            return new Vector(0, 1, 0);
+
+        case 'd':
+            return new Vector(0, -1, 0);
+
+        default:
+            throw new UnknownDirectionException(dirStr);
+        }
     }
     
     /**
@@ -771,58 +818,55 @@ public class WorldEdit {
      */
     public Vector getDiagonalDirection( LocalPlayer player, String dirStr )
         throws UnknownDirectionException {
-        int xm = 0;
-        int ym = 0;
-        int zm = 0;
-
-        PlayerDirection dir = null;
 
         dirStr = dirStr.toLowerCase();
-        boolean wasDetected = false;
 
-        if ( dirStr.equals( "me" ) ) {
-            dir = player.getCardinalDirection();
-            wasDetected = true;
+        if (dirStr.equals("me")) {
+            dirStr = player.getCardinalDirection().name().toLowerCase();
         }
 
-        if ((dirStr.charAt(0) == 's' && dirStr.indexOf( 'w' ) > 0) || dir == PlayerDirection.SOUTH_WEST) {
-            zm += 1;
-            xm += 1;
-        } else if ((dirStr.charAt(0) == 'n' && dirStr.indexOf( 'w' ) > 0) || dir == PlayerDirection.NORTH_WEST) {
-            zm += 1;
-            xm -= 1;
-        } else if ((dirStr.charAt(0) == 's' && dirStr.indexOf( 'e' ) > 0) || dir == PlayerDirection.SOUTH_EAST) {
-            zm -= 1;
-            xm += 1;
-        } else if ((dirStr.charAt(0) == 'n' && dirStr.indexOf( 'e' ) > 0) || dir == PlayerDirection.NORTH_EAST) {
-            zm -= 1;
-            xm -= 1;
-        } else if (dirStr.charAt(0) == 'w' || dir == PlayerDirection.WEST) {
-            zm += 1;
-        } else if (dirStr.charAt(0) == 'e' || dir == PlayerDirection.EAST) {
-            zm -= 1;
-        } else if (dirStr.charAt(0) == 's' || dir == PlayerDirection.SOUTH) {
-            xm += 1;
-        } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.NORTH) {
-            xm -= 1;
-        } else if (dirStr.charAt(0) == 'u' || dir == PlayerDirection.UP) {
-            ym += 1;
-        } else if (dirStr.charAt(0) == 'd' || dir == PlayerDirection.DOWN) {
-            ym -= 1;
-        } else {
-            if (wasDetected) {
-                throw new UnknownDirectionException(dir.name());
-            } else {
-                throw new UnknownDirectionException(dirStr);
+        switch (dirStr.charAt(0)) {
+        case 'w':
+            return new Vector(0, 0, 1);
+
+        case 'e':
+            return new Vector(0, 0, -1);
+
+        case 's':
+            if (dirStr.indexOf('w') > 0) {
+                return new Vector(1, 0, 1);
             }
-        }
 
-        return new Vector( xm, ym, zm );
+            if (dirStr.indexOf('e') > 0) {
+                return new Vector(1, 0, -1);
+            }
+
+            return new Vector(1, 0, 0);
+
+        case 'n':
+            if (dirStr.indexOf('w') > 0) {
+                return new Vector(-1, 0, 1);
+            }
+
+            if (dirStr.indexOf('e') > 0) {
+                return new Vector(-1, 0, -1);
+            }
+
+            return new Vector(-1, 0, 0);
+
+        case 'u':
+            return new Vector(0, 1, 0);
+
+        case 'd':
+            return new Vector(0, -1, 0);
+
+        default:
+            throw new UnknownDirectionException(dirStr);
+        }
     }
 
     /**
-     * Get the flip direction for a player's direction. May return
-     * null if a direction could not be found.
+     * Get the flip direction for a player's direction.
      *
      * @param player
      * @param dirStr 
@@ -832,26 +876,42 @@ public class WorldEdit {
     public CuboidClipboard.FlipDirection getFlipDirection(
             LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
-        PlayerDirection dir = null;
         
         if (dirStr.equals("me")) {
-            dir = player.getCardinalDirection();
+            final PlayerDirection dir = player.getCardinalDirection();
+            switch (dir) {
+            case WEST:
+            case EAST:
+                return CuboidClipboard.FlipDirection.WEST_EAST;
+
+            case NORTH:
+            case SOUTH:
+                return CuboidClipboard.FlipDirection.NORTH_SOUTH;
+
+            case UP:
+            case DOWN:
+                return CuboidClipboard.FlipDirection.UP_DOWN;
+
+            default:
+                throw new UnknownDirectionException(dir.name());
+            }
         }
 
-        if (dirStr.charAt(0) == 'w' || dir == PlayerDirection.WEST) {
+        switch (dirStr.charAt(0)) {
+        case 'w':
+        case 'e':
             return CuboidClipboard.FlipDirection.WEST_EAST;
-        } else if (dirStr.charAt(0) == 'e' || dir == PlayerDirection.EAST) {
-            return CuboidClipboard.FlipDirection.WEST_EAST;
-        } else if (dirStr.charAt(0) == 's' || dir == PlayerDirection.SOUTH) {
+
+        case 'n':
+        case 's':
             return CuboidClipboard.FlipDirection.NORTH_SOUTH;
-        } else if (dirStr.charAt(0) == 'n' || dir == PlayerDirection.NORTH) {
-            return CuboidClipboard.FlipDirection.NORTH_SOUTH;
-        } else if (dirStr.charAt(0) == 'u' || dir == PlayerDirection.UP) {
+
+        case 'u':
+        case 'd':
             return CuboidClipboard.FlipDirection.UP_DOWN;
-        } else if (dirStr.charAt(0) == 'd' || dir == PlayerDirection.DOWN) {
-            return CuboidClipboard.FlipDirection.UP_DOWN;
-        } else {
-            throw new UnknownDirectionException(dir.name());
+
+        default:
+            throw new UnknownDirectionException(dirStr);
         }
     }
 
@@ -984,6 +1044,7 @@ public class WorldEdit {
                 && player.hasPermission("worldedit.navigation.jumpto")) {
             // Bug workaround
             // Blocks this from being used after the thru function
+            // @TODO do this right or make craftbukkit do it right
             if (!session.canUseJumpto()){
                 session.toggleJumptoBlock();
                 return false;
@@ -1025,8 +1086,9 @@ public class WorldEdit {
             }
             // Bug workaround, so it wont do the Jumpto compass function
             // Right after this teleport
-            if (session.canUseJumpto())
+            if (session.canUseJumpto()) {
                 session.toggleJumptoBlock();
+            }
             return true;
         }
         
@@ -1100,10 +1162,8 @@ public class WorldEdit {
         } else if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
             if (session.getSuperPickaxe() != null) {
                 if (session.getSuperPickaxe().canUse(player)) {
-                    if (server.callEvent(player, new WorldEditBlockBreakEvent(clicked, this, session))) {
-                        return session.getSuperPickaxe().actPrimary(server, config,
-                                player, session, clicked);
-                    }
+                    return session.getSuperPickaxe().actPrimary(server, config,
+                            player, session, clicked);
                 }
             }
         }

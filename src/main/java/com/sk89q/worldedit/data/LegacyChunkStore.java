@@ -37,7 +37,7 @@ import java.util.zip.GZIPInputStream;
 public abstract class LegacyChunkStore extends ChunkStore {
     /**
      * Get the filename of a chunk.
-     * 
+     *
      * @param pos
      * @param separator
      * @return
@@ -45,7 +45,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
     public static String getFilename(Vector2D pos, String separator) {
         int x = pos.getBlockX();
         int z = pos.getBlockZ();
-        
+
         String folder1 = Integer.toString(divisorMod(x, 64), 36);
         String folder2 = Integer.toString(divisorMod(z, 64), 36);
         String filename = "c." + Integer.toString(x, 36)
@@ -57,7 +57,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
     /**
      * Get the filename of a chunk, using the system's default path
      * separator.
-     * 
+     *
      * @param pos
      * @return
      */
@@ -74,11 +74,11 @@ public abstract class LegacyChunkStore extends ChunkStore {
      * @throws IOException
      */
     @Override
-    public CompoundTag getChunkTag(Vector2D pos, LocalWorld world)
+    public CompoundTag getChunkTag(Vector2D pos, String world)
             throws DataException, IOException {
         int x = pos.getBlockX();
         int z = pos.getBlockZ();
-        
+
         String folder1 = Integer.toString(divisorMod(x, 64), 36);
         String folder2 = Integer.toString(divisorMod(z, 64), 36);
         String filename = "c." + Integer.toString(x, 36)
@@ -135,7 +135,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
 
     /**
      * Get the input stream for a chunk file.
-     * 
+     *
      * @param f1
      * @param f2
      * @param name

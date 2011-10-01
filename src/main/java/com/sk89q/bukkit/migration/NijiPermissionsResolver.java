@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.bukkit.migration;
 
@@ -26,33 +26,37 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import com.nijikokun.bukkit.Permissions.Permissions;
-import com.sk89q.bukkit.migration.PermissionsResolverManager.MissingPluginException;
+import org.bukkit.util.config.Configuration;
 
 public class NijiPermissionsResolver implements PermissionsResolver {
     private Server server;
     private Permissions api;
-    
-    public void load() {
-        
+
+    public static PermissionsResolver factory(Server server, Configuration config) {
+        PluginManager pluginManager = server.getPluginManager();
+
+        Plugin plugin = pluginManager.getPlugin("Permissions");
+
+        // Check if plugin is loaded and have Permissions interface
+        if (plugin == null || !(plugin instanceof Permissions)) {
+            return null;
+        }
+
+        // Check for fake permissions
+        if (config.getBoolean("ignore-nijiperms-bridges", true) && isFakeNijiPerms(plugin)) {
+            return null;
+        }
+
+        return new NijiPermissionsResolver(server, (Permissions) plugin);
     }
-    
-    public NijiPermissionsResolver(Server server, boolean ignoreBridges)
-            throws PluginAccessException, MissingPluginException {
+
+    public void load() {
+
+    }
+
+    public NijiPermissionsResolver(Server server, Permissions plugin) {
         this.server = server;
-        PluginManager manager = server.getPluginManager();
-        
-        Plugin plugin = manager.getPlugin("Permissions");
-        if (plugin == null) {
-            throw new MissingPluginException();
-        }
-        if (!checkRealNijiPerms(ignoreBridges))
-            throw new MissingPluginException();
-        
-        try {
-            api = (Permissions)plugin;
-        } catch (ClassCastException e) {
-            throw new PluginAccessException();
-        }
+        this.api = plugin;
     }
 
     @SuppressWarnings("static-access")
@@ -84,7 +88,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         }
     }
 
-    @SuppressWarnings({ "static-access" })
+    @SuppressWarnings("static-access")
     public boolean inGroup(String name, String group) {
         try {
             Player player = server.getPlayer(name);
@@ -100,7 +104,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         }
     }
 
-    @SuppressWarnings({ "static-access" })
+    @SuppressWarnings("static-access")
     public String[] getGroups(String name) {
         try {
             Player player = server.getPlayer(name);
@@ -110,8 +114,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
                 groups = api.getHandler().getGroups(player.getWorld().getName(), player.getName());
             } catch (Throwable t) {
                 String group = api.Security.getGroup(player.getWorld().getName(), player.getName());
-                if (group != null)
-                    groups = new String[] {group};
+                if (group != null) groups = new String[] { group };
             }
             if (groups == null) {
                 return new String[0];
@@ -123,17 +126,30 @@ public class NijiPermissionsResolver implements PermissionsResolver {
             return new String[0];
         }
     }
-    
+
     public static class PluginAccessException extends Exception {
         private static final long serialVersionUID = 7044832912491608706L;
     }
 
+    @Deprecated
     public static boolean checkRealNijiPerms(boolean ignoreBridges) {
-        if (!ignoreBridges)
+        if (!ignoreBridges) {
             return true;
+        }
         PluginCommand permsCommand = Bukkit.getServer().getPluginCommand("permissions");
-        if (permsCommand == null)
+        if (permsCommand == null) {
             return false;
+        }
         return permsCommand.getPlugin().getDescription().getName().equals("Permissions");
+    }
+
+    public static boolean isFakeNijiPerms(Plugin plugin) {
+        PluginCommand permsCommand = Bukkit.getServer().getPluginCommand("permissions");
+
+        return !(permsCommand.getPlugin().equals(plugin));
+    }
+
+    public String getDetectionMessage() {
+        return "Permissions plugin detected! Using Permissions plugin for permissions.";
     }
 }

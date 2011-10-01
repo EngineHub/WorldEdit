@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 /**
- * Represents chests.
+ * Represents mob spawners.
  *
  * @author sk89q
  */
@@ -44,8 +44,8 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
      *
      */
     public MobSpawnerBlock() {
-        super(52);
-        this.mobType = "Pig";
+        super(BlockID.MOB_SPAWNER);
+        this.mobType = MobType.PIG.getName();
     }
 
     /**
@@ -54,7 +54,7 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
      * @param mobType
      */
     public MobSpawnerBlock(String mobType) {
-        super(52);
+        super(BlockID.MOB_SPAWNER);
         this.mobType = mobType;
     }
 
@@ -64,7 +64,7 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
      * @param data
      */
     public MobSpawnerBlock(int data) {
-        super(52, data);
+        super(BlockID.MOB_SPAWNER, data);
     }
 
     /**
@@ -74,7 +74,7 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
      * @param mobType
      */
     public MobSpawnerBlock(int data, String mobType) {
-        super(52, data);
+        super(BlockID.MOB_SPAWNER, data);
         this.mobType = mobType;
     }
 
@@ -89,8 +89,8 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
 
     /**
      * Set the mob type.
-     * 
-     * @param mobType 
+     *
+     * @param mobType
      */
     public void setMobType(String mobType) {
         this.mobType = mobType;

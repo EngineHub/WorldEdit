@@ -52,9 +52,9 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
             throw new ScriptException(e.getMessage());
         } catch (RhinoException e) {
             if (e instanceof WrappedException) {
-                Throwable cause = ((WrappedException)e).getCause();
+                Throwable cause = ((WrappedException) e).getCause();
                 if (cause instanceof WorldEditException) {
-                    throw ((WrappedException)e).getCause();
+                    throw ((WrappedException) e).getCause();
                 }
             }
             
@@ -62,7 +62,7 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
             int line = (line = e.lineNumber()) == 0 ? -1 : line;
             
             if (e instanceof JavaScriptException) {
-                msg = String.valueOf(((JavaScriptException)e).getValue());
+                msg = String.valueOf(((JavaScriptException) e).getValue());
             } else {
                 msg = e.getMessage();
             }

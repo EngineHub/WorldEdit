@@ -37,20 +37,20 @@ import com.sk89q.worldedit.data.McRegionChunkStore;
  */
 public class ChunkCommands {
     @Command(
-        aliases = {"chunkinfo"},
+        aliases = { "chunkinfo" },
         usage = "",
         desc = "Get information about the chunk that you are inside",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.chunkinfo"})
+    @CommandPermissions("worldedit.chunkinfo")
     public static void chunkInfo(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
         
         Vector pos = player.getBlockIn();
-        int chunkX = (int)Math.floor(pos.getBlockX() / 16.0);
-        int chunkZ = (int)Math.floor(pos.getBlockZ() / 16.0);
+        int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
+        int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
 
         String folder1 = Integer.toString(WorldEdit.divisorMod(chunkX, 64), 36);
         String folder2 = Integer.toString(WorldEdit.divisorMod(chunkZ, 64), 36);
@@ -64,13 +64,13 @@ public class ChunkCommands {
     }
 
     @Command(
-        aliases = {"listchunks"},
+        aliases = { "listchunks" },
         usage = "",
         desc = "List chunks that your selection includes",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.listchunks"})
+    @CommandPermissions("worldedit.listchunks")
     public static void listChunks(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -83,18 +83,19 @@ public class ChunkCommands {
     }
 
     @Command(
-        aliases = {"delchunks"},
+        aliases = { "delchunks" },
         usage = "",
         desc = "Delete chunks that your selection includes",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.delchunks"})
+    @CommandPermissions("worldedit.delchunks")
     @Logging(REGION)
     public static void deleteChunks(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
+        player.print("Note that this command does not yet support the mcregion format.");
         LocalConfiguration config = we.getConfiguration();
         
         Set<Vector2D> chunks = session.getSelection(player.getWorld()).getChunks();
@@ -158,7 +159,10 @@ public class ChunkCommands {
                 player.printError("Error occurred: " + e.getMessage());
             } finally {
                 if (out != null) {
-                    try { out.close(); } catch (IOException ie) {}
+                    try {
+                        out.close();
+                    } catch (IOException ie) {
+                    }
                 }
             }
         } else {

@@ -1,7 +1,7 @@
 // $Id$
 /*
  * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com>
+ * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,23 +17,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.cui;
 
-/**
- * Thrown when no item exist by the ID.
- *
- * @author sk89q
- */
-public class UnknownItemException extends WorldEditException {
-    private static final long serialVersionUID = 2661079183700565880L;
+public class SelectionMinMaxEvent implements CUIEvent {
 
-    private String type;
-
-    public UnknownItemException(String type) {
-        this.type = type;
+    protected int min;
+    protected int max;
+    
+    public SelectionMinMaxEvent(int min, int max) {
+        this.min = min;
+        this.max = max;
     }
 
-    public String getID() {
-        return type;
+    public String getTypeId() {
+        return "mm";
     }
+
+    public String[] getParameters() {
+        return new String[] {
+                    String.valueOf(min),
+                    String.valueOf(max),
+                };
+    }
+
 }

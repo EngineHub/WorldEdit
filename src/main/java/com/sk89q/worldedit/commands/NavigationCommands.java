@@ -33,13 +33,13 @@ import com.sk89q.worldedit.*;
  */
 public class NavigationCommands {
     @Command(
-        aliases = {"unstuck"},
+        aliases = { "unstuck", "!" },
         usage = "",
         desc = "Escape from being stuck inside a block",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.navigation.unstuck"})
+    @CommandPermissions("worldedit.navigation.unstuck")
     public static void unstuck(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -49,13 +49,13 @@ public class NavigationCommands {
     }
 
     @Command(
-        aliases = {"ascend"},
+        aliases = { "ascend" },
         usage = "[# of levels]",
         desc = "Go up a floor",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.navigation.ascend"})
+    @CommandPermissions("worldedit.navigation.ascend")
     public static void ascend(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -78,13 +78,13 @@ public class NavigationCommands {
     }
 
     @Command(
-        aliases = {"descend"},
+        aliases = { "descend" },
         usage = "[# of floors]",
         desc = "Go down a floor",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.navigation.descend"})
+    @CommandPermissions("worldedit.navigation.descend")
     public static void descend(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -107,13 +107,13 @@ public class NavigationCommands {
     }
 
     @Command(
-        aliases = {"ceil"},
+        aliases = { "ceil" },
         usage = "[clearance]",
         desc = "Go to the celing",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.navigation.ceiling"})
+    @CommandPermissions("worldedit.navigation.ceiling")
     @Logging(POSITION)
     public static void ceiling(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -130,13 +130,13 @@ public class NavigationCommands {
     }
     
     @Command(
-        aliases = {"thru"},
+        aliases = { "thru" },
         usage = "",
         desc = "Passthrough walls",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.navigation.thru"})
+    @CommandPermissions("worldedit.navigation.thru")
     public static void thru(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -149,13 +149,13 @@ public class NavigationCommands {
     }
 
     @Command(
-        aliases = {"jumpto"},
+        aliases = { "jumpto" },
         usage = "",
         desc = "Teleport to a location",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.navigation.jumpto"})
+    @CommandPermissions("worldedit.navigation.jumpto")
     public static void jumpTo(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -170,13 +170,13 @@ public class NavigationCommands {
     }
 
     @Command(
-        aliases = {"up"},
+        aliases = { "up" },
         usage = "<block>",
         desc = "Go upwards some distance",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.navigation.up"})
+    @CommandPermissions("worldedit.navigation.up")
     @Logging(POSITION)
     public static void up(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)

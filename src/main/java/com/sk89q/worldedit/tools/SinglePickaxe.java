@@ -40,15 +40,13 @@ public class SinglePickaxe implements BlockTool {
         if (world.getBlockType(clicked) == BlockID.BEDROCK
                 && !player.canDestroyBedrock()) {
             return true;
-        } else if (world.getBlockType(clicked) == BlockID.TNT) {
-            return false;
         }
 
         if (config.superPickaxeDrop) {
             world.simulateBlockMine(clicked);
         }
         
-        world.setBlockType(clicked, 0);
+        world.setBlockType(clicked, BlockID.AIR);
         
         return true;
     }

@@ -36,7 +36,7 @@ public class WorldEditCommands {
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
     
     @Command(
-        aliases = {"version", "ver"},
+        aliases = { "version", "ver" },
         usage = "",
         desc = "Get WorldEdit version",
         min = 0,
@@ -51,13 +51,13 @@ public class WorldEditCommands {
     }
 
     @Command(
-        aliases = {"reload"},
+        aliases = { "reload" },
         usage = "",
         desc = "Reload WorldEdit",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.reload"})
+    @CommandPermissions("worldedit.reload")
     public static void reload(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -67,7 +67,7 @@ public class WorldEditCommands {
     }
 
     @Command(
-        aliases = {"cui"},
+        aliases = { "cui" },
         usage = "",
         desc = "Complete CUI handshake",
         min = 0,
@@ -81,7 +81,7 @@ public class WorldEditCommands {
     }
 
     @Command(
-        aliases = {"tz"},
+        aliases = { "tz" },
         usage = "[timezone]",
         desc = "Set your timezone",
         min = 1,

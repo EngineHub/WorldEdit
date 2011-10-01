@@ -34,6 +34,7 @@ public class BukkitUtil {
     }
     
     private static final Map<World,LocalWorld> wlw = new HashMap<World,LocalWorld>();
+
     public static LocalWorld getLocalWorld(World w) {
         LocalWorld lw = wlw.get(w);
         if (lw == null) {

@@ -28,6 +28,7 @@ import com.sk89q.minecraft.util.commands.Logging;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.masks.Mask;
@@ -42,13 +43,13 @@ import com.sk89q.worldedit.regions.RegionOperationException;
  */
 public class RegionCommands {
     @Command(
-        aliases = {"/set"},
+        aliases = { "/set" },
         usage = "<block>",
         desc = "Set all the blocks inside the selection to a block",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.region.set"})
+    @CommandPermissions("worldedit.region.set")
     @Logging(REGION)
     public static void set(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -60,7 +61,7 @@ public class RegionCommands {
         
         if (pattern instanceof SingleBlockPattern) {
             affected = editSession.setBlocks(session.getSelection(player.getWorld()),
-                    ((SingleBlockPattern)pattern).getBlock());
+                    ((SingleBlockPattern) pattern).getBlock());
         } else {
             affected = editSession.setBlocks(session.getSelection(player.getWorld()), pattern);
         }
@@ -69,13 +70,14 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = {"/replace"},
+        aliases = { "/replace" },
         usage = "[from-block] <to-block>",
         desc = "Replace all blocks in the selection with another",
+        flags = "f",
         min = 1,
         max = 2
     )
-    @CommandPermissions({"worldedit.region.replace"})
+    @CommandPermissions("worldedit.region.replace")
     @Logging(REGION)
     public static void replace(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -87,14 +89,14 @@ public class RegionCommands {
             from = null;
             to = we.getBlockPattern(player, args.getString(0));
         } else {
-            from = we.getBlocks(player, args.getString(0), true);
+            from = we.getBlocks(player, args.getString(0), true, !args.hasFlag('f'));
             to = we.getBlockPattern(player, args.getString(1));
         }
 
         int affected = 0;
         if (to instanceof SingleBlockPattern) {
             affected = editSession.replaceBlocks(session.getSelection(player.getWorld()), from,
-                    ((SingleBlockPattern)to).getBlock());
+                    ((SingleBlockPattern) to).getBlock());
         } else {
             affected = editSession.replaceBlocks(session.getSelection(player.getWorld()), from, to);
         }
@@ -103,13 +105,13 @@ public class RegionCommands {
     }
     
     @Command(
-        aliases = {"/overlay"},
+        aliases = { "/overlay" },
         usage = "<block>",
         desc = "Set a block on top of blocks in the region",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.region.overlay"})
+    @CommandPermissions("worldedit.region.overlay")
     @Logging(REGION)
     public static void overlay(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -121,7 +123,7 @@ public class RegionCommands {
         int affected = 0;
         if (pat instanceof SingleBlockPattern) {
             affected = editSession.overlayCuboidBlocks(region,
-                    ((SingleBlockPattern)pat).getBlock());
+                    ((SingleBlockPattern) pat).getBlock());
         } else {
             affected = editSession.overlayCuboidBlocks(region, pat);
         }
@@ -129,13 +131,13 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = {"/naturalize"},
+        aliases = { "/naturalize" },
         usage = "",
         desc = "3 layers of dirt on top then rock below",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.region.naturalize"})
+    @CommandPermissions("worldedit.region.naturalize")
     @Logging(REGION)
     public static void naturalize(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -147,13 +149,13 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = {"/walls"},
+        aliases = { "/walls" },
         usage = "<block>",
         desc = "Build the four sides of the selection",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.region.walls"})
+    @CommandPermissions("worldedit.region.walls")
     @Logging(REGION)
     public static void walls(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -171,13 +173,13 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = {"/faces", "/outline"},
+        aliases = { "/faces", "/outline" },
         usage = "<block>",
         desc = "Build the walls, ceiling, and floor of a selection",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.region.faces"})
+    @CommandPermissions("worldedit.region.faces")
     @Logging(REGION)
     public static void faces(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -195,14 +197,14 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = {"/smooth"},
+        aliases = { "/smooth" },
         usage = "[iterations]",
         flags = "n",
         desc = "Smooth the elevation in the selection",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.region.smooth"})
+    @CommandPermissions("worldedit.region.smooth")
     @Logging(REGION)
     public static void smooth(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -221,14 +223,14 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = {"/move"},
+        aliases = { "/move" },
         usage = "[count] [direction] [leave-id]",
         flags = "s",
         desc = "Move the contents of the selection",
         min = 0,
         max = 3
     )
-    @CommandPermissions({"worldedit.region.move"})
+    @CommandPermissions("worldedit.region.move")
     @Logging(ORIENTATION_REGION)
     public static void move(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -243,7 +245,7 @@ public class RegionCommands {
         if (args.argsLength() > 2) {
             replace = we.getBlock(player, args.getString(2));
         } else {
-            replace = new BaseBlock(0);
+            replace = new BaseBlock(BlockID.AIR);
         }
 
         int affected = editSession.moveCuboidRegion(session.getSelection(player.getWorld()),
@@ -255,8 +257,8 @@ public class RegionCommands {
                 region.expand(dir.multiply(count));
                 region.contract(dir.multiply(count));
 
-                session.getRegionSelector(player.getWorld()).learnChanges();
-                session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
+                session.getRegionSelector().learnChanges();
+                session.getRegionSelector().explainRegionAdjust(player, session);
             } catch (RegionOperationException e) {
                 player.printError(e.getMessage());
             }
@@ -267,14 +269,14 @@ public class RegionCommands {
     
 
     @Command(
-        aliases = {"/stack"},
+        aliases = { "/stack" },
         usage = "[count] [direction]",
         flags = "sa",
         desc = "Repeat the contents of the selection",
         min = 0,
         max = 2
     )
-    @CommandPermissions({"worldedit.region.stack"})
+    @CommandPermissions("worldedit.region.stack")
     @Logging(ORIENTATION_REGION)
     public static void stack(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -293,8 +295,8 @@ public class RegionCommands {
                 region.expand(dir.multiply(count));
                 region.contract(dir.multiply(count));
 
-                session.getRegionSelector(player.getWorld()).learnChanges();
-                session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
+                session.getRegionSelector().learnChanges();
+                session.getRegionSelector().explainRegionAdjust(player, session);
             } catch (RegionOperationException e) {
                 player.printError(e.getMessage());
             }
@@ -304,13 +306,13 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = {"/regen"},
+        aliases = { "/regen" },
         usage = "",
         desc = "Regenerates the contents of the selection",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.regen"})
+    @CommandPermissions("worldedit.regen")
     @Logging(REGION)
     public static void regenerateChunk(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)

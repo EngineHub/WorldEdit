@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.bukkit.migration;
 
@@ -28,10 +28,10 @@ import org.bukkit.util.config.Configuration;
 
 public class ConfigurationPermissionsResolver implements PermissionsResolver {
     private Configuration config;
-    private Map<String,Set<String>> userPermissionsCache;
+    private Map<String, Set<String>> userPermissionsCache;
     private Set<String> defaultPermissionsCache;
-    private Map<String,Set<String>> userGroups;
-    
+    private Map<String, Set<String>> userGroups;
+
     public ConfigurationPermissionsResolver(Configuration config) {
         this.config = config;
     }
@@ -44,50 +44,51 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
         config.setProperty("permissions.groups.admins.permissions", new String[]{"*"});
         config.setProperty("permissions.users.sk89q.permissions", new String[]{"worldedit.*"});
         config.setProperty("permissions.users.sk89q.groups", new String[]{"admins"});
+
     }
-    
+
     public void load() {
-        userGroups = new HashMap<String,Set<String>>();
-        userPermissionsCache = new HashMap<String,Set<String>>();
+        userGroups = new HashMap<String, Set<String>>();
+        userPermissionsCache = new HashMap<String, Set<String>>();
         defaultPermissionsCache = new HashSet<String>();
 
-        Map<String,Set<String>> userGroupPermissions = new HashMap<String,Set<String>>();
-            
+        Map<String, Set<String>> userGroupPermissions = new HashMap<String, Set<String>>();
+
         List<String> groupKeys = config.getKeys("permissions.groups");
-        
+
         if (groupKeys != null) {
             for (String key : groupKeys) {
                 List<String> permissions =
                         config.getStringList("permissions.groups." + key + ".permissions", null);
-                
+
                 if (permissions.size() > 0) {
                     Set<String> groupPerms = new HashSet<String>(permissions);
                     userGroupPermissions.put(key, groupPerms);
-                    
+
                     if (key.equals("default")) {
                         defaultPermissionsCache.addAll(permissions);
                     }
                 }
             }
         }
-        
+
         List<String> userKeys = config.getKeys("permissions.users");
 
         if (userKeys != null) {
             for (String key : userKeys) {
                 Set<String> permsCache = new HashSet<String>();
-                
+
                 List<String> permissions =
                         config.getStringList("permissions.users." + key + ".permissions", null);
-                
+
                 if (permissions.size() > 0) {
                     permsCache.addAll(permissions);
                 }
-                
+
                 List<String> groups =
                         config.getStringList("permissions.users." + key + ".groups", null);
                 groups.add("default");
-                
+
                 if (groups.size() > 0) {
                     for (String group : groups) {
                         Set<String> groupPerms = userGroupPermissions.get(group);
@@ -102,7 +103,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
             }
         }
     }
-    
+
     public boolean hasPermission(String player, String permission) {
         int dotPos = permission.lastIndexOf(".");
         if (dotPos > -1) {
@@ -110,19 +111,19 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
                 return true;
             }
         }
-        
+
         Set<String> perms = userPermissionsCache.get(player.toLowerCase());
         if (perms == null) {
             return defaultPermissionsCache.contains(permission)
                     || defaultPermissionsCache.contains("*");
         }
-        
-        return perms.contains("*") || perms.contains(permission);        
+
+        return perms.contains("*") || perms.contains(permission);
     }
 
     public boolean hasPermission(String worldName, String player, String permission) {
-        return hasPermission(player, "worlds." + worldName +  "." + permission)
-            || hasPermission(player, permission);
+        return hasPermission(player, "worlds." + worldName + "." + permission)
+                || hasPermission(player, permission);
     }
 
     public boolean inGroup(String player, String group) {
@@ -130,16 +131,21 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
         if (groups == null) {
             return false;
         }
-        
-        return groups.contains(group);        
+
+        return groups.contains(group);
     }
-    
+
     public String[] getGroups(String player) {
         Set<String> groups = userGroups.get(player.toLowerCase());
         if (groups == null) {
             return new String[0];
         }
-        
-        return groups.toArray(new String[groups.size()]);        
+
+        return groups.toArray(new String[groups.size()]);
     }
+
+    public String getDetectionMessage() {
+        return "No known permissions plugin detected. Using configuration file for permissions.";
+    }
+
 }

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.data.ChunkStore;
@@ -44,43 +43,30 @@ public class Polygonal2DRegion implements Region {
     protected int minY;
     protected int maxY;
     protected boolean hasY = false;
-    protected LocalWorld world;
-    
-    /**
-     * Construct the region
-     */
-    public Polygonal2DRegion() {
-        this(null);
-    }
     
     /**
      * Construct the region.
-     * 
-     * @param world
      */
-    public Polygonal2DRegion(LocalWorld world) {
+    public Polygonal2DRegion() {
         points = new ArrayList<BlockVector2D>();
         minY = 0;
         maxY = 0;
         hasY = false;
-        this.world = world;
         recalculate();
     }
     
     /**
      * Construct the region.
      * 
-     * @param world
      * @param points
      * @param minY
      * @param maxY
      */
-    public Polygonal2DRegion(LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
+    public Polygonal2DRegion(List<BlockVector2D> points, int minY, int maxY) {
         this.points = points;
         this.minY = minY;
         this.maxY = maxY;
         hasY = true;
-        this.world = world;
         recalculate();
     }
     
@@ -122,9 +108,6 @@ public class Polygonal2DRegion implements Region {
         int oldMaxY = maxY;
         minY = Math.min(oldMinY, oldMaxY);
         maxY = Math.max(oldMinY, oldMaxY);
-
-        minY = Math.min(Math.max(0, minY), world.getHeight());
-        maxY = Math.min(Math.max(0, maxY), world.getHeight());
 
         min = new BlockVector(minX, minY, minZ);
         max = new BlockVector(maxX, maxY, maxZ);
@@ -582,13 +565,5 @@ public class Polygonal2DRegion implements Region {
         public void remove() {
             throw new UnsupportedOperationException("Not supported");
         }
-    }
-
-    public LocalWorld getWorld() {
-        return world;
-    }
-
-    public void setWorld(LocalWorld world) {
-        this.world = world;
     }
 }

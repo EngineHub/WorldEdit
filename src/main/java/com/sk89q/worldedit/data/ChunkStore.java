@@ -31,7 +31,7 @@ import com.sk89q.worldedit.*;
 public abstract class ChunkStore {
     /**
      * Convert a position to a chunk.
-     * 
+     *
      * @param pos
      * @return
      */
@@ -50,7 +50,7 @@ public abstract class ChunkStore {
      * @throws DataException
      * @throws IOException
      */
-    public abstract CompoundTag getChunkTag(Vector2D pos, LocalWorld world)
+    public abstract CompoundTag getChunkTag(Vector2D pos, String world)
             throws DataException, IOException;
 
     /**
@@ -62,9 +62,9 @@ public abstract class ChunkStore {
      * @throws IOException
      * @throws DataException
      */
-    public Chunk getChunk(Vector2D pos, LocalWorld world)
+    public Chunk getChunk(Vector2D pos, String world)
             throws DataException, IOException {
-        return new Chunk(world, getChunkTag(pos, world));
+        return new Chunk(getChunkTag(pos, world));
     }
 
     /**
@@ -75,10 +75,10 @@ public abstract class ChunkStore {
     public void close() throws IOException {
 
     }
-    
+
     /**
      * Returns whether the chunk store is of this type.
-     * 
+     *
      * @return
      */
     public abstract boolean isValid();

@@ -34,45 +34,54 @@ import com.sk89q.worldedit.*;
  */
 public class ScriptingCommands {
     @Command(
-        aliases = {"cs"},
+        aliases = { "cs" },
         usage = "<filename> [args...]",
         desc = "Execute a CraftScript",
         min = 1,
         max = -1
     )
-    @CommandPermissions({"worldedit.scripting.execute"})
+    @CommandPermissions("worldedit.scripting.execute")
     @Logging(ALL)
     public static void execute(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
-        // @TODO: Check for worldedit.scripting.execute.<script> permission
 
         String[] scriptArgs = args.getSlice(1);
+        String name = args.getString(0);
         
-        session.setLastScript(args.getString(0));
+        if (!player.hasPermission("worldedit.scripting.execute." + name)) {
+            player.printError("You don't have permission to use that script.");
+            return;
+        }
+
+        session.setLastScript(name);
 
         File dir = we.getWorkingDirectoryFile(we.getConfiguration().scriptsDir);
-        File f = we.getSafeOpenFile(player, dir, args.getString(0), "js",
+        File f = we.getSafeOpenFile(player, dir, name, "js",
                 new String[] {"js"});
         
         we.runScript(player, f, scriptArgs);
     }
 
     @Command(
-        aliases = {".s"},
+        aliases = { ".s" },
         usage = "[args...]",
         desc = "Execute last CraftScript",
         min = 0,
         max = -1
     )
-    @CommandPermissions({"worldedit.scripting.execute"})
+    @CommandPermissions("worldedit.scripting.execute")
     @Logging(ALL)
     public static void executeLast(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
-        // @TODO: Check for worldedit.scripting.execute.<script> permission
         
         String lastScript = session.getLastScript();
+        
+        if (!player.hasPermission("worldedit.scripting.execute." + lastScript)) {
+            player.printError("You don't have permission to use that script.");
+            return;
+        }
         
         if (lastScript == null) {
             player.printError("Use /cs with a script name first.");
@@ -86,6 +95,5 @@ public class ScriptingCommands {
                 new String[] {"js"});
         
         we.runScript(player, f, scriptArgs);
-        
     }
 }

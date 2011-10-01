@@ -56,4 +56,8 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
     public int getTypeId(int x, int y, int z) {
         return editSession.getBlockType(new Vector(x, y, z));
     }
+
+    public int getHeight() {
+        return editSession.getWorld().getHeight();
+    }
 }

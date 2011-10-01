@@ -29,22 +29,41 @@ import java.util.EnumSet;
  * @author sk89q
  */
 public enum ClothColor {
-    WHITE(0, "White", "white"),
-    ORANGE(1, "Orange", "orange"),
-    MAGENTA(2, "Magenta", "magenta"),
-    LIGHT_BLUE(3, "Light blue", "lightblue"),
-    YELLOW(4, "Yellow", "yellow"),
-    LIGHT_GREEN(5, "Light green", "lightgreen"),
-    PINK(6, "Pink", new String[] {"pink", "lightred"}),
-    GRAY(7, "Gray", new String[] {"grey", "gray"}),
-    LIGHT_GRAY(8, "Light gray", new String[] {"lightgrey", "lightgray"}),
-    CYAN(9, "Cyan", new String[] {"cyan", "turquoise"}),
-    PURPLE(10, "Purple", new String[] {"purple", "violet"}),
-    BLUE(11, "Blue", "blue"),
-    BROWN(12, "Brown", new String[] {"brown", "cocoa", "coffee"}),
-    DARK_GREEN(13, "Dark green", new String[] {"green", "darkgreen", "cactusgreen", "cactigreen"}),
-    RED(14, "Red", "red"),
-    BLACK(15, "Black", "black");
+    WHITE(ID.WHITE, "White", "white"),
+    ORANGE(ID.ORANGE, "Orange", "orange"),
+    MAGENTA(ID.MAGENTA, "Magenta", "magenta"),
+    LIGHT_BLUE(ID.LIGHT_BLUE, "Light blue", "lightblue"),
+    YELLOW(ID.YELLOW, "Yellow", "yellow"),
+    LIGHT_GREEN(ID.LIGHT_GREEN, "Light green", "lightgreen"),
+    PINK(ID.PINK, "Pink", new String[] {"pink", "lightred"}),
+    GRAY(ID.GRAY, "Gray", new String[] {"grey", "gray"}),
+    LIGHT_GRAY(ID.LIGHT_GRAY, "Light gray", new String[] {"lightgrey", "lightgray"}),
+    CYAN(ID.CYAN, "Cyan", new String[] {"cyan", "turquoise"}),
+    PURPLE(ID.PURPLE, "Purple", new String[] {"purple", "violet"}),
+    BLUE(ID.BLUE, "Blue", "blue"),
+    BROWN(ID.BROWN, "Brown", new String[] {"brown", "cocoa", "coffee"}),
+    DARK_GREEN(ID.DARK_GREEN, "Dark green", new String[] {"green", "darkgreen", "cactusgreen", "cactigreen"}),
+    RED(ID.RED, "Red", "red"),
+    BLACK(ID.BLACK, "Black", "black");
+
+    public static final class ID {
+        public static final int WHITE = 0;
+        public static final int ORANGE = 1;
+        public static final int MAGENTA = 2;
+        public static final int LIGHT_BLUE = 3;
+        public static final int YELLOW = 4;
+        public static final int LIGHT_GREEN = 5;
+        public static final int PINK = 6;
+        public static final int GRAY = 7;
+        public static final int LIGHT_GRAY = 8;
+        public static final int CYAN = 9;
+        public static final int PURPLE = 10;
+        public static final int BLUE = 11;
+        public static final int BROWN = 12;
+        public static final int DARK_GREEN = 13;
+        public static final int RED = 14;
+        public static final int BLACK = 15;
+    }
 
     /**
      * Stores a map of the IDs for fast access.

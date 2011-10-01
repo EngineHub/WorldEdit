@@ -39,13 +39,13 @@ import com.sk89q.worldedit.regions.Region;
  */
 public class UtilityCommands {
     @Command(
-        aliases = {"/fill"},
-        usage = " <block> <radius> [depth] ",
+        aliases = { "/fill" },
+        usage = "<block> <radius> [depth]",
         desc = "Fill a hole",
         min = 2,
         max = 3
     )
-    @CommandPermissions({"worldedit.fill"})
+    @CommandPermissions("worldedit.fill")
     @Logging(PLACEMENT)
     public static void fill(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -60,7 +60,7 @@ public class UtilityCommands {
         int affected = 0;
         if (pattern instanceof SingleBlockPattern) {
             affected = editSession.fillXZ(pos,
-                    ((SingleBlockPattern)pattern).getBlock(),
+                    ((SingleBlockPattern) pattern).getBlock(),
                     radius, depth, false);
         } else {
             affected = editSession.fillXZ(pos, pattern, radius, depth, false);
@@ -69,13 +69,13 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"/fillr"},
-        usage = " <block> <radius> [depth] ",
+        aliases = { "/fillr" },
+        usage = "<block> <radius> [depth]",
         desc = "Fill a hole recursively",
         min = 2,
         max = 3
     )
-    @CommandPermissions({"worldedit.fill.recursive"})
+    @CommandPermissions("worldedit.fill.recursive")
     @Logging(PLACEMENT)
     public static void fillr(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -90,7 +90,7 @@ public class UtilityCommands {
         int affected = 0;
         if (pattern instanceof SingleBlockPattern) {
             affected = editSession.fillXZ(pos,
-                    ((SingleBlockPattern)pattern).getBlock(),
+                    ((SingleBlockPattern) pattern).getBlock(),
                     radius, depth, true);
         } else {
             affected = editSession.fillXZ(pos, pattern, radius, depth, true);
@@ -99,13 +99,13 @@ public class UtilityCommands {
     }
     
     @Command(
-        aliases = {"/drain"},
+        aliases = { "/drain" },
         usage = "<radius>",
         desc = "Drain a pool",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.drain"})
+    @CommandPermissions("worldedit.drain")
     @Logging(PLACEMENT)
     public static void drain(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -125,7 +125,7 @@ public class UtilityCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.fixlava"})
+    @CommandPermissions("worldedit.fixlava")
     @Logging(PLACEMENT)
     public static void fixLava(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -145,7 +145,7 @@ public class UtilityCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.fixwater"})
+    @CommandPermissions("worldedit.fixwater")
     @Logging(PLACEMENT)
     public static void fixWater(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -160,12 +160,12 @@ public class UtilityCommands {
 
     @Command(
         aliases = { "/removeabove", "removeabove" },
-        usage = "[size] [height] ",
-        desc = "Remove blocks above your head. ",
+        usage = "[size] [height]",
+        desc = "Remove blocks above your head.",
         min = 0,
         max = 2
     )
-    @CommandPermissions({"worldedit.removeabove"})
+    @CommandPermissions("worldedit.removeabove")
     @Logging(PLACEMENT)
     public static void removeAbove(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -173,8 +173,7 @@ public class UtilityCommands {
         
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
-        LocalWorld world = player.getWorld();
-        int height = args.argsLength() > 1 ? Math.min((world.getHeight() + 1), args.getInteger(1) + 2) : (world.getHeight() + 1);
+        int height = args.argsLength() > 1 ? Math.min(128, args.getInteger(1) + 2) : 128;
 
         int affected = editSession.removeAbove(
                 session.getPlacementPosition(player), size, height);
@@ -183,12 +182,12 @@ public class UtilityCommands {
 
     @Command(
         aliases = { "/removebelow", "removebelow" },
-        usage = "[size] [height] ",
-        desc = "Remove blocks below your head. ",
+        usage = "[size] [height]",
+        desc = "Remove blocks below you.",
         min = 0,
         max = 2
     )
-    @CommandPermissions({"worldedit.removebelow"})
+    @CommandPermissions("worldedit.removebelow")
     @Logging(PLACEMENT)
     public static void removeBelow(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -196,22 +195,20 @@ public class UtilityCommands {
 
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
-        LocalWorld world = player.getWorld();
-        int height = args.argsLength() > 1 ? Math.min((world.getHeight() + 1), args.getInteger(1) + 2) : (world.getHeight() + 1);
+        int height = args.argsLength() > 1 ? Math.min(128, args.getInteger(1) + 2) : 128;
 
-        int affected = editSession.removeBelow(
-                session.getPlacementPosition(player), size, height);
+        int affected = editSession.removeBelow(session.getPlacementPosition(player), size, height);
         player.print(affected + " block(s) have been removed.");
     }
 
     @Command(
         aliases = { "/removenear", "removenear" },
-        usage = "<block> [size] ",
+        usage = "<block> [size]",
         desc = "Remove blocks near you.",
         min = 1,
         max = 2
     )
-    @CommandPermissions({"worldedit.removenear"})
+    @CommandPermissions("worldedit.removenear")
     @Logging(PLACEMENT)
     public static void removeNear(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -221,19 +218,19 @@ public class UtilityCommands {
         int size = Math.max(1, args.getInteger(1, 50));
         we.checkMaxRadius(size);
 
-        int affected = editSession.removeNear(
-                session.getPlacementPosition(player), block.getType(), size);
+        int affected = editSession.removeNear(session.getPlacementPosition(player), block.getType(), size);
         player.print(affected + " block(s) have been removed.");
     }
 
     @Command(
         aliases = { "/replacenear", "replacenear" },
-        usage = "<size> <from-id> <to-id> ",
+        usage = "<size> <from-id> <to-id>",
         desc = "Replace nearby blocks",
+        flags = "f",
         min = 3,
         max = 3
     )
-    @CommandPermissions({"worldedit.replacenear"})
+    @CommandPermissions("worldedit.replacenear")
     @Logging(PLACEMENT)
     public static void replaceNear(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -247,14 +244,14 @@ public class UtilityCommands {
             from = null;
             to = we.getBlockPattern(player, args.getString(1));
         } else {
-            from = we.getBlocks(player, args.getString(1), true);
+            from = we.getBlocks(player, args.getString(1), true, !args.hasFlag('f'));
             to = we.getBlockPattern(player, args.getString(2));
         }
 
         Vector base = session.getPlacementPosition(player);
         Vector min = base.subtract(size, size, size);
         Vector max = base.add(size, size, size);
-        Region region = new CuboidRegion(player.getWorld(), min, max);
+        Region region = new CuboidRegion(min, max);
 
         if (to instanceof SingleBlockPattern) {
             affected = editSession.replaceBlocks(region, from, ((SingleBlockPattern) to).getBlock());
@@ -271,7 +268,7 @@ public class UtilityCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.snow"})
+    @CommandPermissions("worldedit.snow")
     @Logging(PLACEMENT)
     public static void snow(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -284,13 +281,13 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/thaw", "thaw" },
+        aliases = {"/thaw", "thaw"},
         usage = "[radius]",
         desc = "Thaws the area",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.thaw"})
+    @CommandPermissions("worldedit.thaw")
     @Logging(PLACEMENT)
     public static void thaw(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -309,7 +306,7 @@ public class UtilityCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.green"})
+    @CommandPermissions("worldedit.green")
     @Logging(PLACEMENT)
     public static void green(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -328,7 +325,7 @@ public class UtilityCommands {
             min = 0,
             max = 1
         )
-    @CommandPermissions({"worldedit.extinguish"})
+    @CommandPermissions("worldedit.extinguish")
     @Logging(PLACEMENT)
     public static void extinguish(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -341,27 +338,25 @@ public class UtilityCommands {
                 : defaultRadius;
         we.checkMaxRadius(size);
 
-        int affected = editSession.removeNear(
-                session.getPlacementPosition(player), 51, size);
+        int affected = editSession.removeNear(session.getPlacementPosition(player), 51, size);
         player.print(affected + " block(s) have been removed.");
     }
 
     @Command(
-        aliases = {"butcher"},
+        aliases = { "butcher" },
         usage = "[radius]",
         flags = "p",
         desc = "Kill all or nearby mobs",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.butcher"})
+    @CommandPermissions("worldedit.butcher")
     @Logging(PLACEMENT)
     public static void butcher(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        int radius = args.argsLength() > 0 ?
-            Math.max(1, args.getInteger(0)) : -1;
+        int radius = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : -1;
 
         Vector origin = session.getPlacementPosition(player);
         int killed = player.getWorld().killMobs(origin, radius, args.hasFlag('p'));
@@ -369,13 +364,13 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"remove", "rem", "rement"},
+        aliases = { "remove", "rem", "rement" },
         usage = "<type> <radius>",
         desc = "Remove all entities of a type",
         min = 2,
         max = 2
     )
-    @CommandPermissions({"worldedit.remove"})
+    @CommandPermissions("worldedit.remove")
     @Logging(PLACEMENT)
     public static void remove(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -406,8 +401,10 @@ public class UtilityCommands {
             type = EntityType.MINECARTS;
         } else if (typeStr.matches("tnt")) {
             type = EntityType.TNT;
+        } else if (typeStr.matches("xp")) {
+            type = EntityType.XP_ORBS;
         } else {
-            player.printError("Acceptable types: arrows, items, paintings, boats, minecarts, tnt");
+            player.printError("Acceptable types: arrows, items, paintings, boats, minecarts, tnt, xp");
             return;
         }
 

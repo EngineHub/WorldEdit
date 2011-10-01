@@ -58,7 +58,6 @@ public class BukkitConfiguration extends LocalConfiguration {
                 "limits.max-super-pickaxe-size", maxSuperPickaxeSize));
         registerHelp = true;
         logCommands = config.getBoolean("logging.log-commands", logCommands);
-        useBlockEvents = config.getBoolean("logging.use-block-events", false);      
         superPickaxeDrop = config.getBoolean("super-pickaxe.drop-items",
                 superPickaxeDrop);
         superPickaxeManyDrop = config.getBoolean(
@@ -95,7 +94,7 @@ public class BukkitConfiguration extends LocalConfiguration {
         shellSaveType = type.equals("") ? null : type;
 
         String logFile = config.getString("logging.file", "");
-        if (!logFile.equals("") && logCommands) {
+        if (!logFile.equals("")) {
             try {
                 logFileHandler = new FileHandler(logFile, true);
                 logFileHandler.setFormatter(new LogFormat());

@@ -38,7 +38,7 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
      * Construct the note block.
      */
     public NoteBlock() {
-        super(25);
+        super(BlockID.NOTE_BLOCK);
         this.note = 0;
     }
 
@@ -48,7 +48,7 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
      * @param data
      */
     public NoteBlock(int data) {
-        super(25, data);
+        super(BlockID.NOTE_BLOCK, data);
         this.note = 0;
     }
 
@@ -59,7 +59,7 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
      * @param note
      */
     public NoteBlock(int data, byte note) {
-        super(25, data);
+        super(BlockID.NOTE_BLOCK, data);
         this.note = note;
     }
 

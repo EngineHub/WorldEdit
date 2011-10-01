@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import java.util.Set;
@@ -32,19 +31,19 @@ import java.util.Set;
 public interface Region extends Iterable<BlockVector> {
     /**
      * Get the lower point of a region.
-     * 
+     *
      * @return min. point
      */
     public Vector getMinimumPoint();
     /**
      * Get the upper point of a region.
-     * 
+     *
      * @return max. point
      */
     public Vector getMaximumPoint();
     /**
      * Get the number of blocks in the region.
-     * 
+     *
      * @return number of blocks
      */
     public int getArea();
@@ -70,41 +69,27 @@ public interface Region extends Iterable<BlockVector> {
      * Expand the region.
      *
      * @param change
-     * @throws RegionOperationException 
+     * @throws RegionOperationException
      */
     public void expand(Vector change) throws RegionOperationException;
     /**
      * Contract the region.
      *
      * @param change
-     * @throws RegionOperationException 
+     * @throws RegionOperationException
      */
     public void contract(Vector change) throws RegionOperationException;
     /**
      * Returns true based on whether the region contains the point,
      *
      * @param pt
-     * @return 
+     * @return
      */
     public boolean contains(Vector pt);
     /**
      * Get a list of chunks.
-     * 
+     *
      * @return
      */
     public Set<Vector2D> getChunks();
-    
-    /**
-     * Get the world the selection is in
-     * 
-     * @return
-     */
-    public LocalWorld getWorld();
-    
-    /**
-     * Sets the world the selection is in
-     * 
-     * @return
-     */
-    public void setWorld(LocalWorld world);
 }

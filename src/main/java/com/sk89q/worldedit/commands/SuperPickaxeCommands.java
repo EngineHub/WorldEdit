@@ -34,13 +34,13 @@ import com.sk89q.worldedit.tools.SinglePickaxe;
 
 public class SuperPickaxeCommands {    
     @Command(
-        aliases = {"single"},
+        aliases = { "single" },
         usage = "",
         desc = "Enable the single block super pickaxe mode",
         min = 0,
         max = 0
     )
-    @CommandPermissions({"worldedit.superpickaxe"})
+    @CommandPermissions("worldedit.superpickaxe")
     public static void single(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -51,13 +51,13 @@ public class SuperPickaxeCommands {
     }
     
     @Command(
-        aliases = {"area"},
+        aliases = { "area" },
         usage = "<radius>",
         desc = "Enable the area super pickaxe pickaxe mode",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.superpickaxe.area"})
+    @CommandPermissions("worldedit.superpickaxe.area")
     public static void area(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -76,13 +76,13 @@ public class SuperPickaxeCommands {
     }
     
     @Command(
-        aliases = {"recur", "recursive"},
+        aliases = { "recur", "recursive" },
         usage = "<radius>",
         desc = "Enable the recursive super pickaxe pickaxe mode",
         min = 1,
         max = 1
     )
-    @CommandPermissions({"worldedit.superpickaxe.recursive"})
+    @CommandPermissions("worldedit.superpickaxe.recursive")
     public static void recursive(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

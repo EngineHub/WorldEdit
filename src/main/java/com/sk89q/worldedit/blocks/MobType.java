@@ -15,40 +15,40 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
-package com.sk89q.worldedit.data;
+package com.sk89q.worldedit.blocks;
 
 /**
- *
- * @author sk89q
+ * Represents the possible types of mobs.
  */
-public class MissingWorldException extends ChunkStoreException {
+public enum MobType {
+    CAVE_SPIDER("CaveSpider"),
+    CHICKEN("Chicken"),
+    COW("Cow"),
+    CREEPER("Creeper"),
+    ENDERMAN("Enderman"),
+    GHAST("Ghast"),
+    GIANT("Giant"),
+    MONSTER("Monster"),
+    PIG("Pig"),
+    PIG_ZOMBIE("PigZombie"),
+    SHEEP("Sheep"),
+    SILVERFISH("Silverfish"),
+    SKELETON("Skeleton"),
+    SLIME("Slime"),
+    SPIDER("Spider"),
+    SQUID("Squid"),
+    ZOMBIE("Zombie"),
+    WOLF("Wolf");
 
-    private static final long serialVersionUID = 6487395784195658467L;
+    private String name;
 
-    private String worldname;
-
-    public MissingWorldException() {
-        super();
+    private MobType(String name) {
+        this.name = name;
     }
 
-    public MissingWorldException(String worldname) {
-        super();
-        this.worldname = worldname;
-    }
-
-    public MissingWorldException(String msg, String worldname) {
-        super(msg);
-        this.worldname = worldname;
-    }
-
-    /**
-     * Get name of the world in question. May be null if unknown.
-     *
-     * @return
-     */
-    public String getWorldname() {
-        return worldname;
+    public String getName() {
+        return name;
     }
 }

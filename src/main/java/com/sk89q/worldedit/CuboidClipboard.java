@@ -79,7 +79,7 @@ public class CuboidClipboard {
      *
      * @param size
      * @param origin
-     * @param offset 
+     * @param offset
      */
     public CuboidClipboard(Vector size, Vector origin, Vector offset) {
         this.size = size;
@@ -148,7 +148,7 @@ public class CuboidClipboard {
                 for (int y = 0; y < height; ++y) {
                     BaseBlock block = data[x][y][z];
                     newData[shiftX + newX][y][shiftZ + newZ] = block;
-                    
+
                     if (reverse) {
                         for (int i = 0; i < numRotations; ++i) {
                             block.rotate90Reverse();
@@ -173,7 +173,17 @@ public class CuboidClipboard {
     /**
      * Flip the clipboard.
      *
-     * @param dir
+     * @param dir direction to flip
+     */
+    public void flip(FlipDirection dir) {
+        flip(dir, false);
+    }
+
+    /**
+     * Flip the clipboard.
+     *
+     * @param dir direction to flip
+     * @param aroundPlayer flip the offset around the player
      */
     public void flip(FlipDirection dir, boolean aroundPlayer) {
         final int width = getWidth();
@@ -186,24 +196,17 @@ public class CuboidClipboard {
             for (int xs = 0; xs < wid; ++xs) {
                 for (int z = 0; z < length; ++z) {
                     for (int y = 0; y < height; ++y) {
-                        final BaseBlock a = data[xs][y][z];
-                        //System.out.println(xs+"/"+y+"/"+z+": "+a.getType());
-                        a.flip(dir);
-
-                        if (xs == width - xs - 1)
-                            continue;
-
-                        final BaseBlock b = data[width - xs - 1][y][z];
-                        b.flip(dir);
-
-                        data[xs][y][z] = b;
-                        data[width - xs - 1][y][z] = a;
+                        BaseBlock old = data[xs][y][z].flip(dir);
+                        if (xs == width - xs - 1) continue;
+                        data[xs][y][z] = data[width - xs - 1][y][z].flip(dir);
+                        data[width - xs - 1][y][z] = old;
                     }
                 }
             }
 
-            if (aroundPlayer)
+            if (aroundPlayer) {
                 offset = offset.setX(1 - offset.getX() - width);
+            }
 
             break;
 
@@ -212,23 +215,17 @@ public class CuboidClipboard {
             for (int zs = 0; zs < len; ++zs) {
                 for (int x = 0; x < width; ++x) {
                     for (int y = 0; y < height; ++y) {
-                        final BaseBlock a = data[x][y][zs];
-                        a.flip(dir);
-
-                        if (zs == length - zs - 1)
-                            continue;
-
-                        final BaseBlock b = data[x][y][length - zs - 1];
-                        b.flip(dir);
-
-                        data[x][y][zs] = b;
-                        data[x][y][length - zs - 1] = a;
+                        BaseBlock old = data[x][y][zs].flip(dir);
+                        if (zs == length - zs - 1) continue;
+                        data[x][y][zs] = data[x][y][length - zs - 1].flip(dir);
+                        data[x][y][length - zs - 1] = old;
                     }
                 }
             }
 
-            if (aroundPlayer)
+            if (aroundPlayer) {
                 offset = offset.setZ(1 - offset.getZ() - length);
+            }
 
             break;
 
@@ -237,23 +234,17 @@ public class CuboidClipboard {
             for (int ys = 0; ys < hei; ++ys) {
                 for (int x = 0; x < width; ++x) {
                     for (int z = 0; z < length; ++z) {
-                        final BaseBlock a = data[x][ys][z];
-                        a.flip(dir);
-
-                        if (ys == height - ys - 1)
-                            continue;
-
-                        final BaseBlock b = data[x][height - ys - 1][z];
-                        b.flip(dir);
-
-                        data[x][ys][z] = b;
-                        data[x][height - ys - 1][z] = a;
+                        BaseBlock old = data[x][ys][z].flip(dir);
+                        if (ys == height - ys - 1) continue;
+                        data[x][ys][z] = data[x][height - ys - 1][z].flip(dir);
+                        data[x][height - ys - 1][z] = old;
                     }
                 }
             }
 
-            if (aroundPlayer)
+            if (aroundPlayer) {
                 offset = offset.setY(1 - offset.getY() - height);
+            }
 
             break;
         }
@@ -290,7 +281,7 @@ public class CuboidClipboard {
 
     /**
      * Places the blocks in a position from the minimum corner.
-     * 
+     *
      * @param editSession
      * @param pos
      * @param noAir
@@ -310,11 +301,11 @@ public class CuboidClipboard {
             }
         }
     }
-    
+
     /**
      * Get one point in the copy. The point is relative to the origin
      * of the copy (0, 0, 0) and not to the actual copy origin.
-     * 
+     *
      * @param pos
      * @return null
      * @throws ArrayIndexOutOfBoundsException
@@ -322,10 +313,10 @@ public class CuboidClipboard {
     public BaseBlock getPoint(Vector pos) throws ArrayIndexOutOfBoundsException {
         return data[pos.getBlockX()][pos.getBlockY()][pos.getBlockZ()];
     }
-    
+
     /**
      * Get the size of the copy.
-     * 
+     *
      * @return
      */
     public Vector getSize() {
@@ -399,7 +390,7 @@ public class CuboidClipboard {
                 }
             }
         }
-        
+
         schematic.put("Blocks", new ByteArrayTag("Blocks", blocks));
         schematic.put("Data", new ByteArrayTag("Data", blockData));
         schematic.put("Entities", new ListTag("Entities", CompoundTag.class, new ArrayList<Tag>()));
@@ -414,7 +405,7 @@ public class CuboidClipboard {
 
     /**
      * Load a .schematic file into a clipboard.
-     * 
+     *
      * @param path
      * @return clipboard
      * @throws DataException
@@ -524,23 +515,39 @@ public class CuboidClipboard {
                     BlockVector pt = new BlockVector(x, y, z);
                     BaseBlock block;
 
-                    if (blocks[index] == BlockID.WALL_SIGN || blocks[index] == BlockID.SIGN_POST) {
+                    switch (blocks[index]) {
+                    case BlockID.WALL_SIGN:
+                    case BlockID.SIGN_POST:
                         block = new SignBlock(blocks[index], blockData[index]);
-                    } else if (blocks[index] == BlockID.CHEST) {
+                        break;
+
+                    case BlockID.CHEST:
                         block = new ChestBlock(blockData[index]);
-                    } else if (blocks[index] == BlockID.FURNACE || blocks[index] == BlockID.BURNING_FURNACE) {
+                        break;
+
+                    case BlockID.FURNACE:
+                    case BlockID.BURNING_FURNACE:
                         block = new FurnaceBlock(blocks[index], blockData[index]);
-                    } else if (blocks[index] == BlockID.DISPENSER) {
+                        break;
+
+                    case BlockID.DISPENSER:
                         block = new DispenserBlock(blockData[index]);
-                    } else if (blocks[index] == BlockID.MOB_SPAWNER) {
+                        break;
+
+                    case BlockID.MOB_SPAWNER:
                         block = new MobSpawnerBlock(blockData[index]);
-                    } else if (blocks[index] == BlockID.NOTE_BLOCK) {
+                        break;
+
+                    case BlockID.NOTE_BLOCK:
                         block = new NoteBlock(blockData[index]);
-                    } else {
+                        break;
+
+                    default:
                         block = new BaseBlock(blocks[index], blockData[index]);
+                        break;
                     }
-                    
-                    if (block instanceof TileEntityBlock 
+
+                    if (block instanceof TileEntityBlock
                             && tileEntitiesMap.containsKey(pt)) {
                         ((TileEntityBlock)block).fromTileEntityNBT(
                                 tileEntitiesMap.get(pt));
@@ -556,7 +563,7 @@ public class CuboidClipboard {
 
     /**
      * Get child tag of a NBT structure.
-     * 
+     *
      * @param items
      * @param key
      * @param expected
@@ -565,7 +572,7 @@ public class CuboidClipboard {
      */
     private static Tag getChildTag(Map<String,Tag> items, String key,
             Class<? extends Tag> expected) throws DataException {
-        
+
         if (!items.containsKey(key)) {
             throw new DataException("Schematic file is missing a \"" + key + "\" tag");
         }
@@ -599,7 +606,7 @@ public class CuboidClipboard {
     }
 
     /**
-     * @param offset 
+     * @param offset
      */
     public void setOffset(Vector offset) {
         this.offset = offset;

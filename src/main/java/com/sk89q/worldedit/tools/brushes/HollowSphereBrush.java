@@ -30,6 +30,6 @@ public class HollowSphereBrush implements Brush {
     
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
-        editSession.makeSphere(pos, mat, size, false);
+        editSession.makeSphere(pos, mat, size, size, size, false);
     }
 }

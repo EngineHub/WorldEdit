@@ -126,8 +126,8 @@ public class BlockWorldVector extends WorldVector {
      */
     @Override
     public int hashCode() {
-        return (Integer.valueOf((int)x).hashCode() >> 13) ^
-               (Integer.valueOf((int)y).hashCode() >> 7) ^
+        return (Integer.valueOf((int)x).hashCode() << 19) ^
+               (Integer.valueOf((int)y).hashCode() << 12) ^
                 Integer.valueOf((int)z).hashCode();
     }
 }

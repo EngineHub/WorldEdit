@@ -1,6 +1,6 @@
 // $Id$
 /*
- * CraftBook
+ * WorldEdit
  * Copyright (C) 2010 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -50,52 +50,59 @@ public abstract class BlockBag {
     public void fetchPlacedBlock(int id) throws BlockBagException {
         try {
             // Blocks that can't be fetched...
-            if (id == BlockID.BEDROCK
-                    || id == BlockID.GOLD_ORE
-                    || id == BlockID.IRON_ORE
-                    || id == BlockID.COAL_ORE
-                    || id == BlockID.DIAMOND_ORE
-                    || id == BlockID.LEAVES
-                    || id == BlockID.TNT
-                    || id == BlockID.MOB_SPAWNER
-                    || id == BlockID.CROPS
-                    || id == BlockID.REDSTONE_ORE
-                    || id == BlockID.GLOWING_REDSTONE_ORE
-                    || id == BlockID.SNOW
-                    || id == BlockID.LIGHTSTONE
-                    || id == BlockID.PORTAL) {
+            switch (id) {
+            case BlockID.BEDROCK:
+            case BlockID.GOLD_ORE:
+            case BlockID.IRON_ORE:
+            case BlockID.COAL_ORE:
+            case BlockID.DIAMOND_ORE:
+            case BlockID.LEAVES:
+            case BlockID.TNT:
+            case BlockID.MOB_SPAWNER:
+            case BlockID.CROPS:
+            case BlockID.REDSTONE_ORE:
+            case BlockID.GLOWING_REDSTONE_ORE:
+            case BlockID.SNOW:
+            case BlockID.LIGHTSTONE:
+            case BlockID.PORTAL:
                 throw new UnplaceableBlockException();
-            }
 
-            // Override liquids
-            if (id == BlockID.WATER
-                    || id == BlockID.STATIONARY_WATER
-                    || id == BlockID.LAVA
-                    || id == BlockID.STATIONARY_LAVA) {
+            case BlockID.WATER:
+            case BlockID.STATIONARY_WATER:
+            case BlockID.LAVA:
+            case BlockID.STATIONARY_LAVA:
+                // Override liquids
                 return;
+
+            default:
+                fetchBlock(id);
+                break;
             }
 
-            fetchBlock(id);
         } catch (OutOfBlocksException e) {
-            // Look for cobblestone
-            if (id == BlockID.STONE) {
+            switch (id) {
+            case BlockID.STONE:
                 fetchBlock(BlockID.COBBLESTONE);
-            // Look for dirt
-            } else if (id == BlockID.GRASS) {
+                break;
+
+            case BlockID.GRASS:
                 fetchBlock(BlockID.DIRT);
-            // Look for redstone dust
-            } else if (id == BlockID.REDSTONE_WIRE) {
-                fetchBlock(331);
-            // Look for furnace
-            } else if (id == BlockID.BURNING_FURNACE) {
-                fetchBlock(BlockID.FURNACE);
-            // Look for lit redstone torch
-            } else if (id == BlockID.REDSTONE_TORCH_OFF) {
+                break;
+
+            case BlockID.REDSTONE_WIRE:
+                fetchBlock(ItemID.REDSTONE_DUST);
+                break;
+
+            case BlockID.REDSTONE_TORCH_OFF:
                 fetchBlock(BlockID.REDSTONE_TORCH_ON);
-            // Look for signs
-            } else if (id == BlockID.WALL_SIGN || id == BlockID.SIGN_POST) {
-                fetchBlock(323);
-            } else {
+                break;
+
+            case BlockID.WALL_SIGN:
+            case BlockID.SIGN_POST:
+                fetchBlock(ItemID.SIGN);
+                break;
+
+            default:
                 throw e;
             }
         }

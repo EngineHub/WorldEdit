@@ -39,17 +39,15 @@ public class Chunk {
     private int rootX;
     private int rootZ;
     private Map<BlockVector,Map<String,Tag>> tileEntities;
-    private LocalWorld world;
 
     /**
      * Construct the chunk with a compound tag.
-     * 
-     * @param tag 
-     * @throws DataException 
+     *
+     * @param tag
+     * @throws DataException
      */
-    public Chunk(LocalWorld world, CompoundTag tag) throws DataException {
+    public Chunk(CompoundTag tag) throws DataException {
         rootTag = tag;
-        this.world = world;
 
         blocks = ((ByteArrayTag)getChildTag(
                 rootTag.getValue(), "Blocks", ByteArrayTag.class)).getValue();
@@ -60,14 +58,14 @@ public class Chunk {
         rootZ = ((IntTag)getChildTag(
                 rootTag.getValue(), "zPos", IntTag.class)).getValue();
 
-        if (blocks.length != 16*16*(world.getHeight() + 1)) {
+        if (blocks.length != 32768) {
             throw new InvalidFormatException("Chunk blocks byte array expected "
-                    + "to be " + 16*16*(world.getHeight() + 1) + " bytes; found " + blocks.length);
+                    + "to be 32,768 bytes; found " + blocks.length);
         }
 
-        if (data.length != 16*16*((world.getHeight() + 1)/2)) {
+        if (data.length != 16384) {
             throw new InvalidFormatException("Chunk block data byte array "
-                    + "expected to be " + 16*16*((world.getHeight() + 1)/2) + " bytes; found " + data.length);
+                    + "expected to be 16,384 bytes; found " + data.length);
         }
     }
 
@@ -82,7 +80,7 @@ public class Chunk {
         int x = pos.getBlockX() - rootX * 16;
         int y = pos.getBlockY();
         int z = pos.getBlockZ() - rootZ * 16;
-        int index = y + (z * (world.getHeight() + 1) + (x * (world.getHeight() + 1) * 16));
+        int index = y + (z * 128 + (x * 128 * 16));
 
         try {
             return blocks[index];
@@ -102,7 +100,7 @@ public class Chunk {
         int x = pos.getBlockX() - rootX * 16;
         int y = pos.getBlockY();
         int z = pos.getBlockZ() - rootZ * 16;
-        int index = y + (z * (world.getHeight() + 1) + (x * (world.getHeight() + 1) * 16));
+        int index = y + (z * 128 + (x * 128 * 16));
         boolean shift = index % 2 == 0;
         index /= 2;
 
@@ -119,7 +117,7 @@ public class Chunk {
 
     /**
      * Used to load the tile entities.
-     * 
+     *
      * @throws DataException
      */
     private void populateTileEntities() throws DataException {
@@ -133,7 +131,7 @@ public class Chunk {
             if (!(tag instanceof CompoundTag)) {
                 throw new InvalidFormatException("CompoundTag expected in TileEntities");
             }
-            
+
             CompoundTag t = (CompoundTag)tag;
 
             int x = 0;
@@ -169,7 +167,7 @@ public class Chunk {
      * Get the map of tags keyed to strings for a block's tile entity data. May
      * return null if there is no tile entity data. Not public yet because
      * what this function returns isn't ideal for usage.
-     * 
+     *
      * @param pos
      * @return
      * @throws DataException
@@ -208,7 +206,7 @@ public class Chunk {
         } else {
             block = new BaseBlock(id, data);
         }
-        
+
         if (block instanceof TileEntityBlock) {
             Map<String,Tag> tileEntity = getBlockTileEntity(pos);
             ((TileEntityBlock)block).fromTileEntityNBT(tileEntity);

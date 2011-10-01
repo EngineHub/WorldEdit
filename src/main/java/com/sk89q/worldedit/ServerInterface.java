@@ -19,41 +19,29 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.events.WorldEditBlockBreakEvent;
-import com.sk89q.worldedit.events.WorldEditEvent;
-
 /**
- * 
+ *
  * @author sk89q
  */
 public abstract class ServerInterface {
     /**
      * Resolves an item name to its ID.
-     * 
+     *
      * @param name
      * @return
      */
     public abstract int resolveItem(String name);
-    
+
     /**
      * Checks if a mob type is valid.
-     * 
+     *
      * @param type
      * @return
      */
     public abstract boolean isValidMobType(String type);
-    
+
     /**
      * Reload WorldEdit configuration.
      */
     public abstract void reload();
-
-    /**
-     * Call an event to the rest of the server (if applicable).
-     * 
-     * @param player
-     * @param event
-     * @return false if cancelled
-     */
-    public abstract boolean callEvent(LocalPlayer player, WorldEditEvent event);
 }

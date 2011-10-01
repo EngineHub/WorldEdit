@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bags.*;
+import com.sk89q.worldedit.blocks.BlockID;
 
 public class BukkitPlayerBlockBag extends BlockBag {
     /**
@@ -68,7 +69,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
      */
     @Override
     public void fetchBlock(int id) throws BlockBagException {
-        if (id == 0) {
+        if (id == BlockID.AIR) {
             throw new IllegalArgumentException("Can't fetch air block");
         }
         
@@ -114,7 +115,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
      */
     @Override
     public void storeBlock(int id) throws BlockBagException {
-        if (id == 0) {
+        if (id == BlockID.AIR) {
             throw new IllegalArgumentException("Can't store air block");
         }
         

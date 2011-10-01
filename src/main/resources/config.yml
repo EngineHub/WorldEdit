@@ -31,7 +31,6 @@ use-inventory:
 logging:
     log-commands: false
     file: worldedit.log
-    use-block-events: false
 
 super-pickaxe:
     drop-items: true
