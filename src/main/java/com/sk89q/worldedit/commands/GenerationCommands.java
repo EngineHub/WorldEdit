@@ -35,13 +35,13 @@ import com.sk89q.worldedit.util.TreeGenerator;
  */
 public class GenerationCommands {
     @Command(
-        aliases = {"/hcyl"},
-        usage = "<block> <radius> [height] ",
+        aliases = { "/hcyl" },
+        usage = "<block> <radius> [height]",
         desc = "Generate a hollow cylinder",
         min = 2,
         max = 3
     )
-    @CommandPermissions({"worldedit.generation.cylinder"})
+    @CommandPermissions("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
     public static void hcyl(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -57,13 +57,13 @@ public class GenerationCommands {
     }
 
     @Command(
-        aliases = {"/cyl"},
-        usage = "<block> <radius> [height] ",
+        aliases = { "/cyl" },
+        usage = "<block> <radius> [height]",
         desc = "Generate a cylinder",
         min = 2,
         max = 3
     )
-    @CommandPermissions({"worldedit.generation.cylinder"})
+    @CommandPermissions("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
     public static void cyl(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -79,17 +79,41 @@ public class GenerationCommands {
     }
 
     @Command(
-        aliases = {"/hsphere"},
-        usage = "<block> <radius>[,<radius>,<radius>] [raised?] ",
-        desc = "Generate a hollow sphere. If you specify 3 radiuses separated by commas, an ellipsoid with the dimensions x,y,z will be generated.",
+        aliases = { "/hsphere" },
+        usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
+        desc = "Generate a hollow sphere.",
+        flags = "q",
         min = 2,
         max = 3
     )
-    @CommandPermissions({"worldedit.generation.sphere"})
+    @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
     public static void hsphere(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
+
+        if (args.hasFlag('q')) {
+            Pattern block = we.getBlockPattern(player, args.getString(0));
+            String[] radiuses = args.getString(1).split(",");
+            if (radiuses.length > 1) {
+                throw new InsufficientArgumentsException("Cannot specify q flag and multiple radiuses."); 
+            }
+            double radius = Double.parseDouble(radiuses[0]);
+            boolean raised = args.argsLength() > 2
+                    ? (args.getString(2).equalsIgnoreCase("true")
+                            || args.getString(2).equalsIgnoreCase("yes"))
+                    : false;
+
+            Vector pos = session.getPlacementPosition(player);
+            if (raised) {
+                pos = pos.add(0, radius, 0);
+            }
+
+            int affected = editSession.makeSphere(pos, block, radius, false);
+            player.findFreePosition();
+            player.print(affected + " block(s) have been created.");
+            return;
+        }
 
         final Pattern block = we.getBlockPattern(player, args.getString(0));
         String[] radiuses = args.getString(1).split(",");
@@ -110,10 +134,11 @@ public class GenerationCommands {
             return;
         }
         final boolean raised;
-        if (args.argsLength() > 2)
+        if (args.argsLength() > 2) {
             raised = args.getString(2).equalsIgnoreCase("true") || args.getString(2).equalsIgnoreCase("yes");
-        else
+        } else {
             raised = false;
+        }
 
         Vector pos = session.getPlacementPosition(player);
         if (raised) {
@@ -126,17 +151,41 @@ public class GenerationCommands {
     }
 
     @Command(
-        aliases = {"/sphere"},
-        usage = "<block> <radius> [raised?] ",
-        desc = "Generate a filled sphere. If you specify 3 radiuses separated by commas, an ellipsoid with the dimensions x,y,z will be generated.",
+        aliases = { "/sphere" },
+        usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
+        desc = "Generate a filled sphere.",
+        flags = "q",
         min = 2,
         max = 3
     )
-    @CommandPermissions({"worldedit.generation.sphere"})
+    @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
     public static void sphere(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
+
+        if (args.hasFlag('q')) {
+            Pattern block = we.getBlockPattern(player, args.getString(0));
+            String[] radiuses = args.getString(1).split(",");
+            if (radiuses.length > 1) {
+                throw new InsufficientArgumentsException("Cannot specify q flag and multiple radiuses."); 
+            }
+            double radius = Double.parseDouble(radiuses[0]);
+            boolean raised = args.argsLength() > 2
+                    ? (args.getString(2).equalsIgnoreCase("true")
+                            || args.getString(2).equalsIgnoreCase("yes"))
+                    : false;
+
+            Vector pos = session.getPlacementPosition(player);
+            if (raised) {
+                pos = pos.add(0, radius, 0);
+            }
+
+            int affected = editSession.makeSphere(pos, block, radius, true);
+            player.findFreePosition();
+            player.print(affected + " block(s) have been created.");
+            return;
+        }
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
         String[] radiuses = args.getString(1).split(",");
@@ -157,10 +206,11 @@ public class GenerationCommands {
             return;
         }
         final boolean raised;
-        if (args.argsLength() > 2)
+        if (args.argsLength() > 2) {
             raised = args.getString(2).equalsIgnoreCase("true") || args.getString(2).equalsIgnoreCase("yes");
-        else
+        } else {
             raised = false;
+        }
 
         Vector pos = session.getPlacementPosition(player);
         if (raised) {
@@ -173,13 +223,13 @@ public class GenerationCommands {
     }
 
     @Command(
-        aliases = {"forestgen"},
+        aliases = { "forestgen" },
         usage = "[size] [type] [density]",
         desc = "Generate a forest",
         min = 0,
         max = 3
     )
-    @CommandPermissions({"worldedit.generation.forest"})
+    @CommandPermissions("worldedit.generation.forest")
     @Logging(POSITION)
     public static void forestGen(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -194,7 +244,6 @@ public class GenerationCommands {
         if (type == null) {
             player.printError("Tree type '" + args.getString(1) + "' is unknown.");
             return;
-        } else {
         }
         
         int affected = editSession.makeForest(player.getPosition(),
@@ -203,13 +252,13 @@ public class GenerationCommands {
     }
     
     @Command(
-        aliases = {"pumpkins"},
+        aliases = { "pumpkins" },
         usage = "[size]",
         desc = "Generate pumpkin patches",
         min = 0,
         max = 1
     )
-    @CommandPermissions({"worldedit.generation.pumpkins"})
+    @CommandPermissions("worldedit.generation.pumpkins")
     @Logging(POSITION)
     public static void pumpkins(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -222,13 +271,13 @@ public class GenerationCommands {
     }
     
     @Command(
-        aliases = {"/pyramid"},
-        usage = "<block> <range>",
+        aliases = { "/pyramid" },
+        usage = "<block> <size>",
         desc = "Generate a filled pyramid",
         min = 2,
         max = 2
     )
-    @CommandPermissions({"worldedit.generation.pyramid"})
+    @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
     public static void pyramid(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
@@ -245,13 +294,13 @@ public class GenerationCommands {
     }
     
     @Command(
-        aliases = {"/hpyramid"},
-        usage = "<block> <range>",
+        aliases = { "/hpyramid" },
+        usage = "<block> <size>",
         desc = "Generate a hollow pyramid",
         min = 2,
         max = 2
     )
-    @CommandPermissions({"worldedit.generation.pyramid"})
+    @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
     public static void hpyramid(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)

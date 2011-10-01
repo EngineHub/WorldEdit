@@ -17,21 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.bukkit;
+package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.Vector;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockBreakEvent;
+/**
+ * @author zml2008
+ */
+public class WorldEditPermissionException extends WorldEditException {
+    private static final long serialVersionUID = 1L;
 
-public class WorldEditBlockEvent extends BlockBreakEvent{
-
-    public WorldEditBlockEvent(Block block, Player player) {
-        super(block, player);
+    public WorldEditPermissionException() {
+        super("You don't have permission to do this.");
     }
-    
-    public WorldEditBlockEvent(Vector location, Player player) {
-       this(player.getWorld().getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ()), player);
-    }
-    
 }
