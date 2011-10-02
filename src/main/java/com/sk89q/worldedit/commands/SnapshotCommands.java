@@ -139,6 +139,56 @@ public class SnapshotCommands {
         }
     }
 
+    
+    @Command(
+            aliases = { "sel" },
+            usage = "<index>",
+            desc = "Choose the snapshot based on the list id",
+            min = 1,
+            max = 1
+            )
+    @CommandPermissions("worldedit.snapshots.restore")
+    public static void sel(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+        LocalConfiguration config = we.getConfiguration();
+
+        if (config.snapshotRepo == null) {
+            player.printError("Snapshot/backup restore is not configured.");
+            return;
+        }
+        
+        int index = -1;
+        try {
+            index = Integer.parseInt(args.getString(0));
+        } catch (NumberFormatException e) {
+            player.printError("Invalid index, " + args.getString(0) + " is not a valid integer.");
+            return;
+        }
+        
+        if(index < 1) {
+            player.printError("Invalid index, must be equal or higher then 1.");
+            return;
+        }
+        
+        try {
+            List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true, player.getWorld().getName());
+            if(snapshots.size() < index) {
+                player.printError("Invalid index, must be between 1 and " + snapshots.size() + ".");
+                return;
+            }
+            Snapshot snapshot = snapshots.get(index-1);
+            if(snapshot == null) {
+                player.printError("That snapshot does not exist or is not available.");
+                return;
+            }
+            session.setSnapshot(snapshot);
+            player.print("Snapshot set to: " + snapshot.getName());
+        } catch(MissingWorldException e) {
+            player.printError("No snapshots were found for this world.");
+        }
+    }
+    
     @Command(
             aliases = { "before" },
             usage = "<date>",
