@@ -178,7 +178,7 @@ public class WorldEditPlugin extends JavaPlugin {
                     null;
             try {
                 JarFile file = new JarFile(getFile());
-                ZipEntry copy = file.getEntry("defaults" + File.separator + name);
+                ZipEntry copy = file.getEntry("defaults/" + name);
                 if (copy == null) throw new FileNotFoundException();
                 input = file.getInputStream(copy);
             } catch (IOException e) {
