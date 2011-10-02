@@ -25,7 +25,10 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.expression.Expression;
+import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
@@ -312,6 +315,95 @@ public class GenerationCommands {
         
         int affected = editSession.makePyramid(pos, block, size, false);
         
+        player.findFreePosition();
+        player.print(affected + " block(s) have been created.");
+    }
+
+    @Command(
+        aliases = { "/generate", "/gen", "/g" },
+        usage = "<block> <equation>",
+        desc = "Generates a shape according to a formula. -h for hollow, -r for untransformed coordinates, -o for unscaled, but offset from placement",
+        flags = "hro",
+        min = 1,
+        max = -1
+    )
+    @CommandPermissions("worldedit.generation.shape")
+    @Logging(ALL)
+    public static void generate(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        final Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        final Region region = session.getSelection(player.getWorld());
+
+        final Expression expression;
+        try {
+            expression = Expression.compile(args.getJoinedStrings(1), "x", "y", "z");
+            expression.optimize();
+        } catch (ExpressionException e) {
+            player.printError(e.getMessage());
+            return;
+        }
+
+        final ArbitraryShape shape;
+
+        if (args.hasFlag('r')) {
+            shape = new ArbitraryShape(region) {
+                @Override
+                protected boolean isInside(double x, double y, double z) {
+
+                    try {
+                        return expression.evaluate(x, y, z) > 0;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+            };
+        }
+        else if (args.hasFlag('o')) {
+            final Vector placement = session.getPlacementPosition(player);
+
+            final double placementX = placement.getX();
+            final double placementY = placement.getY();
+            final double placementZ = placement.getZ();
+
+            shape = new ArbitraryShape(region) {
+                @Override
+                protected boolean isInside(double x, double y, double z) {
+
+                    try {
+                        return expression.evaluate(x-placementX, y-placementY, z-placementZ) > 0;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+            };
+        }
+        else {
+            final Vector min = region.getMinimumPoint();
+            final Vector max = region.getMaximumPoint();
+            final Vector center = max.add(min).multiply(0.5);
+            final Vector stretch = max.subtract(center);
+            shape = new ArbitraryShape(region) {
+                @Override
+                protected boolean isInside(double x, double y, double z) {
+                    final Vector scaled = new Vector(x,y,z).subtract(center).divide(stretch);
+
+                    try {
+                        return expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ()) > 0;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+            };
+        }
+
+        final boolean hollow = args.hasFlag('h');
+        int affected = shape.generate(editSession, pattern, hollow);
+
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }
