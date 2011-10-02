@@ -92,7 +92,7 @@ h3 {
   <li><strong>Install the plugin:</strong> Copy WorldEdit.jar into your Bukkit server's &quot;plugins&quot; directory. Create the folder if it doesn't exist.</li>
   <li><strong>Install the bundled scripts <span class="optional">Optional</span>:</strong> Copy the &quot;craftscripts/&quot; folder into your root folder. These add additional functionality through JavaScript scripts. You also need to <a href="http://wiki.sk89q.com/wiki/WorldEdit/Installation/Bukkit#Rhino">download and install Rhino</a> to use these.</li>
   <li><strong>Change the configuration:</strong> Run your server once (with WorldEdit) and then edit the config.yml file that is generated inside &quot;plugins/WorldEdit&quot;. Use <em>/worldedit reload</em> in the console to reload the configuration.</li>
-  <li><strong>Setup permissions:</strong> Visit the WorldEdit wiki to <a href="http://wiki.sk89q.com/wiki/WorldEdit/Permissions">learn the permissions</a>. However, if you're new to WorldEdit, you may not know what permissions to give, so first add <strong>*</strong> to play with WorldEdit.</li>
+  <li><strong>Setup permissions:</strong> Visit the WorldEdit wiki to <a href="http://wiki.sk89q.com/wiki/WorldEdit/Permissions">learn the permissions</a>. However, if you're new to WorldEdit, you may not know what permissions to give, so  give <strong>worldedit.*</strong> to play with WorldEdit.</li>
 </ol>
 <h3>For Single Player Commands</h3>
 <ol>
@@ -100,24 +100,12 @@ h3 {
   <li><strong>Install WorldEdit:</strong> Copy WorldEdit.jar into your &quot;.minecraft/bin&quot; folder. Do not put WorldEdit.jar into minecraft.jar.</li>
   <li><strong>Install the bundled scripts <span class="optional">Optional</span>:</strong> Copy the &quot;craftscripts/&quot; folder into your &quot;.minecraft&quot; folder. These add additional functionality through JavaScript scripts. You also need to <a href="http://wiki.sk89q.com/wiki/WorldEdit/Installation/Single_player#Rhino">download and install Rhino</a> to use these.</li>
   </ol>
-<br>
 <p>Be sure to:</p>
 <ul>
-  <li>Subscribe to <a href="http://minecraftnews.sk89q.com/">SK's Minecraft blog</a> for news about WorldEdit</li>
   <li>Submit bug reports and suggestions to the <a href="http://redmine.sk89q.com/projects/worldedit/issues">issue tracker</a></li>
   <li>Check out the <a href="http://wiki.sk89q.com/wiki/WorldEdit">WorldEdit wiki</a></li>
   <li>Download the accompanying (optional) <a href="http://wiki.sk89q.com/wiki/WorldEdit/Client_addon">client-side addon</a> that lets WorldEdit draw lines onto your world (making things much easier!)</li>
 </ul>
-<h2> Introduction</h2>
-<p>WorldEdit is pretty powerful and it may take some time to fully grasp exactly what it can do, but fortunately, there's a comprehensive wiki and quick start guide to get you started. Before you get into that though, you may want to become familiar with WorldEdit's navigation aids:</p>
-<ul>
-  <li><strong>/jumpto</strong> sends you to the place that you are looking for</li>
-  <li><strong>/thru</strong> sends you through the wall that you are looking at</li>
-  <li><strong>/up #</strong> sends you upwards a certain number of blocks</li>
-  <li><strong>/ascend</strong> sends you up through the first block above you</li>
-  <li><strong>/descend</strong> sends you down through the floor</li>
-  </ul>
-<p>However, you can also, using a <strong>compass</strong>, left click to move to the place that you are looking at, and right click to pass through the immediate wall (/jumpto and /thru, respectively).</p>
 <h2>Learning WorldEdit</h2>
 <p>The best three ways to getting to know WorldEdit are:</p>
 <ol>
@@ -128,7 +116,7 @@ h3 {
 <p>Additionally, some users have made some <a href="http://wiki.sk89q.com/wiki/WorldEdit#Video_tutorials">introductory videos</a>.</p>
 <p>Remember that <strong>WorldEdit has a history</strong>. Use <strong>//undo</strong> to undo and <strong>//redo</strong> to redo. If you have limited RAM, be sure to clear your history with <strong>/clearhistory</strong> after large operations.</p>
 <p class="warning"><strong>Warning:</strong> The history in the Bukkit version of WorldEdit is reliable, but in Single Player Commands, not all commands can be undone!</p>
-<h2>Other Features</h2>
+<h2>Highlighted Features</h2>
 <p>WorldEdit is largely an in-game map editor where you define areas and modify them, but it has a lot of extra tools that many are unfamiliar with. Once you've mastered the core features, be sure to check out these extras:</p>
 <h3>Snapshots</h3>
 <p>Snapshots allow you to restore a cuboid from a backup (even from a .zip). The obvious way to use this is to select a damaged region and use <strong>//restore</strong> to load the region from a backup. However, sometimes you may want to rollback your world to an older backup but hook WorldEdit's snapshots to the corrupt world (in the opposite way), allowing you to <em>reverse restore</em>. See <a href="http://wiki.sk89q.com/wiki/WorldEdit/Snapshots">snapshots</a>.</p>
@@ -140,13 +128,13 @@ h3 {
   <li>maze.js generates mazes</li>
   <li>roof.js creates pyramids to cover a region</li>
 </ul>
-<h3>Tools</h3>
+<h3>Brushes and Tools</h3>
 <p>WorldEdit has &quot;tools&quot; that you can &quot;bind&quot; to an item that you are holding. You can, for example, bind the <strong>/repl wood</strong> tool so that every time you right click with, say for example, a wooden sword, the block you right click  becomes wood. You can also use the <strong>/tree</strong> tool to generate trees instantly. See the <a href="http://wiki.sk89q.com/wiki/WorldEdit/Tools">tools page</a>.</p>
 <h2>Getting Help</h2>
 <p>If you need help with WorldEdit, two good places to go are:</p>
 <ul>
   <li><a href="http://forum.sk89q.com/forums/worldedit.5/">WorldEdit forum</a></li>
-  <li>IRC on irc.esper.net on channel #worldedit</li>
+  <li>IRC: <a href="skq.me/irc/irc.esper.net/worldedit">irc.esper.net #worldedit</a></li>
 </ul>
 <h2>Contributing</h2>
 <p>WorldEdit is entirely open source! You can download all of the plugin code to learn from it, modify it for your own self, or even contribute back!</p>
