@@ -110,7 +110,6 @@
         <configuration>
           <archive>
             <addMavenDescriptor>true</addMavenDescriptor>
-            <pomPropertiesFile>true</pomPropertiesFile>
             <manifest>
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
