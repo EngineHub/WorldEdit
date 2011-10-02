@@ -6,16 +6,20 @@
 - Added multiworld snapshot support (check the new structure on the wiki!)
 - Added //naturalize command (makes stone/dirt/grass layers)
 - Added a //farwand tool, allows selecting pos1 and pos2 at a distance
-- Added a //lrbuild tool, allows "placing" and "destroying" blocks at a distance
+- Added a //lrbuild tool, allows "placing" and
+    "destroying" blocks at a distance
 - Added /pyramid and /hpyramid generators
 - Added underlay and overlay masks
 - Added a /green command (adds a layer of grass on top of landscape)
 - Added polygon support to the WorldEdit CUI
-- Moved config permissions system and other WEPIF configuration to the wepif.yml file
-- Improved command logging to additionally log the position and region of the player
+- Moved config permissions system and other WEPIF configuration to the
+    wepif.yml file
+- Improved command logging to additionally log the position and region of
+    the player
 - Added -n flag to //smooth (smooth only natural terrain)
 - Improved item/block name matching
-- //pos1 and //pos2 now accept an x,y,z arguement to select arbitrary coordinates
+- //pos1 and //pos2 now accept an x,y,z arguement to
+    select arbitrary coordinates
 - Non-integer (decimal) radii now work in cylinders, spheres, fill, drain, etc
 - Added -s flag to //chunk (select all chunks in current selection)
 - Block patterns now can be used in //replacenear, //walls, and //outline
@@ -34,8 +38,9 @@
 - Fixed flipping of signs and doors
 - Fixed manipulating blocks in unloaded chunks
 Thanks to everyone for their contributions:
-zml2008, wizjany, TomyLobo, Nichts, mrapple, jjkoletar, robinjam, jascotty2, Hretsam,
-Elizacat, masteroftime, x1337x, TLUL, Droolio, ZerothAngel, md-5, and t3hk0d3
+zml2008, wizjany, TomyLobo, Nichts, mrapple, jjkoletar, robinjam, jascotty2,
+Hretsam, Elizacat, masteroftime, x1337x, TLUL, Droolio, ZerothAngel, md-5,
+and t3hk0d3
 
 4.6:
 - Updated for Minecraft 1.6.
