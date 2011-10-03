@@ -126,7 +126,7 @@ public class CuboidClipboard {
             return;
         }
         boolean reverse = angle < 0;
-        int numRotations = (int)Math.floor(angle / 90.0);
+        int numRotations = Math.abs((int)Math.floor(angle / 90.0));
 
         int width = getWidth();
         int length = getLength();
