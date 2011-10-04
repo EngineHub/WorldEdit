@@ -90,21 +90,37 @@ public class BaseBlock {
      * @return if air
      */
     public boolean isAir() {
-        return type == 0;
+        return type == BlockID.AIR;
     }
 
     /**
      * Rotate this block 90 degrees.
      */
-    public void rotate90() {
-        data = (byte) BlockData.rotate90(type, data);
+    public int rotate90() {
+        int newData = BlockData.rotate90(type, data);
+        this.data = (byte) newData;
+        return data;
     }
 
     /**
      * Rotate this block -90 degrees.
      */
-    public void rotate90Reverse() {
-        data = (byte) BlockData.rotate90Reverse(type, data);
+    public int rotate90Reverse() {
+        int newData = BlockData.rotate90Reverse(type, data);
+        this.data = (byte) newData;
+        return newData;
+    }
+
+    /**
+     * Cycle the damage value of the block forward or backward
+     *
+     * @param increment 1 for forward, -1 for backward
+     * @return new data value
+     */
+    public int cycleData(int increment) {
+        int newData = BlockData.cycle(this.type, this.data, increment);
+        this.data = (byte) newData;
+        return newData;
     }
 
     /**
@@ -135,7 +151,7 @@ public class BaseBlock {
     @Override
     public int hashCode() {
         int ret = type << 3;
-        if (data != (byte)-1) ret |= data;
+        if (data != (byte) -1) ret |= data;
         return ret;
     }
 

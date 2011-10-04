@@ -397,7 +397,6 @@ public enum BlockType {
         usesData.add(BlockID.LOG);
         usesData.add(BlockID.LEAVES);
         usesData.add(BlockID.DISPENSER);
-        usesData.add(BlockID.NOTE_BLOCK);
         usesData.add(BlockID.BED);
         usesData.add(BlockID.POWERED_RAIL);
         usesData.add(BlockID.DETECTOR_RAIL);
@@ -409,7 +408,9 @@ public enum BlockType {
         usesData.add(BlockID.DOUBLE_STEP);
         usesData.add(BlockID.STEP);
         usesData.add(BlockID.TORCH);
+        usesData.add(BlockID.FIRE);
         usesData.add(BlockID.WOODEN_STAIRS);
+        usesData.add(BlockID.CHEST);
         usesData.add(BlockID.REDSTONE_WIRE);
         usesData.add(BlockID.CROPS);
         usesData.add(BlockID.SOIL);
@@ -430,6 +431,8 @@ public enum BlockType {
         usesData.add(BlockID.STONE_BUTTON);
         usesData.add(BlockID.SNOW);
         usesData.add(BlockID.CACTUS);
+        usesData.add(BlockID.REED);
+        usesData.add(BlockID.JUKEBOX);
         usesData.add(BlockID.PUMPKIN);
         usesData.add(BlockID.JACKOLANTERN);
         usesData.add(BlockID.CAKE_BLOCK);
@@ -880,9 +883,9 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.LONG_GRASS, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.DEAD_BUSH, PlayerDirection.DOWN);
         for (int offset = 0; offset <= 8; offset += 8) {
-            dataAttachments.put(attachmentKey(BlockID.PISTON_EXTENSION, offset+0), PlayerDirection.UP);
-            dataAttachments.put(attachmentKey(BlockID.PISTON_EXTENSION, offset+1), PlayerDirection.DOWN);
-            addCardinals(BlockID.PISTON_EXTENSION, offset+2, offset+5, offset+3, offset+4);
+            dataAttachments.put(attachmentKey(BlockID.PISTON_EXTENSION, offset + 0), PlayerDirection.UP);
+            dataAttachments.put(attachmentKey(BlockID.PISTON_EXTENSION, offset + 1), PlayerDirection.DOWN);
+            addCardinals(BlockID.PISTON_EXTENSION, offset + 2, offset + 5, offset + 3, offset + 4);
         }
         nonDataAttachments.put(BlockID.YELLOW_FLOWER, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.RED_FLOWER, PlayerDirection.DOWN);
@@ -900,16 +903,16 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.MINECART_TRACKS, PlayerDirection.DOWN);
         addCardinals(BlockID.WALL_SIGN, 2, 5, 3, 4);
         for (int offset = 0; offset <= 8; offset += 8) {
-            addCardinals(BlockID.LEVER, offset+4, offset+1, offset+3, offset+2);
-            dataAttachments.put(attachmentKey(BlockID.LEVER, offset+5), PlayerDirection.DOWN);
-            dataAttachments.put(attachmentKey(BlockID.LEVER, offset+6), PlayerDirection.DOWN);
+            addCardinals(BlockID.LEVER, offset + 4, offset + 1, offset + 3, offset + 2);
+            dataAttachments.put(attachmentKey(BlockID.LEVER, offset + 5), PlayerDirection.DOWN);
+            dataAttachments.put(attachmentKey(BlockID.LEVER, offset + 6), PlayerDirection.DOWN);
         }
         nonDataAttachments.put(BlockID.STONE_PRESSURE_PLATE, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.IRON_DOOR, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.WOODEN_PRESSURE_PLATE, PlayerDirection.DOWN);
         // redstone torches: see torches
         for (int offset = 0; offset <= 8; offset += 8) {
-            addCardinals(BlockID.STONE_BUTTON, offset+4, offset+1, offset+3, offset+2);
+            addCardinals(BlockID.STONE_BUTTON, offset + 4, offset + 1, offset + 3, offset + 2);
         }
         nonDataAttachments.put(BlockID.CACTUS, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.REED, PlayerDirection.DOWN);
@@ -917,7 +920,7 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.REDSTONE_REPEATER_OFF, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.REDSTONE_REPEATER_ON, PlayerDirection.DOWN);
         for (int offset = 0; offset <= 4; offset += 4) {
-            addCardinals(BlockID.TRAP_DOOR, offset+0, offset+3, offset+1, offset+2);
+            addCardinals(BlockID.TRAP_DOOR, offset + 0, offset + 3, offset + 1, offset + 2);
         }
         nonDataAttachments.put(BlockID.PUMPKIN_STEM, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.MELON_STEM, PlayerDirection.DOWN);

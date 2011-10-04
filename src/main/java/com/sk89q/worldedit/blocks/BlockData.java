@@ -110,6 +110,7 @@ public final class BlockData {
 
         case BlockID.LADDER:
         case BlockID.WALL_SIGN:
+        case BlockID.CHEST:
         case BlockID.FURNACE:
         case BlockID.BURNING_FURNACE:
         case BlockID.DISPENSER:
@@ -268,6 +269,7 @@ public final class BlockData {
 
         case BlockID.LADDER:
         case BlockID.WALL_SIGN:
+        case BlockID.CHEST:
         case BlockID.FURNACE:
         case BlockID.BURNING_FURNACE:
         case BlockID.DISPENSER:
@@ -453,6 +455,7 @@ public final class BlockData {
 
         case BlockID.LADDER:
         case BlockID.WALL_SIGN:
+        case BlockID.CHEST:
         case BlockID.FURNACE:
         case BlockID.BURNING_FURNACE:
         case BlockID.DISPENSER:

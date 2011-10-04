@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.tools;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BlockData;
+import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
  * A mode that cycles the data values of supported blocks.
@@ -28,37 +28,38 @@ import com.sk89q.worldedit.blocks.BlockData;
  * @author sk89q
  */
 public class BlockDataCyler implements DoubleActionBlockTool {
-    
+
     public boolean canUse(LocalPlayer player) {
         return player.hasPermission("worldedit.tool.data-cycler");
     }
-    
+
     private boolean handleCycle(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked, boolean forward) {
-        
+
         LocalWorld world = clicked.getWorld();
-        
+
         int type = world.getBlockType(clicked);
         int data = world.getBlockData(clicked);
-        
+
         if (config.allowedDataCycleBlocks.size() > 0
                 && !player.hasPermission("worldedit.override.data-cycler")
                 && !config.allowedDataCycleBlocks.contains(type)) {
             player.printError("You are not permitted to cycle the data value of that block.");
             return true;
         }
-        
+
         int increment = forward ? 1 : -1;
-        data = BlockData.cycle(type, data, increment);
+        data = (new BaseBlock(type, data)).cycleData(increment);
+
         if (data < 0) {
             player.printError("That block's data cannot be cycled!");
-            return true;
+        } else {
+            world.setBlockData(clicked, data);
         }
-        world.setBlockData(clicked, data);
-        
+
         return true;
     }
-    
+
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         return handleCycle(server, config, player, session, clicked, true);
