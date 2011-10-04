@@ -20,7 +20,8 @@
 package com.sk89q.bukkit.migration;
 
 import org.bukkit.Server;
-import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permissible;
+import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.ArrayList;
@@ -45,25 +46,34 @@ public class DinnerPermsResolver implements PermissionsResolver {
     }
 
     public void load() {
-        // Permissions are already loaded
     }
 
     public boolean hasPermission(String name, String permission) {
-        Player player = server.getPlayerExact(name);
-        if (player == null) {
+        Permissible perms = server.getPlayerExact(name);
+        if (perms == null) {
             return false; // Permissions are only registered for online players
         }
-        if (player.hasPermission("*") || player.hasPermission(permission)) {
-            return true;
+        switch (internalHasPermission(perms, permission)) {
+            case 0:
+                break;
+            case -1:
+                return false;
+            case 1:
+                return true;
         }
         int dotPos = permission.lastIndexOf(".");
         while (dotPos > -1) {
-            if (player.hasPermission(permission.substring(0, dotPos + 1) + "*")) {
-                return true;
+            switch (internalHasPermission(perms, permission.substring(0, dotPos + 1) + "*")) {
+                case 0:
+                    break;
+                case -1:
+                    return false;
+                case 1:
+                    return true;
             }
             dotPos = permission.lastIndexOf(".", dotPos - 1);
         }
-        return false;
+        return internalHasPermission(perms, "*") == 1;
     }
 
     public boolean hasPermission(String worldName, String name, String permission) {
@@ -71,20 +81,20 @@ public class DinnerPermsResolver implements PermissionsResolver {
     }
 
     public boolean inGroup(String name, String group) {
-        Player player = server.getPlayer(name);
-        if (player == null) {
+        Permissible perms = server.getPlayerExact(name);
+        if (perms == null) {
             return false;
         }
-        return player.hasPermission(GROUP_PREFIX + group);
+        return perms.hasPermission(GROUP_PREFIX + group);
     }
 
     public String[] getGroups(String name) {
-        Player player = server.getPlayer(name);
-        if (player == null) {
+        Permissible perms = server.getPlayerExact(name);
+        if (perms == null) {
             return new String[0];
         }
         List<String> groupNames = new ArrayList<String>();
-        for (PermissionAttachmentInfo permAttach : player.getEffectivePermissions()) {
+        for (PermissionAttachmentInfo permAttach : perms.getEffectivePermissions()) {
             String perm = permAttach.getPermission();
             if (!(perm.startsWith(GROUP_PREFIX) && permAttach.getValue())) {
                 continue;
@@ -94,8 +104,28 @@ public class DinnerPermsResolver implements PermissionsResolver {
         return groupNames.toArray(new String[groupNames.size()]);
     }
 
+    /**
+     * Checks the permission from dinnerperms
+     * @param perms Permissible to check for
+     * @param permission The permission to check
+     * @return -1 if the permission is explicitly denied, 1 if the permission is allowed,
+     *         0 if the permission is denied by a default.
+     */
+    public int internalHasPermission(Permissible perms, String permission) {
+        if (perms.isPermissionSet(permission)) {
+            return perms.hasPermission(permission) ? 1 : -1;
+        } else {
+            Permission perm = server.getPluginManager().getPermission(permission);
+
+            if (perm != null) {
+                return perm.getDefault().getValue(perms.isOp()) ? 1 : 0;
+            } else {
+                return 0;
+            }
+        }
+    }
+    
     public String getDetectionMessage() {
         return "Using the Bukkit Permissions API.";
     }
-
 }
