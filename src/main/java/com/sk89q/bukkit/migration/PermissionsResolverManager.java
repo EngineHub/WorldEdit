@@ -61,10 +61,10 @@ public class PermissionsResolverManager implements PermissionsResolver {
 
     @SuppressWarnings("unchecked")
     protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[] {
-        PluginPermissionsResolver.class,
-        PermissionsExResolver.class,
-        NijiPermissionsResolver.class,
         DinnerPermsResolver.class,
+        NijiPermissionsResolver.class,
+        PermissionsExResolver.class,
+        PluginPermissionsResolver.class,
         FlatFilePermissionsResolver.class
     };
 
