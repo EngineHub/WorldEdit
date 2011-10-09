@@ -152,7 +152,7 @@ public class CommandContext {
     }
 
     public boolean matches(String command) {
-        return command.equalsIgnoreCase(command);
+        return this.command.equalsIgnoreCase(command);
     }
 
     public String getString(int index) {
