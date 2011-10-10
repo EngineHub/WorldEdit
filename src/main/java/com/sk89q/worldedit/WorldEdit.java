@@ -1046,7 +1046,7 @@ public class WorldEdit {
             // @TODO do this right or make craftbukkit do it right
             if (!session.canUseJumpto()){
                 session.toggleJumptoBlock();
-                return false;
+                return true;
             }
             WorldVector pos = player.getSolidBlockTrace(config.navigationWandMaxDistance);            
             if (pos != null) {
