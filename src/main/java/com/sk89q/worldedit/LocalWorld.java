@@ -298,7 +298,7 @@ public abstract class LocalWorld {
      *
      * @param pt Position to check
      */
-    public abstract void checkLoadedChuck(Vector pt);
+    public void checkLoadedChunk(Vector pt) {}
 
     /**
      * Compare if the other world is equal.
