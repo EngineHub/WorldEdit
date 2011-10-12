@@ -436,8 +436,7 @@ public class WorldEdit {
         return getBlock(player, id, false);
     }
 
-    public Set<BaseBlock> getBlocks (LocalPlayer player, String list,
-                                     boolean allAllowed, boolean allowNoData)
+    public Set<BaseBlock> getBlocks (LocalPlayer player, String list, boolean allAllowed, boolean allowNoData)
             throws DisallowedItemException, UnknownItemException {
         String[] items = list.split(",");
         Set<BaseBlock> blocks = new HashSet<BaseBlock>();
@@ -449,7 +448,7 @@ public class WorldEdit {
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed)
             throws DisallowedItemException, UnknownItemException {
-        return getBlocks(player, list, allAllowed);
+        return getBlocks(player, list, allAllowed, false);
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list)
