@@ -325,4 +325,6 @@ public abstract class LocalWorld {
     public int getHeight() {
         return 127;
     }
+
+    public void fixLighting(Iterable<BlockVector2D> chunks) {}
 }

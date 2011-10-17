@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
@@ -39,10 +42,13 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeType;
 import org.bukkit.World;
+
+import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
@@ -703,5 +709,60 @@ public class BukkitWorld extends LocalWorld {
     @Override
     public int getHeight() {
         return world.getMaxHeight() - 1;
+    }
+
+    @Override
+    public void fixLighting(Iterable<BlockVector2D> chunks) {
+        if (!fastLighting) {
+            return;
+        }
+
+        try {
+            Object notchWorld = CraftWorld_getHandle.invoke(this.world);
+            for (BlockVector2D chunkPos : chunks) {
+                int x = chunkPos.getBlockX();
+                int z = chunkPos.getBlockZ();
+                System.out.println(x+"/"+z);
+
+                Object chunk = World_getChunkFromChunkCoords.invoke(notchWorld, x, z);
+
+                int length = ((byte[])Chunk_b.get(chunk)).length;
+                Chunk_h.set(chunk, NibbleArray_ctor.newInstance(length, 7));
+                //Chunk_i.set(chunk, NibbleArray_ctor.newInstance(length, 7));
+
+                Chunk_generateSkylightMap.invoke(chunk);
+            }
+        }
+        catch (Exception e) {
+            System.out.println("Fast Mode: Could not fix lighting. Probably an incompatible version of CraftBukkit.");
+            e.printStackTrace();
+        }
+    }
+
+    private static boolean fastLighting = false;
+    private static Method CraftWorld_getHandle;
+    private static Method World_getChunkFromChunkCoords;
+    private static Method Chunk_generateSkylightMap;
+    private static Field Chunk_b;
+    private static Field Chunk_h;
+    //private static Field Chunk_i;
+    private static Constructor<?> NibbleArray_ctor;
+    static {
+        if (Bukkit.getServer().getName().equalsIgnoreCase("CraftBukkit")) {
+            try {
+                CraftWorld_getHandle = Class.forName("org.bukkit.craftbukkit.CraftWorld").getMethod("getHandle");
+
+                World_getChunkFromChunkCoords = Class.forName("net.minecraft.server.World").getMethod("getChunkAt", int.class, int.class);
+                Chunk_generateSkylightMap = Class.forName("net.minecraft.server.Chunk").getMethod("initLighting");
+
+                Chunk_b = Class.forName("net.minecraft.server.Chunk").getField("b");
+                Chunk_h = Class.forName("net.minecraft.server.Chunk").getField("h");
+                //Chunk_i = Class.forName("net.minecraft.server.Chunk").getField("i");
+                NibbleArray_ctor = Class.forName("net.minecraft.server.NibbleArray").getConstructor(int.class, int.class);
+                fastLighting = true;
+            }
+            catch (Throwable e) {
+            }
+        }
     }
 }
