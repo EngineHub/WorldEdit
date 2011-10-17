@@ -1,3 +1,11 @@
+4.8-SNAPSHOT: 
+  I added these here mainly to keep track. These entries are not intended to be in the final 4.8 changelog.
+- Added /snapshot sel
+- Fixed data value handling for fire, chest, reed and jukebox
+- Fixed CommandContext.matches(String) (for developers!)
+- Improved interaction with permission plugins
+- Fixed config file generation on windows
+
 4.7:
 - Added support for all the new items and blocks
 - Added multiworld permissions support to WEPIF
