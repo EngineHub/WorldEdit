@@ -107,7 +107,17 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean setBlockTypeFast(Vector pt, int type) {
-        return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setTypeId(type, false);
+        final Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        if (fastLighting) {
+            type = type & 255;
+            final int previousOpacity = Block_lightOpacity[type];
+            Block_lightOpacity[type] = 0;
+            final boolean ret = block.setTypeId(type);
+            Block_lightOpacity[type] = previousOpacity;
+            return ret;
+        }
+
+        return block.setTypeId(type, false);
     }
 
     /**
@@ -131,7 +141,17 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean setTypeIdAndDataFast(Vector pt, int type, int data){
-        return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setTypeIdAndData(type, (byte) data, false);
+        final Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        if (fastLighting) {
+            type = type & 255;
+            final int previousOpacity = Block_lightOpacity[type];
+            Block_lightOpacity[type] = 0;
+            final boolean ret = block.setTypeIdAndData(type, (byte) data, true);
+            Block_lightOpacity[type] = previousOpacity;
+            return ret;
+        }
+
+        return block.setTypeIdAndData(type, (byte) data, false);
     }
     
     /**
@@ -726,8 +746,8 @@ public class BukkitWorld extends LocalWorld {
 
                 Object chunk = World_getChunkFromChunkCoords.invoke(notchWorld, x, z);
 
-                int length = ((byte[])Chunk_b.get(chunk)).length;
-                Chunk_h.set(chunk, NibbleArray_ctor.newInstance(length, 7));
+                int length = ((byte[])Chunk_blocks.get(chunk)).length;
+                Chunk_skylightMap.set(chunk, NibbleArray_ctor.newInstance(length, 7));
                 //Chunk_i.set(chunk, NibbleArray_ctor.newInstance(length, 7));
 
                 Chunk_generateSkylightMap.invoke(chunk);
@@ -740,25 +760,29 @@ public class BukkitWorld extends LocalWorld {
     }
 
     private static boolean fastLighting = false;
+    private static int[] Block_lightOpacity;
     private static Method CraftWorld_getHandle;
     private static Method World_getChunkFromChunkCoords;
     private static Method Chunk_generateSkylightMap;
-    private static Field Chunk_b;
-    private static Field Chunk_h;
-    //private static Field Chunk_i;
+    private static Field Chunk_blocks;
+    private static Field Chunk_skylightMap;
+    //private static Field Chunk_blocklightMap;
     private static Constructor<?> NibbleArray_ctor;
     static {
         if (Bukkit.getServer().getName().equalsIgnoreCase("CraftBukkit")) {
             try {
+                Block_lightOpacity = (int[]) Class.forName("net.minecraft.server.Block").getDeclaredField("q").get(null);
+
                 CraftWorld_getHandle = Class.forName("org.bukkit.craftbukkit.CraftWorld").getMethod("getHandle");
 
                 World_getChunkFromChunkCoords = Class.forName("net.minecraft.server.World").getMethod("getChunkAt", int.class, int.class);
                 Chunk_generateSkylightMap = Class.forName("net.minecraft.server.Chunk").getMethod("initLighting");
 
-                Chunk_b = Class.forName("net.minecraft.server.Chunk").getField("b");
-                Chunk_h = Class.forName("net.minecraft.server.Chunk").getField("h");
-                //Chunk_i = Class.forName("net.minecraft.server.Chunk").getField("i");
+                Chunk_blocks = Class.forName("net.minecraft.server.Chunk").getField("b");
+                Chunk_skylightMap = Class.forName("net.minecraft.server.Chunk").getField("h");
+                //Chunk_blocklightMap = Class.forName("net.minecraft.server.Chunk").getField("i");
                 NibbleArray_ctor = Class.forName("net.minecraft.server.NibbleArray").getConstructor(int.class, int.class);
+
                 fastLighting = true;
             }
             catch (Throwable e) {

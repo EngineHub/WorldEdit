@@ -554,9 +554,14 @@ public class EditSession {
             return;
         }
 
+        final Set<BlockVector2D> dirtyChunks = new HashSet<BlockVector2D>();
+
         for (Map.Entry<BlockVector, BaseBlock> entry : queueAfter) {
             BlockVector pt = (BlockVector) entry.getKey();
             rawSetBlock(pt, (BaseBlock) entry.getValue());
+
+            // TODO: use ChunkStore.toChunk(pt) after optimizing it.
+            if (fastMode) dirtyChunks.add(new BlockVector2D(pt.getBlockX() >> 4, pt.getBlockZ() >> 4));
         }
 
         // We don't want to place these blocks if other blocks were missing
@@ -622,9 +627,14 @@ public class EditSession {
                 for (BlockVector pt : walked) {
                     rawSetBlock(pt, blockTypes.get(pt));
                     blocks.remove(pt);
+
+                    // TODO: use ChunkStore.toChunk(pt) after optimizing it.
+                    if (fastMode) dirtyChunks.add(new BlockVector2D(pt.getBlockX() >> 4, pt.getBlockZ() >> 4));
                 }
             }
         }
+
+        if (!dirtyChunks.isEmpty()) world.fixLighting(dirtyChunks);
 
         queueAfter.clear();
         queueLast.clear();
