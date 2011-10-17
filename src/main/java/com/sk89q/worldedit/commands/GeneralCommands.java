@@ -63,22 +63,34 @@ public class GeneralCommands {
 
     @Command(
         aliases = { "/fast" },
-        usage = "",
+        usage = "[on|off]",
         desc = "Toggle fast mode",
         min = 0,
-        max = 0
+        max = 1
     )
     @CommandPermissions("worldedit.fast")
     public static void fast(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
-        
-        session.setFastMode(!session.hasFastMode());
-        
+
+        String newState = args.getString(0, null);
         if (session.hasFastMode()) {
-            player.print("Fast mode enabled. You may need to rejoin to see changes.");
-        } else {
+            if ("on".equals(newState)) {
+                player.printError("Fast mode already enabled.");
+                return;
+            }
+
+            session.setFastMode(false);
             player.print("Fast mode disabled.");
+        }
+        else {
+            if ("off".equals(newState)) {
+                player.printError("Fast mode already disabled.");
+                return;
+            }
+
+            session.setFastMode(true);
+            player.print("Fast mode enabled. Lighting in the affected chunks may be wrong and/or you may need to rejoin to see changes.");
         }
     }
 
