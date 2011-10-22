@@ -25,7 +25,7 @@ import org.bukkit.entity.Player;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 
-import org.bukkit.util.config.Configuration;
+import org.bukkit.configuration.Configuration;
 
 public class PermissionsExResolver implements PermissionsResolver {
     private final PermissionManager manager;

@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
 import org.bukkit.Server;
-import org.bukkit.util.config.Configuration;
+import org.bukkit.configuration.Configuration;
 
 public class FlatFilePermissionsResolver implements PermissionsResolver {
     private Map<String, Set<String>> userPermissionsCache;

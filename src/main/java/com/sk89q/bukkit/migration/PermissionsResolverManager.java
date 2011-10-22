@@ -22,11 +22,15 @@ package com.sk89q.bukkit.migration;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Server;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.YamlConfigurationOptions;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.util.config.Configuration;
+import org.bukkit.configuration.Configuration;
 
 public class PermissionsResolverManager implements PermissionsResolver {
     private static final String CONFIG_HEADER = "#\r\n" +
@@ -55,21 +59,22 @@ public class PermissionsResolverManager implements PermissionsResolver {
     private Server server;
     private PermissionsResolver permissionResolver;
     private PermissionsResolverServerListener listener;
-    private Configuration config;
+    private FileConfiguration config;
     private String name;
     private Logger logger;
+    private List<Class<? extends PermissionsResolver>> enabledResolvers = new ArrayList<Class<? extends PermissionsResolver>>();
 
     @SuppressWarnings("unchecked")
     protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[] {
-        DinnerPermsResolver.class,
-        NijiPermissionsResolver.class,
-        PermissionsExResolver.class,
         PluginPermissionsResolver.class,
+        PermissionsExResolver.class,
+        NijiPermissionsResolver.class,
+        DinnerPermsResolver.class,
         FlatFilePermissionsResolver.class
     };
 
     @Deprecated
-    public PermissionsResolverManager(Configuration config, Server server, String name, Logger logger) {
+    public PermissionsResolverManager(org.bukkit.util.config.Configuration config, Server server, String name, Logger logger) {
         this.server = server;
         this.name = name;
         this.logger = logger;
@@ -88,23 +93,25 @@ public class PermissionsResolverManager implements PermissionsResolver {
     }
 
     public void findResolver() {
-        for (Class<? extends PermissionsResolver> resolverClass : availableResolvers) {
+        for (Class<? extends PermissionsResolver> resolverClass : enabledResolvers) {
             try {
                 Method factoryMethod = resolverClass.getMethod("factory", Server.class, Configuration.class);
 
                 this.permissionResolver = (PermissionsResolver) factoryMethod.invoke(null, this.server, this.config);
 
                 if (this.permissionResolver != null) {
-                    logger.info(name + ": " + this.permissionResolver.getDetectionMessage());
-                    return;
+                    break;
                 }
             } catch (Throwable e) {
+                logger.warning("Error in factory method for " + resolverClass.getSimpleName() + ": " + e);
+                e.printStackTrace();
                 continue;
             }
         }
-
-        permissionResolver = new ConfigurationPermissionsResolver(config);
-        logger.info(name + ": No known permissions plugin detected. Using configuration file for permissions.");
+        if (permissionResolver == null) {
+            permissionResolver = new ConfigurationPermissionsResolver(config);
+        }
+        logger.info(name + ": " + permissionResolver.getDetectionMessage());
     }
 
     public void setPluginPermissionsResolver(Plugin plugin) {
@@ -113,7 +120,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         }
 
         permissionResolver = new PluginPermissionsResolver((PermissionsProvider) plugin, plugin);
-        logger.info(name + ": Using plugin '" + plugin.getDescription().getName() + "' for permissions.");
+        logger.info(name + ": " + permissionResolver.getDetectionMessage());
     }
 
     public void load() {
@@ -136,6 +143,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         return permissionResolver.getGroups(player);
     }
 
+    @SuppressWarnings("unchecked")
     private boolean loadConfig(File file) {
         boolean isUpdated = false;
         if (!file.exists()) {
@@ -145,29 +153,76 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 e.printStackTrace();
             }
         }
-        config = new Configuration(file);
-        config.load();
-        List<String> keys = config.getKeys();
-        config.setHeader(CONFIG_HEADER);
-        if (!keys.contains("dinnerperms")) {
-            config.setProperty("dinnerperms", config.getBoolean("dinner-perms", true));
-            isUpdated = true;
-        }
+        config = YamlConfiguration.loadConfiguration(file);
+        ((YamlConfigurationOptions)config.options()).indent(4);
+        Set<String> keys = config.getKeys(true);
+        config.options().header(CONFIG_HEADER);
+
         if (!keys.contains("ignore-nijiperms-bridges")) {
-            config.setProperty("ignore-nijiperms-bridges", true);
+            config.set("ignore-nijiperms-bridges", true);
             isUpdated = true;
         }
-        if (keys.contains("dinner-perms")) {
-            config.removeProperty("dinner-perms");
+
+        if (!keys.contains("resolvers.enabled")) {
+           List<String> resolvers = new ArrayList<String>();
+            for (Class<?> clazz : availableResolvers) {
+                resolvers.add(clazz.getSimpleName());
+            }
+            enabledResolvers.addAll(Arrays.asList(availableResolvers));
+            config.set("resolvers.enabled", resolvers);
+            isUpdated = true;
+        } else {
+            List<String> disabledResolvers = config.getList("resolvers.disabled", new ArrayList<String>());
+            List<String> stagedEnabled = config.getList("resolvers.enabled");
+            for (Iterator<String> i = stagedEnabled.iterator(); i.hasNext();) {
+                String nextName = i.next();
+                Class<?> next = null;
+                try {
+                    next = Class.forName(getClass().getPackage().getName() + "." + nextName);
+                } catch (ClassNotFoundException e) {}
+                
+                if (next == null || !PermissionsResolver.class.isAssignableFrom(next)) {
+                    logger.warning("WEPIF: Invalid or unknown class found in enabled resolvers: "
+                            + nextName + ". Moving to disabled resolvers list.");
+                    i.remove();
+                    disabledResolvers.add(nextName);
+                    isUpdated = true;
+                    continue;
+                }
+                enabledResolvers.add(next.asSubclass(PermissionsResolver.class));
+            }
+
+            for (Class<?> clazz : availableResolvers) {
+                if (!stagedEnabled.contains(clazz.getSimpleName()) &&
+                        !disabledResolvers.contains(clazz.getSimpleName())) {
+                    disabledResolvers.add(clazz.getName());
+                    logger.info("New permissions resolver: "
+                            + clazz.getSimpleName() + " detected. " +
+                            "Added to disabled resolvers list.");
+                    isUpdated = true;
+                }
+            }
+            config.set("resolvers.disabled", disabledResolvers);
+            config.set("resolvers.enabled", stagedEnabled);
+        }
+
+        if (keys.contains("dinner-perms") || keys.contains("dinnerperms")) {
+            config.set("dinner-perms", null);
+            config.set("dinnerperms", null);
             isUpdated = true;
         }
         if (!keys.contains("permissions")) {
-            ConfigurationPermissionsResolver.generateDefaultPerms(config);
+            ConfigurationPermissionsResolver.generateDefaultPerms(
+                    config.createSection("permissions"));
             isUpdated = true;
         }
         if (isUpdated) {
             logger.info("WEPIF: Updated config file");
-            config.save();
+            try {
+                config.save(file);
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "WEPIF: Unable to save config file", e);
+            }
         }
         return isUpdated;
     }

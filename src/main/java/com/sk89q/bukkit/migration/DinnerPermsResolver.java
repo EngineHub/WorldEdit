@@ -26,7 +26,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.util.config.Configuration;
+import org.bukkit.configuration.Configuration;
 
 public class DinnerPermsResolver implements PermissionsResolver {
 
@@ -38,9 +38,6 @@ public class DinnerPermsResolver implements PermissionsResolver {
     }
 
     public static PermissionsResolver factory(Server server, Configuration config) {
-        if (!config.getBoolean("dinnerperms", true)) {
-            return null;
-        }
 
         return new DinnerPermsResolver(server);
     }

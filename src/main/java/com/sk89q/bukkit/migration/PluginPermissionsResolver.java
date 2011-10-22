@@ -22,7 +22,7 @@ package com.sk89q.bukkit.migration;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.util.config.Configuration;
+import org.bukkit.configuration.Configuration;
 
 public class PluginPermissionsResolver implements PermissionsResolver {
 

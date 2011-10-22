@@ -19,12 +19,10 @@
 
 package com.sk89q.bukkit.migration;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashMap;
-import org.bukkit.util.config.Configuration;
+import java.util.*;
+
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class ConfigurationPermissionsResolver implements PermissionsResolver {
     private Configuration config;
@@ -36,15 +34,15 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
         this.config = config;
     }
 
-    public static void generateDefaultPerms(Configuration config) {
-        config.setProperty("permissions.groups.default.permissions", new String[] {
+    public static ConfigurationSection generateDefaultPerms(ConfigurationSection section) {
+        section.set("permissions.groups.default.permissions", Arrays.asList(
                 "worldedit.reload",
-                "worldedit.selection.*",
-                "worlds.creative.worldedit.region.*"});
-        config.setProperty("permissions.groups.admins.permissions", new String[]{"*"});
-        config.setProperty("permissions.users.sk89q.permissions", new String[]{"worldedit.*"});
-        config.setProperty("permissions.users.sk89q.groups", new String[]{"admins"});
-
+                "worldedit.selection",
+                "worlds.creative.worldedit.region"));
+        section.set("permissions.groups.admins.permissions", Arrays.asList("*"));
+        section.set("permissions.users.sk89q.permissions", Arrays.asList("worldedit"));
+        section.set("permissions.users.sk89q.groups", Arrays.asList("admins"));
+        return section;
     }
 
     public void load() {
@@ -54,12 +52,12 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
 
         Map<String, Set<String>> userGroupPermissions = new HashMap<String, Set<String>>();
 
-        List<String> groupKeys = config.getKeys("permissions.groups");
+        List<String> groupKeys = config.getList("permissions.groups");
 
         if (groupKeys != null) {
             for (String key : groupKeys) {
                 List<String> permissions =
-                        config.getStringList("permissions.groups." + key + ".permissions", null);
+                        config.getList("permissions.groups." + key + ".permissions", null);
 
                 if (permissions.size() > 0) {
                     Set<String> groupPerms = new HashSet<String>(permissions);
@@ -72,21 +70,21 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
             }
         }
 
-        List<String> userKeys = config.getKeys("permissions.users");
+        List<String> userKeys = config.getList("permissions.users");
 
         if (userKeys != null) {
             for (String key : userKeys) {
                 Set<String> permsCache = new HashSet<String>();
 
                 List<String> permissions =
-                        config.getStringList("permissions.users." + key + ".permissions", null);
+                        config.getList("permissions.users." + key + ".permissions", null);
 
                 if (permissions.size() > 0) {
                     permsCache.addAll(permissions);
                 }
 
                 List<String> groups =
-                        config.getStringList("permissions.users." + key + ".groups", null);
+                        config.getList("permissions.users." + key + ".groups", null);
                 groups.add("default");
 
                 if (groups.size() > 0) {
