@@ -17,33 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.expression.runtime;
+package com.sk89q.worldedit.expression.lexer.tokens;
 
-public final class Variable extends Assignable {
-    public double value;
+public class KeywordToken extends Token {
+    public final String value;
 
-    public Variable(double value) {
-        super(-1);
+    public KeywordToken(int position, String value) {
+        super(position);
         this.value = value;
     }
 
     @Override
-    public double invoke() {
-        return value;
+    public char id() {
+        return 'i';
     }
 
     @Override
     public String toString() {
-        return "var";
-    }
-
-    @Override
-    public char id() {
-        return 'v';
-    }
-
-    @Override
-    public double assign(double value) {
-        return this.value = value;
+        return "KeywordToken(" + value + ")";
     }
 }

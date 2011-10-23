@@ -19,31 +19,10 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
-public final class Variable extends Assignable {
-    public double value;
-
-    public Variable(double value) {
-        super(-1);
-        this.value = value;
+public abstract class Assignable extends Invokable {
+    public Assignable(int position) {
+        super(position);
     }
 
-    @Override
-    public double invoke() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return "var";
-    }
-
-    @Override
-    public char id() {
-        return 'v';
-    }
-
-    @Override
-    public double assign(double value) {
-        return this.value = value;
-    }
+    public abstract double assign(double value) throws EvaluationException;
 }

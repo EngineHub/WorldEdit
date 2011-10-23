@@ -1,0 +1,82 @@
+// $Id$
+/*
+ * WorldEdit
+ * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+package com.sk89q.worldedit.expression.runtime;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Sequence extends Invokable {
+    private final Invokable[] sequence;
+
+    public Sequence(int position, Invokable... sequence) {
+        super(position);
+
+        this.sequence = sequence;
+    }
+
+    @Override
+    public char id() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public double invoke() throws EvaluationException {
+        double ret = 0;
+        for (Invokable invokable : sequence) {
+            ret = invokable.invoke();
+        }
+        return ret;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("seq(");
+        boolean first = true;
+        for (Invokable invokable : sequence) {
+            if (!first) {
+                sb.append(", ");
+            }
+            sb.append(invokable);
+            first = false;
+        }
+
+        return sb.append(')').toString();
+    }
+
+    @Override
+    public Invokable optimize() throws EvaluationException {
+        List<Invokable> newSequence = new ArrayList<Invokable>();
+
+        for (Invokable invokable : sequence) {
+            invokable = invokable.optimize();
+            if (invokable instanceof Sequence) {
+                for (Invokable subInvokable : ((Sequence) invokable).sequence) {
+                    newSequence.add(subInvokable);
+                }
+            }
+            else {
+                newSequence.add(invokable);
+            }
+        }
+
+        return new Sequence(getPosition(), newSequence.toArray(new Invokable[newSequence.size()]));
+    }
+}

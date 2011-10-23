@@ -21,10 +21,22 @@ package com.sk89q.worldedit.expression.runtime;
 
 public final class Operators {
     public static final Function getOperator(int position, String name, Invokable lhs, Invokable rhs) throws NoSuchMethodException {
+        if (lhs instanceof Assignable) {
+            try {
+                return new Function(position, Operators.class.getMethod(name, Assignable.class, Invokable.class), lhs, rhs);
+            }
+            catch (NoSuchMethodException e) {}
+        }
         return new Function(position, Operators.class.getMethod(name, Invokable.class, Invokable.class), lhs, rhs);
     }
 
     public static final Function getOperator(int position, String name, Invokable argument) throws NoSuchMethodException {
+        if (argument instanceof Assignable) {
+            try {
+                return new Function(position, Operators.class.getMethod(name, Assignable.class), argument);
+            }
+            catch (NoSuchMethodException e) {}
+        }
         return new Function(position, Operators.class.getMethod(name, Invokable.class), argument);
     }
 
@@ -113,6 +125,43 @@ public final class Operators {
 
     public static final double shr(Invokable lhs, Invokable rhs) throws EvaluationException {
         return (long) lhs.invoke() >> (long) rhs.invoke();
+    }
+
+
+    public static final double ass(Assignable lhs, Invokable rhs) throws EvaluationException {
+        return lhs.assign(rhs.invoke());
+    }
+
+    public static final double aadd(Assignable lhs, Invokable rhs) throws EvaluationException {
+        return lhs.assign(lhs.invoke() + rhs.invoke());
+    }
+
+    public static final double asub(Assignable lhs, Invokable rhs) throws EvaluationException {
+        return lhs.assign(lhs.invoke() - rhs.invoke());
+    }
+
+    public static final double amul(Assignable lhs, Invokable rhs) throws EvaluationException {
+        return lhs.assign(lhs.invoke() * rhs.invoke());
+    }
+
+    public static final double adiv(Assignable lhs, Invokable rhs) throws EvaluationException {
+        return lhs.assign(lhs.invoke() / rhs.invoke());
+    }
+
+    public static final double amod(Assignable lhs, Invokable rhs) throws EvaluationException {
+        return lhs.assign(lhs.invoke() % rhs.invoke());
+    }
+
+    public static final double aexp(Assignable lhs, Invokable rhs) throws EvaluationException {
+        return lhs.assign(Math.pow(lhs.invoke(), rhs.invoke()));
+    }
+
+    public static final double inc(Assignable x) throws EvaluationException {
+        return x.assign(x.invoke() + 1);
+    }
+
+    public static final double dec(Assignable x) throws EvaluationException {
+        return x.assign(x.invoke() - 1);
     }
 
 

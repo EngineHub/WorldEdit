@@ -15,8 +15,8 @@ public class ExpressionTest {
         assertEquals(1-2+3, simpleEval("1-2+3"), 0);
 
         // check unary ops
-        assertEquals(2+ +4, simpleEval("2++4"), 0);
-        assertEquals(2- -4, simpleEval("2--4"), 0);
+        assertEquals(2+ +4, simpleEval("2+ +4"), 0);
+        assertEquals(2- -4, simpleEval("2- -4"), 0);
         assertEquals(2*-4, simpleEval("2*-4"), 0);
 
         // check functions
@@ -31,7 +31,7 @@ public class ExpressionTest {
     public void testErrors() throws ExpressionException {
         // test lexer errors
         try {
-            Expression.compile("{");
+            Expression.compile("#");
             fail("Error expected");
         } catch (LexerException e) {
             assertEquals("Error position", 0, e.getPosition());
@@ -58,6 +58,15 @@ public class ExpressionTest {
             Expression.compile("x(");
             fail("Error expected");
         } catch (ParserException e) {}
+    }
+
+    @Test
+    public void testAssign() throws ExpressionException {
+        Expression foo = Expression.compile("{a=x} b=y; c=z", "x", "y", "z", "a", "b", "c");
+        foo.evaluate(2, 3, 5);
+        assertEquals(2, foo.getVariable("a").invoke(), 0);
+        assertEquals(3, foo.getVariable("b").invoke(), 0);
+        assertEquals(5, foo.getVariable("c").invoke(), 0);
     }
 
     private double simpleEval(String expression) throws Exception {
