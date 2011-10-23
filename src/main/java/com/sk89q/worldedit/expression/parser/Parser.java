@@ -95,7 +95,7 @@ public class Parser {
 
                 final Token next = peek();
                 if (next.id() == '(') {
-                    halfProcessed.add(parseFunction(identifierToken));
+                    halfProcessed.add(parseFunctionCall(identifierToken));
                 }
                 else {
                     Invokable variable = variables.get(identifierToken.value);
@@ -301,9 +301,9 @@ public class Parser {
         return tokens.get(position);
     }
 
-    private Identifiable parseFunction(IdentifierToken identifierToken) throws ParserException {
+    private Identifiable parseFunctionCall(IdentifierToken identifierToken) throws ParserException {
         if (peek().id() != '(') {
-            throw new ParserException(peek().getPosition(), "Unexpected character in parseBracket");
+            throw new ParserException(peek().getPosition(), "Unexpected character in parseFunctionCall");
         }
         ++position;
 
