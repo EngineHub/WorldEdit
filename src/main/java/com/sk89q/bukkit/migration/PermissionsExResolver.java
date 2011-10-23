@@ -31,13 +31,17 @@ public class PermissionsExResolver implements PermissionsResolver {
     private final Server server;
 
     public static PermissionsResolver factory(Server server, YAMLProcessor config) {
-        PermissionManager manager = server.getServicesManager().load(PermissionManager.class);
+        try {
+            PermissionManager manager = server.getServicesManager().load(PermissionManager.class);
 
-        if (manager == null) {
+            if (manager == null) {
+                return null;
+            }
+
+            return new PermissionsExResolver(server, manager);
+        } catch (Throwable t) {
             return null;
         }
-
-        return new PermissionsExResolver(server, manager);
     }
 
     public PermissionsExResolver(Server server, PermissionManager manager) {
