@@ -28,6 +28,7 @@ import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
+import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -89,7 +90,7 @@ public class WorldEditPlugin extends JavaPlugin {
         
         // Set up configuration and such, including the permissions
         // resolver
-        config = new BukkitConfiguration(getConfiguration(), logger);
+        config = new BukkitConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml"), true), logger);
         perms = new PermissionsResolverManager(this, "WorldEdit", logger);
         
         // Load the configuration
@@ -126,7 +127,6 @@ public class WorldEditPlugin extends JavaPlugin {
      * Loads and reloads all configuration.
      */
     protected void loadConfiguration() {
-        getConfiguration().load();
         config.unload();
         config.load();
         perms.load();

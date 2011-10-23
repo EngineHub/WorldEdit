@@ -25,26 +25,33 @@ import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.bukkit.util.config.Configuration;
+
+import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LogFormat;
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
 
 public class BukkitConfiguration extends LocalConfiguration {
-    private Configuration config;
+    private YAMLProcessor config;
     private Logger logger;
     private FileHandler logFileHandler;
     
     public boolean noOpPermissions = false;
     
-    public BukkitConfiguration(Configuration config, Logger logger) {
+    public BukkitConfiguration(YAMLProcessor config, Logger logger) {
         this.config = config;
         this.logger = logger;
     }
 
     @Override
     public void load() {
+        try {
+            config.load();
+        } catch (IOException e) {
+            logger.severe("Error loading WorldEdit configuration: " + e);
+            e.printStackTrace();
+        }
         showFirstUseVersion = false;
         
         profile = config.getBoolean("debug", profile);

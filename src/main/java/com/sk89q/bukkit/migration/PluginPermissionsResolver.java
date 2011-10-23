@@ -19,17 +19,17 @@
 
 package com.sk89q.bukkit.migration;
 
+import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.configuration.Configuration;
 
 public class PluginPermissionsResolver implements PermissionsResolver {
 
     protected PermissionsProvider resolver;
     protected Plugin plugin;
 
-    public static PermissionsResolver factory(Server server, Configuration config) {
+    public static PermissionsResolver factory(Server server, YAMLProcessor config) {
         // Looking for service
         RegisteredServiceProvider<PermissionsProvider> serviceProvider = server.getServicesManager().getRegistration(PermissionsProvider.class);
 

@@ -28,8 +28,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
+
+import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.Server;
-import org.bukkit.configuration.Configuration;
 
 public class FlatFilePermissionsResolver implements PermissionsResolver {
     private Map<String, Set<String>> userPermissionsCache;
@@ -39,7 +40,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
     protected File groupFile;
     protected File userFile;
 
-    public static PermissionsResolver factory(Server server, Configuration config) {
+    public static PermissionsResolver factory(Server server, YAMLProcessor config) {
         File groups = new File("perms_groups.txt");
         File users = new File("perms_users.txt");
 

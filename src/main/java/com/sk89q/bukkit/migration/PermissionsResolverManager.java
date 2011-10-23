@@ -23,14 +23,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sk89q.util.yaml.YAMLFormat;
+import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.Server;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.configuration.file.YamlConfigurationOptions;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.configuration.Configuration;
 
 public class PermissionsResolverManager implements PermissionsResolver {
     private static final String CONFIG_HEADER = "#\r\n" +
@@ -59,7 +57,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     private Server server;
     private PermissionsResolver permissionResolver;
     private PermissionsResolverServerListener listener;
-    private FileConfiguration config;
+    private YAMLProcessor config;
     private String name;
     private Logger logger;
     private List<Class<? extends PermissionsResolver>> enabledResolvers = new ArrayList<Class<? extends PermissionsResolver>>();
@@ -95,7 +93,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     public void findResolver() {
         for (Class<? extends PermissionsResolver> resolverClass : enabledResolvers) {
             try {
-                Method factoryMethod = resolverClass.getMethod("factory", Server.class, Configuration.class);
+                Method factoryMethod = resolverClass.getMethod("factory", Server.class, YAMLProcessor.class);
 
                 this.permissionResolver = (PermissionsResolver) factoryMethod.invoke(null, this.server, this.config);
 
@@ -153,27 +151,33 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 e.printStackTrace();
             }
         }
-        config = YamlConfiguration.loadConfiguration(file);
-        ((YamlConfigurationOptions)config.options()).indent(4);
-        Set<String> keys = config.getKeys(true);
-        config.options().header(CONFIG_HEADER);
+        config = new YAMLProcessor(file, false, YAMLFormat.EXTENDED);
+        try {
+            config.load();
+        } catch (IOException e) {
+            logger.severe("Error loading WEPIF Config: " + e);
+            e.printStackTrace();
+        }
+        List<String> keys = config.getKeys(null);
+        config.setHeader(CONFIG_HEADER);
 
         if (!keys.contains("ignore-nijiperms-bridges")) {
-            config.set("ignore-nijiperms-bridges", true);
+            config.setProperty("ignore-nijiperms-bridges", true);
             isUpdated = true;
         }
 
-        if (!keys.contains("resolvers.enabled")) {
+        if (!keys.contains("resolvers")) {
+           List<String> resolverKeys = config.getKeys("resolvers");
            List<String> resolvers = new ArrayList<String>();
             for (Class<?> clazz : availableResolvers) {
                 resolvers.add(clazz.getSimpleName());
             }
             enabledResolvers.addAll(Arrays.asList(availableResolvers));
-            config.set("resolvers.enabled", resolvers);
+            config.setProperty("resolvers.enabled", resolvers);
             isUpdated = true;
         } else {
-            List<String> disabledResolvers = config.getList("resolvers.disabled", new ArrayList<String>());
-            List<String> stagedEnabled = config.getList("resolvers.enabled");
+            List<String> disabledResolvers = config.getStringList("resolvers.disabled", new ArrayList<String>());
+            List<String> stagedEnabled = config.getStringList("resolvers.enabled", null);
             for (Iterator<String> i = stagedEnabled.iterator(); i.hasNext();) {
                 String nextName = i.next();
                 Class<?> next = null;
@@ -202,27 +206,23 @@ public class PermissionsResolverManager implements PermissionsResolver {
                     isUpdated = true;
                 }
             }
-            config.set("resolvers.disabled", disabledResolvers);
-            config.set("resolvers.enabled", stagedEnabled);
+            config.setProperty("resolvers.disabled", disabledResolvers);
+            config.setProperty("resolvers.enabled", stagedEnabled);
         }
 
         if (keys.contains("dinner-perms") || keys.contains("dinnerperms")) {
-            config.set("dinner-perms", null);
-            config.set("dinnerperms", null);
+            config.setProperty("dinner-perms", null);
+            config.setProperty("dinnerperms", null);
             isUpdated = true;
         }
         if (!keys.contains("permissions")) {
             ConfigurationPermissionsResolver.generateDefaultPerms(
-                    config.createSection("permissions"));
+                    config.addNode("permissions"));
             isUpdated = true;
         }
         if (isUpdated) {
             logger.info("WEPIF: Updated config file");
-            try {
-                config.save(file);
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, "WEPIF: Unable to save config file", e);
-            }
+            config.save();
         }
         return isUpdated;
     }

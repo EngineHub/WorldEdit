@@ -19,6 +19,7 @@
 
 package com.sk89q.bukkit.migration;
 
+import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.Server;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
@@ -26,7 +27,6 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.configuration.Configuration;
 
 public class DinnerPermsResolver implements PermissionsResolver {
 
@@ -37,7 +37,7 @@ public class DinnerPermsResolver implements PermissionsResolver {
         this.server = server;
     }
 
-    public static PermissionsResolver factory(Server server, Configuration config) {
+    public static PermissionsResolver factory(Server server, YAMLProcessor config) {
 
         return new DinnerPermsResolver(server);
     }

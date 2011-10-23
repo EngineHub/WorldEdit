@@ -19,19 +19,18 @@
 
 package com.sk89q.bukkit.migration;
 
+import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 
-import org.bukkit.configuration.Configuration;
-
 public class PermissionsExResolver implements PermissionsResolver {
     private final PermissionManager manager;
     private final Server server;
 
-    public static PermissionsResolver factory(Server server, Configuration config) {
+    public static PermissionsResolver factory(Server server, YAMLProcessor config) {
         PermissionManager manager = server.getServicesManager().load(PermissionManager.class);
 
         if (manager == null) {
