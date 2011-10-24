@@ -624,6 +624,113 @@ public enum BlockType {
     }
 
     /**
+     * HashSet for emitsLight.
+     */
+    private static final Set<Integer> emitsLight = new HashSet<Integer>();
+    static {
+        emitsLight.add(BlockID.LAVA);
+        emitsLight.add(BlockID.STATIONARY_LAVA);
+        emitsLight.add(BlockID.BROWN_MUSHROOM);
+        emitsLight.add(BlockID.RED_MUSHROOM);
+        emitsLight.add(BlockID.TORCH);
+        emitsLight.add(BlockID.FIRE);
+        emitsLight.add(BlockID.BURNING_FURNACE);
+        emitsLight.add(BlockID.GLOWING_REDSTONE_ORE);
+        emitsLight.add(BlockID.REDSTONE_TORCH_ON);
+        emitsLight.add(BlockID.LIGHTSTONE);
+        emitsLight.add(BlockID.PORTAL);
+        emitsLight.add(BlockID.JACKOLANTERN);
+        emitsLight.add(BlockID.REDSTONE_REPEATER_ON);
+        emitsLight.add(BlockID.LOCKED_CHEST);
+        emitsLight.add(BlockID.BROWN_MUSHROOM_CAP);
+        emitsLight.add(BlockID.RED_MUSHROOM_CAP);
+    }
+
+    /**
+     * Checks if the block type emits light
+     *
+     * @param id
+     * @return
+     */
+    public static boolean emitsLight(int id) {
+        return emitsLight.contains(id);
+    }
+
+    /**
+     * HashSet for emitsLight.
+     */
+    private static final Set<Integer> isTranslucent = new HashSet<Integer>();
+    static {
+        isTranslucent.add(BlockID.AIR);
+        isTranslucent.add(BlockID.SAPLING);
+        isTranslucent.add(BlockID.WATER);
+        isTranslucent.add(BlockID.STATIONARY_WATER);
+        //isTranslucent.add(BlockID.LEAVES);
+        isTranslucent.add(BlockID.GLASS);
+        isTranslucent.add(BlockID.BED);
+        isTranslucent.add(BlockID.POWERED_RAIL);
+        isTranslucent.add(BlockID.DETECTOR_RAIL);
+        //isTranslucent.add(BlockID.PISTON_STICKY_BASE);
+        isTranslucent.add(BlockID.WEB);
+        isTranslucent.add(BlockID.LONG_GRASS);
+        isTranslucent.add(BlockID.DEAD_BUSH);
+        //isTranslucent.add(BlockID.PISTON_BASE);
+        //isTranslucent.add(BlockID.PISTON_EXTENSION);
+        //isTranslucent.add(BlockID.PISTON_MOVING_PIECE);
+        isTranslucent.add(BlockID.YELLOW_FLOWER);
+        isTranslucent.add(BlockID.RED_FLOWER);
+        isTranslucent.add(BlockID.BROWN_MUSHROOM);
+        isTranslucent.add(BlockID.RED_MUSHROOM);
+        isTranslucent.add(BlockID.TORCH);
+        isTranslucent.add(BlockID.FIRE);
+        //isTranslucent.add(BlockID.MOB_SPAWNER);
+        //isTranslucent.add(BlockID.WOODEN_STAIRS);
+        isTranslucent.add(BlockID.REDSTONE_WIRE);
+        isTranslucent.add(BlockID.CROPS);
+        isTranslucent.add(BlockID.SIGN_POST);
+        isTranslucent.add(BlockID.WOODEN_DOOR);
+        isTranslucent.add(BlockID.LADDER);
+        isTranslucent.add(BlockID.MINECART_TRACKS);
+        //isTranslucent.add(BlockID.COBBLESTONE_STAIRS);
+        isTranslucent.add(BlockID.WALL_SIGN);
+        isTranslucent.add(BlockID.LEVER);
+        isTranslucent.add(BlockID.STONE_PRESSURE_PLATE);
+        isTranslucent.add(BlockID.IRON_DOOR);
+        isTranslucent.add(BlockID.WOODEN_PRESSURE_PLATE);
+        isTranslucent.add(BlockID.REDSTONE_TORCH_OFF);
+        isTranslucent.add(BlockID.REDSTONE_TORCH_ON);
+        isTranslucent.add(BlockID.STONE_BUTTON);
+        isTranslucent.add(BlockID.SNOW);
+        isTranslucent.add(BlockID.ICE);
+        //isTranslucent.add(BlockID.CACTUS);
+        isTranslucent.add(BlockID.REED);
+        isTranslucent.add(BlockID.FENCE);
+        isTranslucent.add(BlockID.PORTAL);
+        isTranslucent.add(BlockID.CAKE_BLOCK);
+        isTranslucent.add(BlockID.REDSTONE_REPEATER_OFF);
+        isTranslucent.add(BlockID.REDSTONE_REPEATER_ON);
+        isTranslucent.add(BlockID.TRAP_DOOR);
+        isTranslucent.add(BlockID.IRON_BARS);
+        isTranslucent.add(BlockID.GLASS_PANE);
+        isTranslucent.add(BlockID.PUMPKIN_STEM);
+        isTranslucent.add(BlockID.MELON_STEM);
+        isTranslucent.add(BlockID.VINE);
+        isTranslucent.add(BlockID.FENCE_GATE);
+        //isTranslucent.add(BlockID.BRICK_STAIRS);
+        isTranslucent.add(BlockID.STONE_BRICK_STAIRS);
+    }
+
+    /**
+     * Checks if the block type lets light through
+     *
+     * @param id
+     * @return
+     */
+    public static boolean isTranslucent(int id) {
+        return isTranslucent.contains(id);
+    }
+
+    /**
      * HashMap for getDroppedBlock.
      */
     private static final Map<Integer, Integer> blockDrops = new HashMap<Integer, Integer>();
