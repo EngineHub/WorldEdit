@@ -823,8 +823,21 @@ public class WorldEdit {
             dir = PlayerDirection.DOWN;
             break;
 
-        case 'm':
+        case 'm': // me
+        case 'f': // forward
             dir = player.getCardinalDirection(0);
+            break;
+
+        case 'b': // back
+            dir = player.getCardinalDirection(180);
+            break;
+
+        case 'l': // left
+            dir = player.getCardinalDirection(-90);
+            break;
+
+        case 'r': // right
+            dir = player.getCardinalDirection(90);
             break;
 
         default:
