@@ -18,6 +18,8 @@
  */
 package com.sk89q.worldedit;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -560,9 +562,67 @@ public class EditSession {
         // We don't want to place these blocks if other blocks were missing
         // because it might cause the items to drop
         if (blockBag == null || missingBlocks.size() == 0) {
+            final Set<BlockVector> blocks = new HashSet<BlockVector>();
+            final Map<BlockVector, BaseBlock> blockTypes = new HashMap<BlockVector, BaseBlock>();
             for (Map.Entry<BlockVector, BaseBlock> entry : queueLast) {
-                BlockVector pt = (BlockVector) entry.getKey();
-                rawSetBlock(pt, (BaseBlock) entry.getValue());
+                final BlockVector pt = entry.getKey();
+                blocks.add(pt);
+                blockTypes.put(pt, entry.getValue());
+            }
+
+            while (!blocks.isEmpty()) {
+                BlockVector current = blocks.iterator().next();
+                if (!blocks.contains(current)) {
+                    continue;
+                }
+
+                final Deque<BlockVector> walked = new LinkedList<BlockVector>(); 
+
+                while (true) {
+                    walked.addFirst(current);
+
+                    assert(blockTypes.containsKey(current));
+
+                    final BaseBlock baseBlock = blockTypes.get(current);
+
+                    final int type = baseBlock.getType();
+                    final int data = baseBlock.getData();
+
+                    switch (type) {
+                    case BlockID.WOODEN_DOOR:
+                    case BlockID.IRON_DOOR:
+                        if ((data & 0x8) == 0) {
+                            // Deal with lower door halves being attached to the floor AND the upper half
+                            BlockVector upperBlock = current.add(0, 1, 0).toBlockVector();
+                            if (blocks.contains(upperBlock) && !walked.contains(upperBlock)) {
+                                walked.addFirst(upperBlock);
+                            }
+                        }
+                    }
+
+                    final PlayerDirection attachment = BlockType.getAttachment(type, data);
+                    if (attachment == null) {
+                        // Block is not attached to anything => we can place it 
+                        break;
+                    }
+
+                    current = current.add(attachment.vector()).toBlockVector();
+
+                    if (!blocks.contains(current)) {
+                        // We ran outside the remaing set => assume we can place blocks on this
+                        break;
+                    }
+
+                    if (walked.contains(current)) {
+                        // Cycle detected => This will most likely go wrong, but there's nothing we can do about it.
+                        break;
+                    }
+                }
+
+                for (BlockVector pt : walked) {
+                    rawSetBlock(pt, blockTypes.get(pt));
+                    blocks.remove(pt);
+                }
             }
         }
 
