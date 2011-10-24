@@ -22,9 +22,6 @@ package com.sk89q.worldedit.bukkit;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
@@ -46,7 +43,6 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeType;
@@ -753,23 +749,15 @@ public class BukkitWorld extends LocalWorld {
 
                 Object notchChunk = World_getChunkFromChunkCoords.invoke(notchWorld, chunkX, chunkZ);
 
-                long t = System.currentTimeMillis();
+                // Fix skylight
                 final byte[] blocks = (byte[])Chunk_blocks.get(notchChunk);
                 int length = blocks.length;
                 Chunk_skylightMap.set(notchChunk, NibbleArray_ctor.newInstance(length, 7));
 
-                System.out.println("Took "+(System.currentTimeMillis()-t)+"ms to remove skylighting.");
-                t = System.currentTimeMillis();
-
                 Chunk_generateSkylightMap.invoke(notchChunk);
 
-                System.out.println("Took "+(System.currentTimeMillis()-t)+"ms to restore skylighting.");
-                t = System.currentTimeMillis();
-
+                // Fix blocklight
                 Chunk_blocklightMap.set(notchChunk, NibbleArray_ctor.newInstance(length, 7));
-                Chunk chunk = world.getChunkAt(chunkX, chunkZ);
-
-                List<BlockState> lightEmitters = new ArrayList<BlockState>();
 
                 for (int x = 0; x < chunkSizeX; ++x) {
                     boolean xBorder = x == 0 || x == chunkSizeX - 1;
@@ -778,35 +766,17 @@ public class BukkitWorld extends LocalWorld {
                         for (int y = 0; y < chunkSizeY; ++y) {
                             final int index = y + z * chunkSizeY + x * chunkSizeY * chunkSizeZ;
                             byte blockID = blocks[index];
-                            if (!BlockType.emitsLight(blockID))  {
-                                if (xBorder || zBorder && BlockType.isTranslucent(blockID)) {
-                                    lightEmitters.add(chunk.getBlock(x, y, z).getState());
-                                    if (blockID == 20) {
-                                        blocks[index] = 0;
-                                    }
-                                    else {
-                                        blocks[index] = 20;
-                                    }
-                                    
-                                }
-                                continue;
+                            if (BlockType.emitsLight(blockID))  {
+                                Chunk_relightBlock.invoke(notchChunk, x, y, z);
                             }
-
-                            lightEmitters.add(chunk.getBlock(x, y, z).getState());
-
-                            blocks[index] = 0;
+                            else {
+                                if ((xBorder || zBorder) && BlockType.isTranslucent(blockID)) {
+                                    Chunk_relightBlock.invoke(notchChunk, x, y, z);
+                                }
+                            }
                         }
                     }
                 }
-
-                System.out.println("Took "+(System.currentTimeMillis()-t)+"ms to remove blocklighting.");
-                t = System.currentTimeMillis();
-
-                for (BlockState lightEmitter : lightEmitters) {
-                    lightEmitter.update(true);
-                }
-
-                System.out.println("Took "+(System.currentTimeMillis()-t)+"ms to restore blocklighting.");
             }
         }
         catch (Exception e) {
@@ -820,6 +790,7 @@ public class BukkitWorld extends LocalWorld {
     private static Method CraftWorld_getHandle;
     private static Method World_getChunkFromChunkCoords;
     private static Method Chunk_generateSkylightMap;
+    private static Method Chunk_relightBlock;
     private static Field Chunk_blocks;
     private static Field Chunk_skylightMap;
     private static Field Chunk_blocklightMap;
@@ -833,6 +804,8 @@ public class BukkitWorld extends LocalWorld {
 
                 World_getChunkFromChunkCoords = Class.forName("net.minecraft.server.World").getMethod("getChunkAt", int.class, int.class);
                 Chunk_generateSkylightMap = Class.forName("net.minecraft.server.Chunk").getMethod("initLighting");
+                Chunk_relightBlock = Class.forName("net.minecraft.server.Chunk").getDeclaredMethod("g", int.class, int.class, int.class);
+                Chunk_relightBlock.setAccessible(true);
 
                 Chunk_blocks = Class.forName("net.minecraft.server.Chunk").getField("b");
                 Chunk_skylightMap = Class.forName("net.minecraft.server.Chunk").getField("h");
@@ -842,6 +815,7 @@ public class BukkitWorld extends LocalWorld {
                 fastLightingAvailable = true;
             }
             catch (Throwable e) {
+                e.printStackTrace();
             }
         }
     }
