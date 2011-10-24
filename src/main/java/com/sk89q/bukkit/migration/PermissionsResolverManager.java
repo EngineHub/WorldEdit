@@ -141,7 +141,6 @@ public class PermissionsResolverManager implements PermissionsResolver {
         return permissionResolver.getGroups(player);
     }
 
-    @SuppressWarnings("unchecked")
     private boolean loadConfig(File file) {
         boolean isUpdated = false;
         if (!file.exists()) {
@@ -167,7 +166,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         }
 
         if (!keys.contains("resolvers")) {
-           List<String> resolverKeys = config.getKeys("resolvers");
+           //List<String> resolverKeys = config.getKeys("resolvers");
            List<String> resolvers = new ArrayList<String>();
             for (Class<?> clazz : availableResolvers) {
                 resolvers.add(clazz.getSimpleName());
