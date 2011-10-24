@@ -349,6 +349,16 @@ public abstract class LocalPlayer {
      * @return
      */
     public PlayerDirection getCardinalDirection() {
+        return getCardinalDirection(0);
+    }
+
+    /**
+     * Get the player's cardinal direction (N, W, NW, etc.) with an offset. May return null.
+     * @param yawOffset offset that is added to the player's yaw before determining the cardinal direction
+     *
+     * @return
+     */
+    public PlayerDirection getCardinalDirection(int yawOffset) {
         if (getPitch() > 67.5) {
             return PlayerDirection.DOWN;
         }
@@ -357,7 +367,7 @@ public abstract class LocalPlayer {
         }
 
         // From hey0's code
-        double rot = (getYaw() - 90) % 360;
+        double rot = (getYaw() + yawOffset - 90) % 360;
         if (rot < 0) {
             rot += 360.0;
         }
