@@ -5,6 +5,10 @@
 - Fixed CommandContext.matches(String) (for developers!)
 - Improved interaction with permission plugins
 - Fixed config file generation on windows
+- Added an expression parser (for developers!)
+- Added a YAML library (for developers!)
+- Block queues are now flushed based on attachment to other blocks 
+- Sped up //fast mode by deferring lighting until after all blocks are in place. Has some bugs but it's at the very least good for previews.
 
 4.7:
 - Added support for all the new items and blocks
