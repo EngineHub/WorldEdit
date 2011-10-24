@@ -29,6 +29,7 @@ import javax.script.ScriptException;
 import com.sk89q.minecraft.util.commands.*;
 
 import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.commands.*;
@@ -761,48 +762,75 @@ public class WorldEdit {
      */
     public Vector getDirection(LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
-        
+
         dirStr = dirStr.toLowerCase();
 
-        if (dirStr.equals("me")) {
-            final PlayerDirection dir = player.getCardinalDirection();
-            switch (dir) {
-            case WEST:
-            case EAST:
-            case SOUTH:
-            case NORTH:
-            case UP:
-            case DOWN:
-                dirStr = dir.name().toLowerCase();
-                break;
+        final PlayerDirection dir = getPlayerDirection(player, dirStr);
 
-            default:
-                throw new UnknownDirectionException(dir.name());
-            }
+        switch (dir) {
+        case WEST:
+        case EAST:
+        case SOUTH:
+        case NORTH:
+        case UP:
+        case DOWN:
+            return dir.vector();
+
+        default:
+            throw new UnknownDirectionException(dir.name());
         }
+}
+
+    private PlayerDirection getPlayerDirection(LocalPlayer player, String dirStr) throws UnknownDirectionException {
+        final PlayerDirection dir;
 
         switch (dirStr.charAt(0)) {
         case 'w':
-            return new Vector(0, 0, 1);
+            dir = PlayerDirection.WEST;
+            break;
 
         case 'e':
-            return new Vector(0, 0, -1);
+            dir = PlayerDirection.EAST;
+            break;
 
         case 's':
-            return new Vector(1, 0, 0);
+            if (dirStr.indexOf('w') > 0) {
+                return PlayerDirection.SOUTH_WEST;
+            }
+
+            if (dirStr.indexOf('e') > 0) {
+                return PlayerDirection.SOUTH_EAST;
+            }
+            dir = PlayerDirection.SOUTH;
+            break;
 
         case 'n':
-            return new Vector(-1, 0, 0);
+            if (dirStr.indexOf('w') > 0) {
+                return PlayerDirection.NORTH_WEST;
+            }
+
+            if (dirStr.indexOf('e') > 0) {
+                return PlayerDirection.NORTH_EAST;
+            }
+            dir = PlayerDirection.NORTH;
+            break;
 
         case 'u':
-            return new Vector(0, 1, 0);
+            dir = PlayerDirection.UP;
+            break;
 
         case 'd':
-            return new Vector(0, -1, 0);
+            dir = PlayerDirection.DOWN;
+            break;
+
+        case 'm':
+            dir = player.getCardinalDirection(0);
+            break;
 
         default:
             throw new UnknownDirectionException(dirStr);
         }
+        return dir;
     }
     
     /**
@@ -814,53 +842,10 @@ public class WorldEdit {
      * @return
      * @throws UnknownDirectionException 
      */
-    public Vector getDiagonalDirection( LocalPlayer player, String dirStr )
+    public Vector getDiagonalDirection(LocalPlayer player, String dirStr)
         throws UnknownDirectionException {
 
-        dirStr = dirStr.toLowerCase();
-
-        if (dirStr.equals("me")) {
-            dirStr = player.getCardinalDirection().name().toLowerCase();
-        }
-
-        switch (dirStr.charAt(0)) {
-        case 'w':
-            return new Vector(0, 0, 1);
-
-        case 'e':
-            return new Vector(0, 0, -1);
-
-        case 's':
-            if (dirStr.indexOf('w') > 0) {
-                return new Vector(1, 0, 1);
-            }
-
-            if (dirStr.indexOf('e') > 0) {
-                return new Vector(1, 0, -1);
-            }
-
-            return new Vector(1, 0, 0);
-
-        case 'n':
-            if (dirStr.indexOf('w') > 0) {
-                return new Vector(-1, 0, 1);
-            }
-
-            if (dirStr.indexOf('e') > 0) {
-                return new Vector(-1, 0, -1);
-            }
-
-            return new Vector(-1, 0, 0);
-
-        case 'u':
-            return new Vector(0, 1, 0);
-
-        case 'd':
-            return new Vector(0, -1, 0);
-
-        default:
-            throw new UnknownDirectionException(dirStr);
-        }
+        return getPlayerDirection(player, dirStr.toLowerCase()).vector();
     }
 
     /**
@@ -871,45 +856,25 @@ public class WorldEdit {
      * @return
      * @throws UnknownDirectionException 
      */
-    public CuboidClipboard.FlipDirection getFlipDirection(
-            LocalPlayer player, String dirStr)
+    public FlipDirection getFlipDirection(LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
-        
-        if (dirStr.equals("me")) {
-            final PlayerDirection dir = player.getCardinalDirection();
-            switch (dir) {
-            case WEST:
-            case EAST:
-                return CuboidClipboard.FlipDirection.WEST_EAST;
 
-            case NORTH:
-            case SOUTH:
-                return CuboidClipboard.FlipDirection.NORTH_SOUTH;
+        final PlayerDirection dir = getPlayerDirection(player, dirStr);
+        switch (dir) {
+        case WEST:
+        case EAST:
+            return FlipDirection.WEST_EAST;
 
-            case UP:
-            case DOWN:
-                return CuboidClipboard.FlipDirection.UP_DOWN;
+        case NORTH:
+        case SOUTH:
+            return FlipDirection.NORTH_SOUTH;
 
-            default:
-                throw new UnknownDirectionException(dir.name());
-            }
-        }
-
-        switch (dirStr.charAt(0)) {
-        case 'w':
-        case 'e':
-            return CuboidClipboard.FlipDirection.WEST_EAST;
-
-        case 'n':
-        case 's':
-            return CuboidClipboard.FlipDirection.NORTH_SOUTH;
-
-        case 'u':
-        case 'd':
-            return CuboidClipboard.FlipDirection.UP_DOWN;
+        case UP:
+        case DOWN:
+            return FlipDirection.UP_DOWN;
 
         default:
-            throw new UnknownDirectionException(dirStr);
+            throw new UnknownDirectionException(dir.name());
         }
     }
 
