@@ -634,7 +634,7 @@ public class EditSession {
             }
         }
 
-        if (!dirtyChunks.isEmpty()) world.fixLighting(dirtyChunks);
+        if (!dirtyChunks.isEmpty()) world.fixAfterFastMode(dirtyChunks);
 
         queueAfter.clear();
         queueLast.clear();
