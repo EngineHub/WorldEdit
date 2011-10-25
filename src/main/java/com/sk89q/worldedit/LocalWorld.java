@@ -326,5 +326,12 @@ public abstract class LocalWorld {
         return 127;
     }
 
+    /**
+     * Does some post-processing. Should be called after using fast mode
+     * 
+     * @param chunks the chunks to fix
+     */
+    public void fixAfterFastMode(Iterable<BlockVector2D> chunks) {}
+
     public void fixLighting(Iterable<BlockVector2D> chunks) {}
 }

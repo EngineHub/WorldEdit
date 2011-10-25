@@ -112,7 +112,7 @@ public class BukkitWorld extends LocalWorld {
             type = type & 255;
             final int previousOpacity = Block_lightOpacity[type];
             Block_lightOpacity[type] = 0;
-            final boolean ret = block.setTypeId(type);
+            final boolean ret = block.setTypeId(type, false);
             Block_lightOpacity[type] = previousOpacity;
             return ret;
         }
@@ -146,7 +146,7 @@ public class BukkitWorld extends LocalWorld {
             type = type & 255;
             final int previousOpacity = Block_lightOpacity[type];
             Block_lightOpacity[type] = 0;
-            final boolean ret = block.setTypeIdAndData(type, (byte) data, true);
+            final boolean ret = block.setTypeIdAndData(type, (byte) data, false);
             Block_lightOpacity[type] = previousOpacity;
             return ret;
         }
@@ -731,27 +731,34 @@ public class BukkitWorld extends LocalWorld {
         return world.getMaxHeight() - 1;
     }
 
+    @Override
+    public void fixAfterFastMode(Iterable<BlockVector2D> chunks) {
+        if (fastLightingAvailable) {
+            fixLighting(chunks);
+        }
+        
+        for (BlockVector2D chunkPos : chunks) {
+            world.refreshChunk(chunkPos.getBlockX(), chunkPos.getBlockZ());
+        }
+    }
+
     private static final int chunkSizeX = 16;
     private static final int chunkSizeY = 128;
     private static final int chunkSizeZ = 16;
 
     @Override
     public void fixLighting(Iterable<BlockVector2D> chunks) {
-        if (!fastLightingAvailable) {
-            return;
-        }
-
         try {
             Object notchWorld = CraftWorld_getHandle.invoke(world);
             for (BlockVector2D chunkPos : chunks) {
-                int chunkX = chunkPos.getBlockX();
-                int chunkZ = chunkPos.getBlockZ();
+                final int chunkX = chunkPos.getBlockX();
+                final int chunkZ = chunkPos.getBlockZ();
 
-                Object notchChunk = World_getChunkFromChunkCoords.invoke(notchWorld, chunkX, chunkZ);
+                final Object notchChunk = World_getChunkFromChunkCoords.invoke(notchWorld, chunkX, chunkZ);
 
                 // Fix skylight
                 final byte[] blocks = (byte[])Chunk_blocks.get(notchChunk);
-                int length = blocks.length;
+                final int length = blocks.length;
                 Chunk_skylightMap.set(notchChunk, NibbleArray_ctor.newInstance(length, 7));
 
                 Chunk_generateSkylightMap.invoke(notchChunk);
@@ -760,12 +767,12 @@ public class BukkitWorld extends LocalWorld {
                 Chunk_blocklightMap.set(notchChunk, NibbleArray_ctor.newInstance(length, 7));
 
                 for (int x = 0; x < chunkSizeX; ++x) {
-                    boolean xBorder = x == 0 || x == chunkSizeX - 1;
+                    final boolean xBorder = x == 0 || x == chunkSizeX - 1;
                     for (int z = 0; z < chunkSizeZ; ++z) {
-                        boolean zBorder = z == 0 || z == chunkSizeZ - 1;
+                        final boolean zBorder = z == 0 || z == chunkSizeZ - 1;
                         for (int y = 0; y < chunkSizeY; ++y) {
                             final int index = y + z * chunkSizeY + x * chunkSizeY * chunkSizeZ;
-                            byte blockID = blocks[index];
+                            final byte blockID = blocks[index];
                             if (BlockType.emitsLight(blockID))  {
                                 Chunk_relightBlock.invoke(notchChunk, x, y, z);
                             }
