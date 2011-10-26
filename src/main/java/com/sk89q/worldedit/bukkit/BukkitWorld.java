@@ -733,10 +733,8 @@ public class BukkitWorld extends LocalWorld {
 
     @Override
     public void fixAfterFastMode(Iterable<BlockVector2D> chunks) {
-        if (fastLightingAvailable) {
-            fixLighting(chunks);
-        }
-        
+        fixLighting(chunks);
+
         for (BlockVector2D chunkPos : chunks) {
             world.refreshChunk(chunkPos.getBlockX(), chunkPos.getBlockZ());
         }
@@ -748,6 +746,10 @@ public class BukkitWorld extends LocalWorld {
 
     @Override
     public void fixLighting(Iterable<BlockVector2D> chunks) {
+        if (fastLightingAvailable) {
+            return;
+        }
+
         try {
             Object notchWorld = CraftWorld_getHandle.invoke(world);
             for (BlockVector2D chunkPos : chunks) {

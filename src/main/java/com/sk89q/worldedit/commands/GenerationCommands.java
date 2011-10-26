@@ -322,7 +322,7 @@ public class GenerationCommands {
     @Command(
         aliases = { "/generate", "/gen", "/g" },
         usage = "<block> <equation>",
-        desc = "Generates a shape according to a formula. -h for hollow, -r for untransformed coordinates, -o for unscaled, but offset from placement",
+        desc = "Generates a shape according to a formula. -h for hollow, -r for raw coordinates, -o for unscaled, but offset from placement",
         flags = "hro",
         min = 1,
         max = -1
@@ -351,7 +351,6 @@ public class GenerationCommands {
             shape = new ArbitraryShape(region) {
                 @Override
                 protected boolean isInside(double x, double y, double z) {
-
                     try {
                         return expression.evaluate(x, y, z) > 0;
                     } catch (Exception e) {
@@ -371,7 +370,6 @@ public class GenerationCommands {
             shape = new ArbitraryShape(region) {
                 @Override
                 protected boolean isInside(double x, double y, double z) {
-
                     try {
                         return expression.evaluate(x-placementX, y-placementY, z-placementZ) > 0;
                     } catch (Exception e) {
