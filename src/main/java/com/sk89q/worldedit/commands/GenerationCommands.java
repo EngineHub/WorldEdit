@@ -322,8 +322,7 @@ public class GenerationCommands {
         try {
             expression = Expression.compile(args.getJoinedStrings(1), "x", "y", "z");
             expression.optimize();
-        }
-        catch (ExpressionException e) {
+        } catch (ExpressionException e) {
             player.printError(e.getMessage());
             return;
         }
@@ -336,15 +335,13 @@ public class GenerationCommands {
                 protected boolean isInside(double x, double y, double z) {
                     try {
                         return expression.evaluate(x, y, z) > 0;
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         return false;
                     }
                 }
             };
-        }
-        else if (args.hasFlag('o')) {
+        } else if (args.hasFlag('o')) {
             final Vector placement = session.getPlacementPosition(player);
 
             final double placementX = placement.getX();
@@ -356,15 +353,13 @@ public class GenerationCommands {
                 protected boolean isInside(double x, double y, double z) {
                     try {
                         return expression.evaluate(x - placementX, y - placementY, z - placementZ) > 0;
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         return false;
                     }
                 }
             };
-        }
-        else {
+        } else {
             final Vector min = region.getMinimumPoint();
             final Vector max = region.getMaximumPoint();
             final Vector center = max.add(min).multiply(0.5);
@@ -376,8 +371,7 @@ public class GenerationCommands {
 
                     try {
                         return expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ()) > 0;
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         return false;
                     }

@@ -140,8 +140,7 @@ public class Lexer {
                 if (!numberPart.isEmpty()) {
                     try {
                         tokens.add(new NumberToken(position, Double.parseDouble(numberPart)));
-                    }
-                    catch (NumberFormatException e) {
+                    } catch (NumberFormatException e) {
                         throw new LexerException(position, "Number parsing failed", e);
                     }
 
@@ -156,8 +155,7 @@ public class Lexer {
                 if (!identifierPart.isEmpty()) {
                     if (keywords.contains(identifierPart)) {
                         tokens.add(new KeywordToken(position, identifierPart));
-                    }
-                    else {
+                    } else {
                         tokens.add(new IdentifierToken(position, identifierPart));
                     }
 
@@ -167,8 +165,7 @@ public class Lexer {
             }
 
             throw new LexerException(position, "Unknown character '" + ch + "'");
-        }
-        while (position < expression.length());
+        } while (position < expression.length());
 
         return tokens;
     }

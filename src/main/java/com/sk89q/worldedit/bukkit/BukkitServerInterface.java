@@ -34,8 +34,8 @@ public class BukkitServerInterface extends ServerInterface {
 
     @Override
     public int resolveItem(String name) {
-        // TODO Auto-generated method stub
-        return 0;
+        Material mat = Material.matchMaterial(name);
+        return mat == null ? 0 : mat.getId();
     }
 
     @Override

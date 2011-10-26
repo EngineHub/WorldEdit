@@ -54,8 +54,7 @@ public class ToolUtilCommands {
 
             session.disableSuperPickAxe();
             player.print("Super pick axe disabled.");
-        }
-        else {
+        } else {
             if ("off".equals(newState)) {
                 player.printError("Super pick axe already disabled.");
                 return;

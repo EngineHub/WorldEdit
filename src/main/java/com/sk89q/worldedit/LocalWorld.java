@@ -63,6 +63,10 @@ public abstract class LocalWorld {
         return setBlockType(pt, type);
     }
 
+    public boolean setBlockTypeFast(Vector pt, int type, boolean fastLighting) {
+        return setBlockTypeFast(pt, type);
+    }
+
     /**
      * Get block type.
      * 
@@ -100,7 +104,7 @@ public abstract class LocalWorld {
         setBlockData(pt, data);
         return ret;
     }
-    
+
     /**
      * set block type & data
      * @param pt
@@ -113,7 +117,11 @@ public abstract class LocalWorld {
         setBlockDataFast(pt, data);
         return ret;
     }
-    
+
+    public boolean setTypeIdAndDataFast(Vector pt, int type, int data, boolean fastLighting) {
+        return setTypeIdAndDataFast(pt, type, data);
+    }
+
     /**
      * Get block data.
      * 

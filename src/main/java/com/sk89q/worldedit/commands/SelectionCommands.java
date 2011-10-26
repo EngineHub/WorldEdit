@@ -194,8 +194,7 @@ public class SelectionCommands {
             player.print("Chunks selected: ("
                     + min2D.getBlockX() + ", " + min2D.getBlockZ() + ") - ("
                     + max2D.getBlockX() + ", " + max2D.getBlockZ() + ")");
-        }
-        else {
+        } else {
             final Vector2D min2D = ChunkStore.toChunk(player.getBlockIn());
 
             min = new Vector(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);

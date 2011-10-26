@@ -139,8 +139,7 @@ public class CommandContext {
 
                     // If it is a value flag, read another argument and add it
                     this.valueFlags.put(flagName, argList.get(nextArg++));
-                }
-                else {
+                } else {
                     booleanFlags.add(flagName);
                 }
             }

@@ -39,9 +39,9 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
                 "worldedit.reload",
                 "worldedit.selection",
                 "worlds.creative.worldedit.region"});
-        section.setProperty("permissions.groups.admins.permissions", new String[]{"*"});
-        section.setProperty("permissions.users.sk89q.permissions", new String[]{"worldedit"});
-        section.setProperty("permissions.users.sk89q.groups", new String[]{"admins"});
+        section.setProperty("permissions.groups.admins.permissions", new String[] {"*"});
+        section.setProperty("permissions.users.sk89q.permissions", new String[] {"worldedit"});
+        section.setProperty("permissions.users.sk89q.groups", new String[] {"admins"});
         return section;
     }
 

@@ -49,14 +49,12 @@ public class Function extends RValue {
     public final double getValue() throws EvaluationException {
         try {
             return (Double) method.invoke(null, (Object[]) args);
-        }
-        catch (InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof EvaluationException) {
                 throw (EvaluationException) e.getTargetException();
             }
             throw new EvaluationException(-1, "Exception caught while evaluating expression", e.getTargetException());
-        }
-        catch (IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             throw new EvaluationException(-1, "Internal error while evaluating expression", e);
         }
     }
@@ -99,8 +97,7 @@ public class Function extends RValue {
 
         if (optimizable) {
             return new Constant(position, getValue());
-        }
-        else {
+        } else {
             return new Function(position, method, optimizedArgs);
         }
     }

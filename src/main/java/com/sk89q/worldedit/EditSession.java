@@ -101,6 +101,11 @@ public class EditSession {
     private boolean fastMode = false;
 
     /**
+     * Use fast lighting as well if using fast mode.
+     */
+    private boolean fastLighting = false;
+
+    /**
      * Block bag to use for getting blocks.
      */
     private BlockBag blockBag;
@@ -209,13 +214,13 @@ public class EditSession {
 
         if (BlockType.usesData(type)) {
             if (fastMode) {
-                result = world.setTypeIdAndDataFast(pt, type, block.getData() > -1 ? block.getData() : 0);
+                result = world.setTypeIdAndDataFast(pt, type, block.getData() > -1 ? block.getData() : 0, fastLighting);
             } else {
                 result = world.setTypeIdAndData(pt, type, block.getData() > -1 ? block.getData() : 0);
             }
         } else {
             if (fastMode) {
-                result = world.setBlockTypeFast(pt, type);
+                result = world.setBlockTypeFast(pt, type, fastLighting);
             } else {
                 result = world.setBlockType(pt, type);
             }
@@ -227,8 +232,7 @@ public class EditSession {
                 if (blockBag == null) {
                     world.copyToWorld(pt, block);
                 }
-            }
-            else if (block instanceof TileEntityBlock) {
+            } else if (block instanceof TileEntityBlock) {
                 world.copyToWorld(pt, block);
             }
         }
@@ -522,10 +526,28 @@ public class EditSession {
      * Disable the queue. This will flush the queue.
      */
     public void disableQueue() {
-        if (queued != false) {
+        if (queued) {
             flushQueue();
         }
         queued = false;
+    }
+
+    /**
+     * Set fast lighting.
+     *
+     * @param fastLighting
+     */
+    public void setFastLighting(boolean fastLighting) {
+        this.fastLighting = fastLighting;
+    }
+
+    /**
+     * Return fast lighting status.
+     *
+     * @return
+     */
+    public boolean hasFastLighting() {
+        return fastLighting;
     }
 
     /**
@@ -561,7 +583,9 @@ public class EditSession {
             rawSetBlock(pt, (BaseBlock) entry.getValue());
 
             // TODO: use ChunkStore.toChunk(pt) after optimizing it.
-            if (fastMode) dirtyChunks.add(new BlockVector2D(pt.getBlockX() >> 4, pt.getBlockZ() >> 4));
+            if (fastMode) {
+                dirtyChunks.add(new BlockVector2D(pt.getBlockX() >> 4, pt.getBlockZ() >> 4));
+            }
         }
 
         // We don't want to place these blocks if other blocks were missing
@@ -629,7 +653,9 @@ public class EditSession {
                     blocks.remove(pt);
 
                     // TODO: use ChunkStore.toChunk(pt) after optimizing it.
-                    if (fastMode) dirtyChunks.add(new BlockVector2D(pt.getBlockX() >> 4, pt.getBlockZ() >> 4));
+                    if (fastMode) {
+                        dirtyChunks.add(new BlockVector2D(pt.getBlockX() >> 4, pt.getBlockZ() >> 4));
+                    }
                 }
             }
         }
@@ -1794,9 +1820,24 @@ public class EditSession {
     }
 
     /**
-     * Makes a sphere or ellipsoid.
+     * Makes a cylinder.
      *
-     * @param pos Center of the sphere or ellipsoid
+     * @param pos Center of the cylinder
+     * @param block The block pattern to use
+     * @param radius The cylinder's radius
+     * @param height The cylinder's up/down extent. If negative, extend downward.
+     * @param filled If false, only a shell will be generated.
+     * @return number of blocks changed
+     * @throws MaxChangedBlocksException
+     */
+    public int makeCylinder(Vector pos, Pattern block, double radius, int height, boolean filled) throws MaxChangedBlocksException {
+        return makeCylinder(pos, block, radius, radius, height, filled);
+    }
+
+    /**
+     * Makes a cylinder.
+     *
+     * @param pos Center of the cylinder
      * @param block The block pattern to use
      * @param radiusX The cylinder's largest north/south extent
      * @param radiusZ The cylinder's largest east/west extent
@@ -1873,6 +1914,20 @@ public class EditSession {
         }
 
         return affected;
+    }
+
+    /**
+    * Makes a sphere.
+    *
+    * @param pos Center of the sphere or ellipsoid
+    * @param block The block pattern to use
+    * @param radius The sphere's radius
+    * @param filled If false, only a shell will be generated.
+    * @return number of blocks changed
+    * @throws MaxChangedBlocksException
+    */
+    public int makeSphere(Vector pos, Pattern block, double radius, boolean filled) throws MaxChangedBlocksException {
+        return makeSphere(pos, block, radius, radius, radius, filled);
     }
 
     /**
@@ -2538,8 +2593,7 @@ public class EditSession {
     }
 
     /**
-     * @param blockBag
-     *            the blockBag to set
+     * @param blockBag the blockBag to set
      */
     public void setBlockBag(BlockBag blockBag) {
         this.blockBag = blockBag;

@@ -100,8 +100,7 @@ public class Parser {
                 final Token next = peek();
                 if (next.id() == '(') {
                     halfProcessed.add(parseFunctionCall(identifierToken));
-                }
-                else {
+                } else {
                     RValue variable = variables.get(identifierToken.value);
                     if (variable == null) {
                         throw new ParserException(current.getPosition(), "Variable '" + identifierToken.value + "' not found");
@@ -130,8 +129,7 @@ public class Parser {
             case 'o':
                 if (expressionStart) {
                     halfProcessed.add(new PrefixOperator((OperatorToken) current));
-                }
-                else {
+                } else {
                     halfProcessed.add(current);
                 }
                 ++position;
@@ -148,8 +146,7 @@ public class Parser {
 
         if (isStatement) {
             return ParserProcessors.processStatement(halfProcessed);
-        }
-        else {
+        } else {
             return ParserProcessors.processExpression(halfProcessed);
         }
     }
@@ -195,8 +192,7 @@ public class Parser {
             }
 
             return Functions.getFunction(identifierToken.getPosition(), identifierToken.value, args.toArray(new RValue[args.size()]));
-        }
-        catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             throw new ParserException(identifierToken.getPosition(), "Function not found", e);
         }
     }

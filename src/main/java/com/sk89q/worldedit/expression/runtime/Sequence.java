@@ -75,8 +75,7 @@ public class Sequence extends RValue {
                 for (RValue subInvokable : ((Sequence) invokable).sequence) {
                     newSequence.add(subInvokable);
                 }
-            }
-            else {
+            } else {
                 newSequence.add(invokable);
             }
         }

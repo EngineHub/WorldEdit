@@ -111,8 +111,21 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean setBlockTypeFast(Vector pt, int type) {
+        return setBlockTypeFast(pt, type, false);
+    }
+
+    /**
+     * Set block type.
+     *
+     * @param pt
+     * @param type
+     * @param fastLighting
+     * @return
+     */
+    @Override
+    public boolean setBlockTypeFast(Vector pt, int type, boolean fastLighting) {
         final Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        if (fastLightingAvailable) {
+        if (fastLightingAvailable && fastLighting) {
             type = type & 255;
             final int previousOpacity = Block_lightOpacity[type];
             Block_lightOpacity[type] = 0;
@@ -145,8 +158,13 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean setTypeIdAndDataFast(Vector pt, int type, int data){
+        return setTypeIdAndDataFast(pt, type, data, false);
+    }
+
+    @Override
+    public boolean setTypeIdAndDataFast(Vector pt, int type, int data, boolean fastLighting) {
         final Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        if (fastLightingAvailable) {
+        if (fastLightingAvailable && fastLighting) {
             type = type & 255;
             final int previousOpacity = Block_lightOpacity[type];
             Block_lightOpacity[type] = 0;
@@ -157,7 +175,7 @@ public class BukkitWorld extends LocalWorld {
 
         return block.setTypeIdAndData(type, (byte) data, false);
     }
-    
+
     /**
      * Get block type.
      * 
@@ -788,8 +806,7 @@ public class BukkitWorld extends LocalWorld {
                                     lightEmitters.add(chunk.getBlock(x, y, z).getState());
                                     if (blockID == 20) {
                                         blocks[index] = 0;
-                                    }
-                                    else {
+                                    } else {
                                         blocks[index] = 20;
                                     }
                                     
@@ -808,8 +825,7 @@ public class BukkitWorld extends LocalWorld {
                     lightEmitter.update(true);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Fast Mode: Could not fix lighting. Probably an incompatible version of CraftBukkit.");
             e.printStackTrace();
         }
@@ -843,8 +859,7 @@ public class BukkitWorld extends LocalWorld {
                 NibbleArray_ctor = Class.forName("net.minecraft.server.NibbleArray").getConstructor(int.class, int.class);
 
                 fastLightingAvailable = true;
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }

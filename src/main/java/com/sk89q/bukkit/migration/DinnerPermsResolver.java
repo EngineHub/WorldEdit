@@ -38,7 +38,6 @@ public class DinnerPermsResolver implements PermissionsResolver {
     }
 
     public static PermissionsResolver factory(Server server, YAMLProcessor config) {
-
         return new DinnerPermsResolver(server);
     }
 

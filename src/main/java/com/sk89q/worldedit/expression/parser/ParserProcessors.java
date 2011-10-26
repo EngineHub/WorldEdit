@@ -134,12 +134,10 @@ public final class ParserProcessors {
         for (Identifiable identifiable : input) {
             if (semicolonFound) {
                 rhs.addLast(identifiable);
-            }
-            else {
+            } else {
                 if (identifiable.id() == ';') {
                     semicolonFound = true;
-                }
-                else {
+                } else {
                     lhs.addLast(identifiable);
                 }
             }
@@ -151,12 +149,10 @@ public final class ParserProcessors {
             }
 
             return processExpression(lhs);
-        }
-        else if (lhs.isEmpty()) {
+        } else if (lhs.isEmpty()) {
             return processStatement(rhs);
-        }
-        else {
-            assert(semicolonFound);
+        } else {
+            assert (semicolonFound);
 
             RValue lhsInvokable = processExpression(lhs);
             RValue rhsInvokable = processStatement(rhs);
@@ -193,8 +189,7 @@ public final class ParserProcessors {
                 }
 
                 rhs.removeFirst();
-            }
-            else {
+            } else {
                 lhs.addFirst(identifiable);
             }
         }
@@ -206,8 +201,7 @@ public final class ParserProcessors {
 
         try {
             return Operators.getOperator(input.get(0).getPosition(), operator, lhsInvokable, rhsInvokable);
-        }
-        catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             final Token operatorToken = (Token) input.get(lhs.size());
             throw new ParserException(operatorToken.getPosition(), "Couldn't find operator '" + operator + "'");
         }
@@ -236,8 +230,7 @@ public final class ParserProcessors {
                 }
 
                 lhs.removeLast();
-            }
-            else {
+            } else {
                 rhs.addLast(identifiable);
             }
         }
@@ -249,8 +242,7 @@ public final class ParserProcessors {
 
         try {
             return Operators.getOperator(input.get(0).getPosition(), operator, lhsInvokable, rhsInvokable);
-        }
-        catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             final Token operatorToken = (Token) input.get(lhs.size());
             throw new ParserException(operatorToken.getPosition(), "Couldn't find operator '" + operator + "'");
         }
@@ -280,19 +272,16 @@ public final class ParserProcessors {
                     try {
                         ret = Operators.getOperator(lastPosition, opName, ret);
                         continue;
-                    }
-                    catch (NoSuchMethodException e) {
+                    } catch (NoSuchMethodException e) {
                         throw new ParserException(lastPosition, "No such prefix operator: " + operator);
                     }
                 }
             }
             if (last instanceof Token) {
                 throw new ParserException(lastPosition, "Extra token found in expression: " + last);
-            }
-            else if (last instanceof RValue) {
+            } else if (last instanceof RValue) {
                 throw new ParserException(lastPosition, "Extra expression found: " + last);
-            }
-            else {
+            } else {
                 throw new ParserException(lastPosition, "Extra element found: " + last);
             }
         }

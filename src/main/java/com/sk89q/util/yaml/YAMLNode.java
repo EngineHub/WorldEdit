@@ -721,7 +721,7 @@ public class YAMLNode {
             return null;
         } else if (o instanceof Number) {
             return ((Number)o).intValue();
-        }  else {
+        } else {
             return null;
         }
     }
@@ -737,7 +737,7 @@ public class YAMLNode {
             return null;
         } else if (o instanceof Number) {
             return ((Number)o).doubleValue();
-        }  else {
+        } else {
             return null;
         }
     }
