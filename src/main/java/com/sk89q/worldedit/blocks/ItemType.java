@@ -517,7 +517,9 @@ public enum ItemType {
      * @return
      */
     public static boolean usesDamageValue(int id) {
-        return id == BlockID.CLOTH
-            || id == ItemID.INK_SACK;
+        return id == ItemID.COAL
+            || id == ItemID.INK_SACK
+            // for material only, orientation data is not stored in inventory anyway
+            || BlockType.usesData(id);
     }
 }
