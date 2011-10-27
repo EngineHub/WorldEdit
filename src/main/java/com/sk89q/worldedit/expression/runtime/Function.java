@@ -76,19 +76,24 @@ public class Function extends Invokable {
     public Invokable optimize() throws EvaluationException {
         final Invokable[] optimizedArgs = new Invokable[args.length];
         boolean optimizable = !method.isAnnotationPresent(Dynamic.class);
+        int position = getPosition();
         for (int i = 0; i < args.length; ++i) {
             final Invokable optimized = optimizedArgs[i] = args[i].optimize();
 
             if (!(optimized instanceof Constant)) {
                 optimizable = false;
             }
+
+            if (optimized.getPosition() < position) {
+                position = optimized.getPosition();
+            }
         }
 
         if (optimizable) {
-            return new Constant(getPosition(), invoke());
+            return new Constant(position, invoke());
         }
         else {
-            return new Function(getPosition(), method, optimizedArgs);
+            return new Function(position, method, optimizedArgs);
         }
     }
 }
