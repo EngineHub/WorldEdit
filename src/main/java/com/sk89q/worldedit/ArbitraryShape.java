@@ -43,33 +43,32 @@ public abstract class ArbitraryShape {
             double y = position.getY();
             double z = position.getZ();
 
-            if (!isInside(x, y, z))
-                continue;
+            if (!isInside(x, y, z)) continue;
 
             if (hollow) {
                 boolean draw = false;
                 do {
-                    if (!isInside(x+1, y, z)) {
+                    if (!isInside(x + 1, y, z)) {
                         draw = true;
                         break;
                     }
-                    if (!isInside(x-1, y, z)) {
+                    if (!isInside(x - 1, y, z)) {
                         draw = true;
                         break;
                     }
-                    if (!isInside(x, y+1, z)) {
+                    if (!isInside(x, y + 1, z)) {
                         draw = true;
                         break;
                     }
-                    if (!isInside(x, y-1, z)) {
+                    if (!isInside(x, y - 1, z)) {
                         draw = true;
                         break;
                     }
-                    if (!isInside(x, y, z+1)) {
+                    if (!isInside(x, y, z + 1)) {
                         draw = true;
                         break;
                     }
-                    if (!isInside(x, y, z-1)) {
+                    if (!isInside(x, y, z - 1)) {
                         draw = true;
                         break;
                     }

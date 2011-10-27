@@ -340,7 +340,8 @@ public class GenerationCommands {
         try {
             expression = Expression.compile(args.getJoinedStrings(1), "x", "y", "z");
             expression.optimize();
-        } catch (ExpressionException e) {
+        }
+        catch (ExpressionException e) {
             player.printError(e.getMessage());
             return;
         }
@@ -353,7 +354,8 @@ public class GenerationCommands {
                 protected boolean isInside(double x, double y, double z) {
                     try {
                         return expression.evaluate(x, y, z) > 0;
-                    } catch (Exception e) {
+                    }
+                    catch (Exception e) {
                         e.printStackTrace();
                         return false;
                     }
@@ -371,8 +373,9 @@ public class GenerationCommands {
                 @Override
                 protected boolean isInside(double x, double y, double z) {
                     try {
-                        return expression.evaluate(x-placementX, y-placementY, z-placementZ) > 0;
-                    } catch (Exception e) {
+                        return expression.evaluate(x - placementX, y - placementY, z - placementZ) > 0;
+                    }
+                    catch (Exception e) {
                         e.printStackTrace();
                         return false;
                     }
@@ -387,11 +390,12 @@ public class GenerationCommands {
             shape = new ArbitraryShape(region) {
                 @Override
                 protected boolean isInside(double x, double y, double z) {
-                    final Vector scaled = new Vector(x,y,z).subtract(center).divide(stretch);
+                    final Vector scaled = new Vector(x, y, z).subtract(center).divide(stretch);
 
                     try {
                         return expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ()) > 0;
-                    } catch (Exception e) {
+                    }
+                    catch (Exception e) {
                         e.printStackTrace();
                         return false;
                     }
