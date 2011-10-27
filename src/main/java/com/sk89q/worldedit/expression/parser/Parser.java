@@ -153,55 +153,55 @@ public class Parser {
         }
     }
 
-    private Invokable processStatement(LinkedList<Identifiable> input) throws ParserException {
+    private static Invokable processStatement(LinkedList<Identifiable> input) throws ParserException {
         LinkedList<Identifiable> lhs = new LinkedList<Identifiable>();
         LinkedList<Identifiable> rhs = new LinkedList<Identifiable>();
         boolean semicolonFound = false;
 
-        for (Iterator<Identifiable> it = input.descendingIterator(); it.hasNext();) {
-            Identifiable identifiable = it.next();
+        for (Identifiable identifiable : input) {
             if (semicolonFound) {
-                lhs.addFirst(identifiable);
+                rhs.addLast(identifiable);
             }
             else {
                 if (identifiable.id() == ';') {
                     semicolonFound = true;
                 }
                 else {
-                    rhs.addFirst(identifiable);
+                    lhs.addLast(identifiable);
                 }
             }
         }
 
-        if (lhs.isEmpty()) {
-            if (rhs.isEmpty()) {
+        if (rhs.isEmpty()) {
+            if (lhs.isEmpty()) {
                 return new Sequence(semicolonFound ? input.get(0).getPosition() : -1);
             }
 
-            return processExpression(rhs);
+            return processExpression(lhs);
         }
-        else if (rhs.isEmpty()) {
-            return processStatement(lhs);
+        else if (lhs.isEmpty()) {
+            return processStatement(rhs);
         }
         else {
             assert(semicolonFound);
 
-            Invokable rhsInvokable = processExpression(rhs);
-            Invokable lhsInvokable = processStatement(lhs);
+            Invokable lhsInvokable = processExpression(lhs);
+            Invokable rhsInvokable = processStatement(rhs);
 
-            return new Sequence(position, lhsInvokable, rhsInvokable);
+            return new Sequence(lhsInvokable.getPosition(), lhsInvokable, rhsInvokable);
         }
     }
 
-    private Invokable processExpression(LinkedList<Identifiable> input) throws ParserException {
-        return processBinaryOps(input, binaryOpMaps.length - 1);
+    private static Invokable processExpression(LinkedList<Identifiable> input) throws ParserException {
+        return processBinaryOpsRA(input, binaryOpMapsRA.length - 1);
     }
 
-    private static final Map<String, String>[] binaryOpMaps;
+    private static final Map<String, String>[] binaryOpMapsLA;
+    private static final Map<String, String>[] binaryOpMapsRA;
 
     private static final Map<String, String> unaryOpMap = new HashMap<String, String>();
     static {
-        final Object[][][] binaryOps = {
+        final Object[][][] binaryOpsLA = {
                 {
                     { "^", "pow" },
                     { "**", "pow" },
@@ -236,6 +236,8 @@ public class Parser {
                 {
                     { "||", "or" },
                 },
+        };
+        final Object[][][] binaryOpsRA = {
                 {
                     { "=", "ass" },
                     { "+=", "aadd" },
@@ -248,21 +250,44 @@ public class Parser {
         };
 
         @SuppressWarnings("unchecked")
-        final Map<String, String>[] tmp = binaryOpMaps = new Map[binaryOps.length];
-        for (int i = 0; i < binaryOps.length; ++i) {
-            final Object[][] a = binaryOps[i];
+        final Map<String, String>[] lBinaryOpMapsLA = binaryOpMapsLA = new Map[binaryOpsLA.length];
+        for (int i = 0; i < binaryOpsLA.length; ++i) {
+            final Object[][] a = binaryOpsLA[i];
             switch (a.length) {
             case 0:
-                tmp[i] = Collections.emptyMap();
+                lBinaryOpMapsLA[i] = Collections.emptyMap();
                 break;
 
             case 1:
                 final Object[] first = a[0];
-                tmp[i] = Collections.singletonMap((String) first[0], (String) first[1]);
+                lBinaryOpMapsLA[i] = Collections.singletonMap((String) first[0], (String) first[1]);
                 break;
 
             default:
-                Map<String, String> m = tmp[i] = new HashMap<String, String>();
+                Map<String, String> m = lBinaryOpMapsLA[i] = new HashMap<String, String>();
+                for (int j = 0; j < a.length; ++j) {
+                    final Object[] element = a[j];
+                    m.put((String) element[0], (String) element[1]);
+                }
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        final Map<String, String>[] lBinaryOpMapsRA = binaryOpMapsRA = new Map[binaryOpsRA.length];
+        for (int i = 0; i < binaryOpsRA.length; ++i) {
+            final Object[][] a = binaryOpsRA[i];
+            switch (a.length) {
+            case 0:
+                lBinaryOpMapsRA[i] = Collections.emptyMap();
+                break;
+
+            case 1:
+                final Object[] first = a[0];
+                lBinaryOpMapsRA[i] = Collections.singletonMap((String) first[0], (String) first[1]);
+                break;
+
+            default:
+                Map<String, String> m = lBinaryOpMapsRA[i] = new HashMap<String, String>();
                 for (int j = 0; j < a.length; ++j) {
                     final Object[] element = a[j];
                     m.put((String) element[0], (String) element[1]);
@@ -277,7 +302,7 @@ public class Parser {
         unaryOpMap.put("--", "dec");
     }
 
-    private Invokable processBinaryOps(LinkedList<Identifiable> input, int level) throws ParserException {
+    private static Invokable processBinaryOpsLA(LinkedList<Identifiable> input, int level) throws ParserException {
         if (level < 0) {
             return processUnaryOps(input);
         }
@@ -291,15 +316,11 @@ public class Parser {
             if (operator == null) {
                 rhs.addFirst(identifiable);
 
-                if (rhs.isEmpty()) {
-                    continue;
-                }
-
                 if (!(identifiable instanceof OperatorToken)) {
                     continue;
                 }
 
-                operator = binaryOpMaps[level].get(((OperatorToken) identifiable).operator);
+                operator = binaryOpMapsLA[level].get(((OperatorToken) identifiable).operator);
                 if (operator == null) {
                     continue;
                 }
@@ -311,13 +332,13 @@ public class Parser {
             }
         }
 
-        Invokable rhsInvokable = processBinaryOps(rhs, level - 1);
+        Invokable rhsInvokable = processBinaryOpsLA(rhs, level - 1);
         if (operator == null) return rhsInvokable;
 
-        Invokable lhsInvokable = processBinaryOps(lhs, level);
+        Invokable lhsInvokable = processBinaryOpsLA(lhs, level);
 
         try {
-            return Operators.getOperator(-1, operator, lhsInvokable, rhsInvokable); // TODO: get real position
+            return Operators.getOperator(input.get(0).getPosition(), operator, lhsInvokable, rhsInvokable);
         }
         catch (NoSuchMethodException e) {
             final Token operatorToken = (Token) input.get(lhs.size());
@@ -325,7 +346,54 @@ public class Parser {
         }
     }
 
-    private Invokable processUnaryOps(LinkedList<Identifiable> input) throws ParserException {
+    private static Invokable processBinaryOpsRA(LinkedList<Identifiable> input, int level) throws ParserException {
+        if (level < 0) {
+            return processTernaryOps(input);
+        }
+
+        LinkedList<Identifiable> lhs = new LinkedList<Identifiable>();
+        LinkedList<Identifiable> rhs = new LinkedList<Identifiable>();
+        String operator = null;
+
+        for (Identifiable identifiable : input) {
+            if (operator == null) {
+                lhs.addLast(identifiable);
+
+                if (!(identifiable instanceof OperatorToken)) {
+                    continue;
+                }
+
+                operator = binaryOpMapsRA[level].get(((OperatorToken) identifiable).operator);
+                if (operator == null) {
+                    continue;
+                }
+
+                lhs.removeLast();
+            }
+            else {
+                rhs.addLast(identifiable);
+            }
+        }
+
+        Invokable lhsInvokable = processBinaryOpsRA(lhs, level - 1);
+        if (operator == null) return lhsInvokable;
+
+        Invokable rhsInvokable = processBinaryOpsRA(rhs, level);
+
+        try {
+            return Operators.getOperator(input.get(0).getPosition(), operator, lhsInvokable, rhsInvokable);
+        }
+        catch (NoSuchMethodException e) {
+            final Token operatorToken = (Token) input.get(lhs.size());
+            throw new ParserException(operatorToken.getPosition(), "Couldn't find operator '" + operator + "'");
+        }
+    }
+
+    private static Invokable processTernaryOps(LinkedList<Identifiable> input) throws ParserException {
+        return processBinaryOpsLA(input, binaryOpMapsLA.length - 1);
+    }
+
+    private static Invokable processUnaryOps(LinkedList<Identifiable> input) throws ParserException {
         if (input.isEmpty()) {
             throw new ParserException(-1, "Expression missing.");
         }
@@ -333,6 +401,7 @@ public class Parser {
         Invokable ret = (Invokable) input.removeLast();
         while (!input.isEmpty()) {
             final Identifiable last = input.removeLast();
+            final int lastPosition = last.getPosition();
             if (last instanceof PrefixOperator) {
                 final String operator = ((PrefixOperator) last).operator;
                 if (operator.equals("+")) {
@@ -342,22 +411,22 @@ public class Parser {
                 String opName = unaryOpMap.get(operator);
                 if (opName != null) {
                     try {
-                        ret = Operators.getOperator(last.getPosition(), opName, ret);
+                        ret = Operators.getOperator(lastPosition, opName, ret);
                         continue;
                     }
                     catch (NoSuchMethodException e) {
-                        throw new ParserException(last.getPosition(), "No such prefix operator: " + operator);
+                        throw new ParserException(lastPosition, "No such prefix operator: " + operator);
                     }
                 }
             }
             if (last instanceof Token) {
-                throw new ParserException(last.getPosition(), "Extra token found in expression: " + last);
+                throw new ParserException(lastPosition, "Extra token found in expression: " + last);
             }
             else if (last instanceof Invokable) {
-                throw new ParserException(last.getPosition(), "Extra expression found: " + last);
+                throw new ParserException(lastPosition, "Extra expression found: " + last);
             }
             else {
-                throw new ParserException(last.getPosition(), "Extra element found: " + last);
+                throw new ParserException(lastPosition, "Extra element found: " + last);
             }
         }
         return ret;
