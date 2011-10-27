@@ -89,8 +89,16 @@ public final class Functions {
         return Math.min(a.invoke(), b.invoke());
     }
 
+    public static final double min(Invokable a, Invokable b, Invokable c) throws Exception {
+        return Math.min(a.invoke(), Math.min(b.invoke(), c.invoke()));
+    }
+
     public static final double max(Invokable a, Invokable b) throws Exception {
         return Math.max(a.invoke(), b.invoke());
+    }
+
+    public static final double max(Invokable a, Invokable b, Invokable c) throws Exception {
+        return Math.max(a.invoke(), Math.max(b.invoke(), c.invoke()));
     }
 
 
