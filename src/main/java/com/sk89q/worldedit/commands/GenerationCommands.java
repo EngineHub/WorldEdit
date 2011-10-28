@@ -39,7 +39,7 @@ import com.sk89q.worldedit.util.TreeGenerator;
 public class GenerationCommands {
     @Command(
         aliases = { "/hcyl" },
-        usage = "<block> <radius> [height]",
+        usage = "<block> <radius>[,<radius>] [height]",
         desc = "Generate a hollow cylinder",
         min = 2,
         max = 3
@@ -51,17 +51,32 @@ public class GenerationCommands {
             throws WorldEditException {
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
-        double radius = Math.max(1, args.getDouble(1));
+        String[] radiuses = args.getString(1).split(",");
+        final double radiusX, radiusZ;
+        switch (radiuses.length) {
+        case 1:
+            radiusX = radiusZ = Math.max(1, Double.parseDouble(radiuses[0]));
+            break;
+
+        case 2:
+            radiusX = Math.max(1, Double.parseDouble(radiuses[0]));
+            radiusZ = Math.max(1, Double.parseDouble(radiuses[1]));
+            break;
+
+        default:
+            player.printError("You must either specify 1 or 2 radius values.");
+            return;
+        }
         int height = args.argsLength() > 2 ? args.getInteger(2) : 1;
 
         Vector pos = session.getPlacementPosition(player);
-        int affected = editSession.makeHollowCylinder(pos, block, radius, height);
+        int affected = editSession.makeCylinder(pos, block, radiusX, radiusZ, height, false);
         player.print(affected + " block(s) have been created.");
     }
 
     @Command(
         aliases = { "/cyl" },
-        usage = "<block> <radius> [height]",
+        usage = "<block> <radius>[,<radius>] [height]",
         desc = "Generate a cylinder",
         min = 2,
         max = 3
@@ -73,11 +88,26 @@ public class GenerationCommands {
             throws WorldEditException {
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
-        double radius = Math.max(1, args.getDouble(1));
+        String[] radiuses = args.getString(1).split(",");
+        final double radiusX, radiusZ;
+        switch (radiuses.length) {
+        case 1:
+            radiusX = radiusZ = Math.max(1, Double.parseDouble(radiuses[0]));
+            break;
+
+        case 2:
+            radiusX = Math.max(1, Double.parseDouble(radiuses[0]));
+            radiusZ = Math.max(1, Double.parseDouble(radiuses[1]));
+            break;
+
+        default:
+            player.printError("You must either specify 1 or 2 radius values.");
+            return;
+        }
         int height = args.argsLength() > 2 ? args.getInteger(2) : 1;
 
         Vector pos = session.getPlacementPosition(player);
-        int affected = editSession.makeCylinder(pos, block, radius, height);
+        int affected = editSession.makeCylinder(pos, block, radiusX, radiusZ, height, true);
         player.print(affected + " block(s) have been created.");
     }
 

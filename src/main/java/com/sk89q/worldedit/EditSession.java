@@ -1794,157 +1794,22 @@ public class EditSession {
     }
 
     /**
-     * Helper method to draw the cylinder.
+     * Makes a sphere or ellipsoid.
      *
-     * @param center
-     * @param x
-     * @param z
-     * @param height
-     * @param block
+     * @param pos Center of the sphere or ellipsoid
+     * @param block The block pattern to use
+     * @param radiusX The cylinder's largest north/south extent
+     * @param radiusZ The cylinder's largest east/west extent
+     * @param height The cylinder's up/down extent. If negative, extend downward.
+     * @param filled If false, only a shell will be generated.
+     * @return number of blocks changed
      * @throws MaxChangedBlocksException
      */
-    private int makeHCylinderPoints(Vector center, int x, double z, int height,
-            Pattern block) throws MaxChangedBlocksException {
-        int ceilZ = (int) Math.ceil(z);
+    public int makeCylinder(Vector pos, Pattern block, double radiusX, double radiusZ, int height, boolean filled) throws MaxChangedBlocksException {
         int affected = 0;
 
-        if (x == 0) {
-            for (int y = 0; y < height; ++y) {
-                setBlock(center.add(0, y, ceilZ), block);
-                setBlock(center.add(0, y, -ceilZ), block);
-                setBlock(center.add(ceilZ, y, 0), block);
-                setBlock(center.add(-ceilZ, y, 0), block);
-                affected += 4;
-            }
-        } else if (x == z) {
-            for (int y = 0; y < height; ++y) {
-                setBlock(center.add(x, y, ceilZ), block);
-                setBlock(center.add(-x, y, ceilZ), block);
-                setBlock(center.add(x, y, -ceilZ), block);
-                setBlock(center.add(-x, y, -ceilZ), block);
-                affected += 4;
-            }
-        } else if (x < z) {
-            for (int y = 0; y < height; ++y) {
-                setBlock(center.add(x, y, ceilZ), block);
-                setBlock(center.add(-x, y, ceilZ), block);
-                setBlock(center.add(x, y, -ceilZ), block);
-                setBlock(center.add(-x, y, -ceilZ), block);
-                setBlock(center.add(ceilZ, y, x), block);
-                setBlock(center.add(-ceilZ, y, x), block);
-                setBlock(center.add(ceilZ, y, -x), block);
-                setBlock(center.add(-ceilZ, y, -x), block);
-                affected += 8;
-            }
-        }
-
-        return affected;
-    }
-
-    /**
-     * Draw a hollow cylinder.
-     *
-     * @param pos
-     * @param block
-     * @param radius
-     * @param height
-     * @return number of blocks set
-     * @throws MaxChangedBlocksException
-     */
-    public int makeHollowCylinder(Vector pos, Pattern block, double radius,
-            int height) throws MaxChangedBlocksException {
-        int x = 0;
-        double z = radius;
-        double d = (5 - radius * 4) / 4;
-        int affected = 0;
-
-        if (height == 0) {
-            return 0;
-        } else if (height < 0) {
-            height = -height;
-            pos = pos.subtract(0, height, 0);
-        }
-
-        // Only do this check if height is negative --Elizabeth
-        if (height < 0 && pos.getBlockY() - height - 1 < 0) {
-            height = pos.getBlockY() + 1;
-        } else if (pos.getBlockY() + height - 1 > 127) {
-            height = 127 - pos.getBlockY() + 1;
-        }
-
-        affected += makeHCylinderPoints(pos, x, z, height, block);
-
-        while (x < z) {
-            ++x;
-
-            if (d >= 0) {
-                d += 2 * (x - --z) + 1;
-            } else {
-                d += 2 * x + 1;
-            }
-
-            affected += makeHCylinderPoints(pos, x, z, height, block);
-        }
-
-        return affected;
-    }
-
-    /**
-     * Helper method to draw the cylinder.
-     *
-     * @param center
-     * @param x
-     * @param z
-     * @param height
-     * @param block
-     * @throws MaxChangedBlocksException
-     */
-    private int makeCylinderPoints(Vector center, int x, double z, int height,
-            Pattern block) throws MaxChangedBlocksException {
-        int ceilZ = (int) Math.ceil(z);
-    	int affected = 0;
-
-        if (x == z) {
-            for (int y = 0; y < height; ++y) {
-                for (int z2 = -ceilZ; z2 <= ceilZ; ++z2) {
-                    setBlock(center.add(x, y, z2), block);
-                    setBlock(center.add(-x, y, z2), block);
-                    affected += 2;
-                }
-            }
-        } else if (x < z) {
-            for (int y = 0; y < height; ++y) {
-                for (int x2 = -x; x2 <= x; ++x2) {
-                    for (int z2 = -ceilZ; z2 <= ceilZ; ++z2) {
-                        setBlock(center.add(x2, y, z2), block);
-                        ++affected;
-                    }
-                    setBlock(center.add(ceilZ, y, x2), block);
-                    setBlock(center.add(-ceilZ, y, x2), block);
-                    affected += 2;
-                }
-            }
-        }
-
-        return affected;
-    }
-
-    /**
-     * Draw a filled cylinder.
-     *
-     * @param pos
-     * @param block
-     * @param radius
-     * @param height
-     * @return number of blocks set
-     * @throws MaxChangedBlocksException
-     */
-    public int makeCylinder(Vector pos, Pattern block, double radius, int height)
-            throws MaxChangedBlocksException {
-        int x = 0;
-        double z = radius;
-        double d = (5 - radius * 4) / 4;
-        int affected = 0;
+        radiusX += 0.5;
+        radiusZ += 0.5;
 
         if (height == 0) {
             return 0;
@@ -1959,18 +1824,52 @@ public class EditSession {
             height = 127 - pos.getBlockY() + 1;
         }
 
-        affected += makeCylinderPoints(pos, x, z, height, block);
+        final double invRadiusX = 1 / radiusX;
+        final double invRadiusZ = 1 / radiusZ;
 
-        while (x < z) {
-            ++x;
+        final int ceilRadiusX = (int) Math.ceil(radiusX);
+        final int ceilRadiusZ = (int) Math.ceil(radiusZ);
 
-            if (d >= 0) {
-                d += 2 * (x - --z) + 1;
-            } else {
-                d += 2 * x + 1;
+        double nextXn = 0;
+        forX:
+        for (int x = 0; x <= ceilRadiusX; ++x) {
+            final double xn = nextXn;
+            nextXn = (x + 1) * invRadiusX;
+            double nextZn = 0;
+            forZ:
+            for (int z = 0; z <= ceilRadiusZ; ++z) {
+                final double zn = nextZn;
+                nextZn = (z + 1) * invRadiusZ;
+
+                double distanceSq = lengthSq(xn, zn);
+                if (distanceSq > 1) {
+                    if (z == 0) {
+                        break forX;
+                    }
+                    break forZ;
+                }
+
+                if (!filled) {
+                    if (lengthSq(nextXn, zn) <= 1 && lengthSq(xn, nextZn) <= 1) {
+                        continue;
+                    }
+                }
+
+                for (int y = 0; y < height; ++y) {
+                    if (setBlock(pos.add(x, y, z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(-x, y, z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(x, y, -z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(pos.add(-x, y, -z), block)) {
+                        ++affected;
+                    }
+                }
             }
-
-            affected += makeCylinderPoints(pos, x, z, height, block);
         }
 
         return affected;
@@ -2069,6 +1968,10 @@ public class EditSession {
 
     private static final double lengthSq(double x, double y, double z) {
         return (x * x) + (y * y) + (z * z);
+    }
+
+    private static final double lengthSq(double x, double z) {
+        return (x * x) + (z * z);
     }
 
     /**
