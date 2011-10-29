@@ -14,54 +14,18 @@ import com.sk89q.worldedit.expression.runtime.Operators;
 import com.sk89q.worldedit.expression.runtime.Sequence;
 
 public final class ParserProcessors {
-    static Invokable processStatement(LinkedList<Identifiable> input) throws ParserException {
-        LinkedList<Identifiable> lhs = new LinkedList<Identifiable>();
-        LinkedList<Identifiable> rhs = new LinkedList<Identifiable>();
-        boolean semicolonFound = false;
-
-        for (Identifiable identifiable : input) {
-            if (semicolonFound) {
-                rhs.addLast(identifiable);
-            }
-            else {
-                if (identifiable.id() == ';') {
-                    semicolonFound = true;
-                }
-                else {
-                    lhs.addLast(identifiable);
-                }
-            }
-        }
-
-        if (rhs.isEmpty()) {
-            if (lhs.isEmpty()) {
-                return new Sequence(semicolonFound ? input.get(0).getPosition() : -1);
-            }
-
-            return processExpression(lhs);
-        }
-        else if (lhs.isEmpty()) {
-            return processStatement(rhs);
-        }
-        else {
-            assert(semicolonFound);
-
-            Invokable lhsInvokable = processExpression(lhs);
-            Invokable rhsInvokable = processStatement(rhs);
-
-            return new Sequence(lhsInvokable.getPosition(), lhsInvokable, rhsInvokable);
-        }
-    }
-
-    static Invokable processExpression(LinkedList<Identifiable> input) throws ParserException {
-        return processBinaryOpsRA(input, binaryOpMapsRA.length - 1);
-    }
+    private static final Map<String, String> unaryOpMap = new HashMap<String, String>();
 
     private static final Map<String, String>[] binaryOpMapsLA;
     private static final Map<String, String>[] binaryOpMapsRA;
 
-    private static final Map<String, String> unaryOpMap = new HashMap<String, String>();
     static {
+        unaryOpMap.put("-", "neg");
+        unaryOpMap.put("!", "not");
+        unaryOpMap.put("~", "inv");
+        unaryOpMap.put("++", "inc");
+        unaryOpMap.put("--", "dec");
+
         final Object[][][] binaryOpsLA = {
                 {
                     { "^", "pow" },
@@ -155,12 +119,49 @@ public final class ParserProcessors {
                 }
             }
         }
+    }
 
-        unaryOpMap.put("-", "neg");
-        unaryOpMap.put("!", "not");
-        unaryOpMap.put("~", "inv");
-        unaryOpMap.put("++", "inc");
-        unaryOpMap.put("--", "dec");
+    static Invokable processStatement(LinkedList<Identifiable> input) throws ParserException {
+        LinkedList<Identifiable> lhs = new LinkedList<Identifiable>();
+        LinkedList<Identifiable> rhs = new LinkedList<Identifiable>();
+        boolean semicolonFound = false;
+
+        for (Identifiable identifiable : input) {
+            if (semicolonFound) {
+                rhs.addLast(identifiable);
+            }
+            else {
+                if (identifiable.id() == ';') {
+                    semicolonFound = true;
+                }
+                else {
+                    lhs.addLast(identifiable);
+                }
+            }
+        }
+
+        if (rhs.isEmpty()) {
+            if (lhs.isEmpty()) {
+                return new Sequence(semicolonFound ? input.get(0).getPosition() : -1);
+            }
+
+            return processExpression(lhs);
+        }
+        else if (lhs.isEmpty()) {
+            return processStatement(rhs);
+        }
+        else {
+            assert(semicolonFound);
+
+            Invokable lhsInvokable = processExpression(lhs);
+            Invokable rhsInvokable = processStatement(rhs);
+
+            return new Sequence(lhsInvokable.getPosition(), lhsInvokable, rhsInvokable);
+        }
+    }
+
+    static Invokable processExpression(LinkedList<Identifiable> input) throws ParserException {
+        return processBinaryOpsRA(input, binaryOpMapsRA.length - 1);
     }
 
     private static Invokable processBinaryOpsLA(LinkedList<Identifiable> input, int level) throws ParserException {
