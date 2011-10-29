@@ -19,6 +19,11 @@
 
 package com.sk89q.worldedit.expression.lexer.tokens;
 
+/**
+ * An identifier
+ *
+ * @author TomyLobo
+ */
 public class IdentifierToken extends Token {
     public final String value;
 

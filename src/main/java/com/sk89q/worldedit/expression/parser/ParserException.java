@@ -21,6 +21,11 @@ package com.sk89q.worldedit.expression.parser;
 
 import com.sk89q.worldedit.expression.ExpressionException;
 
+/**
+ * Thrown when the parser encounters a problem.
+ *
+ * @author TomyLobo
+ */
 public class ParserException extends ExpressionException {
     private static final long serialVersionUID = 1L;
 

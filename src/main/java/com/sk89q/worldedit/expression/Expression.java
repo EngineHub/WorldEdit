@@ -32,6 +32,30 @@ import com.sk89q.worldedit.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.expression.runtime.Variable;
 
+/**
+ * Compiles and evaluates expressions.
+ *
+ * Supported operators:
+ * Logical: &&, ||, ! (unary)
+ * Bitwise: ~ (unary), >>, << 
+ * Arithmetic: +, -, *, /, % (modulo), ^ (power), - (unary), --, ++ (prefix only)
+ * Comparison: <=, >=, >, <, ==, !=, ~= (near)
+ *
+ * Supported functions: abs, acos, asin, atan, atan2, cbrt, ceil, cos, cosh, exp, floor, ln, log, log10, max, max, min, min, rint, round, sin, sinh, sqrt, tan, tanh
+ *
+ * Constants: e, pi
+ *
+ * To compile an equation, run <code>Expression.compile("expression here", "var1", "var2"...)</code>
+ * If you wish to run the equation multiple times, you can then optimize it, by calling myExpression.optimize();
+ * You can then run the equation as many times as you want by calling myExpression.evaluate(var1, var2...)
+ * You do not need to pass values for all variables specified while compiling.
+ * To query variables after evaluation, you can use myExpression.getVariable("variable name").
+ * To get a value out of these, use myVariable.getValue()
+ *
+ * Variables are also supported and can be set either by passing values to <code>evaluate</code>
+ *
+ * @author TomyLobo
+ */
 public class Expression {
     private final Map<String, RValue> variables = new HashMap<String, RValue>();
     private final String[] variableNames;

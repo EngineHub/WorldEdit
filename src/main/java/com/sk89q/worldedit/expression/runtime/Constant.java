@@ -19,6 +19,11 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
+/**
+ * A constant.
+ *
+ * @author TomyLobo
+ */
 public final class Constant extends RValue {
     private final double value;
 

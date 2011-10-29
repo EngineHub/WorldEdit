@@ -31,6 +31,13 @@ import java.util.regex.Pattern;
 
 import com.sk89q.worldedit.expression.lexer.tokens.*;
 
+/**
+ * Processes a string into a list of tokens.
+ *
+ * Tokens can be numbers, identifiers, operators and assorted other characters.
+ *
+ * @author TomyLobo
+ */
 public class Lexer {
     private final String expression;
     private int position = 0;

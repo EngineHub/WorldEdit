@@ -13,6 +13,11 @@ import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.expression.runtime.Operators;
 import com.sk89q.worldedit.expression.runtime.Sequence;
 
+/**
+ * Helper classfor Parser. Contains processors for statements and operators.
+ *
+ * @author TomyLobo
+ */
 public final class ParserProcessors {
     private static final Map<String, String> unaryOpMap = new HashMap<String, String>();
 

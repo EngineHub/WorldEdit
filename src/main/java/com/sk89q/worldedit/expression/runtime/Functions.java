@@ -21,6 +21,11 @@ package com.sk89q.worldedit.expression.runtime;
 
 import java.util.Arrays;
 
+/**
+ * Contains all functions that can be used in expressions.
+ *
+ * @author TomyLobo
+ */
 public final class Functions {
     public static final Function getFunction(int position, String name, RValue... args) throws NoSuchMethodException {
         final Class<?>[] parameterTypes = (Class<?>[]) new Class[args.length];

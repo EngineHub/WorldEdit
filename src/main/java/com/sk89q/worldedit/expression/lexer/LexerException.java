@@ -21,6 +21,11 @@ package com.sk89q.worldedit.expression.lexer;
 
 import com.sk89q.worldedit.expression.ExpressionException;
 
+/**
+ * Thrown when the lexer encounters a problem.
+ *
+ * @author TomyLobo
+ */
 public class LexerException extends ExpressionException {
     private static final long serialVersionUID = 1L;
 

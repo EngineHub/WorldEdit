@@ -19,6 +19,11 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
+/**
+ * Contains all unary and binary operators.
+ *
+ * @author TomyLobo
+ */
 public final class Operators {
     public static final Function getOperator(int position, String name, RValue lhs, RValue rhs) throws NoSuchMethodException {
         if (lhs instanceof LValue) {

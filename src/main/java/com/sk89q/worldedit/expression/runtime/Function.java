@@ -24,7 +24,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * Wrapper for a Java method and its arguments (other Invokables)
+ *
+ * @author TomyLobo
+ */
 public class Function extends RValue {
+    /**
+     * Add this annotation on functions that don't always return the same value for the same inputs.
+     */
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Dynamic { }
 

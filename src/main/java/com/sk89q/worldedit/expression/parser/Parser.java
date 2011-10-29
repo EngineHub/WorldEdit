@@ -34,6 +34,13 @@ import com.sk89q.worldedit.expression.runtime.Constant;
 import com.sk89q.worldedit.expression.runtime.Functions;
 import com.sk89q.worldedit.expression.runtime.RValue;
 
+/**
+ * Processes a list of tokens into an executable tree.
+ *
+ * Tokens can be numbers, identifiers, operators and assorted other characters.
+ *
+ * @author TomyLobo
+ */
 public class Parser {
     private final class NullToken extends Token {
         private NullToken(int position) {

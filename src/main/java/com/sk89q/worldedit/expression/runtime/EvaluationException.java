@@ -2,6 +2,11 @@ package com.sk89q.worldedit.expression.runtime;
 
 import com.sk89q.worldedit.expression.ExpressionException;
 
+/**
+ * Thrown when there's a problem during expression evaluation.
+ *
+ * @author TomyLobo
+ */
 public class EvaluationException extends ExpressionException {
     private static final long serialVersionUID = 1L;
 

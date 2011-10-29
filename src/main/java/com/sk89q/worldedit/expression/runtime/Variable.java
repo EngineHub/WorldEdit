@@ -19,6 +19,11 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
+/**
+ * A variable.
+ *
+ * @author TomyLobo
+ */
 public final class Variable extends LValue {
     public double value;
 

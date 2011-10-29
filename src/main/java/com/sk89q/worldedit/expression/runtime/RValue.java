@@ -21,6 +21,11 @@ package com.sk89q.worldedit.expression.runtime;
 
 import com.sk89q.worldedit.expression.Identifiable;
 
+/**
+ * A value that can be used on the right side of an assignment.
+ *
+ * @author TomyLobo
+ */
 public abstract class RValue implements Identifiable {
     private final int position;
 

@@ -19,6 +19,11 @@
 
 package com.sk89q.worldedit.expression.lexer.tokens;
 
+/**
+ * A number
+ *
+ * @author TomyLobo
+ */
 public class NumberToken extends Token {
     public final double value;
 
