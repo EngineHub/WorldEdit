@@ -38,10 +38,10 @@ public class Sequence extends RValue {
     }
 
     @Override
-    public double invoke() throws EvaluationException {
+    public double getValue() throws EvaluationException {
         double ret = 0;
         for (RValue invokable : sequence) {
-            ret = invokable.invoke();
+            ret = invokable.getValue();
         }
         return ret;
     }

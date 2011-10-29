@@ -64,9 +64,9 @@ public class ExpressionTest {
     public void testAssign() throws ExpressionException {
         Expression foo = Expression.compile("{a=x} b=y; c=z", "x", "y", "z", "a", "b", "c");
         foo.evaluate(2, 3, 5);
-        assertEquals(2, foo.getVariable("a").invoke(), 0);
-        assertEquals(3, foo.getVariable("b").invoke(), 0);
-        assertEquals(5, foo.getVariable("c").invoke(), 0);
+        assertEquals(2, foo.getVariable("a").getValue(), 0);
+        assertEquals(3, foo.getVariable("b").getValue(), 0);
+        assertEquals(5, foo.getVariable("c").getValue(), 0);
     }
 
     private double simpleEval(String expression) throws Exception {

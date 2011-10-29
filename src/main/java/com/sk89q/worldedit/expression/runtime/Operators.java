@@ -42,126 +42,126 @@ public final class Operators {
 
 
     public static final double add(RValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.invoke() + rhs.invoke();
+        return lhs.getValue() + rhs.getValue();
     }
 
     public static final double sub(RValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.invoke() - rhs.invoke();
+        return lhs.getValue() - rhs.getValue();
     }
 
     public static final double mul(RValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.invoke() * rhs.invoke();
+        return lhs.getValue() * rhs.getValue();
     }
 
     public static final double div(RValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.invoke() / rhs.invoke();
+        return lhs.getValue() / rhs.getValue();
     }
 
     public static final double mod(RValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.invoke() % rhs.invoke();
+        return lhs.getValue() % rhs.getValue();
     }
 
     public static final double pow(RValue lhs, RValue rhs) throws EvaluationException {
-        return Math.pow(lhs.invoke(), rhs.invoke());
+        return Math.pow(lhs.getValue(), rhs.getValue());
     }
 
 
     public static final double neg(RValue x) throws EvaluationException {
-        return -x.invoke();
+        return -x.getValue();
     }
 
     public static final double not(RValue x) throws EvaluationException {
-        return x.invoke() > 0.0 ? 0.0 : 1.0;
+        return x.getValue() > 0.0 ? 0.0 : 1.0;
     }
 
     public static final double inv(RValue x) throws EvaluationException {
-        return ~(long) x.invoke();
+        return ~(long) x.getValue();
     }
 
 
     public static final double lth(RValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.invoke() < rhs.invoke() ? 1.0 : 0.0;
+        return lhs.getValue() < rhs.getValue() ? 1.0 : 0.0;
     }
 
     public static final double gth(RValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.invoke() > rhs.invoke() ? 1.0 : 0.0;
+        return lhs.getValue() > rhs.getValue() ? 1.0 : 0.0;
     }
 
     public static final double leq(RValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.invoke() <= rhs.invoke() ? 1.0 : 0.0;
+        return lhs.getValue() <= rhs.getValue() ? 1.0 : 0.0;
     }
 
     public static final double geq(RValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.invoke() >= rhs.invoke() ? 1.0 : 0.0;
+        return lhs.getValue() >= rhs.getValue() ? 1.0 : 0.0;
     }
 
 
     public static final double equ(RValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.invoke() == rhs.invoke() ? 1.0 : 0.0;
+        return lhs.getValue() == rhs.getValue() ? 1.0 : 0.0;
     }
 
     public static final double neq(RValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.invoke() != rhs.invoke() ? 1.0 : 0.0;
+        return lhs.getValue() != rhs.getValue() ? 1.0 : 0.0;
     }
 
     public static final double near(RValue lhs, RValue rhs) throws EvaluationException {
-        return almostEqual2sComplement(lhs.invoke(), rhs.invoke(), 450359963L) ? 1.0 : 0.0;
+        return almostEqual2sComplement(lhs.getValue(), rhs.getValue(), 450359963L) ? 1.0 : 0.0;
         //return Math.abs(lhs.invoke() - rhs.invoke()) < 1e-7 ? 1.0 : 0.0;
     }
 
 
     public static final double or(RValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.invoke() > 0.0 || rhs.invoke() > 0.0 ? 1.0 : 0.0;
+        return lhs.getValue() > 0.0 || rhs.getValue() > 0.0 ? 1.0 : 0.0;
     }
 
     public static final double and(RValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.invoke() > 0.0 && rhs.invoke() > 0.0 ? 1.0 : 0.0;
+        return lhs.getValue() > 0.0 && rhs.getValue() > 0.0 ? 1.0 : 0.0;
     }
 
 
     public static final double shl(RValue lhs, RValue rhs) throws EvaluationException {
-        return (long) lhs.invoke() << (long) rhs.invoke();
+        return (long) lhs.getValue() << (long) rhs.getValue();
     }
 
     public static final double shr(RValue lhs, RValue rhs) throws EvaluationException {
-        return (long) lhs.invoke() >> (long) rhs.invoke();
+        return (long) lhs.getValue() >> (long) rhs.getValue();
     }
 
 
     public static final double ass(LValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.assign(rhs.invoke());
+        return lhs.assign(rhs.getValue());
     }
 
     public static final double aadd(LValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.assign(lhs.invoke() + rhs.invoke());
+        return lhs.assign(lhs.getValue() + rhs.getValue());
     }
 
     public static final double asub(LValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.assign(lhs.invoke() - rhs.invoke());
+        return lhs.assign(lhs.getValue() - rhs.getValue());
     }
 
     public static final double amul(LValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.assign(lhs.invoke() * rhs.invoke());
+        return lhs.assign(lhs.getValue() * rhs.getValue());
     }
 
     public static final double adiv(LValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.assign(lhs.invoke() / rhs.invoke());
+        return lhs.assign(lhs.getValue() / rhs.getValue());
     }
 
     public static final double amod(LValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.assign(lhs.invoke() % rhs.invoke());
+        return lhs.assign(lhs.getValue() % rhs.getValue());
     }
 
     public static final double aexp(LValue lhs, RValue rhs) throws EvaluationException {
-        return lhs.assign(Math.pow(lhs.invoke(), rhs.invoke()));
+        return lhs.assign(Math.pow(lhs.getValue(), rhs.getValue()));
     }
 
     public static final double inc(LValue x) throws EvaluationException {
-        return x.assign(x.invoke() + 1);
+        return x.assign(x.getValue() + 1);
     }
 
     public static final double dec(LValue x) throws EvaluationException {
-        return x.assign(x.invoke() - 1);
+        return x.assign(x.getValue() - 1);
     }
 
 

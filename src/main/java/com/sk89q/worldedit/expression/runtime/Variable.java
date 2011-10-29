@@ -28,7 +28,7 @@ public final class Variable extends LValue {
     }
 
     @Override
-    public double invoke() {
+    public double getValue() {
         return value;
     }
 

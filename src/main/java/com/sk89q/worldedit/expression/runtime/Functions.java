@@ -30,108 +30,108 @@ public final class Functions {
 
 
     public static final double sin(RValue x) throws Exception {
-        return Math.sin(x.invoke());
+        return Math.sin(x.getValue());
     }
 
     public static final double cos(RValue x) throws Exception {
-        return Math.cos(x.invoke());
+        return Math.cos(x.getValue());
     }
 
     public static final double tan(RValue x) throws Exception {
-        return Math.tan(x.invoke());
+        return Math.tan(x.getValue());
     }
 
 
     public static final double asin(RValue x) throws Exception {
-        return Math.asin(x.invoke());
+        return Math.asin(x.getValue());
     }
 
     public static final double acos(RValue x) throws Exception {
-        return Math.acos(x.invoke());
+        return Math.acos(x.getValue());
     }
 
     public static final double atan(RValue x) throws Exception {
-        return Math.atan(x.invoke());
+        return Math.atan(x.getValue());
     }
 
     public static final double atan2(RValue y, RValue x) throws Exception {
-        return Math.atan2(y.invoke(), x.invoke());
+        return Math.atan2(y.getValue(), x.getValue());
     }
 
 
     public static final double sinh(RValue x) throws Exception {
-        return Math.sinh(x.invoke());
+        return Math.sinh(x.getValue());
     }
 
     public static final double cosh(RValue x) throws Exception {
-        return Math.cosh(x.invoke());
+        return Math.cosh(x.getValue());
     }
 
     public static final double tanh(RValue x) throws Exception {
-        return Math.tanh(x.invoke());
+        return Math.tanh(x.getValue());
     }
 
 
     public static final double sqrt(RValue x) throws Exception {
-        return Math.sqrt(x.invoke());
+        return Math.sqrt(x.getValue());
     }
 
     public static final double cbrt(RValue x) throws Exception {
-        return Math.cbrt(x.invoke());
+        return Math.cbrt(x.getValue());
     }
 
 
     public static final double abs(RValue x) throws Exception {
-        return Math.abs(x.invoke());
+        return Math.abs(x.getValue());
     }
 
     public static final double min(RValue a, RValue b) throws Exception {
-        return Math.min(a.invoke(), b.invoke());
+        return Math.min(a.getValue(), b.getValue());
     }
 
     public static final double min(RValue a, RValue b, RValue c) throws Exception {
-        return Math.min(a.invoke(), Math.min(b.invoke(), c.invoke()));
+        return Math.min(a.getValue(), Math.min(b.getValue(), c.getValue()));
     }
 
     public static final double max(RValue a, RValue b) throws Exception {
-        return Math.max(a.invoke(), b.invoke());
+        return Math.max(a.getValue(), b.getValue());
     }
 
     public static final double max(RValue a, RValue b, RValue c) throws Exception {
-        return Math.max(a.invoke(), Math.max(b.invoke(), c.invoke()));
+        return Math.max(a.getValue(), Math.max(b.getValue(), c.getValue()));
     }
 
 
     public static final double ceil(RValue x) throws Exception {
-        return Math.ceil(x.invoke());
+        return Math.ceil(x.getValue());
     }
 
     public static final double floor(RValue x) throws Exception {
-        return Math.floor(x.invoke());
+        return Math.floor(x.getValue());
     }
 
     public static final double rint(RValue x) throws Exception {
-        return Math.rint(x.invoke());
+        return Math.rint(x.getValue());
     }
 
     public static final double round(RValue x) throws Exception {
-        return Math.round(x.invoke());
+        return Math.round(x.getValue());
     }
 
 
     public static final double exp(RValue x) throws Exception {
-        return Math.exp(x.invoke());
+        return Math.exp(x.getValue());
     }
 
     public static final double ln(RValue x) throws Exception {
-        return Math.log(x.invoke());
+        return Math.log(x.getValue());
     }
 
     public static final double log(RValue x) throws Exception {
-        return Math.log(x.invoke());
+        return Math.log(x.getValue());
     }
 
     public static final double log10(RValue x) throws Exception {
-        return Math.log10(x.invoke());
+        return Math.log10(x.getValue());
     }
 }

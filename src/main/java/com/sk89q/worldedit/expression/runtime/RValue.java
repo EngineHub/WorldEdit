@@ -29,7 +29,7 @@ public abstract class RValue implements Identifiable {
         this.position = position;
     }
 
-    public abstract double invoke() throws EvaluationException;
+    public abstract double getValue() throws EvaluationException;
 
     @Override
     public abstract String toString();
