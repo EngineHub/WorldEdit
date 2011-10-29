@@ -76,7 +76,7 @@ public class GeneralCommands {
 
         boolean light = args.hasFlag('f');
         String newState = args.getString(0, null);
-        Boolean dir = newState.equals("on") ? true : newState.equals("off") ? false : null;
+        Boolean dir = newState == null ? null : newState.equals("on") ? true : newState.equals("off") ? false : null;
 
         boolean hadFast = session.hasFastMode();
         boolean hadLight = session.hasFastLighting();
@@ -89,7 +89,7 @@ public class GeneralCommands {
             session.setFastLighting(setLight);
         }
 
-        player.print("Fast mode " + (!setFast ? "disabled." :
+        player.print("Fast mode " + (setFast == hadFast ? "already " : "") + (!setFast ? "disabled." :
             ("enabled. You may need to rejoin to see changes"
             + (setLight ? "and lighting in affected chunks may be wrong." : "."))));
     }
