@@ -22,10 +22,10 @@ package com.sk89q.worldedit.expression.runtime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Sequence extends Invokable {
-    private final Invokable[] sequence;
+public class Sequence extends RValue {
+    private final RValue[] sequence;
 
-    public Sequence(int position, Invokable... sequence) {
+    public Sequence(int position, RValue... sequence) {
         super(position);
 
         this.sequence = sequence;
@@ -40,7 +40,7 @@ public class Sequence extends Invokable {
     @Override
     public double invoke() throws EvaluationException {
         double ret = 0;
-        for (Invokable invokable : sequence) {
+        for (RValue invokable : sequence) {
             ret = invokable.invoke();
         }
         return ret;
@@ -50,7 +50,7 @@ public class Sequence extends Invokable {
     public String toString() {
         StringBuilder sb = new StringBuilder("seq(");
         boolean first = true;
-        for (Invokable invokable : sequence) {
+        for (RValue invokable : sequence) {
             if (!first) {
                 sb.append(", ");
             }
@@ -62,13 +62,13 @@ public class Sequence extends Invokable {
     }
 
     @Override
-    public Invokable optimize() throws EvaluationException {
-        List<Invokable> newSequence = new ArrayList<Invokable>();
+    public RValue optimize() throws EvaluationException {
+        List<RValue> newSequence = new ArrayList<RValue>();
 
-        for (Invokable invokable : sequence) {
+        for (RValue invokable : sequence) {
             invokable = invokable.optimize();
             if (invokable instanceof Sequence) {
-                for (Invokable subInvokable : ((Sequence) invokable).sequence) {
+                for (RValue subInvokable : ((Sequence) invokable).sequence) {
                     newSequence.add(subInvokable);
                 }
             }
@@ -77,6 +77,6 @@ public class Sequence extends Invokable {
             }
         }
 
-        return new Sequence(getPosition(), newSequence.toArray(new Invokable[newSequence.size()]));
+        return new Sequence(getPosition(), newSequence.toArray(new RValue[newSequence.size()]));
     }
 }

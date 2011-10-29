@@ -29,13 +29,13 @@ import com.sk89q.worldedit.expression.parser.Parser;
 import com.sk89q.worldedit.expression.parser.ParserException;
 import com.sk89q.worldedit.expression.runtime.Constant;
 import com.sk89q.worldedit.expression.runtime.EvaluationException;
-import com.sk89q.worldedit.expression.runtime.Invokable;
+import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.expression.runtime.Variable;
 
 public class Expression {
-    private final Map<String, Invokable> variables = new HashMap<String, Invokable>();
+    private final Map<String, RValue> variables = new HashMap<String, RValue>();
     private final String[] variableNames;
-    private Invokable root;
+    private RValue root;
 
     public static Expression compile(String expression, String... variableNames) throws ExpressionException {
         return new Expression(expression, variableNames);
@@ -59,7 +59,7 @@ public class Expression {
     public double evaluate(double... values) throws EvaluationException {
         for (int i = 0; i < values.length; ++i) {
             final String variableName = variableNames[i];
-            final Invokable invokable = variables.get(variableName);
+            final RValue invokable = variables.get(variableName);
             if (!(invokable instanceof Variable)) {
                 throw new EvaluationException(invokable.getPosition(), "Tried to assign constant " + variableName + ".");
             }
@@ -79,7 +79,7 @@ public class Expression {
         return root.toString();
     }
 
-    public Invokable getVariable(String name) {
+    public RValue getVariable(String name) {
         return variables.get(name);
     }
 }

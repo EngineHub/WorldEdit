@@ -9,7 +9,7 @@ import java.util.Map;
 import com.sk89q.worldedit.expression.Identifiable;
 import com.sk89q.worldedit.expression.lexer.tokens.OperatorToken;
 import com.sk89q.worldedit.expression.lexer.tokens.Token;
-import com.sk89q.worldedit.expression.runtime.Invokable;
+import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.expression.runtime.Operators;
 import com.sk89q.worldedit.expression.runtime.Sequence;
 
@@ -121,7 +121,7 @@ public final class ParserProcessors {
         }
     }
 
-    static Invokable processStatement(LinkedList<Identifiable> input) throws ParserException {
+    static RValue processStatement(LinkedList<Identifiable> input) throws ParserException {
         LinkedList<Identifiable> lhs = new LinkedList<Identifiable>();
         LinkedList<Identifiable> rhs = new LinkedList<Identifiable>();
         boolean semicolonFound = false;
@@ -153,18 +153,18 @@ public final class ParserProcessors {
         else {
             assert(semicolonFound);
 
-            Invokable lhsInvokable = processExpression(lhs);
-            Invokable rhsInvokable = processStatement(rhs);
+            RValue lhsInvokable = processExpression(lhs);
+            RValue rhsInvokable = processStatement(rhs);
 
             return new Sequence(lhsInvokable.getPosition(), lhsInvokable, rhsInvokable);
         }
     }
 
-    static Invokable processExpression(LinkedList<Identifiable> input) throws ParserException {
+    static RValue processExpression(LinkedList<Identifiable> input) throws ParserException {
         return processBinaryOpsRA(input, binaryOpMapsRA.length - 1);
     }
 
-    private static Invokable processBinaryOpsLA(LinkedList<Identifiable> input, int level) throws ParserException {
+    private static RValue processBinaryOpsLA(LinkedList<Identifiable> input, int level) throws ParserException {
         if (level < 0) {
             return processUnaryOps(input);
         }
@@ -194,10 +194,10 @@ public final class ParserProcessors {
             }
         }
 
-        Invokable rhsInvokable = processBinaryOpsLA(rhs, level - 1);
+        RValue rhsInvokable = processBinaryOpsLA(rhs, level - 1);
         if (operator == null) return rhsInvokable;
 
-        Invokable lhsInvokable = processBinaryOpsLA(lhs, level);
+        RValue lhsInvokable = processBinaryOpsLA(lhs, level);
 
         try {
             return Operators.getOperator(input.get(0).getPosition(), operator, lhsInvokable, rhsInvokable);
@@ -208,7 +208,7 @@ public final class ParserProcessors {
         }
     }
 
-    private static Invokable processBinaryOpsRA(LinkedList<Identifiable> input, int level) throws ParserException {
+    private static RValue processBinaryOpsRA(LinkedList<Identifiable> input, int level) throws ParserException {
         if (level < 0) {
             return processTernaryOps(input);
         }
@@ -237,10 +237,10 @@ public final class ParserProcessors {
             }
         }
 
-        Invokable lhsInvokable = processBinaryOpsRA(lhs, level - 1);
+        RValue lhsInvokable = processBinaryOpsRA(lhs, level - 1);
         if (operator == null) return lhsInvokable;
 
-        Invokable rhsInvokable = processBinaryOpsRA(rhs, level);
+        RValue rhsInvokable = processBinaryOpsRA(rhs, level);
 
         try {
             return Operators.getOperator(input.get(0).getPosition(), operator, lhsInvokable, rhsInvokable);
@@ -251,16 +251,16 @@ public final class ParserProcessors {
         }
     }
 
-    private static Invokable processTernaryOps(LinkedList<Identifiable> input) throws ParserException {
+    private static RValue processTernaryOps(LinkedList<Identifiable> input) throws ParserException {
         return processBinaryOpsLA(input, binaryOpMapsLA.length - 1);
     }
 
-    private static Invokable processUnaryOps(LinkedList<Identifiable> input) throws ParserException {
+    private static RValue processUnaryOps(LinkedList<Identifiable> input) throws ParserException {
         if (input.isEmpty()) {
             throw new ParserException(-1, "Expression missing.");
         }
 
-        Invokable ret = (Invokable) input.removeLast();
+        RValue ret = (RValue) input.removeLast();
         while (!input.isEmpty()) {
             final Identifiable last = input.removeLast();
             final int lastPosition = last.getPosition();
@@ -284,7 +284,7 @@ public final class ParserProcessors {
             if (last instanceof Token) {
                 throw new ParserException(lastPosition, "Extra token found in expression: " + last);
             }
-            else if (last instanceof Invokable) {
+            else if (last instanceof RValue) {
                 throw new ParserException(lastPosition, "Extra expression found: " + last);
             }
             else {

@@ -32,7 +32,7 @@ import com.sk89q.worldedit.expression.lexer.tokens.OperatorToken;
 import com.sk89q.worldedit.expression.lexer.tokens.Token;
 import com.sk89q.worldedit.expression.runtime.Constant;
 import com.sk89q.worldedit.expression.runtime.Functions;
-import com.sk89q.worldedit.expression.runtime.Invokable;
+import com.sk89q.worldedit.expression.runtime.RValue;
 
 public class Parser {
     private final class NullToken extends Token {
@@ -51,19 +51,19 @@ public class Parser {
 
     private final List<Token> tokens;
     private int position = 0;
-    private Map<String, Invokable> variables;
+    private Map<String, RValue> variables;
 
-    private Parser(List<Token> tokens, Map<String, Invokable> variables) {
+    private Parser(List<Token> tokens, Map<String, RValue> variables) {
         this.tokens = tokens;
         this.variables = variables;
     }
 
-    public static final Invokable parse(List<Token> tokens, Map<String, Invokable> variables) throws ParserException {
+    public static final RValue parse(List<Token> tokens, Map<String, RValue> variables) throws ParserException {
         return new Parser(tokens, variables).parse();
     }
 
-    private Invokable parse() throws ParserException {
-        final Invokable ret = parseInternal(true);
+    private RValue parse() throws ParserException {
+        final RValue ret = parseInternal(true);
         if (position < tokens.size()) {
             final Token token = peek();
             throw new ParserException(token.getPosition(), "Extra token at the end of the input: " + token);
@@ -71,7 +71,7 @@ public class Parser {
         return ret;
     }
 
-    private final Invokable parseInternal(boolean isStatement) throws ParserException {
+    private final RValue parseInternal(boolean isStatement) throws ParserException {
         LinkedList<Identifiable> halfProcessed = new LinkedList<Identifiable>();
 
         // process brackets, numbers, functions, variables and detect prefix operators
@@ -95,7 +95,7 @@ public class Parser {
                     halfProcessed.add(parseFunctionCall(identifierToken));
                 }
                 else {
-                    Invokable variable = variables.get(identifierToken.value);
+                    RValue variable = variables.get(identifierToken.value);
                     if (variable == null) {
                         throw new ParserException(current.getPosition(), "Variable '" + identifierToken.value + "' not found");
                     }
@@ -167,7 +167,7 @@ public class Parser {
                 return Functions.getFunction(identifierToken.getPosition(), identifierToken.value);
             }
 
-            List<Invokable> args = new ArrayList<Invokable>();
+            List<RValue> args = new ArrayList<RValue>();
 
             loop: while (true) {
                 args.add(parseInternal(false));
@@ -187,20 +187,20 @@ public class Parser {
                 }
             }
 
-            return Functions.getFunction(identifierToken.getPosition(), identifierToken.value, args.toArray(new Invokable[args.size()]));
+            return Functions.getFunction(identifierToken.getPosition(), identifierToken.value, args.toArray(new RValue[args.size()]));
         }
         catch (NoSuchMethodException e) {
             throw new ParserException(identifierToken.getPosition(), "Function not found", e);
         }
     }
 
-    private final Invokable parseBracket() throws ParserException {
+    private final RValue parseBracket() throws ParserException {
         if (peek().id() != '(') {
             throw new ParserException(peek().getPosition(), "Unexpected character in parseBracket");
         }
         ++position;
 
-        final Invokable ret = parseInternal(false);
+        final RValue ret = parseInternal(false);
 
         if (peek().id() != ')') {
             throw new ParserException(peek().getPosition(), "Unmatched opening bracket");
@@ -210,13 +210,13 @@ public class Parser {
         return ret;
     }
 
-    private final Invokable parseBlock() throws ParserException {
+    private final RValue parseBlock() throws ParserException {
         if (peek().id() != '{') {
             throw new ParserException(peek().getPosition(), "Unexpected character in parseBlock");
         }
         ++position;
 
-        final Invokable ret = parseInternal(true);
+        final RValue ret = parseInternal(true);
 
         if (peek().id() != '}') {
             throw new ParserException(peek().getPosition(), "Unmatched opening brace");

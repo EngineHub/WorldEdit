@@ -19,27 +19,10 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
-import com.sk89q.worldedit.expression.Identifiable;
-
-public abstract class Invokable implements Identifiable {
-    private final int position;
-
-    public Invokable(int position) {
-        super();
-        this.position = position;
+public abstract class LValue extends RValue {
+    public LValue(int position) {
+        super(position);
     }
 
-    public abstract double invoke() throws EvaluationException;
-
-    @Override
-    public abstract String toString();
-
-    public Invokable optimize() throws EvaluationException {
-        return this;
-    }
-
-    @Override
-    public int getPosition() {
-        return position;
-    }
+    public abstract double assign(double value) throws EvaluationException;
 }

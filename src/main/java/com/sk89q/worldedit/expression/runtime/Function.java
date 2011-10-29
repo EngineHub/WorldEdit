@@ -24,14 +24,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Function extends Invokable {
+public class Function extends RValue {
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Dynamic { }
 
     final Method method;
-    final Invokable[] args;
+    final RValue[] args;
 
-    Function(int position, Method method, Invokable... args) {
+    Function(int position, Method method, RValue... args) {
         super(position);
         this.method = method;
         this.args = args;
@@ -73,12 +73,12 @@ public class Function extends Invokable {
     }
 
     @Override
-    public Invokable optimize() throws EvaluationException {
-        final Invokable[] optimizedArgs = new Invokable[args.length];
+    public RValue optimize() throws EvaluationException {
+        final RValue[] optimizedArgs = new RValue[args.length];
         boolean optimizable = !method.isAnnotationPresent(Dynamic.class);
         int position = getPosition();
         for (int i = 0; i < args.length; ++i) {
-            final Invokable optimized = optimizedArgs[i] = args[i].optimize();
+            final RValue optimized = optimizedArgs[i] = args[i].optimize();
 
             if (!(optimized instanceof Constant)) {
                 optimizable = false;

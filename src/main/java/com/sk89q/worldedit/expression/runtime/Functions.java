@@ -22,116 +22,116 @@ package com.sk89q.worldedit.expression.runtime;
 import java.util.Arrays;
 
 public final class Functions {
-    public static final Function getFunction(int position, String name, Invokable... args) throws NoSuchMethodException {
+    public static final Function getFunction(int position, String name, RValue... args) throws NoSuchMethodException {
         final Class<?>[] parameterTypes = (Class<?>[]) new Class[args.length];
-        Arrays.fill(parameterTypes, Invokable.class);
+        Arrays.fill(parameterTypes, RValue.class);
         return new Function(position, Functions.class.getMethod(name, parameterTypes), args);
     }
 
 
-    public static final double sin(Invokable x) throws Exception {
+    public static final double sin(RValue x) throws Exception {
         return Math.sin(x.invoke());
     }
 
-    public static final double cos(Invokable x) throws Exception {
+    public static final double cos(RValue x) throws Exception {
         return Math.cos(x.invoke());
     }
 
-    public static final double tan(Invokable x) throws Exception {
+    public static final double tan(RValue x) throws Exception {
         return Math.tan(x.invoke());
     }
 
 
-    public static final double asin(Invokable x) throws Exception {
+    public static final double asin(RValue x) throws Exception {
         return Math.asin(x.invoke());
     }
 
-    public static final double acos(Invokable x) throws Exception {
+    public static final double acos(RValue x) throws Exception {
         return Math.acos(x.invoke());
     }
 
-    public static final double atan(Invokable x) throws Exception {
+    public static final double atan(RValue x) throws Exception {
         return Math.atan(x.invoke());
     }
 
-    public static final double atan2(Invokable y, Invokable x) throws Exception {
+    public static final double atan2(RValue y, RValue x) throws Exception {
         return Math.atan2(y.invoke(), x.invoke());
     }
 
 
-    public static final double sinh(Invokable x) throws Exception {
+    public static final double sinh(RValue x) throws Exception {
         return Math.sinh(x.invoke());
     }
 
-    public static final double cosh(Invokable x) throws Exception {
+    public static final double cosh(RValue x) throws Exception {
         return Math.cosh(x.invoke());
     }
 
-    public static final double tanh(Invokable x) throws Exception {
+    public static final double tanh(RValue x) throws Exception {
         return Math.tanh(x.invoke());
     }
 
 
-    public static final double sqrt(Invokable x) throws Exception {
+    public static final double sqrt(RValue x) throws Exception {
         return Math.sqrt(x.invoke());
     }
 
-    public static final double cbrt(Invokable x) throws Exception {
+    public static final double cbrt(RValue x) throws Exception {
         return Math.cbrt(x.invoke());
     }
 
 
-    public static final double abs(Invokable x) throws Exception {
+    public static final double abs(RValue x) throws Exception {
         return Math.abs(x.invoke());
     }
 
-    public static final double min(Invokable a, Invokable b) throws Exception {
+    public static final double min(RValue a, RValue b) throws Exception {
         return Math.min(a.invoke(), b.invoke());
     }
 
-    public static final double min(Invokable a, Invokable b, Invokable c) throws Exception {
+    public static final double min(RValue a, RValue b, RValue c) throws Exception {
         return Math.min(a.invoke(), Math.min(b.invoke(), c.invoke()));
     }
 
-    public static final double max(Invokable a, Invokable b) throws Exception {
+    public static final double max(RValue a, RValue b) throws Exception {
         return Math.max(a.invoke(), b.invoke());
     }
 
-    public static final double max(Invokable a, Invokable b, Invokable c) throws Exception {
+    public static final double max(RValue a, RValue b, RValue c) throws Exception {
         return Math.max(a.invoke(), Math.max(b.invoke(), c.invoke()));
     }
 
 
-    public static final double ceil(Invokable x) throws Exception {
+    public static final double ceil(RValue x) throws Exception {
         return Math.ceil(x.invoke());
     }
 
-    public static final double floor(Invokable x) throws Exception {
+    public static final double floor(RValue x) throws Exception {
         return Math.floor(x.invoke());
     }
 
-    public static final double rint(Invokable x) throws Exception {
+    public static final double rint(RValue x) throws Exception {
         return Math.rint(x.invoke());
     }
 
-    public static final double round(Invokable x) throws Exception {
+    public static final double round(RValue x) throws Exception {
         return Math.round(x.invoke());
     }
 
 
-    public static final double exp(Invokable x) throws Exception {
+    public static final double exp(RValue x) throws Exception {
         return Math.exp(x.invoke());
     }
 
-    public static final double ln(Invokable x) throws Exception {
+    public static final double ln(RValue x) throws Exception {
         return Math.log(x.invoke());
     }
 
-    public static final double log(Invokable x) throws Exception {
+    public static final double log(RValue x) throws Exception {
         return Math.log(x.invoke());
     }
 
-    public static final double log10(Invokable x) throws Exception {
+    public static final double log10(RValue x) throws Exception {
         return Math.log10(x.invoke());
     }
 }

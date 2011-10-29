@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
-public final class Variable extends Assignable {
+public final class Variable extends LValue {
     public double value;
 
     public Variable(double value) {
