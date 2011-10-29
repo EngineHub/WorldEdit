@@ -22,6 +22,9 @@ package com.sk89q.worldedit.bukkit;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
@@ -43,6 +46,7 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeType;
@@ -746,7 +750,7 @@ public class BukkitWorld extends LocalWorld {
 
     @Override
     public void fixLighting(Iterable<BlockVector2D> chunks) {
-        if (fastLightingAvailable) {
+        if (!fastLightingAvailable) {
             return;
         }
 
@@ -768,23 +772,40 @@ public class BukkitWorld extends LocalWorld {
                 // Fix blocklight
                 Chunk_blocklightMap.set(notchChunk, NibbleArray_ctor.newInstance(length, 7));
 
+                Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+
+                List<BlockState> lightEmitters = new ArrayList<BlockState>();
+
                 for (int x = 0; x < chunkSizeX; ++x) {
-                    final boolean xBorder = x == 0 || x == chunkSizeX - 1;
+                    boolean xBorder = x == 0 || x == chunkSizeX - 1;
                     for (int z = 0; z < chunkSizeZ; ++z) {
-                        final boolean zBorder = z == 0 || z == chunkSizeZ - 1;
+                        boolean zBorder = z == 0 || z == chunkSizeZ - 1;
                         for (int y = 0; y < chunkSizeY; ++y) {
                             final int index = y + z * chunkSizeY + x * chunkSizeY * chunkSizeZ;
-                            final byte blockID = blocks[index];
-                            if (BlockType.emitsLight(blockID))  {
-                                Chunk_relightBlock.invoke(notchChunk, x, y, z);
-                            }
-                            else {
-                                if ((xBorder || zBorder) && BlockType.isTranslucent(blockID)) {
-                                    Chunk_relightBlock.invoke(notchChunk, x, y, z);
+                            byte blockID = blocks[index];
+                            if (!BlockType.emitsLight(blockID))  {
+                                if (xBorder || zBorder && BlockType.isTranslucent(blockID)) {
+                                    lightEmitters.add(chunk.getBlock(x, y, z).getState());
+                                    if (blockID == 20) {
+                                        blocks[index] = 0;
+                                    }
+                                    else {
+                                        blocks[index] = 20;
+                                    }
+                                    
                                 }
+                                continue;
                             }
+
+                            lightEmitters.add(chunk.getBlock(x, y, z).getState());
+
+                            blocks[index] = 0;
                         }
                     }
+                }
+
+                for (BlockState lightEmitter : lightEmitters) {
+                    lightEmitter.update(true);
                 }
             }
         }
