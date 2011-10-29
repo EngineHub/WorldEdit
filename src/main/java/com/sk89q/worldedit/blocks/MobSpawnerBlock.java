@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.blocks;
 
 import com.sk89q.jnbt.*;
+import com.sk89q.worldedit.MobType;
 import com.sk89q.worldedit.data.*;
 import java.util.Map;
 import java.util.HashMap;

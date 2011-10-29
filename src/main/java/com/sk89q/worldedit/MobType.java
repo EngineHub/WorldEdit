@@ -17,30 +17,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.blocks;
+package com.sk89q.worldedit;
 
 /**
  * Represents the possible types of mobs.
  */
 public enum MobType {
+    BLAZE("Blaze"),
     CAVE_SPIDER("CaveSpider"),
     CHICKEN("Chicken"),
     COW("Cow"),
     CREEPER("Creeper"),
+    ENDERDRAGON("EnderDragon"),
     ENDERMAN("Enderman"),
     GHAST("Ghast"),
     GIANT("Giant"),
-    MONSTER("Monster"),
+    MAGMA_CUBE("LavaSlime"),
+    MOOSHROOM("MushroomCow"),
     PIG("Pig"),
     PIG_ZOMBIE("PigZombie"),
     SHEEP("Sheep"),
     SILVERFISH("Silverfish"),
     SKELETON("Skeleton"),
     SLIME("Slime"),
+    SNOWMAN("SnowMan"),
     SPIDER("Spider"),
     SQUID("Squid"),
-    ZOMBIE("Zombie"),
-    WOLF("Wolf");
+    VILLAGER("Villager"),
+    WOLF("Wolf"),
+    ZOMBIE("Zombie");
 
     private String name;
 

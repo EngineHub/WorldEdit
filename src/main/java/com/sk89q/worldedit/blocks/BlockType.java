@@ -145,7 +145,19 @@ public enum BlockType {
     VINE(BlockID.VINE, "Vine", "vine", "vines", "creepers"),
     FENCE_GATE(BlockID.FENCE_GATE, "Fence gate", "fencegate", "gate"),
     BRICK_STAIRS(BlockID.BRICK_STAIRS, "Brick stairs", "brickstairs", "bricksteps"),
-    STONE_BRICK_STAIRS(BlockID.STONE_BRICK_STAIRS, "Stone brick stairs", "stonebrickstairs", "smoothstonebrickstairs");
+    STONE_BRICK_STAIRS(BlockID.STONE_BRICK_STAIRS, "Stone brick stairs", "stonebrickstairs", "smoothstonebrickstairs"),
+    MYCELIUM(BlockID.MYCELIUM, "Mycelium", "fungus" ,"mycel"),
+    LILY_PAD(BlockID.LILY_PAD, "Lily pad", "lilypad", "waterlily"),
+    NETHER_BRICK(BlockID.NETHER_BRICK, "Nether brick", "netherbrick"),
+    NETHER_BRICK_FENCE(BlockID.NETHER_BRICK_FENCE, "Nether brick fence", "netherbrickfence", "netherfence"),
+    NETHER_BRICK_STAIRS(BlockID.NETHER_BRICK_STAIRS, "Nether brick stairs", "netherbrickstairs", "netherbricksteps", "netherstairs", "nethersteps"),
+    NETHER_WART(BlockID.NETHER_WART, "Nether wart", "netherwart", "netherstalk"),
+    ENCHANTMENT_TABLE(BlockID.ENCHANTMENT_TABLE, "Enchantment table", "enchantmenttable", "enchanttable"),
+    BREWING_STAND(BlockID.BREWING_STAND, "Brewing Stand", "brewingstand"),
+    CAULDRON(BlockID.CAULDRON, "Cauldron"),
+    END_PORTAL(BlockID.END_PORTAL, "End Portal", "endportal", "blackstuff", "airportal", "weirdblackstuff"),
+    END_PORTAL_FRAME(BlockID.END_PORTAL_FRAME, "End Portal Frame", "endportalframe", "airportalframe", "crystalblock"),
+    END_STONE(BlockID.END_STONE, "End Stone", "endstone", "enderstone", "endersand");
 
     /**
      * Stores a map of the IDs for fast access.
@@ -179,7 +191,7 @@ public enum BlockType {
     BlockType(int id, String name, String lookupKey) {
         this.id = id;
         this.name = name;
-        this.lookupKeys = new String[]{lookupKey};
+        this.lookupKeys = new String[] { lookupKey };
     }
 
     /**
@@ -312,6 +324,8 @@ public enum BlockType {
         shouldPlaceLast.add(BlockID.REDSTONE_REPEATER_ON);
         shouldPlaceLast.add(BlockID.TRAP_DOOR);
         shouldPlaceLast.add(BlockID.VINE);
+        shouldPlaceLast.add(BlockID.LILY_PAD);
+        shouldPlaceLast.add(BlockID.NETHER_WART);
     }
 
     /**
@@ -370,7 +384,12 @@ public enum BlockType {
         canPassThrough.add(BlockID.PORTAL);
         canPassThrough.add(BlockID.REDSTONE_REPEATER_OFF);
         canPassThrough.add(BlockID.REDSTONE_REPEATER_ON);
+        canPassThrough.add(BlockID.PUMPKIN_STEM);
+        canPassThrough.add(BlockID.MELON_STEM);
         canPassThrough.add(BlockID.VINE);
+        canPassThrough.add(BlockID.LILY_PAD);
+        canPassThrough.add(BlockID.NETHER_WART);
+        canPassThrough.add(BlockID.END_PORTAL);
     }
 
     /**
@@ -381,7 +400,15 @@ public enum BlockType {
      */
     public static boolean canPassThrough(int id) {
         return canPassThrough.contains(id);
+    }
 
+    /**
+     * Checks whether a block can be passed through.
+     *
+     * @return
+     */
+    public boolean canPassThrough() {
+        return canPassThrough.contains(id);
     }
 
     /**
@@ -449,6 +476,12 @@ public enum BlockType {
         usesData.add(BlockID.FENCE_GATE);
         usesData.add(BlockID.BRICK_STAIRS);
         usesData.add(BlockID.STONE_BRICK_STAIRS);
+        usesData.add(BlockID.NETHER_BRICK_STAIRS);
+        usesData.add(BlockID.NETHER_WART);
+        usesData.add(BlockID.ENCHANTMENT_TABLE);
+        usesData.add(BlockID.BREWING_STAND);
+        usesData.add(BlockID.CAULDRON);
+        usesData.add(BlockID.END_PORTAL_FRAME);
     }
 
     /**
@@ -462,6 +495,15 @@ public enum BlockType {
     }
 
     /**
+     * Returns true if the block uses its data value.
+     *
+     * @return
+     */
+    public boolean usesData() {
+        return usesData.contains(id);
+    }
+
+    /**
      * HashSet for isContainerBlock.
      */
     private static final Set<Integer> isContainerBlock = new HashSet<Integer>();
@@ -470,6 +512,7 @@ public enum BlockType {
         isContainerBlock.add(BlockID.FURNACE);
         isContainerBlock.add(BlockID.BURNING_FURNACE);
         isContainerBlock.add(BlockID.CHEST);
+        isContainerBlock.add(BlockID.BREWING_STAND);
     }
 
     /**
@@ -479,6 +522,15 @@ public enum BlockType {
      * @return
      */
     public static boolean isContainerBlock(int id) {
+        return isContainerBlock.contains(id);
+    }
+
+    /**
+     * Returns true if the block is a container block.
+     *
+     * @return
+     */
+    public boolean isContainerBlock() {
         return isContainerBlock.contains(id);
     }
 
@@ -518,6 +570,15 @@ public enum BlockType {
     }
 
     /**
+     * Returns true if a block uses redstone in some way.
+     *
+     * @return
+     */
+    public boolean isRedstoneBlock() {
+        return isRedstoneBlock.contains(id);
+    }
+
+    /**
      * HashSet for canTransferRedstone.
      */
     private static final Set<Integer> canTransferRedstone = new HashSet<Integer>();
@@ -537,6 +598,16 @@ public enum BlockType {
      * @return
      */
     public static boolean canTransferRedstone(int id) {
+        return canTransferRedstone.contains(id);
+    }
+
+    /**
+     * Returns true if a block can transfer redstone.
+     * Made this since isRedstoneBlock was getting big.
+     *
+     * @return
+     */
+    public boolean canTransferRedstone() {
         return canTransferRedstone.contains(id);
     }
 
@@ -565,6 +636,15 @@ public enum BlockType {
     }
 
     /**
+     * Yay for convenience methods.
+     *
+     * @return
+     */
+    public boolean isRedstoneSource() {
+        return isRedstoneSource.contains(id);
+    }
+
+    /**
      * HashSet for isRailBlock.
      */
     private static final Set<Integer> isRailBlock = new HashSet<Integer>();
@@ -585,6 +665,15 @@ public enum BlockType {
     }
 
     /**
+     * Checks if the id is that of one of the rail types
+     *
+     * @return
+     */
+    public boolean isRailBlock() {
+        return isRailBlock.contains(id);
+    }
+
+    /**
      * HashSet for isNaturalBlock.
      */
     private static final Set<Integer> isNaturalTerrainBlock = new HashSet<Integer>();
@@ -597,6 +686,7 @@ public enum BlockType {
         isNaturalTerrainBlock.add(BlockID.SAND);
         isNaturalTerrainBlock.add(BlockID.GRAVEL);
         isNaturalTerrainBlock.add(BlockID.CLAY);
+        isNaturalTerrainBlock.add(BlockID.MYCELIUM);
 
         // hell
         isNaturalTerrainBlock.add(BlockID.NETHERSTONE);
@@ -624,6 +714,15 @@ public enum BlockType {
     }
 
     /**
+     * Checks if the block type is naturally occuring
+     *
+     * @return
+     */
+    public boolean isNaturalTerrainBlock() {
+        return isNaturalTerrainBlock.contains(id);
+    }
+
+    /**
      * HashSet for emitsLight.
      */
     private static final Set<Integer> emitsLight = new HashSet<Integer>();
@@ -644,6 +743,7 @@ public enum BlockType {
         emitsLight.add(BlockID.LOCKED_CHEST);
         emitsLight.add(BlockID.BROWN_MUSHROOM_CAP);
         emitsLight.add(BlockID.RED_MUSHROOM_CAP);
+        emitsLight.add(BlockID.END_PORTAL);
     }
 
     /**
@@ -657,7 +757,7 @@ public enum BlockType {
     }
 
     /**
-     * HashSet for emitsLight.
+     * HashSet for isTranslucent.
      */
     private static final Set<Integer> isTranslucent = new HashSet<Integer>();
     static {
@@ -716,8 +816,15 @@ public enum BlockType {
         isTranslucent.add(BlockID.MELON_STEM);
         isTranslucent.add(BlockID.VINE);
         isTranslucent.add(BlockID.FENCE_GATE);
-        //isTranslucent.add(BlockID.BRICK_STAIRS);
+        isTranslucent.add(BlockID.BRICK_STAIRS);
         isTranslucent.add(BlockID.STONE_BRICK_STAIRS);
+        isTranslucent.add(BlockID.LILY_PAD);
+        isTranslucent.add(BlockID.NETHER_BRICK_FENCE);
+        isTranslucent.add(BlockID.NETHER_BRICK_STAIRS);
+        isTranslucent.add(BlockID.NETHER_WART);
+        isTranslucent.add(BlockID.ENCHANTMENT_TABLE);
+        isTranslucent.add(BlockID.BREWING_STAND);
+        isTranslucent.add(BlockID.CAULDRON);
     }
 
     /**
@@ -820,7 +927,7 @@ public enum BlockType {
         blockDrops.put(BlockID.TRAP_DOOR, BlockID.TRAP_DOOR);
         blockDrops.put(BlockID.SILVERFISH_BLOCK, -1);
         blockDrops.put(BlockID.STONE_BRICK, BlockID.STONE_BRICK);
-        blockDrops.put(BlockID.BROWN_MUSHROOM_CAP, BlockID.BROWN_MUSHROOM_CAP); // the wiki has the 2 mushroom caps the other way round
+        blockDrops.put(BlockID.BROWN_MUSHROOM_CAP, BlockID.BROWN_MUSHROOM_CAP);
         blockDrops.put(BlockID.RED_MUSHROOM_CAP, BlockID.RED_MUSHROOM_CAP);
         blockDrops.put(BlockID.IRON_BARS, BlockID.IRON_BARS);
         blockDrops.put(BlockID.GLASS_PANE, BlockID.GLASS_PANE);
@@ -831,6 +938,18 @@ public enum BlockType {
         blockDrops.put(BlockID.FENCE_GATE, BlockID.FENCE_GATE);
         blockDrops.put(BlockID.BRICK_STAIRS, BlockID.BRICK);
         blockDrops.put(BlockID.STONE_BRICK_STAIRS, BlockID.STONE_BRICK);
+        blockDrops.put(BlockID.MYCELIUM, BlockID.DIRT);
+        blockDrops.put(BlockID.LILY_PAD, BlockID.LILY_PAD);
+        blockDrops.put(BlockID.NETHER_BRICK, BlockID.NETHER_BRICK);
+        blockDrops.put(BlockID.NETHER_BRICK_FENCE, BlockID.NETHER_BRICK_FENCE);
+        blockDrops.put(BlockID.NETHER_BRICK_STAIRS, BlockID.NETHER_BRICK);
+        blockDrops.put(BlockID.NETHER_WART, ItemID.NETHER_WART_SEED);
+        blockDrops.put(BlockID.ENCHANTMENT_TABLE, BlockID.ENCHANTMENT_TABLE);
+        blockDrops.put(BlockID.BREWING_STAND, ItemID.BREWING_STAND);
+        blockDrops.put(BlockID.CAULDRON, ItemID.CAULDRON);
+        blockDrops.put(BlockID.END_PORTAL, -1);
+        blockDrops.put(BlockID.END_PORTAL_FRAME, -1);
+        blockDrops.put(BlockID.END_STONE, BlockID.END_STONE);
     }
 
     /**
@@ -851,8 +970,13 @@ public enum BlockType {
         return dropped;
     }
 
+    public BaseItemStack getBlockDrop(short data) {
+        return getBlockDrop(id, data);
+    }
+
     private static final Random random = new Random();
     public static BaseItemStack getBlockDrop(int id, short data) {
+        int store;
         switch (id) {
         case BlockID.STONE:
             return new BaseItemStack(BlockID.COBBLESTONE);
@@ -861,7 +985,7 @@ public enum BlockType {
             return new BaseItemStack(BlockID.DIRT);
 
         case BlockID.GRAVEL:
-            if (random.nextDouble() >= 0.9) {
+            if (random.nextInt(10) == 0) {
                 return new BaseItemStack(ItemID.FLINT);
             } else {
                 return new BaseItemStack(BlockID.GRAVEL);
@@ -903,6 +1027,7 @@ public enum BlockType {
             return new BaseItemStack(ItemID.DIAMOND);
 
         case BlockID.CROPS:
+            if (data == 7) return new BaseItemStack(ItemID.WHEAT);
             return new BaseItemStack(ItemID.SEEDS);
 
         case BlockID.SOIL:
@@ -946,6 +1071,26 @@ public enum BlockType {
         case BlockID.REDSTONE_REPEATER_ON:
             return new BaseItemStack(ItemID.REDSTONE_REPEATER);
 
+        case BlockID.BROWN_MUSHROOM_CAP:
+            store = random.nextInt(10);
+            if (store == 0) {
+                return new BaseItemStack(BlockID.BROWN_MUSHROOM, 2);
+            } else if (store == 1) {
+                return new BaseItemStack(BlockID.BROWN_MUSHROOM);
+            } else {
+                return null;
+            }
+
+        case BlockID.RED_MUSHROOM_CAP:
+            store = random.nextInt(10);
+            if (store == 0) {
+                return new BaseItemStack(BlockID.RED_MUSHROOM, 2);
+            } else if (store == 1) {
+                return new BaseItemStack(BlockID.RED_MUSHROOM);
+            } else {
+                return null;
+            }
+
         case BlockID.MELON_BLOCK:
             return new BaseItemStack(ItemID.MELON, (random.nextInt(5) + 3));
 
@@ -954,6 +1099,30 @@ public enum BlockType {
 
         case BlockID.MELON_STEM:
             return new BaseItemStack(ItemID.MELON_SEEDS);
+
+        case BlockID.BRICK_STAIRS:
+            return new BaseItemStack(BlockID.BRICK);
+
+        case BlockID.STONE_BRICK_STAIRS:
+            return new BaseItemStack(BlockID.STONE_BRICK);
+
+        case BlockID.MYCELIUM:
+            return new BaseItemStack(BlockID.DIRT);
+
+        case BlockID.LILY_PAD:
+            return new BaseItemStack(BlockID.LILY_PAD);
+
+        case BlockID.NETHER_BRICK_STAIRS:
+            return new BaseItemStack(BlockID.NETHER_BRICK);
+
+        case BlockID.NETHER_WART:
+            return new BaseItemStack(ItemID.NETHER_WART_SEED, random.nextInt(3) + 1);
+
+        case BlockID.BREWING_STAND:
+            return new BaseItemStack(ItemID.BREWING_STAND);
+
+        case BlockID.CAULDRON:
+            return new BaseItemStack(ItemID.CAULDRON);
 
         case BlockID.BEDROCK:
         case BlockID.WATER:
@@ -972,8 +1141,11 @@ public enum BlockType {
         case BlockID.LOCKED_CHEST:
         case BlockID.SILVERFISH_BLOCK:
         case BlockID.VINE:
+        case BlockID.END_PORTAL:
+        case BlockID.END_PORTAL_FRAME:
             return null;
         }
+
         if (usesData(id)) {
             return new BaseItemStack(id, 1, data);
         } else {
@@ -1034,7 +1206,7 @@ public enum BlockType {
         // vines are complicated, but I'll list the single-attachment variants anyway
         dataAttachments.put(attachmentKey(BlockID.VINE, 0), PlayerDirection.UP);
         addCardinals(BlockID.VINE, 1, 2, 4, 8);
-        //nonDataAttachments.put(BlockID.NETHER_WART, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.NETHER_WART, PlayerDirection.DOWN);
     }
 
     /**

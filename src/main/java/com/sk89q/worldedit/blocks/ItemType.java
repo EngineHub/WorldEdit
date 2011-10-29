@@ -146,6 +146,18 @@ public enum ItemType {
     FENCE_GATE(BlockID.FENCE_GATE, "Fence gate", "fencegate", "gate"),
     BRICK_STAIRS(BlockID.BRICK_STAIRS, "Brick stairs", "brickstairs", "bricksteps"),
     STONE_BRICK_STAIRS(BlockID.STONE_BRICK_STAIRS, "Stone brick stairs", "stonebrickstairs", "smoothstonebrickstairs"),
+    MYCELIUM(BlockID.MYCELIUM, "Mycelium", "fungus" ,"mycel"),
+    LILY_PAD(BlockID.LILY_PAD, "Lily pad", "lilypad", "waterlily"),
+    NETHER_BRICK(BlockID.NETHER_BRICK, "Nether brick", "netherbrick"),
+    NETHER_BRICK_FENCE(BlockID.NETHER_BRICK_FENCE, "Nether brick fence", "netherbrickfence", "netherfence"),
+    NETHER_BRICK_STAIRS(BlockID.NETHER_BRICK_STAIRS, "Nether brick stairs", "netherbrickstairs", "netherbricksteps", "netherstairs", "nethersteps"),
+    NETHER_WART(BlockID.NETHER_WART, "Nether wart", "netherwart", "netherstalk"),
+    ENCHANTMENT_TABLE(BlockID.ENCHANTMENT_TABLE, "Enchantment table", "enchantmenttable", "enchanttable"),
+    BREWING_STAND(BlockID.BREWING_STAND, "Brewing Stand", "brewingstand"),
+    CAULDRON(BlockID.CAULDRON, "Cauldron"),
+    END_PORTAL(BlockID.END_PORTAL, "End Portal", "endportal", "blackstuff", "airportal", "weirdblackstuff"),
+    END_PORTAL_FRAME(BlockID.END_PORTAL_FRAME, "End Portal Frame", "endportalframe", "airportalframe", "crystalblock"),
+    END_STONE(BlockID.END_STONE, "End Stone", "endstone", "enderstone", "endersand"),
 
     // Items
     IRON_SHOVEL(ItemID.IRON_SHOVEL, "Iron shovel", "ironshovel"),
@@ -261,6 +273,33 @@ public enum ItemType {
     COOKED_CHICKEN(ItemID.COOKED_CHICKEN, "Cooked chicken", "cookedchicken", "chicken", "grilledchicken"),
     ROTTEN_FLESH(ItemID.ROTTEN_FLESH, "Rotten flesh", "rottenflesh", "zombiemeat", "flesh"),
     ENDER_PEARL(ItemID.ENDER_PEARL, "Ender pearl", "pearl", "enderpearl"),
+    BLAZE_ROD(ItemID.BLAZE_ROD, "Blaze rod", "blazerod"),
+    GHAST_TEAR(ItemID.GHAST_TEAR, "Ghast tear", "ghasttear"),
+    GOLD_NUGGET(ItemID.GOLD_NUGGET, "Gold nuggest", "goldnugget"),
+    NETHER_WART_ITEM(ItemID.NETHER_WART_SEED, "Nether wart", "netherwart", "netherwartseed"),
+    POTION(ItemID.POTION, "Potion", "potion"),
+    GLASS_BOTTLE(ItemID.GLASS_BOTTLE, "Glass bottle", "glassbottle"),
+    SPIDER_EYE(ItemID.SPIDER_EYE, "Spider eye", "spidereye"),
+    FERMENTED_SPIDER_EYE(ItemID.FERMENTED_SPIDER_EYE, "Fermented spider eye", "fermentedspidereye", "fermentedeye"),
+    BLAZE_POWDER(ItemID.BLAZE_POWDER, "Blaze powder", "blazepowder"),
+    MAGMA_CREAM(ItemID.MAGMA_CREAM, "Magma cream", "magmacream"),
+    BREWING_STAND_ITEM(ItemID.BREWING_STAND, "Brewing stand", "brewingstand"),
+    CAULDRON_ITEM(ItemID.CAULDRON, "Cauldron", "cauldron"),
+    EYE_OF_ENDER(ItemID.EYE_OF_ENDER, "Eye of Ender", "eyeofender", "endereye"),
+    GLISTERING_MELON(ItemID.GLISTERING_MELON, "Glistering Melon", "glisteringmelon", "goldmelon"),
+    DISC_13(ItemID.DISC_13, "Music Disc - 13", "disc_13"),
+    DISC_CAT(ItemID.DISC_CAT, "Music Disc - Cat", "disc_cat"),
+    DISC_BLOCKS(ItemID.DISC_BLOCKS, "Music Disc - blocks", "disc_blocks"),
+    DISC_CHIRP(ItemID.DISC_CHIRP, "Music Disc - chirp", "disc_chirp"),
+    DISC_FAR(ItemID.DISC_FAR, "Music Disc - far", "disc_far"),
+    DISC_MALL(ItemID.DISC_MALL, "Music Disc - mall", "disc_mall"),
+    DISC_MELLOHI(ItemID.DISC_MELLOHI, "Music Disc - mellohi", "disc_mellohi"),
+    DISC_STAL(ItemID.DISC_STAL, "Music Disc - stal", "disc_stal"),
+    DISC_STRAD(ItemID.DISC_STRAD, "Music Disc - strad", "disc_strad"),
+    DISC_WARD(ItemID.DISC_WARD, "Music Disc - ward", "disc_ward"),
+    DISC_11(ItemID.DISC_11, "Music Disc - 11", "disc_11"),
+
+    // deprecated
     GOLD_RECORD(ItemID.GOLD_RECORD, "Gold Record", "goldrecord", "golddisc"),
     GREEN_RECORD(ItemID.GREEN_RECORD, "Green Record", "greenrecord", "greenddisc");
 
@@ -495,8 +534,18 @@ public enum ItemType {
         shouldNotStack.add(ItemID.CAKE_ITEM);
         shouldNotStack.add(ItemID.BED_ITEM);
         shouldNotStack.add(ItemID.MAP);
-        shouldNotStack.add(ItemID.GOLD_RECORD);
-        shouldNotStack.add(ItemID.GREEN_RECORD);
+        shouldNotStack.add(ItemID.SHEARS);
+        shouldNotStack.add(ItemID.DISC_13);
+        shouldNotStack.add(ItemID.DISC_CAT);
+        shouldNotStack.add(ItemID.DISC_BLOCKS);
+        shouldNotStack.add(ItemID.DISC_CHIRP);
+        shouldNotStack.add(ItemID.DISC_FAR);
+        shouldNotStack.add(ItemID.DISC_MALL);
+        shouldNotStack.add(ItemID.DISC_MELLOHI);
+        shouldNotStack.add(ItemID.DISC_STAL);
+        shouldNotStack.add(ItemID.DISC_STRAD);
+        shouldNotStack.add(ItemID.DISC_WARD);
+        shouldNotStack.add(ItemID.DISC_11);
     }
 
     /**
@@ -519,6 +568,8 @@ public enum ItemType {
     public static boolean usesDamageValue(int id) {
         return id == ItemID.COAL
             || id == ItemID.INK_SACK
+            || id == ItemID.POTION
+            || id == ItemID.GLASS_BOTTLE
             // for material only, orientation data is not stored in inventory anyway
             || BlockType.usesData(id);
     }

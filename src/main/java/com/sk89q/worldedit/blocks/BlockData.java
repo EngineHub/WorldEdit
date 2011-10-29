@@ -72,6 +72,7 @@ public final class BlockData {
         case BlockID.COBBLESTONE_STAIRS:
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
+        case BlockID.NETHER_BRICK_STAIRS:
             switch (data) {
             case 0: return 2;
             case 1: return 3;
@@ -231,6 +232,7 @@ public final class BlockData {
         case BlockID.COBBLESTONE_STAIRS:
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
+        case BlockID.NETHER_BRICK_STAIRS:
             switch (data) {
             case 2: return 0;
             case 3: return 1;
@@ -423,6 +425,7 @@ public final class BlockData {
         case BlockID.COBBLESTONE_STAIRS:
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
+        case BlockID.NETHER_BRICK_STAIRS:
             switch (data) {
             case 0:
             case 1:
@@ -608,8 +611,11 @@ public final class BlockData {
         case BlockID.COBBLESTONE_STAIRS:
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
+        case BlockID.NETHER_BRICK_STAIRS:
         case BlockID.PUMPKIN:
         case BlockID.JACKOLANTERN:
+        case BlockID.NETHER_WART:
+        case BlockID.CAULDRON:
             if (data > 3) return -1;
             return mod((data + increment), 4);
 
