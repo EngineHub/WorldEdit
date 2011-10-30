@@ -50,8 +50,6 @@ public class DinnerPermsResolver implements PermissionsResolver {
             return false; // Permissions are only registered for online players
         }
         switch (internalHasPermission(perms, permission)) {
-            case 0:
-                break;
             case -1:
                 return false;
             case 1:
@@ -60,8 +58,6 @@ public class DinnerPermsResolver implements PermissionsResolver {
         int dotPos = permission.lastIndexOf(".");
         while (dotPos > -1) {
             switch (internalHasPermission(perms, permission.substring(0, dotPos + 1) + "*")) {
-                case 0:
-                    break;
                 case -1:
                     return false;
                 case 1:
@@ -112,7 +108,6 @@ public class DinnerPermsResolver implements PermissionsResolver {
             return perms.hasPermission(permission) ? 1 : -1;
         } else {
             Permission perm = server.getPluginManager().getPermission(permission);
-
             if (perm != null) {
                 return perm.getDefault().getValue(perms.isOp()) ? 1 : 0;
             } else {
