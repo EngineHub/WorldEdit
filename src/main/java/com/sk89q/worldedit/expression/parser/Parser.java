@@ -166,6 +166,7 @@ public class Parser {
 
             case 'o':
                 if (expressionStart) {
+                    // Preprocess prefix operators into unary operators
                     halfProcessed.add(new UnaryOperator((OperatorToken) current));
                 } else {
                     halfProcessed.add(current);

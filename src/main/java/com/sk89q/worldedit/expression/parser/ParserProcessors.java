@@ -220,7 +220,7 @@ public final class ParserProcessors {
     }
 
     private static RValue processUnaryOps(LinkedList<Identifiable> input) throws ParserException {
-        // Preprocess postfix operators into prefix operators
+        // Preprocess postfix operators into unary operators
         final Identifiable center;
         LinkedList<UnaryOperator> postfixes = new LinkedList<UnaryOperator>();
         do {
@@ -230,12 +230,10 @@ public final class ParserProcessors {
 
             final Identifiable last = input.removeLast();
             if (last instanceof OperatorToken) {
-                System.out.println("Found postfix: "+last);
-                postfixes.addFirst(new UnaryOperator(last.getPosition(), "x"+((OperatorToken)last).operator));
+                postfixes.addLast(new UnaryOperator(last.getPosition(), "x"+((OperatorToken)last).operator));
             }
             else if (last instanceof UnaryOperator) {
-                System.out.println("Found postfix: "+last);
-                postfixes.addFirst(new UnaryOperator(last.getPosition(), "x"+((UnaryOperator)last).operator));
+                postfixes.addLast(new UnaryOperator(last.getPosition(), "x"+((UnaryOperator)last).operator));
             }
             else {
                 center = last;
@@ -269,6 +267,7 @@ public final class ParserProcessors {
                     }
                 }
             }
+
             if (last instanceof Token) {
                 throw new ParserException(lastPosition, "Extra token found in expression: " + last);
             } else if (last instanceof RValue) {
