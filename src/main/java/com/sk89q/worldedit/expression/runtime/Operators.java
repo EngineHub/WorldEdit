@@ -161,6 +161,7 @@ public final class Operators {
         return lhs.assign(Math.pow(lhs.getValue(), rhs.getValue()));
     }
 
+
     public static final double inc(LValue x) throws EvaluationException {
         return x.assign(x.getValue() + 1);
     }
@@ -169,6 +170,41 @@ public final class Operators {
         return x.assign(x.getValue() - 1);
     }
 
+    public static final double postinc(LValue x) throws EvaluationException {
+        final double oldValue = x.getValue();
+        x.assign(oldValue + 1);
+        return oldValue;
+    }
+
+    public static final double postdec(LValue x) throws EvaluationException {
+        final double oldValue = x.getValue();
+        x.assign(oldValue - 1);
+        return oldValue;
+    }
+
+
+    private static final double[] factorials = new double[171];
+    static {
+        double accum = 1;
+        factorials[0] = 1;
+        for (int i = 1; i < factorials.length; ++i) {
+            factorials[i] = accum *= i;
+        }
+    }
+
+    public static final double fac(RValue x) throws EvaluationException {
+        int n = (int) x.getValue();
+
+        if (n < 0) {
+            return 0;
+        }
+
+        if (n >= factorials.length) {
+            return Double.POSITIVE_INFINITY;
+        }
+
+        return factorials[n];
+    }
 
     // Usable AlmostEqual function, based on http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
     private static boolean almostEqual2sComplement(double A, double B, long maxUlps) {
