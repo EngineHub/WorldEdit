@@ -52,6 +52,10 @@ public class SingleBlockPattern implements Pattern {
         return block;
     }
 
+    public BaseBlock next(int x, int y, int z) {
+        return block;
+    }
+
     /**
      * Get the block.
      *

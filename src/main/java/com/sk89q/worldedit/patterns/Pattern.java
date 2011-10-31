@@ -37,4 +37,13 @@ public interface Pattern {
      * @return
      */
     public BaseBlock next(Vector pos);
+
+    /**
+     * Get a block for a position. This return value of this method does
+     * not have to be consistent for the same position.
+     *
+     * @param pos
+     * @return
+     */
+    public BaseBlock next(int x, int y, int z);
 }

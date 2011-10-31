@@ -82,4 +82,8 @@ public class RandomFillPattern implements Pattern {
 
         throw new RuntimeException("ProportionalFillPattern");
     }
+
+    public BaseBlock next(int x, int y, int z) {
+        return next(null);
+    }
 }

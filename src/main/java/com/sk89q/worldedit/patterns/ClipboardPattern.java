@@ -54,10 +54,22 @@ public class ClipboardPattern implements Pattern {
      * @return
      */
     public BaseBlock next(Vector pos) {
-        int x = Math.abs(pos.getBlockX()) % size.getBlockX();
-        int y = Math.abs(pos.getBlockY()) % size.getBlockY();
-        int z = Math.abs(pos.getBlockZ()) % size.getBlockZ();
+        return next(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ());
+    }
 
-        return clipboard.getPoint(new Vector(x, y, z));
+    /**
+     * Get next block.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
+    public BaseBlock next(int x, int y, int z) {
+        int xp = Math.abs(x) % size.getBlockX();
+        int yp = Math.abs(y) % size.getBlockY();
+        int zp = Math.abs(z) % size.getBlockZ();
+
+        return clipboard.getPoint(new Vector(xp, yp, zp));
     }
 }
