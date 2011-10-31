@@ -25,6 +25,7 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.patterns.Pattern;
@@ -332,12 +333,12 @@ public class GenerationCommands {
         if (args.hasFlag('r')) {
             shape = new ArbitraryShape(region) {
                 @Override
-                protected boolean isInside(double x, double y, double z) {
+                protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
                     try {
-                        return expression.evaluate(x, y, z) > 0;
+                        return expression.evaluate(x, y, z) > 0 ? defaultMaterial : null;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return false;
+                        return null;
                     }
                 }
             };
@@ -350,12 +351,12 @@ public class GenerationCommands {
 
             shape = new ArbitraryShape(region) {
                 @Override
-                protected boolean isInside(double x, double y, double z) {
+                protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
                     try {
-                        return expression.evaluate(x - placementX, y - placementY, z - placementZ) > 0;
+                        return expression.evaluate(x - placementX, y - placementY, z - placementZ) > 0 ? defaultMaterial : null;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return false;
+                        return null;
                     }
                 }
             };
@@ -366,14 +367,14 @@ public class GenerationCommands {
             final Vector stretch = max.subtract(center);
             shape = new ArbitraryShape(region) {
                 @Override
-                protected boolean isInside(double x, double y, double z) {
+                protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
                     final Vector scaled = new Vector(x, y, z).subtract(center).divide(stretch);
 
                     try {
-                        return expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ()) > 0;
+                        return expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ()) > 0 ? defaultMaterial : null;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return false;
+                        return null;
                     }
                 }
             };

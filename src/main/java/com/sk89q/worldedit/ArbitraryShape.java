@@ -19,56 +19,151 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;
 
 public abstract class ArbitraryShape {
-    private Region extent;
+    private final Region extent;
+    private int cacheSizeX;
+    private int cacheSizeY;
+    private int cacheSizeZ;
+    private int cacheX;
+    private int cacheY;
+    private int cacheZ;
 
     public ArbitraryShape(Region extent) {
         this.extent = extent;
+
+        Vector min = extent.getMinimumPoint();
+        Vector max = extent.getMaximumPoint();
+
+        cacheSizeX = (int)(max.getX() - min.getX() + 1 + 2);
+        cacheSizeY = (int)(max.getY() - min.getY() + 1 + 2);
+        cacheSizeZ = (int)(max.getZ() - min.getZ() + 1 + 2);
+
+        cacheX = min.getBlockX() - 1;
+        cacheY = min.getBlockY() - 1;
+        cacheZ = min.getBlockZ() - 1;
+
+        cache = new short[cacheSizeX * cacheSizeY * cacheSizeZ];
     }
 
     protected Region getExtent() {
         return extent;
     }
 
-    protected abstract boolean isInside(double x, double y, double z);
+
+    /**
+     * Cache entries:
+     * 0 = unknown
+     * -1 = outside
+     * -2 = inside but type and data 0
+     * > 0 = inside, value = (type | (data << 8)), not handling data < -1
+     */
+    private final short[] cache;
+
+    protected abstract BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial);
+
+    private BaseBlock getMaterialCached(int x, int y, int z, Pattern pattern) {
+        final int index = (y - cacheY) + (z - cacheZ) * cacheSizeY + (x - cacheX) * cacheSizeY * cacheSizeZ;
+
+        final short cacheEntry = cache[index];
+        switch (cacheEntry) {
+        case 0:
+            // unknown, fetch material
+            final BaseBlock material = getMaterial(x, y, z, pattern.next(new BlockVector(x, y, z)));
+            if (material == null) {
+                // outside
+                cache[index] = -1;
+                return null;
+            }
+
+            short newCacheEntry = (short) (material.getType() | ((material.getData()+1) << 8));
+            if (newCacheEntry == 0) {
+                // type and data 0
+                newCacheEntry = -2;
+            }
+
+            cache[index] = newCacheEntry;
+            return material;
+
+        case -1:
+            // outside
+            return null;
+
+        case -2:
+            // type and data 0
+            return new BaseBlock(0, 0);
+        }
+
+        return new BaseBlock(cacheEntry & 255, ((cacheEntry >> 8) - 1) & 15);
+    }
+
+    private boolean isInsideCached(int x, int y, int z, Pattern pattern) {
+        final int index = (y - cacheY) + (z - cacheZ) * cacheSizeY + (x - cacheX) * cacheSizeY * cacheSizeZ;
+        
+        switch (cache[index]) {
+        case 0:
+            // unknown block, meaning they must be outside the extent at this stage, but might still be inside the shape
+            return getMaterialCached(x, y, z, pattern) != null;
+
+        case -1:
+            // outside
+            return false;
+
+        default:
+            // inside
+            return true;
+        }
+    }
 
     public int generate(EditSession editSession, Pattern pattern, boolean hollow) throws MaxChangedBlocksException {
         int affected = 0;
 
         for (BlockVector position : getExtent()) {
-            double x = position.getX();
-            double y = position.getY();
-            double z = position.getZ();
+            int x = position.getBlockX();
+            int y = position.getBlockY();
+            int z = position.getBlockZ();
 
-            if (!isInside(x, y, z)) continue;
+            if (!hollow) {
+                final BaseBlock material = getMaterial(x, y, z, pattern.next(position));
+                if (material != null && editSession.setBlock(position, material)) {
+                    ++affected;
+                }
+
+                continue;
+            }
+
+            final BaseBlock material = getMaterialCached(x, y, z, pattern);
+            if (material == null) {
+                continue;
+            }
 
             if (hollow) {
                 boolean draw = false;
                 do {
-                    if (!isInside(x + 1, y, z)) {
+                    if (!isInsideCached(x + 1, y, z, pattern)) {
                         draw = true;
                         break;
                     }
-                    if (!isInside(x - 1, y, z)) {
+                    if (!isInsideCached(x - 1, y, z, pattern)) {
                         draw = true;
                         break;
                     }
-                    if (!isInside(x, y + 1, z)) {
+                    if (!isInsideCached(x, y + 1, z, pattern)) {
                         draw = true;
                         break;
                     }
-                    if (!isInside(x, y - 1, z)) {
+                    if (!isInsideCached(x, y - 1, z, pattern)) {
                         draw = true;
                         break;
                     }
-                    if (!isInside(x, y, z + 1)) {
+                    if (!isInsideCached(x, y, z + 1, pattern)) {
                         draw = true;
                         break;
                     }
-                    if (!isInside(x, y, z - 1)) {
+                    if (!isInsideCached(x, y, z - 1, pattern)) {
                         draw = true;
                         break;
                     }
@@ -79,7 +174,7 @@ public abstract class ArbitraryShape {
                 }
             }
 
-            if (editSession.setBlock(position, pattern)) {
+            if (editSession.setBlock(position, material)) {
                 ++affected;
             }
         }
