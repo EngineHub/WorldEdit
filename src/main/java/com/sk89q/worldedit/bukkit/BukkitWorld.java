@@ -111,21 +111,8 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean setBlockTypeFast(Vector pt, int type) {
-        return setBlockTypeFast(pt, type, false);
-    }
-
-    /**
-     * Set block type.
-     *
-     * @param pt
-     * @param type
-     * @param fastLighting
-     * @return
-     */
-    @Override
-    public boolean setBlockTypeFast(Vector pt, int type, boolean fastLighting) {
         final Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        if (fastLightingAvailable && fastLighting) {
+        if (fastLightingAvailable) {
             type = type & 255;
             final int previousOpacity = Block_lightOpacity[type];
             Block_lightOpacity[type] = 0;
@@ -158,13 +145,8 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean setTypeIdAndDataFast(Vector pt, int type, int data){
-        return setTypeIdAndDataFast(pt, type, data, false);
-    }
-
-    @Override
-    public boolean setTypeIdAndDataFast(Vector pt, int type, int data, boolean fastLighting) {
         final Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        if (fastLightingAvailable && fastLighting) {
+        if (fastLightingAvailable) {
             type = type & 255;
             final int previousOpacity = Block_lightOpacity[type];
             Block_lightOpacity[type] = 0;

@@ -73,7 +73,6 @@ public class LocalSession {
     private boolean beenToldVersion = false;
     private boolean hasCUISupport = false;
     private boolean fastMode = false;
-    private boolean fastLighting = false;
     private Mask mask;
     private TimeZone timezone = TimeZone.getDefault();
     private Boolean jumptoBlock = true;
@@ -645,7 +644,6 @@ public class LocalSession {
                 new EditSession(player.getWorld(),
                         getBlockChangeLimit(), blockBag);
         editSession.setFastMode(fastMode);
-        editSession.setFastLighting(fastLighting);
         editSession.setMask(mask);
 
         return editSession;
@@ -667,24 +665,6 @@ public class LocalSession {
      */
     public void setFastMode(boolean fastMode) {
         this.fastMode = fastMode;
-    }
-
-    /**
-     * Checks if the session has fast lighting enabled.
-     *
-     * @return
-     */
-    public boolean hasFastLighting() {
-        return fastLighting;
-    }
-
-    /**
-     * Set fast lighting.
-     *
-     * @param fastLighting
-     */
-    public void setFastLighting(boolean fastLighting) {
-        this.fastLighting = fastLighting;
     }
 
     /**

@@ -63,7 +63,6 @@ public class GeneralCommands {
 
     @Command(
         aliases = { "/fast" },
-        flags = "l",
         usage = "[on|off]",
         desc = "Toggle fast mode",
         min = 0,
@@ -74,24 +73,24 @@ public class GeneralCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
-        boolean light = args.hasFlag('f');
         String newState = args.getString(0, null);
-        Boolean dir = newState == null ? null : newState.equals("on") ? true : newState.equals("off") ? false : null;
+        if (session.hasFastMode()) {
+            if ("on".equals(newState)) {
+                player.printError("Fast mode already enabled.");
+                return;
+            }
 
-        boolean hadFast = session.hasFastMode();
-        boolean hadLight = session.hasFastLighting();
+            session.setFastMode(false);
+            player.print("Fast mode disabled.");
+        } else {
+            if ("off".equals(newState)) {
+                player.printError("Fast mode already disabled.");
+                return;
+            }
 
-        boolean setFast = dir == null ? !hadFast : dir;
-        boolean setLight = dir == null ? !hadLight : dir;
-
-        session.setFastMode(setFast);
-        if (light) {
-            session.setFastLighting(setLight);
+            session.setFastMode(true);
+            player.print("Fast mode enabled. Lighting in the affected chunks may be wrong and/or you may need to rejoin to see changes.");
         }
-
-        player.print("Fast mode " + (setFast == hadFast ? "already " : "") + (!setFast ? "disabled." :
-            ("enabled. You may need to rejoin to see changes"
-            + (setLight ? "and lighting in affected chunks may be wrong." : "."))));
     }
 
     @Command(

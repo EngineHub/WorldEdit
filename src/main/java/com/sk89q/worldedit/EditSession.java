@@ -101,11 +101,6 @@ public class EditSession {
     private boolean fastMode = false;
 
     /**
-     * Use fast lighting as well if using fast mode.
-     */
-    private boolean fastLighting = false;
-
-    /**
      * Block bag to use for getting blocks.
      */
     private BlockBag blockBag;
@@ -214,13 +209,13 @@ public class EditSession {
 
         if (BlockType.usesData(type)) {
             if (fastMode) {
-                result = world.setTypeIdAndDataFast(pt, type, block.getData() > -1 ? block.getData() : 0, fastLighting);
+                result = world.setTypeIdAndDataFast(pt, type, block.getData() > -1 ? block.getData() : 0);
             } else {
                 result = world.setTypeIdAndData(pt, type, block.getData() > -1 ? block.getData() : 0);
             }
         } else {
             if (fastMode) {
-                result = world.setBlockTypeFast(pt, type, fastLighting);
+                result = world.setBlockTypeFast(pt, type);
             } else {
                 result = world.setBlockType(pt, type);
             }
@@ -530,24 +525,6 @@ public class EditSession {
             flushQueue();
         }
         queued = false;
-    }
-
-    /**
-     * Set fast lighting.
-     *
-     * @param fastLighting
-     */
-    public void setFastLighting(boolean fastLighting) {
-        this.fastLighting = fastLighting;
-    }
-
-    /**
-     * Return fast lighting status.
-     *
-     * @return
-     */
-    public boolean hasFastLighting() {
-        return fastLighting;
     }
 
     /**
