@@ -34,6 +34,9 @@ import com.sk89q.worldedit.regions.*;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.bags.*;
 import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.expression.Expression;
+import com.sk89q.worldedit.expression.ExpressionException;
+import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.*;
 
@@ -2610,5 +2613,33 @@ public class EditSession {
         // Collections.reverse(distribution);
 
         return distribution;
+    }
+
+    public int makeShape(final Region region, final Vector zero, final Vector unit, final Pattern pattern, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException {
+        final Expression expression = Expression.compile(expressionString, "x", "y", "z", "type", "data");
+        expression.optimize();
+
+        final RValue typeVariable = expression.getVariable("type");
+        final RValue dataVariable = expression.getVariable("data");
+
+        final ArbitraryShape shape = new ArbitraryShape(region) {
+            @Override
+            protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
+                final Vector scaled = new Vector(x, y, z).subtract(zero).divide(unit);
+
+                try {
+                    if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ(), defaultMaterial.getType(), defaultMaterial.getData()) <= 0) {
+                        return null;
+                    }
+
+                    return new BaseBlock((int)typeVariable.getValue(), (int)dataVariable.getValue());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        };
+
+        return shape.generate(this, pattern, hollow);
     }
 }

@@ -25,10 +25,7 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
-import com.sk89q.worldedit.expression.runtime.LValue;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
@@ -320,95 +317,33 @@ public class GenerationCommands {
         final Pattern pattern = we.getBlockPattern(player, args.getString(0));
         final Region region = session.getSelection(player.getWorld());
 
-        final Expression expression;
-        try {
-            expression = Expression.compile(args.getJoinedStrings(1), "x", "y", "z", "type", "data");
-            expression.optimize();
-        } catch (ExpressionException e) {
-            player.printError(e.getMessage());
-            return;
-        }
+        final boolean hollow = args.hasFlag('h');
 
-        final LValue typeVariable = (LValue) expression.getVariable("type");
-        final LValue dataVariable = (LValue) expression.getVariable("data");
+        final String expression = args.getJoinedStrings(1);
 
-        final ArbitraryShape shape;
+        final Vector zero;
+        final Vector unit;
 
         if (args.hasFlag('r')) {
-            shape = new ArbitraryShape(region) {
-                @Override
-                protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
-                    try {
-                        typeVariable.assign(defaultMaterial.getType());
-                        dataVariable.assign(defaultMaterial.getData());
-
-                        if (expression.evaluate(x, y, z) <= 0) {
-                            return null;
-                        }
-
-                        return new BaseBlock((int)typeVariable.getValue(), (int)dataVariable.getValue());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }
-            };
+            zero = new Vector(0,0,0);
+            unit = new Vector(1,1,1);
         } else if (args.hasFlag('o')) {
-            final Vector placement = session.getPlacementPosition(player);
-
-            final double placementX = placement.getX();
-            final double placementY = placement.getY();
-            final double placementZ = placement.getZ();
-
-            shape = new ArbitraryShape(region) {
-                @Override
-                protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
-                    try {
-                        typeVariable.assign(defaultMaterial.getType());
-                        dataVariable.assign(defaultMaterial.getData());
-
-                        if (expression.evaluate(x - placementX, y - placementY, z - placementZ) <= 0) {
-                            return null;
-                        }
-
-                        return new BaseBlock((int)typeVariable.getValue(), (int)dataVariable.getValue());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }
-            };
+            zero = session.getPlacementPosition(player);
+            unit = new Vector(1,1,1);
         } else {
             final Vector min = region.getMinimumPoint();
             final Vector max = region.getMaximumPoint();
-            final Vector center = max.add(min).multiply(0.5);
-            final Vector stretch = max.subtract(center);
-            shape = new ArbitraryShape(region) {
-                @Override
-                protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
-                    final Vector scaled = new Vector(x, y, z).subtract(center).divide(stretch);
 
-                    try {
-                        typeVariable.assign(defaultMaterial.getType());
-                        dataVariable.assign(defaultMaterial.getData());
-
-                        if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ()) <= 0) {
-                            return null;
-                        }
-
-                        return new BaseBlock((int)typeVariable.getValue(), (int)dataVariable.getValue());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }
-            };
+            zero = max.add(min).multiply(0.5);
+            unit = max.subtract(zero);
         }
 
-        final boolean hollow = args.hasFlag('h');
-        int affected = shape.generate(editSession, pattern, hollow);
-
-        player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
+        try {
+            final int affected = editSession.makeShape(region, zero, unit, pattern, expression, hollow);
+            player.findFreePosition();
+            player.print(affected + " block(s) have been created.");
+        } catch (ExpressionException e) {
+            player.printError(e.getMessage());
+        }
     }
 }
