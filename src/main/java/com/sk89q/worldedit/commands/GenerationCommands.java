@@ -28,6 +28,7 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
+import com.sk89q.worldedit.expression.runtime.LValue;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
@@ -304,7 +305,7 @@ public class GenerationCommands {
 
     @Command(
         aliases = { "/generate", "/gen", "/g" },
-        usage = "<block> <equation>",
+        usage = "<block> <expression>",
         desc = "Generates a shape according to a formula. -h for hollow, -r for raw coordinates, -o for unscaled, but offset from placement",
         flags = "hro",
         min = 1,
@@ -321,12 +322,15 @@ public class GenerationCommands {
 
         final Expression expression;
         try {
-            expression = Expression.compile(args.getJoinedStrings(1), "x", "y", "z");
+            expression = Expression.compile(args.getJoinedStrings(1), "x", "y", "z", "type", "data");
             expression.optimize();
         } catch (ExpressionException e) {
             player.printError(e.getMessage());
             return;
         }
+
+        final LValue typeVariable = (LValue) expression.getVariable("type");
+        final LValue dataVariable = (LValue) expression.getVariable("data");
 
         final ArbitraryShape shape;
 
@@ -335,7 +339,14 @@ public class GenerationCommands {
                 @Override
                 protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
                     try {
-                        return expression.evaluate(x, y, z) > 0 ? defaultMaterial : null;
+                        typeVariable.assign(defaultMaterial.getType());
+                        dataVariable.assign(defaultMaterial.getData());
+
+                        if (expression.evaluate(x, y, z) <= 0) {
+                            return null;
+                        }
+
+                        return new BaseBlock((int)typeVariable.getValue(), (int)dataVariable.getValue());
                     } catch (Exception e) {
                         e.printStackTrace();
                         return null;
@@ -353,7 +364,14 @@ public class GenerationCommands {
                 @Override
                 protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
                     try {
-                        return expression.evaluate(x - placementX, y - placementY, z - placementZ) > 0 ? defaultMaterial : null;
+                        typeVariable.assign(defaultMaterial.getType());
+                        dataVariable.assign(defaultMaterial.getData());
+
+                        if (expression.evaluate(x - placementX, y - placementY, z - placementZ) <= 0) {
+                            return null;
+                        }
+
+                        return new BaseBlock((int)typeVariable.getValue(), (int)dataVariable.getValue());
                     } catch (Exception e) {
                         e.printStackTrace();
                         return null;
@@ -371,7 +389,14 @@ public class GenerationCommands {
                     final Vector scaled = new Vector(x, y, z).subtract(center).divide(stretch);
 
                     try {
-                        return expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ()) > 0 ? defaultMaterial : null;
+                        typeVariable.assign(defaultMaterial.getType());
+                        dataVariable.assign(defaultMaterial.getData());
+
+                        if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ()) <= 0) {
+                            return null;
+                        }
+
+                        return new BaseBlock((int)typeVariable.getValue(), (int)dataVariable.getValue());
                     } catch (Exception e) {
                         e.printStackTrace();
                         return null;
