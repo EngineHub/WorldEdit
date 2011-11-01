@@ -546,6 +546,164 @@ public class EditSession {
     }
 
     /**
+     * Set a block by chance.
+     *
+     * @param pos
+     * @param block
+     * @param c 0-1 chance
+     * @return whether a block was changed
+     * @throws MaxChangedBlocksException
+     */
+    public boolean setChanceBlockIfAir(Vector pos, BaseBlock block, double c)
+            throws MaxChangedBlocksException {
+        if (Math.random() <= c) {
+            return setBlockIfAir(pos, block);
+        }
+        return false;
+    }
+
+    /**
+     * Count the number of blocks of a list of types in a region.
+     *
+     * @param region
+     * @param searchIDs
+     * @return
+     */
+    public int countBlocks(Region region, Set<Integer> searchIDs) {
+        int count = 0;
+
+        if (region instanceof CuboidRegion) {
+            // Doing this for speed
+            Vector min = region.getMinimumPoint();
+            Vector max = region.getMaximumPoint();
+
+            int minX = min.getBlockX();
+            int minY = min.getBlockY();
+            int minZ = min.getBlockZ();
+            int maxX = max.getBlockX();
+            int maxY = max.getBlockY();
+            int maxZ = max.getBlockZ();
+
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    for (int z = minZ; z <= maxZ; ++z) {
+                        Vector pt = new Vector(x, y, z);
+
+                        if (searchIDs.contains(getBlockType(pt))) {
+                            ++count;
+                        }
+                    }
+                }
+            }
+        } else {
+            for (Vector pt : region) {
+                if (searchIDs.contains(getBlockType(pt))) {
+                    ++count;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    /**
+     * Returns the highest solid 'terrain' block which can occur naturally.
+     *
+     * @param x
+     * @param z
+     * @param minY minimal height
+     * @param maxY maximal height
+     * @param naturalOnly look at natural blocks or all blocks
+     * @return height of highest block found or 'minY'
+     */
+    public int getHighestTerrainBlock(int x, int z, int minY, int maxY) {
+        return getHighestTerrainBlock(x, z, minY, maxY, false);
+    }
+
+    /**
+     * Returns the highest solid 'terrain' block which can occur naturally.
+     *
+     * @param x
+     * @param z
+     * @param minY minimal height
+     * @param maxY maximal height
+     * @param naturalOnly look at natural blocks or all blocks
+     * @return height of highest block found or 'minY'
+     */
+    public int getHighestTerrainBlock(int x, int z, int minY, int maxY, boolean naturalOnly) {
+        for (int y = maxY; y >= minY; --y) {
+            Vector pt = new Vector(x, y, z);
+            int id = getBlockType(pt);
+            if (naturalOnly ? BlockType.isNaturalTerrainBlock(id) : !BlockType.canPassThrough(id)) {
+                return y;
+            }
+        }
+        return minY;
+    }
+
+    /**
+     * Gets the list of missing blocks and clears the list for the next
+     * operation.
+     *
+     * @return
+     */
+    public Set<Integer> popMissingBlocks() {
+        Set<Integer> missingBlocks = this.missingBlocks;
+        this.missingBlocks = new HashSet<Integer>();
+        return missingBlocks;
+    }
+
+    /**
+     * @return the blockBag
+     */
+    public BlockBag getBlockBag() {
+        return blockBag;
+    }
+
+    /**
+     * @param blockBag the blockBag to set
+     */
+    public void setBlockBag(BlockBag blockBag) {
+        this.blockBag = blockBag;
+    }
+
+    /**
+     * Get the world.
+     *
+     * @return
+     */
+    public LocalWorld getWorld() {
+        return world;
+    }
+
+    /**
+     * Get the number of blocks changed, including repeated block changes.
+     *
+     * @return
+     */
+    public int getBlockChangeCount() {
+        return original.size();
+    }
+
+    /**
+     * Get the mask.
+     *
+     * @return mask, may be null
+     */
+    public Mask getMask() {
+        return mask;
+    }
+
+    /**
+     * Set a mask.
+     *
+     * @param mask mask or null
+     */
+    public void setMask(Mask mask) {
+        this.mask = mask;
+    }
+
+    /**
      * Finish off the queue.
      */
     public void flushQueue() {
@@ -2221,23 +2379,6 @@ public class EditSession {
     }
 
     /**
-     * Set a block by chance.
-     *
-     * @param pos
-     * @param block
-     * @param c 0-1 chance
-     * @return whether a block was changed
-     * @throws MaxChangedBlocksException
-     */
-    public boolean setChanceBlockIfAir(Vector pos, BaseBlock block, double c)
-            throws MaxChangedBlocksException {
-        if (Math.random() <= c) {
-            return setBlockIfAir(pos, block);
-        }
-        return false;
-    }
-
-    /**
      * Makes a pumpkin patch.
      *
      * @param basePos
@@ -2414,50 +2555,6 @@ public class EditSession {
     }
 
     /**
-     * Count the number of blocks of a list of types in a region.
-     *
-     * @param region
-     * @param searchIDs
-     * @return
-     */
-    public int countBlocks(Region region, Set<Integer> searchIDs) {
-        int count = 0;
-
-        if (region instanceof CuboidRegion) {
-            // Doing this for speed
-            Vector min = region.getMinimumPoint();
-            Vector max = region.getMaximumPoint();
-
-            int minX = min.getBlockX();
-            int minY = min.getBlockY();
-            int minZ = min.getBlockZ();
-            int maxX = max.getBlockX();
-            int maxY = max.getBlockY();
-            int maxZ = max.getBlockZ();
-
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    for (int z = minZ; z <= maxZ; ++z) {
-                        Vector pt = new Vector(x, y, z);
-
-                        if (searchIDs.contains(getBlockType(pt))) {
-                            ++count;
-                        }
-                    }
-                }
-            }
-        } else {
-            for (Vector pt : region) {
-                if (searchIDs.contains(getBlockType(pt))) {
-                    ++count;
-                }
-            }
-        }
-
-        return count;
-    }
-
-    /**
      * Get the block distribution inside a region.
      *
      * @param region
@@ -2513,102 +2610,5 @@ public class EditSession {
         // Collections.reverse(distribution);
 
         return distribution;
-    }
-
-    /**
-     * Returns the highest solid 'terrain' block which can occur naturally.
-     *
-     * @param x
-     * @param z
-     * @param minY minimal height
-     * @param maxY maximal height
-     * @param naturalOnly look at natural blocks or all blocks
-     * @return height of highest block found or 'minY'
-     */
-    public int getHighestTerrainBlock(int x, int z, int minY, int maxY) {
-        return getHighestTerrainBlock(x, z, minY, maxY, false);
-    }
-
-    /**
-     * Returns the highest solid 'terrain' block which can occur naturally.
-     *
-     * @param x
-     * @param z
-     * @param minY minimal height
-     * @param maxY maximal height
-     * @param naturalOnly look at natural blocks or all blocks
-     * @return height of highest block found or 'minY'
-     */
-    public int getHighestTerrainBlock(int x, int z, int minY, int maxY, boolean naturalOnly) {
-        for (int y = maxY; y >= minY; --y) {
-            Vector pt = new Vector(x, y, z);
-            int id = getBlockType(pt);
-            if (naturalOnly ? BlockType.isNaturalTerrainBlock(id) : !BlockType.canPassThrough(id)) {
-                return y;
-            }
-        }
-        return minY;
-    }
-
-    /**
-     * Gets the list of missing blocks and clears the list for the next
-     * operation.
-     *
-     * @return
-     */
-    public Set<Integer> popMissingBlocks() {
-        Set<Integer> missingBlocks = this.missingBlocks;
-        this.missingBlocks = new HashSet<Integer>();
-        return missingBlocks;
-    }
-
-    /**
-     * @return the blockBag
-     */
-    public BlockBag getBlockBag() {
-        return blockBag;
-    }
-
-    /**
-     * @param blockBag the blockBag to set
-     */
-    public void setBlockBag(BlockBag blockBag) {
-        this.blockBag = blockBag;
-    }
-
-    /**
-     * Get the world.
-     *
-     * @return
-     */
-    public LocalWorld getWorld() {
-        return world;
-    }
-
-    /**
-     * Get the number of blocks changed, including repeated block changes.
-     *
-     * @return
-     */
-    public int getBlockChangeCount() {
-        return original.size();
-    }
-
-    /**
-     * Get the mask.
-     *
-     * @return mask, may be null
-     */
-    public Mask getMask() {
-        return mask;
-    }
-
-    /**
-     * Set a mask.
-     *
-     * @param mask mask or null
-     */
-    public void setMask(Mask mask) {
-        this.mask = mask;
     }
 }
