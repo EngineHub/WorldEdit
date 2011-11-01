@@ -56,34 +56,41 @@ public class EditSession {
      * Random number generator.
      */
     private static Random prng = new Random();
+
     /**
      * World.
      */
     protected LocalWorld world;
+
     /**
      * Stores the original blocks before modification.
      */
     private DoubleArrayList<BlockVector, BaseBlock> original =
-            new DoubleArrayList<BlockVector, BaseBlock>(
-            true);
+        new DoubleArrayList<BlockVector, BaseBlock>(true);
+
     /**
      * Stores the current blocks.
      */
     private DoubleArrayList<BlockVector, BaseBlock> current =
-            new DoubleArrayList<BlockVector, BaseBlock>(
-            false);
+        new DoubleArrayList<BlockVector, BaseBlock>(false);
+
     /**
      * Blocks that should be placed before last.
      */
     private DoubleArrayList<BlockVector, BaseBlock> queueAfter =
-            new DoubleArrayList<BlockVector, BaseBlock>(
-            false);
+        new DoubleArrayList<BlockVector, BaseBlock>(false);
+
     /**
      * Blocks that should be placed last.
      */
     private DoubleArrayList<BlockVector, BaseBlock> queueLast =
-            new DoubleArrayList<BlockVector, BaseBlock>(
-            false);
+        new DoubleArrayList<BlockVector, BaseBlock>(false);
+
+    /**
+     * Blocks that should be placed after all other blocks.
+     */
+    private DoubleArrayList<BlockVector, BaseBlock> queueFinal =
+        new DoubleArrayList<BlockVector, BaseBlock>(false);
 
     /**
      * The maximum number of blocks to change at a time. If this number is
@@ -317,13 +324,18 @@ public class EditSession {
      */
     public boolean smartSetBlock(Vector pt, BaseBlock block) {
         if (queued) {
-            // Place torches, etc. last
             if (BlockType.shouldPlaceLast(block.getType())) {
+                // Place torches, etc. last
                 queueLast.put(pt.toBlockVector(), block);
                 return !(getBlockType(pt) == block.getType()
                         && getBlockData(pt) == block.getData());
-                // Destroy torches, etc. first
+            } else if (BlockType.shouldPlaceFinal(block.getType())) {
+                // Place signs, reed, etc even later
+                queueFinal.put(pt.toBlockVector(), block);
+                return !(getBlockType(pt) == block.getType()
+                        && getBlockData(pt) == block.getData());
             } else if (BlockType.shouldPlaceLast(getBlockType(pt))) {
+                // Destroy torches, etc. first
                 rawSetBlock(pt, new BaseBlock(BlockID.AIR));
             } else {
                 queueAfter.put(pt.toBlockVector(), block);
@@ -729,9 +741,19 @@ public class EditSession {
         // We don't want to place these blocks if other blocks were missing
         // because it might cause the items to drop
         if (blockBag == null || missingBlocks.size() == 0) {
+            for (Map.Entry<BlockVector, BaseBlock> entry : queueLast) {
+                BlockVector pt = (BlockVector) entry.getKey();
+                rawSetBlock(pt, (BaseBlock) entry.getValue());
+
+                // TODO: use ChunkStore.toChunk(pt) after optimizing it.
+                if (fastMode) {
+                    dirtyChunks.add(new BlockVector2D(pt.getBlockX() >> 4, pt.getBlockZ() >> 4));
+                }
+            }
+
             final Set<BlockVector> blocks = new HashSet<BlockVector>();
             final Map<BlockVector, BaseBlock> blockTypes = new HashMap<BlockVector, BaseBlock>();
-            for (Map.Entry<BlockVector, BaseBlock> entry : queueLast) {
+            for (Map.Entry<BlockVector, BaseBlock> entry : queueFinal) {
                 final BlockVector pt = entry.getKey();
                 blocks.add(pt);
                 blockTypes.put(pt, entry.getValue());
@@ -802,6 +824,7 @@ public class EditSession {
 
         queueAfter.clear();
         queueLast.clear();
+        queueFinal.clear();
     }
 
     /**

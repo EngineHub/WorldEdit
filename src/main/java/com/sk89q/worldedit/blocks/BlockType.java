@@ -303,23 +303,16 @@ public enum BlockType {
         shouldPlaceLast.add(BlockID.FIRE);
         shouldPlaceLast.add(BlockID.REDSTONE_WIRE);
         shouldPlaceLast.add(BlockID.CROPS);
-        shouldPlaceLast.add(BlockID.SIGN_POST);
-        shouldPlaceLast.add(BlockID.WOODEN_DOOR);
         shouldPlaceLast.add(BlockID.LADDER);
         shouldPlaceLast.add(BlockID.MINECART_TRACKS);
-        shouldPlaceLast.add(BlockID.WALL_SIGN);
         shouldPlaceLast.add(BlockID.LEVER);
         shouldPlaceLast.add(BlockID.STONE_PRESSURE_PLATE);
-        shouldPlaceLast.add(BlockID.IRON_DOOR);
         shouldPlaceLast.add(BlockID.WOODEN_PRESSURE_PLATE);
         shouldPlaceLast.add(BlockID.REDSTONE_TORCH_OFF);
         shouldPlaceLast.add(BlockID.REDSTONE_TORCH_ON);
         shouldPlaceLast.add(BlockID.STONE_BUTTON);
         shouldPlaceLast.add(BlockID.SNOW);
-        shouldPlaceLast.add(BlockID.CACTUS);
-        shouldPlaceLast.add(BlockID.REED);
         shouldPlaceLast.add(BlockID.PORTAL);
-        shouldPlaceLast.add(BlockID.CAKE_BLOCK);
         shouldPlaceLast.add(BlockID.REDSTONE_REPEATER_OFF);
         shouldPlaceLast.add(BlockID.REDSTONE_REPEATER_ON);
         shouldPlaceLast.add(BlockID.TRAP_DOOR);
@@ -345,6 +338,32 @@ public enum BlockType {
      */
     public boolean shouldPlaceLast() {
         return shouldPlaceLast.contains(id);
+    }
+
+    /**
+     * HashSet for shouldPlaceLast.
+     */
+    private static final Set<Integer> shouldPlaceFinal = new HashSet<Integer>();
+    static {
+        shouldPlaceLast.add(BlockID.SIGN_POST);
+        shouldPlaceLast.add(BlockID.WOODEN_DOOR);
+        shouldPlaceLast.add(BlockID.WALL_SIGN);
+        shouldPlaceLast.add(BlockID.IRON_DOOR);
+        shouldPlaceLast.add(BlockID.CACTUS);
+        shouldPlaceLast.add(BlockID.REED);
+        shouldPlaceLast.add(BlockID.CAKE_BLOCK);
+    }
+
+    /**
+     * Checks to see whether a block should be placed in the final queue.
+     *
+     * This applies to blocks that can be attached to other blocks that have an attachment.
+     *
+     * @param id
+     * @return
+     */
+    public static boolean shouldPlaceFinal(int id) {
+        return shouldPlaceFinal.contains(id);
     }
 
     /**
