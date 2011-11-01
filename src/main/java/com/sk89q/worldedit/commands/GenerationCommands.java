@@ -322,7 +322,7 @@ public class GenerationCommands {
         final String expression = args.getJoinedStrings(1);
 
         final Vector zero;
-        final Vector unit;
+        Vector unit;
 
         if (args.hasFlag('r')) {
             zero = new Vector(0,0,0);
@@ -336,6 +336,10 @@ public class GenerationCommands {
 
             zero = max.add(min).multiply(0.5);
             unit = max.subtract(zero);
+
+            if (unit.getX() == 0) unit = unit.setX(1.0);
+            if (unit.getY() == 0) unit = unit.setY(1.0);
+            if (unit.getZ() == 0) unit = unit.setZ(1.0);
         }
 
         try {
