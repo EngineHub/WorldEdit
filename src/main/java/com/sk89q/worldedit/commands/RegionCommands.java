@@ -29,6 +29,7 @@ import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.masks.Mask;
@@ -324,5 +325,49 @@ public class RegionCommands {
         player.getWorld().regenerate(region, editSession);
         session.setMask(mask);
         player.print("Region regenerated.");
+    }
+
+    @Command(
+            aliases = { "/deform" },
+            usage = "<expression>",
+            desc = "Deforms a selected region with an expression",
+            flags = "ro",
+            min = 1,
+            max = -1
+    )
+    @CommandPermissions("worldedit.region.deform")
+    @Logging(ALL)
+    public static void deform(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        final Region region = session.getSelection(player.getWorld());
+
+        final String expression = args.getJoinedStrings(0);
+
+        final Vector zero;
+        final Vector unit;
+
+        if (args.hasFlag('r')) {
+            zero = new Vector(0,0,0);
+            unit = new Vector(1,1,1);
+        } else if (args.hasFlag('o')) {
+            zero = session.getPlacementPosition(player);
+            unit = new Vector(1,1,1);
+        } else {
+            final Vector min = region.getMinimumPoint();
+            final Vector max = region.getMaximumPoint();
+
+            zero = max.add(min).multiply(0.5);
+            unit = max.subtract(zero);
+        }
+
+        try {
+            final int affected = editSession.deformRegion(region, zero, unit, expression);
+            player.findFreePosition();
+            player.print(affected + " block(s) have been deformed.");
+        } catch (ExpressionException e) {
+            player.printError(e.getMessage());
+        }
     }
 }

@@ -2642,4 +2642,33 @@ public class EditSession {
 
         return shape.generate(this, pattern, hollow);
     }
+
+    public int deformRegion(final Region region, final Vector zero, final Vector unit, final String expressionString) throws ExpressionException, MaxChangedBlocksException {
+        final Expression expression = Expression.compile(expressionString, "x", "y", "z");
+        expression.optimize();
+
+        final RValue x = expression.getVariable("x");
+        final RValue y = expression.getVariable("y");
+        final RValue z = expression.getVariable("z");
+
+        int affected = 0;
+
+        for (BlockVector position : region) {
+            final Vector scaled = position.subtract(zero).divide(unit);
+
+            expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ());
+
+            final Vector sourceScaled = new Vector(x.getValue(), y.getValue(), z.getValue());
+
+            final BlockVector sourcePosition = sourceScaled.multiply(unit).add(zero).toBlockPoint();
+
+            BaseBlock material = new BaseBlock(world.getBlockType(sourcePosition), world.getBlockData(sourcePosition));
+
+            if (setBlock(position, material)) {
+                ++affected;
+            }
+        }
+
+        return affected;
+    }
 }
