@@ -2674,19 +2674,35 @@ public class EditSession {
         final RValue y = expression.getVariable("y");
         final RValue z = expression.getVariable("z");
 
-        int affected = 0;
+        Vector zero2 = zero.add(0.5, 0.5, 0.5);
+
+        final DoubleArrayList<BlockVector, BaseBlock> queue = new DoubleArrayList<BlockVector, BaseBlock>(false);
 
         for (BlockVector position : region) {
+            // offset, scale
             final Vector scaled = position.subtract(zero).divide(unit);
 
+            // transform
             expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ());
 
             final Vector sourceScaled = new Vector(x.getValue(), y.getValue(), z.getValue());
 
-            final BlockVector sourcePosition = sourceScaled.multiply(unit).add(zero).toBlockPoint();
+            // unscale, unoffset, round-nearest
+            final BlockVector sourcePosition = sourceScaled.multiply(unit).add(zero2).toBlockPoint();
 
+            // read block from world
             BaseBlock material = new BaseBlock(world.getBlockType(sourcePosition), world.getBlockData(sourcePosition));
 
+            // queue operation
+            queue.put(position, material);
+        }
+
+        int affected = 0;
+        for (Map.Entry<BlockVector, BaseBlock> entry : queue) {
+            BlockVector position = entry.getKey();
+            BaseBlock material = entry.getValue();
+
+            // set at new position
             if (setBlock(position, material)) {
                 ++affected;
             }
