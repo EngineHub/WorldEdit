@@ -19,7 +19,11 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
-import java.util.Arrays;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Contains all functions that can be used in expressions.
@@ -27,10 +31,81 @@ import java.util.Arrays;
  * @author TomyLobo
  */
 public final class Functions {
+    private static class Overload {
+        private final Method method; 
+        private final int mask;
+
+        public Overload(Method method) throws IllegalArgumentException {
+            this.method = method;
+
+            int accum = 0;
+            Class<?>[] parameters = method.getParameterTypes();
+            for (Class<?> parameter : parameters) {
+                if (!RValue.class.isAssignableFrom(parameter)) {
+                    throw new IllegalArgumentException("Method takes arguments that can't be cast to RValue.");
+                }
+
+                accum <<= 2;
+
+                if (LValue.class.isAssignableFrom(parameter)) {
+                    accum |= 3;
+                } else {
+                    accum |= 1;
+                }
+            }
+            mask = accum;
+        }
+
+        public boolean matches(RValue... args) {
+            int accum = 0;
+            for (RValue argument : args) {
+                accum <<= 2;
+
+                if (argument instanceof LValue) {
+                    accum |= 3;
+                } else {
+                    accum |= 1;
+                }
+            }
+
+            return (accum & mask) == mask;
+        }
+    }
+
+
     public static final Function getFunction(int position, String name, RValue... args) throws NoSuchMethodException {
-        final Class<?>[] parameterTypes = (Class<?>[]) new Class[args.length];
-        Arrays.fill(parameterTypes, RValue.class);
-        return new Function(position, Functions.class.getMethod(name, parameterTypes), args);
+        return new Function(position, getMethod(name, args), args);
+    }
+
+    private static Method getMethod(String name, RValue... args) throws NoSuchMethodException {
+        final List<Overload> overloads = functions.get(name);
+        if (overloads != null) {
+            for (Overload overload : overloads) {
+                if (overload.matches(args)) {
+                    return overload.method;
+                }
+            }
+        }
+
+        throw new NoSuchMethodException();
+    }
+
+    private static final Map<String, List<Overload>> functions = new HashMap<String, List<Overload>>();
+    static {
+        for (Method method : Functions.class.getMethods()) {
+            final String methodName = method.getName();
+
+            try {
+                Overload overload = new Overload(method);
+
+                List<Overload> overloads = functions.get(methodName);
+                if (overloads == null) {
+                    functions.put(methodName, overloads = new ArrayList<Overload>());
+                }
+
+                overloads.add(overload);
+            } catch(IllegalArgumentException e) {}
+        }
     }
 
 
@@ -138,5 +213,21 @@ public final class Functions {
 
     public static final double log10(RValue x) throws Exception {
         return Math.log10(x.getValue());
+    }
+
+
+    public static final double rotate(LValue x, LValue y, RValue angle) throws EvaluationException {
+        final double f = angle.getValue();
+
+        final double cosF = Math.cos(f);
+        final double sinF = Math.sin(f);
+
+        final double xOld = x.getValue();
+        final double yOld = y.getValue();
+
+        x.assign(xOld * cosF - yOld * sinF);
+        y.assign(xOld * sinF + yOld * cosF);
+
+        return 0;
     }
 }
