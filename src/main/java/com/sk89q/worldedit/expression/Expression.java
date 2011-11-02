@@ -73,6 +73,8 @@ public class Expression {
         this.variableNames = variableNames;
         variables.put("e", new Constant(-1, Math.E));
         variables.put("pi", new Constant(-1, Math.PI));
+        variables.put("true", new Constant(-1, 1));
+        variables.put("false", new Constant(-1, 0));
         for (String variableName : variableNames) {
             variables.put(variableName, new Variable(0));
         }
