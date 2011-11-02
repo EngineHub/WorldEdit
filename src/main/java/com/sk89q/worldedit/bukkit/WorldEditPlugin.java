@@ -80,8 +80,14 @@ public class WorldEditPlugin extends JavaPlugin {
      * Called on plugin enable.
      */
     public void onEnable() {
-        logger.info("WorldEdit " + getDescription().getVersion() + " enabled.");
-        
+        final String pluginYmlVersion = getDescription().getVersion();
+        final String manifestVersion = WorldEdit.getVersion();
+
+        logger.info("WorldEdit " + pluginYmlVersion + " enabled.");
+        if (!manifestVersion.equalsIgnoreCase(pluginYmlVersion)) {
+            WorldEdit.setVersion(manifestVersion + " (" + pluginYmlVersion + ")");
+        }
+
         // Make the data folders that WorldEdit uses
         getDataFolder().mkdirs();
 

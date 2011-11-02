@@ -1409,4 +1409,8 @@ public class WorldEdit {
 
         return version;
     }
+
+    public static void setVersion(String version) {
+        WorldEdit.version = version;
+    }
 }
