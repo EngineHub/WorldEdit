@@ -94,18 +94,14 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
                 name = folder + "/" + name;
             }
         } else {
-            Pattern pattern = Pattern.compile(".*\\.mcr$");
+            Pattern pattern = Pattern.compile("^" + worldname + "/region/.*\\.mcr$");
             for (Enumeration<? extends ZipEntry> e = zip.entries();
                     e.hasMoreElements();) {
                 ZipEntry testEntry = (ZipEntry) e.nextElement();
-                // Check for world
-                if (testEntry.getName().startsWith(worldname + "/")) {
-                    if (pattern.matcher(testEntry.getName()).matches()) {
-                        folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf("/"));
-                        name = folder + "/" + name;
-                        break;
-                    }
-                    
+                if (pattern.matcher(testEntry.getName()).matches()) {
+                    folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf("/"));
+                    name = folder + "/" + name;
+                    break;
                 }
             }
             
