@@ -26,6 +26,7 @@ import com.sk89q.worldedit.bags.*;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.ItemType;
 
 public class BukkitPlayerBlockBag extends BlockBag {
     /**
@@ -121,7 +122,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
         final int damage = item.getDamage();
         int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
         assert(amount <= 64);
-        boolean usesDamageValue = false; // TODO: Use ItemType.usesDamageValue once it's fixed.
+        boolean usesDamageValue = ItemType.usesDamageValue(id);
 
         if (id == BlockID.AIR) {
             throw new IllegalArgumentException("Can't store air block");
@@ -137,7 +138,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
             if (bukkitItem == null) {
                 // Delay using up a free slot until we know there are no stacks
                 // of this item to merge into
-                
+
                 if (freeSlot == -1) {
                     freeSlot = slot;
                 }

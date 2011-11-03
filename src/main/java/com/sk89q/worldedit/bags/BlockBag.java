@@ -36,7 +36,7 @@ public abstract class BlockBag {
      * @throws BlockBagException
      */
     public void storeDroppedBlock(int id, int data) throws BlockBagException {
-        BaseItem dropped = BlockType.getDroppedBlock(id, data);
+        BaseItem dropped = BlockType.getBlockBagItem(id, data);
         if (dropped == null) return;
         if (dropped.getType() == BlockID.AIR) return;
 
@@ -121,6 +121,8 @@ public abstract class BlockBag {
     /**
      * Store a block.
      * 
+     * Either this method or storeItem needs to be overridden
+     * 
      * @param id
      * @throws BlockBagException 
      */
@@ -130,6 +132,8 @@ public abstract class BlockBag {
     
     /**
      * Store a block.
+     * 
+     * Either this method or storeBlock needs to be overridden
      * 
      * @param item
      * @throws BlockBagException 

@@ -857,126 +857,151 @@ public enum BlockType {
     }
 
     /**
-     * HashMap for getDroppedBlock.
+     * HashMap for getBlockBagItem.
      */
-    private static final Map<Integer, BaseItem> dataBlockDrops = new HashMap<Integer, BaseItem>();
-    private static final Map<Integer, BaseItem> nonDataBlockDrops = new HashMap<Integer, BaseItem>();
+    private static final Map<Integer, BaseItem> dataBlockBagItems = new HashMap<Integer, BaseItem>();
+    private static final Map<Integer, BaseItem> nonDataBlockBagItems = new HashMap<Integer, BaseItem>();
     private static final BaseItem doNotDestroy = new BaseItemStack(BlockID.AIR, 0);
     static {
-        // TODO: consider data values
-        
-        nonDataBlockDrops.put(BlockID.STONE, new BaseItem(BlockID.COBBLESTONE));
-        nonDataBlockDrops.put(BlockID.GRASS, new BaseItem(BlockID.DIRT));
-        nonDataBlockDrops.put(BlockID.DIRT, new BaseItem(BlockID.DIRT));
-        nonDataBlockDrops.put(BlockID.COBBLESTONE, new BaseItem(BlockID.COBBLESTONE));
-        nonDataBlockDrops.put(BlockID.WOOD, new BaseItem(BlockID.WOOD));
-        nonDataBlockDrops.put(BlockID.SAPLING, new BaseItem(BlockID.SAPLING));
-        nonDataBlockDrops.put(BlockID.BEDROCK, doNotDestroy);
-        nonDataBlockDrops.put(BlockID.SAND, new BaseItem(BlockID.SAND));
-        nonDataBlockDrops.put(BlockID.GRAVEL, new BaseItem(BlockID.GRAVEL));
-        nonDataBlockDrops.put(BlockID.GOLD_ORE, new BaseItem(BlockID.GOLD_ORE));
-        nonDataBlockDrops.put(BlockID.IRON_ORE, new BaseItem(BlockID.IRON_ORE));
-        nonDataBlockDrops.put(BlockID.COAL_ORE, new BaseItem(BlockID.COAL_ORE));
-        nonDataBlockDrops.put(BlockID.LOG, new BaseItem(BlockID.LOG));
-        nonDataBlockDrops.put(BlockID.LEAVES, new BaseItem(BlockID.LEAVES));
-        nonDataBlockDrops.put(BlockID.SPONGE, new BaseItem(BlockID.SPONGE));
-        nonDataBlockDrops.put(BlockID.GLASS, new BaseItem(BlockID.GLASS)); // Have to drop glass for //undo
-        nonDataBlockDrops.put(BlockID.LAPIS_LAZULI_ORE, new BaseItem(BlockID.LAPIS_LAZULI_ORE)); // Block damage drops not implemented
-        nonDataBlockDrops.put(BlockID.LAPIS_LAZULI_BLOCK, new BaseItem(BlockID.LAPIS_LAZULI_BLOCK));
-        nonDataBlockDrops.put(BlockID.DISPENSER, new BaseItem(BlockID.DISPENSER));
-        nonDataBlockDrops.put(BlockID.SANDSTONE, new BaseItem(BlockID.SANDSTONE));
-        nonDataBlockDrops.put(BlockID.NOTE_BLOCK, new BaseItem(BlockID.NOTE_BLOCK));
-        nonDataBlockDrops.put(BlockID.BED, new BaseItem(ItemID.BED_ITEM));
-        nonDataBlockDrops.put(BlockID.POWERED_RAIL, new BaseItem(BlockID.POWERED_RAIL));
-        nonDataBlockDrops.put(BlockID.DETECTOR_RAIL, new BaseItem(BlockID.DETECTOR_RAIL));
-        nonDataBlockDrops.put(BlockID.WEB, new BaseItem(BlockID.WEB));
-        nonDataBlockDrops.put(BlockID.PISTON_EXTENSION, doNotDestroy);
-        nonDataBlockDrops.put(BlockID.CLOTH, new BaseItem(BlockID.CLOTH));
-        nonDataBlockDrops.put(BlockID.PISTON_MOVING_PIECE, doNotDestroy);
-        nonDataBlockDrops.put(BlockID.YELLOW_FLOWER, new BaseItem(BlockID.YELLOW_FLOWER));
-        nonDataBlockDrops.put(BlockID.RED_FLOWER, new BaseItem(BlockID.RED_FLOWER));
-        nonDataBlockDrops.put(BlockID.BROWN_MUSHROOM, new BaseItem(BlockID.BROWN_MUSHROOM));
-        nonDataBlockDrops.put(BlockID.RED_MUSHROOM, new BaseItem(BlockID.RED_MUSHROOM));
-        nonDataBlockDrops.put(BlockID.GOLD_BLOCK, new BaseItem(BlockID.GOLD_BLOCK));
-        nonDataBlockDrops.put(BlockID.IRON_BLOCK, new BaseItem(BlockID.IRON_BLOCK));
-        nonDataBlockDrops.put(BlockID.DOUBLE_STEP, new BaseItem(BlockID.DOUBLE_STEP));
-        nonDataBlockDrops.put(BlockID.STEP, new BaseItem(BlockID.STEP));
-        nonDataBlockDrops.put(BlockID.BRICK, new BaseItem(BlockID.BRICK));
-        nonDataBlockDrops.put(BlockID.BOOKCASE, new BaseItem(BlockID.BOOKCASE));
-        nonDataBlockDrops.put(BlockID.MOSSY_COBBLESTONE, new BaseItem(BlockID.MOSSY_COBBLESTONE));
-        nonDataBlockDrops.put(BlockID.OBSIDIAN, new BaseItem(BlockID.OBSIDIAN));
-        nonDataBlockDrops.put(BlockID.TORCH, new BaseItem(BlockID.TORCH));
-        nonDataBlockDrops.put(BlockID.WOODEN_STAIRS, new BaseItem(BlockID.WOODEN_STAIRS));
-        nonDataBlockDrops.put(BlockID.CHEST, new BaseItem(BlockID.CHEST));
-        nonDataBlockDrops.put(BlockID.REDSTONE_WIRE, new BaseItem(ItemID.REDSTONE_DUST));
-        nonDataBlockDrops.put(BlockID.DIAMOND_ORE, new BaseItem(ItemID.DIAMOND));
-        nonDataBlockDrops.put(BlockID.DIAMOND_BLOCK, new BaseItem(BlockID.DIAMOND_BLOCK));
-        nonDataBlockDrops.put(BlockID.WORKBENCH, new BaseItem(BlockID.WORKBENCH));
-        nonDataBlockDrops.put(BlockID.CROPS, new BaseItem(ItemID.SEEDS));
-        nonDataBlockDrops.put(BlockID.SOIL, new BaseItem(BlockID.SOIL));
-        nonDataBlockDrops.put(BlockID.FURNACE, new BaseItem(BlockID.FURNACE));
-        nonDataBlockDrops.put(BlockID.BURNING_FURNACE, new BaseItem(BlockID.FURNACE));
-        nonDataBlockDrops.put(BlockID.SIGN_POST, new BaseItem(ItemID.SIGN));
-        nonDataBlockDrops.put(BlockID.WOODEN_DOOR, new BaseItem(ItemID.WOODEN_DOOR_ITEM));
-        nonDataBlockDrops.put(BlockID.LADDER, new BaseItem(BlockID.LADDER));
-        nonDataBlockDrops.put(BlockID.MINECART_TRACKS, new BaseItem(BlockID.MINECART_TRACKS));
-        nonDataBlockDrops.put(BlockID.COBBLESTONE_STAIRS, new BaseItem(BlockID.COBBLESTONE_STAIRS));
-        nonDataBlockDrops.put(BlockID.WALL_SIGN, new BaseItem(ItemID.SIGN));
-        nonDataBlockDrops.put(BlockID.LEVER, new BaseItem(BlockID.LEVER));
-        nonDataBlockDrops.put(BlockID.STONE_PRESSURE_PLATE, new BaseItem(BlockID.STONE_PRESSURE_PLATE));
-        nonDataBlockDrops.put(BlockID.IRON_DOOR, new BaseItem(ItemID.IRON_DOOR_ITEM));
-        nonDataBlockDrops.put(BlockID.WOODEN_PRESSURE_PLATE, new BaseItem(BlockID.WOODEN_PRESSURE_PLATE));
-        nonDataBlockDrops.put(BlockID.REDSTONE_ORE, new BaseItem(ItemID.REDSTONE_DUST));
-        nonDataBlockDrops.put(BlockID.GLOWING_REDSTONE_ORE, new BaseItem(ItemID.REDSTONE_DUST));
-        nonDataBlockDrops.put(BlockID.REDSTONE_TORCH_OFF, new BaseItem(BlockID.REDSTONE_TORCH_ON));
-        nonDataBlockDrops.put(BlockID.REDSTONE_TORCH_ON, new BaseItem(BlockID.REDSTONE_TORCH_ON));
-        nonDataBlockDrops.put(BlockID.STONE_BUTTON, new BaseItem(BlockID.STONE_BUTTON));
-        nonDataBlockDrops.put(BlockID.SNOW, new BaseItem(ItemID.SNOWBALL));
-        nonDataBlockDrops.put(BlockID.ICE, new BaseItem(BlockID.ICE));
-        nonDataBlockDrops.put(BlockID.SNOW_BLOCK, new BaseItem(BlockID.SNOW_BLOCK));
-        nonDataBlockDrops.put(BlockID.CLAY, new BaseItem(BlockID.CLAY));
-        nonDataBlockDrops.put(BlockID.REED, new BaseItem(ItemID.SUGAR_CANE_ITEM));
-        nonDataBlockDrops.put(BlockID.JUKEBOX, new BaseItem(BlockID.JUKEBOX));
-        nonDataBlockDrops.put(BlockID.FENCE, new BaseItem(BlockID.FENCE));
-        nonDataBlockDrops.put(BlockID.PUMPKIN, new BaseItem(BlockID.PUMPKIN));
-        nonDataBlockDrops.put(BlockID.NETHERRACK, new BaseItem(BlockID.NETHERRACK));
-        nonDataBlockDrops.put(BlockID.SLOW_SAND, new BaseItem(BlockID.SLOW_SAND));
-        nonDataBlockDrops.put(BlockID.LIGHTSTONE, new BaseItem(ItemID.LIGHTSTONE_DUST));
-        nonDataBlockDrops.put(BlockID.JACKOLANTERN, new BaseItem(BlockID.JACKOLANTERN));
-        nonDataBlockDrops.put(BlockID.CAKE_BLOCK, new BaseItem(ItemID.CAKE_ITEM));
-        nonDataBlockDrops.put(BlockID.REDSTONE_REPEATER_OFF, new BaseItem(ItemID.REDSTONE_REPEATER));
-        nonDataBlockDrops.put(BlockID.REDSTONE_REPEATER_ON, new BaseItem(ItemID.REDSTONE_REPEATER));
-        nonDataBlockDrops.put(BlockID.LOCKED_CHEST, new BaseItem(BlockID.LOCKED_CHEST));
-        nonDataBlockDrops.put(BlockID.TRAP_DOOR, new BaseItem(BlockID.TRAP_DOOR));
-        nonDataBlockDrops.put(BlockID.SILVERFISH_BLOCK, doNotDestroy);
-        nonDataBlockDrops.put(BlockID.STONE_BRICK, new BaseItem(BlockID.STONE_BRICK));
-        nonDataBlockDrops.put(BlockID.BROWN_MUSHROOM_CAP, new BaseItem(BlockID.BROWN_MUSHROOM_CAP));
-        nonDataBlockDrops.put(BlockID.RED_MUSHROOM_CAP, new BaseItem(BlockID.RED_MUSHROOM_CAP));
-        nonDataBlockDrops.put(BlockID.IRON_BARS, new BaseItem(BlockID.IRON_BARS));
-        nonDataBlockDrops.put(BlockID.GLASS_PANE, new BaseItem(BlockID.GLASS_PANE));
-        nonDataBlockDrops.put(BlockID.MELON_BLOCK, new BaseItem(BlockID.MELON_BLOCK));
-        nonDataBlockDrops.put(BlockID.PUMPKIN_STEM, new BaseItem(BlockID.PUMPKIN_STEM));
-        nonDataBlockDrops.put(BlockID.MELON_STEM, new BaseItem(BlockID.MELON_STEM));
-        nonDataBlockDrops.put(BlockID.VINE, doNotDestroy);
-        nonDataBlockDrops.put(BlockID.FENCE_GATE, new BaseItem(BlockID.FENCE_GATE));
-        nonDataBlockDrops.put(BlockID.BRICK_STAIRS, new BaseItem(BlockID.BRICK));
-        nonDataBlockDrops.put(BlockID.STONE_BRICK_STAIRS, new BaseItem(BlockID.STONE_BRICK));
-        nonDataBlockDrops.put(BlockID.MYCELIUM, new BaseItem(BlockID.DIRT));
-        nonDataBlockDrops.put(BlockID.LILY_PAD, new BaseItem(BlockID.LILY_PAD));
-        nonDataBlockDrops.put(BlockID.NETHER_BRICK, new BaseItem(BlockID.NETHER_BRICK));
-        nonDataBlockDrops.put(BlockID.NETHER_BRICK_FENCE, new BaseItem(BlockID.NETHER_BRICK_FENCE));
-        nonDataBlockDrops.put(BlockID.NETHER_BRICK_STAIRS, new BaseItem(BlockID.NETHER_BRICK));
-        nonDataBlockDrops.put(BlockID.NETHER_WART, new BaseItem(ItemID.NETHER_WART_SEED));
-        nonDataBlockDrops.put(BlockID.ENCHANTMENT_TABLE, new BaseItem(BlockID.ENCHANTMENT_TABLE));
-        nonDataBlockDrops.put(BlockID.BREWING_STAND, new BaseItem(ItemID.BREWING_STAND));
-        nonDataBlockDrops.put(BlockID.CAULDRON, new BaseItem(ItemID.CAULDRON));
-        nonDataBlockDrops.put(BlockID.END_PORTAL, doNotDestroy);
-        nonDataBlockDrops.put(BlockID.END_PORTAL_FRAME, doNotDestroy);
-        nonDataBlockDrops.put(BlockID.END_STONE, new BaseItem(BlockID.END_STONE));
+        /*
+         * rules:
+         * 
+         * 1. block yields itself => addIdentity
+         * 2. block is part of a 2-block object => drop an appropriate item for one of the 2 blocks
+         * 3. block can be placed by right-clicking an obtainable item on the ground => use that item
+         * 4. block yields more than one item => addIdentity
+         * 5. block yields exactly one item => use that item
+         * 6. block is a liquid => drop nothing
+         * 7. block is created from thin air by the game other than by the map generator => drop nothing
+         */
+
+        nonDataBlockBagItems.put(BlockID.STONE, new BaseItem(BlockID.COBBLESTONE)); // rule 5
+        nonDataBlockBagItems.put(BlockID.GRASS, new BaseItem(BlockID.DIRT)); // rule 5
+        addIdentity(BlockID.DIRT); // rule 1
+        addIdentity(BlockID.COBBLESTONE); // rule 1
+        addIdentity(BlockID.WOOD); // rule 1
+        addIdentities(BlockID.SAPLING, 3); // rule 1
+        nonDataBlockBagItems.put(BlockID.BEDROCK, doNotDestroy); // exception
+        // WATER, rule 6
+        // STATIONARY_WATER, rule 6
+        // LAVA, rule 6
+        // STATIONARY_LAVA, rule 6
+        addIdentity(BlockID.SAND); // rule 1
+        addIdentity(BlockID.GRAVEL); // rule 1
+        addIdentity(BlockID.GOLD_ORE); // rule 1
+        addIdentity(BlockID.IRON_ORE); // rule 1
+        nonDataBlockBagItems.put(BlockID.COAL_ORE, new BaseItem(ItemID.COAL)); // rule 5
+        addIdentities(BlockID.LOG, 3); // rule 1
+        addIdentities(BlockID.LEAVES, 4); // rule 1 with shears, otherwise rule 3
+        addIdentity(BlockID.SPONGE); // rule 1
+        addIdentity(BlockID.GLASS); // rule 3
+        addIdentity(BlockID.LAPIS_LAZULI_ORE); // rule 4
+        addIdentity(BlockID.LAPIS_LAZULI_BLOCK); // rule 1
+        addIdentity(BlockID.DISPENSER); // rule 1
+        addIdentity(BlockID.SANDSTONE); // rule 1
+        addIdentity(BlockID.NOTE_BLOCK); // rule 1
+        addIdentities(BlockID.BED, 8); // rule 2
+        addIdentity(BlockID.POWERED_RAIL); // rule 1
+        addIdentity(BlockID.DETECTOR_RAIL); // rule 1
+        addIdentity(BlockID.PISTON_STICKY_BASE);
+        nonDataBlockBagItems.put(BlockID.WEB, new BaseItem(ItemID.STRING)); // rule 5
+        // LONG_GRASS
+        // DEAD_BUSH
+        addIdentity(BlockID.PISTON_BASE);
+        nonDataBlockBagItems.put(BlockID.PISTON_EXTENSION, doNotDestroy); // rule 7
+        addIdentities(BlockID.CLOTH, 16); // rule 1
+        nonDataBlockBagItems.put(BlockID.PISTON_MOVING_PIECE, doNotDestroy); // rule 7
+        addIdentity(BlockID.YELLOW_FLOWER); // rule 1
+        addIdentity(BlockID.RED_FLOWER); // rule 1
+        addIdentity(BlockID.BROWN_MUSHROOM); // rule 1
+        addIdentity(BlockID.RED_MUSHROOM); // rule 1
+        addIdentity(BlockID.GOLD_BLOCK); // rule 1
+        addIdentity(BlockID.IRON_BLOCK); // rule 1
+        addIdentities(BlockID.DOUBLE_STEP, 7); // rule 3
+        addIdentities(BlockID.STEP, 7); // rule 1
+        addIdentity(BlockID.BRICK); // rule 1
+        addIdentity(BlockID.TNT);
+        addIdentity(BlockID.BOOKCASE); // rule 3
+        addIdentity(BlockID.MOSSY_COBBLESTONE); // rule 1
+        addIdentity(BlockID.OBSIDIAN); // rule 1
+        addIdentity(BlockID.TORCH); // rule 1
+        // FIRE
+        // MOB_SPAWNER
+        addIdentity(BlockID.WOODEN_STAIRS); // rule 3
+        addIdentity(BlockID.CHEST); // rule 1
+        nonDataBlockBagItems.put(BlockID.REDSTONE_WIRE, new BaseItem(ItemID.REDSTONE_DUST)); // rule 3
+        nonDataBlockBagItems.put(BlockID.DIAMOND_ORE, new BaseItem(ItemID.DIAMOND)); // rule 5
+        addIdentity(BlockID.DIAMOND_BLOCK); // rule 1
+        addIdentity(BlockID.WORKBENCH); // rule 1
+        nonDataBlockBagItems.put(BlockID.CROPS, new BaseItem(ItemID.SEEDS)); // rule 3
+        nonDataBlockBagItems.put(BlockID.SOIL, new BaseItem(BlockID.DIRT)); // rule 5
+        addIdentity(BlockID.FURNACE); // rule 1
+        nonDataBlockBagItems.put(BlockID.BURNING_FURNACE, new BaseItem(BlockID.FURNACE));
+        nonDataBlockBagItems.put(BlockID.SIGN_POST, new BaseItem(ItemID.SIGN)); // rule 3
+        addIdentities(BlockID.WOODEN_DOOR, 8); // rule 2
+        addIdentity(BlockID.LADDER); // rule 1
+        addIdentity(BlockID.MINECART_TRACKS); // rule 1
+        addIdentity(BlockID.COBBLESTONE_STAIRS); // rule 3
+        nonDataBlockBagItems.put(BlockID.WALL_SIGN, new BaseItem(ItemID.SIGN)); // rule 3
+        addIdentity(BlockID.LEVER); // rule 1
+        addIdentity(BlockID.STONE_PRESSURE_PLATE); // rule 1
+        addIdentities(BlockID.IRON_DOOR, 8); // rule 2
+        addIdentity(BlockID.WOODEN_PRESSURE_PLATE); // rule 1
+        addIdentity(BlockID.REDSTONE_ORE);  // rule 4
+        nonDataBlockBagItems.put(BlockID.GLOWING_REDSTONE_ORE, new BaseItem(BlockID.REDSTONE_ORE)); // rule 4
+        nonDataBlockBagItems.put(BlockID.REDSTONE_TORCH_OFF, new BaseItem(BlockID.REDSTONE_TORCH_ON)); // rule 3
+        addIdentity(BlockID.REDSTONE_TORCH_ON); // rule 1
+        addIdentity(BlockID.STONE_BUTTON); // rule 1
+        addIdentity(BlockID.SNOW); // rule 1
+        addIdentity(BlockID.ICE); // exception
+        addIdentity(BlockID.SNOW_BLOCK); // rule 3
+        addIdentity(BlockID.CACTUS);
+        addIdentity(BlockID.CLAY); // rule 3
+        nonDataBlockBagItems.put(BlockID.REED, new BaseItem(ItemID.SUGAR_CANE_ITEM)); // rule 3
+        addIdentity(BlockID.JUKEBOX); // rule 1
+        addIdentity(BlockID.FENCE); // rule 1
+        addIdentity(BlockID.PUMPKIN); // rule 1
+        addIdentity(BlockID.NETHERRACK); // rule 1
+        addIdentity(BlockID.SLOW_SAND); // rule 1
+        addIdentity(BlockID.LIGHTSTONE); // rule 4
+        // PORTAL
+        addIdentity(BlockID.JACKOLANTERN); // rule 1
+        nonDataBlockBagItems.put(BlockID.CAKE_BLOCK, new BaseItem(ItemID.CAKE_ITEM)); // rule 3
+        nonDataBlockBagItems.put(BlockID.REDSTONE_REPEATER_OFF, new BaseItem(ItemID.REDSTONE_REPEATER)); // rule 3
+        nonDataBlockBagItems.put(BlockID.REDSTONE_REPEATER_ON, new BaseItem(ItemID.REDSTONE_REPEATER)); // rule 3
+        addIdentity(BlockID.LOCKED_CHEST); // ???
+        addIdentity(BlockID.TRAP_DOOR); // rule 1
+        nonDataBlockBagItems.put(BlockID.SILVERFISH_BLOCK, doNotDestroy); // exception
+        addIdentity(BlockID.STONE_BRICK); // rule 1
+        addIdentity(BlockID.BROWN_MUSHROOM_CAP);
+        addIdentity(BlockID.RED_MUSHROOM_CAP);
+        addIdentity(BlockID.IRON_BARS); // rule 1
+        addIdentity(BlockID.GLASS_PANE); // rule 1
+        addIdentity(BlockID.MELON_BLOCK); // rule 3
+        nonDataBlockBagItems.put(BlockID.PUMPKIN_STEM, new BaseItem(ItemID.PUMPKIN_SEEDS)); // rule 3
+        nonDataBlockBagItems.put(BlockID.MELON_STEM, new BaseItem(ItemID.MELON_SEEDS)); // rule 3
+        nonDataBlockBagItems.put(BlockID.VINE, doNotDestroy); // exception
+        addIdentity(BlockID.FENCE_GATE); // rule 1
+        addIdentity(BlockID.BRICK_STAIRS); // rule 3
+        addIdentity(BlockID.STONE_BRICK_STAIRS); // rule 3
+
+        // 1.9 blocks
+        nonDataBlockBagItems.put(BlockID.MYCELIUM, new BaseItem(BlockID.DIRT));
+        addIdentity(BlockID.LILY_PAD);
+        addIdentity(BlockID.NETHER_BRICK);
+        addIdentity(BlockID.NETHER_BRICK_FENCE);
+        addIdentity(BlockID.NETHER_BRICK_STAIRS);
+        nonDataBlockBagItems.put(BlockID.NETHER_WART, new BaseItem(ItemID.NETHER_WART_SEED));
+        addIdentity(BlockID.ENCHANTMENT_TABLE);
+        nonDataBlockBagItems.put(BlockID.BREWING_STAND, new BaseItem(ItemID.BREWING_STAND));
+        nonDataBlockBagItems.put(BlockID.CAULDRON, new BaseItem(ItemID.CAULDRON));
+        nonDataBlockBagItems.put(BlockID.END_PORTAL, doNotDestroy);
+        nonDataBlockBagItems.put(BlockID.END_PORTAL_FRAME, doNotDestroy);
+        addIdentity(BlockID.END_STONE);
     }
 
     /**
-     * Get the block or item that would have been dropped. If nothing is
+     * Get the block or item that this block can be constructed from. If nothing is
      * dropped, a block with a BaseItemStack of type AIR and size 0 will be returned.
      * If the block should not be destroyed (i.e. bedrock), null will be returned.
      *
@@ -984,11 +1009,11 @@ public enum BlockType {
      * @param data
      * @return
      */
-    public static BaseItem getDroppedBlock(int type, int data) {
-        BaseItem dropped = nonDataBlockDrops.get(type);
+    public static BaseItem getBlockBagItem(int type, int data) {
+        BaseItem dropped = nonDataBlockBagItems.get(type);
         if (dropped != null) return dropped;
 
-        dropped = dataBlockDrops.get(typeDataKey(type, data));
+        dropped = dataBlockBagItems.get(typeDataKey(type, data));
 
         if (dropped == null) {
             return new BaseItemStack(BlockID.AIR, 0);
@@ -999,6 +1024,16 @@ public enum BlockType {
         }
 
         return dropped;
+    }
+
+    private static void addIdentity(int type) {
+        nonDataBlockBagItems.put(type, new BaseItem(type));
+    }
+    
+    private static void addIdentities(int type, int maxData) {
+        for (int data = 0; data < maxData; ++data) {
+            dataBlockBagItems.put(typeDataKey(type, data), new BaseItem(BlockID.LEAVES, (short) data));
+        }
     }
 
     /**
@@ -1012,7 +1047,7 @@ public enum BlockType {
      */
     @Deprecated
     public static int getDroppedBlock(int id) {
-        BaseItem dropped = nonDataBlockDrops.get(id);
+        BaseItem dropped = nonDataBlockBagItems.get(id);
         if (dropped == null) {
             return BlockID.AIR;
         }
