@@ -209,7 +209,7 @@ public class EditSession {
 
             if (existing > 0) {
                 try {
-                    blockBag.storeDroppedBlock(existing);
+                    blockBag.storeDroppedBlock(existing, world.getBlockData(pt));
                 } catch (BlockBagException e) {
                 }
             }

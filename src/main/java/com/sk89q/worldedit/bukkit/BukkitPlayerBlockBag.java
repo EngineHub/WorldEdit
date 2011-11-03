@@ -23,6 +23,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bags.*;
+import com.sk89q.worldedit.blocks.BaseItem;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
 
 public class BukkitPlayerBlockBag extends BlockBag {
@@ -114,53 +116,70 @@ public class BukkitPlayerBlockBag extends BlockBag {
      * @param id
      */
     @Override
-    public void storeBlock(int id) throws BlockBagException {
+    public void storeItem(BaseItem item) throws BlockBagException {
+        final int id = item.getType();
+        final int damage = item.getDamage();
+        int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
+        assert(amount <= 64);
+        boolean usesDamageValue = false; // TODO: Use ItemType.usesDamageValue once it's fixed.
+
         if (id == BlockID.AIR) {
             throw new IllegalArgumentException("Can't store air block");
         }
-        
+
         loadInventory();
-        
-        boolean found = false;
+
         int freeSlot = -1;
-        
+
         for (int slot = 0; slot < items.length; ++slot) {
-            ItemStack item = items[slot];
-            
-            // Delay using up a free slot until we know there are no stacks
-            // of this item to merge into
-            if (item == null) {
+            ItemStack bukkitItem = items[slot];
+
+            if (bukkitItem == null) {
+                // Delay using up a free slot until we know there are no stacks
+                // of this item to merge into
+                
                 if (freeSlot == -1) {
                     freeSlot = slot;
                 }
                 continue;
             }
-            
-            if (item.getTypeId() == id) {
-                int amount = item.getAmount();
-                
-                // Unlimited
-                if (amount < 0) {
-                    return;
-                }
-                
-                if (amount < 64) {
-                    item.setAmount(amount + 1);
-                    found = true;
-                    break;
-                }
+
+            if (bukkitItem.getTypeId() != id) {
+                // Type id doesn't fit
+                continue;
             }
+
+            if (usesDamageValue && bukkitItem.getDurability() != damage) {
+                // Damage value doesn't fit.
+                continue;
+            }
+
+            int currentAmount = bukkitItem.getAmount();
+            if (currentAmount < 0) {
+                // Unlimited
+                return;
+            }
+            if (currentAmount >= 64) {
+                // Full stack
+                continue;
+            }
+
+            int spaceLeft = 64 - currentAmount;
+            if (spaceLeft >= amount) {
+                bukkitItem.setAmount(currentAmount + amount);
+                return;
+            }
+
+            bukkitItem.setAmount(64);
+            amount -= spaceLeft;
         }
 
-        if (!found && freeSlot > -1) {
-            items[freeSlot] = new ItemStack(id, 1);
-            found = true;
+        if (freeSlot > -1) {
+            items[freeSlot] = new ItemStack(id, amount);
+            return;
         }
-        
-        if (found) {
-        } else {
-            throw new OutOfSpaceException(id);
-        }
+
+        throw new OutOfSpaceException(id);
     }
     
     /**

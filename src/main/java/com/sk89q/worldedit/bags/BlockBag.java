@@ -32,13 +32,15 @@ public abstract class BlockBag {
      * Stores a block as if it was mined.
      * 
      * @param id
+     * @param data 
      * @throws BlockBagException
      */
-    public void storeDroppedBlock(int id) throws BlockBagException {
-        int dropped = BlockType.getDroppedBlock(id);
-        if (dropped > 0) {
-            storeBlock(dropped);
-        }
+    public void storeDroppedBlock(int id, int data) throws BlockBagException {
+        BaseItem dropped = BlockType.getDroppedBlock(id, data);
+        if (dropped == null) return;
+        if (dropped.getType() == BlockID.AIR) return;
+
+        storeItem(dropped);
     }
     
     /**
@@ -122,7 +124,19 @@ public abstract class BlockBag {
      * @param id
      * @throws BlockBagException 
      */
-    public abstract void storeBlock(int id) throws BlockBagException;
+    public void storeBlock(int id) throws BlockBagException {
+        storeItem(new BaseItem(id));
+    }
+    
+    /**
+     * Store a block.
+     * 
+     * @param item
+     * @throws BlockBagException 
+     */
+    public void storeItem(BaseItem item) throws BlockBagException {
+        storeBlock(item.getType());
+    }
     
     /**
      * Checks to see if a block exists without removing it.
