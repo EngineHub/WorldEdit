@@ -563,10 +563,11 @@ public class SelectionCommands {
             }
             
             for (Countable<Integer> c : distribution) {
+                BlockType block = BlockType.fromID(c.getID());
                 String str = String.format("%-7s (%.3f%%) %s #%d",
                         String.valueOf(c.getAmount()),
                         c.getAmount() / (double)size * 100,
-                        BlockType.fromID(c.getID()).getName(), c.getID());
+                        block == null ? "Unknown" : block.getName(), c.getID());
                 player.print(str);
                 
                 if (args.hasFlag('c')) {
