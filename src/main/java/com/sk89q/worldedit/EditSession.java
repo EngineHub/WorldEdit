@@ -198,7 +198,7 @@ public class EditSession {
         if (blockBag != null) {
             if (type > 0) {
                 try {
-                    blockBag.fetchPlacedBlock(type);
+                    blockBag.fetchPlacedBlock(type, 0);
                 } catch (UnplaceableBlockException e) {
                     return false;
                 } catch (BlockBagException e) {

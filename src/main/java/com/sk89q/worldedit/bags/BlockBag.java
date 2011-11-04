@@ -34,7 +34,7 @@ public abstract class BlockBag {
      * @param id
      * @param data 
      * @throws BlockBagException
-     * @deprecated Use {@link BlockBag#storeDroppedBlock(int, int)}
+     * @deprecated Use {@link BlockBag#storeDroppedBlock(int, int)} instead
      */
     @Deprecated
     public void storeDroppedBlock(int id) throws BlockBagException {
@@ -61,8 +61,20 @@ public abstract class BlockBag {
      *
      * @param id
      * @throws BlockBagException
+     * @deprecated Use {@link #fetchPlacedBlock(int,int)} instead
      */
     public void fetchPlacedBlock(int id) throws BlockBagException {
+        fetchPlacedBlock(id, 0);
+    }
+
+    /**
+     * Sets a block as if it was placed by hand.
+     *
+     * @param id
+     * @param data TODO
+     * @throws BlockBagException
+     */
+    public void fetchPlacedBlock(int id, int data) throws BlockBagException {
         try {
             // Blocks that can't be fetched...
             switch (id) {
@@ -95,42 +107,38 @@ public abstract class BlockBag {
             }
 
         } catch (OutOfBlocksException e) {
-            switch (id) {
-            case BlockID.STONE:
-                fetchBlock(BlockID.COBBLESTONE);
-                break;
+            BaseItem placed = BlockType.getBlockBagItem(id, data);
+            if (placed == null) throw e; // TODO: check
+            if (placed.getType() == BlockID.AIR) throw e; // TODO: check
 
-            case BlockID.GRASS:
-                fetchBlock(BlockID.DIRT);
-                break;
-
-            case BlockID.REDSTONE_WIRE:
-                fetchBlock(ItemID.REDSTONE_DUST);
-                break;
-
-            case BlockID.REDSTONE_TORCH_OFF:
-                fetchBlock(BlockID.REDSTONE_TORCH_ON);
-                break;
-
-            case BlockID.WALL_SIGN:
-            case BlockID.SIGN_POST:
-                fetchBlock(ItemID.SIGN);
-                break;
-
-            default:
-                throw e;
-            }
+            fetchItem(placed);
         }
     }
 
     /**
      * Get a block.
      *
+     * Either this method or fetchItem needs to be overridden
+     *
      * @param id
      * @throws BlockBagException 
      */
-    public abstract void fetchBlock(int id) throws BlockBagException;
-    
+    public void fetchBlock(int id) throws BlockBagException {
+        fetchItem(new BaseItem(id));
+    }
+
+    /**
+     * Get a block.
+     *
+     * Either this method or fetchBlock needs to be overridden
+     *
+     * @param item
+     * @throws BlockBagException 
+     */
+    public void fetchItem(BaseItem item) throws BlockBagException {
+        fetchBlock(item.getType());
+    }
+
     /**
      * Store a block.
      * 

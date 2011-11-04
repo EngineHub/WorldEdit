@@ -71,46 +71,60 @@ public class BukkitPlayerBlockBag extends BlockBag {
      * @param id
      */
     @Override
-    public void fetchBlock(int id) throws BlockBagException {
+    public void fetchItem(BaseItem item) throws BlockBagException {
+        final int id = item.getType();
+        final int damage = item.getDamage();
+        int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
+        assert(amount == 1);
+        boolean usesDamageValue = ItemType.usesDamageValue(id);
+
         if (id == BlockID.AIR) {
             throw new IllegalArgumentException("Can't fetch air block");
         }
-        
+
         loadInventory();
-        
+
         boolean found = false;
-        
+
         for (int slot = 0; slot < items.length; ++slot) {
-            ItemStack item = items[slot];
-            
-            if (item == null) continue;
-            
-            if (item.getTypeId() == id) {
-                int amount = item.getAmount();
-                
-                // Unlimited
-                if (amount < 0) {
-                    return;
-                }
-                
-                if (amount > 1) {
-                    item.setAmount(amount - 1);
-                    found = true;
-                } else {
-                    items[slot] = null; 
-                    found = true;
-                }
-                
-                break;
+            ItemStack bukkitItem = items[slot];
+
+            if (bukkitItem == null) {
+                continue;
             }
+
+            if (bukkitItem.getTypeId() != id) {
+                // Type id doesn't fit
+                continue;
+            }
+
+            if (usesDamageValue && bukkitItem.getDurability() != damage) {
+                // Damage value doesn't fit.
+                continue;
+            }
+
+            int currentAmount = bukkitItem.getAmount();
+            if (currentAmount < 0) {
+                // Unlimited
+                return;
+            }
+
+            if (currentAmount > 1) {
+                bukkitItem.setAmount(currentAmount - 1);
+                found = true;
+            } else {
+                items[slot] = null; 
+                found = true;
+            }
+
+            break;
         }
-        
-        if (found) {
-        } else {
+
+        if (!found) {
             throw new OutOfBlocksException();
         }
     }
-    
+
     /**
      * Store a block.
      * 
