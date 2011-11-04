@@ -34,6 +34,19 @@ public abstract class BlockBag {
      * @param id
      * @param data 
      * @throws BlockBagException
+     * @deprecated Use {@link BlockBag#storeDroppedBlock(int, int)}
+     */
+    @Deprecated
+    public void storeDroppedBlock(int id) throws BlockBagException {
+        storeDroppedBlock(id, 0);
+    }
+    
+    /**
+     * Stores a block as if it was mined.
+     * 
+     * @param id
+     * @param data 
+     * @throws BlockBagException
      */
     public void storeDroppedBlock(int id, int data) throws BlockBagException {
         BaseItem dropped = BlockType.getBlockBagItem(id, data);
