@@ -908,9 +908,9 @@ public enum BlockType {
         // LONG_GRASS
         // DEAD_BUSH
         addIdentity(BlockID.PISTON_BASE);
-        nonDataBlockBagItems.put(BlockID.PISTON_EXTENSION, doNotDestroy); // rule 7
+        // PISTON_EXTENSION, rule 7
         addIdentities(BlockID.CLOTH, 16); // rule 1
-        nonDataBlockBagItems.put(BlockID.PISTON_MOVING_PIECE, doNotDestroy); // rule 7
+        // PISTON_MOVING_PIECE, rule 7
         addIdentity(BlockID.YELLOW_FLOWER); // rule 1
         addIdentity(BlockID.RED_FLOWER); // rule 1
         addIdentity(BlockID.BROWN_MUSHROOM); // rule 1
