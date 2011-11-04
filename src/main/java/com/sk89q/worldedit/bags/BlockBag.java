@@ -83,7 +83,6 @@ public abstract class BlockBag {
             case BlockID.IRON_ORE:
             case BlockID.COAL_ORE:
             case BlockID.DIAMOND_ORE:
-            case BlockID.LEAVES:
             case BlockID.TNT:
             case BlockID.MOB_SPAWNER:
             case BlockID.CROPS:
