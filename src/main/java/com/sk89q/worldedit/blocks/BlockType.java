@@ -1032,7 +1032,7 @@ public enum BlockType {
     
     private static void addIdentities(int type, int maxData) {
         for (int data = 0; data < maxData; ++data) {
-            dataBlockBagItems.put(typeDataKey(type, data), new BaseItem(BlockID.LEAVES, (short) data));
+            dataBlockBagItems.put(typeDataKey(type, data), new BaseItem(type, (short) data));
         }
     }
 
