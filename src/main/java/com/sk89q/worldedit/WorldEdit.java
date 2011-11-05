@@ -242,6 +242,7 @@ public class WorldEdit {
      * @return
      */
     public boolean hasSession(LocalPlayer player) {
+        // TODO: If this is indeed used in multiple threads, we should use Collections.synchronizedMap here to simplify things and exclude sources of error.
         synchronized (sessions) {
             return sessions.containsKey(player.getName());
         }
@@ -268,9 +269,9 @@ public class WorldEdit {
         BlockType blockType;
         arg = arg.replace("_", " ");
         arg = arg.replace(";", "|");
-        String[] args0 = arg.split("\\|");
-        String[] args1 = args0[0].split(":", 2);
-        String testID = args1[0];
+        String[] blockAndExtraData = arg.split("\\|");
+        String[] typeAndData = blockAndExtraData[0].split(":", 2);
+        String testID = typeAndData[0];
         int blockId = -1;
         
         int data = -1;
@@ -314,25 +315,25 @@ public class WorldEdit {
         if (data == -1) { // Block data not yet detected
             // Parse the block data (optional)
             try {
-                data = args1.length > 1 ? Integer.parseInt(args1[1]) : (allowNoData ? -1 : 0);
+                data = typeAndData.length > 1 ? Integer.parseInt(typeAndData[1]) : (allowNoData ? -1 : 0);
                 if (data > 15 || (data < 0 && !(allAllowed && data == -1))) {
                     data = 0;
                 }
             } catch (NumberFormatException e) {
                 switch (blockType) {
                 case CLOTH:
-                    ClothColor col = ClothColor.lookup(args1[1]);
+                    ClothColor col = ClothColor.lookup(typeAndData[1]);
                     
                     if (col != null) {
                         data = col.getID();
                     } else {
-                        throw new InvalidItemException(arg, "Unknown cloth color '" + args1[1] + "'");
+                        throw new InvalidItemException(arg, "Unknown cloth color '" + typeAndData[1] + "'");
                     }
                     break;
 
                 case STEP:
                 case DOUBLE_STEP:
-                    BlockType dataType = BlockType.lookup(args1[1]);
+                    BlockType dataType = BlockType.lookup(typeAndData[1]);
                     
                     if (dataType != null) {
                         switch (dataType) {
@@ -358,15 +359,15 @@ public class WorldEdit {
                             data = 5;
 
                         default:
-                            throw new InvalidItemException(arg, "Invalid step type '" + args1[1] + "'");
+                            throw new InvalidItemException(arg, "Invalid step type '" + typeAndData[1] + "'");
                         }
                     } else {
-                        throw new InvalidItemException(arg, "Unknown step type '" + args1[1] + "'");
+                        throw new InvalidItemException(arg, "Unknown step type '" + typeAndData[1] + "'");
                     }
                     break;
 
                 default:
-                    throw new InvalidItemException(arg, "Unknown data value '" + args1[1] + "'");
+                    throw new InvalidItemException(arg, "Unknown data value '" + typeAndData[1] + "'");
                 }
             }
         }
@@ -379,16 +380,16 @@ public class WorldEdit {
             if (blockType == BlockType.SIGN_POST
                     || blockType == BlockType.WALL_SIGN) {
                 String[] text = new String[4];
-                text[0] = args0.length > 1 ? args0[1] : "";
-                text[1] = args0.length > 2 ? args0[2] : "";
-                text[2] = args0.length > 3 ? args0[3] : "";
-                text[3] = args0.length > 4 ? args0[4] : "";
+                text[0] = blockAndExtraData.length > 1 ? blockAndExtraData[1] : "";
+                text[1] = blockAndExtraData.length > 2 ? blockAndExtraData[2] : "";
+                text[2] = blockAndExtraData.length > 3 ? blockAndExtraData[3] : "";
+                text[3] = blockAndExtraData.length > 4 ? blockAndExtraData[4] : "";
                 return new SignBlock(blockType.getID(), data, text);
             
             // Allow setting mob spawn type
             } else if (blockType == BlockType.MOB_SPAWNER) {
-                if (args0.length > 1) {
-                    String mobName = args0[1];
+                if (blockAndExtraData.length > 1) {
+                    String mobName = blockAndExtraData[1];
                     for (MobType mobType : MobType.values()){
                         if (mobType.getName().toLowerCase().equals(mobName.toLowerCase())){
                             mobName = mobType.getName();
@@ -405,10 +406,10 @@ public class WorldEdit {
             
             // Allow setting note
             } else if (blockType == BlockType.NOTE_BLOCK) {
-                if (args0.length > 1) {
-                    byte note = Byte.parseByte(args0[1]);
+                if (blockAndExtraData.length > 1) {
+                    byte note = Byte.parseByte(blockAndExtraData[1]);
                     if (note < 0 || note > 24) {
-                        throw new InvalidItemException(arg, "Out of range note value: '" + args0[1] + "'");
+                        throw new InvalidItemException(arg, "Out of range note value: '" + blockAndExtraData[1] + "'");
                     } else {
                         return new NoteBlock(data, note);
                     }
