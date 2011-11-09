@@ -840,7 +840,7 @@ public class BukkitWorld extends LocalWorld {
                 Chunk_blocklightMap = Class.forName("net.minecraft.server.Chunk").getField("i");
                 NibbleArray_ctor = Class.forName("net.minecraft.server.NibbleArray").getConstructor(int.class, int.class);
 
-                fastLightingAvailable = true;
+                //fastLightingAvailable = true;
             } catch (Throwable e) {
                 e.printStackTrace();
             }
