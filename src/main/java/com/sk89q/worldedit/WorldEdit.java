@@ -1018,7 +1018,8 @@ public class WorldEdit {
         LocalSession session = getSession(player);
         if (player.getItemInHand() == config.navigationWand
                 && config.navigationWandMaxDistance > 0
-                && player.hasPermission("worldedit.navigation.jumpto")) {
+                && (player.hasPermission("worldedit.navigation.jumpto.tool")
+                || player.hasPermission("worldedit.navigation.jumpto"))) { // TODO: Remove old permission
             // Bug workaround
             // Blocks this from being used after the thru function
             // @TODO do this right or make craftbukkit do it right
@@ -1056,7 +1057,8 @@ public class WorldEdit {
 
         if (player.getItemInHand() == config.navigationWand
                 && config.navigationWandMaxDistance > 0
-                && player.hasPermission("worldedit.navigation.thru")) {
+                && (player.hasPermission("worldedit.navigation.thru.tool")
+                || player.hasPermission("worldedit.navication.thru"))) { // TODO: Remove old permission
             
             if (!player.passThroughForwardWall(40)) {
                 player.printError("Nothing to pass through!");
