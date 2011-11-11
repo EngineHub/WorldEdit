@@ -27,7 +27,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sk89q.util.StringUtil;
-import static com.sk89q.util.ArrayUtil.removePortionOfArray;
 
 /**
  * <p>Manager for handling commands. This allows you to easily process commands,
@@ -104,20 +103,37 @@ public abstract class CommandsManager<T> {
     }
 
     /**
+     * Register an class that contains commands (denoted by {@link Command}.
+     * If no dependency injector is specified, then the methods of the
+     * class will be registered to be called statically. Otherwise, new
+     * instances will be created of the command classes and methods will
+     * not be called statically. A List of {@link Command} annotations from
+     * registered commands is returned.
+     *
+     * @param cls
+     * @return A List of {@link Command} annotations from registered commands,
+     * for use in eg. a dynamic command registration system.
+     */
+    public List<Command> registerAndReturn(Class<?> cls) {
+        return registerMethods(cls, null);
+    }
+
+    /**
      * Register the methods of a class. This will automatically construct
      * instances as necessary.
      *
      * @param cls
      * @param parent
+     * @return Commands Registered
      */
-    private void registerMethods(Class<?> cls, Method parent) {
+    private List<Command> registerMethods(Class<?> cls, Method parent) {
         try {
             if (getInjector() == null) {
-                registerMethods(cls, parent, null);
+                return registerMethods(cls, parent, null);
             } else {
                 Object obj = null;
                 obj = getInjector().getInstance(cls);
-                registerMethods(cls, parent, obj);
+                return registerMethods(cls, parent, obj);
             }
         } catch (InvocationTargetException e) {
             logger.log(Level.SEVERE, "Failed to register commands", e);
@@ -126,6 +142,7 @@ public abstract class CommandsManager<T> {
         } catch (InstantiationException e) {
             logger.log(Level.SEVERE, "Failed to register commands", e);
         }
+        return null;
     }
     
     /**
@@ -134,8 +151,9 @@ public abstract class CommandsManager<T> {
      * @param cls
      * @param parent
      */
-    private void registerMethods(Class<?> cls, Method parent, Object obj) {
+    private List<Command> registerMethods(Class<?> cls, Method parent, Object obj) {
         Map<String, Method> map;
+        List<Command> registered = new ArrayList<Command>();
         
         // Make a new hash map to cache the commands for this class
         // as looking up methods via reflection is fairly slow
@@ -179,6 +197,9 @@ public abstract class CommandsManager<T> {
                     descs.put(cmd.aliases()[0], cmd.usage() + " - " + cmd.desc());
                 }
             }
+
+            // Add the command to the registered command list for return
+            registered.add(cmd);
             
             // Look for nested commands -- if there are any, those have
             // to be cached too so that they can be quickly looked
@@ -191,6 +212,7 @@ public abstract class CommandsManager<T> {
                 }
             }
         }
+        return registered;
     }
     
     /**
@@ -230,15 +252,21 @@ public abstract class CommandsManager<T> {
             command.append(args[i] + " ");
         }
         if (cmd.flags().length() > 0) {
-        char[] flags = cmd.flags().toCharArray();
+            List<Character> flagChars = new ArrayList<Character>();
+            char[] flags = cmd.flags().toCharArray();
             for (int i = 0; i < flags.length; ++i) {
-                if (flags.length > i + 1) {
-                    if (flags[i + 1] == ':') {
-                        flags = removePortionOfArray(flags, i, i + 1, null);
-                    }
+                if (flags.length > i + 1 && flags[i + 1] == ':') {
+                        i++; continue;
                 }
+                flagChars.add(flags[i]);
             }
-            if (flags.length > 0) command.append("[-" + String.valueOf(flags) + "] ");
+            if (flagChars.size() > 0) {
+                command.append("[-");
+                for (char character : flagChars) {
+                    command.append(character);
+                }
+                command.append("] ");
+            }
         }
         command.append(cmd.usage());
         
@@ -391,13 +419,13 @@ public abstract class CommandsManager<T> {
             final Set<Character> valueFlags = new HashSet<Character>();
 
             char[] flags = cmd.flags().toCharArray();
+            Set<Character> newFlags = new HashSet<Character>();
             for (int i = 0; i < flags.length; ++i) {
-                if (flags.length > i + 1) {
-                    if (flags[i + 1] == ':') {
+                if (flags.length > i + 1 && flags[i + 1] == ':') {
                         valueFlags.add(flags[i]);
-                        flags = removePortionOfArray(flags, i + 1, i + 1, null);
-                    }
+                        ++i;
                 }
+                newFlags.add(flags[i]);
             }
 
             CommandContext context = new CommandContext(newArgs, valueFlags);
@@ -408,9 +436,8 @@ public abstract class CommandsManager<T> {
             if (cmd.max() != -1 && context.argsLength() > cmd.max())
                 throw new CommandUsageException("Too many arguments.", getUsage(args, level, cmd));
 
-            String flagStr = String.valueOf(flags);
             for (char flag : context.getFlags()) {
-                if (flagStr.indexOf(flag) == -1)
+                if (!newFlags.contains(flag))
                     throw new CommandUsageException("Unknown flag: " + flag, getUsage(args, level, cmd));
             }
 
