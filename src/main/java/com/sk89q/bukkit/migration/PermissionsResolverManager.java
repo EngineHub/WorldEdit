@@ -109,6 +109,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         if (permissionResolver == null) {
             permissionResolver = new ConfigurationPermissionsResolver(config);
         }
+        permissionResolver.load();
         logger.info(name + ": " + permissionResolver.getDetectionMessage());
     }
 
