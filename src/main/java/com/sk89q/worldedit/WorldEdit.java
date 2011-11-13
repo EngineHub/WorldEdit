@@ -1058,7 +1058,7 @@ public class WorldEdit {
         if (player.getItemInHand() == config.navigationWand
                 && config.navigationWandMaxDistance > 0
                 && (player.hasPermission("worldedit.navigation.thru.tool")
-                || player.hasPermission("worldedit.navication.thru"))) { // TODO: Remove old permission
+                || player.hasPermission("worldedit.navigation.thru"))) { // TODO: Remove old permission
             
             if (!player.passThroughForwardWall(40)) {
                 player.printError("Nothing to pass through!");
