@@ -19,14 +19,15 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldVector;
 
 /**
@@ -37,13 +38,13 @@ public class WorldEditPlayerListener extends PlayerListener {
      * Plugin.
      */
     private WorldEditPlugin plugin;
-    
+
     /**
      * Called when a player plays an animation, such as an arm swing
      * 
      * @param event Relevant event details
      */
-    
+
     /**
      * Construct the object;
      * 
@@ -56,7 +57,7 @@ public class WorldEditPlayerListener extends PlayerListener {
         plugin.registerEvent("PLAYER_INTERACT", this);
         plugin.registerEvent("PLAYER_COMMAND_PREPROCESS", this);
     }
-    
+
     /**
      * Called when a player leaves a server
      *
@@ -79,7 +80,7 @@ public class WorldEditPlayerListener extends PlayerListener {
         }
 
         String[] split = event.getMessage().split(" ");
-        
+
         if (plugin.getWorldEdit().handleCommand(wrapPlayer(event.getPlayer()), split)) {
             event.setCancelled(true);
         }
@@ -92,43 +93,55 @@ public class WorldEditPlayerListener extends PlayerListener {
      */
     @Override
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            LocalWorld world = new BukkitWorld(event.getClickedBlock().getWorld());
-            WorldVector pos = new WorldVector(world, event.getClickedBlock().getX(),
-                    event.getClickedBlock().getY(), event.getClickedBlock().getZ());
-            LocalPlayer player = wrapPlayer(event.getPlayer());
+        final LocalPlayer player = wrapPlayer(event.getPlayer());
+        final LocalWorld world = player.getWorld();
+        final WorldEdit we = plugin.getWorldEdit();
 
-            if (plugin.getWorldEdit().handleBlockLeftClick(player, pos)) {
-                event.setCancelled(true);
-            }
+        switch (event.getAction()) {
+        case LEFT_CLICK_BLOCK: {
+            final Block clickedBlock = event.getClickedBlock();
+            final WorldVector pos = new WorldVector(world, clickedBlock.getX(),
+                    clickedBlock.getY(), clickedBlock.getZ());
 
-            if (plugin.getWorldEdit().handleArmSwing(wrapPlayer(event.getPlayer()))) {
-                event.setCancelled(true);
-            }
-        } else if (event.getAction() == Action.LEFT_CLICK_AIR) {
-            if (plugin.getWorldEdit().handleArmSwing(wrapPlayer(event.getPlayer()))) {
-                event.setCancelled(true);
-            }
-        } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            LocalWorld world = new BukkitWorld(event.getClickedBlock().getWorld());
-            WorldVector pos = new WorldVector(world, event.getClickedBlock().getX(),
-                    event.getClickedBlock().getY(), event.getClickedBlock().getZ());
-            LocalPlayer player = wrapPlayer(event.getPlayer());
-            
-            if (plugin.getWorldEdit().handleBlockRightClick(player, pos)) {
+            if (we.handleBlockLeftClick(player, pos)) {
                 event.setCancelled(true);
             }
 
-            if (plugin.getWorldEdit().handleRightClick(wrapPlayer(event.getPlayer()))) {
+            if (we.handleArmSwing(player)) {
                 event.setCancelled(true);
             }
-        } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
-            if (plugin.getWorldEdit().handleRightClick(wrapPlayer(event.getPlayer()))) {
+            break;
+        }
+
+        case LEFT_CLICK_AIR:
+            if (we.handleArmSwing(player)) {
                 event.setCancelled(true);
             }
+            break;
+
+        case RIGHT_CLICK_BLOCK: {
+            final Block clickedBlock = event.getClickedBlock();
+            final WorldVector pos = new WorldVector(world, clickedBlock.getX(),
+                    clickedBlock.getY(), clickedBlock.getZ());
+
+            if (we.handleBlockRightClick(player, pos)) {
+                event.setCancelled(true);
+            }
+
+            if (we.handleRightClick(player)) {
+                event.setCancelled(true);
+            }
+            break;
+        }
+
+        case RIGHT_CLICK_AIR:
+            if (we.handleRightClick(player)) {
+                event.setCancelled(true);
+            }
+            break;
         }
     }
-    
+
     private BukkitPlayer wrapPlayer(Player player) {
         return new BukkitPlayer(plugin, plugin.getServerInterface(), player);
     }
