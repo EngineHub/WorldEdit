@@ -199,7 +199,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
             for (Class<?> clazz : availableResolvers) {
                 if (!stagedEnabled.contains(clazz.getSimpleName()) &&
                         !disabledResolvers.contains(clazz.getSimpleName())) {
-                    disabledResolvers.add(clazz.getName());
+                    disabledResolvers.add(clazz.getSimpleName());
                     logger.info("New permissions resolver: "
                             + clazz.getSimpleName() + " detected. " +
                             "Added to disabled resolvers list.");

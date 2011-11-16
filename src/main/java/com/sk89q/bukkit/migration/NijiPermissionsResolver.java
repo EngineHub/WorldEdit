@@ -34,6 +34,11 @@ public class NijiPermissionsResolver implements PermissionsResolver {
 
     public static PermissionsResolver factory(Server server, YAMLProcessor config) {
         PluginManager pluginManager = server.getPluginManager();
+        try {
+            Class.forName("com.nijikokun.bukkit.Permissions.Permissions");
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
 
         Plugin plugin = pluginManager.getPlugin("Permissions");
 
