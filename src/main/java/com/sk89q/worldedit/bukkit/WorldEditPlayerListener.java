@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -86,6 +87,8 @@ public class WorldEditPlayerListener extends PlayerListener {
         }
     }
 
+    private boolean ignoreLeftClickAir = false;
+    
     /**
      * Called when a player interacts
      *
@@ -110,13 +113,29 @@ public class WorldEditPlayerListener extends PlayerListener {
             if (we.handleArmSwing(player)) {
                 event.setCancelled(true);
             }
+
+            if (!ignoreLeftClickAir) {
+                final int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() { public void run() {
+                    ignoreLeftClickAir = false;
+                }}, 2);
+
+                if (taskId != -1) {
+                    ignoreLeftClickAir = true;
+                }
+            }
+
             break;
         }
 
         case LEFT_CLICK_AIR:
+            if (ignoreLeftClickAir) {
+                break;
+            }
+
             if (we.handleArmSwing(player)) {
                 event.setCancelled(true);
             }
+
             break;
 
         case RIGHT_CLICK_BLOCK: {
