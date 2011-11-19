@@ -41,19 +41,8 @@ public class Polygonal2DSelection extends RegionSelection {
         maxY = Math.min(Math.max(0, maxY), 127);
 
         Polygonal2DRegionSelector sel = new Polygonal2DRegionSelector();
-        poly2d = sel.getIncompleteRegion();
-        
-        for (BlockVector2D pt : points) {
-            if (pt == null) {
-                throw new IllegalArgumentException("Null point not permitted");
-            }
-            
-            poly2d.addPoint(pt);
-        }
-        
-        poly2d.setMinimumY(minY);
-        poly2d.setMaximumY(maxY);
-        
+        poly2d = new Polygonal2DRegion(points, minY, maxY);
+
         sel.learnChanges();
 
         setRegionSelector(sel);
