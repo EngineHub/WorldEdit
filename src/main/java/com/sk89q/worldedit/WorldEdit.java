@@ -1015,19 +1015,17 @@ public class WorldEdit {
      * @return 
      */
     public boolean handleArmSwing(LocalPlayer player) {
-        LocalSession session = getSession(player);
-        if (player.getItemInHand() == config.navigationWand
-                && config.navigationWandMaxDistance > 0
-                && (player.hasPermission("worldedit.navigation.jumpto.tool")
-                || player.hasPermission("worldedit.navigation.jumpto"))) { // TODO: Remove old permission
-            // Bug workaround
-            // Blocks this from being used after the thru function
-            // @TODO do this right or make craftbukkit do it right
-            if (!session.canUseJumpto()){
-                session.toggleJumptoBlock();
-                return true;
+        if (player.getItemInHand() == config.navigationWand) {
+            if (config.navigationWandMaxDistance <= 0) {
+                return false;
             }
-            WorldVector pos = player.getSolidBlockTrace(config.navigationWandMaxDistance);            
+
+            if (!player.hasPermission("worldedit.navigation.jumpto.tool")
+                    && !player.hasPermission("worldedit.navigation.jumpto")) { // TODO: Remove old permission
+                return false;
+            }
+
+            WorldVector pos = player.getSolidBlockTrace(config.navigationWandMaxDistance);
             if (pos != null) {
                 player.findFreePosition(pos);
             } else {
@@ -1036,6 +1034,8 @@ public class WorldEdit {
             return true;
         }
 
+        LocalSession session = getSession(player);
+
         Tool tool = session.getTool(player.getItemInHand());
         if (tool != null && tool instanceof DoubleActionTraceTool) {
             if (tool.canUse(player)) {
@@ -1043,6 +1043,7 @@ public class WorldEdit {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -1053,33 +1054,33 @@ public class WorldEdit {
      * @return 
      */
     public boolean handleRightClick(LocalPlayer player) {
-        LocalSession session = getSession(player);
+        if (player.getItemInHand() == config.navigationWand) {
+            if (config.navigationWandMaxDistance <= 0) {
+                return false;
+            }
 
-        if (player.getItemInHand() == config.navigationWand
-                && config.navigationWandMaxDistance > 0
-                && (player.hasPermission("worldedit.navigation.thru.tool")
-                || player.hasPermission("worldedit.navigation.thru"))) { // TODO: Remove old permission
-            
+            if (!player.hasPermission("worldedit.navigation.thru.tool")
+                    && !player.hasPermission("worldedit.navigation.thru")) { // TODO: Remove old permission
+                return false;
+            }
+
             if (!player.passThroughForwardWall(40)) {
                 player.printError("Nothing to pass through!");
             }
-            // Bug workaround, so it wont do the Jumpto compass function
-            // Right after this teleport
-            if (session.canUseJumpto()) {
-                session.toggleJumptoBlock();
-            }
+
             return true;
         }
-        
+
+        LocalSession session = getSession(player);
+
         Tool tool = session.getTool(player.getItemInHand());
-        
         if (tool != null && tool instanceof TraceTool) {
             if (tool.canUse(player)) {
                 ((TraceTool) tool).actPrimary(server, config, player, session);
                 return true;
             }
         }
-        
+
         return false;
     }
 
