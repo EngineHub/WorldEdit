@@ -21,6 +21,7 @@ package com.sk89q.worldedit;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.io.*;
 import java.lang.reflect.Method;
 
@@ -1167,6 +1168,8 @@ public class WorldEdit {
         return false;
     }
 
+    private static final java.util.regex.Pattern numberFormatExceptionPattern = java.util.regex.Pattern.compile("^For input string: \"(.*)\"$");
+
     /**
      *
      * @param player
@@ -1243,7 +1246,13 @@ public class WorldEdit {
                 flushBlockBag(player, editSession);
             }
         } catch (NumberFormatException e) {
-            player.printError("Number expected; string given.");
+            final Matcher matcher = numberFormatExceptionPattern.matcher(e.getMessage());
+
+            if (matcher.matches()) {
+                player.printError("Number expected; string \""+matcher.group(1)+"\" given.");
+            } else {
+                player.printError("Number expected; string given.");
+            }
         } catch (IncompleteRegionException e) {
             player.printError("Make a region selection first.");
         } catch (UnknownItemException e) {
