@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
  *
  * @author TomyLobo
  */
-public class Function extends RValue {
+public class Function extends Node {
     /**
      * Add this annotation on functions that don't always return the same value for the same inputs.
      */
@@ -47,8 +47,12 @@ public class Function extends RValue {
 
     @Override
     public final double getValue() throws EvaluationException {
+        return invokeMethod(method, args);
+    }
+
+    protected static final double invokeMethod(Method method, Object[] args) throws EvaluationException {
         try {
-            return (Double) method.invoke(null, (Object[]) args);
+            return (Double) method.invoke(null, args);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof EvaluationException) {
                 throw (EvaluationException) e.getTargetException();
@@ -79,7 +83,7 @@ public class Function extends RValue {
     }
 
     @Override
-    public RValue optimize() throws EvaluationException {
+    public Node optimize() throws EvaluationException {
         final RValue[] optimizedArgs = new RValue[args.length];
         boolean optimizable = !method.isAnnotationPresent(Dynamic.class);
         int position = getPosition();
@@ -96,7 +100,9 @@ public class Function extends RValue {
         }
 
         if (optimizable) {
-            return new Constant(position, getValue());
+            return new Constant(position, invokeMethod(method, optimizedArgs));
+        } else if (this instanceof LValueFunction) {
+            return new LValueFunction(position, method, ((LValueFunction) this).setter, optimizedArgs);
         } else {
             return new Function(position, method, optimizedArgs);
         }

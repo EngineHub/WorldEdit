@@ -41,8 +41,9 @@ public interface Identifiable {
      *
      * Invokables:
      * c - Constant
-     * f - Function
      * v - Variable
+     * f - Function
+     * l - LValueFunction
      * </pre>
      */
     public abstract char id();

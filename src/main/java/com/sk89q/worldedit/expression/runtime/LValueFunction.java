@@ -19,14 +19,33 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
-import com.sk89q.worldedit.expression.Identifiable;
+import java.lang.reflect.Method;
 
 /**
- * A value that can be used on the right side of an assignment.
+ * Wrapper for a Java method and its arguments (other Invokables)
  *
  * @author TomyLobo
  */
-public interface RValue extends Identifiable {
-    public double getValue() throws EvaluationException;
-    public Node optimize() throws EvaluationException;
+public class LValueFunction extends Function implements LValue {
+    private final Object[] setterArgs;
+    final Method setter;
+
+    LValueFunction(int position, Method getter, Method setter, RValue... args) {
+        super(position, getter, args);
+
+        setterArgs = new Object[args.length + 1];
+        System.arraycopy(args, 0, setterArgs, 0, args.length);
+        this.setter = setter;
+    }
+
+    @Override
+    public char id() {
+        return 'l';
+    }
+
+    @Override
+    public double assign(double value) throws EvaluationException {
+        setterArgs[setterArgs.length - 1] = value;
+        return invokeMethod(setter, setterArgs);
+    }
 }

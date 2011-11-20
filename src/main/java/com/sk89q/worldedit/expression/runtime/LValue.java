@@ -24,10 +24,6 @@ package com.sk89q.worldedit.expression.runtime;
  *
  * @author TomyLobo
  */
-public abstract class LValue extends RValue {
-    public LValue(int position) {
-        super(position);
-    }
-
-    public abstract double assign(double value) throws EvaluationException;
+public interface LValue extends RValue {
+    public double assign(double value) throws EvaluationException;
 }

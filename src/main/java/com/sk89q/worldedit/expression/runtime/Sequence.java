@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @author TomyLobo
  */
-public class Sequence extends RValue {
+public class Sequence extends Node {
     private final RValue[] sequence;
 
     public Sequence(int position, RValue... sequence) {
@@ -66,7 +66,7 @@ public class Sequence extends RValue {
     }
 
     @Override
-    public RValue optimize() throws EvaluationException {
+    public Node optimize() throws EvaluationException {
         List<RValue> newSequence = new ArrayList<RValue>();
 
         for (RValue invokable : sequence) {

@@ -24,7 +24,7 @@ package com.sk89q.worldedit.expression.runtime;
  *
  * @author TomyLobo
  */
-public final class Constant extends RValue {
+public final class Constant extends Node {
     private final double value;
 
     public Constant(int position, double value) {

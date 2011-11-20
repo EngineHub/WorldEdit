@@ -19,14 +19,27 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
-import com.sk89q.worldedit.expression.Identifiable;
-
 /**
  * A value that can be used on the right side of an assignment.
  *
  * @author TomyLobo
  */
-public interface RValue extends Identifiable {
-    public double getValue() throws EvaluationException;
-    public Node optimize() throws EvaluationException;
+public abstract class Node implements RValue {
+    private final int position;
+
+    public Node(int position) {
+        this.position = position;
+    }
+
+    @Override
+    public abstract String toString();
+
+    public Node optimize() throws EvaluationException {
+        return this;
+    }
+
+    @Override
+    public int getPosition() {
+        return position;
+    }
 }
