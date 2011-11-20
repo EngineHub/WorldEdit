@@ -175,8 +175,8 @@ public class WorldEdit {
         commands.register(ToolCommands.class);
         commands.register(UtilityCommands.class);
     }
-    
-    /*
+
+    /**
      * Gets the LocalSession for a player name if it exists
      *
      * @param player
@@ -460,22 +460,23 @@ public class WorldEdit {
     }
 
     /**
-     * Get a list of blocks as a set. This returns a Pattern.
+     * Returns a Pattern corresponding to the specified pattern string,
+     * as given by the player on the command line.
      *
      * @param player
-     * @param list
+     * @param patternString
      * @return pattern
      * @throws UnknownItemException 
      * @throws DisallowedItemException 
      */
-    public Pattern getBlockPattern(LocalPlayer player, String list)
+    public Pattern getBlockPattern(LocalPlayer player, String patternString)
             throws UnknownItemException, DisallowedItemException {
 
-        String[] items = list.split(",");
+        String[] items = patternString.split(",");
         
         // Handle special block pattern types
-        if (list.charAt(0) == '#') {
-            if (list.equals("#clipboard") || list.equals("#copy")) {
+        if (patternString.charAt(0) == '#') {
+            if (patternString.equals("#clipboard") || patternString.equals("#copy")) {
                 LocalSession session = getSession(player);
                 CuboidClipboard clipboard;
                 
@@ -488,7 +489,7 @@ public class WorldEdit {
                 
                 return new ClipboardPattern(clipboard);
             } else {
-                throw new UnknownItemException(list);
+                throw new UnknownItemException(patternString);
             }
         }
 
@@ -532,71 +533,82 @@ public class WorldEdit {
      */
     public Mask getBlockMask(LocalPlayer player, LocalSession session,
             String maskString) throws WorldEditException {
-        Mask mask = null;
+        List<Mask> masks = new ArrayList<Mask>();
 
         for (String component : maskString.split(" ")) {
-            Mask current = null;
             if (component.length() == 0) {
                 continue;
             }
 
-            if (component.charAt(0) == '#') {
-                if (component.equalsIgnoreCase("#existing")) {
-                    current = new ExistingBlockMask();
-                } else if (component.equalsIgnoreCase("#selection")
-                        || component.equalsIgnoreCase("#region")
-                        || component.equalsIgnoreCase("#sel")) {
-                    current = new RegionMask(session.getSelection(player.getWorld()));
-                } else {
-                    throw new UnknownItemException(component);
-                }
-            } else if (component.charAt(0) == '>'
-                    || component.charAt(0) == '<') {
-                LocalWorld world = player.getWorld();
-                boolean over = component.charAt(0) == '>';
-                Set<Integer> set = new HashSet<Integer>();
-                String ids = component.replaceAll(">", "").replaceAll("<", "");
+            Mask current = getBlockMaskComponent(player, session, masks, component);
 
-                if (!(ids.equals("*") || ids.equals(""))) {
-                    for (String sid : ids.split(",")) {
-                        try {
-                            int pid = Integer.parseInt(sid);
-                            if (!world.isValidBlockType(pid)) {
-                                throw new UnknownItemException(sid);
-                            }
-                            set.add(pid);
-                        } catch (NumberFormatException e) {
-                            BlockType type = BlockType.lookup(sid);
-                            int id = type.getID();
-                            if (!world.isValidBlockType(id)) {
-                                throw new UnknownItemException(sid);
-                            }
-                            set.add(id);
+            masks.add(current);
+        }
+
+        switch (masks.size()) {
+        case 0:
+            return null;
+
+        case 1:
+            return masks.get(0);
+
+        default:
+            return new CombinedMask(masks);
+        }
+    }
+
+    private Mask getBlockMaskComponent(LocalPlayer player, LocalSession session, List<Mask> masks, String component) throws IncompleteRegionException, UnknownItemException, DisallowedItemException {
+        final char firstChar = component.charAt(0);
+        switch (firstChar) {
+        case '#':
+            if (component.equalsIgnoreCase("#existing")) {
+                return new ExistingBlockMask();
+            } else if (component.equalsIgnoreCase("#selection")
+                    || component.equalsIgnoreCase("#region")
+                    || component.equalsIgnoreCase("#sel")) {
+                return new RegionMask(session.getSelection(player.getWorld()));
+            } else {
+                throw new UnknownItemException(component);
+            }
+
+        case '>':
+        case '<':
+            final LocalWorld world = player.getWorld();
+            final boolean over = firstChar == '>';
+            final String idString = component.substring(1);
+            final Set<Integer> ids = new HashSet<Integer>();
+
+            if (!(idString.equals("*") || idString.equals(""))) {
+                for (String sid : idString.split(",")) {
+                    try {
+                        final int pid = Integer.parseInt(sid);
+                        if (!world.isValidBlockType(pid)) {
+                            throw new UnknownItemException(sid);
                         }
+                        ids.add(pid);
+                    } catch (NumberFormatException e) {
+                        final BlockType type = BlockType.lookup(sid);
+                        final int id = type.getID();
+                        if (!world.isValidBlockType(id)) {
+                            throw new UnknownItemException(sid);
+                        }
+                        ids.add(id);
                     }
                 }
-                current = new UnderOverlayMask(set, over);
-            } else {
-                if (component.charAt(0) == '!' && component.length() > 1) {
-                    current = new InvertedBlockTypeMask(
-                            getBlockIDs(player, component.substring(1), true));
-                } else {
-                    current = new BlockTypeMask(getBlockIDs(player, component, true));
-                }
             }
-            
-            if (mask == null) {
-                mask = current;
-            } else if (mask instanceof CombinedMask) {
-                ((CombinedMask) mask).add(current);
-            } else {
-                mask = new CombinedMask(mask);
-                ((CombinedMask) mask).add(current);
+
+            return new UnderOverlayMask(ids, over);
+
+        case '!':
+            if (component.length() > 1) {
+                return new InvertedBlockTypeMask(getBlockIDs(player, component.substring(1), true));
             }
+
+        default:
+            return new BlockTypeMask(getBlockIDs(player, component, true));
         }
-        
-        return mask;
     }
+
     /**
      * Get a list of blocks as a set.
      *

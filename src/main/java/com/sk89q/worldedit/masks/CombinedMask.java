@@ -25,24 +25,28 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 
 public class CombinedMask implements Mask {
-    
+
     private List<Mask> masks = new ArrayList<Mask>();
-    
+
     public CombinedMask() {
     }
-    
+
     public CombinedMask(Mask mask) {
         masks.add(mask);
     }
-    
+
+    public CombinedMask(List<Mask> masks) {
+        masks.addAll(masks);
+    }
+
     public void add(Mask mask) {
         masks.add(mask);
     }
-    
+
     public boolean remove(Mask mask) {
         return masks.remove(mask);
     }
-    
+
     public boolean has(Mask mask) {
         return masks.contains(mask);
     }
@@ -53,8 +57,7 @@ public class CombinedMask implements Mask {
                 return false;
             }
         }
-        
+
         return true;
     }
-
 }
