@@ -1092,12 +1092,17 @@ public class WorldEdit {
      * @return false if you want the action to go through
      */
     public boolean handleBlockRightClick(LocalPlayer player, WorldVector clicked) {
-        int itemInHand = player.getItemInHand();
-        
         LocalSession session = getSession(player);
 
-        if (itemInHand == config.wandItem && session.isToolControlEnabled()
-                && player.hasPermission("worldedit.selection.pos")) {
+        if (player.getItemInHand() == config.wandItem) {
+            if (!session.isToolControlEnabled()) {
+                return false;
+            }
+
+            if (!player.hasPermission("worldedit.selection.pos")) {
+                return false;
+            }
+
             RegionSelector selector = session.getRegionSelector(player.getWorld());
             if (selector.selectSecondary(clicked)) {
                 selector.explainSecondarySelection(player, session, clicked);
@@ -1107,7 +1112,6 @@ public class WorldEdit {
         }
 
         Tool tool = session.getTool(player.getItemInHand());
-        
         if (tool != null && tool instanceof BlockTool) {
             if (tool.canUse(player)) {
                 ((BlockTool)tool).actPrimary(server, config, player, session, clicked);
@@ -1129,27 +1133,30 @@ public class WorldEdit {
         LocalSession session = getSession(player);
 
         if (player.getItemInHand() == config.wandItem) {
-            if (session.isToolControlEnabled()
-                    && player.hasPermission("worldedit.selection.pos")) {
-
-                RegionSelector selector = session.getRegionSelector(player.getWorld());
-                if (selector.selectPrimary(clicked)) {
-                    selector.explainPrimarySelection(player, session, clicked);
-                }
-
-                return true;
+            if (!session.isToolControlEnabled()) {
+                return false;
             }
-        } else if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
-            if (session.getSuperPickaxe() != null) {
-                if (session.getSuperPickaxe().canUse(player)) {
-                    return session.getSuperPickaxe().actPrimary(server, config,
-                            player, session, clicked);
-                }
+
+            if (!player.hasPermission("worldedit.selection.pos")) {
+                return false;
+            }
+
+            RegionSelector selector = session.getRegionSelector(player.getWorld());
+            if (selector.selectPrimary(clicked)) {
+                selector.explainPrimarySelection(player, session, clicked);
+            }
+
+            return true;
+        }
+
+        if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
+            final BlockTool superPickaxe = session.getSuperPickaxe();
+            if (superPickaxe != null && superPickaxe.canUse(player)) {
+                return superPickaxe.actPrimary(server, config, player, session, clicked);
             }
         }
 
         Tool tool = session.getTool(player.getItemInHand());
-        
         if (tool != null && tool instanceof DoubleActionBlockTool) {
             if (tool.canUse(player)) {
                 ((DoubleActionBlockTool)tool).actSecondary(server, config, player, session, clicked);
