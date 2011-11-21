@@ -32,16 +32,13 @@ import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Boat;
-import org.bukkit.entity.Creature;
-import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
-import org.bukkit.entity.Ghast;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Painting;
-import org.bukkit.entity.Slime;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Tameable;
 import org.bukkit.inventory.Inventory;
@@ -507,7 +504,7 @@ public class BukkitWorld extends LocalWorld {
             if (!killPets && ent instanceof Tameable && ((Tameable) ent).isTamed()) {
                 continue; // tamed wolf
             }
-            if (ent instanceof Creature || ent instanceof Ghast || ent instanceof Slime || ent instanceof EnderDragon) {
+            if (ent instanceof LivingEntity && !(ent instanceof HumanEntity)) {
                 if (radius == -1
                         || origin.distanceSq(BukkitUtil.toVector(ent.getLocation())) <= radiusSq) {
                     ent.remove();
