@@ -84,7 +84,12 @@ public class ExpressionTest {
         final Expression expression2 = Expression.compile("if (0) if (1) x=5; y=4;", "x", "y");
         expression2.evaluate(1, 2);
         assertEquals(4, expression2.getVariable("y").getValue(), 0);
-        
+    }
+
+    @Test
+    public void testWhile() throws ExpressionException {
+        assertEquals(5, simpleEval("c=5; a=0; while (c > 0) { ++a; --c; } a"), 0);
+        assertEquals(5, simpleEval("c=5; a=0; do { ++a; --c; } while (c > 0) a"), 0);
     }
 
     private double simpleEval(String expression) throws ExpressionException {

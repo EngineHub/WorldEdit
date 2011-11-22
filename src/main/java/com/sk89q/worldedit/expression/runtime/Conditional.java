@@ -30,7 +30,11 @@ public class Conditional extends Node {
 
     @Override
     public String toString() {
-        return "if ("+condition+") { "+truePart+" } else { "+falsePart+" }";
+        if (falsePart == null) {
+            return "if ("+condition+") { "+truePart+" }";
+        } else {
+            return "if ("+condition+") { "+truePart+" } else { "+falsePart+" }";
+        }
     }
 
     //TODO: optimizer

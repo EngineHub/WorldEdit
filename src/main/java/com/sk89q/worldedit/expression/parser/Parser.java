@@ -36,6 +36,7 @@ import com.sk89q.worldedit.expression.runtime.Functions;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.expression.runtime.Sequence;
 import com.sk89q.worldedit.expression.runtime.Variable;
+import com.sk89q.worldedit.expression.runtime.While;
 
 /**
  * Processes a list of tokens into an executable tree.
@@ -112,7 +113,7 @@ public class Parser {
             case 'k':
                 final String keyword = ((KeywordToken) current).value;
                 switch (keyword.charAt(0)) {
-                case 'i': // if
+                case 'i': { // if
                     ++position;
                     final RValue condition = parseBracket();
                     final RValue truePart = parseStatements(true);
@@ -128,6 +129,31 @@ public class Parser {
 
                     statements.add(new Conditional(current.getPosition(), condition, truePart, falsePart));
                     break;
+                }
+
+                case 'w': { // while
+                    ++position;
+                    final RValue condition = parseBracket();
+                    final RValue body = parseStatements(true);
+
+                    statements.add(new While(current.getPosition(), condition, body, false));
+                    break;
+                }
+
+                case 'd': { // do
+                    ++position;
+                    final RValue body = parseStatements(true);
+
+                    final Token next = peek();
+                    if (!(next instanceof KeywordToken) || !((KeywordToken) next).value.equals("while")) {
+                        throw new ParserException(current.getPosition(), "Expected while");
+                    }
+                    ++position;
+                    final RValue condition = parseBracket();
+
+                    statements.add(new While(current.getPosition(), condition, body, true));
+                    break;
+                }
 
                 default:
                     throw new ParserException(current.getPosition(), "Unimplemented keyword '" + keyword + "'");
