@@ -48,6 +48,8 @@ public interface Identifiable {
      * I - Conditional
      * w - While
      * F - For
+     * r - Return
+     * b - Break (includes continue)
      * </pre>
      */
     public abstract char id();

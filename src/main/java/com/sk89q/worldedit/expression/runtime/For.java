@@ -21,10 +21,20 @@ public class For extends Node {
         double ret = 0.0;
 
         for (init.getValue(); condition.getValue() > 0; increment.getValue()) {
-            ret = body.getValue();
-            ++iterations;
             if (iterations > 256) {
                 throw new EvaluationException(getPosition(), "Loop exceeded 256 iterations.");
+            }
+            ++iterations;
+
+            try {
+                ret = body.getValue();
+            }
+            catch (BreakException e) {
+                if (e.doContinue) {
+                    continue;
+                } else {
+                    break;
+                }
             }
         }
 

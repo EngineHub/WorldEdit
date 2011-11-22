@@ -30,11 +30,13 @@ import com.sk89q.worldedit.expression.lexer.tokens.KeywordToken;
 import com.sk89q.worldedit.expression.lexer.tokens.NumberToken;
 import com.sk89q.worldedit.expression.lexer.tokens.OperatorToken;
 import com.sk89q.worldedit.expression.lexer.tokens.Token;
+import com.sk89q.worldedit.expression.runtime.Break;
 import com.sk89q.worldedit.expression.runtime.Conditional;
 import com.sk89q.worldedit.expression.runtime.Constant;
 import com.sk89q.worldedit.expression.runtime.For;
 import com.sk89q.worldedit.expression.runtime.Functions;
 import com.sk89q.worldedit.expression.runtime.RValue;
+import com.sk89q.worldedit.expression.runtime.Return;
 import com.sk89q.worldedit.expression.runtime.Sequence;
 import com.sk89q.worldedit.expression.runtime.Variable;
 import com.sk89q.worldedit.expression.runtime.While;
@@ -162,6 +164,28 @@ public class Parser {
                     statements.add(new For(current.getPosition(), init, condition, increment, body));
                     break;
                 }
+
+                case 'b': // break
+                    ++position;
+                    statements.add(new Break(current.getPosition(), false));
+                    break;
+
+                case 'c': // continue
+                    ++position;
+                    statements.add(new Break(current.getPosition(), true));
+                    break;
+
+                case 'r': // return
+                    ++position;
+                    statements.add(new Return(current.getPosition(), parseExpression(true)));
+
+                    if (peek().id() == ';') {
+                        ++position;
+                        break;
+                    }
+                    else {
+                        break loop;
+                    }
 
                 default:
                     throw new ParserException(current.getPosition(), "Unimplemented keyword '" + keyword + "'");

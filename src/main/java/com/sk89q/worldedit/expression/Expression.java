@@ -29,6 +29,7 @@ import com.sk89q.worldedit.expression.parser.Parser;
 import com.sk89q.worldedit.expression.runtime.Constant;
 import com.sk89q.worldedit.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.expression.runtime.RValue;
+import com.sk89q.worldedit.expression.runtime.ReturnException;
 import com.sk89q.worldedit.expression.runtime.Variable;
 
 /**
@@ -97,7 +98,12 @@ public class Expression {
             ((Variable) invokable).value = values[i];
         }
 
-        return root.getValue();
+        try {
+            return root.getValue();
+        }
+        catch (ReturnException e) {
+            return e.getValue();
+        }
     }
 
     public void optimize() throws EvaluationException {
