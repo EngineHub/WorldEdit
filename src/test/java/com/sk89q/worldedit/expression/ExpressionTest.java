@@ -10,7 +10,7 @@ import com.sk89q.worldedit.expression.parser.ParserException;
 
 public class ExpressionTest {
     @Test
-    public void testEvaluate() throws Exception {
+    public void testEvaluate() throws ExpressionException {
         // check 
         assertEquals(1-2+3, simpleEval("1-2+3"), 0);
 
@@ -69,7 +69,25 @@ public class ExpressionTest {
         assertEquals(5, foo.getVariable("c").getValue(), 0);
     }
 
-    private double simpleEval(String expression) throws Exception {
+    @Test
+    public void testIf() throws ExpressionException {
+        assertEquals(40, simpleEval("if (1) x=4; else y=5; x*10+y;"), 0);
+        assertEquals(5, simpleEval("if (0) x=4; else y=5; x*10+y;"), 0);
+
+        // test 'dangling else'
+        final Expression expression1 = Expression.compile("if (1) if (0) x=4; else y=5;", "x", "y");
+        expression1.evaluate(1, 2);
+        assertEquals(1, expression1.getVariable("x").getValue(), 0);
+        assertEquals(5, expression1.getVariable("y").getValue(), 0);
+
+        // test if the if construct is correctly recognized as a statement
+        final Expression expression2 = Expression.compile("if (0) if (1) x=5; y=4;", "x", "y");
+        expression2.evaluate(1, 2);
+        assertEquals(4, expression2.getVariable("y").getValue(), 0);
+        
+    }
+
+    private double simpleEval(String expression) throws ExpressionException {
         return Expression.compile(expression).evaluate();
     }
 }
