@@ -25,7 +25,7 @@ public class Conditional extends Node {
 
     @Override
     public char id() {
-        return 't';
+        return 'I';
     }
 
     @Override

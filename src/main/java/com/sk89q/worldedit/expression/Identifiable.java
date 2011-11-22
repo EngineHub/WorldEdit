@@ -37,13 +37,17 @@ public interface Identifiable {
      * CharacterTokens are returned literally
      *
      * PseudoTokens:
-     * p - PrefixOperator
+     * p - UnaryOperator
      *
-     * Invokables:
+     * Nodes:
      * c - Constant
      * v - Variable
      * f - Function
      * l - LValueFunction
+     * s - Sequence
+     * I - Conditional
+     * w - While
+     * F - For
      * </pre>
      */
     public abstract char id();

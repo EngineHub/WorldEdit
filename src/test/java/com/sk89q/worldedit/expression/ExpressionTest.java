@@ -92,6 +92,11 @@ public class ExpressionTest {
         assertEquals(5, simpleEval("c=5; a=0; do { ++a; --c; } while (c > 0) a"), 0);
     }
 
+    @Test
+    public void testFor() throws ExpressionException {
+        assertEquals(5, simpleEval("a=0; for (i=0; i<5; ++i) { ++a; } a"), 0);
+    }
+
     private double simpleEval(String expression) throws ExpressionException {
         return Expression.compile(expression).evaluate();
     }
