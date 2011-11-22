@@ -92,14 +92,6 @@ public class Parser {
 
             final Token current = peek();
             switch (current.id()) {
-            case ';':
-                ++position;
-
-                if (singleStatement) {
-                    break loop;
-                }
-                break;
-
             case '{':
                 consumeCharacter('{');
 
@@ -159,11 +151,11 @@ public class Parser {
                 case 'f': { // for
                     ++position;
                     consumeCharacter('(');
-                    final RValue init = parseExpression();
+                    final RValue init = parseExpression(true);
                     consumeCharacter(';');
-                    final RValue condition = parseExpression();
+                    final RValue condition = parseExpression(true);
                     consumeCharacter(';');
-                    final RValue increment = parseExpression();
+                    final RValue increment = parseExpression(true);
                     consumeCharacter(')');
                     final RValue body = parseStatements(true);
 
@@ -181,7 +173,7 @@ public class Parser {
                 break;
 
             default:
-                statements.add(parseExpression());
+                statements.add(parseExpression(true));
 
                 if (peek().id() == ';') {
                     ++position;
@@ -212,7 +204,7 @@ public class Parser {
         }
     }
 
-    private final RValue parseExpression() throws ParserException {
+    private final RValue parseExpression(boolean canBeEmpty) throws ParserException {
         LinkedList<Identifiable> halfProcessed = new LinkedList<Identifiable>();
 
         // process brackets, numbers, functions, variables and detect prefix operators
@@ -279,6 +271,10 @@ public class Parser {
             }
         }
 
+        if (halfProcessed.isEmpty() && canBeEmpty) {
+            return new Sequence(peek().getPosition());
+        }
+
         return ParserProcessors.processExpression(halfProcessed);
     }
 
@@ -302,7 +298,7 @@ public class Parser {
             List<RValue> args = new ArrayList<RValue>();
 
             loop: while (true) {
-                args.add(parseExpression());
+                args.add(parseExpression(false));
 
                 final Token current = peek();
                 ++position;
@@ -328,7 +324,7 @@ public class Parser {
     private final RValue parseBracket() throws ParserException {
         consumeCharacter('(');
 
-        final RValue ret = parseExpression();
+        final RValue ret = parseExpression(false);
 
         consumeCharacter(')');
 
