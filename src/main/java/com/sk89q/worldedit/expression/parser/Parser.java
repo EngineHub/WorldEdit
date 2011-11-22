@@ -101,7 +101,11 @@ public class Parser {
                 break;
 
             case '{':
-                statements.add(parseBlock());
+                consumeCharacter('{');
+
+                statements.add(parseStatements(false));
+
+                consumeCharacter('}');
 
                 if (singleStatement) {
                     break loop;
@@ -178,7 +182,7 @@ public class Parser {
 
             default:
                 statements.add(parseExpression());
-                
+
                 if (peek().id() == ';') {
                     ++position;
                     if (singleStatement) {
@@ -194,13 +198,17 @@ public class Parser {
 
         switch (statements.size()) {
         case 0:
-            throw new ParserException(-1, "No statement found.");
+            if (singleStatement) {
+                throw new ParserException(peek().getPosition(), "Statement expected.");
+            } else {
+                return new Sequence(peek().getPosition());
+            }
 
         case 1:
             return statements.get(0);
 
         default:
-            return new Sequence(position, statements.toArray(new RValue[statements.size()]));
+            return new Sequence(peek().getPosition(), statements.toArray(new RValue[statements.size()]));
         }
     }
 
@@ -323,20 +331,6 @@ public class Parser {
         final RValue ret = parseExpression();
 
         consumeCharacter(')');
-
-        return ret;
-    }
-
-    private final RValue parseBlock() throws ParserException {
-        consumeCharacter('{');
-
-        if (peek().id() == '}') {
-            return new Sequence(peek().getPosition());
-        }
-
-        final RValue ret = parseStatements(false);
-
-        consumeCharacter('}');
 
         return ret;
     }
