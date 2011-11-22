@@ -262,15 +262,25 @@ public final class Functions {
     }
 
 
-    private static final double[] megabuf = new double[1024];
+    private static final Map<Integer, double[]> gmegabuf = new HashMap<Integer, double[]>();
 
-    @Dynamic
-    public static final double megabuf(RValue index) throws EvaluationException {
-        return megabuf[(int) index.getValue()];
+    private static double[] getSubBuffer(Integer key) {
+        double[] ret = gmegabuf.get(key);
+        if (ret == null) {
+            gmegabuf.put(key, ret = new double[1024]);
+        }
+        return ret;
     }
 
     @Dynamic
-    public static final double megabuf(RValue index, double value) throws EvaluationException {
-        return megabuf[(int) index.getValue()] = value;
+    public static final double gmegabuf(RValue index) throws EvaluationException {
+        final int intIndex = (int) index.getValue();
+        return getSubBuffer(intIndex & ~1023)[intIndex & 1023];
+    }
+
+    @Dynamic
+    public static final double gmegabuf(RValue index, double value) throws EvaluationException {
+        final int intIndex = (int) index.getValue();
+        return getSubBuffer(intIndex & ~1023)[intIndex & 1023] = value;
     }
 }
