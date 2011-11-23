@@ -26,7 +26,6 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-
 /**
  * Represents WorldEdit's configuration.
  * 
@@ -102,12 +101,12 @@ public abstract class LocalConfiguration {
     public String saveDir = "schematics";
     public String scriptsDir = "craftscripts";
     public boolean showFirstUseVersion = true;
-    
+
     /**
      * Loads the configuration.
      */
     public abstract void load();
-    
+
     /**
      * Get the working directory to work from.
      * 

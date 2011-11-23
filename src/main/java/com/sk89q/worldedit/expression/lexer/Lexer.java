@@ -51,50 +51,50 @@ public class Lexer {
     }
 
     private final DecisionTree operatorTree = new DecisionTree(null,
-            '+', new DecisionTree("+",
-                    '=', new DecisionTree("+="),
-                    '+', new DecisionTree("++")
-            ),
-            '-', new DecisionTree("-",
-                    '=', new DecisionTree("-="),
-                    '-', new DecisionTree("--")
-            ),
-            '*', new DecisionTree("*",
-                    '=', new DecisionTree("*="),
-                    '*', new DecisionTree("**")
-            ),
-            '/', new DecisionTree("/",
-                    '=', new DecisionTree("/=")
-            ),
-            '%', new DecisionTree("%",
-                    '=', new DecisionTree("%=")
-            ),
-            '^', new DecisionTree("^",
-                    '=', new DecisionTree("^=")
-            ),
-            '=', new DecisionTree("=",
-                    '=', new DecisionTree("==")
-            ),
-            '!', new DecisionTree("!",
-                    '=', new DecisionTree("!=")
-            ),
-            '<', new DecisionTree("<",
-                    '<', new DecisionTree("<<"),
-                    '=', new DecisionTree("<=")
-            ),
-            '>', new DecisionTree(">",
-                    '>', new DecisionTree(">>"),
-                    '=', new DecisionTree(">=")
-            ),
-            '&', new DecisionTree(null, // not implemented
-                    '&', new DecisionTree("&&")
-            ),
-            '|', new DecisionTree(null, // not implemented
-                    '|', new DecisionTree("||")
-            ),
-            '~', new DecisionTree("~",
-                    '=', new DecisionTree("~=")
-            )
+        '+', new DecisionTree("+",
+            '=', new DecisionTree("+="),
+            '+', new DecisionTree("++")
+        ),
+        '-', new DecisionTree("-",
+            '=', new DecisionTree("-="),
+            '-', new DecisionTree("--")
+        ),
+        '*', new DecisionTree("*",
+            '=', new DecisionTree("*="),
+            '*', new DecisionTree("**")
+        ),
+        '/', new DecisionTree("/",
+            '=', new DecisionTree("/=")
+        ),
+        '%', new DecisionTree("%",
+            '=', new DecisionTree("%=")
+        ),
+        '^', new DecisionTree("^",
+            '=', new DecisionTree("^=")
+        ),
+        '=', new DecisionTree("=",
+            '=', new DecisionTree("==")
+        ),
+        '!', new DecisionTree("!",
+            '=', new DecisionTree("!=")
+        ),
+        '<', new DecisionTree("<",
+            '<', new DecisionTree("<<"),
+            '=', new DecisionTree("<=")
+        ),
+        '>', new DecisionTree(">",
+            '>', new DecisionTree(">>"),
+            '=', new DecisionTree(">=")
+        ),
+        '&', new DecisionTree(null, // not implemented
+            '&', new DecisionTree("&&")
+        ),
+        '|', new DecisionTree(null, // not implemented
+            '|', new DecisionTree("||")
+        ),
+        '~', new DecisionTree("~",
+            '=', new DecisionTree("~=")
+        )
     );
 
     private static final Set<Character> characterTokens = new HashSet<Character>();

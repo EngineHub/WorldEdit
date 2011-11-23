@@ -36,8 +36,8 @@ public abstract class ChunkStore {
      * @return
      */
     public static BlockVector2D toChunk(Vector pos) {
-        int chunkX = (int)Math.floor(pos.getBlockX() / 16.0);
-        int chunkZ = (int)Math.floor(pos.getBlockZ() / 16.0);
+        int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
+        int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
 
         return new BlockVector2D(chunkX, chunkZ);
     }

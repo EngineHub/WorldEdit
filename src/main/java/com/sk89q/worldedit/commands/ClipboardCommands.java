@@ -82,7 +82,7 @@ public class ClipboardCommands {
         if (args.argsLength() > 0) {
             block = we.getBlock(player, args.getString(0));
         }
-            
+
         Region region = session.getSelection(player.getWorld());
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
@@ -97,7 +97,7 @@ public class ClipboardCommands {
         editSession.setBlocks(session.getSelection(player.getWorld()), block);
         player.print("Block(s) cut.");
     }
-    
+
     @Command(
         aliases = { "/paste" },
         usage = "",
@@ -114,7 +114,7 @@ public class ClipboardCommands {
 
         boolean atOrigin = args.hasFlag('o');
         boolean pasteNoAir = args.hasFlag('a');
-                
+
         if (atOrigin) {
             Vector pos = session.getClipboard().getOrigin();
             session.getClipboard().place(editSession, pos, pasteNoAir);
@@ -141,7 +141,7 @@ public class ClipboardCommands {
             throws WorldEditException {
         
         int angle = args.getInteger(0);
-        
+
         if (angle % 90 == 0) {
             CuboidClipboard clipboard = session.getClipboard();
             clipboard.rotate2D(angle);
@@ -171,7 +171,7 @@ public class ClipboardCommands {
         clipboard.flip(dir, args.hasFlag('p'));
         player.print("Clipboard flipped.");
     }
-    
+
     @Command(
         aliases = { "/load" },
         usage = "<filename>",
@@ -189,7 +189,7 @@ public class ClipboardCommands {
         String filename = args.getString(0);
         File dir = we.getWorkingDirectoryFile(config.saveDir);
         File f = we.getSafeOpenFile(player, dir, filename, "schematic",
-                new String[] {"schematic"});
+                new String[] { "schematic" });
 
         try {
             String filePath = f.getCanonicalPath();
@@ -208,7 +208,7 @@ public class ClipboardCommands {
             player.printError("Schematic could not read or it does not exist: " + e.getMessage());
         }
     }
-    
+
     @Command(
         aliases = { "/save" },
         usage = "<filename>",
@@ -227,7 +227,7 @@ public class ClipboardCommands {
 
         File dir = we.getWorkingDirectoryFile(config.saveDir);
         File f = we.getSafeSaveFile(player, dir, filename, "schematic",
-                new String[] {"schematic"});
+                new String[] { "schematic" });
 
         if (!dir.exists()) {
             if (!dir.mkdir()) {
@@ -252,7 +252,7 @@ public class ClipboardCommands {
             player.printError("Schematic could not written: " + e.getMessage());
         }
     }
-    
+
     @Command(
         aliases = { "clearclipboard" },
         usage = "",

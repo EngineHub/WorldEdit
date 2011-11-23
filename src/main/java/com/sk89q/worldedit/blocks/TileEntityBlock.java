@@ -35,20 +35,22 @@ public interface TileEntityBlock {
      * @return title entity ID
      */
     public String getTileEntityID();
+
     /**
      * Store additional tile entity data.
      *
      * @return map of values
      * @throws DataException
      */
-    public Map<String,Tag> toTileEntityNBT()
+    public Map<String, Tag> toTileEntityNBT()
             throws DataException;
+
     /**
      * Get additional information from the title entity data.
      *
      * @param values
      * @throws DataException
      */
-    public void fromTileEntityNBT(Map<String,Tag> values)
+    public void fromTileEntityNBT(Map<String, Tag> values)
             throws DataException;
 }

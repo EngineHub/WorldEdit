@@ -31,23 +31,23 @@ import com.sk89q.worldedit.blocks.BlockType;
  */
 public class BlockReplacer implements DoubleActionBlockTool {
     private BaseBlock targetBlock;
-    
+
     public BlockReplacer(BaseBlock targetBlock) {
         this.targetBlock = targetBlock;
     }
-    
+
     public boolean canUse(LocalPlayer player) {
         return player.hasPermission("worldedit.tool.replacer");
     }
-    
+
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
 
         BlockBag bag = session.getBlockBag(player);
-        
+
         LocalWorld world = clicked.getWorld();
         EditSession editSession = new EditSession(world, -1, bag);
-        
+
         try {
             editSession.setBlock(clicked, targetBlock);
         } catch (MaxChangedBlocksException e) {
@@ -57,7 +57,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
             }
             session.remember(editSession);
         }
-        
+
         return true;
     }
 
@@ -68,11 +68,11 @@ public class BlockReplacer implements DoubleActionBlockTool {
         LocalWorld world = clicked.getWorld();
         targetBlock = (new EditSession(world, -1)).getBlock(clicked);
         BlockType type = BlockType.fromID(targetBlock.getType());
-        
+
         if (type != null) {
             player.print("Replacer tool switched to: " + type.getName());
         }
-        
+
         return true;
     }
 

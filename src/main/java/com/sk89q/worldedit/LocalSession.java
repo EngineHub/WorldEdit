@@ -75,7 +75,6 @@ public class LocalSession {
     private boolean fastMode = false;
     private Mask mask;
     private TimeZone timezone = TimeZone.getDefault();
-    //private Boolean jumptoBlock = true;
 
     /**
      * Construct the object.
@@ -165,7 +164,7 @@ public class LocalSession {
         if (historyPointer < history.size()) {
             EditSession editSession = history.get(historyPointer);
             EditSession newEditSession =
-                new EditSession(editSession.getWorld(), -1, newBlockBag);
+                    new EditSession(editSession.getWorld(), -1, newBlockBag);
             newEditSession.enableQueue();
             newEditSession.setFastMode(fastMode);
             editSession.redo(newEditSession);
@@ -465,7 +464,7 @@ public class LocalSession {
             setTool(item, tool);
         }
 
-        return (BrushTool)tool;
+        return (BrushTool) tool;
     }
 
     /**

@@ -88,7 +88,7 @@ public class WorldEditPlayerListener extends PlayerListener {
     }
 
     private boolean ignoreLeftClickAir = false;
-    
+
     /**
      * Called when a player interacts
      *
@@ -115,9 +115,11 @@ public class WorldEditPlayerListener extends PlayerListener {
             }
 
             if (!ignoreLeftClickAir) {
-                final int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() { public void run() {
-                    ignoreLeftClickAir = false;
-                }}, 2);
+                final int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    public void run() {
+                        ignoreLeftClickAir = false;
+                    }
+                }, 2);
 
                 if (taskId != -1) {
                     ignoreLeftClickAir = true;

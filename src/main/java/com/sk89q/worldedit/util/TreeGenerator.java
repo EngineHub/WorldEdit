@@ -37,19 +37,19 @@ import com.sk89q.worldedit.blocks.BlockID;
  */
 public class TreeGenerator {
     public enum TreeType {
-        TREE("Regular tree", new String[] {"tree", "regular"}),
-        BIG_TREE("Big tree", new String[] {"big", "bigtree"}),
-        REDWOOD("Redwood", new String[] {"redwood", "sequoia", "sequoioideae"}),
-        TALL_REDWOOD("Tall redwood", new String[] {"tallredwood", "tallsequoia", "tallsequoioideae"}),
-        BIRCH("Birch", new String[] {"birch", "white", "whitebark"}),
-        PINE("Pine", new String[] {"pine"}),
-        RANDOM_REDWOOD("Random redwood", new String[] {"randredwood", "randomredwood", "anyredwood"}),
-        RANDOM("Random", new String[] {"rand", "random"});
+        TREE("Regular tree", new String[] { "tree", "regular" }),
+        BIG_TREE("Big tree", new String[] { "big", "bigtree" }),
+        REDWOOD("Redwood", new String[] { "redwood", "sequoia", "sequoioideae" }),
+        TALL_REDWOOD("Tall redwood", new String[] { "tallredwood", "tallsequoia", "tallsequoioideae" }),
+        BIRCH("Birch", new String[] { "birch", "white", "whitebark" }),
+        PINE("Pine", new String[] { "pine" }),
+        RANDOM_REDWOOD("Random redwood", new String[] { "randredwood", "randomredwood", "anyredwood" }),
+        RANDOM("Random", new String[] { "rand", "random" });
 
         /**
          * Stores a map of the names for fast access.
          */
-        private static final Map<String,TreeType> lookup = new HashMap<String,TreeType>();
+        private static final Map<String, TreeType> lookup = new HashMap<String, TreeType>();
 
         private final String name;
         private final String[] lookupKeys;
@@ -61,17 +61,17 @@ public class TreeGenerator {
                 }
             }
         }
-        
+
         TreeType(String name, String lookupKey) {
             this.name = name;
-            this.lookupKeys = new String[]{ lookupKey };
+            this.lookupKeys = new String[] { lookupKey };
         }
-        
+
         TreeType(String name, String[] lookupKeys) {
             this.name = name;
             this.lookupKeys = lookupKeys;
         }
-        
+
         /**
          * Get user-friendly tree type name.
          *
@@ -80,7 +80,7 @@ public class TreeGenerator {
         public String getName() {
             return name;
         }
-        
+
         /**
          * Return type from name. May return null.
          *
@@ -91,11 +91,11 @@ public class TreeGenerator {
             return lookup.get(name.toLowerCase());
         }
     };
-    
+
     private static Random rand = new Random();
-    
+
     private TreeType type;
-    
+
     /**
      * Construct the tree generator with a tree type.
      * 
@@ -104,7 +104,7 @@ public class TreeGenerator {
     public TreeGenerator(TreeType type) {
         this.type = type;
     }
-    
+
     /**
      * Generate a tree.
      * 
@@ -117,7 +117,7 @@ public class TreeGenerator {
             throws MaxChangedBlocksException {
         return generate(type, editSession, pos);
     }
-    
+
     /**
      * Generate a tree.
      * 
@@ -130,41 +130,41 @@ public class TreeGenerator {
     private boolean generate(TreeType type, EditSession editSession, Vector pos)
             throws MaxChangedBlocksException {
         LocalWorld world = editSession.getWorld();
-        
+
         TreeType[] choices;
         TreeType realType;
-        
+
         switch (type) {
-            case TREE:
-                return world.generateTree(editSession, pos);
-            case BIG_TREE:
-                return world.generateBigTree(editSession, pos);
-            case BIRCH:
-                return world.generateBirchTree(editSession, pos);
-            case REDWOOD:
-                return world.generateRedwoodTree(editSession, pos);
-            case TALL_REDWOOD:
-                return world.generateTallRedwoodTree(editSession, pos);
-            case PINE:
-                makePineTree(editSession, pos);
-                return true;
-            case RANDOM_REDWOOD:
-                choices = 
+        case TREE:
+            return world.generateTree(editSession, pos);
+        case BIG_TREE:
+            return world.generateBigTree(editSession, pos);
+        case BIRCH:
+            return world.generateBirchTree(editSession, pos);
+        case REDWOOD:
+            return world.generateRedwoodTree(editSession, pos);
+        case TALL_REDWOOD:
+            return world.generateTallRedwoodTree(editSession, pos);
+        case PINE:
+            makePineTree(editSession, pos);
+            return true;
+        case RANDOM_REDWOOD:
+            choices =
                     new TreeType[] {
-                        TreeType.REDWOOD, TreeType.TALL_REDWOOD
+                            TreeType.REDWOOD, TreeType.TALL_REDWOOD
                         };
-                realType = choices[rand.nextInt(choices.length)];
-                return generate(realType, editSession, pos);
-            case RANDOM:
-                choices = 
+            realType = choices[rand.nextInt(choices.length)];
+            return generate(realType, editSession, pos);
+        case RANDOM:
+            choices =
                     new TreeType[] {
-                        TreeType.TREE, TreeType.BIG_TREE, TreeType.BIRCH,
-                        TreeType.REDWOOD, TreeType.TALL_REDWOOD, TreeType.PINE
+                            TreeType.TREE, TreeType.BIG_TREE, TreeType.BIRCH,
+                            TreeType.REDWOOD, TreeType.TALL_REDWOOD, TreeType.PINE
                         };
-                realType = choices[rand.nextInt(choices.length)];
-                return generate(realType, editSession, pos);
+            realType = choices[rand.nextInt(choices.length)];
+            return generate(realType, editSession, pos);
         }
-        
+
         return false;
     }
 
@@ -226,7 +226,7 @@ public class TreeGenerator {
 
         editSession.setBlockIfAir(basePos.add(0, height, 0), leavesBlock);
     }
-    
+
     /**
      * Looks up a tree type. May return null if a tree type by that
      * name is not found.

@@ -13,7 +13,7 @@ public class UnaryOperator extends PseudoToken {
     public UnaryOperator(OperatorToken operatorToken) {
         this(operatorToken.getPosition(), operatorToken.operator);
     }
-    
+
     public UnaryOperator(int position, String operator) {
         super(position);
         this.operator = operator;

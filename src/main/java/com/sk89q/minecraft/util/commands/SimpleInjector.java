@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class SimpleInjector<T> implements Injector {
     private final T injectionObject;
+
     public SimpleInjector(T injectionObject) {
         this.injectionObject = injectionObject;
     }

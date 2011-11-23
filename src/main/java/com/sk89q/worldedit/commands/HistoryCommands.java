@@ -50,7 +50,7 @@ public class HistoryCommands {
             } else {
                 player.checkPermission("worldedit.history.undo.other");
                 LocalSession sess = we.getSession(args.getString(1));
-                if (sess == null){
+                if (sess == null) {
                     player.printError("Unable to find session for " + args.getString(1));
                     break;
                 }
@@ -65,7 +65,7 @@ public class HistoryCommands {
             }
         }
     }
-    
+
     @Command(
         aliases = { "/redo", "redo" },
         usage = "[times] [player]",
@@ -79,7 +79,7 @@ public class HistoryCommands {
             throws WorldEditException {
         
         int times = Math.max(1, args.getInteger(0, 1));
-        
+
         for (int i = 0; i < times; ++i) {
             EditSession redone;
             if (args.argsLength() < 2) {
@@ -87,7 +87,7 @@ public class HistoryCommands {
             } else {
                 player.checkPermission("worldedit.history.redo.other");
                 LocalSession sess = we.getSession(args.getString(1));
-                if (sess == null){
+                if (sess == null) {
                     player.printError("Unable to find session for " + args.getString(1));
                     break;
                 }

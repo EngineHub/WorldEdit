@@ -30,7 +30,7 @@ import com.sk89q.worldedit.Vector2D;
 public abstract class McRegionChunkStore extends ChunkStore {
     protected String curFilename = null;
     protected McRegionReader cachedReader = null;
-    
+
     /**
      * Get the filename of a region file.
      * 
@@ -40,12 +40,12 @@ public abstract class McRegionChunkStore extends ChunkStore {
     public static String getFilename(Vector2D pos) {
         int x = pos.getBlockX();
         int z = pos.getBlockZ();
-        
+
         String filename = "r." + (x >> 5) + "." + (z >> 5) + ".mcr";
 
         return filename;
     }
-    
+
     protected McRegionReader getReader(Vector2D pos, String worldname) throws DataException, IOException {
         String filename = getFilename(pos);
         if (curFilename != null) {
@@ -67,7 +67,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
     @Override
     public CompoundTag getChunkTag(Vector2D pos, String worldname) throws DataException,
             IOException {
-        
+
         McRegionReader reader = getReader(pos, worldname);
         InputStream stream = reader.getChunkInputStream(pos);
         NBTInputStream nbt = new NBTInputStream(stream);
@@ -80,14 +80,14 @@ public abstract class McRegionChunkStore extends ChunkStore {
                         + tag.getClass().getName());
             }
 
-            Map<String,Tag> children = (Map<String,Tag>)((CompoundTag)tag).getValue();
+            Map<String, Tag> children = (Map<String, Tag>) ((CompoundTag) tag).getValue();
             CompoundTag rootTag = null;
 
             // Find Level tag
-            for (Map.Entry<String,Tag> entry : children.entrySet()) {
+            for (Map.Entry<String, Tag> entry : children.entrySet()) {
                 if (entry.getKey().equals("Level")) {
                     if (entry.getValue() instanceof CompoundTag) {
-                        rootTag = (CompoundTag)entry.getValue();
+                        rootTag = (CompoundTag) entry.getValue();
                         break;
                     } else {
                         throw new ChunkStoreException("CompoundTag expected for 'Level'; got "
@@ -115,7 +115,6 @@ public abstract class McRegionChunkStore extends ChunkStore {
      */
     protected abstract InputStream getInputStream(String name, String worldname)
             throws IOException, DataException;
-    
 
     /**
      * Close resources.

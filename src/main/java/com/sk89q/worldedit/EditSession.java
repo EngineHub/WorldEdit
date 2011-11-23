@@ -66,31 +66,31 @@ public class EditSession {
      * Stores the original blocks before modification.
      */
     private DoubleArrayList<BlockVector, BaseBlock> original =
-        new DoubleArrayList<BlockVector, BaseBlock>(true);
+            new DoubleArrayList<BlockVector, BaseBlock>(true);
 
     /**
      * Stores the current blocks.
      */
     private DoubleArrayList<BlockVector, BaseBlock> current =
-        new DoubleArrayList<BlockVector, BaseBlock>(false);
+            new DoubleArrayList<BlockVector, BaseBlock>(false);
 
     /**
      * Blocks that should be placed before last.
      */
     private DoubleArrayList<BlockVector, BaseBlock> queueAfter =
-        new DoubleArrayList<BlockVector, BaseBlock>(false);
+            new DoubleArrayList<BlockVector, BaseBlock>(false);
 
     /**
      * Blocks that should be placed last.
      */
     private DoubleArrayList<BlockVector, BaseBlock> queueLast =
-        new DoubleArrayList<BlockVector, BaseBlock>(false);
+            new DoubleArrayList<BlockVector, BaseBlock>(false);
 
     /**
      * Blocks that should be placed after all other blocks.
      */
     private DoubleArrayList<BlockVector, BaseBlock> queueFinal =
-        new DoubleArrayList<BlockVector, BaseBlock>(false);
+            new DoubleArrayList<BlockVector, BaseBlock>(false);
 
     /**
      * The maximum number of blocks to change at a time. If this number is
@@ -327,20 +327,17 @@ public class EditSession {
             if (BlockType.shouldPlaceLast(block.getType())) {
                 // Place torches, etc. last
                 queueLast.put(pt.toBlockVector(), block);
-                return !(getBlockType(pt) == block.getType()
-                        && getBlockData(pt) == block.getData());
+                return !(getBlockType(pt) == block.getType() && getBlockData(pt) == block.getData());
             } else if (BlockType.shouldPlaceFinal(block.getType())) {
                 // Place signs, reed, etc even later
                 queueFinal.put(pt.toBlockVector(), block);
-                return !(getBlockType(pt) == block.getType()
-                        && getBlockData(pt) == block.getData());
+                return !(getBlockType(pt) == block.getType() && getBlockData(pt) == block.getData());
             } else if (BlockType.shouldPlaceLast(getBlockType(pt))) {
                 // Destroy torches, etc. first
                 rawSetBlock(pt, new BaseBlock(BlockID.AIR));
             } else {
                 queueAfter.put(pt.toBlockVector(), block);
-                return !(getBlockType(pt) == block.getType()
-                        && getBlockData(pt) == block.getData());
+                return !(getBlockType(pt) == block.getType() && getBlockData(pt) == block.getData());
             }
         }
 
@@ -403,6 +400,7 @@ public class EditSession {
 
         return world.getBlockData(pt);
     }
+
     /**
      * Gets the block type at a position x, y, z.
      *
@@ -765,7 +763,7 @@ public class EditSession {
                     continue;
                 }
 
-                final Deque<BlockVector> walked = new LinkedList<BlockVector>(); 
+                final Deque<BlockVector> walked = new LinkedList<BlockVector>();
 
                 while (true) {
                     walked.addFirst(current);
@@ -1962,7 +1960,7 @@ public class EditSession {
 
             visited.add(cur);
 
-            if (setBlock(cur, stationaryBlock)){
+            if (setBlock(cur, stationaryBlock)) {
                 ++affected;
             }
 
@@ -2033,13 +2031,11 @@ public class EditSession {
         final int ceilRadiusZ = (int) Math.ceil(radiusZ);
 
         double nextXn = 0;
-        forX:
-        for (int x = 0; x <= ceilRadiusX; ++x) {
+        forX: for (int x = 0; x <= ceilRadiusX; ++x) {
             final double xn = nextXn;
             nextXn = (x + 1) * invRadiusX;
             double nextZn = 0;
-            forZ:
-            for (int z = 0; z <= ceilRadiusZ; ++z) {
+            forZ: for (int z = 0; z <= ceilRadiusZ; ++z) {
                 final double zn = nextZn;
                 nextZn = (z + 1) * invRadiusZ;
 
@@ -2119,18 +2115,15 @@ public class EditSession {
         final int ceilRadiusZ = (int) Math.ceil(radiusZ);
 
         double nextXn = 0;
-        forX:
-        for (int x = 0; x <= ceilRadiusX; ++x) {
+        forX: for (int x = 0; x <= ceilRadiusX; ++x) {
             final double xn = nextXn;
             nextXn = (x + 1) * invRadiusX;
             double nextYn = 0;
-            forY:
-            for (int y = 0; y <= ceilRadiusY; ++y) {
+            forY: for (int y = 0; y <= ceilRadiusY; ++y) {
                 final double yn = nextYn;
                 nextYn = (y + 1) * invRadiusY;
                 double nextZn = 0;
-                forZ:
-                for (int z = 0; z <= ceilRadiusZ; ++z) {
+                forZ: for (int z = 0; z <= ceilRadiusZ; ++z) {
                     final double zn = nextZn;
                     nextZn = (z + 1) * invRadiusZ;
 
@@ -2244,7 +2237,7 @@ public class EditSession {
     public int thaw(Vector pos, double radius)
             throws MaxChangedBlocksException {
         int affected = 0;
-        double radiusSq = radius*radius;
+        double radiusSq = radius * radius;
 
         int ox = pos.getBlockX();
         int oy = pos.getBlockY();
@@ -2303,7 +2296,7 @@ public class EditSession {
     public int simulateSnow(Vector pos, double radius)
             throws MaxChangedBlocksException {
         int affected = 0;
-        double radiusSq = radius*radius;
+        double radiusSq = radius * radius;
 
         int ox = pos.getBlockX();
         int oy = pos.getBlockY();
@@ -2368,7 +2361,7 @@ public class EditSession {
     public int green(Vector pos, double radius)
             throws MaxChangedBlocksException {
         int affected = 0;
-        double radiusSq = radius*radius;
+        double radiusSq = radius * radius;
 
         int ox = pos.getBlockX();
         int oy = pos.getBlockY();
@@ -2655,7 +2648,7 @@ public class EditSession {
                         return null;
                     }
 
-                    return new BaseBlock((int)typeVariable.getValue(), (int)dataVariable.getValue());
+                    return new BaseBlock((int) typeVariable.getValue(), (int) dataVariable.getValue());
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;

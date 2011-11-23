@@ -40,7 +40,7 @@ import com.sk89q.worldedit.cui.SelectionShapeEvent;
 public class Polygonal2DRegionSelector implements RegionSelector, CUIPointBasedRegion {
     protected BlockVector pos1;
     protected Polygonal2DRegion region = new Polygonal2DRegion();
-    
+
     public boolean selectPrimary(Vector pos) {
         if (pos1 != null && pos1.equals(pos)) {
             return false;
@@ -51,7 +51,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIPointBasedR
         region.expandY(pos.getBlockY());
         return true;
     }
-    
+
     public boolean selectSecondary(Vector pos) {
         if (region.size() > 0) {
             List<BlockVector2D> points = region.getPoints();
@@ -60,12 +60,12 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIPointBasedR
                     && lastPoint.getBlockZ() == pos.getBlockZ()) {
                 return false;
             }
-            
+
             if (points.size() >= 20) {
                 return false;
             }
         }
-        
+
         region.addPoint(pos);
         region.expandY(pos.getBlockY());
         return true;
@@ -101,7 +101,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIPointBasedR
         if (!isDefined()) {
             throw new IncompleteRegionException();
         }
-        
+
         return region;
     }
 
@@ -141,7 +141,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIPointBasedR
     public int getArea() {
         return region.getArea();
     }
-    
+
     public int getPointCount() {
         return region.getPoints().size();
     }

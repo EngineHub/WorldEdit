@@ -17,8 +17,7 @@ public class Conditional extends Node {
     public double getValue() throws EvaluationException {
         if (condition.getValue() > 0.0) {
             return truePart.getValue();
-        }
-        else {
+        } else {
             return falsePart == null ? 0 : falsePart.getValue();
         }
     }
@@ -31,9 +30,9 @@ public class Conditional extends Node {
     @Override
     public String toString() {
         if (falsePart == null) {
-            return "if ("+condition+") { "+truePart+" }";
+            return "if (" + condition + ") { " + truePart + " }";
         } else {
-            return "if ("+condition+") { "+truePart+" } else { "+falsePart+" }";
+            return "if (" + condition + ") { " + truePart + " } else { " + falsePart + " }";
         }
     }
 

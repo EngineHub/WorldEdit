@@ -39,28 +39,28 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
     public Object eval(String script, ScriptContext context)
             throws ScriptException {
-        
+
         Scriptable scope = setupScope(cx, context);
-        
+
         String filename = (filename = (String) get(ScriptEngine.FILENAME)) == null
                 ? "<unknown>" : filename;
-        
+
         try {
             return cx.evaluateString(scope, script, filename, 1, null);
         } catch (RhinoException e) {
             String msg;
             int line = (line = e.lineNumber()) == 0 ? -1 : line;
-            
+
             if (e instanceof JavaScriptException) {
                 msg = String.valueOf(((JavaScriptException) e).getValue());
             } else {
                 msg = e.getMessage();
             }
-            
+
             ScriptException scriptException =
-                new ScriptException(msg, e.sourceName(), line);
+                    new ScriptException(msg, e.sourceName(), line);
             scriptException.initCause(e);
-            
+
             throw scriptException;
         } finally {
             Context.exit();
@@ -69,28 +69,28 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
     public Object eval(Reader reader, ScriptContext context)
             throws ScriptException {
-        
+
         Scriptable scope = setupScope(cx, context);
-        
+
         String filename = (filename = (String) get(ScriptEngine.FILENAME)) == null
                 ? "<unknown>" : filename;
-        
+
         try {
             return cx.evaluateReader(scope, reader, filename, 1, null);
         } catch (RhinoException e) {
             String msg;
             int line = (line = e.lineNumber()) == 0 ? -1 : line;
-            
+
             if (e instanceof JavaScriptException) {
                 msg = String.valueOf(((JavaScriptException) e).getValue());
             } else {
                 msg = e.getMessage();
             }
-            
+
             ScriptException scriptException =
-                new ScriptException(msg, e.sourceName(), line);
+                    new ScriptException(msg, e.sourceName(), line);
             scriptException.initCause(e);
-            
+
             throw scriptException;
         } catch (IOException e) {
             throw new ScriptException(e);
@@ -106,7 +106,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
             return new RhinoScriptEngineFactory();
         }
     }
-    
+
     private Scriptable setupScope(Context cx, ScriptContext context) {
         ScriptableObject scriptable = new ImporterTopLevel(cx);
         Scriptable scope = cx.initStandardObjects(scriptable);

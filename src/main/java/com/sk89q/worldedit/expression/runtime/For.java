@@ -28,8 +28,7 @@ public class For extends Node {
 
             try {
                 ret = body.getValue();
-            }
-            catch (BreakException e) {
+            } catch (BreakException e) {
                 if (e.doContinue) {
                     continue;
                 } else {
@@ -48,7 +47,7 @@ public class For extends Node {
 
     @Override
     public String toString() {
-        return "for ("+init+"; "+condition+"; "+increment+") { "+body+" }";
+        return "for (" + init + "; " + condition + "; " + increment + ") { " + body + " }";
     }
 
     //TODO: optimizer

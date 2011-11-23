@@ -74,7 +74,7 @@ public class BaseBlock {
      * @return the data
      */
     public int getData() {
-        return (int)data;
+        return (int) data;
     }
 
     /**
@@ -130,6 +130,7 @@ public class BaseBlock {
         data = (byte) BlockData.flip(type, data);
         return this;
     }
+
     /**
      * Flip this block.
      * @param direction

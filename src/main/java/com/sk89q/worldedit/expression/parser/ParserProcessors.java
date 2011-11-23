@@ -35,32 +35,32 @@ public final class ParserProcessors {
 
         final Object[][][] binaryOpsLA = {
                 {
-                    { "^", "pow" },
-                    { "**", "pow" },
+                        { "^", "pow" },
+                        { "**", "pow" },
                 },
                 {
-                    { "*", "mul" },
-                    { "/", "div" },
-                    { "%", "mod" },
+                        { "*", "mul" },
+                        { "/", "div" },
+                        { "%", "mod" },
                 },
                 {
-                    { "+", "add" },
-                    { "-", "sub" },
+                        { "+", "add" },
+                        { "-", "sub" },
                 },
                 {
-                    { "<<", "shl" },
-                    { ">>", "shr" },
+                        { "<<", "shl" },
+                        { ">>", "shr" },
                 },
                 {
-                    { "<", "lth" },
-                    { ">", "gth" },
-                    { "<=", "leq" },
-                    { ">=", "geq" },
+                        { "<", "lth" },
+                        { ">", "gth" },
+                        { "<=", "leq" },
+                        { ">=", "geq" },
                 },
                 {
-                    { "==", "equ" },
-                    { "!=", "neq" },
-                    { "~=", "near" },
+                        { "==", "equ" },
+                        { "!=", "neq" },
+                        { "~=", "near" },
                 },
                 {
                     { "&&", "and" },
@@ -71,13 +71,13 @@ public final class ParserProcessors {
         };
         final Object[][][] binaryOpsRA = {
                 {
-                    { "=", "ass" },
-                    { "+=", "aadd" },
-                    { "-=", "asub" },
-                    { "*=", "amul" },
-                    { "/=", "adiv" },
-                    { "%=", "amod" },
-                    { "^=", "aexp" },
+                        { "=", "ass" },
+                        { "+=", "aadd" },
+                        { "-=", "asub" },
+                        { "*=", "amul" },
+                        { "/=", "adiv" },
+                        { "%=", "amod" },
+                        { "^=", "aexp" },
                 },
         };
 
@@ -230,19 +230,17 @@ public final class ParserProcessors {
 
             final Identifiable last = input.removeLast();
             if (last instanceof OperatorToken) {
-                postfixes.addLast(new UnaryOperator(last.getPosition(), "x"+((OperatorToken)last).operator));
-            }
-            else if (last instanceof UnaryOperator) {
-                postfixes.addLast(new UnaryOperator(last.getPosition(), "x"+((UnaryOperator)last).operator));
-            }
-            else {
+                postfixes.addLast(new UnaryOperator(last.getPosition(), "x" + ((OperatorToken) last).operator));
+            } else if (last instanceof UnaryOperator) {
+                postfixes.addLast(new UnaryOperator(last.getPosition(), "x" + ((UnaryOperator) last).operator));
+            } else {
                 center = last;
                 break;
             }
         } while (true);
 
         if (!(center instanceof RValue)) {
-            throw new ParserException(center.getPosition(), "Expected expression, found "+center);
+            throw new ParserException(center.getPosition(), "Expected expression, found " + center);
         }
 
         input.addAll(postfixes);

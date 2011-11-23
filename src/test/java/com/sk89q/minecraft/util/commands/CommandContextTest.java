@@ -32,7 +32,7 @@ public class CommandContextTest {
     CommandContext firstCommand;
 
     @Before
-    public void setUpTest(){
+    public void setUpTest() {
         try {
             firstCommand = new CommandContext(firstCmdString, new HashSet<Character>(Arrays.asList('o', 'w')));
         } catch (CommandException e) {

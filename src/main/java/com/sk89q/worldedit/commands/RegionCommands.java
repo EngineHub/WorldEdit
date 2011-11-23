@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.commands;
 
-
 import java.util.Set;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -57,16 +56,16 @@ public class RegionCommands {
             throws WorldEditException {
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
-        
+
         int affected;
-        
+
         if (pattern instanceof SingleBlockPattern) {
             affected = editSession.setBlocks(session.getSelection(player.getWorld()),
                     ((SingleBlockPattern) pattern).getBlock());
         } else {
             affected = editSession.setBlocks(session.getSelection(player.getWorld()), pattern);
         }
-        
+
         player.print(affected + " block(s) have been changed.");
     }
 
@@ -101,10 +100,10 @@ public class RegionCommands {
         } else {
             affected = editSession.replaceBlocks(session.getSelection(player.getWorld()), from, to);
         }
-        
+
         player.print(affected + " block(s) have been replaced.");
     }
-    
+
     @Command(
         aliases = { "/overlay" },
         usage = "<block>",
@@ -169,7 +168,7 @@ public class RegionCommands {
         } else {
             affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), pattern);
         }
-        
+
         player.print(affected + " block(s) have been changed.");
     }
 
@@ -220,7 +219,7 @@ public class RegionCommands {
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         int affected = heightMap.applyFilter(filter, iterations);
         player.print("Terrain's height map smoothed. " + affected + " block(s) changed.");
-    
+
     }
 
     @Command(
@@ -267,7 +266,6 @@ public class RegionCommands {
 
         player.print(affected + " blocks moved.");
     }
-    
 
     @Command(
         aliases = { "/stack" },

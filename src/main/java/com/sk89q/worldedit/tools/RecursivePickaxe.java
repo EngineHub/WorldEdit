@@ -34,21 +34,21 @@ import com.sk89q.worldedit.blocks.BlockID;
 public class RecursivePickaxe implements BlockTool {
     private static final BaseBlock air = new BaseBlock(0);
     private double range;
-    
+
     public RecursivePickaxe(double range) {
         this.range = range;
     }
-    
+
     public boolean canUse(LocalPlayer player) {
         return player.hasPermission("worldedit.superpickaxe.recursive");
     }
-    
+
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         LocalWorld world = clicked.getWorld();
-        
+
         int initialType = world.getBlockType(clicked);
-        
+
         if (initialType == BlockID.AIR) {
             return true;
         }
@@ -89,7 +89,7 @@ public class RecursivePickaxe implements BlockTool {
             Vector origin, double size, int initialType,
             Set<BlockVector> visited, boolean drop)
             throws MaxChangedBlocksException {
-        
+
         if (origin.distance(pos) > size || visited.contains(pos)) {
             return;
         }

@@ -50,18 +50,18 @@ public class DinnerPermsResolver implements PermissionsResolver {
             return false; // Permissions are only registered for online players
         }
         switch (internalHasPermission(perms, permission)) {
-            case -1:
-                return false;
-            case 1:
-                return true;
+        case -1:
+            return false;
+        case 1:
+            return true;
         }
         int dotPos = permission.lastIndexOf(".");
         while (dotPos > -1) {
             switch (internalHasPermission(perms, permission.substring(0, dotPos + 1) + "*")) {
-                case -1:
-                    return false;
-                case 1:
-                    return true;
+            case -1:
+                return false;
+            case 1:
+                return true;
             }
             dotPos = permission.lastIndexOf(".", dotPos - 1);
         }
@@ -115,7 +115,7 @@ public class DinnerPermsResolver implements PermissionsResolver {
             }
         }
     }
-    
+
     public String getDetectionMessage() {
         return "Using the Bukkit Permissions API.";
     }

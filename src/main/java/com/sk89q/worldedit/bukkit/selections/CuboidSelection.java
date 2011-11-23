@@ -29,26 +29,26 @@ import com.sk89q.worldedit.regions.*;
 public class CuboidSelection extends RegionSelection {
 
     protected CuboidRegion cuboid;
-    
-    public CuboidSelection(World world, Location pt1, Location pt2) {        
+
+    public CuboidSelection(World world, Location pt1, Location pt2) {
         this(world, BukkitUtil.toVector(pt1), BukkitUtil.toVector(pt2));
     }
-    
-    public CuboidSelection(World world, Vector pt1, Vector pt2) {        
+
+    public CuboidSelection(World world, Vector pt1, Vector pt2) {
         super(world);
 
         if (pt1 == null) {
             throw new IllegalArgumentException("Null point 1 not permitted");
         }
-        
+
         if (pt2 == null) {
             throw new IllegalArgumentException("Null point 2 not permitted");
         }
-        
+
         CuboidRegionSelector sel = new CuboidRegionSelector();
         sel.selectPrimary(pt1);
         sel.selectSecondary(pt2);
-        
+
         try {
             cuboid = sel.getRegion();
         } catch (IncompleteRegionException e) {
@@ -58,7 +58,7 @@ public class CuboidSelection extends RegionSelection {
         setRegionSelector(sel);
         setRegion(cuboid);
     }
-    
+
     public CuboidSelection(World world, RegionSelector sel, CuboidRegion region) {
         super(world, sel, region);
         this.cuboid = region;

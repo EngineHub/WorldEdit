@@ -151,14 +151,14 @@ public class ToolUtilCommands {
             throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
-        
+
         int radius = args.getInteger(0);
         if (radius > config.maxBrushRadius) {
             player.printError("Maximum allowed brush radius: "
                     + config.maxBrushRadius);
             return;
         }
-        
+
         session.getBrushTool(player.getItemInHand()).setSize(radius);
         player.print("Brush size set.");
     }

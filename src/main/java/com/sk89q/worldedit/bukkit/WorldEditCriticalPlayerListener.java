@@ -32,7 +32,7 @@ public class WorldEditCriticalPlayerListener extends PlayerListener {
      * Plugin.
      */
     private WorldEditPlugin plugin;
-    
+
     /**
      * Construct the object;
      * 

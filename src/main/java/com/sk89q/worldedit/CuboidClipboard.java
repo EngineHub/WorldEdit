@@ -126,7 +126,7 @@ public class CuboidClipboard {
             return;
         }
         boolean reverse = angle < 0;
-        int numRotations = Math.abs((int)Math.floor(angle / 90.0));
+        int numRotations = Math.abs((int) Math.floor(angle / 90.0));
 
         int width = getWidth();
         int length = getLength();
@@ -260,7 +260,7 @@ public class CuboidClipboard {
             for (int y = 0; y < size.getBlockY(); ++y) {
                 for (int z = 0; z < size.getBlockZ(); ++z) {
                     data[x][y][z] =
-                        editSession.getBlock(new Vector(x, y, z).add(getOrigin()));
+                            editSession.getBlock(new Vector(x, y, z).add(getOrigin()));
                 }
             }
         }
@@ -287,16 +287,15 @@ public class CuboidClipboard {
      * @param noAir
      * @throws MaxChangedBlocksException
      */
-    public void place(EditSession editSession, Vector pos, boolean noAir)
-            throws MaxChangedBlocksException {
+    public void place(EditSession editSession, Vector pos, boolean noAir) throws MaxChangedBlocksException {
         for (int x = 0; x < size.getBlockX(); ++x) {
             for (int y = 0; y < size.getBlockY(); ++y) {
                 for (int z = 0; z < size.getBlockZ(); ++z) {
-                    if (noAir && data[x][y][z].isAir())
+                    if (noAir && data[x][y][z].isAir()) {
                         continue;
+                    }
 
-                    editSession.setBlock(new Vector(x, y, z).add(pos),
-                            data[x][y][z]);
+                    editSession.setBlock(new Vector(x, y, z).add(pos), data[x][y][z]);
                 }
             }
         }
@@ -345,10 +344,10 @@ public class CuboidClipboard {
             throw new DataException("Length of region too large for a .schematic");
         }
 
-        HashMap<String,Tag> schematic = new HashMap<String,Tag>();
-        schematic.put("Width", new ShortTag("Width", (short)width));
-        schematic.put("Length", new ShortTag("Length", (short)length));
-        schematic.put("Height", new ShortTag("Height", (short)height));
+        HashMap<String, Tag> schematic = new HashMap<String, Tag>();
+        schematic.put("Width", new ShortTag("Width", (short) width));
+        schematic.put("Length", new ShortTag("Length", (short) length));
+        schematic.put("Height", new ShortTag("Height", (short) height));
         schematic.put("Materials", new StringTag("Materials", "Alpha"));
         schematic.put("WEOriginX", new IntTag("WEOriginX", getOrigin().getBlockX()));
         schematic.put("WEOriginY", new IntTag("WEOriginY", getOrigin().getBlockY()));
@@ -366,16 +365,16 @@ public class CuboidClipboard {
             for (int y = 0; y < height; ++y) {
                 for (int z = 0; z < length; ++z) {
                     int index = y * width * length + z * width + x;
-                    blocks[index] = (byte)data[x][y][z].getType();
-                    blockData[index] = (byte)data[x][y][z].getData();
+                    blocks[index] = (byte) data[x][y][z].getType();
+                    blockData[index] = (byte) data[x][y][z].getData();
 
                     // Store TileEntity data
                     if (data[x][y][z] instanceof TileEntityBlock) {
                         TileEntityBlock tileEntityBlock =
-                                (TileEntityBlock)data[x][y][z];
+                                (TileEntityBlock) data[x][y][z];
 
                         // Get the list of key/values from the block
-                        Map<String,Tag> values = tileEntityBlock.toTileEntityNBT();
+                        Map<String, Tag> values = tileEntityBlock.toTileEntityNBT();
                         if (values != null) {
                             values.put("id", new StringTag("id",
                                     tileEntityBlock.getTileEntityID()));
@@ -421,78 +420,78 @@ public class CuboidClipboard {
         Vector offset = new Vector();
 
         // Schematic tag
-        CompoundTag schematicTag = (CompoundTag)nbtStream.readTag();
+        CompoundTag schematicTag = (CompoundTag) nbtStream.readTag();
         if (!schematicTag.getName().equals("Schematic")) {
             throw new DataException("Tag \"Schematic\" does not exist or is not first");
         }
 
         // Check
-        Map<String,Tag> schematic = schematicTag.getValue();
+        Map<String, Tag> schematic = schematicTag.getValue();
         if (!schematic.containsKey("Blocks")) {
             throw new DataException("Schematic file is missing a \"Blocks\" tag");
         }
 
         // Get information
-        short width = (Short)getChildTag(schematic, "Width", ShortTag.class).getValue();
-        short length = (Short)getChildTag(schematic, "Length", ShortTag.class).getValue();
-        short height = (Short)getChildTag(schematic, "Height", ShortTag.class).getValue();
+        short width = (Short) getChildTag(schematic, "Width", ShortTag.class).getValue();
+        short length = (Short) getChildTag(schematic, "Length", ShortTag.class).getValue();
+        short height = (Short) getChildTag(schematic, "Height", ShortTag.class).getValue();
 
         try {
-            int originX = (Integer)getChildTag(schematic, "WEOriginX", IntTag.class).getValue();
-            int originY = (Integer)getChildTag(schematic, "WEOriginY", IntTag.class).getValue();
-            int originZ = (Integer)getChildTag(schematic, "WEOriginZ", IntTag.class).getValue();
+            int originX = (Integer) getChildTag(schematic, "WEOriginX", IntTag.class).getValue();
+            int originY = (Integer) getChildTag(schematic, "WEOriginY", IntTag.class).getValue();
+            int originZ = (Integer) getChildTag(schematic, "WEOriginZ", IntTag.class).getValue();
             origin = new Vector(originX, originY, originZ);
         } catch (DataException e) {
             // No origin data
         }
 
         try {
-            int offsetX = (Integer)getChildTag(schematic, "WEOffsetX", IntTag.class).getValue();
-            int offsetY = (Integer)getChildTag(schematic, "WEOffsetY", IntTag.class).getValue();
-            int offsetZ = (Integer)getChildTag(schematic, "WEOffsetZ", IntTag.class).getValue();
+            int offsetX = (Integer) getChildTag(schematic, "WEOffsetX", IntTag.class).getValue();
+            int offsetY = (Integer) getChildTag(schematic, "WEOffsetY", IntTag.class).getValue();
+            int offsetZ = (Integer) getChildTag(schematic, "WEOffsetZ", IntTag.class).getValue();
             offset = new Vector(offsetX, offsetY, offsetZ);
         } catch (DataException e) {
             // No offset data
         }
 
         // Check type of Schematic
-        String materials = (String)getChildTag(schematic, "Materials", StringTag.class).getValue();
+        String materials = (String) getChildTag(schematic, "Materials", StringTag.class).getValue();
         if (!materials.equals("Alpha")) {
             throw new DataException("Schematic file is not an Alpha schematic");
         }
 
         // Get blocks
-        byte[] blocks = (byte[])getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
-        byte[] blockData = (byte[])getChildTag(schematic, "Data", ByteArrayTag.class).getValue();
+        byte[] blocks = (byte[]) getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
+        byte[] blockData = (byte[]) getChildTag(schematic, "Data", ByteArrayTag.class).getValue();
 
         // Need to pull out tile entities
-        List<Tag> tileEntities = (List<Tag>)((ListTag)getChildTag(schematic, "TileEntities", ListTag.class))
+        List<Tag> tileEntities = (List<Tag>) ((ListTag) getChildTag(schematic, "TileEntities", ListTag.class))
                 .getValue();
-        Map<BlockVector,Map<String,Tag>> tileEntitiesMap =
-                new HashMap<BlockVector,Map<String,Tag>>();
+        Map<BlockVector, Map<String, Tag>> tileEntitiesMap =
+                new HashMap<BlockVector, Map<String, Tag>>();
 
         for (Tag tag : tileEntities) {
             if (!(tag instanceof CompoundTag)) continue;
-            CompoundTag t = (CompoundTag)tag;
+            CompoundTag t = (CompoundTag) tag;
 
             int x = 0;
             int y = 0;
             int z = 0;
 
-            Map<String,Tag> values = new HashMap<String,Tag>();
+            Map<String, Tag> values = new HashMap<String, Tag>();
 
-            for (Map.Entry<String,Tag> entry : t.getValue().entrySet()) {
+            for (Map.Entry<String, Tag> entry : t.getValue().entrySet()) {
                 if (entry.getKey().equals("x")) {
                     if (entry.getValue() instanceof IntTag) {
-                        x = ((IntTag)entry.getValue()).getValue();
+                        x = ((IntTag) entry.getValue()).getValue();
                     }
                 } else if (entry.getKey().equals("y")) {
                     if (entry.getValue() instanceof IntTag) {
-                        y = ((IntTag)entry.getValue()).getValue();
+                        y = ((IntTag) entry.getValue()).getValue();
                     }
                 } else if (entry.getKey().equals("z")) {
                     if (entry.getValue() instanceof IntTag) {
-                        z = ((IntTag)entry.getValue()).getValue();
+                        z = ((IntTag) entry.getValue()).getValue();
                     }
                 }
 
@@ -549,7 +548,7 @@ public class CuboidClipboard {
 
                     if (block instanceof TileEntityBlock
                             && tileEntitiesMap.containsKey(pt)) {
-                        ((TileEntityBlock)block).fromTileEntityNBT(
+                        ((TileEntityBlock) block).fromTileEntityNBT(
                                 tileEntitiesMap.get(pt));
                     }
 
@@ -570,7 +569,7 @@ public class CuboidClipboard {
      * @return child tag
      * @throws DataException
      */
-    private static Tag getChildTag(Map<String,Tag> items, String key,
+    private static Tag getChildTag(Map<String, Tag> items, String key,
             Class<? extends Tag> expected) throws DataException {
 
         if (!items.containsKey(key)) {

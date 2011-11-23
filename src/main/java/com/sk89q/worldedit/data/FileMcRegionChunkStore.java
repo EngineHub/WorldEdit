@@ -49,7 +49,7 @@ public class FileMcRegionChunkStore extends McRegionChunkStore {
         if (!file.exists()) {
             file = new File(path, "DIM-1" + File.separator + fileName);
         }
-        
+
         try {
             return new FileInputStream(file);
         } catch (FileNotFoundException e) {

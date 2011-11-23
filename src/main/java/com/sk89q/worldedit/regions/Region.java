@@ -35,36 +35,42 @@ public interface Region extends Iterable<BlockVector> {
      * @return min. point
      */
     public Vector getMinimumPoint();
+
     /**
      * Get the upper point of a region.
      *
      * @return max. point
      */
     public Vector getMaximumPoint();
+
     /**
      * Get the number of blocks in the region.
      *
      * @return number of blocks
      */
     public int getArea();
+
     /**
      * Get X-size.
      *
      * @return width
      */
     public int getWidth();
+
     /**
      * Get Y-size.
      *
      * @return height
      */
     public int getHeight();
+
     /**
      * Get Z-size.
      *
      * @return length
      */
     public int getLength();
+
     /**
      * Expand the region.
      *
@@ -72,6 +78,7 @@ public interface Region extends Iterable<BlockVector> {
      * @throws RegionOperationException
      */
     public void expand(Vector change) throws RegionOperationException;
+
     /**
      * Contract the region.
      *
@@ -79,6 +86,7 @@ public interface Region extends Iterable<BlockVector> {
      * @throws RegionOperationException
      */
     public void contract(Vector change) throws RegionOperationException;
+
     /**
      * Returns true based on whether the region contains the point,
      *
@@ -86,6 +94,7 @@ public interface Region extends Iterable<BlockVector> {
      * @return
      */
     public boolean contains(Vector pt);
+
     /**
      * Get a list of chunks.
      *

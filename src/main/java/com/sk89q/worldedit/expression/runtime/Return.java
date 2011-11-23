@@ -21,7 +21,7 @@ public class Return extends Node {
 
     @Override
     public String toString() {
-        return "return "+value;
+        return "return " + value;
     }
 
     //TODO: optimizer

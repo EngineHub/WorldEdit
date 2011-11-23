@@ -138,7 +138,7 @@ public class ToolCommands {
 
         LocalConfiguration config = we.getConfiguration();
         int range = args.getInteger(1);
-        
+
         if (range > config.maxSuperPickaxeSize) {
             player.printError("Maximum range: " + config.maxSuperPickaxeSize);
             return;
@@ -159,7 +159,7 @@ public class ToolCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
     }
-    
+
     @Command(
             aliases = { "deltree" },
             usage = "",

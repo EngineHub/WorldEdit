@@ -23,7 +23,7 @@ public class SelectionMinMaxEvent implements CUIEvent {
 
     protected int min;
     protected int max;
-    
+
     public SelectionMinMaxEvent(int min, int max) {
         this.min = min;
         this.max = max;

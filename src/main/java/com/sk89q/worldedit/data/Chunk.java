@@ -17,7 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package com.sk89q.worldedit.data;
 
 import java.util.List;
@@ -38,7 +37,7 @@ public class Chunk {
     private byte[] data;
     private int rootX;
     private int rootZ;
-    private Map<BlockVector,Map<String,Tag>> tileEntities;
+    private Map<BlockVector, Map<String, Tag>> tileEntities;
 
     /**
      * Construct the chunk with a compound tag.
@@ -49,13 +48,13 @@ public class Chunk {
     public Chunk(CompoundTag tag) throws DataException {
         rootTag = tag;
 
-        blocks = ((ByteArrayTag)getChildTag(
+        blocks = ((ByteArrayTag) getChildTag(
                 rootTag.getValue(), "Blocks", ByteArrayTag.class)).getValue();
-        data = ((ByteArrayTag)getChildTag(
+        data = ((ByteArrayTag) getChildTag(
                 rootTag.getValue(), "Data", ByteArrayTag.class)).getValue();
-        rootX = ((IntTag)getChildTag(
+        rootX = ((IntTag) getChildTag(
                 rootTag.getValue(), "xPos", IntTag.class)).getValue();
-        rootZ = ((IntTag)getChildTag(
+        rootZ = ((IntTag) getChildTag(
                 rootTag.getValue(), "zPos", IntTag.class)).getValue();
 
         if (blocks.length != 32768) {
@@ -121,37 +120,37 @@ public class Chunk {
      * @throws DataException
      */
     private void populateTileEntities() throws DataException {
-        List<Tag> tags = (List<Tag>)((ListTag)getChildTag(
+        List<Tag> tags = (List<Tag>) ((ListTag) getChildTag(
                 rootTag.getValue(), "TileEntities", ListTag.class))
                 .getValue();
 
-        tileEntities = new HashMap<BlockVector,Map<String,Tag>>();
+        tileEntities = new HashMap<BlockVector, Map<String, Tag>>();
 
         for (Tag tag : tags) {
             if (!(tag instanceof CompoundTag)) {
                 throw new InvalidFormatException("CompoundTag expected in TileEntities");
             }
 
-            CompoundTag t = (CompoundTag)tag;
+            CompoundTag t = (CompoundTag) tag;
 
             int x = 0;
             int y = 0;
             int z = 0;
 
-            Map<String,Tag> values = new HashMap<String,Tag>();
+            Map<String, Tag> values = new HashMap<String, Tag>();
 
-            for (Map.Entry<String,Tag> entry : t.getValue().entrySet()) {
+            for (Map.Entry<String, Tag> entry : t.getValue().entrySet()) {
                 if (entry.getKey().equals("x")) {
                     if (entry.getValue() instanceof IntTag) {
-                        x = ((IntTag)entry.getValue()).getValue();
+                        x = ((IntTag) entry.getValue()).getValue();
                     }
                 } else if (entry.getKey().equals("y")) {
                     if (entry.getValue() instanceof IntTag) {
-                        y = ((IntTag)entry.getValue()).getValue();
+                        y = ((IntTag) entry.getValue()).getValue();
                     }
                 } else if (entry.getKey().equals("z")) {
                     if (entry.getValue() instanceof IntTag) {
-                        z = ((IntTag)entry.getValue()).getValue();
+                        z = ((IntTag) entry.getValue()).getValue();
                     }
                 }
 
@@ -172,9 +171,10 @@ public class Chunk {
      * @return
      * @throws DataException
      */
-    private Map<String,Tag> getBlockTileEntity(Vector pos) throws DataException {
-        if (tileEntities == null)
+    private Map<String, Tag> getBlockTileEntity(Vector pos) throws DataException {
+        if (tileEntities == null) {
             populateTileEntities();
+        }
 
         return tileEntities.get(new BlockVector(pos));
     }
@@ -208,8 +208,8 @@ public class Chunk {
         }
 
         if (block instanceof TileEntityBlock) {
-            Map<String,Tag> tileEntity = getBlockTileEntity(pos);
-            ((TileEntityBlock)block).fromTileEntityNBT(tileEntity);
+            Map<String, Tag> tileEntity = getBlockTileEntity(pos);
+            ((TileEntityBlock) block).fromTileEntityNBT(tileEntity);
         }
 
         return block;
@@ -224,7 +224,7 @@ public class Chunk {
      * @return child tag
      * @throws InvalidFormatException
      */
-    public static Tag getChildTag(Map<String,Tag> items, String key,
+    public static Tag getChildTag(Map<String, Tag> items, String key,
             Class<? extends Tag> expected)
             throws InvalidFormatException {
         if (!items.containsKey(key)) {
@@ -232,8 +232,7 @@ public class Chunk {
         }
         Tag tag = items.get(key);
         if (!expected.isInstance(tag)) {
-            throw new InvalidFormatException(
-                key + " tag is not of tag type " + expected.getName());
+            throw new InvalidFormatException(key + " tag is not of tag type " + expected.getName());
         }
         return tag;
     }

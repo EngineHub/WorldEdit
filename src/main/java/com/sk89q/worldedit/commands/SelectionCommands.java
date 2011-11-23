@@ -87,11 +87,11 @@ public class SelectionCommands {
             throws WorldEditException {
 
         Vector pos;
-        if(args.argsLength() == 1) {
-            if(args.getString(0).matches("-?\\d+,-?\\d+,-?\\d+")) {
+        if (args.argsLength() == 1) {
+            if (args.getString(0).matches("-?\\d+,-?\\d+,-?\\d+")) {
                 String[] coords = args.getString(0).split(",");
-                pos = new Vector(Integer.parseInt(coords[0]), 
-                        Integer.parseInt(coords[1]), 
+                pos = new Vector(Integer.parseInt(coords[0]),
+                        Integer.parseInt(coords[1]),
                         Integer.parseInt(coords[2]));
             } else {
                 player.printError("Invalid coordinates " + args.getString(0));
@@ -105,7 +105,6 @@ public class SelectionCommands {
             player.printError("Position already set.");
             return;
         }
-
 
         session.getRegionSelector(player.getWorld())
                 .explainSecondarySelection(player, session, pos);
@@ -124,7 +123,7 @@ public class SelectionCommands {
             throws WorldEditException {
         
         Vector pos = player.getBlockTrace(300);
-        
+
         if (pos != null) {
             if (!session.getRegionSelector(player.getWorld())
                     .selectPrimary(pos)) {
@@ -152,7 +151,7 @@ public class SelectionCommands {
             throws WorldEditException {
         
         Vector pos = player.getBlockTrace(300);
-        
+
         if (pos != null) {
             if (!session.getRegionSelector(player.getWorld())
                     .selectSecondary(pos)) {
@@ -208,11 +207,11 @@ public class SelectionCommands {
         selector.selectPrimary(min);
         selector.selectSecondary(max);
         session.setRegionSelector(player.getWorld(), selector);
-        
+
         session.dispatchCUISelection(player);
 
     }
-    
+
     @Command(
         aliases = { "/wand" },
         usage = "",
@@ -228,7 +227,7 @@ public class SelectionCommands {
         player.giveItem(we.getConfiguration().wandItem, 1);
         player.print("Left click: select pos #1; Right click: select pos #2");
     }
-    
+
     @Command(
         aliases = { "toggleeditwand" },
         usage = "",
@@ -242,7 +241,7 @@ public class SelectionCommands {
             throws WorldEditException {
         
         session.setToolControl(!session.isToolControlEnabled());
-        
+
         if (session.isToolControlEnabled()) {
             player.print("Edit wand enabled.");
         } else {
@@ -281,13 +280,13 @@ public class SelectionCommands {
             } catch (RegionOperationException e) {
                 player.printError(e.getMessage());
             }
-            
+
             return;
         }
 
         int change = args.getInteger(0);
         int reverseChange = 0;
-        
+
         switch (args.argsLength()) {
         case 2:
             // Either a reverse amount or a direction
@@ -300,7 +299,7 @@ public class SelectionCommands {
             }
             break;
 
-        case 3: 
+        case 3:
             // Both reverse amount and direction
             reverseChange = args.getInteger(1) * -1;
             dir = we.getDirection(player,
@@ -313,16 +312,16 @@ public class SelectionCommands {
         Region region = session.getSelection(player.getWorld());
         int oldSize = region.getArea();
         region.expand(dir.multiply(change));
-        
+
         if (reverseChange != 0) {
             region.expand(dir.multiply(reverseChange));
         }
 
         session.getRegionSelector().learnChanges();
         int newSize = region.getArea();
-        
+
         session.getRegionSelector().explainRegionAdjust(player, session);
-        
+
         player.print("Region expanded " + (newSize - oldSize) + " blocks.");
     }
 
@@ -353,7 +352,7 @@ public class SelectionCommands {
             }
             break;
 
-        case 3: 
+        case 3:
             // Both reverse amount and direction
             reverseChange = args.getInteger(1) * -1;
             dir = we.getDirection(player, args.getString(2).toLowerCase());
@@ -371,9 +370,9 @@ public class SelectionCommands {
             }
             session.getRegionSelector().learnChanges();
             int newSize = region.getArea();
-            
+
             session.getRegionSelector().explainRegionAdjust(player, session);
-            
+
             player.print("Region contracted " + (oldSize - newSize) + " blocks.");
         } catch (RegionOperationException e) {
             player.printError(e.getMessage());
@@ -392,7 +391,7 @@ public class SelectionCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
         Vector dir;
-        
+
         int change = args.getInteger(0);
         if (args.argsLength() == 2) {
             dir = we.getDirection(player, args.getString(1).toLowerCase());
@@ -405,9 +404,9 @@ public class SelectionCommands {
             region.expand(dir.multiply(change));
             region.contract(dir.multiply(change));
             session.getRegionSelector().learnChanges();
-            
+
             session.getRegionSelector().explainRegionAdjust(player, session);
-            
+
             player.print("Region shifted.");
         } catch (RegionOperationException e) {
             player.printError(e.getMessage());
@@ -429,13 +428,13 @@ public class SelectionCommands {
         int change = args.getInteger(0);
 
         Region region = session.getSelection(player.getWorld());
-        
+
         try {
             if (!args.hasFlag('h')) {
                 region.expand((new Vector(0, 1, 0)).multiply(change));
                 region.expand((new Vector(0, -1, 0)).multiply(change));
             }
-            
+
             if (!args.hasFlag('v')) {
                 region.expand((new Vector(1, 0, 0)).multiply(change));
                 region.expand((new Vector(-1, 0, 0)).multiply(change));
@@ -444,9 +443,9 @@ public class SelectionCommands {
             }
 
             session.getRegionSelector().learnChanges();
-            
+
             session.getRegionSelector().explainRegionAdjust(player, session);
-            
+
             player.print("Region outset.");
         } catch (RegionOperationException e) {
             player.printError(e.getMessage());
@@ -468,12 +467,12 @@ public class SelectionCommands {
         int change = args.getInteger(0);
 
         Region region = session.getSelection(player.getWorld());
-        
+
         if (!args.hasFlag('h')) {
             region.contract((new Vector(0, 1, 0)).multiply(change));
             region.contract((new Vector(0, -1, 0)).multiply(change));
         }
-        
+
         if (!args.hasFlag('v')) {
             region.contract((new Vector(1, 0, 0)).multiply(change));
             region.contract((new Vector(-1, 0, 0)).multiply(change));
@@ -482,9 +481,9 @@ public class SelectionCommands {
         }
 
         session.getRegionSelector().learnChanges();
-        
+
         session.getRegionSelector().explainRegionAdjust(player, session);
-        
+
         player.print("Region inset.");
     }
 
@@ -506,11 +505,11 @@ public class SelectionCommands {
                 .add(1, 1, 1);
 
         player.print("Type: " + session.getRegionSelector().getTypeName());
-        
+
         for (String line : session.getRegionSelector().getInformationLines()) {
             player.print(line);
         }
-        
+
         player.print("Size: " + size);
         player.print("Cuboid distance: " + region.getMaximumPoint().distance(region.getMinimumPoint()));
         player.print("# of blocks: " + region.getArea());
@@ -548,28 +547,28 @@ public class SelectionCommands {
             throws WorldEditException {
         
         List<Countable<Integer>> distribution =
-            editSession.getBlockDistribution(session.getSelection(player.getWorld()));
-        
+                editSession.getBlockDistribution(session.getSelection(player.getWorld()));
+
         Logger logger = Logger.getLogger("Minecraft.WorldEdit");
-        
+
         if (distribution.size() > 0) { // *Should* always be true
             int size = session.getSelection(player.getWorld()).getArea();
-    
+
             player.print("# total blocks: " + size);
-            
+
             if (args.hasFlag('c')) {
                 logger.info("Block distribution (req. by " + player.getName() + "):");
                 logger.info("# total blocks: " + size);
             }
-            
+
             for (Countable<Integer> c : distribution) {
                 BlockType block = BlockType.fromID(c.getID());
                 String str = String.format("%-7s (%.3f%%) %s #%d",
                         String.valueOf(c.getAmount()),
-                        c.getAmount() / (double)size * 100,
+                        c.getAmount() / (double) size * 100,
                         block == null ? "Unknown" : block.getName(), c.getID());
                 player.print(str);
-                
+
                 if (args.hasFlag('c')) {
                     logger.info(str);
                 }

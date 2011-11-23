@@ -27,7 +27,7 @@ import com.sk89q.worldedit.patterns.Pattern;
 public class SphereBrush implements Brush {
     public SphereBrush() {
     }
-    
+
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
         editSession.makeSphere(pos, mat, size, size, size, true);

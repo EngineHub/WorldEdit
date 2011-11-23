@@ -53,7 +53,7 @@ public class WorldEditPlugin extends JavaPlugin {
      * WorldEdit messages get sent here.
      */
     private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
-    
+
     /**
      * The server interface that all server-related API goes through.
      */
@@ -66,7 +66,7 @@ public class WorldEditPlugin extends JavaPlugin {
      * Deprecated API.
      */
     private WorldEditAPI api;
-    
+
     /**
      * Holds the configuration for WorldEdit.
      */
@@ -93,15 +93,15 @@ public class WorldEditPlugin extends JavaPlugin {
 
         // Create the default configuration file
         createDefaultConfiguration("config.yml");
-        
+
         // Set up configuration and such, including the permissions
         // resolver
         config = new BukkitConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml"), true), logger);
         perms = new PermissionsResolverManager(this, "WorldEdit", logger);
-        
+
         // Load the configuration
         loadConfiguration();
-        
+
         // Setup interfaces
         server = new BukkitServerInterface(this, getServer());
         controller = new WorldEdit(server, config);
@@ -109,8 +109,8 @@ public class WorldEditPlugin extends JavaPlugin {
 
         // Now we can register events!
         registerEvents();
-        
-        getServer().getScheduler().scheduleAsyncRepeatingTask(this, 
+
+        getServer().getScheduler().scheduleAsyncRepeatingTask(this,
                 new SessionTimer(controller, getServer()), 120, 120);
     }
 
@@ -128,7 +128,7 @@ public class WorldEditPlugin extends JavaPlugin {
         config.unload();
         this.getServer().getScheduler().cancelTasks(this);
     }
-    
+
     /**
      * Loads and reloads all configuration.
      */
@@ -200,20 +200,22 @@ public class WorldEditPlugin extends JavaPlugin {
                     while ((length = input.read(buf)) > 0) {
                         output.write(buf, 0, length);
                     }
-                    
+
                     logger.info(getDescription().getName()
                             + ": Default configuration file written: " + name);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
                     try {
-                        if (input != null)
+                        if (input != null) {
                             input.close();
+                        }
                     } catch (IOException e) {}
 
                     try {
-                        if (output != null)
+                        if (output != null) {
                             output.close();
+                        }
                     } catch (IOException e) {}
                 }
             }
@@ -231,20 +233,20 @@ public class WorldEditPlugin extends JavaPlugin {
         if (!(sender instanceof Player)) {
             return true;
         }
-        
-        Player player = (Player)sender;
-        
+
+        Player player = (Player) sender;
+
         // Add the command to the array because the underlying command handling
         // code of WorldEdit expects it
         String[] split = new String[args.length + 1];
         System.arraycopy(args, 0, split, 1, args.length);
         split[0] = "/" + cmd.getName();
-        
+
         controller.handleCommand(wrapPlayer(player), split);
-        
+
         return true;
     }
-    
+
     /**
      * Gets the session for the player.
      * 
@@ -254,7 +256,7 @@ public class WorldEditPlugin extends JavaPlugin {
     public LocalSession getSession(Player player) {
         return controller.getSession(wrapPlayer(player));
     }
-    
+
     /**
      * Gets the session for the player.
      * 
@@ -265,15 +267,14 @@ public class WorldEditPlugin extends JavaPlugin {
         LocalPlayer wePlayer = wrapPlayer(player);
         LocalSession session = controller.getSession(wePlayer);
         BlockBag blockBag = session.getBlockBag(wePlayer);
-        
+
         EditSession editSession =
-            new EditSession(wePlayer.getWorld(),
-                    session.getBlockChangeLimit(), blockBag);
+                new EditSession(wePlayer.getWorld(), session.getBlockChangeLimit(), blockBag);
         editSession.enableQueue();
-        
+
         return editSession;
     }
-    
+
     /**
      * Remember an edit session.
      * 
@@ -283,13 +284,13 @@ public class WorldEditPlugin extends JavaPlugin {
     public void remember(Player player, EditSession editSession) {
         LocalPlayer wePlayer = wrapPlayer(player);
         LocalSession session = controller.getSession(wePlayer);
-        
+
         session.remember(editSession);
         editSession.flushQueue();
-        
+
         controller.flushBlockBag(wePlayer, editSession);
     }
-    
+
     /**
      * Wrap an operation into an EditSession.
      * 
@@ -301,7 +302,7 @@ public class WorldEditPlugin extends JavaPlugin {
             throws Throwable {
         LocalPlayer wePlayer = wrapPlayer(player);
         LocalSession session = controller.getSession(wePlayer);
-        
+
         EditSession editSession = createEditSession(player);
         try {
             op.run(session, wePlayer, editSession);
@@ -309,7 +310,7 @@ public class WorldEditPlugin extends JavaPlugin {
             remember(player, editSession);
         }
     }
-    
+
     /**
      * Get the API.
      * 
@@ -319,7 +320,7 @@ public class WorldEditPlugin extends JavaPlugin {
     public WorldEditAPI getAPI() {
         return api;
     }
-    
+
     /**
      * Returns the configuration used by WorldEdit.
      * 
@@ -328,7 +329,7 @@ public class WorldEditPlugin extends JavaPlugin {
     public BukkitConfiguration getLocalConfiguration() {
         return config;
     }
-    
+
     /**
      * Get the permissions resolver in use.
      * 
@@ -337,7 +338,7 @@ public class WorldEditPlugin extends JavaPlugin {
     public PermissionsResolverManager getPermissionsResolver() {
         return perms;
     }
-    
+
     /**
      * Used to wrap a Bukkit Player as a LocalPlayer.
      * 
@@ -347,7 +348,7 @@ public class WorldEditPlugin extends JavaPlugin {
     public BukkitPlayer wrapPlayer(Player player) {
         return new BukkitPlayer(this, this.server, player);
     }
-    
+
     /**
      * Get the server interface.
      * 
@@ -356,7 +357,7 @@ public class WorldEditPlugin extends JavaPlugin {
     public ServerInterface getServerInterface() {
         return server;
     }
-    
+
     /**
      * Get WorldEdit.
      * 
@@ -365,7 +366,7 @@ public class WorldEditPlugin extends JavaPlugin {
     public WorldEdit getWorldEdit() {
         return controller;
     }
-    
+
     /**
      * Gets the region selection for the player.
      * 
@@ -379,18 +380,18 @@ public class WorldEditPlugin extends JavaPlugin {
         if (!player.isOnline()) {
             throw new IllegalArgumentException("Offline player not allowed");
         }
-        
+
         LocalSession session = controller.getSession(wrapPlayer(player));
         RegionSelector selector = session.getRegionSelector();
-        
+
         try {
             Region region = selector.getRegion();
             World world = ((BukkitWorld) session.getSelectionWorld()).getWorld();
-            
+
             if (region instanceof CuboidRegion) {
-                return new CuboidSelection(world, selector, (CuboidRegion)region);
+                return new CuboidSelection(world, selector, (CuboidRegion) region);
             } else if (region instanceof Polygonal2DRegion) {
-                return new Polygonal2DSelection(world, selector, (Polygonal2DRegion)region);
+                return new Polygonal2DSelection(world, selector, (Polygonal2DRegion) region);
             } else {
                 return null;
             }
@@ -398,7 +399,7 @@ public class WorldEditPlugin extends JavaPlugin {
             return null;
         }
     }
-    
+
     /**
      * Sets the region selection for a player.
      * 
@@ -415,8 +416,8 @@ public class WorldEditPlugin extends JavaPlugin {
         if (selection == null) {
             throw new IllegalArgumentException("Null selection not allowed");
         }
-        
-        LocalSession session = controller.getSession(wrapPlayer(player)); 
+
+        LocalSession session = controller.getSession(wrapPlayer(player));
         RegionSelector sel = selection.getRegionSelector();
         session.setRegionSelector(new BukkitWorld(player.getWorld()), sel);
         session.dispatchCUISelection(wrapPlayer(player));

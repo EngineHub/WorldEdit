@@ -28,14 +28,14 @@ import com.sk89q.worldedit.blocks.*;
  * @author sk89q
  */
 public class QueryTool implements BlockTool {
-    
+
     public boolean canUse(LocalPlayer player) {
         return player.hasPermission("worldedit.tool.info");
     }
 
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
-        
+
         LocalWorld world = clicked.getWorld();
         BaseBlock block = (new EditSession(world, 0)).rawGetBlock(clicked);
         BlockType type = BlockType.fromID(block.getType());
@@ -48,16 +48,16 @@ public class QueryTool implements BlockTool {
 
         if (block instanceof MobSpawnerBlock) {
             player.printRaw("\u00A7e" + "Mob Type: "
-                    + ((MobSpawnerBlock)block).getMobType());
+                    + ((MobSpawnerBlock) block).getMobType());
         } else if (block instanceof NoteBlock) {
             player.printRaw("\u00A7e" + "Note block: "
-                    + ((NoteBlock)block).getNote());
+                    + ((NoteBlock) block).getNote());
         } else if (block.getType() == BlockID.CLOTH) {
             // Should never be null
             player.printRaw("\u00A7e" + "Color: "
                     + ClothColor.fromID(block.getData()).getName());
         }
-    
+
         return true;
     }
 

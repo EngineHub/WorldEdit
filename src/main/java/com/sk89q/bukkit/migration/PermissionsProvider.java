@@ -21,7 +21,10 @@ package com.sk89q.bukkit.migration;
 
 public interface PermissionsProvider {
     public boolean hasPermission(String name, String permission);
+
     public boolean hasPermission(String worldName, String name, String permission);
+
     public boolean inGroup(String player, String group);
+
     public String[] getGroups(String player);
 }

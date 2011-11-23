@@ -100,8 +100,7 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
             Pattern pattern = Pattern.compile(".*\\.mcr$");
             // World pattern
             Pattern worldPattern = Pattern.compile(worldname + "\\$");
-            for (Enumeration<? extends ZipEntry> e = zip.entries();
-                    e.hasMoreElements();) {
+            for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements(); ) {
                 ZipEntry testEntry = (ZipEntry) e.nextElement();
                 // Check for world
                 if (worldPattern.matcher(worldname).matches()) {
@@ -158,8 +157,7 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
     @Override
     @SuppressWarnings("unchecked")
     public boolean isValid() {
-        for (Enumeration<? extends ZipEntry> e = zip.entries();
-                e.hasMoreElements();) {
+        for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements(); ) {
 
             ZipEntry testEntry = e.nextElement();
 

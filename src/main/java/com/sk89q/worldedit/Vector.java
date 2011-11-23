@@ -47,9 +47,9 @@ public class Vector {
      * @param z
      */
     public Vector(int x, int y, int z) {
-        this.x = (double)x;
-        this.y = (double)y;
-        this.z = (double)z;
+        this.x = (double) x;
+        this.y = (double) y;
+        this.z = (double) z;
     }
 
     /**
@@ -60,9 +60,9 @@ public class Vector {
      * @param z
      */
     public Vector(float x, float y, float z) {
-        this.x = (double)x;
-        this.y = (double)y;
-        this.z = (double)z;
+        this.x = (double) x;
+        this.y = (double) y;
+        this.z = (double) z;
     }
 
     /**
@@ -96,7 +96,7 @@ public class Vector {
      * @return the x
      */
     public int getBlockX() {
-        return (int)Math.round(x);
+        return (int) Math.round(x);
     }
 
     /**
@@ -130,7 +130,7 @@ public class Vector {
      * @return the y
      */
     public int getBlockY() {
-        return (int)Math.round(y);
+        return (int) Math.round(y);
     }
 
     /**
@@ -164,7 +164,7 @@ public class Vector {
      * @return the z
      */
     public int getBlockZ() {
-        return (int)Math.round(z);
+        return (int) Math.round(z);
     }
 
     /**
@@ -227,7 +227,7 @@ public class Vector {
      * @param others
      * @return New point
      */
-    public Vector add(Vector ... others) {
+    public Vector add(Vector... others) {
         double newX = x, newY = y, newZ = z;
 
         for (int i = 0; i < others.length; ++i) {
@@ -278,7 +278,7 @@ public class Vector {
      * @param others
      * @return New point
      */
-    public Vector subtract(Vector ... others) {
+    public Vector subtract(Vector... others) {
         double newX = x, newY = y, newZ = z;
 
         for (int i = 0; i < others.length; ++i) {
@@ -329,7 +329,7 @@ public class Vector {
      * @param others
      * @return New point
      */
-    public Vector multiply(Vector ... others) {
+    public Vector multiply(Vector... others) {
         double newX = x, newY = y, newZ = z;
 
         for (int i = 0; i < others.length; ++i) {
@@ -546,9 +546,9 @@ public class Vector {
      * @return point
      */
     public static Vector toBlockPoint(double x, double y, double z) {
-        return new Vector((int)Math.floor(x),
-                         (int)Math.floor(y),
-                         (int)Math.floor(z));
+        return new Vector((int) Math.floor(x),
+                         (int) Math.floor(y),
+                         (int) Math.floor(z));
     }
 
     /**
@@ -557,9 +557,9 @@ public class Vector {
      * @return point
      */
     public BlockVector toBlockPoint() {
-        return new BlockVector((int)Math.floor(x),
-                 (int)Math.floor(y),
-                 (int)Math.floor(z));
+        return new BlockVector((int) Math.floor(x),
+                 (int) Math.floor(y),
+                 (int) Math.floor(z));
     }
 
     /**

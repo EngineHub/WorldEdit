@@ -41,7 +41,7 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
         Context cx = factory.enterContext();
         ScriptableObject scriptable = new ImporterTopLevel(cx);
         Scriptable scope = cx.initStandardObjects(scriptable);
-        
+
         for (Map.Entry<String, Object> entry : args.entrySet()) {
             ScriptableObject.putProperty(scope, entry.getKey(),
                     Context.javaToJS(entry.getValue(), scope));
@@ -57,20 +57,20 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
                     throw ((WrappedException) e).getCause();
                 }
             }
-            
+
             String msg;
             int line = (line = e.lineNumber()) == 0 ? -1 : line;
-            
+
             if (e instanceof JavaScriptException) {
                 msg = String.valueOf(((JavaScriptException) e).getValue());
             } else {
                 msg = e.getMessage();
             }
-            
+
             ScriptException scriptException =
-                new ScriptException(msg, e.sourceName(), line);
+                    new ScriptException(msg, e.sourceName(), line);
             scriptException.initCause(e);
-            
+
             throw scriptException;
         } finally {
             Context.exit();

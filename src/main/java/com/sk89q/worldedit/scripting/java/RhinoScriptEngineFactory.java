@@ -72,22 +72,22 @@ public class RhinoScriptEngineFactory implements ScriptEngineFactory {
         return "1.8";
     }
 
-    public String getMethodCallSyntax(String obj, String m, String ... args) {
+    public String getMethodCallSyntax(String obj, String m, String... args) {
         StringBuilder s = new StringBuilder();
         s.append(obj);
         s.append(".");
         s.append(m);
         s.append("(");
-        
+
         for (int i = 0; i < args.length; ++i) {
             s.append(args[i]);
             if (i < args.length - 1) {
                 s.append(",");
             }
         }
-        
+
         s.append(")");
-        
+
         return s.toString();
     }
 
@@ -123,7 +123,7 @@ public class RhinoScriptEngineFactory implements ScriptEngineFactory {
         }
     }
 
-    public String getProgram(String ... statements) {
+    public String getProgram(String... statements) {
         StringBuilder s = new StringBuilder();
         for (String stmt : statements) {
             s.append(stmt);

@@ -97,22 +97,22 @@ public class DispenserBlock extends BaseBlock implements TileEntityBlock, Contai
      * @return map of values
      * @throws DataException
      */
-    public Map<String,Tag> toTileEntityNBT()
+    public Map<String, Tag> toTileEntityNBT()
             throws DataException {
         List<Tag> itemsList = new ArrayList<Tag>();
         for (int i = 0; i < items.length; ++i) {
             BaseItemStack item = items[i];
             if (item != null) {
-                Map<String,Tag> data = new HashMap<String,Tag>();
+                Map<String, Tag> data = new HashMap<String, Tag>();
                 CompoundTag itemTag = new CompoundTag("Items", data);
-                data.put("id", new ShortTag("id", (short)item.getType()));
+                data.put("id", new ShortTag("id", (short) item.getType()));
                 data.put("Damage", new ShortTag("Damage", item.getDamage()));
-                data.put("Count", new ByteTag("Count", (byte)item.getAmount()));
-                data.put("Slot", new ByteTag("Slot", (byte)i));
+                data.put("Count", new ByteTag("Count", (byte) item.getAmount()));
+                data.put("Slot", new ByteTag("Slot", (byte) i));
                 itemsList.add(itemTag);
             }
         }
-        Map<String,Tag> values = new HashMap<String,Tag>();
+        Map<String, Tag> values = new HashMap<String, Tag>();
         values.put("Items", new ListTag("Items", CompoundTag.class, itemsList));
         return values;
     }
@@ -123,19 +123,18 @@ public class DispenserBlock extends BaseBlock implements TileEntityBlock, Contai
      * @param values
      * @throws DataException
      */
-    public void fromTileEntityNBT(Map<String,Tag> values)
-            throws DataException  {
+    public void fromTileEntityNBT(Map<String, Tag> values)
+            throws DataException {
         if (values == null) {
             return;
         }
 
-
         Tag t = values.get("id");
-        if (!(t instanceof StringTag) || !((StringTag)t).getValue().equals("Trap")) {
+        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Trap")) {
             throw new DataException("'Trap' tile entity expected");
         }
 
-        ListTag items = (ListTag)Chunk.getChildTag(values, "Items", ListTag.class);
+        ListTag items = (ListTag) Chunk.getChildTag(values, "Items", ListTag.class);
         BaseItemStack[] newItems = new BaseItemStack[27];
 
         for (Tag tag : items.getValue()) {
@@ -143,16 +142,16 @@ public class DispenserBlock extends BaseBlock implements TileEntityBlock, Contai
                 throw new DataException("CompoundTag expected as child tag of Trap Items");
             }
 
-            CompoundTag item = (CompoundTag)tag;
-            Map<String,Tag> itemValues = item.getValue();
+            CompoundTag item = (CompoundTag) tag;
+            Map<String, Tag> itemValues = item.getValue();
 
-            short id = (Short)((ShortTag)Chunk.getChildTag(itemValues, "id", ShortTag.class))
+            short id = (Short) ((ShortTag) Chunk.getChildTag(itemValues, "id", ShortTag.class))
                     .getValue();
-            short damage = (Short)((ShortTag)Chunk.getChildTag(itemValues, "Damage", ShortTag.class))
+            short damage = (Short) ((ShortTag) Chunk.getChildTag(itemValues, "Damage", ShortTag.class))
                     .getValue();
-            byte count = (Byte)((ByteTag)Chunk.getChildTag(itemValues, "Count", ByteTag.class))
+            byte count = (Byte) ((ByteTag) Chunk.getChildTag(itemValues, "Count", ByteTag.class))
                     .getValue();
-            byte slot = (Byte)((ByteTag)Chunk.getChildTag(itemValues, "Slot", ByteTag.class))
+            byte slot = (Byte) ((ByteTag) Chunk.getChildTag(itemValues, "Slot", ByteTag.class))
                     .getValue();
 
             if (slot >= 0 && slot <= 8) {

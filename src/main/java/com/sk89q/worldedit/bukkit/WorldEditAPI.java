@@ -22,13 +22,13 @@ package com.sk89q.worldedit.bukkit;
 import org.bukkit.entity.Player;
 import com.sk89q.worldedit.LocalSession;
 
-public class WorldEditAPI  {
+public class WorldEditAPI {
     private WorldEditPlugin plugin;
-    
+
     public WorldEditAPI(WorldEditPlugin plugin) {
         this.plugin = plugin;
     }
-    
+
     /**
      * Get the session for a player.
      *

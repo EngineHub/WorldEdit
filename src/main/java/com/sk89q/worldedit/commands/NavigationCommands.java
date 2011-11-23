@@ -74,7 +74,6 @@ public class NavigationCommands {
         } else {
             player.print((ascentLevels != 1) ? "Ascended " + Integer.toString(ascentLevels) + " levels." : "Ascended a level.");
         }
-        
     }
 
     @Command(
@@ -103,7 +102,6 @@ public class NavigationCommands {
         } else {
             player.print((descentLevels != 1) ? "Descended " + Integer.toString(descentLevels) + " levels." : "Descended a level.");
         }
-        
     }
 
     @Command(
@@ -128,7 +126,7 @@ public class NavigationCommands {
             player.printError("No free spot above you found.");
         }
     }
-    
+
     @Command(
         aliases = { "thru" },
         usage = "",

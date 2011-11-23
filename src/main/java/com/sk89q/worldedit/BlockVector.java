@@ -80,9 +80,9 @@ public class BlockVector extends Vector {
         if (!(obj instanceof Vector)) {
             return false;
         }
-        Vector other = (Vector)obj;
-        return (int)other.getX() == (int)this.x && (int)other.getY() == (int)this.y
-                && (int)other.getZ() == (int)this.z;
+        Vector other = (Vector) obj;
+        return (int) other.getX() == (int) this.x && (int) other.getY() == (int) this.y
+                && (int) other.getZ() == (int) this.z;
 
     }
 
@@ -93,8 +93,8 @@ public class BlockVector extends Vector {
      */
     @Override
     public int hashCode() {
-        return (Integer.valueOf((int)x).hashCode() << 19) ^
-               (Integer.valueOf((int)y).hashCode() << 12) ^
-                Integer.valueOf((int)z).hashCode();
+        return (Integer.valueOf((int) x).hashCode() << 19) ^
+                (Integer.valueOf((int) y).hashCode() << 12) ^
+                Integer.valueOf((int) z).hashCode();
     }
 }

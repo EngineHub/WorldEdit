@@ -40,7 +40,7 @@ public class UnderOverlayMask implements Mask {
         this.overlay = overlay;
     }
 
-    public void addAll(Set<Integer> ids){
+    public void addAll(Set<Integer> ids) {
         this.ids.addAll(ids);
     }
 
@@ -50,4 +50,3 @@ public class UnderOverlayMask implements Mask {
     }
 
 }
-

@@ -44,7 +44,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
             return false;
         }
         pos1 = pos.toBlockVector();
-        region.setPos1(pos1);   
+        region.setPos1(pos1);
         return true;
     }
 
@@ -65,7 +65,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         } else {
             player.print("First position set to " + pos1 + ".");
         }
-        
+
         session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos, getArea()));
     }
 
@@ -77,7 +77,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         } else {
             player.print("Second position set to " + pos2 + ".");
         }
-        
+
         session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos, getArea()));
     }
 
@@ -89,15 +89,15 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
             session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos2, getArea()));
         }
     }
-    
+
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
         if (pos1 == null) {
             throw new IncompleteRegionException();
         }
-        
+
         return pos1;
     }
-    
+
     public boolean isDefined() {
         return pos1 != null && pos2 != null;
     }
@@ -106,7 +106,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         if (pos1 == null || pos2 == null) {
             throw new IncompleteRegionException();
         }
-        
+
         return region;
     }
 
@@ -118,7 +118,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         pos1 = region.getPos1().toBlockVector();
         pos2 = region.getPos2().toBlockVector();
     }
-    
+
     public void clear() {
         pos1 = null;
         pos2 = null;
@@ -130,15 +130,15 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
 
     public List<String> getInformationLines() {
         List<String> lines = new ArrayList<String>();
-        
+
         if (pos1 != null) {
             lines.add("Position 1: " + pos1);
         }
-        
+
         if (pos2 != null) {
             lines.add("Position 2: " + pos2);
         }
-        
+
         return lines;
     }
 
@@ -159,7 +159,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         if (pos1 != null && pos2 != null) {
             return region.getArea();
         }
-        
+
         return -1;
     }
 }

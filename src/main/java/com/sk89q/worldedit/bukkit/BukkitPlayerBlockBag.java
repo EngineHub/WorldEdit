@@ -37,7 +37,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
      * The player's inventory;
      */
     private ItemStack[] items;
-    
+
     /**
      * Construct the object.
      * 
@@ -46,7 +46,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
     public BukkitPlayerBlockBag(Player player) {
         this.player = player;
     }
-    
+
     /**
      * Loads inventory on first use.
      */
@@ -55,7 +55,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
             items = player.getInventory().getContents();
         }
     }
-    
+
     /**
      * Get the player.
      * 
@@ -64,7 +64,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
     public Player getPlayer() {
         return player;
     }
-    
+
     /**
      * Get a block.
      *
@@ -113,7 +113,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
                 bukkitItem.setAmount(currentAmount - 1);
                 found = true;
             } else {
-                items[slot] = null; 
+                items[slot] = null;
                 found = true;
             }
 
@@ -196,7 +196,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
 
         throw new OutOfSpaceException(id);
     }
-    
+
     /**
      * Flush any changes. This is called at the end.
      */
@@ -216,7 +216,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
     @Override
     public void addSourcePosition(Vector pos) {
     }
-    
+
     /**
      * Adds a position to be used a source.
      *

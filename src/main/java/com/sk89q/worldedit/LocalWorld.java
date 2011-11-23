@@ -35,7 +35,7 @@ public abstract class LocalWorld {
      * Random generator.
      */
     protected Random random = new Random();
-    
+
     /**
      * Get the name of the world.
      * 
@@ -129,7 +129,7 @@ public abstract class LocalWorld {
      * @return
      */
     public abstract int getBlockLightLevel(Vector pt);
-    
+
     /**
      * Regenerate an area.
      * 
@@ -248,10 +248,16 @@ public abstract class LocalWorld {
      */
     public void simulateBlockMine(Vector pt) {
         BaseItemStack stack = BlockType.getBlockDrop(getBlockType(pt), (short) getBlockData(pt));
-        if (stack != null) dropItem(pt,
-                stack.getAmount() > 1 ? new BaseItemStack(stack.getType(),
-                1, stack.getDamage()) : stack, stack.getAmount());
+        if (stack == null) {
+            return;
+        }
 
+        final int amount = stack.getAmount();
+        if (amount > 1) {
+            dropItem(pt, new BaseItemStack(stack.getType(), 1, stack.getDamage()), amount);
+        } else {
+            dropItem(pt, stack, amount);
+        }
     }
 
     /**
@@ -282,7 +288,7 @@ public abstract class LocalWorld {
      * @return
      */
     public abstract int removeEntities(EntityType type, Vector origin, int radius);
-    
+
     /**
      * Returns whether a block has a valid ID.
      * 
@@ -298,7 +304,8 @@ public abstract class LocalWorld {
      *
      * @param pt Position to check
      */
-    public void checkLoadedChunk(Vector pt) {}
+    public void checkLoadedChunk(Vector pt) {
+    }
 
     /**
      * Compare if the other world is equal.
@@ -331,7 +338,9 @@ public abstract class LocalWorld {
      * 
      * @param chunks the chunks to fix
      */
-    public void fixAfterFastMode(Iterable<BlockVector2D> chunks) {}
+    public void fixAfterFastMode(Iterable<BlockVector2D> chunks) {
+    }
 
-    public void fixLighting(Iterable<BlockVector2D> chunks) {}
+    public void fixLighting(Iterable<BlockVector2D> chunks) {
+    }
 }

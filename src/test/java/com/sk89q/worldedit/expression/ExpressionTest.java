@@ -12,16 +12,16 @@ public class ExpressionTest {
     @Test
     public void testEvaluate() throws ExpressionException {
         // check 
-        assertEquals(1-2+3, simpleEval("1-2+3"), 0);
+        assertEquals(1 - 2 + 3, simpleEval("1 - 2 + 3"), 0);
 
         // check unary ops
-        assertEquals(2+ +4, simpleEval("2+ +4"), 0);
-        assertEquals(2- -4, simpleEval("2- -4"), 0);
-        assertEquals(2*-4, simpleEval("2*-4"), 0);
+        assertEquals(2 + +4, simpleEval("2 + +4"), 0);
+        assertEquals(2 - -4, simpleEval("2 - -4"), 0);
+        assertEquals(2 * -4, simpleEval("2 * -4"), 0);
 
         // check functions
         assertEquals(sin(5), simpleEval("sin(5)"), 0);
-        assertEquals(atan2(3,4), simpleEval("atan2(3,4)"), 0);
+        assertEquals(atan2(3, 4), simpleEval("atan2(3, 4)"), 0);
 
         // check variables
         assertEquals(8, Expression.compile("foo+bar", "foo", "bar").evaluate(5, 3), 0);

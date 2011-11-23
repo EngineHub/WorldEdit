@@ -53,27 +53,27 @@ public class WorldEdit {
      * Logger for debugging.
      */
     public static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
-    
+
     /**
      * Holds WorldEdit's version.
      */
     private static String version;
-    
+
     /**
      * Interface to the server.
      */
     private ServerInterface server;
-    
+
     /**
      * Configuration. This is a subclass.
      */
     private LocalConfiguration config;
-    
+
     /**
      * List of commands.
      */
     private CommandsManager<LocalPlayer> commands;
-    
+
     /**
      * Stores a list of WorldEdit sessions, keyed by players' names. Sessions
      * persist only for the user's session. On disconnect, the session will be
@@ -81,15 +81,15 @@ public class WorldEdit {
      * without any WorldEdit abilities or never use WorldEdit in a session will
      * not have a session object generated for them.
      */
-    private HashMap<String,LocalSession> sessions = new HashMap<String,LocalSession>();
-    
+    private HashMap<String, LocalSession> sessions = new HashMap<String, LocalSession>();
+
     /**
      * Initialize statically.
      */
     static {
         getVersion();
     }
-    
+
     /**
      * Construct an instance of the plugin
      * 
@@ -99,13 +99,13 @@ public class WorldEdit {
     public WorldEdit(ServerInterface server, final LocalConfiguration config) {
         this.server = server;
         this.config = config;
-        
+
         commands = new CommandsManager<LocalPlayer>() {
             @Override
             public boolean hasPermission(LocalPlayer player, String perm) {
                 return player.hasPermission(perm);
             }
-            
+
             @Override
             public void invokeMethod(Method parent, String[] args,
                     LocalPlayer player, Method method, Object instance,
@@ -135,20 +135,20 @@ public class WorldEdit {
                             /* FALL-THROUGH */
 
                         case POSITION:
-                            msg += " - Position: "+position;
+                            msg += " - Position: " + position;
                             break;
 
                         case ALL:
-                            msg += " - Position: "+position;
+                            msg += " - Position: " + position;
                             /* FALL-THROUGH */
 
                         case ORIENTATION_REGION:
-                            msg += " - Orientation: "+player.getCardinalDirection().name();
+                            msg += " - Orientation: " + player.getCardinalDirection().name();
                             /* FALL-THROUGH */
 
                         case REGION:
                             try {
-                                msg += " - Region: "+session.getSelection(player.getWorld());
+                                msg += " - Region: " + session.getSelection(player.getWorld());
                             } catch (IncompleteRegionException e) {
                                 break;
                             }
@@ -194,20 +194,20 @@ public class WorldEdit {
      */
     public LocalSession getSession(LocalPlayer player) {
         LocalSession session;
-        
+
         synchronized (sessions) {
             if (sessions.containsKey(player.getName())) {
                 return sessions.get(player.getName());
             }
-            
+
             session = new LocalSession(config);
-            
+
             // Set the limit on the number of blocks that an operation can
             // change at once, or don't if the player has an override or there
             // is no limit. There is also a default limit
             if (!player.hasPermission("worldedit.limit.unrestricted")
                     && config.maxChangeLimit > -1) {
-                
+
                 // If the default limit is infinite but there is a maximum
                 // limit, make sure to not have it be overridden
                 if (config.defaultChangeLimit < 0) {
@@ -222,17 +222,17 @@ public class WorldEdit {
                 // No change limit or override
                 session.setBlockChangeLimit(config.defaultChangeLimit);
             }
-            
+
             // Have the session use inventory if it's enabled and the player
             // doesn't have an override
             session.setUseInventory(config.useInventory
                     && (!config.useInventoryOverride
                             || !player.hasPermission("worldedit.inventory.unrestricted")));
-            
+
             // Remember the session
             sessions.put(player.getName(), session);
         }
-        
+
         return session;
     }
 
@@ -274,7 +274,7 @@ public class WorldEdit {
         String[] typeAndData = blockAndExtraData[0].split(":", 2);
         String testID = typeAndData[0];
         int blockId = -1;
-        
+
         int data = -1;
 
         // Attempt to parse the item ID or otherwise resolve an item/block
@@ -295,7 +295,7 @@ public class WorldEdit {
         if (blockId == -1 && blockType == null) {
             // Maybe it's a cloth
             ClothColor col = ClothColor.lookup(testID);
-            
+
             if (col != null) {
                 blockType = BlockType.CLOTH;
                 data = col.getID();
@@ -303,16 +303,16 @@ public class WorldEdit {
                 throw new UnknownItemException(arg);
             }
         }
-        
+
         // Read block ID
         if (blockId == -1) {
             blockId = blockType.getID();
         }
-        
+
         if (!player.getWorld().isValidBlockType(blockId)) {
             throw new UnknownItemException(arg);
         }
-        
+
         if (data == -1) { // Block data not yet detected
             // Parse the block data (optional)
             try {
@@ -324,7 +324,7 @@ public class WorldEdit {
                 switch (blockType) {
                 case CLOTH:
                     ClothColor col = ClothColor.lookup(typeAndData[1]);
-                    
+
                     if (col != null) {
                         data = col.getID();
                     } else {
@@ -335,7 +335,7 @@ public class WorldEdit {
                 case STEP:
                 case DOUBLE_STEP:
                     BlockType dataType = BlockType.lookup(typeAndData[1]);
-                    
+
                     if (dataType != null) {
                         switch (dataType) {
                         case STONE:
@@ -374,25 +374,24 @@ public class WorldEdit {
         }
 
         // Check if the item is allowed
-        if (allAllowed || player.hasPermission("worldedit.anyblock")
-                || !config.disallowedBlocks.contains(blockId)) {
-            
-            // Allow special sign text syntax
-            if (blockType == BlockType.SIGN_POST
-                    || blockType == BlockType.WALL_SIGN) {
+        if (allAllowed || player.hasPermission("worldedit.anyblock") || !config.disallowedBlocks.contains(blockId)) {
+            switch (blockType) {
+            case SIGN_POST:
+            case WALL_SIGN:
+                // Allow special sign text syntax
                 String[] text = new String[4];
                 text[0] = blockAndExtraData.length > 1 ? blockAndExtraData[1] : "";
                 text[1] = blockAndExtraData.length > 2 ? blockAndExtraData[2] : "";
                 text[2] = blockAndExtraData.length > 3 ? blockAndExtraData[3] : "";
                 text[3] = blockAndExtraData.length > 4 ? blockAndExtraData[4] : "";
                 return new SignBlock(blockType.getID(), data, text);
-            
-            // Allow setting mob spawn type
-            } else if (blockType == BlockType.MOB_SPAWNER) {
+
+            case MOB_SPAWNER:
+                // Allow setting mob spawn type
                 if (blockAndExtraData.length > 1) {
                     String mobName = blockAndExtraData[1];
-                    for (MobType mobType : MobType.values()){
-                        if (mobType.getName().toLowerCase().equals(mobName.toLowerCase())){
+                    for (MobType mobType : MobType.values()) {
+                        if (mobType.getName().toLowerCase().equals(mobName.toLowerCase())) {
                             mobName = mobType.getName();
                             break;
                         }
@@ -404,9 +403,9 @@ public class WorldEdit {
                 } else {
                     return new MobSpawnerBlock(data, MobType.PIG.getName());
                 }
-            
-            // Allow setting note
-            } else if (blockType == BlockType.NOTE_BLOCK) {
+
+            case NOTE_BLOCK:
+                // Allow setting note
                 if (blockAndExtraData.length > 1) {
                     byte note = Byte.parseByte(blockAndExtraData[1]);
                     if (note < 0 || note > 24) {
@@ -415,11 +414,12 @@ public class WorldEdit {
                         return new NoteBlock(data, note);
                     }
                 } else {
-                    return new NoteBlock(data, (byte)0);
+                    return new NoteBlock(data, (byte) 0);
                 }
-            }
 
-            return new BaseBlock(blockId, data);
+            default:
+                return new BaseBlock(blockId, data);
+            }
         }
 
         throw new DisallowedItemException(arg);
@@ -439,7 +439,7 @@ public class WorldEdit {
         return getBlock(player, id, false);
     }
 
-    public Set<BaseBlock> getBlocks (LocalPlayer player, String list, boolean allAllowed, boolean allowNoData)
+    public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed, boolean allowNoData)
             throws DisallowedItemException, UnknownItemException {
         String[] items = list.split(",");
         Set<BaseBlock> blocks = new HashSet<BaseBlock>();
@@ -473,20 +473,20 @@ public class WorldEdit {
             throws UnknownItemException, DisallowedItemException {
 
         String[] items = patternString.split(",");
-        
+
         // Handle special block pattern types
         if (patternString.charAt(0) == '#') {
             if (patternString.equals("#clipboard") || patternString.equals("#copy")) {
                 LocalSession session = getSession(player);
                 CuboidClipboard clipboard;
-                
+
                 try {
                     clipboard = session.getClipboard();
                 } catch (EmptyClipboardException e) {
                     player.printError("Copy a selection first with //copy.");
                     throw new UnknownItemException("#clipboard");
                 }
-                
+
                 return new ClipboardPattern(clipboard);
             } else {
                 throw new UnknownItemException(patternString);
@@ -502,9 +502,9 @@ public class WorldEdit {
 
         for (String s : items) {
             BaseBlock block;
-            
+
             double chance;
-            
+
             // Parse special percentage syntax
             if (s.matches("[0-9]+(?:\\.(?:[0-9]+)?)?%.*")) {
                 String[] p = s.split("%");
@@ -514,22 +514,22 @@ public class WorldEdit {
                 chance = 1;
                 block = getBlock(player, s);
             }
-            
+
             blockChances.add(new BlockChance(block, chance));
         }
 
         return new RandomFillPattern(blockChances);
     }
-    
-     /**
+
+    /**
      * Get a block mask. Block masks are used to determine which
      * blocks to include when replacing.
-     * 
+     *
      * @param player
      * @param session
      * @param maskString
      * @return
-     * @throws WorldEditException 
+     * @throws WorldEditException
      */
     public Mask getBlockMask(LocalPlayer player, LocalSession session,
             String maskString) throws WorldEditException {
@@ -622,7 +622,7 @@ public class WorldEdit {
     public Set<Integer> getBlockIDs(LocalPlayer player,
             String list, boolean allBlocksAllowed)
             throws UnknownItemException, DisallowedItemException {
-        
+
         String[] items = list.split(",");
         Set<Integer> blocks = new HashSet<Integer>();
         for (String s : items) {
@@ -630,7 +630,7 @@ public class WorldEdit {
         }
         return blocks;
     }
-    
+
     /**
      * Gets the path to a file. This method will check to see if the filename
      * has valid characters and has an extension. It also prevents directory
@@ -650,7 +650,7 @@ public class WorldEdit {
             throws FilenameException {
         return getSafeFile(player, dir, filename, defaultExt, extensions, true);
     }
-    
+
     /**
      * Gets the path to a file. This method will check to see if the filename
      * has valid characters and has an extension. It also prevents directory
@@ -670,7 +670,7 @@ public class WorldEdit {
             throws FilenameException {
         return getSafeFile(player, dir, filename, defaultExt, extensions, false);
     }
-    
+
     /**
      * Get a safe path to a file.
      * 
@@ -687,14 +687,14 @@ public class WorldEdit {
             String defaultExt, String[] extensions, boolean isSave)
             throws FilenameException {
         File f;
-        
+
         if (filename.equals("#")) {
             if (isSave) {
                 f = player.openFileSaveDialog(extensions);
             } else {
                 f = player.openFileOpenDialog(extensions);
             }
-            
+
             if (f == null) {
                 throw new FileSelectionAbortedException("No file selected");
             }
@@ -702,11 +702,11 @@ public class WorldEdit {
             if (defaultExt != null && filename.lastIndexOf('.') == -1) {
                 filename += "." + defaultExt;
             }
-            
+
             if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$")) {
                 throw new InvalidFilenameException(filename, "Invalid characters or extension missing");
             }
-            
+
             f = new File(dir, filename);
         }
 
@@ -718,7 +718,7 @@ public class WorldEdit {
                 throw new FilenameResolutionException(filename,
                         "Path is outside allowable root");
             }
-            
+
             return f;
         } catch (IOException e) {
             throw new FilenameResolutionException(filename,
@@ -737,7 +737,7 @@ public class WorldEdit {
             throw new MaxRadiusException();
         }
     }
-    
+
     /**
      * Get a file relative to the defined working directory. If the specified
      * path is absolute, then the working directory is not used.
@@ -793,7 +793,7 @@ public class WorldEdit {
         default:
             throw new UnknownDirectionException(dir.name());
         }
-}
+    }
 
     private PlayerDirection getPlayerDirection(LocalPlayer player, String dirStr) throws UnknownDirectionException {
         final PlayerDirection dir;
@@ -859,7 +859,7 @@ public class WorldEdit {
         }
         return dir;
     }
-    
+
     /**
      * Get diagonal direction vector for a player's direction. May return
      * null if a direction could not be found.
@@ -870,7 +870,7 @@ public class WorldEdit {
      * @throws UnknownDirectionException 
      */
     public Vector getDiagonalDirection(LocalPlayer player, String dirStr)
-        throws UnknownDirectionException {
+            throws UnknownDirectionException {
 
         return getPlayerDirection(player, dirStr.toLowerCase()).vector();
     }
@@ -924,7 +924,7 @@ public class WorldEdit {
             sessions.clear();
         }
     }
-    
+
     /**
      * Flush a block bag's changes to a player.
      * 
@@ -933,35 +933,35 @@ public class WorldEdit {
      */
     public void flushBlockBag(LocalPlayer player,
             EditSession editSession) {
-        
+
         BlockBag blockBag = editSession.getBlockBag();
-        
+
         if (blockBag != null) {
             blockBag.flushChanges();
         }
-        
+
         Set<Integer> missingBlocks = editSession.popMissingBlocks();
-        
+
         if (missingBlocks.size() > 0) {
             StringBuilder str = new StringBuilder();
             str.append("Missing these blocks: ");
             int size = missingBlocks.size();
             int i = 0;
-            
+
             for (Integer id : missingBlocks) {
                 BlockType type = BlockType.fromID(id);
-                
+
                 str.append(type != null
                         ? type.getName() + " (" + id + ")"
                         : id.toString());
-                
+
                 ++i;
-                
+
                 if (i != size) {
                     str.append(", ");
                 }
             }
-            
+
             player.printError(str.toString());
         }
     }
@@ -972,7 +972,7 @@ public class WorldEdit {
     public Map<String, String> getCommands() {
         return commands.getCommands();
     }
-    
+
     /**
      *
      * @param player
@@ -981,7 +981,7 @@ public class WorldEdit {
     public void handleDisconnect(LocalPlayer player) {
         forgetPlayer(player);
     }
-    
+
     /**
      *
      * @param player
@@ -994,7 +994,7 @@ public class WorldEdit {
             }
         }
     }
-    
+
     /**
      * Forget a player.
      *
@@ -1003,14 +1003,14 @@ public class WorldEdit {
     public void forgetPlayer(LocalPlayer player) {
         removeSession(player);
     }
-    
+
     /*
      * Flush expired sessions.
      */
     public void flushExpiredSessions(SessionCheck checker) {
         synchronized (sessions) {
             Iterator<Map.Entry<String, LocalSession>> it = sessions.entrySet().iterator();
-            
+
             while (it.hasNext()) {
                 Map.Entry<String, LocalSession> entry = it.next();
                 if (entry.getValue().hasExpired()
@@ -1127,7 +1127,7 @@ public class WorldEdit {
         Tool tool = session.getTool(player.getItemInHand());
         if (tool != null && tool instanceof BlockTool) {
             if (tool.canUse(player)) {
-                ((BlockTool)tool).actPrimary(server, config, player, session, clicked);
+                ((BlockTool) tool).actPrimary(server, config, player, session, clicked);
                 return true;
             }
         }
@@ -1172,7 +1172,7 @@ public class WorldEdit {
         Tool tool = session.getTool(player.getItemInHand());
         if (tool != null && tool instanceof DoubleActionBlockTool) {
             if (tool.canUse(player)) {
-                ((DoubleActionBlockTool)tool).actSecondary(server, config, player, session, clicked);
+                ((DoubleActionBlockTool) tool).actSecondary(server, config, player, session, clicked);
                 return true;
             }
         }
@@ -1191,7 +1191,7 @@ public class WorldEdit {
     public boolean handleCommand(LocalPlayer player, String[] split) {
         try {
             split[0] = split[0].substring(1);
-            
+
             // Quick script shortcut
             if (split[0].matches("^[^/].*\\.js$")) {
                 String[] newSplit = new String[split.length + 1];
@@ -1200,9 +1200,9 @@ public class WorldEdit {
                 newSplit[1] = newSplit[1];
                 split = newSplit;
             }
-            
+
             String searchCmd = split[0].toLowerCase();
-            
+
             // Try to detect the command
             if (commands.hasCommand(searchCmd)) {
             } else if (config.noDoubleSlash && commands.hasCommand("/" + searchCmd)) {
@@ -1211,12 +1211,12 @@ public class WorldEdit {
                     && commands.hasCommand(searchCmd.substring(1))) {
                 split[0] = split[0].substring(1);
             }
-            
+
             // No command found!
             if (!commands.hasCommand(split[0])) {
                 return false;
             }
-        
+
             LocalSession session = getSession(player);
             EditSession editSession = session.createEditSession(player);
             editSession.enableQueue();
@@ -1254,14 +1254,14 @@ public class WorldEdit {
                         player.printDebug((time / 1000.0) + "s elapsed.");
                     }
                 }
-                
+
                 flushBlockBag(player, editSession);
             }
         } catch (NumberFormatException e) {
             final Matcher matcher = numberFormatExceptionPattern.matcher(e.getMessage());
 
             if (matcher.matches()) {
-                player.printError("Number expected; string \""+matcher.group(1)+"\" given.");
+                player.printError("Number expected; string \"" + matcher.group(1) + "\" given.");
             } else {
                 player.printError("Number expected; string given.");
             }
@@ -1305,7 +1305,7 @@ public class WorldEdit {
 
         return true;
     }
-    
+
     /**
      * Executes a WorldEdit script.
      * 
@@ -1316,24 +1316,24 @@ public class WorldEdit {
      */
     public void runScript(LocalPlayer player, File f, String[] args)
             throws WorldEditException {
-        String filename = f.getPath();        
+        String filename = f.getPath();
         int index = filename.lastIndexOf(".");
         String ext = filename.substring(index + 1, filename.length());
-        
+
         if (!ext.equalsIgnoreCase("js")) {
             player.printError("Only .js scripts are currently supported");
             return;
         }
-        
+
         String script;
-        
+
         try {
             InputStream file;
-            
+
             if (!f.exists()) {
                 file = WorldEdit.class.getResourceAsStream(
                         "craftscripts/" + filename);
-                
+
                 if (file == null) {
                     player.printError("Script does not exist: " + filename);
                     return;
@@ -1341,7 +1341,7 @@ public class WorldEdit {
             } else {
                 file = new FileInputStream(f);
             }
-            
+
             DataInputStream in = new DataInputStream(file);
             byte[] data = new byte[in.available()];
             in.readFully(data);
@@ -1351,11 +1351,11 @@ public class WorldEdit {
             player.printError("Script read error: " + e.getMessage());
             return;
         }
-        
+
         LocalSession session = getSession(player);
         CraftScriptContext scriptContext =
                 new CraftScriptContext(this, server, config, session, player, args);
-        
+
         CraftScriptEngine engine = null;
 
         try {
@@ -1365,18 +1365,18 @@ public class WorldEdit {
             player.printError("Please see http://wiki.sk89q.com/wiki/WorldEdit/Installation");
             return;
         }
-        
+
         engine.setTimeLimit(config.scriptTimeout);
-        
+
         Map<String, Object> vars = new HashMap<String, Object>();
         vars.put("argv", args);
         vars.put("context", scriptContext);
         vars.put("player", player);
-        
+
         try {
             engine.evaluate(script, filename, vars);
         } catch (ScriptException e) {
-            player.printError("Failed to execute:");;
+            player.printError("Failed to execute:");
             player.printRaw(e.getMessage());
             e.printStackTrace();
         } catch (NumberFormatException e) {
@@ -1394,7 +1394,7 @@ public class WorldEdit {
             }
         }
     }
-    
+
     /**
      * Get Worldedit's configuration.
      * 
@@ -1403,7 +1403,7 @@ public class WorldEdit {
     public LocalConfiguration getConfiguration() {
         return config;
     }
-    
+
     /**
      * Get the server interface.
      * 
@@ -1422,18 +1422,18 @@ public class WorldEdit {
         if (version != null) {
             return version;
         }
-        
+
         Package p = WorldEdit.class.getPackage();
-        
+
         if (p == null) {
             p = Package.getPackage("com.sk89q.worldedit");
         }
-        
+
         if (p == null) {
             version = "(unknown)";
         } else {
             version = p.getImplementationVersion();
-            
+
             if (version == null) {
                 version = "(unknown)";
             }

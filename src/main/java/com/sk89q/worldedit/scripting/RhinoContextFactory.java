@@ -23,11 +23,11 @@ import org.mozilla.javascript.*;
 
 public class RhinoContextFactory extends ContextFactory {
     protected int timeLimit;
-    
+
     public RhinoContextFactory(int timeLimit) {
         this.timeLimit = timeLimit;
     }
-    
+
     @Override
     protected Context makeContext() {
         RhinoContext cx = new RhinoContext(this);
@@ -37,9 +37,9 @@ public class RhinoContextFactory extends ContextFactory {
 
     @Override
     protected void observeInstructionCount(Context cx, int instructionCount) {
-        RhinoContext mcx = (RhinoContext)cx;
+        RhinoContext mcx = (RhinoContext) cx;
         long currentTime = System.currentTimeMillis();
-        
+
         if (currentTime - mcx.startTime > timeLimit) {
             throw new Error("Script timed out (" + timeLimit + "ms)");
         }
@@ -48,7 +48,7 @@ public class RhinoContextFactory extends ContextFactory {
     @Override
     protected Object doTopCall(Callable callable, Context cx, Scriptable scope,
             Scriptable thisObj, Object[] args) {
-        RhinoContext mcx = (RhinoContext)cx;
+        RhinoContext mcx = (RhinoContext) cx;
         mcx.startTime = System.currentTimeMillis();
 
         return super.doTopCall(callable, cx, scope, thisObj, args);
@@ -56,7 +56,7 @@ public class RhinoContextFactory extends ContextFactory {
 
     private static class RhinoContext extends Context {
         long startTime;
-        
+
         public RhinoContext(ContextFactory factory) {
             super(factory);
         }

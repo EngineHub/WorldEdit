@@ -97,7 +97,7 @@ public class CuboidRegion implements Region {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
 
-        return (int)(max.getX() - min.getX() + 1);
+        return (int) (max.getX() - min.getX() + 1);
     }
 
     /**
@@ -109,7 +109,7 @@ public class CuboidRegion implements Region {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
 
-        return (int)(max.getY() - min.getY() + 1);
+        return (int) (max.getY() - min.getY() + 1);
     }
 
     /**
@@ -121,7 +121,7 @@ public class CuboidRegion implements Region {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
 
-        return (int)(max.getZ() - min.getZ() + 1);
+        return (int) (max.getZ() - min.getZ() + 1);
     }
 
     /**

@@ -30,10 +30,10 @@ import com.sk89q.worldedit.WorldEdit;
  * @author sk89q
  */
 public class SessionTimer implements Runnable {
-    
+
     private WorldEdit worldEdit;
     private SessionCheck checker;
-    
+
     public SessionTimer(WorldEdit worldEdit, final Server server) {
         this.worldEdit = worldEdit;
         this.checker = new SessionCheck() {

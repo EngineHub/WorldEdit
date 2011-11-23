@@ -1,4 +1,3 @@
-package com.sk89q.worldedit;
 // $Id$
 /*
  * WorldEditLibrary
@@ -17,6 +16,8 @@ package com.sk89q.worldedit;
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
+package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;

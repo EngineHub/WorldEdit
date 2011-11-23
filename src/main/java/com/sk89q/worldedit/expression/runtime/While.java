@@ -27,8 +27,7 @@ public class While extends Node {
 
                 try {
                     ret = body.getValue();
-                }
-                catch (BreakException e) {
+                } catch (BreakException e) {
                     if (e.doContinue) {
                         continue;
                     } else {
@@ -45,8 +44,7 @@ public class While extends Node {
 
                 try {
                     ret = body.getValue();
-                }
-                catch (BreakException e) {
+                } catch (BreakException e) {
                     if (e.doContinue) {
                         continue;
                     } else {
@@ -67,9 +65,9 @@ public class While extends Node {
     @Override
     public String toString() {
         if (footChecked) {
-            return "do { "+body+" } while ("+condition+")";
+            return "do { " + body + " } while (" + condition + ")";
         } else {
-            return "while ("+condition+") { "+body+" }";
+            return "while (" + condition + ") { " + body + " }";
         }
     }
 

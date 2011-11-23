@@ -28,5 +28,6 @@ import com.sk89q.worldedit.expression.Identifiable;
  */
 public interface RValue extends Identifiable {
     public double getValue() throws EvaluationException;
+
     public Node optimize() throws EvaluationException;
 }

@@ -34,7 +34,7 @@ import com.sk89q.worldedit.WorldEditException;
 
 public class WorldEditCommands {
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-    
+
     @Command(
         aliases = { "version", "ver" },
         usage = "",

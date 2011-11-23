@@ -56,13 +56,12 @@ import com.sk89q.util.StringUtil;
  * @param <T> command sender class
  */
 public abstract class CommandsManager<T> {
-
     /**
      * Logger for general errors.
      */
     protected static final Logger logger =
             Logger.getLogger(CommandsManager.class.getCanonicalName());
-    
+
     /**
      * Mapping of commands (including aliases) with a description. Root
      * commands are stored under a key of null, whereas child commands are
@@ -70,14 +69,13 @@ public abstract class CommandsManager<T> {
      * the key of the command name (one for each alias) with the
      * method.
      */
-    protected Map<Method, Map<String, Method>> commands
-            = new HashMap<Method, Map<String, Method>>();
+    protected Map<Method, Map<String, Method>> commands = new HashMap<Method, Map<String, Method>>();
 
     /**
      * Used to store the instances associated with a method.
      */
     protected Map<Method, Object> instances = new HashMap<Method, Object>();
-    
+
     /**
      * Mapping of commands (not including aliases) with a description. This
      * is only for top level commands.
@@ -88,7 +86,7 @@ public abstract class CommandsManager<T> {
      * Stores the injector used to getInstance.
      */
     protected Injector injector;
-    
+
     /**
      * Register an class that contains commands (denoted by {@link Command}.
      * If no dependency injector is specified, then the methods of the
@@ -144,7 +142,7 @@ public abstract class CommandsManager<T> {
         }
         return null;
     }
-    
+
     /**
      * Register the methods of a class.
      * 
@@ -154,7 +152,7 @@ public abstract class CommandsManager<T> {
     private List<Command> registerMethods(Class<?> cls, Method parent, Object obj) {
         Map<String, Method> map;
         List<Command> registered = new ArrayList<Command>();
-        
+
         // Make a new hash map to cache the commands for this class
         // as looking up methods via reflection is fairly slow
         if (commands.containsKey(parent)) {
@@ -163,7 +161,7 @@ public abstract class CommandsManager<T> {
             map = new HashMap<String, Method>();
             commands.put(parent, map);
         }
-        
+
         for (Method method : cls.getMethods()) {
             if (!method.isAnnotationPresent(Command.class)) {
                 continue;
@@ -172,7 +170,7 @@ public abstract class CommandsManager<T> {
             boolean isStatic = Modifier.isStatic(method.getModifiers());
 
             Command cmd = method.getAnnotation(Command.class);
-            
+
             // Cache the aliases too
             for (String alias : cmd.aliases()) {
                 map.put(alias, method);
@@ -184,10 +182,10 @@ public abstract class CommandsManager<T> {
                 if (obj == null) {
                     continue;
                 }
-                
+
                 instances.put(method, obj);
             }
-            
+
             // Build a list of commands and their usage details, at least for
             // root level commands
             if (parent == null) {
@@ -200,13 +198,13 @@ public abstract class CommandsManager<T> {
 
             // Add the command to the registered command list for return
             registered.add(cmd);
-            
+
             // Look for nested commands -- if there are any, those have
             // to be cached too so that they can be quickly looked
             // up when processing commands
             if (method.isAnnotationPresent(NestedCommand.class)) {
                 NestedCommand nestedCmd = method.getAnnotation(NestedCommand.class);
-                
+
                 for (Class<?> nestedCls : nestedCmd.value()) {
                     registerMethods(nestedCls, method);
                 }
@@ -214,7 +212,7 @@ public abstract class CommandsManager<T> {
         }
         return registered;
     }
-    
+
     /**
      * Checks to see whether there is a command named such at the root level.
      * This will check aliases as well.
@@ -225,7 +223,7 @@ public abstract class CommandsManager<T> {
     public boolean hasCommand(String command) {
         return commands.get(null).containsKey(command.toLowerCase());
     }
-    
+
     /**
      * Get a list of command descriptions. This is only for root commands.
      * 
@@ -234,7 +232,7 @@ public abstract class CommandsManager<T> {
     public Map<String, String> getCommands() {
         return descs;
     }
-    
+
     /**
      * Get the usage string for a command.
      * 
@@ -245,9 +243,9 @@ public abstract class CommandsManager<T> {
      */
     protected String getUsage(String[] args, int level, Command cmd) {
         StringBuilder command = new StringBuilder();
-        
+
         command.append("/");
-        
+
         for (int i = 0; i <= level; ++i) {
             command.append(args[i] + " ");
         }
@@ -256,7 +254,8 @@ public abstract class CommandsManager<T> {
             char[] flags = cmd.flags().toCharArray();
             for (int i = 0; i < flags.length; ++i) {
                 if (flags.length > i + 1 && flags[i + 1] == ':') {
-                        i++; continue;
+                    i++;
+                    continue;
                 }
                 flagChars.add(flags[i]);
             }
@@ -269,10 +268,10 @@ public abstract class CommandsManager<T> {
             }
         }
         command.append(cmd.usage());
-        
+
         return command.toString();
     }
-    
+
     /**
      * Get the usage string for a nested command.
      * 
@@ -285,34 +284,33 @@ public abstract class CommandsManager<T> {
      */
     protected String getNestedUsage(String[] args, int level,
             Method method, T player) throws CommandException {
-        
+
         StringBuilder command = new StringBuilder();
-        
+
         command.append("/");
-        
+
         for (int i = 0; i <= level; ++i) {
             command.append(args[i] + " ");
         }
 
-        
         Map<String, Method> map = commands.get(method);
         boolean found = false;
-        
+
         command.append("<");
-        
+
         Set<String> allowedCommands = new HashSet<String>();
-        
+
         for (Map.Entry<String, Method> entry : map.entrySet()) {
             Method childMethod = entry.getValue();
             found = true;
-            
+
             if (hasPermission(childMethod, player)) {
                 Command childCmd = childMethod.getAnnotation(Command.class);
-                
+
                 allowedCommands.add(childCmd.aliases()[0]);
             }
         }
-        
+
         if (allowedCommands.size() > 0) {
             command.append(StringUtil.joinString(allowedCommands, "|", 0));
         } else {
@@ -323,12 +321,12 @@ public abstract class CommandsManager<T> {
                 throw new CommandPermissionsException();
             }
         }
-        
+
         command.append(">");
-        
+
         return command.toString();
     }
-    
+
     /**
      * Attempt to execute a command. This version takes a separate command
      * name (for the root command) and then a list of following arguments.
@@ -340,17 +338,17 @@ public abstract class CommandsManager<T> {
      * @throws CommandException 
      */
     public void execute(String cmd, String[] args, T player,
-            Object ... methodArgs) throws CommandException {
-        
+            Object... methodArgs) throws CommandException {
+
         String[] newArgs = new String[args.length + 1];
         System.arraycopy(args, 0, newArgs, 1, args.length);
         newArgs[0] = cmd;
         Object[] newMethodArgs = new Object[methodArgs.length + 1];
         System.arraycopy(methodArgs, 0, newMethodArgs, 1, methodArgs.length);
-        
+
         executeMethod(null, newArgs, player, newMethodArgs, 0);
     }
-    
+
     /**
      * Attempt to execute a command.
      * 
@@ -360,13 +358,13 @@ public abstract class CommandsManager<T> {
      * @throws CommandException 
      */
     public void execute(String[] args, T player,
-            Object ... methodArgs) throws CommandException {
-        
+            Object... methodArgs) throws CommandException {
+
         Object[] newMethodArgs = new Object[methodArgs.length + 1];
         System.arraycopy(methodArgs, 0, newMethodArgs, 1, methodArgs.length);
         executeMethod(null, args, player, newMethodArgs, 0);
     }
-    
+
     /**
      * Attempt to execute a command.
      * 
@@ -379,12 +377,12 @@ public abstract class CommandsManager<T> {
      */
     public void executeMethod(Method parent, String[] args,
             T player, Object[] methodArgs, int level) throws CommandException {
-        
+
         String cmdName = args[level];
-        
+
         Map<String, Method> map = commands.get(parent);
         Method method = map.get(cmdName.toLowerCase());
-        
+
         if (method == null) {
             if (parent == null) { // Root
                 throw new UnhandledCommandException();
@@ -393,16 +391,16 @@ public abstract class CommandsManager<T> {
                         getNestedUsage(args, level - 1, parent, player));
             }
         }
-        
+
         if (!hasPermission(method, player)) {
             throw new CommandPermissionsException();
         }
-        
+
         int argsCount = args.length - 1 - level;
 
         if (method.isAnnotationPresent(NestedCommand.class)) {
             if (argsCount == 0) {
-                throw new MissingNestedCommandException("Sub-command required.", 
+                throw new MissingNestedCommandException("Sub-command required.",
                         getNestedUsage(args, level, method, player));
             } else {
                 executeMethod(method, args, player, methodArgs, level + 1);
@@ -410,7 +408,7 @@ public abstract class CommandsManager<T> {
         } else if (method.isAnnotationPresent(CommandAlias.class)) {
             CommandAlias aCmd = method.getAnnotation(CommandAlias.class);
             executeMethod(parent, aCmd.value(), player, methodArgs, level);
-        } else  {
+        } else {
             Command cmd = method.getAnnotation(Command.class);
 
             String[] newArgs = new String[args.length - level];
@@ -422,23 +420,26 @@ public abstract class CommandsManager<T> {
             Set<Character> newFlags = new HashSet<Character>();
             for (int i = 0; i < flags.length; ++i) {
                 if (flags.length > i + 1 && flags[i + 1] == ':') {
-                        valueFlags.add(flags[i]);
-                        ++i;
+                    valueFlags.add(flags[i]);
+                    ++i;
                 }
                 newFlags.add(flags[i]);
             }
 
             CommandContext context = new CommandContext(newArgs, valueFlags);
 
-            if (context.argsLength() < cmd.min())
+            if (context.argsLength() < cmd.min()) {
                 throw new CommandUsageException("Too few arguments.", getUsage(args, level, cmd));
+            }
 
-            if (cmd.max() != -1 && context.argsLength() > cmd.max())
+            if (cmd.max() != -1 && context.argsLength() > cmd.max()) {
                 throw new CommandUsageException("Too many arguments.", getUsage(args, level, cmd));
+            }
 
             for (char flag : context.getFlags()) {
-                if (!newFlags.contains(flag))
+                if (!newFlags.contains(flag)) {
                     throw new CommandUsageException("Unknown flag: " + flag, getUsage(args, level, cmd));
+                }
             }
 
             methodArgs[0] = context;
@@ -461,11 +462,11 @@ public abstract class CommandsManager<T> {
             if (e.getCause() instanceof CommandException) {
                 throw (CommandException) e.getCause();
             }
-            
+
             throw new WrappedCommandException(e.getCause());
         }
     }
-    
+
     /**
      * Returns whether a player has access to a command.
      * 
@@ -478,16 +479,16 @@ public abstract class CommandsManager<T> {
         if (perms == null) {
             return true;
         }
-        
+
         for (String perm : perms.value()) {
             if (hasPermission(player, perm)) {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Returns whether a player permission..
      * 

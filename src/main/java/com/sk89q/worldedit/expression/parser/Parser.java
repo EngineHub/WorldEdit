@@ -182,8 +182,7 @@ public class Parser {
                     if (peek().id() == ';') {
                         ++position;
                         break;
-                    }
-                    else {
+                    } else {
                         break loop;
                     }
 
@@ -205,8 +204,7 @@ public class Parser {
                         break loop;
                     }
                     break;
-                }
-                else {
+                } else {
                     break loop;
                 }
             }
@@ -253,7 +251,7 @@ public class Parser {
                 } else {
                     RValue variable = variables.get(identifierToken.value);
                     if (variable == null) {
-                        if (next instanceof OperatorToken && ((OperatorToken)next).operator.equals("=")) {
+                        if (next instanceof OperatorToken && ((OperatorToken) next).operator.equals("=")) {
                             // Ugly hack to make temporary variables work while not sacrificing error reporting.
                             variables.put(identifierToken.value, variable = new Variable(0));
                         } else {

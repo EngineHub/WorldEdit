@@ -28,7 +28,7 @@ public class WorldVector extends Vector {
     /**
      * Represents the world.
      */
-    private LocalWorld world; 
+    private LocalWorld world;
 
     /**
      * Construct the Vector object.
@@ -89,7 +89,7 @@ public class WorldVector extends Vector {
         super();
         this.world = world;
     }
-    
+
     /**
      * Get the world.
      * 
@@ -110,9 +110,9 @@ public class WorldVector extends Vector {
      */
     public static WorldVector toBlockPoint(LocalWorld world, double x, double y,
             double z) {
-        return new WorldVector(world, (int)Math.floor(x),
-                 (int)Math.floor(y),
-                 (int)Math.floor(z));
+        return new WorldVector(world, (int) Math.floor(x),
+                 (int) Math.floor(y),
+                 (int) Math.floor(z));
     }
 
     /**

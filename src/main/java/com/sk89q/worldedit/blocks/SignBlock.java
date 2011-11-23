@@ -42,7 +42,7 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
      */
     public SignBlock(int type, int data) {
         super(type, data);
-        this.text = new String[]{ "", "", "", "" };
+        this.text = new String[] { "", "", "", "" };
     }
 
     /**
@@ -86,9 +86,9 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
      * @return map of values
      * @throws DataException
      */
-    public Map<String,Tag> toTileEntityNBT()
+    public Map<String, Tag> toTileEntityNBT()
             throws DataException {
-        Map<String,Tag> values = new HashMap<String,Tag>();
+        Map<String, Tag> values = new HashMap<String, Tag>();
         values.put("Text1", new StringTag("Text1", text[0]));
         values.put("Text2", new StringTag("Text2", text[1]));
         values.put("Text3", new StringTag("Text3", text[2]));
@@ -102,39 +102,39 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
      * @param values
      * @throws DataException
      */
-    public void fromTileEntityNBT(Map<String,Tag> values)
-            throws DataException  {
+    public void fromTileEntityNBT(Map<String, Tag> values)
+            throws DataException {
         if (values == null) {
             return;
         }
 
         Tag t;
 
-        text = new String[]{ "", "", "", "" };
+        text = new String[] { "", "", "", "" };
 
         t = values.get("id");
-        if (!(t instanceof StringTag) || !((StringTag)t).getValue().equals("Sign")) {
+        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Sign")) {
             throw new DataException("'Sign' tile entity expected");
         }
 
         t = values.get("Text1");
         if (t instanceof StringTag) {
-            text[0] = ((StringTag)t).getValue();
+            text[0] = ((StringTag) t).getValue();
         }
 
         t = values.get("Text2");
         if (t instanceof StringTag) {
-            text[1] = ((StringTag)t).getValue();
+            text[1] = ((StringTag) t).getValue();
         }
 
         t = values.get("Text3");
         if (t instanceof StringTag) {
-            text[2] = ((StringTag)t).getValue();
+            text[2] = ((StringTag) t).getValue();
         }
 
         t = values.get("Text4");
         if (t instanceof StringTag) {
-            text[3] = ((StringTag)t).getValue();
+            text[3] = ((StringTag) t).getValue();
         }
     }
 }

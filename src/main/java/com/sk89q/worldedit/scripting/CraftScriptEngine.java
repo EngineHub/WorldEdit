@@ -24,7 +24,9 @@ import javax.script.ScriptException;
 
 public interface CraftScriptEngine {
     public void setTimeLimit(int milliseconds);
+
     public int getTimeLimit();
+
     public Object evaluate(String script, String filename, Map<String, Object> args)
             throws ScriptException, Throwable;
 }

@@ -61,7 +61,7 @@ import com.sk89q.worldedit.regions.Region;
 
 public class BukkitWorld extends LocalWorld {
     private World world;
-    
+
     /**
      * Construct the object.
      * @param world
@@ -69,7 +69,7 @@ public class BukkitWorld extends LocalWorld {
     public BukkitWorld(World world) {
         this.world = world;
     }
-    
+
     /**
      * Get the world handle.
      * 
@@ -78,7 +78,7 @@ public class BukkitWorld extends LocalWorld {
     public World getWorld() {
         return world;
     }
-    
+
     /**
      * Get the name of the world
      * 
@@ -130,10 +130,10 @@ public class BukkitWorld extends LocalWorld {
      * @return 
      */
     @Override
-    public boolean setTypeIdAndData(Vector pt, int type, int data){
+    public boolean setTypeIdAndData(Vector pt, int type, int data) {
         return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setTypeIdAndData(type, (byte) data, true);
     }
-    
+
     /**
      * set block type & data
      * @param pt
@@ -142,7 +142,7 @@ public class BukkitWorld extends LocalWorld {
      * @return 
      */
     @Override
-    public boolean setTypeIdAndDataFast(Vector pt, int type, int data){
+    public boolean setTypeIdAndDataFast(Vector pt, int type, int data) {
         final Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (fastLightingAvailable) {
             type = type & 255;
@@ -175,7 +175,7 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public void setBlockData(Vector pt, int data) {
-        world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setData((byte)data);
+        world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setData((byte) data);
     }
 
     /**
@@ -186,7 +186,7 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public void setBlockDataFast(Vector pt, int data) {
-        world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setData((byte)data, false);
+        world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setData((byte) data, false);
     }
 
     /**
@@ -221,10 +221,10 @@ public class BukkitWorld extends LocalWorld {
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
         BaseBlock[] history = new BaseBlock[16 * 16 * 128];
-        
+
         for (Vector2D chunk : region.getChunks()) {
             Vector min = new Vector(chunk.getBlockX() * 16, 0, chunk.getBlockZ() * 16);
-            
+
             // First save all the blocks inside
             for (int x = 0; x < 16; ++x) {
                 for (int y = 0; y < 128; ++y) {
@@ -235,20 +235,20 @@ public class BukkitWorld extends LocalWorld {
                     }
                 }
             }
-            
+
             try {
                 world.regenerateChunk(chunk.getBlockX(), chunk.getBlockZ());
             } catch (Throwable t) {
                 t.printStackTrace();
             }
-            
+
             // Then restore 
             for (int x = 0; x < 16; ++x) {
                 for (int y = 0; y < 128; ++y) {
                     for (int z = 0; z < 16; ++z) {
                         Vector pt = min.add(x, y, z);
                         int index = y * 16 * 16 + z * 16 + x;
-                        
+
                         // We have to restore the block if it was outside
                         if (!region.contains(pt)) {
                             editSession.smartSetBlock(pt, history[index]);
@@ -260,7 +260,7 @@ public class BukkitWorld extends LocalWorld {
                 }
             }
         }
-        
+
         return true;
     }
 
@@ -273,51 +273,55 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean copyToWorld(Vector pt, BaseBlock block) {
-        // Signs
         if (block instanceof SignBlock) {
-            setSignText(pt, ((SignBlock)block).getText());
+            // Signs
+            setSignText(pt, ((SignBlock) block).getText());
             return true;
-        
-        // Furnaces
-        } else if (block instanceof FurnaceBlock) {
+        }
+
+        if (block instanceof FurnaceBlock) {
+            // Furnaces
             Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (bukkitBlock == null) return false;
             BlockState state = bukkitBlock.getState();
             if (!(state instanceof Furnace)) return false;
-            Furnace bukkit = (Furnace)state;
-            FurnaceBlock we = (FurnaceBlock)block;
+            Furnace bukkit = (Furnace) state;
+            FurnaceBlock we = (FurnaceBlock) block;
             bukkit.setBurnTime(we.getBurnTime());
             bukkit.setCookTime(we.getCookTime());
-            return setContainerBlockContents(pt, ((ContainerBlock)block).getItems());
-            
-        // Chests/dispenser
-        } else if (block instanceof ContainerBlock) {
-            return setContainerBlockContents(pt, ((ContainerBlock)block).getItems());
-        
-        // Mob spawners
-        } else if (block instanceof MobSpawnerBlock) {
+            return setContainerBlockContents(pt, ((ContainerBlock) block).getItems());
+        }
+
+        if (block instanceof ContainerBlock) {
+            // Chests/dispenser
+            return setContainerBlockContents(pt, ((ContainerBlock) block).getItems());
+        }
+
+        if (block instanceof MobSpawnerBlock) {
+            // Mob spawners
             Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (bukkitBlock == null) return false;
             BlockState state = bukkitBlock.getState();
             if (!(state instanceof CreatureSpawner)) return false;
-            CreatureSpawner bukkit = (CreatureSpawner)state;
-            MobSpawnerBlock we = (MobSpawnerBlock)block;
+            CreatureSpawner bukkit = (CreatureSpawner) state;
+            MobSpawnerBlock we = (MobSpawnerBlock) block;
             bukkit.setCreatureTypeId(we.getMobType());
             bukkit.setDelay(we.getDelay());
             return true;
-        
-        // Note block
-        } else if (block instanceof NoteBlock) {
+        }
+
+        if (block instanceof NoteBlock) {
+            // Note block
             Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (bukkitBlock == null) return false;
             BlockState state = bukkitBlock.getState();
             if (!(state instanceof org.bukkit.block.NoteBlock)) return false;
-            org.bukkit.block.NoteBlock bukkit = (org.bukkit.block.NoteBlock)state;
-            NoteBlock we = (NoteBlock)block;
+            org.bukkit.block.NoteBlock bukkit = (org.bukkit.block.NoteBlock) state;
+            NoteBlock we = (NoteBlock) block;
             bukkit.setRawNote(we.getNote());
             return true;
         }
-        
+
         return false;
     }
 
@@ -330,13 +334,14 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean copyFromWorld(Vector pt, BaseBlock block) {
-        // Signs
         if (block instanceof SignBlock) {
+            // Signs
             ((SignBlock) block).setText(getSignText(pt));
             return true;
-        
-        // Furnaces
-        } else if (block instanceof FurnaceBlock) {
+        }
+
+        if (block instanceof FurnaceBlock) {
+            // Furnaces
             Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (bukkitBlock == null) return false;
             BlockState state = bukkitBlock.getState();
@@ -347,14 +352,16 @@ public class BukkitWorld extends LocalWorld {
             we.setCookTime(bukkit.getCookTime());
             ((ContainerBlock) block).setItems(getContainerBlockContents(pt));
             return true;
+        }
 
-        // Chests/dispenser
-        } else if (block instanceof ContainerBlock) {
+        if (block instanceof ContainerBlock) {
+            // Chests/dispenser
             ((ContainerBlock) block).setItems(getContainerBlockContents(pt));
             return true;
-        
-        // Mob spawners
-        } else if (block instanceof MobSpawnerBlock) {
+        }
+
+        if (block instanceof MobSpawnerBlock) {
+            // Mob spawners
             Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (bukkitBlock == null) return false;
             BlockState state = bukkitBlock.getState();
@@ -364,18 +371,19 @@ public class BukkitWorld extends LocalWorld {
             we.setMobType(bukkit.getCreatureTypeId());
             we.setDelay((short) bukkit.getDelay());
             return true;
-        
-        // Note block
-        } else if (block instanceof NoteBlock) {
+        }
+
+        if (block instanceof NoteBlock) {
+            // Note block
             Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (bukkitBlock == null) return false;
             BlockState state = bukkitBlock.getState();
             if (!(state instanceof org.bukkit.block.NoteBlock)) return false;
-            org.bukkit.block.NoteBlock bukkit = (org.bukkit.block.NoteBlock)state;
+            org.bukkit.block.NoteBlock bukkit = (org.bukkit.block.NoteBlock) state;
             NoteBlock we = (NoteBlock) block;
             we.setNote(bukkit.getRawNote());
         }
-        
+
         return false;
     }
 
@@ -395,7 +403,7 @@ public class BukkitWorld extends LocalWorld {
             return false;
         }
 
-        org.bukkit.block.ContainerBlock chest = (org.bukkit.block.ContainerBlock)state;
+        org.bukkit.block.ContainerBlock chest = (org.bukkit.block.ContainerBlock) state;
         Inventory inven = chest.getInventory();
         inven.clear();
         return true;
@@ -472,7 +480,7 @@ public class BukkitWorld extends LocalWorld {
         ItemStack bukkitItem = new ItemStack(item.getType(), item.getAmount(),
                 (byte) item.getDamage());
         world.dropItemNaturally(toLocation(pt), bukkitItem);
-        
+
     }
 
     /**
@@ -499,7 +507,7 @@ public class BukkitWorld extends LocalWorld {
     public int killMobs(Vector origin, int radius, boolean killPets) {
         int num = 0;
         double radiusSq = Math.pow(radius, 2);
-        
+
         for (LivingEntity ent : world.getLivingEntities()) {
             if (!killPets && ent instanceof Tameable && ((Tameable) ent).isTamed()) {
                 continue; // tamed wolf
@@ -512,10 +520,10 @@ public class BukkitWorld extends LocalWorld {
                 }
             }
         }
-        
+
         return num;
     }
-    
+
     /**
      * Remove entities in an area.
      * 
@@ -527,54 +535,68 @@ public class BukkitWorld extends LocalWorld {
     public int removeEntities(EntityType type, Vector origin, int radius) {
         int num = 0;
         double radiusSq = Math.pow(radius, 2);
-        
+
         for (Entity ent : world.getEntities()) {
             if (radius != -1
                     && origin.distanceSq(BukkitUtil.toVector(ent.getLocation())) > radiusSq) {
                 continue;
             }
-            
-            if (type == EntityType.ARROWS) {
+
+            switch (type) {
+            case ARROWS:
                 if (ent instanceof Arrow) {
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.BOATS) {
+                break;
+
+            case BOATS:
                 if (ent instanceof Boat) {
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.ITEMS) {
+                break;
+
+            case ITEMS:
                 if (ent instanceof Item) {
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.MINECARTS) {
+                break;
+
+            case MINECARTS:
                 if (ent instanceof Minecart) {
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.PAINTINGS) {
+                break;
+
+            case PAINTINGS:
                 if (ent instanceof Painting) {
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.TNT) {
+                break;
+
+            case TNT:
                 if (ent instanceof TNTPrimed) {
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.XP_ORBS) {
+                break;
+
+            case XP_ORBS:
                 if (ent instanceof ExperienceOrb) {
                     ent.remove();
                     ++num;
                 }
+                break;
             }
         }
-        
+
         return num;
     }
-    
+
     private Location toLocation(Vector pt) {
         return new Location(world, pt.getX(), pt.getY(), pt.getZ());
     }
@@ -639,22 +661,22 @@ public class BukkitWorld extends LocalWorld {
         if (!(state instanceof org.bukkit.block.ContainerBlock)) {
             return new BaseItemStack[0];
         }
-        
+
         org.bukkit.block.ContainerBlock container = (org.bukkit.block.ContainerBlock) state;
         Inventory inven = container.getInventory();
         int size = inven.getSize();
         BaseItemStack[] contents = new BaseItemStack[size];
-        
+
         for (int i = 0; i < size; ++i) {
             ItemStack bukkitStack = inven.getItem(i);
             if (bukkitStack.getTypeId() > 0) {
                 contents[i] = new BaseItemStack(
                         bukkitStack.getTypeId(),
-                        bukkitStack.getAmount(), 
+                        bukkitStack.getAmount(),
                         bukkitStack.getDurability());
             }
         }
-        
+
         return contents;
     }
 
@@ -674,11 +696,11 @@ public class BukkitWorld extends LocalWorld {
         if (!(state instanceof org.bukkit.block.ContainerBlock)) {
             return false;
         }
-        
-        org.bukkit.block.ContainerBlock chest = (org.bukkit.block.ContainerBlock)state;
+
+        org.bukkit.block.ContainerBlock chest = (org.bukkit.block.ContainerBlock) state;
         Inventory inven = chest.getInventory();
         int size = inven.getSize();
-        
+
         for (int i = 0; i < size; ++i) {
             if (i >= contents.length) {
                 break;
@@ -686,16 +708,16 @@ public class BukkitWorld extends LocalWorld {
 
             if (contents[i] != null) {
                 inven.setItem(i, new ItemStack(contents[i].getType(),
-                        contents[i].getAmount(), 
+                        contents[i].getAmount(),
                         (byte) contents[i].getDamage()));
             } else {
                 inven.setItem(i, null);
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Returns whether a block has a valid ID.
      * 
@@ -719,7 +741,7 @@ public class BukkitWorld extends LocalWorld {
         if (!(other instanceof BukkitWorld)) {
             return false;
         }
-        
+
         return ((BukkitWorld) other).world.equals(world);
     }
 
@@ -761,7 +783,7 @@ public class BukkitWorld extends LocalWorld {
                 final Object notchChunk = World_getChunkFromChunkCoords.invoke(notchWorld, chunkX, chunkZ);
 
                 // Fix skylight
-                final byte[] blocks = (byte[])Chunk_blocks.get(notchChunk);
+                final byte[] blocks = (byte[]) Chunk_blocks.get(notchChunk);
                 final int length = blocks.length;
                 Chunk_skylightMap.set(notchChunk, NibbleArray_ctor.newInstance(length, 7));
 
@@ -781,7 +803,7 @@ public class BukkitWorld extends LocalWorld {
                         for (int y = 0; y < chunkSizeY; ++y) {
                             final int index = y + z * chunkSizeY + x * chunkSizeY * chunkSizeZ;
                             byte blockID = blocks[index];
-                            if (!BlockType.emitsLight(blockID))  {
+                            if (!BlockType.emitsLight(blockID)) {
                                 if (xBorder || zBorder && BlockType.isTranslucent(blockID)) {
                                     lightEmitters.add(chunk.getBlock(x, y, z).getState());
                                     if (blockID == 20) {
@@ -789,7 +811,7 @@ public class BukkitWorld extends LocalWorld {
                                     } else {
                                         blocks[index] = 20;
                                     }
-                                    
+
                                 }
                                 continue;
                             }

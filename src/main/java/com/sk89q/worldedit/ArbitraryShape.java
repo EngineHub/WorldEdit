@@ -38,9 +38,9 @@ public abstract class ArbitraryShape {
         Vector min = extent.getMinimumPoint();
         Vector max = extent.getMaximumPoint();
 
-        cacheSizeX = (int)(max.getX() - min.getX() + 1 + 2);
-        cacheSizeY = (int)(max.getY() - min.getY() + 1 + 2);
-        cacheSizeZ = (int)(max.getZ() - min.getZ() + 1 + 2);
+        cacheSizeX = (int) (max.getX() - min.getX() + 1 + 2);
+        cacheSizeY = (int) (max.getY() - min.getY() + 1 + 2);
+        cacheSizeZ = (int) (max.getZ() - min.getZ() + 1 + 2);
 
         cacheX = min.getBlockX() - 1;
         cacheY = min.getBlockY() - 1;
@@ -79,7 +79,7 @@ public abstract class ArbitraryShape {
                 return null;
             }
 
-            short newCacheEntry = (short) (material.getType() | ((material.getData()+1) << 8));
+            short newCacheEntry = (short) (material.getType() | ((material.getData() + 1) << 8));
             if (newCacheEntry == 0) {
                 // type and data 0
                 newCacheEntry = -2;
@@ -102,7 +102,7 @@ public abstract class ArbitraryShape {
 
     private boolean isInsideCached(int x, int y, int z, Pattern pattern) {
         final int index = (y - cacheY) + (z - cacheZ) * cacheSizeY + (x - cacheX) * cacheSizeY * cacheSizeZ;
-        
+
         switch (cache[index]) {
         case 0:
             // unknown block, meaning they must be outside the extent at this stage, but might still be inside the shape

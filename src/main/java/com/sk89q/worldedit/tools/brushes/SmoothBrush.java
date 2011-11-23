@@ -32,7 +32,7 @@ import com.sk89q.worldedit.regions.Region;
 public class SmoothBrush implements Brush {
     private int iterations;
     private boolean naturalOnly;
-    
+
     public SmoothBrush(int iterations) {
         this(iterations, false);
     }
@@ -41,7 +41,7 @@ public class SmoothBrush implements Brush {
         this.iterations = iterations;
         this.naturalOnly = naturalOnly;
     }
-    
+
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
         double rad = size;

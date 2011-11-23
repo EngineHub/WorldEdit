@@ -56,7 +56,7 @@ public class GeneralCommands {
                 return;
             }
         }
-        
+
         session.setBlockChangeLimit(limit);
         player.print("Block change limit set to " + limit + ".");
     }
@@ -147,27 +147,27 @@ public class GeneralCommands {
         String query = args.getString(0).trim().toLowerCase();
         boolean blocksOnly = args.hasFlag('b');
         boolean itemsOnly = args.hasFlag('i');
-        
+
         try {
             int id = Integer.parseInt(query);
-            
+
             ItemType type = ItemType.fromID(id);
-            
+
             if (type != null) {
                 player.print("#" + type.getID() + " (" + type.getName() + ")");
             } else {
                 player.printError("No item found by ID " + id);
             }
-            
+
             return;
         } catch (NumberFormatException e) {
         }
-        
+
         if (query.length() <= 2) {
             player.printError("Enter a longer search string (len > 2).");
             return;
         }
-        
+
         if (!blocksOnly && !itemsOnly) {
             player.print("Searching for: " + query);
         } else if (blocksOnly && itemsOnly) {
@@ -178,23 +178,23 @@ public class GeneralCommands {
         } else {
             player.print("Searching for items: " + query);
         }
-        
+
         int found = 0;
-        
+
         for (ItemType type : ItemType.values()) {
             if (found >= 15) {
                 player.print("Too many results!");
                 break;
             }
-            
+
             if (blocksOnly && type.getID() > 255) {
                 continue;
             }
-            
+
             if (itemsOnly && type.getID() <= 255) {
                 continue;
             }
-            
+
             for (String alias : type.getAliases()) {
                 if (alias.contains(query)) {
                     player.print("#" + type.getID() + " (" + type.getName() + ")");
@@ -203,7 +203,7 @@ public class GeneralCommands {
                 }
             }
         }
-        
+
         if (found == 0) {
             player.printError("No items found.");
         }

@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.commands;
 
-
 import java.util.Set;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -97,7 +96,7 @@ public class UtilityCommands {
         }
         player.print(affected + " block(s) have been created.");
     }
-    
+
     @Command(
         aliases = { "/drain" },
         usage = "<radius>",
@@ -260,7 +259,7 @@ public class UtilityCommands {
         }
         player.print(affected + " block(s) have been replaced.");
     }
-    
+
     @Command(
         aliases = { "/snow", "snow" },
         usage = "[radius]",
@@ -332,7 +331,7 @@ public class UtilityCommands {
             throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
-        
+
         int defaultRadius = config.maxRadius != -1 ? Math.min(40, config.maxRadius) : 40;
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0))
                 : defaultRadius;
@@ -378,12 +377,12 @@ public class UtilityCommands {
 
         String typeStr = args.getString(0);
         int radius = args.getInteger(1);
-        
+
         if (radius < -1) {
             player.printError("Use -1 to remove all entities in loaded chunks");
             return;
         }
-        
+
         EntityType type = null;
 
         if (typeStr.matches("arrows?")) {

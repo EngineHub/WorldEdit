@@ -92,7 +92,7 @@ public class TargetBlock {
         yRotation = yRotation * -1;
 
         double h = (checkDistance * Math.cos(Math.toRadians(yRotation)));
-        
+
         offset = new Vector((h * Math.cos(Math.toRadians(xRotation))),
                             (checkDistance * Math.sin(Math.toRadians(yRotation))),
                             (h * Math.sin(Math.toRadians(xRotation))));
@@ -113,7 +113,7 @@ public class TargetBlock {
         BlockWorldVector lastBlock = null;
         while (getNextBlock() != null) {
             if (world.getBlockType(getCurrentBlock()) == BlockID.AIR) {
-                if(searchForLastBlock) {
+                if (searchForLastBlock) {
                     lastBlock = getCurrentBlock();
                     if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= 127) {
                         searchForLastBlock = false;
@@ -126,7 +126,7 @@ public class TargetBlock {
         BlockWorldVector currentBlock = getCurrentBlock();
         return (currentBlock != null ? currentBlock : lastBlock);
     }
-    
+
     /**
      * Returns the block at the sight. Returns null if out of range or if no
      * viable target was found
@@ -134,8 +134,7 @@ public class TargetBlock {
      * @return Block
      */
     public BlockWorldVector getTargetBlock() {
-        while ((getNextBlock() != null)
-                && (world.getBlockType(getCurrentBlock()) == 0));
+        while (getNextBlock() != null && world.getBlockType(getCurrentBlock()) == 0) ;
         return getCurrentBlock();
     }
 
@@ -146,8 +145,7 @@ public class TargetBlock {
      * @return Block
      */
     public BlockWorldVector getSolidTargetBlock() {
-        while ((getNextBlock() != null)
-                && BlockType.canPassThrough(world.getBlockType(getCurrentBlock())));
+        while (getNextBlock() != null && BlockType.canPassThrough(world.getBlockType(getCurrentBlock()))) ;
         return getCurrentBlock();
     }
 
@@ -160,7 +158,7 @@ public class TargetBlock {
         prevPos = targetPos;
         do {
             curDistance += checkDistance;
-            
+
             targetPosDouble = offset.add(targetPosDouble.getX(),
                                          targetPosDouble.getY(),
                                          targetPosDouble.getZ());
@@ -169,7 +167,7 @@ public class TargetBlock {
                 && targetPos.getBlockX() == prevPos.getBlockX()
                 && targetPos.getBlockY() == prevPos.getBlockY()
                 && targetPos.getBlockZ() == prevPos.getBlockZ());
-        
+
         if (curDistance > maxDistance) {
             return null;
         }

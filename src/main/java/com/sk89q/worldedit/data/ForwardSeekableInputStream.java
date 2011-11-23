@@ -23,10 +23,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ForwardSeekableInputStream extends InputStream {
-    
+
     protected InputStream parent;
     protected long position = 0;
-    
+
     public ForwardSeekableInputStream(InputStream parent) {
         this.parent = parent;
     }
@@ -83,18 +83,18 @@ public class ForwardSeekableInputStream extends InputStream {
         position += skipped;
         return skipped;
     }
-    
+
     public void seek(long n) throws IOException {
         long diff = n - position;
-        
+
         if (diff < 0) {
             throw new IOException("Can't seek backwards");
         }
-        
+
         if (diff == 0) {
             return;
         }
-        
+
         if (skip(diff) < diff) {
             throw new IOException("Failed to seek " + diff + " bytes");
         }

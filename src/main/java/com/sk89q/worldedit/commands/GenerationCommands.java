@@ -229,12 +229,12 @@ public class GenerationCommands {
             player.printError("Tree type '" + args.getString(1) + "' is unknown.");
             return;
         }
-        
+
         int affected = editSession.makeForest(player.getPosition(),
                 size, density, new TreeGenerator(type));
         player.print(affected + " trees created.");
     }
-    
+
     @Command(
         aliases = { "pumpkins" },
         usage = "[size]",
@@ -253,7 +253,7 @@ public class GenerationCommands {
         int affected = editSession.makePumpkinPatches(player.getPosition(), size);
         player.print(affected + " pumpkin patches created.");
     }
-    
+
     @Command(
         aliases = { "/pyramid" },
         usage = "<block> <size>",
@@ -270,13 +270,13 @@ public class GenerationCommands {
         Pattern block = we.getBlockPattern(player, args.getString(0));
         int size = Math.max(1, args.getInteger(1));
         Vector pos = session.getPlacementPosition(player);
-        
+
         int affected = editSession.makePyramid(pos, block, size, true);
-        
+
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }
-    
+
     @Command(
         aliases = { "/hpyramid" },
         usage = "<block> <size>",
@@ -293,9 +293,9 @@ public class GenerationCommands {
         Pattern block = we.getBlockPattern(player, args.getString(0));
         int size = Math.max(1, args.getInteger(1));
         Vector pos = session.getPlacementPosition(player);
-        
+
         int affected = editSession.makePyramid(pos, block, size, false);
-        
+
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }

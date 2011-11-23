@@ -65,9 +65,9 @@ public class SnapshotCommands {
             List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true, player.getWorld().getName());
 
             if (snapshots.size() > 0) {
-                
+
                 int num = args.argsLength() > 0 ? Math.min(40, Math.max(5, args.getInteger(0))) : 5;
-                
+
                 player.print("Snapshots for world: '" + player.getWorld().getName() + "'");
                 for (byte i = 0; i < Math.min(num, snapshots.size()); i++) {
                     player.print((i + 1) + ". " + snapshots.get(i).getName());

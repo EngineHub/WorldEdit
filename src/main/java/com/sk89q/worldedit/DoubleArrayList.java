@@ -33,7 +33,7 @@ import java.util.NoSuchElementException;
  * @param <A>
  * @param <B>
  */
-public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
+public class DoubleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
     /**
      * First list.
      */
@@ -88,13 +88,13 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
      *
      * @return
      */
-    public Iterator<Map.Entry<A,B>> iterator() {
+    public Iterator<Map.Entry<A, B>> iterator() {
         if (isReversed) {
-            return new ReverseEntryIterator<Map.Entry<A,B>>(
+            return new ReverseEntryIterator<Map.Entry<A, B>>(
                     listA.listIterator(listA.size()),
                     listB.listIterator(listB.size()));
         } else {
-            return new ForwardEntryIterator<Map.Entry<A,B>>(
+            return new ForwardEntryIterator<Map.Entry<A, B>>(
                     listA.iterator(),
                     listB.iterator());
         }
@@ -105,8 +105,8 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
      *
      * @param <T>
      */
-    public class ForwardEntryIterator<T extends Map.Entry<A,B>>
-            implements Iterator<Map.Entry<A,B>> {
+    public class ForwardEntryIterator<T extends Map.Entry<A, B>>
+            implements Iterator<Map.Entry<A, B>> {
 
         private Iterator<A> keyIterator;
         private Iterator<B> valueIterator;
@@ -120,8 +120,8 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
             return keyIterator.hasNext();
         }
 
-        public Map.Entry<A,B> next() throws NoSuchElementException {
-            return new Entry<A,B>(keyIterator.next(), valueIterator.next());
+        public Map.Entry<A, B> next() throws NoSuchElementException {
+            return new Entry<A, B>(keyIterator.next(), valueIterator.next());
         }
 
         public void remove() {
@@ -134,8 +134,8 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
      *
      * @param <T>
      */
-    public class ReverseEntryIterator<T extends Map.Entry<A,B>>
-            implements Iterator<Map.Entry<A,B>> {
+    public class ReverseEntryIterator<T extends Map.Entry<A, B>>
+            implements Iterator<Map.Entry<A, B>> {
 
         private ListIterator<A> keyIterator;
         private ListIterator<B> valueIterator;
@@ -149,8 +149,8 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
             return keyIterator.hasPrevious();
         }
 
-        public Map.Entry<A,B> next() throws NoSuchElementException {
-            return new Entry<A,B>(keyIterator.previous(), valueIterator.previous());
+        public Map.Entry<A, B> next() throws NoSuchElementException {
+            return new Entry<A, B>(keyIterator.previous(), valueIterator.previous());
         }
 
         public void remove() {
@@ -164,7 +164,7 @@ public class DoubleArrayList<A,B> implements Iterable<Map.Entry<A,B>> {
      * @param <C>
      * @param <D>
      */
-    public class Entry<C,D> implements Map.Entry<A,B> {
+    public class Entry<C, D> implements Map.Entry<A, B> {
         private A key;
         private B value;
 

@@ -126,9 +126,9 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
      * @return map of values
      * @throws DataException
      */
-    public Map<String,Tag> toTileEntityNBT()
+    public Map<String, Tag> toTileEntityNBT()
             throws DataException {
-        Map<String,Tag> values = new HashMap<String,Tag>();
+        Map<String, Tag> values = new HashMap<String, Tag>();
         values.put("EntityId", new StringTag("EntityId", mobType));
         values.put("Delay", new ShortTag("Delay", delay));
         return values;
@@ -140,19 +140,19 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
      * @param values
      * @throws DataException
      */
-    public void fromTileEntityNBT(Map<String,Tag> values)
-            throws DataException  {
+    public void fromTileEntityNBT(Map<String, Tag> values)
+            throws DataException {
         if (values == null) {
             return;
         }
 
         Tag t = values.get("id");
-        if (!(t instanceof StringTag) || !((StringTag)t).getValue().equals("MobSpawner")) {
+        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("MobSpawner")) {
             throw new DataException("'MobSpawner' tile entity expected");
         }
 
-        StringTag mobTypeTag = (StringTag)Chunk.getChildTag(values, "EntityId", StringTag.class);
-        ShortTag delayTag = (ShortTag)Chunk.getChildTag(values, "Delay", ShortTag.class);
+        StringTag mobTypeTag = (StringTag) Chunk.getChildTag(values, "EntityId", StringTag.class);
+        ShortTag delayTag = (ShortTag) Chunk.getChildTag(values, "Delay", ShortTag.class);
 
         this.mobType = mobTypeTag.getValue();
         this.delay = delayTag.getValue();

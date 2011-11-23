@@ -75,7 +75,7 @@ public class HeightMapFilter {
      * @param height
      * @return the modified heightmap
      */
-    public int[] filter(int[] inData, int width, int height ) {
+    public int[] filter(int[] inData, int width, int height) {
         int index = 0;
         float[] matrix = kernel.getKernelData(null);
         int[] outData = new int[inData.length];
@@ -84,7 +84,7 @@ public class HeightMapFilter {
         int kw = kernel.getWidth();
         int kox = kernel.getXOrigin();
         int koy = kernel.getYOrigin();
-        
+
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
                 float z = 0;
@@ -92,9 +92,10 @@ public class HeightMapFilter {
                 for (int ky = 0; ky < kh; ++ky) {
                     int offsetY = y + ky - koy;
                     // Clamp coordinates inside data
-                    if (offsetY < 0 || offsetY >= height)
+                    if (offsetY < 0 || offsetY >= height) {
                         offsetY = y;
-                    
+                    }
+
                     offsetY *= width;
 
                     int matrixOffset = ky * kw;
@@ -104,9 +105,10 @@ public class HeightMapFilter {
 
                         int offsetX = x + kx - kox;
                         // Clamp coordinates inside data
-                        if (offsetX < 0 || offsetX >= width)
-                                offsetX = x;
- 
+                        if (offsetX < 0 || offsetX >= width) {
+                            offsetX = x;
+                        }
+
                         z += f * inData[offsetY + offsetX];
                     }
                 }

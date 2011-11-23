@@ -32,7 +32,7 @@ import com.sk89q.worldedit.tools.AreaPickaxe;
 import com.sk89q.worldedit.tools.RecursivePickaxe;
 import com.sk89q.worldedit.tools.SinglePickaxe;
 
-public class SuperPickaxeCommands {    
+public class SuperPickaxeCommands {
     @Command(
         aliases = { "single" },
         usage = "",
@@ -49,7 +49,7 @@ public class SuperPickaxeCommands {
         session.enableSuperPickAxe();
         player.print("Mode changed. Left click with a pickaxe. // to disable.");
     }
-    
+
     @Command(
         aliases = { "area" },
         usage = "<radius>",
@@ -64,17 +64,17 @@ public class SuperPickaxeCommands {
 
         LocalConfiguration config = we.getConfiguration();
         int range = args.getInteger(0);
-        
+
         if (range > config.maxSuperPickaxeSize) {
             player.printError("Maximum range: " + config.maxSuperPickaxeSize);
             return;
         }
-        
+
         session.setSuperPickaxe(new AreaPickaxe(range));
         session.enableSuperPickAxe();
         player.print("Mode changed. Left click with a pickaxe. // to disable.");
     }
-    
+
     @Command(
         aliases = { "recur", "recursive" },
         usage = "<radius>",
@@ -89,12 +89,12 @@ public class SuperPickaxeCommands {
 
         LocalConfiguration config = we.getConfiguration();
         double range = args.getDouble(0);
-        
+
         if (range > config.maxSuperPickaxeSize) {
             player.printError("Maximum range: " + config.maxSuperPickaxeSize);
             return;
         }
-        
+
         session.setSuperPickaxe(new RecursivePickaxe(range));
         session.enableSuperPickAxe();
         player.print("Mode changed. Left click with a pickaxe. // to disable.");

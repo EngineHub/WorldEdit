@@ -28,12 +28,12 @@ import com.sk89q.worldedit.patterns.Pattern;
 public class ClipboardBrush implements Brush {
     private CuboidClipboard clipboard;
     private boolean noAir;
-    
+
     public ClipboardBrush(CuboidClipboard clipboard, boolean noAir) {
         this.clipboard = clipboard;
         this.noAir = noAir;
     }
-    
+
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
         clipboard.place(editSession, pos.subtract(clipboard.getSize().divide(2)), noAir);

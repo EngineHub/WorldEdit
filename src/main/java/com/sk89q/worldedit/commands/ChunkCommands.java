@@ -97,7 +97,7 @@ public class ChunkCommands {
 
         player.print("Note that this command does not yet support the mcregion format.");
         LocalConfiguration config = we.getConfiguration();
-        
+
         Set<Vector2D> chunks = session.getSelection(player.getWorld()).getChunks();
         FileOutputStream out = null;
 
@@ -129,7 +129,9 @@ public class ChunkCommands {
                 player.printError("Error occurred: " + e.getMessage());
             } finally {
                 if (out != null) {
-                    try { out.close(); } catch (IOException ie) {}
+                    try {
+                        out.close();
+                    } catch (IOException ie) { }
                 }
             }
         } else if (config.shellSaveType.equalsIgnoreCase("bash")) {

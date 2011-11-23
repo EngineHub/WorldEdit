@@ -30,7 +30,7 @@ import com.sk89q.worldedit.cui.CUIEvent;
 public class BukkitPlayer extends LocalPlayer {
     private Player player;
     private WorldEditPlugin plugin;
-    
+
     public BukkitPlayer(WorldEditPlugin plugin, ServerInterface server, Player player) {
         super(server);
         this.plugin = plugin;
@@ -117,11 +117,11 @@ public class BukkitPlayer extends LocalPlayer {
     public LocalWorld getWorld() {
         return new BukkitWorld(player.getWorld());
     }
-    
+
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
         String[] params = event.getParameters();
-        
+
         if (params.length > 0) {
             player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId()
                     + "|" + StringUtil.joinString(params, "|"));
@@ -129,7 +129,7 @@ public class BukkitPlayer extends LocalPlayer {
             player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId());
         }
     }
-    
+
     @Override
     public void dispatchCUIHandshake() {
         player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75");

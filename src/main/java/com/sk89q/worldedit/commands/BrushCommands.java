@@ -75,7 +75,7 @@ public class BrushCommands {
         Pattern fill = we.getBlockPattern(player, args.getString(0));
         tool.setFill(fill);
         tool.setSize(radius);
-        
+
         if (args.hasFlag('h')) {
             tool.setBrush(new HollowSphereBrush(), "worldedit.brush.sphere");
         } else {
@@ -119,13 +119,13 @@ public class BrushCommands {
         Pattern fill = we.getBlockPattern(player, args.getString(0));
         tool.setFill(fill);
         tool.setSize(radius);
-        
+
         if (args.hasFlag('h')) {
             tool.setBrush(new HollowCylinderBrush(height), "worldedit.brush.cylinder");
         } else {
             tool.setBrush(new CylinderBrush(height), "worldedit.brush.cylinder");
         }
-        
+
         player.print(String.format("Cylinder brush shape equipped (%.0f by %d).",
                 radius, height));
     }
@@ -144,14 +144,14 @@ public class BrushCommands {
             throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
-        
+
         CuboidClipboard clipboard = session.getClipboard();
-        
+
         if (clipboard == null) {
             player.printError("Copy something first.");
             return;
         }
-        
+
         Vector size = clipboard.getSize();
 
         if (size.getBlockX() > config.maxBrushRadius
@@ -164,7 +164,7 @@ public class BrushCommands {
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
         tool.setBrush(new ClipboardBrush(clipboard, args.hasFlag('a')), "worldedit.brush.clipboard");
-        
+
         player.print("Clipboard brush shape equipped.");
     }
 
@@ -199,7 +199,7 @@ public class BrushCommands {
         player.print(String.format("Smooth brush equipped (%.0f x %dx, using " + (args.hasFlag('n') ? "natural blocks only" : "any block") + ").",
                 radius, iterations));
     }
-    
+
     @Command(
         aliases = { "ex", "extinguish" },
         usage = "[radius]",

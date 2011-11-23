@@ -45,7 +45,7 @@ import com.sk89q.worldedit.commands.UtilityCommands;
 public class DocumentationPrinter {
     public static void main(String[] args) throws IOException {
         File commandsDir = new File(args[0]);
-        
+
         List<Class<?>> commandClasses = getCommandClasses(commandsDir);
 
         System.out.println("Writing permissions wiki table...");
@@ -55,7 +55,7 @@ public class DocumentationPrinter {
 
         System.out.println("Done!");
     }
-    
+
     private static List<Class<?>> getCommandClasses(File dir) {
         List<Class<?>> classes = new ArrayList<Class<?>>();
 
@@ -72,7 +72,7 @@ public class DocumentationPrinter {
         classes.add(ToolUtilCommands.class);
         classes.add(ToolCommands.class);
         classes.add(UtilityCommands.class);
-        
+
         /*for (File f : dir.listFiles()) {
             if (!f.getName().matches("^.*\\.java$")) {
                 continue;
@@ -91,10 +91,10 @@ public class DocumentationPrinter {
             
             classes.add(cls);
         }*/
-        
+
         return classes;
-    }   
-    
+    }
+
     private static void writePermissionsWikiTable(List<Class<?>> commandClasses)
             throws IOException {
         FileOutputStream stream = null;
@@ -108,26 +108,26 @@ public class DocumentationPrinter {
             }
         }
     }
-    
+
     private static void _writePermissionsWikiTable(PrintStream stream,
             List<Class<?>> commandClasses, String prefix) {
-        
+
         for (Class<?> cls : commandClasses) {
             for (Method method : cls.getMethods()) {
                 if (!method.isAnnotationPresent(Command.class)) {
                     continue;
                 }
-    
+
                 Command cmd = method.getAnnotation(Command.class);
-    
+
                 stream.println("|-");
                 stream.print("| " + prefix + cmd.aliases()[0]);
                 stream.print(" || ");
-    
+
                 if (method.isAnnotationPresent(CommandPermissions.class)) {
                     CommandPermissions perms =
-                        method.getAnnotation(CommandPermissions.class);
-                    
+                            method.getAnnotation(CommandPermissions.class);
+
                     String[] permKeys = perms.value();
                     for (int i = 0; i < permKeys.length; ++i) {
                         if (i > 0) {
@@ -136,9 +136,9 @@ public class DocumentationPrinter {
                         stream.print(permKeys[i]);
                     }
                 }
-    
+
                 stream.print(" || ");
-    
+
                 boolean firstAlias = true;
                 if (cmd.aliases().length != 0) {
                     for (String alias : cmd.aliases()) {
@@ -164,8 +164,8 @@ public class DocumentationPrinter {
 
                 if (method.isAnnotationPresent(NestedCommand.class)) {
                     NestedCommand nested =
-                        method.getAnnotation(NestedCommand.class);
-                    
+                            method.getAnnotation(NestedCommand.class);
+
                     Class<?>[] nestedClasses = nested.value();
                     _writePermissionsWikiTable(stream,
                             Arrays.asList(nestedClasses),
@@ -174,7 +174,7 @@ public class DocumentationPrinter {
             }
         }
     }
-    
+
     private static void writeBukkitYAML(List<Class<?>> commandClasses)
             throws IOException {
         FileOutputStream stream = null;
@@ -188,7 +188,7 @@ public class DocumentationPrinter {
             }
         }
     }
-    
+
     private static void _writeBukkitYAML(PrintStream stream,
             List<Class<?>> commandClasses) {
 
@@ -196,7 +196,7 @@ public class DocumentationPrinter {
         stream.println("main: com.sk89q.worldedit.bukkit.WorldEditPlugin");
         stream.println("version: ${project.version}");
         stream.println("commands:");
-        
+
         for (Class<?> cls : commandClasses) {
             for (Method method : cls.getMethods()) {
                 if (!method.isAnnotationPresent(Command.class)) {

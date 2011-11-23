@@ -28,7 +28,7 @@ import com.sk89q.worldedit.LocalPlayer;
  * @author sk89q
  */
 public abstract interface Tool {
-    
+
     /**
      * Checks to see if the player can still be using this tool (considering
      * permissions and such).
@@ -37,5 +37,5 @@ public abstract interface Tool {
      * @return
      */
     public boolean canUse(LocalPlayer player);
-    
+
 }

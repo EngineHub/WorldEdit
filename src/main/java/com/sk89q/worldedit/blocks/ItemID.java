@@ -163,6 +163,6 @@ public final class ItemID {
     public static final int DISC_MELLOHI = 2262;
     public static final int DISC_STAL = 2263;
     public static final int DISC_STRAD = 2264;
-    public static final int DISC_WARD =  2265;
+    public static final int DISC_WARD = 2265;
     public static final int DISC_11 = 2266;
 }

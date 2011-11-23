@@ -44,7 +44,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
             return false;
         }
     }
-    
+
     public boolean setRawTypeIdAndData(int x, int y, int z, int typeId, int data) {
         try {
             return editSession.setBlock(new Vector(x, y, z), new BaseBlock(typeId, data));

@@ -35,19 +35,19 @@ import com.sk89q.worldedit.blocks.BlockID;
 public class FloatingTreeRemover implements BlockTool {
     private static final BaseBlock air = new BaseBlock(BlockID.AIR);
     private int range;
-    
+
     public FloatingTreeRemover() {
         this.range = 100;
     }
-    
+
     public boolean canUse(LocalPlayer player) {
         return player.hasPermission("worldedit.tool.deltree");
     }
-    
+
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         LocalWorld world = clicked.getWorld();
-        
+
         int initialType = world.getBlockType(clicked);
         int block;
 
@@ -60,7 +60,7 @@ public class FloatingTreeRemover implements BlockTool {
             player.printError("That's not a floating tree.");
             return true;
         }
-        
+
         HashSet<BlockVector> blockSet = new HashSet<BlockVector>();
         try {
             if (!recurse(server, editSession, world, clicked.toBlockVector(),
@@ -105,7 +105,7 @@ public class FloatingTreeRemover implements BlockTool {
             Vector origin, int size,
             Set<BlockVector> visited, int lastBlock)
             throws MaxChangedBlocksException {
-        
+
         if (origin.distance(pos) > size || visited.contains(pos)) {
             return true;
         }
@@ -113,7 +113,7 @@ public class FloatingTreeRemover implements BlockTool {
         visited.add(pos);
 
         int block = editSession.getBlock(pos).getType();
-        if (block == BlockID.AIR || block == BlockID.SNOW){
+        if (block == BlockID.AIR || block == BlockID.SNOW) {
             return true;
         }
         if (block != BlockID.LOG
@@ -125,7 +125,7 @@ public class FloatingTreeRemover implements BlockTool {
             } else {
                 return false;
             }
-            
+
         }
 
         for (int i = -1; i <= 1; ++i) {

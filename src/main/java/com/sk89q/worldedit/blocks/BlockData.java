@@ -721,7 +721,7 @@ public final class BlockData {
             case ClothColor.ID.MAGENTA: return ClothColor.ID.PINK;
             case ClothColor.ID.PINK: return ClothColor.ID.WHITE;
         }
-    
+
         return ClothColor.ID.WHITE;
     }
 
@@ -750,7 +750,7 @@ public final class BlockData {
             case ClothColor.ID.PINK: return ClothColor.ID.MAGENTA;
             case ClothColor.ID.WHITE: return ClothColor.ID.PINK;
         }
-    
+
         return ClothColor.ID.WHITE;
     }
 }
