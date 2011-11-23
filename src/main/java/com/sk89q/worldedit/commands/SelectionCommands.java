@@ -538,7 +538,7 @@ public class SelectionCommands {
         aliases = { "/distr" },
         usage = "",
         desc = "Get the distribution of blocks in the selection",
-        flags = "c",
+        flags = "cd",
         min = 0,
         max = 0
     )
@@ -546,9 +546,11 @@ public class SelectionCommands {
     public static void distr(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
+
+        boolean useData = args.hasFlag('d'); 
         
         List<Countable<Integer>> distribution =
-            editSession.getBlockDistribution(session.getSelection(player.getWorld()));
+            editSession.getBlockDistribution(session.getSelection(player.getWorld()), useData);
         
         Logger logger = Logger.getLogger("Minecraft.WorldEdit");
         
@@ -563,11 +565,20 @@ public class SelectionCommands {
             }
             
             for (Countable<Integer> c : distribution) {
-                BlockType block = BlockType.fromID(c.getID());
-                String str = String.format("%-7s (%.3f%%) %s #%d",
-                        String.valueOf(c.getAmount()),
-                        c.getAmount() / (double)size * 100,
-                        block == null ? "Unknown" : block.getName(), c.getID());
+                String str;
+                if (useData) {
+                    BlockType block = BlockType.fromID(c.getID() >> 16);
+                    str = String.format("%-7s (%.3f%%) %s #%d:%d",
+                            String.valueOf(c.getAmount()),
+                            c.getAmount() / (double)size * 100,
+                            block == null ? "Unknown" : block.getName(), c.getID() >> 16, c.getID() & 0xFFFF);
+                } else {
+                    BlockType block = BlockType.fromID(c.getID());
+                    str = String.format("%-7s (%.3f%%) %s #%d",
+                            String.valueOf(c.getAmount()),
+                            c.getAmount() / (double)size * 100,
+                            block == null ? "Unknown" : block.getName(), c.getID());
+                }
                 player.print(str);
                 
                 if (args.hasFlag('c')) {

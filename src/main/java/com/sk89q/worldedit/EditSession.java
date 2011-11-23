@@ -2586,7 +2586,7 @@ public class EditSession {
      * @param region
      * @return
      */
-    public List<Countable<Integer>> getBlockDistribution(Region region) {
+    public List<Countable<Integer>> getBlockDistribution(Region region, boolean useData) {
         List<Countable<Integer>> distribution = new ArrayList<Countable<Integer>>();
         Map<Integer, Countable<Integer>> map = new HashMap<Integer, Countable<Integer>>();
 
@@ -2608,6 +2608,9 @@ public class EditSession {
                         Vector pt = new Vector(x, y, z);
 
                         int id = getBlockType(pt);
+                        if (useData) {
+                            id = (id << 16) | getBlockData(pt);
+                        }
 
                         if (map.containsKey(id)) {
                             map.get(id).increment();
@@ -2622,6 +2625,9 @@ public class EditSession {
         } else {
             for (Vector pt : region) {
                 int id = getBlockType(pt);
+                if (useData) {
+                    id = (id << 16) | getBlockData(pt);
+                }
 
                 if (map.containsKey(id)) {
                     map.get(id).increment();
