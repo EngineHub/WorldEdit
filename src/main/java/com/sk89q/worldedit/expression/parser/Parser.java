@@ -167,8 +167,7 @@ public class Parser {
                         final RValue body = parseStatements(true);
 
                         statements.add(new For(current.getPosition(), init, condition, increment, body));
-                    }
-                    else {
+                    } else {
                         position = oldPosition;
 
                         final Token variableToken = peek();
@@ -377,7 +376,7 @@ public class Parser {
 
             return Functions.getFunction(identifierToken.getPosition(), identifierToken.value, args.toArray(new RValue[args.size()]));
         } catch (NoSuchMethodException e) {
-            throw new ParserException(identifierToken.getPosition(), "Function '"+identifierToken.value+"' not found", e);
+            throw new ParserException(identifierToken.getPosition(), "Function '" + identifierToken.value + "' not found", e);
         }
     }
 
