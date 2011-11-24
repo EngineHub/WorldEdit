@@ -95,6 +95,7 @@ public class ExpressionTest {
     @Test
     public void testFor() throws ExpressionException {
         assertEquals(5, simpleEval("a=0; for (i=0; i<5; ++i) { ++a; } a"), 0);
+        assertEquals(12345, simpleEval("y=0; for (i=1,5) { y *= 10; y += i; } y"), 0);
     }
 
     private double simpleEval(String expression) throws ExpressionException {

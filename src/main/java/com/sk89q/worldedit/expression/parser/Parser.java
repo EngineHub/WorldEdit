@@ -35,9 +35,11 @@ import com.sk89q.worldedit.expression.runtime.Conditional;
 import com.sk89q.worldedit.expression.runtime.Constant;
 import com.sk89q.worldedit.expression.runtime.For;
 import com.sk89q.worldedit.expression.runtime.Functions;
+import com.sk89q.worldedit.expression.runtime.LValue;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.expression.runtime.Return;
 import com.sk89q.worldedit.expression.runtime.Sequence;
+import com.sk89q.worldedit.expression.runtime.SimpleFor;
 import com.sk89q.worldedit.expression.runtime.Variable;
 import com.sk89q.worldedit.expression.runtime.While;
 
@@ -153,15 +155,50 @@ public class Parser {
                 case 'f': { // for
                     ++position;
                     consumeCharacter('(');
+                    int oldPosition = position;
                     final RValue init = parseExpression(true);
-                    consumeCharacter(';');
-                    final RValue condition = parseExpression(true);
-                    consumeCharacter(';');
-                    final RValue increment = parseExpression(true);
-                    consumeCharacter(')');
-                    final RValue body = parseStatements(true);
+                    //if ((init instanceof LValue) && )
+                    if (peek().id() == ';') {
+                        ++position;
+                        final RValue condition = parseExpression(true);
+                        consumeCharacter(';');
+                        final RValue increment = parseExpression(true);
+                        consumeCharacter(')');
+                        final RValue body = parseStatements(true);
 
-                    statements.add(new For(current.getPosition(), init, condition, increment, body));
+                        statements.add(new For(current.getPosition(), init, condition, increment, body));
+                    }
+                    else {
+                        position = oldPosition;
+
+                        final Token variableToken = peek();
+                        if (!(variableToken instanceof IdentifierToken)) {
+                            throw new ParserException(variableToken.getPosition(), "Expected identifier");
+                        }
+
+                        // In theory, I should have to create non-existant variables here.
+                        // However, the java-for parsing attempt further up already takes care of that :) 
+                        RValue variable = variables.get(((IdentifierToken) variableToken).value);
+                        if (!(variable instanceof LValue)) {
+                            throw new ParserException(variableToken.getPosition(), "Expected variable");
+                        }
+
+                        ++position;
+
+                        final Token equalsToken = peek();
+                        if (!(equalsToken instanceof OperatorToken) || !((OperatorToken) equalsToken).operator.equals("=")) {
+                            throw new ParserException(variableToken.getPosition(), "Expected '=' or a term and ';'");
+                        }
+                        ++position;
+
+                        final RValue first = parseExpression(true);
+                        consumeCharacter(',');
+                        final RValue last = parseExpression(true);
+                        consumeCharacter(')');
+                        final RValue body = parseStatements(true);
+
+                        statements.add(new SimpleFor(current.getPosition(), (LValue) variable, first, last, body));
+                    }
                     break;
                 }
 
