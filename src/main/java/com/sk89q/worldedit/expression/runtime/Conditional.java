@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.expression.runtime;
 
 /**
- * An if/else statement.
+ * An if/else statement or a ternary operator.
  *
  * @author TomyLobo
  */
