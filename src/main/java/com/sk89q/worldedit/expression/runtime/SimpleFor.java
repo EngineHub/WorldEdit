@@ -78,5 +78,10 @@ public class SimpleFor extends Node {
         return "for (" + counter + " = " + first + ", " + last + ") { " + body + " }";
     }
 
-    //TODO: optimizer
+    @Override
+    public RValue optimize() throws EvaluationException {
+        // TODO: unroll small loops into Sequences
+
+        return new SimpleFor(getPosition(), (LValue) counter.optimize(), first.optimize(), last.optimize(), body.optimize());
+    }
 }

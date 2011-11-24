@@ -74,5 +74,17 @@ public class For extends Node {
         return "for (" + init + "; " + condition + "; " + increment + ") { " + body + " }";
     }
 
-    //TODO: optimizer
+    @Override
+    public RValue optimize() throws EvaluationException {
+        final RValue newCondition = condition.optimize();
+
+        if (newCondition instanceof Constant && newCondition.getValue() <= 0) {
+            // If the condition is always false, the loop can be flattened.
+            // So we run the init part and then return 0.0.
+            return new Sequence(getPosition(), init, new Constant(getPosition(), 0.0)).optimize();
+        }
+
+        //return new Sequence(getPosition(), init.optimize(), new While(getPosition(), condition, new Sequence(getPosition(), body, increment), false)).optimize();
+        return new For(getPosition(), init.optimize(), newCondition, increment.optimize(), body.optimize());
+    }
 }

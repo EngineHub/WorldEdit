@@ -95,5 +95,21 @@ public class While extends Node {
         }
     }
 
-    //TODO: optimizer
+    @Override
+    public RValue optimize() throws EvaluationException {
+        final RValue newCondition = condition.optimize();
+
+        if (newCondition instanceof Constant && newCondition.getValue() <= 0) {
+            // If the condition is always false, the loop can be flattened.
+            if (footChecked) {
+                // Foot-checked loops run at least once.
+                return body.optimize();
+            } else {
+                // Loops that never run always return 0.0.
+                return new Constant(getPosition(), 0.0);
+            }
+        }
+
+        return new While(getPosition(), newCondition, body.optimize(), footChecked);
+    }
 }

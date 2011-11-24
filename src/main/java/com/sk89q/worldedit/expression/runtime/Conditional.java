@@ -42,7 +42,7 @@ public class Conditional extends Node {
         if (condition.getValue() > 0.0) {
             return truePart.getValue();
         } else {
-            return falsePart == null ? 0 : falsePart.getValue();
+            return falsePart == null ? 0.0 : falsePart.getValue();
         }
     }
 
@@ -62,5 +62,18 @@ public class Conditional extends Node {
         }
     }
 
-    //TODO: optimizer
+    @Override
+    public RValue optimize() throws EvaluationException {
+        final RValue newCondition = condition.optimize();
+
+        if (newCondition instanceof Constant) {
+            if (newCondition.getValue() > 0) {
+                return truePart.optimize();
+            } else {
+                return falsePart == null ? new Constant(getPosition(), 0.0) : falsePart.optimize();
+            }
+        }
+
+        return new Conditional(getPosition(), newCondition, truePart.optimize(), falsePart.optimize());
+    }
 }

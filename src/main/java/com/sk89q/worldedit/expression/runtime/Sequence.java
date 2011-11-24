@@ -88,6 +88,10 @@ public class Sequence extends Node {
             newSequence.add(droppedLast);
         }
 
+        if (newSequence.size() == 1) {
+            return newSequence.get(0);
+        }
+
         return new Sequence(getPosition(), newSequence.toArray(new RValue[newSequence.size()]));
     }
 }
