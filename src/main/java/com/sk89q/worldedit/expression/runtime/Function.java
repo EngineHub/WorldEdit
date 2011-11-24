@@ -31,7 +31,8 @@ import java.lang.reflect.Method;
  */
 public class Function extends Node {
     /**
-     * Add this annotation on functions that don't always return the same value for the same inputs.
+     * Add this annotation on functions that don't always return the same value
+     * for the same inputs and on functions with side-effects.
      */
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Dynamic { }

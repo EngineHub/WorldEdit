@@ -351,6 +351,7 @@ public class Parser {
 
         try {
             if (peek().id() == ')') {
+                ++position;
                 return Functions.getFunction(identifierToken.getPosition(), identifierToken.value);
             }
 
@@ -376,7 +377,7 @@ public class Parser {
 
             return Functions.getFunction(identifierToken.getPosition(), identifierToken.value, args.toArray(new RValue[args.size()]));
         } catch (NoSuchMethodException e) {
-            throw new ParserException(identifierToken.getPosition(), "Function not found", e);
+            throw new ParserException(identifierToken.getPosition(), "Function '"+identifierToken.value+"' not found", e);
         }
     }
 

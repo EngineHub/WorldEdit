@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import com.sk89q.worldedit.expression.runtime.Function.Dynamic;
 
@@ -280,5 +281,18 @@ public final class Functions {
     public static final double gmegabuf(RValue index, double value) throws EvaluationException {
         final int intIndex = (int) index.getValue();
         return getSubBuffer(intIndex & ~1023)[intIndex & 1023] = value;
+    }
+
+
+    private static final Random random = new Random();
+
+    @Dynamic
+    public static final double random() {
+        return random.nextDouble();
+    }
+
+    @Dynamic
+    public static final double randint(RValue max) throws EvaluationException {
+        return random.nextInt((int) Math.floor(max.getValue()));
     }
 }

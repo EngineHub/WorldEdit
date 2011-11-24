@@ -69,15 +69,23 @@ public class Sequence extends Node {
     public Node optimize() throws EvaluationException {
         List<RValue> newSequence = new ArrayList<RValue>();
 
+        RValue droppedLast = null;
         for (RValue invokable : sequence) {
+            droppedLast = null;
             invokable = invokable.optimize();
             if (invokable instanceof Sequence) {
                 for (RValue subInvokable : ((Sequence) invokable).sequence) {
                     newSequence.add(subInvokable);
                 }
+            } else if (invokable instanceof Constant) {
+                droppedLast = invokable;
             } else {
                 newSequence.add(invokable);
             }
+        }
+
+        if (droppedLast != null) {
+            newSequence.add(droppedLast);
         }
 
         return new Sequence(getPosition(), newSequence.toArray(new RValue[newSequence.size()]));
