@@ -31,12 +31,12 @@ import com.sk89q.worldedit.regions.Region;
  */
 public abstract class ArbitraryShape {
     private final Region extent;
+    private int cacheOffsetX;
+    private int cacheOffsetY;
+    private int cacheOffsetZ;
     private int cacheSizeX;
     private int cacheSizeY;
     private int cacheSizeZ;
-    private int cacheX;
-    private int cacheY;
-    private int cacheZ;
 
     public ArbitraryShape(Region extent) {
         this.extent = extent;
@@ -44,13 +44,13 @@ public abstract class ArbitraryShape {
         Vector min = extent.getMinimumPoint();
         Vector max = extent.getMaximumPoint();
 
-        cacheSizeX = (int) (max.getX() - min.getX() + 1 + 2);
-        cacheSizeY = (int) (max.getY() - min.getY() + 1 + 2);
-        cacheSizeZ = (int) (max.getZ() - min.getZ() + 1 + 2);
+        cacheOffsetX = min.getBlockX() - 1;
+        cacheOffsetY = min.getBlockY() - 1;
+        cacheOffsetZ = min.getBlockZ() - 1;
 
-        cacheX = min.getBlockX() - 1;
-        cacheY = min.getBlockY() - 1;
-        cacheZ = min.getBlockZ() - 1;
+        cacheSizeX = (int) (max.getX() - cacheOffsetX + 2);
+        cacheSizeY = (int) (max.getY() - cacheOffsetY + 2);
+        cacheSizeZ = (int) (max.getZ() - cacheOffsetZ + 2);
 
         cache = new short[cacheSizeX * cacheSizeY * cacheSizeZ];
     }
@@ -65,7 +65,7 @@ public abstract class ArbitraryShape {
      * 0 = unknown
      * -1 = outside
      * -2 = inside but type and data 0
-     * > 0 = inside, value = (type | (data << 8)), not handling data < -1
+     * > 0 = inside, value = (type | (data << 8)), not handling data < 0
      */
     private final short[] cache;
 
@@ -81,7 +81,7 @@ public abstract class ArbitraryShape {
     protected abstract BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial);
 
     private BaseBlock getMaterialCached(int x, int y, int z, Pattern pattern) {
-        final int index = (y - cacheY) + (z - cacheZ) * cacheSizeY + (x - cacheX) * cacheSizeY * cacheSizeZ;
+        final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
 
         final short cacheEntry = cache[index];
         switch (cacheEntry) {
@@ -116,7 +116,7 @@ public abstract class ArbitraryShape {
     }
 
     private boolean isInsideCached(int x, int y, int z, Pattern pattern) {
-        final int index = (y - cacheY) + (z - cacheZ) * cacheSizeY + (x - cacheX) * cacheSizeY * cacheSizeZ;
+        final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
 
         switch (cache[index]) {
         case 0:
