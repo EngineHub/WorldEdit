@@ -25,7 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * Wrapper for a Java method and its arguments (other Invokables)
+ * Wrapper for a Java method and its arguments (other Nodes)
  *
  * @author TomyLobo
  */
