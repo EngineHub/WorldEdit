@@ -34,7 +34,7 @@ public abstract class Node implements RValue {
     @Override
     public abstract String toString();
 
-    public Node optimize() throws EvaluationException {
+    public RValue optimize() throws EvaluationException {
         return this;
     }
 

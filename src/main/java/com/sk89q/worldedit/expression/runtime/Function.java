@@ -84,7 +84,7 @@ public class Function extends Node {
     }
 
     @Override
-    public Node optimize() throws EvaluationException {
+    public RValue optimize() throws EvaluationException {
         final RValue[] optimizedArgs = new RValue[args.length];
         boolean optimizable = !method.isAnnotationPresent(Dynamic.class);
         int position = getPosition();
