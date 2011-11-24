@@ -23,6 +23,12 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;
 
+/**
+ * Generates solid and hollow shapes according to materials returned by the
+ * {@link #getMaterial} method.
+ *
+ * @author TomyLobo
+ */
 public abstract class ArbitraryShape {
     private final Region extent;
     private int cacheSizeX;
@@ -63,6 +69,15 @@ public abstract class ArbitraryShape {
      */
     private final short[] cache;
 
+    /**
+     * Override this function to specify the shape to generate.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @param defaultMaterial The material returned by the pattern for the current block.
+     * @return material to place or null to not place anything.
+     */
     protected abstract BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial);
 
     private BaseBlock getMaterialCached(int x, int y, int z, Pattern pattern) {
@@ -118,6 +133,15 @@ public abstract class ArbitraryShape {
         }
     }
 
+    /**
+     * Generates the shape.
+     *
+     * @param editSession
+     * @param pattern The pattern to generate default materials from.
+     * @param hollow Specifies whether to generate a hollow shape.
+     * @return number of affected blocks.
+     * @throws MaxChangedBlocksException
+     */
     public int generate(EditSession editSession, Pattern pattern, boolean hollow) throws MaxChangedBlocksException {
         int affected = 0;
 
