@@ -55,8 +55,10 @@ public class Conditional extends Node {
     public String toString() {
         if (falsePart == null) {
             return "if (" + condition + ") { " + truePart + " }";
-        } else {
+        } else if (truePart instanceof Sequence || falsePart instanceof Sequence) {
             return "if (" + condition + ") { " + truePart + " } else { " + falsePart + " }";
+        } else {
+            return "(" + condition + ") ? (" + truePart + ") : (" + falsePart + ")";
         }
     }
 

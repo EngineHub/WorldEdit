@@ -105,6 +105,8 @@ public class Lexer {
         characterTokens.add('{');
         characterTokens.add('}');
         characterTokens.add(';');
+        characterTokens.add('?');
+        characterTokens.add(':');
     }
 
     private static final Set<String> keywords = new HashSet<String>(Arrays.asList("if", "else", "while", "do", "for", "break", "continue", "return"));

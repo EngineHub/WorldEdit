@@ -28,6 +28,7 @@ import java.util.Map;
 import com.sk89q.worldedit.expression.Identifiable;
 import com.sk89q.worldedit.expression.lexer.tokens.OperatorToken;
 import com.sk89q.worldedit.expression.lexer.tokens.Token;
+import com.sk89q.worldedit.expression.runtime.Conditional;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.expression.runtime.Operators;
 
@@ -235,7 +236,61 @@ public final class ParserProcessors {
     }
 
     private static RValue processTernaryOps(LinkedList<Identifiable> input) throws ParserException {
-        return processBinaryOpsLA(input, binaryOpMapsLA.length - 1);
+        LinkedList<Identifiable> lhs = new LinkedList<Identifiable>();
+        LinkedList<Identifiable> mhs = new LinkedList<Identifiable>();
+        LinkedList<Identifiable> rhs = new LinkedList<Identifiable>();
+
+        int partsFound = 0;
+        int conditionalsFound = 0;
+
+        for (Identifiable identifiable : input) {
+            final char character = identifiable.id();
+            switch (character) {
+            case '?':
+                ++conditionalsFound;
+                break;
+            case ':':
+                --conditionalsFound;
+                break;
+            }
+
+            if (conditionalsFound < 0) {
+                throw new ParserException(identifiable.getPosition(), "Unexpected ':'");
+            }
+
+            switch (partsFound) {
+            case 0:
+                if (character == '?') {
+                    System.out.println("question mark found");
+                    partsFound = 1;
+                } else {
+                    lhs.addLast(identifiable);
+                }
+                break;
+
+            case 1:
+                if (conditionalsFound == 0 && character == ':') {
+                    System.out.println("matching colon found");
+                    partsFound = 2;
+                } else {
+                    mhs.addLast(identifiable);
+                }
+                break;
+
+            case 2:
+                rhs.addLast(identifiable);
+            }
+        }
+
+        if (partsFound < 2) {
+            return processBinaryOpsLA(input, binaryOpMapsLA.length - 1);
+        }
+
+        RValue lhsInvokable = processBinaryOpsLA(lhs, binaryOpMapsLA.length - 1);
+        RValue mhsInvokable = processTernaryOps(mhs);
+        RValue rhsInvokable = processTernaryOps(rhs);
+
+        return new Conditional(input.get(lhs.size()).getPosition(), lhsInvokable, mhsInvokable, rhsInvokable);
     }
 
     private static RValue processUnaryOps(LinkedList<Identifiable> input) throws ParserException {
