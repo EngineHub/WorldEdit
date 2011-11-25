@@ -541,56 +541,42 @@ public class BukkitWorld extends LocalWorld {
                     && origin.distanceSq(BukkitUtil.toVector(ent.getLocation())) > radiusSq) {
                 continue;
             }
-
-            switch (type) {
-            case ARROWS:
+            
+            if (type == EntityType.ARROWS) {
                 if (ent instanceof Arrow) {
                     ent.remove();
                     ++num;
                 }
-                break;
-
-            case BOATS:
+            } else if (type == EntityType.BOATS) {
                 if (ent instanceof Boat) {
                     ent.remove();
                     ++num;
                 }
-                break;
-
-            case ITEMS:
+            } else if (type == EntityType.ITEMS) {
                 if (ent instanceof Item) {
                     ent.remove();
                     ++num;
                 }
-                break;
-
-            case MINECARTS:
+            } else if (type == EntityType.MINECARTS) {
                 if (ent instanceof Minecart) {
                     ent.remove();
                     ++num;
                 }
-                break;
-
-            case PAINTINGS:
+            } else if (type == EntityType.PAINTINGS) {
                 if (ent instanceof Painting) {
                     ent.remove();
                     ++num;
                 }
-                break;
-
-            case TNT:
+            } else if (type == EntityType.TNT) {
                 if (ent instanceof TNTPrimed) {
                     ent.remove();
                     ++num;
                 }
-                break;
-
-            case XP_ORBS:
+            } else if (type == EntityType.XP_ORBS) {
                 if (ent instanceof ExperienceOrb) {
                     ent.remove();
                     ++num;
                 }
-                break;
             }
         }
 
