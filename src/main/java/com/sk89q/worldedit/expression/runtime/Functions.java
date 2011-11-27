@@ -257,7 +257,16 @@ public final class Functions {
         x.assign(xOld * cosF - yOld * sinF);
         y.assign(xOld * sinF + yOld * cosF);
 
-        return 0;
+        return 0.0;
+    }
+
+    public static final double swap(LValue x, LValue y) throws EvaluationException {
+        final double tmp = x.getValue();
+
+        x.assign(y.getValue());
+        y.assign(tmp);
+
+        return 0.0;
     }
 
 
