@@ -24,12 +24,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Sign;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
@@ -660,6 +662,11 @@ public class BukkitWorld extends LocalWorld {
                         bukkitStack.getTypeId(),
                         bukkitStack.getAmount(),
                         bukkitStack.getDurability());
+                try {
+                    for (Map.Entry<Enchantment, Integer> entry : bukkitStack.getEnchantments().entrySet()) {
+                        contents[i].getEnchantments().put(entry.getKey().getId(), entry.getValue());
+                    }
+                } catch (Throwable ignore) {}
             }
         }
 
@@ -693,9 +700,15 @@ public class BukkitWorld extends LocalWorld {
             }
 
             if (contents[i] != null) {
-                inven.setItem(i, new ItemStack(contents[i].getType(),
+                ItemStack toAdd = new ItemStack(contents[i].getType(),
                         contents[i].getAmount(),
-                        (byte) contents[i].getDamage()));
+                        (byte) contents[i].getDamage());
+                try {
+                    for (Map.Entry<Integer, Integer> entry : contents[i].getEnchantments().entrySet()) {
+                        toAdd.addEnchantment(Enchantment.getById(entry.getKey()), entry.getValue());
+                    }
+                } catch (Throwable ignore) {}
+                inven.setItem(i, toAdd);
             } else {
                 inven.setItem(i, null);
             }
