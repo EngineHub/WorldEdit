@@ -216,7 +216,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     @Deprecated
     public File getSafeFile(String folder, String filename) throws FilenameException {
         File dir = controller.getWorkingDirectoryFile(folder);
-        return controller.getSafeOpenFile(player, dir, filename, null, null);
+        return controller.getSafeOpenFile(player, dir, filename, null, (String[]) null);
     }
 
     /**
@@ -236,7 +236,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws FilenameException 
      */
     public File getSafeOpenFile(String folder, String filename,
-            String defaultExt, String[] exts)
+            String defaultExt, String... exts)
             throws FilenameException {
         File dir = controller.getWorkingDirectoryFile(folder);
         return controller.getSafeOpenFile(player, dir, filename, defaultExt, exts);
@@ -259,7 +259,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws FilenameException 
      */
     public File getSafeSaveFile(String folder, String filename,
-            String defaultExt, String[] exts)
+            String defaultExt, String... exts)
             throws FilenameException {
         File dir = controller.getWorkingDirectoryFile(folder);
         return controller.getSafeSaveFile(player, dir, filename, defaultExt, exts);

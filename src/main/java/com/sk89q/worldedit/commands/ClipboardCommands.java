@@ -188,8 +188,7 @@ public class ClipboardCommands {
 
         String filename = args.getString(0);
         File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = we.getSafeOpenFile(player, dir, filename, "schematic",
-                new String[] { "schematic" });
+        File f = we.getSafeOpenFile(player, dir, filename, "schematic", "schematic");
 
         try {
             String filePath = f.getCanonicalPath();
@@ -226,8 +225,7 @@ public class ClipboardCommands {
         String filename = args.getString(0);
 
         File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = we.getSafeSaveFile(player, dir, filename, "schematic",
-                new String[] { "schematic" });
+        File f = we.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
 
         if (!dir.exists()) {
             if (!dir.mkdir()) {

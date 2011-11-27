@@ -646,7 +646,7 @@ public class WorldEdit {
      * @throws FilenameException
      */
     public File getSafeSaveFile(LocalPlayer player, File dir, String filename,
-            String defaultExt, String[] extensions)
+            String defaultExt, String... extensions)
             throws FilenameException {
         return getSafeFile(player, dir, filename, defaultExt, extensions, true);
     }
@@ -666,7 +666,7 @@ public class WorldEdit {
      * @throws FilenameException
      */
     public File getSafeOpenFile(LocalPlayer player, File dir, String filename,
-            String defaultExt, String[] extensions)
+            String defaultExt, String... extensions)
             throws FilenameException {
         return getSafeFile(player, dir, filename, defaultExt, extensions, false);
     }
@@ -686,6 +686,8 @@ public class WorldEdit {
     private File getSafeFile(LocalPlayer player, File dir, String filename,
             String defaultExt, String[] extensions, boolean isSave)
             throws FilenameException {
+        if (extensions.length == 1 && extensions[0] == null) extensions = null;
+
         File f;
 
         if (filename.equals("#")) {

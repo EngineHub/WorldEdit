@@ -57,8 +57,7 @@ public class ScriptingCommands {
         session.setLastScript(name);
 
         File dir = we.getWorkingDirectoryFile(we.getConfiguration().scriptsDir);
-        File f = we.getSafeOpenFile(player, dir, name, "js",
-                new String[] { "js" });
+        File f = we.getSafeOpenFile(player, dir, name, "js", "js");
 
         we.runScript(player, f, scriptArgs);
     }
@@ -91,8 +90,7 @@ public class ScriptingCommands {
         String[] scriptArgs = args.getSlice(0);
 
         File dir = we.getWorkingDirectoryFile(we.getConfiguration().scriptsDir);
-        File f = we.getSafeOpenFile(player, dir, lastScript, "js",
-                new String[] { "js" });
+        File f = we.getSafeOpenFile(player, dir, lastScript, "js", "js");
 
         we.runScript(player, f, scriptArgs);
     }
