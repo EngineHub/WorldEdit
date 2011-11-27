@@ -157,7 +157,8 @@ public enum BlockType {
     CAULDRON(BlockID.CAULDRON, "Cauldron"),
     END_PORTAL(BlockID.END_PORTAL, "End Portal", "endportal", "blackstuff", "airportal", "weirdblackstuff"),
     END_PORTAL_FRAME(BlockID.END_PORTAL_FRAME, "End Portal Frame", "endportalframe", "airportalframe", "crystalblock"),
-    END_STONE(BlockID.END_STONE, "End Stone", "endstone", "enderstone", "endersand");
+    END_STONE(BlockID.END_STONE, "End Stone", "endstone", "enderstone", "endersand"),
+    DRAGON_EGG(BlockID.DRAGON_EGG, "Dragon Egg", "dragonegg", "dragons");
 
     /**
      * Stores a map of the IDs for fast access.

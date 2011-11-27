@@ -148,4 +148,5 @@ public final class BlockID {
     public static final int END_PORTAL = 119;
     public static final int END_PORTAL_FRAME = 120;
     public static final int END_STONE = 121;
+    public static final int DRAGON_EGG = 122;
 }

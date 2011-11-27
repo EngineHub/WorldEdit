@@ -321,53 +321,57 @@ public class WorldEdit {
                     data = 0;
                 }
             } catch (NumberFormatException e) {
-                switch (blockType) {
-                case CLOTH:
-                    ClothColor col = ClothColor.lookup(typeAndData[1]);
+                if (blockType != null) {
+                    switch (blockType) {
+                        case CLOTH:
+                            ClothColor col = ClothColor.lookup(typeAndData[1]);
 
-                    if (col != null) {
-                        data = col.getID();
-                    } else {
-                        throw new InvalidItemException(arg, "Unknown cloth color '" + typeAndData[1] + "'");
-                    }
-                    break;
-
-                case STEP:
-                case DOUBLE_STEP:
-                    BlockType dataType = BlockType.lookup(typeAndData[1]);
-
-                    if (dataType != null) {
-                        switch (dataType) {
-                        case STONE:
-                            data = 0;
+                            if (col != null) {
+                                data = col.getID();
+                            } else {
+                                throw new InvalidItemException(arg, "Unknown cloth color '" + typeAndData[1] + "'");
+                            }
                             break;
 
-                        case SANDSTONE:
-                            data = 1;
-                            break;
+                        case STEP:
+                        case DOUBLE_STEP:
+                            BlockType dataType = BlockType.lookup(typeAndData[1]);
 
-                        case WOOD:
-                            data = 2;
-                            break;
+                            if (dataType != null) {
+                                switch (dataType) {
+                                    case STONE:
+                                        data = 0;
+                                        break;
 
-                        case COBBLESTONE:
-                            data = 3;
+                                    case SANDSTONE:
+                                        data = 1;
+                                        break;
+
+                                    case WOOD:
+                                        data = 2;
+                                        break;
+
+                                    case COBBLESTONE:
+                                        data = 3;
+                                        break;
+                                    case BRICK:
+                                        data = 4;
+                                        break;
+                                    case STONE_BRICK:
+                                        data = 5;
+
+                                    default:
+                                        throw new InvalidItemException(arg, "Invalid step type '" + typeAndData[1] + "'");
+                                }
+                            } else {
+                                throw new InvalidItemException(arg, "Unknown step type '" + typeAndData[1] + "'");
+                            }
                             break;
-                        case BRICK:
-                            data = 4;
-                            break;
-                        case STONE_BRICK:
-                            data = 5;
 
                         default:
-                            throw new InvalidItemException(arg, "Invalid step type '" + typeAndData[1] + "'");
-                        }
-                    } else {
-                        throw new InvalidItemException(arg, "Unknown step type '" + typeAndData[1] + "'");
+                            throw new InvalidItemException(arg, "Unknown data value '" + typeAndData[1] + "'");
                     }
-                    break;
-
-                default:
+                } else {
                     throw new InvalidItemException(arg, "Unknown data value '" + typeAndData[1] + "'");
                 }
             }
@@ -375,49 +379,53 @@ public class WorldEdit {
 
         // Check if the item is allowed
         if (allAllowed || player.hasPermission("worldedit.anyblock") || !config.disallowedBlocks.contains(blockId)) {
-            switch (blockType) {
-            case SIGN_POST:
-            case WALL_SIGN:
-                // Allow special sign text syntax
-                String[] text = new String[4];
-                text[0] = blockAndExtraData.length > 1 ? blockAndExtraData[1] : "";
-                text[1] = blockAndExtraData.length > 2 ? blockAndExtraData[2] : "";
-                text[2] = blockAndExtraData.length > 3 ? blockAndExtraData[3] : "";
-                text[3] = blockAndExtraData.length > 4 ? blockAndExtraData[4] : "";
-                return new SignBlock(blockType.getID(), data, text);
+            if (blockType != null) {
+                switch (blockType) {
+                    case SIGN_POST:
+                    case WALL_SIGN:
+                        // Allow special sign text syntax
+                        String[] text = new String[4];
+                        text[0] = blockAndExtraData.length > 1 ? blockAndExtraData[1] : "";
+                        text[1] = blockAndExtraData.length > 2 ? blockAndExtraData[2] : "";
+                        text[2] = blockAndExtraData.length > 3 ? blockAndExtraData[3] : "";
+                        text[3] = blockAndExtraData.length > 4 ? blockAndExtraData[4] : "";
+                        return new SignBlock(blockType.getID(), data, text);
 
-            case MOB_SPAWNER:
-                // Allow setting mob spawn type
-                if (blockAndExtraData.length > 1) {
-                    String mobName = blockAndExtraData[1];
-                    for (MobType mobType : MobType.values()) {
-                        if (mobType.getName().toLowerCase().equals(mobName.toLowerCase())) {
-                            mobName = mobType.getName();
-                            break;
+                    case MOB_SPAWNER:
+                        // Allow setting mob spawn type
+                        if (blockAndExtraData.length > 1) {
+                            String mobName = blockAndExtraData[1];
+                            for (MobType mobType : MobType.values()) {
+                                if (mobType.getName().toLowerCase().equals(mobName.toLowerCase())) {
+                                    mobName = mobType.getName();
+                                    break;
+                                }
+                            }
+                            if (!server.isValidMobType(mobName)) {
+                                throw new InvalidItemException(arg, "Unknown mob type '" + mobName + "'");
+                            }
+                            return new MobSpawnerBlock(data, mobName);
+                        } else {
+                            return new MobSpawnerBlock(data, MobType.PIG.getName());
                         }
-                    }
-                    if (!server.isValidMobType(mobName)) {
-                        throw new InvalidItemException(arg, "Unknown mob type '" + mobName + "'");
-                    }
-                    return new MobSpawnerBlock(data, mobName);
-                } else {
-                    return new MobSpawnerBlock(data, MobType.PIG.getName());
-                }
 
-            case NOTE_BLOCK:
-                // Allow setting note
-                if (blockAndExtraData.length > 1) {
-                    byte note = Byte.parseByte(blockAndExtraData[1]);
-                    if (note < 0 || note > 24) {
-                        throw new InvalidItemException(arg, "Out of range note value: '" + blockAndExtraData[1] + "'");
-                    } else {
-                        return new NoteBlock(data, note);
-                    }
-                } else {
-                    return new NoteBlock(data, (byte) 0);
-                }
+                    case NOTE_BLOCK:
+                        // Allow setting note
+                        if (blockAndExtraData.length > 1) {
+                            byte note = Byte.parseByte(blockAndExtraData[1]);
+                            if (note < 0 || note > 24) {
+                                throw new InvalidItemException(arg, "Out of range note value: '" + blockAndExtraData[1] + "'");
+                            } else {
+                                return new NoteBlock(data, note);
+                            }
+                        } else {
+                            return new NoteBlock(data, (byte) 0);
+                        }
 
-            default:
+                    default:
+                        return new BaseBlock(blockId, data);
+                }
+            } else {
                 return new BaseBlock(blockId, data);
             }
         }
