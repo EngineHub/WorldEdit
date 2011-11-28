@@ -23,6 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +48,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeType;
@@ -57,6 +59,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.EntityType;
 import com.sk89q.worldedit.regions.Region;
@@ -864,5 +867,24 @@ public class BukkitWorld extends LocalWorld {
                 e.printStackTrace();
             }
         }
+    }
+
+    private static final Map<Integer, Effect> effects = new HashMap<Integer, Effect>();
+    static {
+        for (Effect effect : Effect.values()) {
+            effects.put(effect.getId(), effect);
+        }
+    }
+
+    @Override
+    public boolean playEffect(Vector position, int type, int data) {
+        final Effect effect = effects.get(type);
+        if (effect == null) {
+            return false;
+        }
+
+        world.playEffect(BukkitUtil.toLocation(world, position), effect, data);
+
+        return true;
     }
 }

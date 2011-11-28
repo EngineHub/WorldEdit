@@ -343,4 +343,15 @@ public abstract class LocalWorld {
 
     public void fixLighting(Iterable<BlockVector2D> chunks) {
     }
+
+    /**
+     * Plays the minecraft effect with the given type and data at the given position.
+     *
+     * @param position
+     * @param type
+     * @param data
+     */
+    public boolean playEffect(Vector position, int type, int data) {
+        return false;
+    }
 }
