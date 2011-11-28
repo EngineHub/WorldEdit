@@ -44,4 +44,17 @@ public abstract class ServerInterface {
      * Reload WorldEdit configuration.
      */
     public abstract void reload();
+
+    /**
+     * Schedules the given <code>task</code> to be invoked once every <code>period</code> ticks
+     * after an initial delay of <code>delay</code> ticks.
+     *
+     * @param delay Delay in server ticks before executing first repeat
+     * @param period Period in server ticks of the task
+     * @param task Task to be executed
+     * @return Task id number (-1 if scheduling failed)
+     */
+    public int schedule(long delay, long period, Runnable task) {
+        return -1;
+    }
 }

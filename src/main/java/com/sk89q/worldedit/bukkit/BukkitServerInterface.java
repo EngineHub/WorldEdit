@@ -48,4 +48,8 @@ public class BukkitServerInterface extends ServerInterface {
         plugin.loadConfiguration();
     }
 
+    @Override
+    public int schedule(long delay, long period, Runnable task) {
+        return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay, period);
+    }
 }
