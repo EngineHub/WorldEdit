@@ -37,7 +37,8 @@ public class SinglePickaxe implements BlockTool {
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         LocalWorld world = clicked.getWorld();
 
-        if (world.getBlockType(clicked) == BlockID.BEDROCK
+        final int blockType = world.getBlockType(clicked);
+        if (blockType == BlockID.BEDROCK
                 && !player.canDestroyBedrock()) {
             return true;
         }
@@ -47,6 +48,8 @@ public class SinglePickaxe implements BlockTool {
         }
 
         world.setBlockType(clicked, BlockID.AIR);
+
+        world.playEffect(clicked, 2001, blockType);
 
         return true;
     }

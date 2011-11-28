@@ -59,7 +59,6 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.EntityType;
 import com.sk89q.worldedit.regions.Region;
