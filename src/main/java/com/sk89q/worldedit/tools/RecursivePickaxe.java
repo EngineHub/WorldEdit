@@ -21,6 +21,7 @@ package com.sk89q.worldedit.tools;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
@@ -90,20 +91,24 @@ public class RecursivePickaxe implements BlockTool {
             Set<BlockVector> visited, boolean drop)
             throws MaxChangedBlocksException {
 
-        if (origin.distance(pos) > size || visited.contains(pos)) {
+        final double distanceSq = origin.distanceSq(pos);
+        if (distanceSq > size*size || visited.contains(pos)) {
             return;
         }
 
         visited.add(pos);
 
-        if (editSession.getBlock(pos).getType() == initialType) {
-            if (drop) {
-                world.simulateBlockMine(pos);
-            }
-            editSession.setBlock(pos, air);
-        } else {
+        if (editSession.getBlock(pos).getType() != initialType) {
             return;
         }
+
+        if (drop) {
+            world.simulateBlockMine(pos);
+        }
+
+        world.queueBlockBreakEffect(server, pos, initialType, distanceSq);
+
+        editSession.setBlock(pos, air);
 
         recurse(server, editSession, world, pos.add(1, 0, 0).toBlockVector(),
                 origin, size, initialType, visited, drop);

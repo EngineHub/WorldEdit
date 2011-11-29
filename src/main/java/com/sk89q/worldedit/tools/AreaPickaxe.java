@@ -63,13 +63,16 @@ public class AreaPickaxe implements BlockTool {
                 for (int y = oy - range; y <= oy + range; ++y) {
                     for (int z = oz - range; z <= oz + range; ++z) {
                         Vector pos = new Vector(x, y, z);
-                        if (world.getBlockType(pos) == initialType) {
-                            if (config.superPickaxeManyDrop) {
-                                world.simulateBlockMine(pos);
-                            }
-
-                            editSession.setBlock(pos, air);
+                        if (world.getBlockType(pos) != initialType) {
+                            continue;
                         }
+                        if (config.superPickaxeManyDrop) {
+                            world.simulateBlockMine(pos);
+                        }
+
+                        world.queueBlockBreakEffect(server, pos, initialType, clicked.distanceSq(pos));
+
+                        editSession.setBlock(pos, air);
                     }
                 }
             }
