@@ -33,6 +33,7 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
         super("worldedit.wand");
     }
 
+    @Override
     public boolean canUse(LocalPlayer player) {
         return player.hasPermission("worldedit.wand");
     }

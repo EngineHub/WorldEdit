@@ -88,6 +88,7 @@ public class BukkitWorld extends LocalWorld {
      * 
      * @return
      */
+    @Override
     public String getName() {
         return world.getName();
     }

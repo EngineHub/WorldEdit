@@ -471,6 +471,7 @@ public class Polygonal2DRegion implements Region {
      * 
      * @return string
      */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         List<BlockVector2D> pts = getPoints();

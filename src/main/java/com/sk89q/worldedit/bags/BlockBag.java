@@ -63,6 +63,7 @@ public abstract class BlockBag {
      * @throws BlockBagException
      * @deprecated Use {@link #fetchPlacedBlock(int,int)} instead
      */
+    @Deprecated
     public void fetchPlacedBlock(int id) throws BlockBagException {
         fetchPlacedBlock(id, 0);
     }

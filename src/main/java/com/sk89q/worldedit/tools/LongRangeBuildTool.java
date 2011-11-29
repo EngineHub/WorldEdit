@@ -39,6 +39,7 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
         this.secondary = secondary;
     }
 
+    @Override
     public boolean canUse(LocalPlayer player) {
         return player.hasPermission("worldedit.tool.lrbuild");
     }
