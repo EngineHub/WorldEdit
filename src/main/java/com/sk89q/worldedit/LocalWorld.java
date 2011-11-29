@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit;
 
+import java.util.PriorityQueue;
 import java.util.Random;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -353,5 +354,50 @@ public abstract class LocalWorld {
      */
     public boolean playEffect(Vector position, int type, int data) {
         return false;
+    }
+
+    private class QueuedEffect implements Comparable<QueuedEffect>{
+        private final Vector position;
+        private final int blockId;
+        private final double priority;
+        public QueuedEffect(Vector position, int blockId, double priority) {
+            this.position = position;
+            this.blockId = blockId;
+            this.priority = priority;
+        }
+
+        public void play() {
+            playEffect(position, 2001, blockId);
+        }
+
+        @Override
+        public int compareTo(QueuedEffect other) {
+            return Double.compare(priority, other.priority);
+        }
+    }
+
+    private final PriorityQueue<QueuedEffect> effectQueue = new PriorityQueue<QueuedEffect>();
+    private int taskId = -1;
+    public boolean queueBlockBreakEffect(ServerInterface server, Vector position, int blockId, double priority) {
+        if (taskId == -1) {
+            taskId = server.schedule(0, 1, new Runnable() { 
+                public void run() {
+                    int max = Math.max(1, Math.min(30, effectQueue.size() / 3));
+                    for (int i = 0; i < max; ++i) {
+                        if (effectQueue.isEmpty()) return;
+
+                        effectQueue.poll().play();
+                    }
+                }
+            });
+        }
+
+        if (taskId == -1) {
+            return false;
+        }
+
+        effectQueue.offer(new QueuedEffect(position, blockId, priority));
+
+        return true;
     }
 }
