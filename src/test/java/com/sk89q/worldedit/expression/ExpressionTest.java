@@ -90,7 +90,7 @@ public class ExpressionTest {
     @Test
     public void testWhile() throws ExpressionException {
         assertEquals(5, simpleEval("c=5; a=0; while (c > 0) { ++a; --c; } a"), 0);
-        assertEquals(5, simpleEval("c=5; a=0; do { ++a; --c; } while (c > 0) a"), 0);
+        assertEquals(5, simpleEval("c=5; a=0; do { ++a; --c; } while (c > 0); a"), 0);
     }
 
     @Test
