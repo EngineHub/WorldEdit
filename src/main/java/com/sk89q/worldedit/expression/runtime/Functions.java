@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.runtime.Function.Dynamic;
 
 /**
@@ -272,10 +273,10 @@ public final class Functions {
 
     private static final Map<Integer, double[]> gmegabuf = new HashMap<Integer, double[]>();
 
-    private static double[] getSubBuffer(Integer key) {
-        double[] ret = gmegabuf.get(key);
+    private static double[] getSubBuffer(Map<Integer, double[]> megabuf, Integer key) {
+        double[] ret = megabuf.get(key);
         if (ret == null) {
-            gmegabuf.put(key, ret = new double[1024]);
+            megabuf.put(key, ret = new double[1024]);
         }
         return ret;
     }
@@ -283,13 +284,25 @@ public final class Functions {
     @Dynamic
     public static final double gmegabuf(RValue index) throws EvaluationException {
         final int intIndex = (int) index.getValue();
-        return getSubBuffer(intIndex & ~1023)[intIndex & 1023];
+        return getSubBuffer(gmegabuf, intIndex & ~1023)[intIndex & 1023];
     }
 
     @Dynamic
     public static final double gmegabuf(RValue index, double value) throws EvaluationException {
         final int intIndex = (int) index.getValue();
-        return getSubBuffer(intIndex & ~1023)[intIndex & 1023] = value;
+        return getSubBuffer(gmegabuf, intIndex & ~1023)[intIndex & 1023] = value;
+    }
+
+    @Dynamic
+    public static final double megabuf(RValue index) throws EvaluationException {
+        final int intIndex = (int) index.getValue();
+        return getSubBuffer(Expression.getInstance().getMegabuf(), intIndex & ~1023)[intIndex & 1023];
+    }
+
+    @Dynamic
+    public static final double megabuf(RValue index, double value) throws EvaluationException {
+        final int intIndex = (int) index.getValue();
+        return getSubBuffer(Expression.getInstance().getMegabuf(), intIndex & ~1023)[intIndex & 1023] = value;
     }
 
 

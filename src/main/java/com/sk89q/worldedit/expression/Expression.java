@@ -63,6 +63,7 @@ public class Expression {
     private final Map<String, RValue> variables = new HashMap<String, RValue>();
     private final String[] variableNames;
     private RValue root;
+    private final Map<Integer, double[]> megabuf = new HashMap<Integer, double[]>();
 
     public static Expression compile(String expression, String... variableNames) throws ExpressionException {
         return new Expression(expression, variableNames);
@@ -150,5 +151,9 @@ public class Expression {
         if (foo.isEmpty()) {
             instance.set(null);
         }
+    }
+
+    public Map<Integer, double[]> getMegabuf() {
+        return megabuf;
     }
 }
