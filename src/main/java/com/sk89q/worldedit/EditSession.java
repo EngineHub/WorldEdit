@@ -2635,8 +2635,8 @@ public class EditSession {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z", "type", "data");
         expression.optimize();
 
-        final RValue typeVariable = expression.getVariable("type");
-        final RValue dataVariable = expression.getVariable("data");
+        final RValue typeVariable = expression.getVariable("type", false);
+        final RValue dataVariable = expression.getVariable("data", false);
 
         final ArbitraryShape shape = new ArbitraryShape(region) {
             @Override
@@ -2663,9 +2663,9 @@ public class EditSession {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z");
         expression.optimize();
 
-        final RValue x = expression.getVariable("x");
-        final RValue y = expression.getVariable("y");
-        final RValue z = expression.getVariable("z");
+        final RValue x = expression.getVariable("x", false);
+        final RValue y = expression.getVariable("y", false);
+        final RValue z = expression.getVariable("z", false);
 
         Vector zero2 = zero.add(0.5, 0.5, 0.5);
 

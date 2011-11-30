@@ -22,8 +22,7 @@ package com.sk89q.worldedit.expression.parser;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
+import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.Identifiable;
 import com.sk89q.worldedit.expression.lexer.tokens.IdentifierToken;
 import com.sk89q.worldedit.expression.lexer.tokens.KeywordToken;
@@ -40,7 +39,6 @@ import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.expression.runtime.Return;
 import com.sk89q.worldedit.expression.runtime.Sequence;
 import com.sk89q.worldedit.expression.runtime.SimpleFor;
-import com.sk89q.worldedit.expression.runtime.Variable;
 import com.sk89q.worldedit.expression.runtime.While;
 
 /**
@@ -68,15 +66,15 @@ public class Parser {
 
     private final List<Token> tokens;
     private int position = 0;
-    private Map<String, RValue> variables;
+    private Expression expression;
 
-    private Parser(List<Token> tokens, Map<String, RValue> variables) {
+    private Parser(List<Token> tokens, Expression expression) {
         this.tokens = tokens;
-        this.variables = variables;
+        this.expression = expression;
     }
 
-    public static final RValue parse(List<Token> tokens, Map<String, RValue> variables) throws ParserException {
-        return new Parser(tokens, variables).parse();
+    public static final RValue parse(List<Token> tokens, Expression expression) throws ParserException {
+        return new Parser(tokens, expression).parse();
     }
 
     private RValue parse() throws ParserException {
@@ -176,9 +174,7 @@ public class Parser {
                             throw new ParserException(variableToken.getPosition(), "Expected identifier");
                         }
 
-                        // In theory, I should have to create non-existant variables here.
-                        // However, the java-for parsing attempt further up already takes care of that :) 
-                        RValue variable = variables.get(((IdentifierToken) variableToken).value);
+                        RValue variable = expression.getVariable(((IdentifierToken) variableToken).value, true);
                         if (!(variable instanceof LValue)) {
                             throw new ParserException(variableToken.getPosition(), "Expected variable");
                         }
@@ -286,14 +282,11 @@ public class Parser {
                 if (next.id() == '(') {
                     halfProcessed.add(parseFunctionCall(identifierToken));
                 } else {
-                    RValue variable = variables.get(identifierToken.value);
+                    // Ugly hack to make temporary variables work while not sacrificing error reporting.
+                    final boolean isSimpleAssignment = next instanceof OperatorToken && ((OperatorToken) next).operator.equals("=");
+                    RValue variable = expression.getVariable(identifierToken.value, isSimpleAssignment);
                     if (variable == null) {
-                        if (next instanceof OperatorToken && ((OperatorToken) next).operator.equals("=")) {
-                            // Ugly hack to make temporary variables work while not sacrificing error reporting.
-                            variables.put(identifierToken.value, variable = new Variable(0));
-                        } else {
-                            throw new ParserException(current.getPosition(), "Variable '" + identifierToken.value + "' not found");
-                        }
+                        throw new ParserException(current.getPosition(), "Variable '" + identifierToken.value + "' not found");
                     }
                     halfProcessed.add(variable);
                 }

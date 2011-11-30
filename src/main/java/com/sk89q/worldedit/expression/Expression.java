@@ -84,7 +84,7 @@ public class Expression {
             variables.put(variableName, new Variable(0));
         }
 
-        root = Parser.parse(tokens, variables);
+        root = Parser.parse(tokens, this);
     }
 
     public double evaluate(double... values) throws EvaluationException {
@@ -114,7 +114,12 @@ public class Expression {
         return root.toString();
     }
 
-    public RValue getVariable(String name) {
-        return variables.get(name);
+    public RValue getVariable(String name, boolean create) {
+        RValue variable = variables.get(name);
+        if (variable == null && create) {
+            variables.put(name, variable = new Variable(0));
+        }
+
+        return variable;
     }
 }
