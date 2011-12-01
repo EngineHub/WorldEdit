@@ -240,9 +240,9 @@ public class Parser {
         case 0:
             if (singleStatement) {
                 throw new ParserException(peek().getPosition(), "Statement expected.");
-            } else {
-                return new Sequence(peek().getPosition());
             }
+
+            return new Sequence(peek().getPosition());
 
         case 1:
             return statements.get(0);
