@@ -39,6 +39,7 @@ import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.expression.runtime.Return;
 import com.sk89q.worldedit.expression.runtime.Sequence;
 import com.sk89q.worldedit.expression.runtime.SimpleFor;
+import com.sk89q.worldedit.expression.runtime.Switch;
 import com.sk89q.worldedit.expression.runtime.While;
 
 /**
@@ -134,7 +135,11 @@ public class Parser {
                     break;
                 }
 
-                case 'd': { // do
+                case 'd': { // do/default
+                    if (hasKeyword("default")) {
+                        break loop;
+                    }
+
                     ++position;
                     final RValue body = parseStatements(true);
 
@@ -199,7 +204,11 @@ public class Parser {
                     statements.add(new Break(current.getPosition(), false));
                     break;
 
-                case 'c': // continue
+                case 'c': // continue/case
+                    if (hasKeyword("case")) {
+                        break loop;
+                    }
+
                     ++position;
                     statements.add(new Break(current.getPosition(), true));
                     break;
@@ -211,8 +220,55 @@ public class Parser {
                     expectSemicolon = true;
                     break;
 
+                case 's': // switch
+                    ++position;
+                    final RValue parameter = parseBracket();
+                    final List<Double> values = new ArrayList<Double>();
+                    final List<RValue> caseStatements = new ArrayList<RValue>();
+                    RValue defaultCase = null;
+
+                    consumeCharacter('{');
+                    while (peek().id() != '}') {
+                        if (position >= tokens.size()) {
+                            throw new ParserException(current.getPosition(), "Expected '}' instead of EOF");
+                        }
+                        if (defaultCase != null) {
+                            throw new ParserException(current.getPosition(), "Expected '}' instead of " + peek());
+                        }
+
+                        if (hasKeyword("case")) {
+                            ++position;
+
+                            final Token valueToken = peek();
+                            if (!(valueToken instanceof NumberToken)) {
+                                throw new ParserException(current.getPosition(), "Expected number instead of " + peek());
+                            }
+
+                            ++position;
+
+                            values.add(((NumberToken) valueToken).value);
+
+                            consumeCharacter(':');
+                            caseStatements.add(parseStatements(false));
+                        } else if (hasKeyword("default")) {
+                            ++position;
+
+                            consumeCharacter(':');
+                            defaultCase = parseStatements(false);
+                        } else {
+                            throw new ParserException(current.getPosition(), "Expected 'case' or 'default' instead of " + peek());
+                        }
+                    }
+                    consumeCharacter('}');
+
+                    statements.add(new Switch(current.getPosition(), parameter, values, caseStatements, defaultCase));
+                    break;
+
                 default:
-                    throw new ParserException(current.getPosition(), "Unimplemented keyword '" + keyword + "'");
+                    throw new ParserException(current.getPosition(), "Unexpected keyword '" + keyword + "'");
+                }
+                switch (1) {
+                default:
                 }
 
                 break;

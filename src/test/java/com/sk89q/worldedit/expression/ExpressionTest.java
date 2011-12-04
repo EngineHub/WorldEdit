@@ -99,6 +99,17 @@ public class ExpressionTest {
         assertEquals(12345, simpleEval("y=0; for (i=1,5) { y *= 10; y += i; } y"), 0);
     }
 
+    @Test
+    public void testSwitch() throws ExpressionException {
+        assertEquals(523, simpleEval("x=1;y=2;z=3;switch (1) { case 1: x=5; break; case 2: y=6; break; default: z=7 } x*100+y*10+z"), 0);
+        assertEquals(163, simpleEval("x=1;y=2;z=3;switch (2) { case 1: x=5; break; case 2: y=6; break; default: z=7 } x*100+y*10+z"), 0);
+        assertEquals(127, simpleEval("x=1;y=2;z=3;switch (3) { case 1: x=5; break; case 2: y=6; break; default: z=7 } x*100+y*10+z"), 0);
+
+        assertEquals(567, simpleEval("x=1;y=2;z=3;switch (1) { case 1: x=5; case 2: y=6; default: z=7 } x*100+y*10+z"), 0);
+        assertEquals(167, simpleEval("x=1;y=2;z=3;switch (2) { case 1: x=5; case 2: y=6; default: z=7 } x*100+y*10+z"), 0);
+        assertEquals(127, simpleEval("x=1;y=2;z=3;switch (3) { case 1: x=5; case 2: y=6; default: z=7 } x*100+y*10+z"), 0);
+    }
+
     private double simpleEval(String expressionString) throws ExpressionException {
         final Expression expression = compile(expressionString);
         return expression.evaluate();

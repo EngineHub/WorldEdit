@@ -109,7 +109,7 @@ public class Lexer {
         characterTokens.add(':');
     }
 
-    private static final Set<String> keywords = new HashSet<String>(Arrays.asList("if", "else", "while", "do", "for", "break", "continue", "return", "switch", "case"));
+    private static final Set<String> keywords = new HashSet<String>(Arrays.asList("if", "else", "while", "do", "for", "break", "continue", "return", "switch", "case", "default"));
 
     private static final Pattern numberPattern = Pattern.compile("^([0-9]*(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)");
     private static final Pattern identifierPattern = Pattern.compile("^([A-Za-z][0-9A-Za-z_]*)");
