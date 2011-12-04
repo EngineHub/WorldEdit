@@ -39,7 +39,7 @@ public abstract class Node implements RValue {
     }
 
     @Override
-    public int getPosition() {
+    public final int getPosition() {
         return position;
     }
 }

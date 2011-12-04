@@ -356,7 +356,7 @@ public abstract class LocalWorld {
         return false;
     }
 
-    private class QueuedEffect implements Comparable<QueuedEffect>{
+    private class QueuedEffect implements Comparable<QueuedEffect> {
         private final Vector position;
         private final int blockId;
         private final double priority;
