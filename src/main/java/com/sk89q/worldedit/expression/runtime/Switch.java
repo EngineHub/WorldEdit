@@ -1,26 +1,59 @@
+// $Id$
+/*
+ * WorldEdit
+ * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.sk89q.worldedit.expression.runtime;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * A switch/case construct.
+ *
+ * @author TomyLobo
+ */
 public class Switch extends Node implements RValue {
     private final RValue parameter;
-    private final Map<Double, Integer> valueMap = new HashMap<Double, Integer>();
+    private final Map<Double, Integer> valueMap;
     private final RValue[] caseStatements;
     private final RValue defaultCase;
 
     public Switch(int position, RValue parameter, List<Double> values, List<RValue> caseStatements, RValue defaultCase) {
-        super(position);
-        this.parameter = parameter;
+        this(position, parameter, invertList(values), caseStatements, defaultCase);
 
-        assert(values.size() == caseStatements.size());
+    }
 
+    private static Map<Double, Integer> invertList(List<Double> values) {
+        Map<Double, Integer> valueMap = new HashMap<Double, Integer>();
         for (int i = 0; i < values.size(); ++i) {
             valueMap.put(values.get(i), i);
         }
+        return valueMap;
+    }
 
+    private Switch(int position, RValue parameter, Map<Double, Integer> valueMap, List<RValue> caseStatements, RValue defaultCase) {
+        super(position);
+
+        this.parameter = parameter;
+        this.valueMap = valueMap;
         this.caseStatements = caseStatements.toArray(new RValue[caseStatements.size()]);
         this.defaultCase = defaultCase;
     }
@@ -81,5 +114,35 @@ public class Switch extends Node implements RValue {
         sb.append("}");
 
         return sb.toString();
+    }
+
+    @Override
+    public RValue optimize() throws EvaluationException {
+        final List<RValue> newSequence = new ArrayList<RValue>();
+        final Map<Double, Integer> newValueMap = new HashMap<Double, Integer>();
+
+        Map<Integer, Double> backMap = new HashMap<Integer, Double>();
+        for (Entry<Double, Integer> entry : valueMap.entrySet()) {
+            backMap.put(entry.getValue(), entry.getKey());
+        }
+
+        for (int i = 0; i < caseStatements.length; ++i) {
+            final RValue invokable = caseStatements[i].optimize();
+
+            final Double caseValue = backMap.get(i);
+            if (caseValue != null) {
+                newValueMap.put(caseValue, newSequence.size());
+            }
+
+            if (invokable instanceof Sequence) {
+                for (RValue subInvokable : ((Sequence) invokable).sequence) {
+                    newSequence.add(subInvokable);
+                }
+            } else {
+                newSequence.add(invokable);
+            }
+        }
+
+        return new Switch(getPosition(), parameter.optimize(), newValueMap, newSequence, defaultCase.optimize());
     }
 }
