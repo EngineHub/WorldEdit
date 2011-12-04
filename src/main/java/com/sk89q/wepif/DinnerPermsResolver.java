@@ -17,10 +17,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.bukkit.migration;
+package com.sk89q.wepif;
 
 import com.sk89q.util.yaml.YAMLProcessor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -45,43 +47,59 @@ public class DinnerPermsResolver implements PermissionsResolver {
     }
 
     public boolean hasPermission(String name, String permission) {
-        Permissible perms = server.getPlayerExact(name);
+        return hasPermission(server.getOfflinePlayer(name), permission);
+    }
+
+    public boolean hasPermission(String worldName, String name, String permission) {
+        return hasPermission(worldName, server.getOfflinePlayer(name), permission);
+    }
+
+    public boolean inGroup(String name, String group) {
+        return inGroup(server.getOfflinePlayer(name), group);
+    }
+
+    public String[] getGroups(String name) {
+        return getGroups(server.getOfflinePlayer(name));
+    }
+
+    public boolean hasPermission(OfflinePlayer player, String permission) {
+        Permissible perms = getPermissible(player);
         if (perms == null) {
-            return false; // Permissions are only registered for online players
+            return false; // Permissions are only registered for objects with a Permissible
         }
         switch (internalHasPermission(perms, permission)) {
-        case -1:
-            return false;
-        case 1:
-            return true;
-        }
-        int dotPos = permission.lastIndexOf(".");
-        while (dotPos > -1) {
-            switch (internalHasPermission(perms, permission.substring(0, dotPos + 1) + "*")) {
             case -1:
                 return false;
             case 1:
                 return true;
+        }
+        int dotPos = permission.lastIndexOf(".");
+        while (dotPos > -1) {
+            switch (internalHasPermission(perms, permission.substring(0, dotPos + 1) + "*")) {
+                case -1:
+                    return false;
+                case 1:
+                    return true;
             }
             dotPos = permission.lastIndexOf(".", dotPos - 1);
         }
         return internalHasPermission(perms, "*") == 1;
     }
 
-    public boolean hasPermission(String worldName, String name, String permission) {
-        return hasPermission(name, permission); // no per-world ability to check permissions in dinnerperms
+    public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
+        return hasPermission(player, permission); // no per-world ability to check permissions in dinnerperms
     }
 
-    public boolean inGroup(String name, String group) {
-        Permissible perms = server.getPlayerExact(name);
+    public boolean inGroup(OfflinePlayer player, String group) {
+        Permissible perms = getPermissible(player);
         if (perms == null) {
             return false;
         }
         return perms.hasPermission(GROUP_PREFIX + group);
     }
 
-    public String[] getGroups(String name) {
-        Permissible perms = server.getPlayerExact(name);
+    public String[] getGroups(OfflinePlayer player) {
+        Permissible perms = getPermissible(player);
         if (perms == null) {
             return new String[0];
         }
@@ -94,6 +112,18 @@ public class DinnerPermsResolver implements PermissionsResolver {
             groupNames.add(perm.substring(GROUP_PREFIX.length(), perm.length()));
         }
         return groupNames.toArray(new String[groupNames.size()]);
+    }
+    
+    public Permissible getPermissible(OfflinePlayer offline) {
+        if (offline == null) return null;
+        Permissible perm = null;
+        if (offline instanceof Permissible) {
+            perm = (Permissible) offline;
+        } else {
+            Player player = offline.getPlayer();
+            if (player != null) perm = player;
+        }
+        return perm;
     }
 
     /**

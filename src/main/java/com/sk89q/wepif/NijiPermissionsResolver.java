@@ -17,10 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.bukkit.migration;
+package com.sk89q.wepif;
 
 import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
@@ -130,6 +131,22 @@ public class NijiPermissionsResolver implements PermissionsResolver {
             t.printStackTrace();
             return new String[0];
         }
+    }
+
+    public boolean hasPermission(OfflinePlayer player, String permission) {
+        return hasPermission(player.getName(), permission);
+    }
+
+    public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
+        return hasPermission(worldName, player.getName(), permission);
+    }
+
+    public boolean inGroup(OfflinePlayer player, String group) {
+        return inGroup(player.getName(), group);
+    }
+
+    public String[] getGroups(OfflinePlayer player) {
+        return getGroups(player.getName());
     }
 
     public static boolean isFakeNijiPerms(Plugin plugin) {

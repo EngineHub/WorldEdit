@@ -17,12 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.bukkit.migration;
+package com.sk89q.wepif;
 
 import java.util.*;
 
 import com.sk89q.util.yaml.YAMLNode;
 import com.sk89q.util.yaml.YAMLProcessor;
+import org.bukkit.OfflinePlayer;
 
 public class ConfigurationPermissionsResolver implements PermissionsResolver {
     private YAMLProcessor config;
@@ -35,13 +36,13 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
     }
 
     public static YAMLNode generateDefaultPerms(YAMLNode section) {
-        section.setProperty("permissions.groups.default.permissions", new String[] {
+        section.setProperty("groups.default.permissions", new String[] {
                 "worldedit.reload",
                 "worldedit.selection",
-                "worlds.creative.worldedit.region" });
-        section.setProperty("permissions.groups.admins.permissions", new String[] { "*" });
-        section.setProperty("permissions.users.sk89q.permissions", new String[] { "worldedit" });
-        section.setProperty("permissions.users.sk89q.groups", new String[] { "admins" });
+                "worlds.creative.worldedit.region"});
+        section.setProperty("groups.admins.permissions", new String[] { "*" });
+        section.setProperty("users.sk89q.permissions", new String[] { "worldedit" });
+        section.setProperty("users.sk89q.groups", new String[] { "admins" });
         return section;
     }
 
@@ -140,6 +141,22 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
         }
 
         return groups.toArray(new String[groups.size()]);
+    }
+
+    public boolean hasPermission(OfflinePlayer player, String permission) {
+        return hasPermission(player.getName(), permission);
+    }
+
+    public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
+        return hasPermission(worldName, player.getName(), permission);
+    }
+
+    public boolean inGroup(OfflinePlayer player, String group) {
+        return inGroup(player.getName(), group);
+    }
+
+    public String[] getGroups(OfflinePlayer player) {
+        return getGroups(player.getName());
     }
 
     public String getDetectionMessage() {

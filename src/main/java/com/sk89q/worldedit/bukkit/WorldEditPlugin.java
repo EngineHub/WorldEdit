@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
 import com.sk89q.util.yaml.YAMLProcessor;
+import com.sk89q.wepif.PermissionsResolverManager;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -37,7 +38,6 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.sk89q.bukkit.migration.PermissionsResolverManager;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.bukkit.selections.*;
@@ -71,10 +71,6 @@ public class WorldEditPlugin extends JavaPlugin {
      * Holds the configuration for WorldEdit.
      */
     private BukkitConfiguration config;
-    /**
-     * The permissions resolver in use.
-     */
-    private PermissionsResolverManager perms;
 
     /**
      * Called on plugin enable.
@@ -97,7 +93,7 @@ public class WorldEditPlugin extends JavaPlugin {
         // Set up configuration and such, including the permissions
         // resolver
         config = new BukkitConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml"), true), logger);
-        perms = new PermissionsResolverManager(this, "WorldEdit", logger);
+        PermissionsResolverManager.initialize(this);
 
         // Load the configuration
         loadConfiguration();
@@ -135,7 +131,7 @@ public class WorldEditPlugin extends JavaPlugin {
     protected void loadConfiguration() {
         config.unload();
         config.load();
-        perms.load();
+        getPermissionsResolver().load();
     }
 
     /**
@@ -336,7 +332,7 @@ public class WorldEditPlugin extends JavaPlugin {
      * @return
      */
     public PermissionsResolverManager getPermissionsResolver() {
-        return perms;
+        return PermissionsResolverManager.getInstance();
     }
 
     /**

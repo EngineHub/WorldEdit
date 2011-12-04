@@ -98,7 +98,7 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public String[] getGroups() {
-        return plugin.getPermissionsResolver().getGroups(player.getName());
+        return plugin.getPermissionsResolver().getGroups(player);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class BukkitPlayer extends LocalPlayer {
     public boolean hasPermission(String perm) {
         return (!plugin.getLocalConfiguration().noOpPermissions && player.isOp())
                 || plugin.getPermissionsResolver().hasPermission(
-                        player.getWorld().getName(), player.getName(), perm);
+                        player.getWorld().getName(), player, perm);
     }
 
     @Override

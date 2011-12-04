@@ -17,9 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.bukkit.migration;
+package com.sk89q.wepif;
 
+public interface PermissionsResolver extends PermissionsProvider {
+    public void load();
 
-@Deprecated
-public interface PermissionsResolver extends com.sk89q.wepif.PermissionsResolver {
+    public String getDetectionMessage();
 }
