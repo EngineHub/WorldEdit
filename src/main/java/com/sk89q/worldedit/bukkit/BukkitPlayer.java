@@ -72,22 +72,30 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public void printRaw(String msg) {
-        player.sendMessage(msg);
+        for (String part : msg.split("\n")) {
+            player.sendMessage(part);
+        }
     }
 
     @Override
     public void print(String msg) {
-        player.sendMessage("\u00A7d" + msg);
+        for (String part : msg.split("\n")) {
+            player.sendMessage("\u00A7d" + part);
+        }
     }
 
     @Override
     public void printDebug(String msg) {
-        player.sendMessage("\u00A77" + msg);
+        for (String part : msg.split("\n")) {
+            player.sendMessage("\u00A77" + part);
+        }
     }
 
     @Override
     public void printError(String msg) {
-        player.sendMessage("\u00A7c" + msg);
+        for (String part : msg.split("\n")) {
+            player.sendMessage("\u00A7c" + part);
+        }
     }
 
     @Override
