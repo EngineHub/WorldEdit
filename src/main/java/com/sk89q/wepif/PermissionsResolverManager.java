@@ -24,6 +24,9 @@ import com.sk89q.util.yaml.YAMLFormat;
 import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.event.Event;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -76,7 +79,6 @@ public class PermissionsResolverManager implements PermissionsResolver {
 
     private Server server;
     private PermissionsResolver permissionResolver;
-    private PermissionsResolverServerListener listener;
     private YAMLProcessor config;
     private Logger logger = Logger.getLogger(getClass().getCanonicalName());
     private List<Class<? extends PermissionsResolver>> enabledResolvers = new ArrayList<Class<? extends PermissionsResolver>>();
@@ -93,7 +95,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
 
     protected PermissionsResolverManager(Plugin plugin) {
         this.server = plugin.getServer();
-        this.listener = new PermissionsResolverServerListener(this, plugin);
+        (new ServerListener()).register(plugin); // Register the events
 
         loadConfig(new File("wepif.yml"));
         findResolver();
@@ -166,6 +168,10 @@ public class PermissionsResolverManager implements PermissionsResolver {
 
     public String[] getGroups(OfflinePlayer player) {
         return permissionResolver.getGroups(player);
+    }
+
+    public String getDetectionMessage() {
+        return "Using WEPIF for permissions";
     }
 
     private boolean loadConfig(File file) {
@@ -253,20 +259,39 @@ public class PermissionsResolverManager implements PermissionsResolver {
         return isUpdated;
     }
 
-    boolean hasServerListener() {
-        return listener != null;
-    }
-
-    void setServerListener(PermissionsResolverServerListener listener) {
-        this.listener = listener;
-    }
-
     public static class MissingPluginException extends Exception {
         private static final long serialVersionUID = 7044832912491608706L;
     }
 
-    public String getDetectionMessage() {
-        return "Using WEPIF for permissions";
+    class ServerListener extends org.bukkit.event.server.ServerListener {
+
+        @Override
+        public void onPluginEnable(PluginEnableEvent event) {
+            Plugin plugin = event.getPlugin();
+            String name = plugin.getDescription().getName();
+            if (plugin instanceof PermissionsProvider) {
+                setPluginPermissionsResolver(plugin);
+            } else if ("Permissions".equals(name) || "PermissionsEx".equals(name)) {
+                load();
+            }
+        }
+
+        @Override
+        public void onPluginDisable(PluginDisableEvent event) {
+            String name = event.getPlugin().getDescription().getName();
+
+            if (event.getPlugin() instanceof PermissionsProvider 
+                    || "Permissions".equals(name) || "PermissionsEx".equals(name)) {
+                load();
+            }
+        }
+        
+        void register(Plugin plugin) {
+            plugin.getServer().getPluginManager().registerEvent(Event.Type.PLUGIN_ENABLE,
+                    this, Event.Priority.Normal, plugin);
+            plugin.getServer().getPluginManager().registerEvent(Event.Type.PLUGIN_DISABLE,
+                    this, Event.Priority.Normal, plugin);
+        }
     }
 
 }
