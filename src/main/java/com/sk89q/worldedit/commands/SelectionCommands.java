@@ -580,7 +580,7 @@ public class SelectionCommands {
 
     @Command(
         aliases = { "/sel", ";" },
-        usage = "[type]",
+        usage = "[cuboid|poly]",
         desc = "Choose a region selector",
         min = 0,
         max = 1
