@@ -80,6 +80,8 @@ public class Switch extends Node implements RValue {
 
             return defaultCase == null ? ret : defaultCase.getValue();
         } catch (BreakException e) {
+            if (e.doContinue) throw e;
+
             return 0.0;
         }
     }
