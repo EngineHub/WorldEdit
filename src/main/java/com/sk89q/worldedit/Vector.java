@@ -613,6 +613,16 @@ public class Vector {
     }
 
     /**
+     * Gets the dot product of this and another vector.
+     *
+     * @param other
+     * @return the dot product of this and the other vector
+     */
+    public double dot(Vector other) {
+        return x * other.x + y * other.y + z * other.z;
+    }
+
+    /**
      * Gets the minimum components of two vectors.
      *
      * @param v1
