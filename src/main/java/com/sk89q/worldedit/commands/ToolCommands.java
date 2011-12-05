@@ -34,7 +34,7 @@ public class ToolCommands {
     @Command(
         aliases = { "none" },
         usage = "",
-        desc = "Unbind all bound tools",
+        desc = "Unbind a bound tool from your current item",
         min = 0,
         max = 0
     )
