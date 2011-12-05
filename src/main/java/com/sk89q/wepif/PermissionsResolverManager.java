@@ -19,7 +19,6 @@
 
 package com.sk89q.wepif;
 
-import com.sk89q.bukkit.migration.LegacyPluginPermissionsResolver;
 import com.sk89q.util.yaml.YAMLFormat;
 import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.OfflinePlayer;
@@ -86,7 +85,6 @@ public class PermissionsResolverManager implements PermissionsResolver {
     @SuppressWarnings("unchecked")
     protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[] {
             PluginPermissionsResolver.class,
-            LegacyPluginPermissionsResolver.class,
             PermissionsExResolver.class,
             NijiPermissionsResolver.class,
             DinnerPermsResolver.class,
