@@ -69,7 +69,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
 
     public static PermissionsResolverManager getInstance() {
         if (instance == null) {
-            throw new WEPIFRutimeException("WEPIF has not yet been initialized!");
+            throw new WEPIFRuntimeException("WEPIF has not yet been initialized!");
         }
         return instance;
     }
