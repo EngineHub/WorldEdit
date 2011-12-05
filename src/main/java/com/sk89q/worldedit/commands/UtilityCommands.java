@@ -346,6 +346,9 @@ public class UtilityCommands {
         usage = "[radius]",
         flags = "p",
         desc = "Kill all or nearby mobs",
+        help =
+            "Kills nearby mobs, or all mobs if you don't specify a radius.\n" +
+            "The -p flag makes /butcher also kill pets.",
         min = 0,
         max = 1
     )

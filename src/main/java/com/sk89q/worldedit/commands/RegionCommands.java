@@ -201,6 +201,9 @@ public class RegionCommands {
         usage = "[iterations]",
         flags = "n",
         desc = "Smooth the elevation in the selection",
+        help =
+            "Smoothes the elevation in the selection.\n" +
+            "The -n flag makes it only consider naturally occuring blocks.",
         min = 0,
         max = 1
     )
@@ -227,6 +230,10 @@ public class RegionCommands {
         usage = "[count] [direction] [leave-id]",
         flags = "s",
         desc = "Move the contents of the selection",
+        help =
+            "Move the contents of the selection.\n" +
+            "The -s flag shifts the selection to the target location.\n" +
+            "Optionally fills the old location with <leave-id>.",
         min = 0,
         max = 3
     )
@@ -272,6 +279,11 @@ public class RegionCommands {
         usage = "[count] [direction]",
         flags = "sa",
         desc = "Repeat the contents of the selection",
+        help =
+            "Repeats the contents of the selection.\n" +
+            "Flags:\n" +
+            "  -s shifts the selection to the last stacked copy\n" +
+            "  -a skips air blocks",
         min = 0,
         max = 2
     )
@@ -311,6 +323,10 @@ public class RegionCommands {
         aliases = { "/regen" },
         usage = "",
         desc = "Regenerates the contents of the selection",
+        help =
+            "Regenerates the contents of the current selection.\n" +
+            "This command might affect things outside the selection,\n" +
+            "if they are within the same chunk.",
         min = 0,
         max = 0
     )
@@ -332,6 +348,11 @@ public class RegionCommands {
             aliases = { "/deform" },
             usage = "<expression>",
             desc = "Deforms a selected region with an expression",
+            help =
+                "Deforms a selected region with an expression\n" +
+                "The expression is executed for each block and is expected\n" +
+                "to modify the variables x, y and z to point to a new block\n" +
+                "to fetch. See also tinyurl.com/wesyntax.",
             flags = "ro",
             min = 1,
             max = -1

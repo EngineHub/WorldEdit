@@ -137,6 +137,11 @@ public class GeneralCommands {
         usage = "<query>",
         flags = "bi",
         desc = "Search for an item",
+        help =
+            "Searches for an item.\n" +
+            "Flags:\n" +
+            "  -b only search for blocks\n" +
+            "  -i only search for items",
         min = 1,
         max = 1
     )

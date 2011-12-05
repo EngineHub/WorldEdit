@@ -103,6 +103,11 @@ public class ClipboardCommands {
         usage = "",
         flags = "ao",
         desc = "Paste the clipboard's contents",
+        help =
+            "Pastes the clipboard's contents.\n" +
+            "Flags:\n" +
+            "  -a skips air blocks\n" +
+            "  -o pastes at the original position",
         min = 0,
         max = 0
     )
@@ -156,6 +161,10 @@ public class ClipboardCommands {
         usage = "[dir]",
         flags = "p",
         desc = "Flip the contents of the clipboard.",
+        help =
+            "Flips the contents of the clipboard.\n" +
+            "The -p flag flips the selection around the player,\n" +
+            "instead of the selections center.",
         min = 0,
         max = 1
     )

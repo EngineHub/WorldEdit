@@ -54,6 +54,9 @@ public class BrushCommands {
         usage = "<block> [radius]",
         flags = "h",
         desc = "Choose the sphere brush",
+        help =
+            "Chooses the sphere brush.\n" +
+            "The -h flag creates hollow spheres instead.",
         min = 1,
         max = 2
     )
@@ -91,6 +94,9 @@ public class BrushCommands {
         usage = "<block> [radius] [height]",
         flags = "h",
         desc = "Choose the cylinder brush",
+        help =
+            "Chooses the cylinder brush.\n" +
+            "The -h flag creates hollow cylinders instead.",
         min = 1,
         max = 3
     )
@@ -135,6 +141,9 @@ public class BrushCommands {
         usage = "",
         flags = "a",
         desc = "Choose the clipboard brush",
+        help =
+            "Chooses the clipboard brush.\n" +
+            "The -a flag makes it not paste air.",
         min = 0,
         max = 0
     )
@@ -173,6 +182,9 @@ public class BrushCommands {
         usage = "[size] [iterations]",
         flags = "n",
         desc = "Choose the terrain softener brush",
+        help =
+            "Chooses the terrain softener brush.\n" +
+            "The -n flag makes it only consider naturally occuring blocks.",
         min = 0,
         max = 2
     )

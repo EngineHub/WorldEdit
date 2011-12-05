@@ -171,6 +171,10 @@ public class SelectionCommands {
         usage = "",
         flags = "s",
         desc = "Set the selection to your current chunk.",
+        help =
+            "Set the selection to the chunk you are currently in.\n" +
+            "With the -s flag, your current selection is expanded\n" +
+            "to encompass all chunks that are part of it.",
         min = 0,
         max = 0
     )
@@ -417,6 +421,11 @@ public class SelectionCommands {
         aliases = { "/outset" },
         usage = "<amount>",
         desc = "Outset the selection area",
+        help =
+            "Expands the selection by the given amount in all directions.\n" +
+            "Flags:\n" +
+            "  -h only expand horizontally\n" +
+            "  -v only expand vertically\n",
         flags = "hv",
         min = 1,
         max = 1
@@ -456,6 +465,11 @@ public class SelectionCommands {
         aliases = { "/inset" },
         usage = "<amount>",
         desc = "Inset the selection area",
+        help =
+            "Contracts the selection by the given amount in all directions.\n" +
+            "Flags:\n" +
+            "  -h only contract horizontally\n" +
+            "  -v only contract vertically\n",
         flags = "hv",
         min = 1,
         max = 1
@@ -537,6 +551,9 @@ public class SelectionCommands {
         aliases = { "/distr" },
         usage = "",
         desc = "Get the distribution of blocks in the selection",
+        help =
+            "Gets the distribution of blocks in the selection.\n" +
+            "The -c flag makes it print to the console as well.",
         flags = "c",
         min = 0,
         max = 0

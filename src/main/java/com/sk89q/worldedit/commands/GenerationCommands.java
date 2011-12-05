@@ -39,7 +39,12 @@ public class GenerationCommands {
     @Command(
         aliases = { "/hcyl" },
         usage = "<block> <radius>[,<radius>] [height]",
-        desc = "Generate a hollow cylinder",
+        desc = "Generates a hollow cylinder.",
+        help =
+            "Generates a hollow cylinder.\n" +
+            "By specifying 2 radii, separated by a comma,\n" +
+            "you can generate elliptical cylinders.\n" +
+            "The 1st radius is north/south, the 2nd radius is east/west.",
         min = 2,
         max = 3
     )
@@ -76,7 +81,12 @@ public class GenerationCommands {
     @Command(
         aliases = { "/cyl" },
         usage = "<block> <radius>[,<radius>] [height]",
-        desc = "Generate a cylinder",
+        desc = "Generates a cylinder.",
+        help =
+            "Generates a cylinder.\n" +
+            "By specifying 2 radii, separated by a comma,\n" +
+            "you can generate elliptical cylinders.\n" +
+            "The 1st radius is north/south, the 2nd radius is east/west.",
         min = 2,
         max = 3
     )
@@ -113,7 +123,12 @@ public class GenerationCommands {
     @Command(
         aliases = { "/hsphere" },
         usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-        desc = "Generate a hollow sphere.",
+        desc = "Generates a hollow sphere.",
+        help =
+            "Generates a hollow sphere.\n" +
+            "By specifying 3 radii, separated by commas,\n" +
+            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
+            "is north/south, up/down, east/west.",
         min = 2,
         max = 3
     )
@@ -161,7 +176,12 @@ public class GenerationCommands {
     @Command(
         aliases = { "/sphere" },
         usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-        desc = "Generate a filled sphere.",
+        desc = "Generates a filled sphere.",
+        help =
+            "Generates a filled sphere.\n" +
+            "By specifying 3 radii, separated by commas,\n" +
+            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
+            "is north/south, up/down, east/west.",
         min = 2,
         max = 3
     )
@@ -303,7 +323,17 @@ public class GenerationCommands {
     @Command(
         aliases = { "/generate", "/gen", "/g" },
         usage = "<block> <expression>",
-        desc = "Generates a shape according to a formula. -h for hollow, -r for raw coordinates, -o for unscaled, but offset from placement",
+        desc = "Generates a shape according to a formula.",
+        help =
+            "Generates a shape according to a formula that is expected to\n" +
+            "return positive numbers (true) if the point is inside the shape\n" +
+            "Optionally set type/data to the desired block.\n" +
+            "Flags:\n" +
+            "  -h to generate a hollow shape\n" +
+            "  -r to use raw minecraft coordinates\n" +
+            "  -o is like -r, except offset from placement.\n" +
+            "If neither -r nor -o is given, the selection is mapped to -1..1\n" +
+            "See also tinyurl.com/wesyntax.",
         flags = "hro",
         min = 1,
         max = -1
