@@ -262,7 +262,7 @@ public abstract class LocalWorld {
     }
 
     /**
-     * Kill mobs in an area, excluding pet wolves.
+     * Kill mobs in an area, excluding pet wolves and animals.
      * 
      * @param origin
      * @param radius
@@ -276,9 +276,10 @@ public abstract class LocalWorld {
      * @param origin
      * @param radius
      * @param killPets
+     * @param killAnimals
      * @return
      */
-    public abstract int killMobs(Vector origin, int radius, boolean killPets);
+    public abstract int killMobs(Vector origin, int radius, boolean killPets, boolean killAnimals);
 
     /**
      * Remove entities in an area.
