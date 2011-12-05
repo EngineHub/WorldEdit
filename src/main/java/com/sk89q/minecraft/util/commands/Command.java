@@ -67,4 +67,9 @@ public @interface Command {
      * meaning that if it is given it must have a value
      */
     String flags() default "";
+
+    /**
+     * A long description for the command.
+     */
+    String help() default "";
 }

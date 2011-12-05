@@ -242,7 +242,7 @@ public abstract class CommandsManager<T> {
      * @return
      */
     protected String getUsage(String[] args, int level, Command cmd) {
-        StringBuilder command = new StringBuilder();
+        final StringBuilder command = new StringBuilder();
 
         command.append('/');
 
@@ -261,6 +261,12 @@ public abstract class CommandsManager<T> {
             }
         }
         command.append(cmd.usage());
+
+        final String help = cmd.help();
+        if (!help.isEmpty()) {
+            command.append("\n\n");
+            command.append(help);
+        }
 
         return command.toString();
     }
