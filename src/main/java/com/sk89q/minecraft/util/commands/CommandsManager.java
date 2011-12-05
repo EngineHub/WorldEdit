@@ -244,25 +244,18 @@ public abstract class CommandsManager<T> {
     protected String getUsage(String[] args, int level, Command cmd) {
         StringBuilder command = new StringBuilder();
 
-        command.append("/");
+        command.append('/');
 
         for (int i = 0; i <= level; ++i) {
-            command.append(args[i] + " ");
+            command.append(args[i]);
+            command.append(' ');
         }
         if (cmd.flags().length() > 0) {
-            List<Character> flagChars = new ArrayList<Character>();
-            char[] flags = cmd.flags().toCharArray();
-            for (int i = 0; i < flags.length; ++i) {
-                if (flags.length > i + 1 && flags[i + 1] == ':') {
-                    i++;
-                    continue;
-                }
-                flagChars.add(flags[i]);
-            }
-            if (flagChars.size() > 0) {
+            String flags = cmd.flags().replaceAll(".:", "");
+            if (flags.length() > 0) {
                 command.append("[-");
-                for (char character : flagChars) {
-                    command.append(character);
+                for (int i = 0; i < flags.length(); ++i) {
+                    command.append(flags.charAt(i));
                 }
                 command.append("] ");
             }
