@@ -7,11 +7,18 @@
 - Fixed config file generation on windows
 - Added an expression parser (for developers!)
 - Added a YAML library (for developers!)
-- Block queues are now flushed based on attachment to other blocks
-- Sped up //fast mode by deferring lighting until after all blocks are in place. Has some bugs but it's at the very least good for previews.
+- Block queues are now flushed based on attachment to other blocks. This should fix doors popping out.
+[removed](- Sped up //fast mode by deferring lighting until after all blocks are in place. Has some bugs but it's at the very least good for previews.)
 - Added l[eft], r[ight], b[ack] and f[orward] to the commands that take a direction.
 - Added a //g[en[erate]] command that can generate a shape given a formula
 - Added support for stretched cylinders
+- Added support for the new blocks/items/mobs that were added with Minecraft 1.0
+- Added a //deform command that deforms the current selection given a formula
+- Made blockbag (take blocks from inventory) system more consistent.
+- Fixed some navigation wand (compass) quirks
+- Added sound and particle effects for the super pickaxe
+- Fixed the tree remover tool for large forests
+- Changed the WEPIF interface (for developers!)
 
 4.7:
 - Added support for all the new items and blocks
