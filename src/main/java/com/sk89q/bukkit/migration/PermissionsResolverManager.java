@@ -49,7 +49,7 @@ public class PermissionsResolverManager implements PermissionsProvider {
     @Deprecated
     public void load() {
         try {
-        getRealResolver().load();
+            getRealResolver().load();
         } catch (WEPIFRuntimeException ignore) {
             // Some plugins do this very early in the initialization process
         }
