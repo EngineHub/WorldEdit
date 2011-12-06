@@ -39,9 +39,7 @@ public class PermissionsResolverServerListener extends ServerListener {
 
     @Deprecated
     public void register(Plugin plugin) {
-        if (!manager.isSetUp()) {
-            manager.setUp(plugin);
-        }
+        manager.setUp(plugin);
     }
 
 }

@@ -21,21 +21,19 @@ package com.sk89q.bukkit.migration;
 
 import java.util.logging.Logger;
 
+import com.sk89q.wepif.WEPIFRuntimeException;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 
 @Deprecated
 public class PermissionsResolverManager implements PermissionsProvider {
-    private static boolean setUp;
 
     @Deprecated
     public PermissionsResolverManager(org.bukkit.util.config.Configuration config, Server server, String name, Logger logger) {}
 
     @Deprecated
     public PermissionsResolverManager(Plugin plugin, String name, Logger logger) {
-        if (!setUp) {
-            setUp(plugin);
-        }
+        setUp(plugin);
     }
 
     @Deprecated
@@ -50,7 +48,11 @@ public class PermissionsResolverManager implements PermissionsProvider {
 
     @Deprecated
     public void load() {
+        try {
         getRealResolver().load();
+        } catch (WEPIFRuntimeException ignore) {
+            // Some plugins do this very early in the initialization process
+        }
     }
 
     public boolean hasPermission(String name, String permission) {
@@ -72,17 +74,12 @@ public class PermissionsResolverManager implements PermissionsProvider {
     public String getDetectionMessage() {
         return getRealResolver().getDetectionMessage();
     }
-
-    boolean isSetUp() {
-        return setUp;
-    }
     
     void setUp(Plugin plugin) {
         com.sk89q.wepif.PermissionsResolverManager.initialize(plugin);
-        setUp = true;
     }
 
-    public com.sk89q.wepif.PermissionsResolverManager getRealResolver() {
+    private com.sk89q.wepif.PermissionsResolverManager getRealResolver() {
         return com.sk89q.wepif.PermissionsResolverManager.getInstance();
     }
 
