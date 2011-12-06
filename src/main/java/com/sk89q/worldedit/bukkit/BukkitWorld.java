@@ -62,6 +62,7 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.EntityType;
 import com.sk89q.worldedit.regions.Region;
+import org.bukkit.entity.Animals;
 
 public class BukkitWorld extends LocalWorld {
     private World world;
@@ -489,7 +490,7 @@ public class BukkitWorld extends LocalWorld {
     }
 
     /**
-     * Kill mobs in an area, excluding tamed wolves.
+     * Kill mobs in an area, excluding tamed wolves and animals.
      * 
      * @param origin
      * @param radius -1 for all mobs
@@ -497,7 +498,7 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public int killMobs(Vector origin, int radius) {
-        return killMobs(origin, radius, false);
+        return killMobs(origin, radius, false, false);
     }
 
     /**
@@ -505,17 +506,21 @@ public class BukkitWorld extends LocalWorld {
      * 
      * @param origin
      * @param radius -1 for all mobs
-     * @param killPets true to kill tames wolves
+     * @param killPets true to kill tamed wolves
+     * @param killAnimals true to kill animals
      * @return
      */
     @Override
-    public int killMobs(Vector origin, int radius, boolean killPets) {
+    public int killMobs(Vector origin, int radius, boolean killPets, boolean killAnimals) {
         int num = 0;
         double radiusSq = Math.pow(radius, 2);
 
         for (LivingEntity ent : world.getLivingEntities()) {
             if (!killPets && ent instanceof Tameable && ((Tameable) ent).isTamed()) {
                 continue; // tamed wolf
+            }
+            if (!killAnimals && ent instanceof Animals) {
+                continue; // animal
             }
             if (ent instanceof LivingEntity && !(ent instanceof HumanEntity)) {
                 if (radius == -1
