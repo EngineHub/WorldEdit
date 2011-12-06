@@ -48,14 +48,14 @@ public class Chunk {
     public Chunk(CompoundTag tag) throws DataException {
         rootTag = tag;
 
-        blocks = ((ByteArrayTag) getChildTag(
-                rootTag.getValue(), "Blocks", ByteArrayTag.class)).getValue();
-        data = ((ByteArrayTag) getChildTag(
-                rootTag.getValue(), "Data", ByteArrayTag.class)).getValue();
-        rootX = ((IntTag) getChildTag(
-                rootTag.getValue(), "xPos", IntTag.class)).getValue();
-        rootZ = ((IntTag) getChildTag(
-                rootTag.getValue(), "zPos", IntTag.class)).getValue();
+        blocks = getChildTag(
+                rootTag.getValue(), "Blocks", ByteArrayTag.class).getValue();
+        data = getChildTag(
+                rootTag.getValue(), "Data", ByteArrayTag.class).getValue();
+        rootX = getChildTag(
+                rootTag.getValue(), "xPos", IntTag.class).getValue();
+        rootZ = getChildTag(
+                rootTag.getValue(), "zPos", IntTag.class).getValue();
 
         if (blocks.length != 32768) {
             throw new InvalidFormatException("Chunk blocks byte array expected "
@@ -120,8 +120,8 @@ public class Chunk {
      * @throws DataException
      */
     private void populateTileEntities() throws DataException {
-        List<Tag> tags = (List<Tag>) ((ListTag) getChildTag(
-                rootTag.getValue(), "TileEntities", ListTag.class))
+        List<Tag> tags = getChildTag(
+                rootTag.getValue(), "TileEntities", ListTag.class)
                 .getValue();
 
         tileEntities = new HashMap<BlockVector, Map<String, Tag>>();
@@ -224,9 +224,8 @@ public class Chunk {
      * @return child tag
      * @throws InvalidFormatException
      */
-    public static Tag getChildTag(Map<String, Tag> items, String key,
-            Class<? extends Tag> expected)
-            throws InvalidFormatException {
+    public static <T extends Tag> T getChildTag(Map<String,Tag> items, String key,
+            Class<T> expected) throws InvalidFormatException {
         if (!items.containsKey(key)) {
             throw new InvalidFormatException("Missing a \"" + key + "\" tag");
         }
@@ -234,6 +233,6 @@ public class Chunk {
         if (!expected.isInstance(tag)) {
             throw new InvalidFormatException(key + " tag is not of tag type " + expected.getName());
         }
-        return tag;
+        return (T) tag;
     }
 }
