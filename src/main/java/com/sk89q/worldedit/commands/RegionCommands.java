@@ -202,7 +202,7 @@ public class RegionCommands {
         flags = "n",
         desc = "Smooth the elevation in the selection",
         help =
-            "Smoothes the elevation in the selection.\n" +
+            "Smooths the elevation in the selection.\n" +
             "The -n flag makes it only consider naturally occuring blocks.",
         min = 0,
         max = 1
@@ -231,7 +231,7 @@ public class RegionCommands {
         flags = "s",
         desc = "Move the contents of the selection",
         help =
-            "Move the contents of the selection.\n" +
+            "Moves the contents of the selection.\n" +
             "The -s flag shifts the selection to the target location.\n" +
             "Optionally fills the old location with <leave-id>.",
         min = 0,
