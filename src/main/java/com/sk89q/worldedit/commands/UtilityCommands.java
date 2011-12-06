@@ -345,13 +345,14 @@ public class UtilityCommands {
     @Command(
         aliases = { "butcher" },
         usage = "[radius]",
-        flags = "pn",
+        flags = "pna",
         desc = "Kill all or nearby mobs",
         help =
             "Kills nearby mobs, or all mobs if you don't specify a radius.\n" +
             "Flags:" +
-            "  -p also kill pets.\n" +
-            "  -n also kill NPCs.",
+            "  -p also kills pets.\n" +
+            "  -n also kills NPCs.\n" +
+            "  -a also kills animals.",
         min = 0,
         max = 1
     )
@@ -368,6 +369,7 @@ public class UtilityCommands {
         int flags = 0;
         if (args.hasFlag('p')) flags |= KillFlags.PETS;
         if (args.hasFlag('n')) flags |= KillFlags.NPCS;
+        if (args.hasFlag('a')) flags |= KillFlags.ANIMALS;
 
         int killed = player.getWorld().killMobs(origin, radius, flags);
         player.print("Killed " + killed + " mobs.");

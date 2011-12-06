@@ -38,6 +38,7 @@ public abstract class LocalWorld {
     public class KillFlags {
         public static final int PETS = 1 << 0;
         public static final int NPCS = 1 << 1;
+        public static final int ANIMALS = 1 << 2;
     }
 
     /**

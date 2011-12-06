@@ -33,6 +33,7 @@ import org.bukkit.block.Furnace;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Sign;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
@@ -500,6 +501,7 @@ public class BukkitWorld extends LocalWorld {
     public int killMobs(Vector origin, double radius, int flags) {
         boolean killPets = (flags & KillFlags.PETS) != 0;
         boolean killNPCs = (flags & KillFlags.NPCS) != 0;
+        boolean killAnimals = (flags & KillFlags.ANIMALS) != 0;
 
         int num = 0;
         double radiusSq = radius * radius;
@@ -508,6 +510,10 @@ public class BukkitWorld extends LocalWorld {
 
         for (LivingEntity ent : world.getLivingEntities()) {
             if (ent instanceof HumanEntity) {
+                continue;
+            }
+
+            if (!killAnimals && ent instanceof Animals) {
                 continue;
             }
 
