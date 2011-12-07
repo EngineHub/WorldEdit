@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.cui;
 
+import org.bukkit.ChatColor;
+
 public class UpdateEvent implements CUIEvent {
     
     public UpdateEvent() {
@@ -29,7 +31,7 @@ public class UpdateEvent implements CUIEvent {
     }
 
     public String[] getParameters() {
-        return new String[] { "\u00a7cWARNING: WorldEdit CUI is no longer being updated. Please update to the latest version." };
+        return new String[] { ChatColor.RED + "Update WorldEditCUI as soon as possible!" };
     }
 
 }
