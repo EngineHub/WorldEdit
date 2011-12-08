@@ -2703,4 +2703,100 @@ public class EditSession {
 
         return affected;
     }
+
+    Vector[] recurseDirections = {
+        PlayerDirection.NORTH.vector(),
+        PlayerDirection.EAST.vector(),
+        PlayerDirection.SOUTH.vector(),
+        PlayerDirection.WEST.vector(),
+        PlayerDirection.UP.vector(),
+        PlayerDirection.DOWN.vector(),
+    };
+
+    /**
+     * Hollows out the region (It's treated as if it was a cuboid if it's not).
+     *
+     * @param region
+     * @param block
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int hollowOutRegion(Region region) throws MaxChangedBlocksException {
+        int affected = 0;
+
+        Set<BlockVector> outside = new HashSet<BlockVector>();
+
+        Vector min = region.getMinimumPoint();
+        Vector max = region.getMaximumPoint();
+
+        int minX = min.getBlockX();
+        int minY = min.getBlockY();
+        int minZ = min.getBlockZ();
+        int maxX = max.getBlockX();
+        int maxY = max.getBlockY();
+        int maxZ = max.getBlockZ();
+
+        for (int x = minX; x <= maxX; ++x) {
+            for (int y = minY; y <= maxY; ++y) {
+                recurseHollow(region, new BlockVector(x, y, minZ), outside);
+                recurseHollow(region, new BlockVector(x, y, maxZ), outside);
+            }
+        }
+
+        for (int y = minY; y <= maxY; ++y) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                recurseHollow(region, new BlockVector(minX, y, z), outside);
+                recurseHollow(region, new BlockVector(maxX, y, z), outside);
+            }
+        }
+
+        for (int z = minZ; z <= maxZ; ++z) {
+            for (int x = minX; x <= maxX; ++x) {
+                recurseHollow(region, new BlockVector(x, minY, z), outside);
+                recurseHollow(region, new BlockVector(x, maxY, z), outside);
+            }
+        }
+
+        BaseBlock air = new BaseBlock(BlockID.AIR);
+
+        outer: for (BlockVector position : region) {
+            for (Vector recurseDirection: recurseDirections) {
+                BlockVector neighbor = position.add(recurseDirection).toBlockVector();
+
+                if (outside.contains(neighbor)) {
+                    continue outer;
+                }
+            }
+
+            if (setBlock(position, air)) {
+                ++affected;
+            }
+        }
+
+        return affected;
+    }
+
+    private void recurseHollow(Region region, BlockVector origin, Set<BlockVector> outside) {
+        final LinkedList<BlockVector> queue = new LinkedList<BlockVector>();
+        queue.addLast(origin);
+
+        while (!queue.isEmpty()) {
+            final BlockVector current = queue.removeFirst();
+            if (!BlockType.canPassThrough(getBlockType(current))) {
+                continue;
+            }
+
+            if (!outside.add(current)) {
+                continue;
+            }
+
+            if (!region.contains(current)) {
+                continue;
+            }
+
+            for (Vector recurseDirection: recurseDirections) {
+                queue.addLast(current.add(recurseDirection).toBlockVector());
+            }
+        } // while
+    }
 }

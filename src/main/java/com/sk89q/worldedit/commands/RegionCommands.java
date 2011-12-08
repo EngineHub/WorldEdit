@@ -396,4 +396,22 @@ public class RegionCommands {
             player.printError(e.getMessage());
         }
     }
+
+    @Command(
+        aliases = { "/hollow" },
+        usage = "",
+        desc = "Hollows out the object contained in this selection",
+        min = 0,
+        max = 0
+    )
+    @CommandPermissions("worldedit.region.hollow")
+    @Logging(REGION)
+    public static void hollow(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        int affected = editSession.hollowOutRegion(session.getSelection(player.getWorld()));
+
+        player.print(affected + " block(s) have been changed.");
+    }
 }
