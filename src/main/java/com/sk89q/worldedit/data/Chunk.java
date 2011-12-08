@@ -224,6 +224,7 @@ public class Chunk {
      * @return child tag
      * @throws InvalidFormatException
      */
+    @SuppressWarnings("unchecked")
     public static <T extends Tag> T getChildTag(Map<String,Tag> items, String key,
             Class<T> expected) throws InvalidFormatException {
         if (!items.containsKey(key)) {
