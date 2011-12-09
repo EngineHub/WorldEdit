@@ -91,11 +91,13 @@ public class DinnerPermsResolver implements PermissionsResolver {
     }
 
     public boolean inGroup(OfflinePlayer player, String group) {
-        Permissible perms = getPermissible(player);
+        final Permissible perms = getPermissible(player);
         if (perms == null) {
             return false;
         }
-        return perms.hasPermission(GROUP_PREFIX + group);
+
+        final String perm = GROUP_PREFIX + group;
+        return perms.isPermissionSet(perm) && perms.hasPermission(perm);
     }
 
     public String[] getGroups(OfflinePlayer player) {
