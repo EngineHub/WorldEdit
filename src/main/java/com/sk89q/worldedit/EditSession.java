@@ -2361,35 +2361,45 @@ public class EditSession {
     public int green(Vector pos, double radius)
             throws MaxChangedBlocksException {
         int affected = 0;
-        double radiusSq = radius * radius;
+        final double radiusSq = radius * radius;
 
-        int ox = pos.getBlockX();
-        int oy = pos.getBlockY();
-        int oz = pos.getBlockZ();
+        final int ox = pos.getBlockX();
+        final int oy = pos.getBlockY();
+        final int oz = pos.getBlockZ();
 
-        BaseBlock grass = new BaseBlock(BlockID.GRASS);
+        final BaseBlock grass = new BaseBlock(BlockID.GRASS);
 
-        int ceilRadius = (int) Math.ceil(radius);
+        final int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
             for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
                 if ((new Vector(x, oy, z)).distanceSq(pos) > radiusSq) {
                     continue;
                 }
 
-                for (int y = 127; y >= 1; --y) {
-                    Vector pt = new Vector(x, y, z);
-                    int id = getBlockType(pt);
+                loop: for (int y = 127; y >= 1; --y) {
+                    final Vector pt = new Vector(x, y, z);
+                    final int id = getBlockType(pt);
 
-                    if (BlockType.canPassThrough(id)) {
-                        continue;
-                    }
-
-                    if (id == BlockID.DIRT) {
+                    switch (id) {
+                    case BlockID.DIRT:
                         if (setBlock(pt, grass)) {
                             ++affected;
                         }
+                        break loop;
+
+                    case BlockID.WATER:
+                    case BlockID.STATIONARY_WATER:
+                    case BlockID.LAVA:
+                    case BlockID.STATIONARY_LAVA:
+                        // break on liquids...
+                        break loop;
+
+                    default:
+                        // ...and all non-passable blocks
+                        if (!BlockType.canPassThrough(id)) {
+                            break loop;
+                        }
                     }
-                    break;
                 }
             }
         }
