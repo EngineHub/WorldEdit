@@ -28,9 +28,11 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.data.ChunkStore;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
+import com.sk89q.worldedit.regions.ExtendingCuboidRegionSelector;
 import com.sk89q.worldedit.regions.Polygonal2DRegionSelector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.blocks.*;
 
 /**
@@ -597,7 +599,7 @@ public class SelectionCommands {
 
     @Command(
         aliases = { "/sel", ";" },
-        usage = "[cuboid|poly]",
+        usage = "[cuboid|extend|poly]",
         desc = "Choose a region selector",
         min = 0,
         max = 1
@@ -606,21 +608,30 @@ public class SelectionCommands {
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
+        final LocalWorld world = player.getWorld();
         if (args.argsLength() == 0) {
-            session.getRegionSelector(player.getWorld()).clear();
+            session.getRegionSelector(world).clear();
             return;
         }
-        String typeName = args.getString(0);
+
+        final String typeName = args.getString(0);
+        final RegionSelector oldSelector = session.getRegionSelector(world);
+
+        final RegionSelector selector;
         if (typeName.equalsIgnoreCase("cuboid")) {
-            session.setRegionSelector(player.getWorld(), new CuboidRegionSelector());
-            session.dispatchCUISelection(player);
+            selector = new CuboidRegionSelector(oldSelector);
             player.print("Cuboid: left click for point 1, right click for point 2");
+        } else if (typeName.equalsIgnoreCase("extend")) {
+            selector = new ExtendingCuboidRegionSelector(oldSelector);
+            player.print("Cuboid: left click for a starting point, right click to extend");
         } else if (typeName.equalsIgnoreCase("poly")) {
-            session.setRegionSelector(player.getWorld(), new Polygonal2DRegionSelector());
-            session.dispatchCUISelection(player);
+            selector = new Polygonal2DRegionSelector();
             player.print("2D polygon selector: Left/right click to add a point.");
         } else {
-            player.printError("Only 'cuboid' and 'poly' are accepted.");
+            player.printError("Only 'cuboid', 'extend' and 'poly' are accepted.");
+            return;
         }
+        session.setRegionSelector(world, selector);
+        session.dispatchCUISelection(player);
     }
 }

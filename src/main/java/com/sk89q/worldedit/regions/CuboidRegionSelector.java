@@ -39,29 +39,54 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
     protected BlockVector pos2;
     protected CuboidRegion region = new CuboidRegion(new Vector(), new Vector());
 
+    public CuboidRegionSelector() {
+    }
+
+    public CuboidRegionSelector(RegionSelector oldSelector) {
+        if (oldSelector instanceof CuboidRegionSelector) {
+            final CuboidRegionSelector cuboidRegionSelector = (CuboidRegionSelector) oldSelector;
+
+            pos1 = cuboidRegionSelector.pos1;
+            pos2 = cuboidRegionSelector.pos2;
+        } else {
+            final Region oldRegion;
+            try {
+                oldRegion = oldSelector.getRegion();
+            } catch (IncompleteRegionException e) {
+                return;
+            }
+
+            pos1 = oldRegion.getMinimumPoint().toBlockVector();
+            pos2 = oldRegion.getMaximumPoint().toBlockVector();
+        }
+
+        region.setPos1(pos1);
+        region.setPos2(pos2);
+    }
+
     public boolean selectPrimary(Vector pos) {
-        if (pos1 != null && pos1.equals(pos)) {
+        if (pos.equals(pos1)) {
             return false;
         }
+
         pos1 = pos.toBlockVector();
         region.setPos1(pos1);
         return true;
     }
 
     public boolean selectSecondary(Vector pos) {
-        if (pos2 != null && pos2.equals(pos)) {
+        if (pos.equals(pos2)) {
             return false;
         }
+
         pos2 = pos.toBlockVector();
         region.setPos2(pos2);
         return true;
     }
 
-    public void explainPrimarySelection(LocalPlayer player,
-            LocalSession session, Vector pos) {
+    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector pos) {
         if (pos1 != null && pos2 != null) {
-            player.print("First position set to " + pos1
-                    + " (" + region.getArea() + ").");
+            player.print("First position set to " + pos1 + " (" + region.getArea() + ").");
         } else {
             player.print("First position set to " + pos1 + ".");
         }
@@ -69,11 +94,9 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos, getArea()));
     }
 
-    public void explainSecondarySelection(LocalPlayer player,
-            LocalSession session, Vector pos) {
+    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
         if (pos1 != null && pos2 != null) {
-            player.print("Second position set to " + pos2
-                    + " (" + region.getArea() + ").");
+            player.print("Second position set to " + pos2 + " (" + region.getArea() + ").");
         } else {
             player.print("Second position set to " + pos2 + ".");
         }
@@ -85,6 +108,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         if (pos1 != null) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos1, getArea()));
         }
+
         if (pos2 != null) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos2, getArea()));
         }
@@ -129,7 +153,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
     }
 
     public List<String> getInformationLines() {
-        List<String> lines = new ArrayList<String>();
+        final List<String> lines = new ArrayList<String>();
 
         if (pos1 != null) {
             lines.add("Position 1: " + pos1);
@@ -150,16 +174,21 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         if (pos1 != null) {
             player.dispatchCUIEvent(new SelectionPointEvent(0, pos1, getArea()));
         }
+
         if (pos2 != null) {
             player.dispatchCUIEvent(new SelectionPointEvent(1, pos2, getArea()));
         }
     }
 
     public int getArea() {
-        if (pos1 != null && pos2 != null) {
-            return region.getArea();
+        if (pos1 == null) {
+            return -1;
         }
 
-        return -1;
+        if (pos2 == null) {
+            return -1;
+        }
+
+        return region.getArea();
     }
 }
