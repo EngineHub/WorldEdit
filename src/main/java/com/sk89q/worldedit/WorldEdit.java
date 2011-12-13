@@ -984,6 +984,13 @@ public class WorldEdit {
     }
 
     /**
+     * @return the commands
+     */
+    public CommandsManager<LocalPlayer> getCommandsManager() {
+        return commands;
+    }
+
+    /**
      *
      * @param player
      */

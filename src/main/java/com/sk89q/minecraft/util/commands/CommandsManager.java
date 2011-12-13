@@ -88,6 +88,12 @@ public abstract class CommandsManager<T> {
     protected Injector injector;
 
     /**
+     * Mapping of commands (not including aliases) with a description. This
+     * is only for top level commands.
+     */
+    protected Map<String, String> helpMessages = new HashMap<String, String>();
+
+    /**
      * Register an class that contains commands (denoted by {@link Command}.
      * If no dependency injector is specified, then the methods of the
      * class will be registered to be called statically. Otherwise, new
@@ -189,11 +195,32 @@ public abstract class CommandsManager<T> {
             // Build a list of commands and their usage details, at least for
             // root level commands
             if (parent == null) {
-                if (cmd.usage().length() == 0) {
-                    descs.put(cmd.aliases()[0], cmd.desc());
+                final String commandName = cmd.aliases()[0];
+                final String desc = cmd.desc();
+
+                final String usage = cmd.usage();
+                if (usage.length() == 0) {
+                    descs.put(commandName, desc);
                 } else {
-                    descs.put(cmd.aliases()[0], cmd.usage() + " - " + cmd.desc());
+                    descs.put(commandName, usage + " - " + desc);
                 }
+
+                String help = cmd.help();
+                if (help.length() == 0) {
+                    help = desc;
+                }                     
+
+                final CharSequence arguments = getArguments(cmd);
+                for (String alias : cmd.aliases()) {
+                    final String helpMessage = "/"+alias+" "+arguments+"\n\n"+help;
+                    final String key = alias.replaceAll("/", "");
+                    String previous = helpMessages.put(key, helpMessage);
+
+                    if (previous != null && !previous.replaceAll("^/[^ ]+ ", "").equals(helpMessage.replaceAll("^/[^ ]+ ", ""))) {
+                        helpMessages.put(key, previous+"\n\n"+helpMessage);
+                    }
+                }
+
             }
 
             // Add the command to the registered command list for return
@@ -234,6 +261,15 @@ public abstract class CommandsManager<T> {
     }
 
     /**
+     * Get a map from command name to help message. This is only for root commands.
+     * 
+     * @return
+     */
+    public Map<String, String> getHelpMessages() {
+        return helpMessages;
+    }
+
+    /**
      * Get the usage string for a command.
      * 
      * @param args
@@ -250,17 +286,7 @@ public abstract class CommandsManager<T> {
             command.append(args[i]);
             command.append(' ');
         }
-        if (cmd.flags().length() > 0) {
-            String flags = cmd.flags().replaceAll(".:", "");
-            if (flags.length() > 0) {
-                command.append("[-");
-                for (int i = 0; i < flags.length(); ++i) {
-                    command.append(flags.charAt(i));
-                }
-                command.append("] ");
-            }
-        }
-        command.append(cmd.usage());
+        command.append(getArguments(cmd));
 
         final String help = cmd.help();
         if (!help.isEmpty()) {
@@ -269,6 +295,26 @@ public abstract class CommandsManager<T> {
         }
 
         return command.toString();
+    }
+
+    protected CharSequence getArguments(Command cmd) {
+        final String flags = cmd.flags();
+
+        final StringBuilder command2 = new StringBuilder();
+        if (flags.length() > 0) {
+            String flagString = flags.replaceAll(".:", "");
+            if (flagString.length() > 0) {
+                command2.append("[-");
+                for (int i = 0; i < flagString.length(); ++i) {
+                    command2.append(flagString.charAt(i));
+                }
+                command2.append("] ");
+            }
+        }
+
+        command2.append(cmd.usage());
+
+        return command2;
     }
 
     /**

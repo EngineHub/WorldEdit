@@ -20,9 +20,13 @@
 package com.sk89q.worldedit.commands;
 
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.minecraft.util.commands.Logging;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
@@ -425,5 +429,49 @@ public class UtilityCommands {
         Vector origin = session.getPlacementPosition(player);
         int removed = player.getWorld().removeEntities(type, origin, radius);
         player.print("Marked " + removed + " entit(ies) for removal.");
+    }
+
+    @Command(
+        aliases = { "/help" },
+        usage = "[<command>]",
+        desc = "Displays help for the given command or lists all commands.",
+        min = 0,
+        max = -1
+    )
+    public static void help(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        final CommandsManager<LocalPlayer> commandsManager = we.getCommandsManager();
+
+        if (args.argsLength() == 0) {
+            StringBuilder sb = new StringBuilder();
+            boolean first = true;
+            SortedSet<String> commands = new TreeSet<String>(commandsManager.getCommands().keySet());
+
+            for (String command : commands) {
+                if (!first) {
+                    sb.append(", ");
+                }
+
+                sb.append('/');
+                sb.append(command);
+                first = false;
+            }
+
+            player.print(sb.toString());
+
+            return;
+        }
+
+        String command = args.getJoinedStrings(0).replaceAll("/", "");
+
+        String helpMessage = commandsManager.getHelpMessages().get(command);
+        if (helpMessage == null) {
+            player.printError("Unknown command '" + command + "'.");
+            return;
+        }
+
+        player.print(helpMessage);
     }
 }
