@@ -19,6 +19,12 @@
 - Added sound and particle effects for the super pickaxe
 - Fixed the tree remover tool for large forests
 - Changed the WEPIF interface (for developers!)
+- Fixed //stack -s to actually shift the selection to the end of the stack
+- Made some commands' syntax error messages more elaborate and useful
+- Added -a and -n flags to //butcher to kill animals and NPCs, respectively
+- Added a //hollow command, which hollows out the object contained in the selection.
+- Made /green break on liquids.
+- Added //sel extend, which activates cuboid selector where you can extend selections by right-clicking.
 
 4.7:
 - Added support for all the new items and blocks
