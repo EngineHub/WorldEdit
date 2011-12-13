@@ -357,7 +357,7 @@ public abstract class LocalWorld {
      * 
      * @return
      */
-    public int getHeight() {
+    public int getMaxY() {
         return 127;
     }
 

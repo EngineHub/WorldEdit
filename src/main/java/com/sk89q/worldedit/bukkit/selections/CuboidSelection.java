@@ -44,8 +44,8 @@ public class CuboidSelection extends RegionSelection {
         if (pt2 == null) {
             throw new IllegalArgumentException("Null point 2 not permitted");
         }
-
-        CuboidRegionSelector sel = new CuboidRegionSelector();
+        
+        CuboidRegionSelector sel = new CuboidRegionSelector(BukkitUtil.getLocalWorld(world));
         sel.selectPrimary(pt1);
         sel.selectSecondary(pt2);
 

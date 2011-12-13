@@ -230,7 +230,7 @@ public abstract class LocalPlayer extends LocalCommandSender {
             return false;
         }
 
-        while (y <= 127) {
+        while (y <= world.getMaxY()) {
             // Found a ceiling!
             if (!BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
@@ -257,7 +257,7 @@ public abstract class LocalPlayer extends LocalCommandSender {
         int initialY = Math.max(0, pos.getBlockY());
         int y = Math.max(0, pos.getBlockY() + 1);
         int z = pos.getBlockZ();
-        int maxY = Math.min(128, initialY + distance);
+        int maxY = Math.min(getWorld().getMaxY() + 1, initialY + distance);
         LocalWorld world = getPosition().getWorld();
 
         while (y <= 129) {

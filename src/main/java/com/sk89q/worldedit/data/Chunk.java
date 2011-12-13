@@ -37,7 +37,9 @@ public class Chunk {
     private byte[] data;
     private int rootX;
     private int rootZ;
-    private Map<BlockVector, Map<String, Tag>> tileEntities;
+
+    private Map<BlockVector, Map<String,Tag>> tileEntities;
+    private LocalWorld world;
 
     /**
      * Construct the chunk with a compound tag.
@@ -45,8 +47,9 @@ public class Chunk {
      * @param tag
      * @throws DataException
      */
-    public Chunk(CompoundTag tag) throws DataException {
+    public Chunk(LocalWorld world, CompoundTag tag) throws DataException {
         rootTag = tag;
+        this.world = world;
 
         blocks = getChildTag(
                 rootTag.getValue(), "Blocks", ByteArrayTag.class).getValue();
@@ -57,14 +60,14 @@ public class Chunk {
         rootZ = getChildTag(
                 rootTag.getValue(), "zPos", IntTag.class).getValue();
 
-        if (blocks.length != 32768) {
+        if (blocks.length != 16*16*(world.getMaxY() + 1)) {
             throw new InvalidFormatException("Chunk blocks byte array expected "
-                    + "to be 32,768 bytes; found " + blocks.length);
+                    + "to be " + 16*16*(world.getMaxY() + 1) + " bytes; found " + blocks.length);
         }
 
-        if (data.length != 16384) {
+        if (data.length != 16*16*((world.getMaxY() + 1)/2)) {
             throw new InvalidFormatException("Chunk block data byte array "
-                    + "expected to be 16,384 bytes; found " + data.length);
+                    + "expected to be " + 16*16*((world.getMaxY() + 1)/2) + " bytes; found " + data.length);
         }
     }
 
@@ -79,7 +82,7 @@ public class Chunk {
         int x = pos.getBlockX() - rootX * 16;
         int y = pos.getBlockY();
         int z = pos.getBlockZ() - rootZ * 16;
-        int index = y + (z * 128 + (x * 128 * 16));
+        int index = y + (z * (world.getMaxY() + 1) + (x * (world.getMaxY() + 1) * 16));
 
         try {
             return blocks[index];
@@ -99,7 +102,7 @@ public class Chunk {
         int x = pos.getBlockX() - rootX * 16;
         int y = pos.getBlockY();
         int z = pos.getBlockZ() - rootZ * 16;
-        int index = y + (z * 128 + (x * 128 * 16));
+        int index = y + (z * (world.getMaxY() + 1) + (x * (world.getMaxY() + 1) * 16));
         boolean shift = index % 2 == 0;
         index /= 2;
 

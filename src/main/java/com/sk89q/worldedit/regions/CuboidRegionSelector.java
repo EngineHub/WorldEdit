@@ -25,6 +25,7 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.cui.CUIPointBasedRegion;
 import com.sk89q.worldedit.cui.SelectionPointEvent;
@@ -37,12 +38,18 @@ import com.sk89q.worldedit.cui.SelectionPointEvent;
 public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion {
     protected BlockVector pos1;
     protected BlockVector pos2;
-    protected CuboidRegion region = new CuboidRegion(new Vector(), new Vector());
+    protected CuboidRegion region;
+    
+    public CuboidRegionSelector(LocalWorld world) {
+       region = new CuboidRegion(world, new Vector(), new Vector());
+    }
 
     public CuboidRegionSelector() {
+        this((LocalWorld)null);
     }
 
     public CuboidRegionSelector(RegionSelector oldSelector) {
+        region = new CuboidRegion(oldSelector.getIncompleteRegion().getWorld(), new Vector(), new Vector());
         if (oldSelector instanceof CuboidRegionSelector) {
             final CuboidRegionSelector cuboidRegionSelector = (CuboidRegionSelector) oldSelector;
 

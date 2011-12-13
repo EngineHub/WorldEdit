@@ -26,6 +26,7 @@ import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.cui.CUIPointBasedRegion;
 import com.sk89q.worldedit.cui.SelectionMinMaxEvent;
@@ -39,7 +40,11 @@ import com.sk89q.worldedit.cui.SelectionShapeEvent;
  */
 public class Polygonal2DRegionSelector implements RegionSelector, CUIPointBasedRegion {
     protected BlockVector pos1;
-    protected Polygonal2DRegion region = new Polygonal2DRegion();
+    protected Polygonal2DRegion region;
+    
+    public Polygonal2DRegionSelector(LocalWorld world) {
+        region = new Polygonal2DRegion(world);
+    }
 
     public boolean selectPrimary(Vector pos) {
         if (pos.equals(pos1)) {
@@ -47,7 +52,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIPointBasedR
         }
 
         pos1 = pos.toBlockVector();
-        region = new Polygonal2DRegion();
+        region = new Polygonal2DRegion(region.getWorld());
         region.addPoint(pos);
         region.expandY(pos.getBlockY());
 
@@ -124,7 +129,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIPointBasedR
 
     public void clear() {
         pos1 = null;
-        region = new Polygonal2DRegion();
+        region = new Polygonal2DRegion(region.getWorld());
     }
 
     public String getTypeName() {

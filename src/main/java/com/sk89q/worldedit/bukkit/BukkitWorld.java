@@ -226,14 +226,14 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
-        BaseBlock[] history = new BaseBlock[16 * 16 * 128];
+        BaseBlock[] history = new BaseBlock[16 * 16 * (getMaxY() + 1)];
 
         for (Vector2D chunk : region.getChunks()) {
             Vector min = new Vector(chunk.getBlockX() * 16, 0, chunk.getBlockZ() * 16);
 
             // First save all the blocks inside
             for (int x = 0; x < 16; ++x) {
-                for (int y = 0; y < 128; ++y) {
+                for (int y = 0; y < (getMaxY() + 1); ++y) {
                     for (int z = 0; z < 16; ++z) {
                         Vector pt = min.add(x, y, z);
                         int index = y * 16 * 16 + z * 16 + x;
@@ -250,7 +250,7 @@ public class BukkitWorld extends LocalWorld {
 
             // Then restore 
             for (int x = 0; x < 16; ++x) {
-                for (int y = 0; y < 128; ++y) {
+                for (int y = 0; y < (getMaxY() + 1); ++y) {
                     for (int z = 0; z < 16; ++z) {
                         Vector pt = min.add(x, y, z);
                         int index = y * 16 * 16 + z * 16 + x;
@@ -761,7 +761,7 @@ public class BukkitWorld extends LocalWorld {
     }
 
     @Override
-    public int getHeight() {
+    public int getMaxY() {
         return world.getMaxHeight() - 1;
     }
 
@@ -775,7 +775,6 @@ public class BukkitWorld extends LocalWorld {
     }
 
     private static final int chunkSizeX = 16;
-    private static final int chunkSizeY = 128;
     private static final int chunkSizeZ = 16;
 
     @Override
@@ -810,8 +809,8 @@ public class BukkitWorld extends LocalWorld {
                     boolean xBorder = x == 0 || x == chunkSizeX - 1;
                     for (int z = 0; z < chunkSizeZ; ++z) {
                         boolean zBorder = z == 0 || z == chunkSizeZ - 1;
-                        for (int y = 0; y < chunkSizeY; ++y) {
-                            final int index = y + z * chunkSizeY + x * chunkSizeY * chunkSizeZ;
+                        for (int y = 0; y < world.getMaxHeight(); ++y) {
+                            final int index = y + z * world.getMaxHeight() + x * world.getMaxHeight() * chunkSizeZ;
                             byte blockID = blocks[index];
                             if (!BlockType.emitsLight(blockID)) {
                                 if (xBorder || zBorder && BlockType.isTranslucent(blockID)) {

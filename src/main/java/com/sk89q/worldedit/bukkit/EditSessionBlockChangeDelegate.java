@@ -58,6 +58,6 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
     }
 
     public int getHeight() {
-        return editSession.getWorld().getHeight();
+        return editSession.getWorld().getMaxY();
     }
 }
