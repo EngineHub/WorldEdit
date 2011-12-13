@@ -549,4 +549,8 @@ public abstract class LocalPlayer extends LocalCommandSender {
     public void dispatchCUIHandshake() {
     }
 
+    @Override
+    public LocalPlayer asPlayer() {
+        return this;
+    }
 }

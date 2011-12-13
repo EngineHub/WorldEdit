@@ -114,4 +114,8 @@ public abstract class LocalCommandSender {
     public int hashCode() {
         return getName().hashCode();
     }
+
+    public LocalPlayer asPlayer() throws PlayerNeededException {
+        throw new PlayerNeededException();
+    }
 }
