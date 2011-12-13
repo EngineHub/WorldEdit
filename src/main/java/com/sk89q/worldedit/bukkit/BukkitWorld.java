@@ -19,12 +19,7 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.block.Block;
@@ -47,8 +42,6 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Tameable;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -115,17 +108,7 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean setBlockTypeFast(Vector pt, int type) {
-        final Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        if (fastLightingAvailable) {
-            type = type & 255;
-            final int previousOpacity = Block_lightOpacity[type];
-            Block_lightOpacity[type] = 0;
-            final boolean ret = block.setTypeId(type, false);
-            Block_lightOpacity[type] = previousOpacity;
-            return ret;
-        }
-
-        return block.setTypeId(type, false);
+        return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setTypeId(type, false);
     }
 
     /**
@@ -149,17 +132,7 @@ public class BukkitWorld extends LocalWorld {
      */
     @Override
     public boolean setTypeIdAndDataFast(Vector pt, int type, int data) {
-        final Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        if (fastLightingAvailable) {
-            type = type & 255;
-            final int previousOpacity = Block_lightOpacity[type];
-            Block_lightOpacity[type] = 0;
-            final boolean ret = block.setTypeIdAndData(type, (byte) data, false);
-            Block_lightOpacity[type] = previousOpacity;
-            return ret;
-        }
-
-        return block.setTypeIdAndData(type, (byte) data, false);
+        return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setTypeIdAndData(type, (byte) data, false);
     }
 
     /**
@@ -767,112 +740,8 @@ public class BukkitWorld extends LocalWorld {
 
     @Override
     public void fixAfterFastMode(Iterable<BlockVector2D> chunks) {
-        fixLighting(chunks);
-
         for (BlockVector2D chunkPos : chunks) {
             world.refreshChunk(chunkPos.getBlockX(), chunkPos.getBlockZ());
-        }
-    }
-
-    private static final int chunkSizeX = 16;
-    private static final int chunkSizeZ = 16;
-
-    @Override
-    public void fixLighting(Iterable<BlockVector2D> chunks) {
-        if (!fastLightingAvailable) {
-            return;
-        }
-
-        try {
-            Object notchWorld = CraftWorld_getHandle.invoke(world);
-            for (BlockVector2D chunkPos : chunks) {
-                final int chunkX = chunkPos.getBlockX();
-                final int chunkZ = chunkPos.getBlockZ();
-
-                final Object notchChunk = World_getChunkFromChunkCoords.invoke(notchWorld, chunkX, chunkZ);
-
-                // Fix skylight
-                final byte[] blocks = (byte[]) Chunk_blocks.get(notchChunk);
-                final int length = blocks.length;
-                Chunk_skylightMap.set(notchChunk, NibbleArray_ctor.newInstance(length, 7));
-
-                Chunk_generateSkylightMap.invoke(notchChunk);
-
-                // Fix blocklight
-                Chunk_blocklightMap.set(notchChunk, NibbleArray_ctor.newInstance(length, 7));
-
-                Chunk chunk = world.getChunkAt(chunkX, chunkZ);
-
-                List<BlockState> lightEmitters = new ArrayList<BlockState>();
-
-                for (int x = 0; x < chunkSizeX; ++x) {
-                    boolean xBorder = x == 0 || x == chunkSizeX - 1;
-                    for (int z = 0; z < chunkSizeZ; ++z) {
-                        boolean zBorder = z == 0 || z == chunkSizeZ - 1;
-                        for (int y = 0; y < world.getMaxHeight(); ++y) {
-                            final int index = y + z * world.getMaxHeight() + x * world.getMaxHeight() * chunkSizeZ;
-                            byte blockID = blocks[index];
-                            if (!BlockType.emitsLight(blockID)) {
-                                if (xBorder || zBorder && BlockType.isTranslucent(blockID)) {
-                                    lightEmitters.add(chunk.getBlock(x, y, z).getState());
-                                    if (blockID == 20) {
-                                        blocks[index] = 0;
-                                    } else {
-                                        blocks[index] = 20;
-                                    }
-
-                                }
-                                continue;
-                            }
-
-                            lightEmitters.add(chunk.getBlock(x, y, z).getState());
-
-                            blocks[index] = 0;
-                        }
-                    }
-                }
-
-                for (BlockState lightEmitter : lightEmitters) {
-                    lightEmitter.update(true);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Fast Mode: Could not fix lighting. Probably an incompatible version of CraftBukkit.");
-            e.printStackTrace();
-        }
-    }
-
-    private static boolean fastLightingAvailable = false;
-    private static int[] Block_lightOpacity;
-    private static Method CraftWorld_getHandle;
-    private static Method World_getChunkFromChunkCoords;
-    private static Method Chunk_generateSkylightMap;
-    private static Method Chunk_relightBlock;
-    private static Field Chunk_blocks;
-    private static Field Chunk_skylightMap;
-    private static Field Chunk_blocklightMap;
-    private static Constructor<?> NibbleArray_ctor;
-    static {
-        if (Bukkit.getServer().getName().equalsIgnoreCase("CraftBukkit")) {
-            try {
-                Block_lightOpacity = (int[]) Class.forName("net.minecraft.server.Block").getDeclaredField("q").get(null);
-
-                CraftWorld_getHandle = Class.forName("org.bukkit.craftbukkit.CraftWorld").getMethod("getHandle");
-
-                World_getChunkFromChunkCoords = Class.forName("net.minecraft.server.World").getMethod("getChunkAt", int.class, int.class);
-                Chunk_generateSkylightMap = Class.forName("net.minecraft.server.Chunk").getMethod("initLighting");
-                Chunk_relightBlock = Class.forName("net.minecraft.server.Chunk").getDeclaredMethod("g", int.class, int.class, int.class);
-                Chunk_relightBlock.setAccessible(true);
-
-                Chunk_blocks = Class.forName("net.minecraft.server.Chunk").getField("b");
-                Chunk_skylightMap = Class.forName("net.minecraft.server.Chunk").getField("h");
-                Chunk_blocklightMap = Class.forName("net.minecraft.server.Chunk").getField("i");
-                NibbleArray_ctor = Class.forName("net.minecraft.server.NibbleArray").getConstructor(int.class, int.class);
-
-                //fastLightingAvailable = true;
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
         }
     }
 
