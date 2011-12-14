@@ -189,8 +189,8 @@ public class CuboidRegion implements Region {
             }
         }
 
-        pos1 = pos1.clampY(0, world.getMaxY());
-        pos2 = pos2.clampY(0, world.getMaxY());
+        pos1 = pos1.clampY(0, world == null ? 127 : world.getMaxY());
+        pos2 = pos2.clampY(0, world == null ? 127 : world.getMaxY());
     }
 
     /**
