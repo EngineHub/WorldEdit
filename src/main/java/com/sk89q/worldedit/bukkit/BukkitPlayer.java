@@ -51,7 +51,7 @@ public class BukkitPlayer extends LocalPlayer {
     @Override
     public WorldVector getPosition() {
         Location loc = player.getLocation();
-        return new WorldVector(new BukkitWorld(loc.getWorld()),
+        return new WorldVector(BukkitUtil.getLocalWorld(loc.getWorld()),
                 loc.getX(), loc.getY(), loc.getZ());
     }
 
@@ -123,7 +123,7 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public LocalWorld getWorld() {
-        return new BukkitWorld(player.getWorld());
+        return BukkitUtil.getLocalWorld(player.getWorld());
     }
 
     @Override

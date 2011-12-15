@@ -415,7 +415,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
         LocalSession session = controller.getSession(wrapPlayer(player));
         RegionSelector sel = selection.getRegionSelector();
-        session.setRegionSelector(new BukkitWorld(player.getWorld()), sel);
+        session.setRegionSelector(BukkitUtil.getLocalWorld(player.getWorld()), sel);
         session.dispatchCUISelection(wrapPlayer(player));
     }
 }
