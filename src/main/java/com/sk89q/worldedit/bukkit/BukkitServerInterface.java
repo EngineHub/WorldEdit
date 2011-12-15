@@ -19,8 +19,12 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.*;
 import org.bukkit.entity.CreatureType;
+import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 
 public class BukkitServerInterface extends ServerInterface {
@@ -51,5 +55,17 @@ public class BukkitServerInterface extends ServerInterface {
     @Override
     public int schedule(long delay, long period, Runnable task) {
         return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay, period);
+    }
+
+    @Override
+    public List<LocalWorld> getWorlds() {
+        List<World> worlds = server.getWorlds();
+        List<LocalWorld> ret = new ArrayList<LocalWorld>(worlds.size());
+
+        for (World world : worlds) {
+            ret.add(BukkitUtil.getLocalWorld(world));
+        }
+
+        return ret;
     }
 }

@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  *
  * @author sk89q
@@ -56,5 +59,9 @@ public abstract class ServerInterface {
      */
     public int schedule(long delay, long period, Runnable task) {
         return -1;
+    }
+
+    public List<LocalWorld> getWorlds() {
+        return Collections.emptyList();
     }
 }
