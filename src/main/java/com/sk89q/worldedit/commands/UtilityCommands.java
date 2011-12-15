@@ -28,6 +28,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.minecraft.util.commands.Console;
 import com.sk89q.minecraft.util.commands.Logging;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
@@ -365,20 +366,28 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.butcher")
     @Logging(PLACEMENT)
+    @Console
     public static void butcher(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
 
         int radius = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : -1;
 
-        Vector origin = session.getPlacementPosition(player);
-
         int flags = 0;
         if (args.hasFlag('p')) flags |= KillFlags.PETS;
         if (args.hasFlag('n')) flags |= KillFlags.NPCS;
         if (args.hasFlag('a')) flags |= KillFlags.ANIMALS;
 
-        int killed = player.getWorld().killMobs(origin, radius, flags);
+        int killed;
+        if (player.isPlayer()) {
+            killed = player.getWorld().killMobs(session.getPlacementPosition(player), radius, flags);
+        } else {
+            killed = 0;
+            for (LocalWorld world : we.getServer().getWorlds()) {
+                killed += world.killMobs(new Vector(), radius, flags);
+            }
+        }
+
         player.print("Killed " + killed + " mobs.");
     }
 
@@ -439,6 +448,7 @@ public class UtilityCommands {
         min = 0,
         max = -1
     )
+    @Console
     public static void help(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {

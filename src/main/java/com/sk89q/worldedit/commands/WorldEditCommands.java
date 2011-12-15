@@ -26,6 +26,7 @@ import java.util.TimeZone;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Console;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
@@ -42,6 +43,7 @@ public class WorldEditCommands {
         min = 0,
         max = 0
     )
+    @Console
     public static void version(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -58,6 +60,7 @@ public class WorldEditCommands {
         max = 0
     )
     @CommandPermissions("worldedit.reload")
+    @Console
     public static void reload(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -87,6 +90,7 @@ public class WorldEditCommands {
         min = 1,
         max = 1
     )
+    @Console
     public static void tz(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -95,5 +99,20 @@ public class WorldEditCommands {
         player.print("Timezone set for this session to: " + tz.getDisplayName());
         player.print("The current time in that timezone is: "
                 + dateFormat.format(Calendar.getInstance(tz).getTime()));
+    }
+
+    @Command(
+        aliases = { "help" },
+        usage = "[<command>]",
+        desc = "Displays help for the given command or lists all commands.",
+        min = 0,
+        max = -1
+    )
+    @Console
+    public static void help(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        UtilityCommands.help(args, we, session, player, editSession);
     }
 }

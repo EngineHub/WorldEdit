@@ -22,6 +22,7 @@ package com.sk89q.worldedit.commands;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Console;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.ItemType;
@@ -145,6 +146,7 @@ public class GeneralCommands {
         min = 1,
         max = 1
     )
+    @Console
     public static void searchItem(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
@@ -219,6 +221,7 @@ public class GeneralCommands {
         desc = "WorldEdit commands"
     )
     @NestedCommand(WorldEditCommands.class)
+    @Console
     public static void we(CommandContext args, WorldEdit we,
             LocalSession session, LocalPlayer player, EditSession editSession)
             throws WorldEditException {
