@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.commands;
 
+import java.util.Comparator;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -445,10 +446,19 @@ public class UtilityCommands {
         final CommandsManager<LocalPlayer> commandsManager = we.getCommandsManager();
 
         if (args.argsLength() == 0) {
+            SortedSet<String> commands = new TreeSet<String>(new Comparator<String>() {
+                public int compare(String o1, String o2) {
+                    final int ret = o1.replaceAll("/", "").compareToIgnoreCase(o2.replaceAll("/", ""));
+                    if (ret == 0) {
+                        return o1.compareToIgnoreCase(o2);
+                    }
+                    return ret;
+                }
+            });
+            commands.addAll(commandsManager.getCommands().keySet());
+
             StringBuilder sb = new StringBuilder();
             boolean first = true;
-            SortedSet<String> commands = new TreeSet<String>(commandsManager.getCommands().keySet());
-
             for (String command : commands) {
                 if (!first) {
                     sb.append(", ");
