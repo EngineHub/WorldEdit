@@ -345,6 +345,14 @@ public class WorldEditPlugin extends JavaPlugin {
         return new BukkitPlayer(this, this.server, player);
     }
 
+    public LocalPlayer wrapCommandSender(CommandSender sender) {
+        if (sender instanceof Player) {
+            return wrapPlayer((Player) sender);
+        }
+
+        return new BukkitCommandSender(this, this.server, sender);
+    }
+    
     /**
      * Get the server interface.
      * 

@@ -657,4 +657,8 @@ public abstract class LocalPlayer {
             throw new WorldEditPermissionException();
         }
     }
+
+    public boolean isPlayer() {
+        return true;
+    }
 }
