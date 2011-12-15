@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 import javax.script.ScriptException;
 
 import com.sk89q.minecraft.util.commands.*;
+import com.sk89q.minecraft.util.commands.Console;
 
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
@@ -102,6 +103,15 @@ public class WorldEdit {
 
         commands = new CommandsManager<LocalPlayer>() {
             @Override
+            protected void checkPermission(LocalPlayer player, Method method) throws CommandException {
+                if (!player.isPlayer() && !method.isAnnotationPresent(Console.class)) {
+                    throw new UnhandledCommandException();
+                }
+
+                super.checkPermission(player, method);
+            }
+
+            @Override
             public boolean hasPermission(LocalPlayer player, String perm) {
                 return player.hasPermission(perm);
             }
@@ -120,9 +130,12 @@ public class WorldEdit {
                         logMode = loggingAnnotation.value();
                     }
 
-                    String msg = "WorldEdit: " + player.getName() + " (in \"" + player.getWorld().getName()
-                            + "\")" + ": " + StringUtil.joinString(args, " ");
-                    if (logMode != null) {
+                    String msg = "WorldEdit: " + player.getName();
+                    if (player.isPlayer()) {
+                        msg += " (in \"" + player.getWorld().getName() + "\")";
+                    }
+                    msg += ": " + StringUtil.joinString(args, " ");
+                    if (logMode != null && player.isPlayer()) {
                         Vector position = player.getPosition();
                         final LocalSession session = getSession(player);
                         switch (logMode) {

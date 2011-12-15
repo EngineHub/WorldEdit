@@ -31,7 +31,6 @@ import java.util.zip.ZipEntry;
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.wepif.PermissionsResolverManager;
 import org.bukkit.World;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
@@ -222,15 +221,8 @@ public class WorldEditPlugin extends JavaPlugin {
      * Called on WorldEdit command.
      */
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd,
+    public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd,
             String commandLabel, String[] args) {
-        // Since WorldEdit is primarily made for use in-game, we're going
-        // to ignore the situation where the command sender is not a player.
-        if (!(sender instanceof Player)) {
-            return true;
-        }
-
-        Player player = (Player) sender;
 
         // Add the command to the array because the underlying command handling
         // code of WorldEdit expects it
@@ -238,7 +230,7 @@ public class WorldEditPlugin extends JavaPlugin {
         System.arraycopy(args, 0, split, 1, args.length);
         split[0] = "/" + cmd.getName();
 
-        controller.handleCommand(wrapPlayer(player), split);
+        controller.handleCommand(wrapCommandSender(sender), split);
 
         return true;
     }

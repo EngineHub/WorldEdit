@@ -640,7 +640,7 @@ public class LocalSession {
 
         // Create an edit session
         EditSession editSession =
-                new EditSession(player.getWorld(),
+                new EditSession(player.isPlayer() ? player.getWorld() : null,
                         getBlockChangeLimit(), blockBag);
         editSession.setFastMode(fastMode);
         editSession.setMask(mask);
