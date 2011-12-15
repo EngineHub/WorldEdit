@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit;
 
+import java.io.File;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
@@ -30,14 +31,19 @@ import com.sk89q.worldedit.util.TargetBlock;
  *
  * @author sk89q
  */
-public abstract class LocalPlayer extends LocalCommandSender {
+public abstract class LocalPlayer {
+    /**
+     * Server.
+     */
+    protected ServerInterface server;
+
     /**
      * Construct the object.
      *
      * @param server
      */
     protected LocalPlayer(ServerInterface server) {
-        super(server);
+        this.server = server;
     }
 
     /**
@@ -407,6 +413,13 @@ public abstract class LocalPlayer extends LocalCommandSender {
     public abstract int getItemInHand();
 
     /**
+     * Get the name of the player.
+     *
+     * @return String
+     */
+    public abstract String getName();
+
+    /**
      * Get the player's position.
      *
      * @return point
@@ -502,6 +515,34 @@ public abstract class LocalPlayer extends LocalCommandSender {
     }
 
     /**
+     * Print a message.
+     *
+     * @param msg
+     */
+    public abstract void printRaw(String msg);
+
+    /**
+     * Print a WorldEdit message.
+     *
+     * @param msg
+     */
+    public abstract void printDebug(String msg);
+
+    /**
+     * Print a WorldEdit message.
+     *
+     * @param msg
+     */
+    public abstract void print(String msg);
+
+    /**
+     * Print a WorldEdit error.
+     *
+     * @param msg
+     */
+    public abstract void printError(String msg);
+
+    /**
      * Move the player.
      *
      * @param pos
@@ -520,11 +561,48 @@ public abstract class LocalPlayer extends LocalCommandSender {
     }
 
     /**
+     * Get a player's list of groups.
+     *
+     * @return
+     */
+    public abstract String[] getGroups();
+
+    /**
      * Get this player's block bag.
      *
      * @return
      */
     public abstract BlockBag getInventoryBlockBag();
+
+    /**
+     * Checks if a player has permission.
+     *
+     * @param perm
+     * @return
+     */
+    public abstract boolean hasPermission(String perm);
+
+    /**
+     * Open a file open dialog.
+     *
+     * @param extensions null to allow all
+     * @return
+     */
+    public File openFileOpenDialog(String[] extensions) {
+        printError("File dialogs are not supported in your environment.");
+        return null;
+    }
+
+    /**
+     * Open a file save dialog.
+     *
+     * @param extensions null to allow all
+     * @return
+     */
+    public File openFileSaveDialog(String[] extensions) {
+        printError("File dialogs are not supported in your environment.");
+        return null;
+    }
 
     /**
      * Returns true if the player can destroy bedrock.
@@ -549,8 +627,34 @@ public abstract class LocalPlayer extends LocalCommandSender {
     public void dispatchCUIHandshake() {
     }
 
+    /**
+     * Returns true if equal.
+     *
+     * @param other
+     * @return whether the other object is equivalent
+     */
     @Override
-    public LocalPlayer asPlayer() {
-        return this;
+    public boolean equals(Object other) {
+        if (!(other instanceof LocalPlayer)) {
+            return false;
+        }
+        LocalPlayer other2 = (LocalPlayer) other;
+        return other2.getName().equals(getName());
+    }
+
+    /**
+     * Gets the hash code.
+     *
+     * @return hash code
+     */
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
+
+    public void checkPermission(String permission) throws WorldEditPermissionException {
+        if (!hasPermission(permission)) {
+            throw new WorldEditPermissionException();
+        }
     }
 }
