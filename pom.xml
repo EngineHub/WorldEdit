@@ -41,7 +41,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.0.0-R1-SNAPSHOT</version>
+      <version>1.0.1-R2-SNAPSHOT</version>
     </dependency>
 
     <!-- Archive reading library for snapshots -->
