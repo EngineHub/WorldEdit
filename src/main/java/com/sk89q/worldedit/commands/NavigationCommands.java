@@ -32,6 +32,7 @@ import com.sk89q.worldedit.*;
  * @author sk89q
  */
 public class NavigationCommands {
+    @SuppressWarnings("unused")
     private final WorldEdit we;
 
     public NavigationCommands(WorldEdit we) {
