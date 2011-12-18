@@ -24,7 +24,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.runtime.Function.Dynamic;
 
 /**
@@ -34,7 +36,7 @@ import com.sk89q.worldedit.expression.runtime.Function.Dynamic;
  */
 public final class Functions {
     private static class Overload {
-        private final Method method; 
+        private final Method method;
         private final int mask;
         private final boolean isSetter;
 
@@ -90,14 +92,12 @@ public final class Functions {
         }
     }
 
-
     public static final Function getFunction(int position, String name, RValue... args) throws NoSuchMethodException {
         final Method getter = getMethod(name, false, args);
         try {
             Method setter = getMethod(name, true, args);
             return new LValueFunction(position, getter, setter, args);
-        }
-        catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             return new Function(position, getter, args);
         }
     }
@@ -258,16 +258,25 @@ public final class Functions {
         x.assign(xOld * cosF - yOld * sinF);
         y.assign(xOld * sinF + yOld * cosF);
 
-        return 0;
+        return 0.0;
+    }
+
+    public static final double swap(LValue x, LValue y) throws EvaluationException {
+        final double tmp = x.getValue();
+
+        x.assign(y.getValue());
+        y.assign(tmp);
+
+        return 0.0;
     }
 
 
     private static final Map<Integer, double[]> gmegabuf = new HashMap<Integer, double[]>();
 
-    private static double[] getSubBuffer(Integer key) {
-        double[] ret = gmegabuf.get(key);
+    private static double[] getSubBuffer(Map<Integer, double[]> megabuf, Integer key) {
+        double[] ret = megabuf.get(key);
         if (ret == null) {
-            gmegabuf.put(key, ret = new double[1024]);
+            megabuf.put(key, ret = new double[1024]);
         }
         return ret;
     }
@@ -275,12 +284,37 @@ public final class Functions {
     @Dynamic
     public static final double gmegabuf(RValue index) throws EvaluationException {
         final int intIndex = (int) index.getValue();
-        return getSubBuffer(intIndex & ~1023)[intIndex & 1023];
+        return getSubBuffer(gmegabuf, intIndex & ~1023)[intIndex & 1023];
     }
 
     @Dynamic
     public static final double gmegabuf(RValue index, double value) throws EvaluationException {
         final int intIndex = (int) index.getValue();
-        return getSubBuffer(intIndex & ~1023)[intIndex & 1023] = value;
+        return getSubBuffer(gmegabuf, intIndex & ~1023)[intIndex & 1023] = value;
+    }
+
+    @Dynamic
+    public static final double megabuf(RValue index) throws EvaluationException {
+        final int intIndex = (int) index.getValue();
+        return getSubBuffer(Expression.getInstance().getMegabuf(), intIndex & ~1023)[intIndex & 1023];
+    }
+
+    @Dynamic
+    public static final double megabuf(RValue index, double value) throws EvaluationException {
+        final int intIndex = (int) index.getValue();
+        return getSubBuffer(Expression.getInstance().getMegabuf(), intIndex & ~1023)[intIndex & 1023] = value;
+    }
+
+
+    private static final Random random = new Random();
+
+    @Dynamic
+    public static final double random() {
+        return random.nextDouble();
+    }
+
+    @Dynamic
+    public static final double randint(RValue max) throws EvaluationException {
+        return random.nextInt((int) Math.floor(max.getValue()));
     }
 }

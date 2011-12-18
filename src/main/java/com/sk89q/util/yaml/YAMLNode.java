@@ -36,6 +36,7 @@ import java.util.Map;
 public class YAMLNode {
     protected Map<String, Object> root;
     private boolean writeDefaults;
+
     public YAMLNode(Map<String, Object> root, boolean writeDefaults) {
         this.root = root;
         this.writeDefaults = writeDefaults;
@@ -49,14 +50,14 @@ public class YAMLNode {
     public Map<String, Object> getMap() {
         return root;
     }
-    
+
     /**
      * Clear all nodes.
      */
     public void clear() {
         root.clear();
     }
-    
+
     /**
      * Gets a property at a location. This will either return an Object
      * or null, with null meaning that no configuration value exists at
@@ -76,31 +77,31 @@ public class YAMLNode {
             }
             return val;
         }
-        
+
         String[] parts = path.split("\\.");
         Map<String, Object> node = root;
-        
+
         for (int i = 0; i < parts.length; i++) {
             Object o = node.get(parts[i]);
-            
+
             if (o == null) {
                 return null;
             }
-            
+
             if (i == parts.length - 1) {
                 return o;
             }
-            
+
             try {
-                node = (Map<String, Object>)o;
+                node = (Map<String, Object>) o;
             } catch (ClassCastException e) {
                 return null;
             }
         }
-        
+
         return null;
     }
-    
+
     /**
      * Prepare a value for serialization, in case it's not a native type
      * (and we don't want to serialize objects as YAML objects).
@@ -117,10 +118,10 @@ public class YAMLNode {
             out.put("z", vec.getZ());
             return out;
         }
-        
+
         return value;
     }
-    
+
     /**
      * Set the property at a location. This will override existing
      * configuration data to have it conform to key/value mappings.
@@ -131,34 +132,34 @@ public class YAMLNode {
     @SuppressWarnings("unchecked")
     public void setProperty(String path, Object value) {
         value = prepareSerialization(value);
-        
+
         if (!path.contains(".")) {
             root.put(path, value);
             return;
         }
-        
+
         String[] parts = path.split("\\.");
         Map<String, Object> node = root;
-        
+
         for (int i = 0; i < parts.length; i++) {
             Object o = node.get(parts[i]);
-            
+
             // Found our target!
             if (i == parts.length - 1) {
                 node.put(parts[i], value);
                 return;
             }
-            
+
             if (o == null || !(o instanceof Map)) {
                 // This will override existing configuration data!
                 o = new HashMap<String, Object>();
                 node.put(parts[i], o);
             }
-            
-            node = (Map<String, Object>)o;
+
+            node = (Map<String, Object>) o;
         }
     }
-    
+
     /**
      * Adds a new node to the given path. The returned object is a reference
      * to the new node. This method will replace an existing node at
@@ -204,15 +205,15 @@ public class YAMLNode {
         if (o == null) {
             return null;
         }
-        
+
         Double x = o.getDouble("x");
         Double y = o.getDouble("y");
         Double z = o.getDouble("z");
-        
+
         if (x == null || y == null || z == null) {
             return null;
         }
-        
+
         return new Vector(x, y, z);
     }
 
@@ -229,14 +230,14 @@ public class YAMLNode {
         if (o == null) {
             return null;
         }
-        
+
         Double x = o.getDouble("x");
         Double z = o.getDouble("z");
-        
+
         if (x == null || z == null) {
             return null;
         }
-        
+
         return new Vector2D(x, z);
     }
 
@@ -387,7 +388,7 @@ public class YAMLNode {
             return o;
         }
     }
-    
+
     /**
      * Get a list of keys at a location. If the map at the particular location
      * does not exist or it is not a map, null will be returned.
@@ -402,7 +403,7 @@ public class YAMLNode {
         if (o == null) {
             return null;
         } else if (o instanceof Map) {
-            return new ArrayList<String>(((Map<String,Object>)o).keySet());
+            return new ArrayList<String>(((Map<String, Object>) o).keySet());
         } else {
             return null;
         }
@@ -421,12 +422,12 @@ public class YAMLNode {
         if (o == null) {
             return null;
         } else if (o instanceof List) {
-            return (List<Object>)o;
+            return (List<Object>) o;
         } else {
             return null;
         }
     }
-    
+
     /**
      * Gets a list of strings. Non-valid entries will not be in the list.
      * There will be no null slots. If the list is not defined, the
@@ -450,13 +451,13 @@ public class YAMLNode {
             if (o == null) {
                 continue;
             }
-            
+
             list.add(o.toString());
         }
-        
+
         return list;
     }
-    
+
     /**
      * Gets a list of integers. Non-valid entries will not be in the list.
      * There will be no null slots. If the list is not defined, the
@@ -481,10 +482,10 @@ public class YAMLNode {
                 list.add(i);
             }
         }
-        
+
         return list;
     }
-    
+
     /**
      * Gets a list of doubles. Non-valid entries will not be in the list.
      * There will be no null slots. If the list is not defined, the
@@ -509,10 +510,10 @@ public class YAMLNode {
                 list.add(i);
             }
         }
-        
+
         return list;
     }
-    
+
     /**
      * Gets a list of booleans. Non-valid entries will not be in the list.
      * There will be no null slots. If the list is not defined, the
@@ -537,10 +538,10 @@ public class YAMLNode {
                 list.add(tetsu);
             }
         }
-        
+
         return list;
     }
-    
+
     /**
      * Gets a list of vectors. Non-valid entries will not be in the list.
      * There will be no null slots. If the list is not defined, the
@@ -554,25 +555,25 @@ public class YAMLNode {
      */
     public List<Vector> getVectorList(
             String path, List<Vector> def) {
-        
+
         List<YAMLNode> raw = getNodeList(path, null);
         List<Vector> list = new ArrayList<Vector>();
-        
+
         for (YAMLNode o : raw) {
             Double x = o.getDouble("x");
             Double y = o.getDouble("y");
             Double z = o.getDouble("z");
-            
+
             if (x == null || y == null || z == null) {
                 continue;
             }
-            
+
             list.add(new Vector(x, y, z));
         }
-        
+
         return list;
     }
-    
+
     /**
      * Gets a list of 2D vectors. Non-valid entries will not be in the list.
      * There will be no null slots. If the list is not defined, the
@@ -586,24 +587,24 @@ public class YAMLNode {
      */
     public List<Vector2D> getVector2dList(
             String path, List<Vector2D> def) {
-        
+
         List<YAMLNode> raw = getNodeList(path, null);
         List<Vector2D> list = new ArrayList<Vector2D>();
-        
+
         for (YAMLNode o : raw) {
             Double x = o.getDouble("x");
             Double z = o.getDouble("z");
-            
+
             if (x == null || z == null) {
                 continue;
             }
-            
+
             list.add(new Vector2D(x, z));
         }
-        
+
         return list;
     }
-    
+
     /**
      * Gets a list of 2D vectors. Non-valid entries will not be in the list.
      * There will be no null slots. If the list is not defined, the
@@ -617,24 +618,24 @@ public class YAMLNode {
      */
     public List<BlockVector2D> getBlockVector2dList(
             String path, List<BlockVector2D> def) {
-        
+
         List<YAMLNode> raw = getNodeList(path, null);
         List<BlockVector2D> list = new ArrayList<BlockVector2D>();
-        
+
         for (YAMLNode o : raw) {
             Double x = o.getDouble("x");
             Double z = o.getDouble("z");
-            
+
             if (x == null || z == null) {
                 continue;
             }
-            
+
             list.add(new BlockVector2D(x, z));
         }
-        
+
         return list;
     }
-    
+
     /**
      * Gets a list of nodes. Non-valid entries will not be in the list.
      * There will be no null slots. If the list is not defined, the
@@ -656,13 +657,13 @@ public class YAMLNode {
         List<YAMLNode> list = new ArrayList<YAMLNode>();
         for (Object o : raw) {
             if (o instanceof Map) {
-                list.add(new YAMLNode((Map<String, Object>)o, writeDefaults));
+                list.add(new YAMLNode((Map<String, Object>) o, writeDefaults));
             }
         }
-        
+
         return list;
     }
-    
+
     /**
      * Get a configuration node at a path. If the node doesn't exist or the
      * path does not lead to a node, null will be returned. A node has
@@ -675,12 +676,12 @@ public class YAMLNode {
     public YAMLNode getNode(String path) {
         Object raw = getProperty(path);
         if (raw instanceof Map) {
-            return new YAMLNode((Map<String, Object>)raw, writeDefaults);
+            return new YAMLNode((Map<String, Object>) raw, writeDefaults);
         }
-        
+
         return null;
     }
-    
+
     /**
      * Get a list of nodes at a location. If the map at the particular location
      * does not exist or it is not a map, null will be returned.
@@ -695,21 +696,21 @@ public class YAMLNode {
             return null;
         } else if (o instanceof Map) {
             Map<String, YAMLNode> nodes =
-                new HashMap<String, YAMLNode>();
-            
-            for (Map.Entry<String, Object> entry : ((Map<String, Object>)o).entrySet()) {
+                    new HashMap<String, YAMLNode>();
+
+            for (Map.Entry<String, Object> entry : ((Map<String, Object>) o).entrySet()) {
                 if (entry.getValue() instanceof Map) {
                     nodes.put(entry.getKey(),
                             new YAMLNode((Map<String, Object>) entry.getValue(), writeDefaults));
                 }
             }
-            
+
             return nodes;
         } else {
             return null;
         }
     }
-    
+
     /**
      * Casts a value to an integer. May return null.
      * 
@@ -720,12 +721,12 @@ public class YAMLNode {
         if (o == null) {
             return null;
         } else if (o instanceof Number) {
-            return ((Number)o).intValue();
+            return ((Number) o).intValue();
         } else {
             return null;
         }
     }
-    
+
     /**
      * Casts a value to a double. May return null.
      * 
@@ -736,12 +737,12 @@ public class YAMLNode {
         if (o == null) {
             return null;
         } else if (o instanceof Number) {
-            return ((Number)o).doubleValue();
+            return ((Number) o).doubleValue();
         } else {
             return null;
         }
     }
-    
+
     /**
      * Casts a value to a boolean. May return null.
      * 
@@ -752,12 +753,12 @@ public class YAMLNode {
         if (o == null) {
             return null;
         } else if (o instanceof Boolean) {
-            return (Boolean)o;
+            return (Boolean) o;
         } else {
             return null;
         }
     }
-    
+
     /**
      * Remove the property at a location. This will override existing
      * configuration data to have it conform to key/value mappings.
@@ -770,20 +771,20 @@ public class YAMLNode {
             root.remove(path);
             return;
         }
-        
+
         String[] parts = path.split("\\.");
         Map<String, Object> node = root;
-        
+
         for (int i = 0; i < parts.length; i++) {
             Object o = node.get(parts[i]);
-            
+
             // Found our target!
             if (i == parts.length - 1) {
                 node.remove(parts[i]);
                 return;
             }
-            
-            node = (Map<String, Object>)o;
+
+            node = (Map<String, Object>) o;
         }
     }
 

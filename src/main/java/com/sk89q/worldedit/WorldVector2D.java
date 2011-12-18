@@ -80,7 +80,7 @@ public class WorldVector2D extends Vector2D {
     @Override
     public int hashCode() {
         return (world.hashCode() >> 7) ^
-                ((int)(Double.doubleToLongBits(x)^(Double.doubleToLongBits(x)>>>32)) >> 13) ^
-                (int)(Double.doubleToLongBits(z)^(Double.doubleToLongBits(z)>>>32));
+                ((int) (Double.doubleToLongBits(x) ^ (Double.doubleToLongBits(x) >>> 32)) >> 13) ^
+                (int) (Double.doubleToLongBits(z) ^ (Double.doubleToLongBits(z) >>> 32));
     }
 }

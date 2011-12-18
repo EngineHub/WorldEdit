@@ -44,8 +44,8 @@ public class Vector2D {
      * @param z
      */
     public Vector2D(int x, int z) {
-        this.x = (double)x;
-        this.z = (double)z;
+        this.x = (double) x;
+        this.z = (double) z;
     }
 
     /**
@@ -55,8 +55,8 @@ public class Vector2D {
      * @param z
      */
     public Vector2D(float x, float z) {
-        this.x = (double)x;
-        this.z = (double)z;
+        this.x = (double) x;
+        this.z = (double) z;
     }
 
     /**

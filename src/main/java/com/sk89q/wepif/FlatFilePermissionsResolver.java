@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.bukkit.migration;
+package com.sk89q.wepif;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.HashMap;
 
 import com.sk89q.util.yaml.YAMLProcessor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 
 public class FlatFilePermissionsResolver implements PermissionsResolver {
@@ -211,6 +212,22 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
         }
 
         return groups.toArray(new String[groups.size()]);
+    }
+
+    public boolean hasPermission(OfflinePlayer player, String permission) {
+        return hasPermission(player.getName(), permission);
+    }
+
+    public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
+        return hasPermission(worldName, player.getName(), permission);
+    }
+
+    public boolean inGroup(OfflinePlayer player, String group) {
+        return inGroup(player.getName(), group);
+    }
+
+    public String[] getGroups(OfflinePlayer player) {
+        return getGroups(player.getName());
     }
 
     public String getDetectionMessage() {

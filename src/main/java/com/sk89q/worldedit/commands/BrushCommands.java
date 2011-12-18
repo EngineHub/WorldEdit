@@ -49,18 +49,26 @@ import com.sk89q.worldedit.tools.brushes.SphereBrush;
  * @author sk89q
  */
 public class BrushCommands {
+	private final WorldEdit we;
+	
+	public BrushCommands(WorldEdit we) {
+		this.we = we;
+	}
+
     @Command(
         aliases = { "sphere", "s" },
         usage = "<block> [radius]",
         flags = "h",
         desc = "Choose the sphere brush",
+        help =
+            "Chooses the sphere brush.\n" +
+            "The -h flag creates hollow spheres instead.",
         min = 1,
         max = 2
     )
     @CommandPermissions("worldedit.brush.sphere")
-    public static void sphereBrush(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void sphereBrush(CommandContext args, LocalSession session,
+            LocalPlayer player, EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
@@ -75,7 +83,7 @@ public class BrushCommands {
         Pattern fill = we.getBlockPattern(player, args.getString(0));
         tool.setFill(fill);
         tool.setSize(radius);
-        
+
         if (args.hasFlag('h')) {
             tool.setBrush(new HollowSphereBrush(), "worldedit.brush.sphere");
         } else {
@@ -91,13 +99,15 @@ public class BrushCommands {
         usage = "<block> [radius] [height]",
         flags = "h",
         desc = "Choose the cylinder brush",
+        help =
+            "Chooses the cylinder brush.\n" +
+            "The -h flag creates hollow cylinders instead.",
         min = 1,
         max = 3
     )
     @CommandPermissions("worldedit.brush.cylinder")
-    public static void cylinderBrush(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void cylinderBrush(CommandContext args, LocalSession session,
+            LocalPlayer player, EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
@@ -119,13 +129,13 @@ public class BrushCommands {
         Pattern fill = we.getBlockPattern(player, args.getString(0));
         tool.setFill(fill);
         tool.setSize(radius);
-        
+
         if (args.hasFlag('h')) {
             tool.setBrush(new HollowCylinderBrush(height), "worldedit.brush.cylinder");
         } else {
             tool.setBrush(new CylinderBrush(height), "worldedit.brush.cylinder");
         }
-        
+
         player.print(String.format("Cylinder brush shape equipped (%.0f by %d).",
                 radius, height));
     }
@@ -135,23 +145,25 @@ public class BrushCommands {
         usage = "",
         flags = "a",
         desc = "Choose the clipboard brush",
+        help =
+            "Chooses the clipboard brush.\n" +
+            "The -a flag makes it not paste air.",
         min = 0,
         max = 0
     )
     @CommandPermissions("worldedit.brush.clipboard")
-    public static void clipboardBrush(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void clipboardBrush(CommandContext args, LocalSession session,
+            LocalPlayer player, EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
-        
+
         CuboidClipboard clipboard = session.getClipboard();
-        
+
         if (clipboard == null) {
             player.printError("Copy something first.");
             return;
         }
-        
+
         Vector size = clipboard.getSize();
 
         if (size.getBlockX() > config.maxBrushRadius
@@ -164,7 +176,7 @@ public class BrushCommands {
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
         tool.setBrush(new ClipboardBrush(clipboard, args.hasFlag('a')), "worldedit.brush.clipboard");
-        
+
         player.print("Clipboard brush shape equipped.");
     }
 
@@ -173,13 +185,15 @@ public class BrushCommands {
         usage = "[size] [iterations]",
         flags = "n",
         desc = "Choose the terrain softener brush",
+        help =
+            "Chooses the terrain softener brush.\n" +
+            "The -n flag makes it only consider naturally occuring blocks.",
         min = 0,
         max = 2
     )
     @CommandPermissions("worldedit.brush.smooth")
-    public static void smoothBrush(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void smoothBrush(CommandContext args, LocalSession session,
+            LocalPlayer player, EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
@@ -199,7 +213,7 @@ public class BrushCommands {
         player.print(String.format("Smooth brush equipped (%.0f x %dx, using " + (args.hasFlag('n') ? "natural blocks only" : "any block") + ").",
                 radius, iterations));
     }
-    
+
     @Command(
         aliases = { "ex", "extinguish" },
         usage = "[radius]",
@@ -208,9 +222,8 @@ public class BrushCommands {
         max = 1
     )
     @CommandPermissions("worldedit.brush.ex")
-    public static void extinguishBrush(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void extinguishBrush(CommandContext args, LocalSession session,
+            LocalPlayer player, EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 

@@ -24,9 +24,9 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.Region;
 
 public class RegionMask implements Mask {
-    
+
     private Region region;
-    
+
     public RegionMask(Region region) {
         this.region = region;
     }

@@ -36,9 +36,9 @@ public class BukkitConfiguration extends LocalConfiguration {
     private YAMLProcessor config;
     private Logger logger;
     private FileHandler logFileHandler;
-    
+
     public boolean noOpPermissions = false;
-    
+
     public BukkitConfiguration(YAMLProcessor config, Logger logger) {
         this.config = config;
         this.logger = logger;
@@ -53,7 +53,7 @@ public class BukkitConfiguration extends LocalConfiguration {
             e.printStackTrace();
         }
         showFirstUseVersion = false;
-        
+
         profile = config.getBoolean("debug", profile);
         wandItem = config.getInt("wand-item", wandItem);
         defaultChangeLimit = Math.max(-1, config.getInt(
@@ -74,7 +74,7 @@ public class BukkitConfiguration extends LocalConfiguration {
         useInventoryOverride = config.getBoolean("use-inventory.allow-override",
                 useInventoryOverride);
         maxBrushRadius = config.getInt("limits.max-brush-radius", maxBrushRadius);
-        
+
         navigationWand = config.getInt("navigation-wand.item", navigationWand);
         navigationWandMaxDistance = config.getInt("navigation-wand.max-distance", navigationWandMaxDistance);
 
@@ -82,18 +82,18 @@ public class BukkitConfiguration extends LocalConfiguration {
         scriptsDir = config.getString("scripting.dir", scriptsDir);
 
         saveDir = config.getString("saving.dir", saveDir);
-        
+
         disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
 
         allowedDataCycleBlocks = new HashSet<Integer>(config.getIntList("limits.allowed-data-cycle-blocks", null));
 
         noOpPermissions = config.getBoolean("no-op-permissions", false);
-        
+
         LocalSession.MAX_HISTORY_SIZE = Math.max(0, config.getInt("history.size", 15));
         LocalSession.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;
-        
+
         String snapshotsDir = config.getString("snapshots.directory", "");
-        if (!snapshotsDir.isEmpty()){
+        if (!snapshotsDir.isEmpty()) {
             snapshotRepo = new SnapshotRepository(snapshotsDir);
         }
 
@@ -116,11 +116,10 @@ public class BukkitConfiguration extends LocalConfiguration {
             }
         }
     }
-    
+
     public void unload() {
         if (logFileHandler != null) {
             logFileHandler.close();
         }
-    } 
-    
+    }
 }

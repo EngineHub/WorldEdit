@@ -22,6 +22,7 @@ package com.sk89q.worldedit.expression;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import com.sk89q.worldedit.expression.lexer.Lexer;
 import com.sk89q.worldedit.expression.lexer.tokens.Token;
@@ -57,9 +58,12 @@ import com.sk89q.worldedit.expression.runtime.Variable;
  * @author TomyLobo
  */
 public class Expression {
+    private static final ThreadLocal<Stack<Expression>> instance = new ThreadLocal<Stack<Expression>>();
+
     private final Map<String, RValue> variables = new HashMap<String, RValue>();
     private final String[] variableNames;
     private RValue root;
+    private final Map<Integer, double[]> megabuf = new HashMap<Integer, double[]>();
 
     public static Expression compile(String expression, String... variableNames) throws ExpressionException {
         return new Expression(expression, variableNames);
@@ -84,7 +88,7 @@ public class Expression {
             variables.put(variableName, new Variable(0));
         }
 
-        root = Parser.parse(tokens, variables);
+        root = Parser.parse(tokens, this);
     }
 
     public double evaluate(double... values) throws EvaluationException {
@@ -98,11 +102,13 @@ public class Expression {
             ((Variable) invokable).value = values[i];
         }
 
+        pushInstance();
         try {
             return root.getValue();
-        }
-        catch (ReturnException e) {
+        } catch (ReturnException e) {
             return e.getValue();
+        } finally {
+            popInstance();
         }
     }
 
@@ -115,7 +121,39 @@ public class Expression {
         return root.toString();
     }
 
-    public RValue getVariable(String name) {
-        return variables.get(name);
+    public RValue getVariable(String name, boolean create) {
+        RValue variable = variables.get(name);
+        if (variable == null && create) {
+            variables.put(name, variable = new Variable(0));
+        }
+
+        return variable;
+    }
+
+    public static Expression getInstance() {
+        return instance.get().peek();
+    }
+
+    private void pushInstance() {
+        Stack<Expression> foo = instance.get();
+        if (foo == null) {
+            instance.set(foo = new Stack<Expression>());
+        }
+
+        foo.push(this);
+    }
+
+    private void popInstance() {
+        Stack<Expression> foo = instance.get();
+
+        foo.pop();
+
+        if (foo.isEmpty()) {
+            instance.set(null);
+        }
+    }
+
+    public Map<Integer, double[]> getMegabuf() {
+        return megabuf;
     }
 }

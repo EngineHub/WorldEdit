@@ -30,7 +30,7 @@ import com.sk89q.worldedit.cui.CUIEvent;
 public class BukkitPlayer extends LocalPlayer {
     private Player player;
     private WorldEditPlugin plugin;
-    
+
     public BukkitPlayer(WorldEditPlugin plugin, ServerInterface server, Player player) {
         super(server);
         this.plugin = plugin;
@@ -51,7 +51,7 @@ public class BukkitPlayer extends LocalPlayer {
     @Override
     public WorldVector getPosition() {
         Location loc = player.getLocation();
-        return new WorldVector(new BukkitWorld(loc.getWorld()),
+        return new WorldVector(BukkitUtil.getLocalWorld(loc.getWorld()),
                 loc.getX(), loc.getY(), loc.getZ());
     }
 
@@ -72,22 +72,30 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public void printRaw(String msg) {
-        player.sendMessage(msg);
+        for (String part : msg.split("\n")) {
+            player.sendMessage(part);
+        }
     }
 
     @Override
     public void print(String msg) {
-        player.sendMessage("\u00A7d" + msg);
+        for (String part : msg.split("\n")) {
+            player.sendMessage("\u00A7d" + part);
+        }
     }
 
     @Override
     public void printDebug(String msg) {
-        player.sendMessage("\u00A77" + msg);
+        for (String part : msg.split("\n")) {
+            player.sendMessage("\u00A77" + part);
+        }
     }
 
     @Override
     public void printError(String msg) {
-        player.sendMessage("\u00A7c" + msg);
+        for (String part : msg.split("\n")) {
+            player.sendMessage("\u00A7c" + part);
+        }
     }
 
     @Override
@@ -98,7 +106,7 @@ public class BukkitPlayer extends LocalPlayer {
 
     @Override
     public String[] getGroups() {
-        return plugin.getPermissionsResolver().getGroups(player.getName());
+        return plugin.getPermissionsResolver().getGroups(player);
     }
 
     @Override
@@ -110,18 +118,18 @@ public class BukkitPlayer extends LocalPlayer {
     public boolean hasPermission(String perm) {
         return (!plugin.getLocalConfiguration().noOpPermissions && player.isOp())
                 || plugin.getPermissionsResolver().hasPermission(
-                        player.getWorld().getName(), player.getName(), perm);
+                        player.getWorld().getName(), player, perm);
     }
 
     @Override
     public LocalWorld getWorld() {
-        return new BukkitWorld(player.getWorld());
+        return BukkitUtil.getLocalWorld(player.getWorld());
     }
-    
+
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
         String[] params = event.getParameters();
-        
+
         if (params.length > 0) {
             player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId()
                     + "|" + StringUtil.joinString(params, "|"));
@@ -129,7 +137,7 @@ public class BukkitPlayer extends LocalPlayer {
             player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId());
         }
     }
-    
+
     @Override
     public void dispatchCUIHandshake() {
         player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75");

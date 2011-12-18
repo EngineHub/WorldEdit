@@ -38,6 +38,12 @@ import com.sk89q.worldedit.regions.Region;
  * @author sk89q
  */
 public class ClipboardCommands {
+    private final WorldEdit we;
+    
+    public ClipboardCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "/copy" },
         usage = "",
@@ -46,9 +52,8 @@ public class ClipboardCommands {
         max = 0
     )
     @CommandPermissions("worldedit.clipboard.copy")
-    public static void copy(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void copy(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
             
         Region region = session.getSelection(player.getWorld());
         Vector min = region.getMinimumPoint();
@@ -73,16 +78,15 @@ public class ClipboardCommands {
     )
     @CommandPermissions("worldedit.clipboard.cut")
     @Logging(REGION)
-    public static void cut(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void cut(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         BaseBlock block = new BaseBlock(BlockID.AIR);
 
         if (args.argsLength() > 0) {
             block = we.getBlock(player, args.getString(0));
         }
-            
+
         Region region = session.getSelection(player.getWorld());
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
@@ -97,24 +101,28 @@ public class ClipboardCommands {
         editSession.setBlocks(session.getSelection(player.getWorld()), block);
         player.print("Block(s) cut.");
     }
-    
+
     @Command(
         aliases = { "/paste" },
         usage = "",
         flags = "ao",
         desc = "Paste the clipboard's contents",
+        help =
+            "Pastes the clipboard's contents.\n" +
+            "Flags:\n" +
+            "  -a skips air blocks\n" +
+            "  -o pastes at the original position",
         min = 0,
         max = 0
     )
     @CommandPermissions("worldedit.clipboard.paste")
     @Logging(PLACEMENT)
-    public static void paste(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void paste(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         boolean atOrigin = args.hasFlag('o');
         boolean pasteNoAir = args.hasFlag('a');
-                
+
         if (atOrigin) {
             Vector pos = session.getClipboard().getOrigin();
             session.getClipboard().place(editSession, pos, pasteNoAir);
@@ -136,12 +144,11 @@ public class ClipboardCommands {
         max = 1
     )
     @CommandPermissions("worldedit.clipboard.rotate")
-    public static void rotate(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void rotate(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         int angle = args.getInteger(0);
-        
+
         if (angle % 90 == 0) {
             CuboidClipboard clipboard = session.getClipboard();
             clipboard.rotate2D(angle);
@@ -156,13 +163,16 @@ public class ClipboardCommands {
         usage = "[dir]",
         flags = "p",
         desc = "Flip the contents of the clipboard.",
+        help =
+            "Flips the contents of the clipboard.\n" +
+            "The -p flag flips the selection around the player,\n" +
+            "instead of the selections center.",
         min = 0,
         max = 1
     )
     @CommandPermissions("worldedit.clipboard.flip")
-    public static void flip(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void flip(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         CuboidClipboard.FlipDirection dir = we.getFlipDirection(player,
                 args.argsLength() > 0 ? args.getString(0).toLowerCase() : "me");
@@ -171,7 +181,7 @@ public class ClipboardCommands {
         clipboard.flip(dir, args.hasFlag('p'));
         player.print("Clipboard flipped.");
     }
-    
+
     @Command(
         aliases = { "/load" },
         usage = "<filename>",
@@ -180,16 +190,14 @@ public class ClipboardCommands {
         max = 1
     )
     @CommandPermissions("worldedit.clipboard.load")
-    public static void load(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void load(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
         String filename = args.getString(0);
         File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = we.getSafeOpenFile(player, dir, filename, "schematic",
-                new String[] {"schematic"});
+        File f = we.getSafeOpenFile(player, dir, filename, "schematic", "schematic");
 
         try {
             String filePath = f.getCanonicalPath();
@@ -208,7 +216,7 @@ public class ClipboardCommands {
             player.printError("Schematic could not read or it does not exist: " + e.getMessage());
         }
     }
-    
+
     @Command(
         aliases = { "/save" },
         usage = "<filename>",
@@ -217,17 +225,15 @@ public class ClipboardCommands {
         max = 1
     )
     @CommandPermissions("worldedit.clipboard.save")
-    public static void save(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void save(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
         String filename = args.getString(0);
 
         File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = we.getSafeSaveFile(player, dir, filename, "schematic",
-                new String[] {"schematic"});
+        File f = we.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
 
         if (!dir.exists()) {
             if (!dir.mkdir()) {
@@ -252,7 +258,7 @@ public class ClipboardCommands {
             player.printError("Schematic could not written: " + e.getMessage());
         }
     }
-    
+
     @Command(
         aliases = { "clearclipboard" },
         usage = "",
@@ -261,9 +267,8 @@ public class ClipboardCommands {
         max = 0
     )
     @CommandPermissions("worldedit.clipboard.clear")
-    public static void clearClipboard(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void clearClipboard(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         session.setClipboard(null);
         player.print("Clipboard cleared.");

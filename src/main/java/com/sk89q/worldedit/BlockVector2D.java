@@ -75,8 +75,8 @@ public class BlockVector2D extends Vector2D {
         if (!(obj instanceof Vector2D)) {
             return false;
         }
-        Vector2D other = (Vector2D)obj;
-        return (int)other.x == (int)this.x && (int)other.z == (int)this.z;
+        Vector2D other = (Vector2D) obj;
+        return (int) other.x == (int) this.x && (int) other.z == (int) this.z;
 
     }
 
@@ -87,7 +87,7 @@ public class BlockVector2D extends Vector2D {
      */
     @Override
     public int hashCode() {
-        return (Integer.valueOf((int)x).hashCode() >> 13) ^
-                Integer.valueOf((int)z).hashCode();
+        return (Integer.valueOf((int) x).hashCode() >> 13) ^
+                Integer.valueOf((int) z).hashCode();
     }
 }

@@ -19,13 +19,10 @@
 
 package com.sk89q.bukkit.migration;
 
-import org.bukkit.event.Event;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 import org.bukkit.plugin.Plugin;
 
+@Deprecated
 public class PermissionsResolverServerListener extends ServerListener {
     private PermissionsResolverManager manager;
 
@@ -34,52 +31,15 @@ public class PermissionsResolverServerListener extends ServerListener {
         this.manager = manager;
     }
 
+    @Deprecated
     public PermissionsResolverServerListener(PermissionsResolverManager manager, Plugin plugin) {
         this.manager = manager;
-        if (!manager.hasServerListener()) {
-            register(plugin);
-        }
+        register(plugin);
     }
 
-    /**
-     * Called when a plugin is enabled
-     *
-     * @param event Relevant event details
-     */
-    @Override
-    public void onPluginEnable(PluginEnableEvent event) {
-        Plugin plugin = event.getPlugin();
-        String name = plugin.getDescription().getName();
-        if (plugin instanceof PermissionsProvider) {
-            manager.setPluginPermissionsResolver(plugin);
-        } else if ("Permissions".equals(name) || "PermissionsEx".equals(name)) {
-            manager.findResolver();
-            manager.load();
-        }
-    }
-
-    /**
-     * Called when a plugin is disabled
-     *
-     * @param event Relevant event details
-     */
-    @Override
-    public void onPluginDisable(PluginDisableEvent event) {
-        Plugin plugin = event.getPlugin();
-        String name = plugin.getDescription().getName();
-
-        if (plugin instanceof PermissionsProvider || "Permissions".equals(name) || "PermissionsEx".equals(name)) {
-            manager.findResolver();
-            manager.load();
-        }
-    }
-
+    @Deprecated
     public void register(Plugin plugin) {
-        plugin.getServer().getPluginManager().registerEvent(Event.Type.PLUGIN_ENABLE,
-                this, Priority.Normal, plugin);
-        plugin.getServer().getPluginManager().registerEvent(Event.Type.PLUGIN_DISABLE,
-                this, Priority.Normal, plugin);
-        manager.setServerListener(this);
+        manager.setUp(plugin);
     }
 
 }

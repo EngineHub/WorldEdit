@@ -31,70 +31,70 @@ public interface Selection {
      * @return min. point
      */
     public Location getMinimumPoint();
-    
+
     /**
      * Get the lower point of a region.
      * 
      * @return min. point
      */
     public Vector getNativeMinimumPoint();
-    
+
     /**
      * Get the upper point of a region.
      * 
      * @return max. point
      */
     public Location getMaximumPoint();
-    
+
     /**
      * Get the upper point of a region.
      * 
      * @return max. point
      */
     public Vector getNativeMaximumPoint();
-    
+
     /**
      * Get the region selector. This is for internal use.
      * 
      * @return
      */
     public RegionSelector getRegionSelector();
-    
+
     /**
      * Get the world.
      * 
      * @return
      */
     public World getWorld();
-    
+
     /**
      * Get the number of blocks in the region.
      * 
      * @return number of blocks
      */
     public int getArea();
-    
+
     /**
      * Get X-size.
      *
      * @return width
      */
     public int getWidth();
-    
+
     /**
      * Get Y-size.
      *
      * @return height
      */
     public int getHeight();
-    
+
     /**
      * Get Z-size.
      *
      * @return length
      */
     public int getLength();
-    
+
     /**
      * Returns true based on whether the region contains the point,
      *

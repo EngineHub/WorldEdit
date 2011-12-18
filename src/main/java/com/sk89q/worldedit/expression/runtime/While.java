@@ -1,5 +1,29 @@
+// $Id$
+/*
+ * WorldEdit
+ * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.sk89q.worldedit.expression.runtime;
 
+/**
+ * A while loop.
+ *
+ * @author TomyLobo
+ */
 public class While extends Node {
     RValue condition;
     RValue body;
@@ -27,8 +51,7 @@ public class While extends Node {
 
                 try {
                     ret = body.getValue();
-                }
-                catch (BreakException e) {
+                } catch (BreakException e) {
                     if (e.doContinue) {
                         continue;
                     } else {
@@ -45,8 +68,7 @@ public class While extends Node {
 
                 try {
                     ret = body.getValue();
-                }
-                catch (BreakException e) {
+                } catch (BreakException e) {
                     if (e.doContinue) {
                         continue;
                     } else {
@@ -67,11 +89,27 @@ public class While extends Node {
     @Override
     public String toString() {
         if (footChecked) {
-            return "do { "+body+" } while ("+condition+")";
+            return "do { " + body + " } while (" + condition + ")";
         } else {
-            return "while ("+condition+") { "+body+" }";
+            return "while (" + condition + ") { " + body + " }";
         }
     }
 
-    //TODO: optimizer
+    @Override
+    public RValue optimize() throws EvaluationException {
+        final RValue newCondition = condition.optimize();
+
+        if (newCondition instanceof Constant && newCondition.getValue() <= 0) {
+            // If the condition is always false, the loop can be flattened.
+            if (footChecked) {
+                // Foot-checked loops run at least once.
+                return body.optimize();
+            } else {
+                // Loops that never run always return 0.0.
+                return new Constant(getPosition(), 0.0);
+            }
+        }
+
+        return new While(getPosition(), newCondition, body.optimize(), footChecked);
+    }
 }

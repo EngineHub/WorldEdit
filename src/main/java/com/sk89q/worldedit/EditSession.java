@@ -66,31 +66,31 @@ public class EditSession {
      * Stores the original blocks before modification.
      */
     private DoubleArrayList<BlockVector, BaseBlock> original =
-        new DoubleArrayList<BlockVector, BaseBlock>(true);
+            new DoubleArrayList<BlockVector, BaseBlock>(true);
 
     /**
      * Stores the current blocks.
      */
     private DoubleArrayList<BlockVector, BaseBlock> current =
-        new DoubleArrayList<BlockVector, BaseBlock>(false);
+            new DoubleArrayList<BlockVector, BaseBlock>(false);
 
     /**
      * Blocks that should be placed before last.
      */
     private DoubleArrayList<BlockVector, BaseBlock> queueAfter =
-        new DoubleArrayList<BlockVector, BaseBlock>(false);
+            new DoubleArrayList<BlockVector, BaseBlock>(false);
 
     /**
      * Blocks that should be placed last.
      */
     private DoubleArrayList<BlockVector, BaseBlock> queueLast =
-        new DoubleArrayList<BlockVector, BaseBlock>(false);
+            new DoubleArrayList<BlockVector, BaseBlock>(false);
 
     /**
      * Blocks that should be placed after all other blocks.
      */
     private DoubleArrayList<BlockVector, BaseBlock> queueFinal =
-        new DoubleArrayList<BlockVector, BaseBlock>(false);
+            new DoubleArrayList<BlockVector, BaseBlock>(false);
 
     /**
      * The maximum number of blocks to change at a time. If this number is
@@ -168,7 +168,7 @@ public class EditSession {
     public boolean rawSetBlock(Vector pt, BaseBlock block) {
         final int y = pt.getBlockY();
         final int type = block.getType();
-        if (y < 0 || y > 127) {
+        if (y < 0 || y > world.getMaxY()) {
             return false;
         }
 
@@ -327,20 +327,17 @@ public class EditSession {
             if (BlockType.shouldPlaceLast(block.getType())) {
                 // Place torches, etc. last
                 queueLast.put(pt.toBlockVector(), block);
-                return !(getBlockType(pt) == block.getType()
-                        && getBlockData(pt) == block.getData());
+                return !(getBlockType(pt) == block.getType() && getBlockData(pt) == block.getData());
             } else if (BlockType.shouldPlaceFinal(block.getType())) {
                 // Place signs, reed, etc even later
                 queueFinal.put(pt.toBlockVector(), block);
-                return !(getBlockType(pt) == block.getType()
-                        && getBlockData(pt) == block.getData());
+                return !(getBlockType(pt) == block.getType() && getBlockData(pt) == block.getData());
             } else if (BlockType.shouldPlaceLast(getBlockType(pt))) {
                 // Destroy torches, etc. first
                 rawSetBlock(pt, new BaseBlock(BlockID.AIR));
             } else {
                 queueAfter.put(pt.toBlockVector(), block);
-                return !(getBlockType(pt) == block.getType()
-                        && getBlockData(pt) == block.getData());
+                return !(getBlockType(pt) == block.getType() && getBlockData(pt) == block.getData());
             }
         }
 
@@ -403,6 +400,7 @@ public class EditSession {
 
         return world.getBlockData(pt);
     }
+
     /**
      * Gets the block type at a position x, y, z.
      *
@@ -765,7 +763,7 @@ public class EditSession {
                     continue;
                 }
 
-                final Deque<BlockVector> walked = new LinkedList<BlockVector>(); 
+                final Deque<BlockVector> walked = new LinkedList<BlockVector>();
 
                 while (true) {
                     walked.addFirst(current);
@@ -1048,7 +1046,7 @@ public class EditSession {
      */
     public int removeAbove(Vector pos, int size, int height)
             throws MaxChangedBlocksException {
-        int maxY = Math.min(127, pos.getBlockY() + height - 1);
+        int maxY = Math.min(world.getMaxY(), pos.getBlockY() + height - 1);
         --size;
         int affected = 0;
 
@@ -1124,7 +1122,7 @@ public class EditSession {
         int minX = pos.getBlockX() - size;
         int maxX = pos.getBlockX() + size;
         int minY = Math.max(0, pos.getBlockY() - size);
-        int maxY = Math.min(127, pos.getBlockY() + size);
+        int maxY = Math.min(world.getMaxY(), pos.getBlockY() + size);
         int minZ = pos.getBlockZ() - size;
         int maxZ = pos.getBlockZ() + size;
 
@@ -1586,7 +1584,7 @@ public class EditSession {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
 
-        int upperY = Math.min(127, max.getBlockY() + 1);
+        int upperY = Math.min(world.getMaxY(), max.getBlockY() + 1);
         int lowerY = Math.max(0, min.getBlockY() - 1);
 
         int affected = 0;
@@ -1601,7 +1599,7 @@ public class EditSession {
                 for (int y = upperY; y >= lowerY; --y) {
                     Vector above = new Vector(x, y + 1, z);
 
-                    if (y + 1 <= 127 && !getBlock(new Vector(x, y, z)).isAir()
+                    if (y + 1 <= world.getMaxY() && !getBlock(new Vector(x, y, z)).isAir()
                             && getBlock(above).isAir()) {
                         if (setBlock(above, block)) {
                             ++affected;
@@ -1628,7 +1626,7 @@ public class EditSession {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
 
-        int upperY = Math.min(127, max.getBlockY() + 1);
+        int upperY = Math.min(world.getMaxY(), max.getBlockY() + 1);
         int lowerY = Math.max(0, min.getBlockY() - 1);
 
         int affected = 0;
@@ -1643,7 +1641,7 @@ public class EditSession {
                 for (int y = upperY; y >= lowerY; --y) {
                     Vector above = new Vector(x, y + 1, z);
 
-                    if (y + 1 <= 127 && !getBlock(new Vector(x, y, z)).isAir()
+                    if (y + 1 <= world.getMaxY() && !getBlock(new Vector(x, y, z)).isAir()
                             && getBlock(above).isAir()) {
                         if (setBlock(above, pattern.next(above))) {
                             ++affected;
@@ -1670,7 +1668,7 @@ public class EditSession {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
 
-        int upperY = Math.min(127, max.getBlockY() + 1);
+        int upperY = Math.min(world.getMaxY(), max.getBlockY() + 1);
         int lowerY = Math.max(0, min.getBlockY() - 1);
 
         int affected = 0;
@@ -1962,7 +1960,7 @@ public class EditSession {
 
             visited.add(cur);
 
-            if (setBlock(cur, stationaryBlock)){
+            if (setBlock(cur, stationaryBlock)) {
                 ++affected;
             }
 
@@ -2022,8 +2020,8 @@ public class EditSession {
 
         if (pos.getBlockY() - height - 1 < 0) {
             height = pos.getBlockY() + 1;
-        } else if (pos.getBlockY() + height - 1 > 127) {
-            height = 127 - pos.getBlockY() + 1;
+        } else if (pos.getBlockY() + height - 1 > world.getMaxY()) {
+            height = world.getMaxY() - pos.getBlockY() + 1;
         }
 
         final double invRadiusX = 1 / radiusX;
@@ -2033,13 +2031,11 @@ public class EditSession {
         final int ceilRadiusZ = (int) Math.ceil(radiusZ);
 
         double nextXn = 0;
-        forX:
-        for (int x = 0; x <= ceilRadiusX; ++x) {
+        forX: for (int x = 0; x <= ceilRadiusX; ++x) {
             final double xn = nextXn;
             nextXn = (x + 1) * invRadiusX;
             double nextZn = 0;
-            forZ:
-            for (int z = 0; z <= ceilRadiusZ; ++z) {
+            forZ: for (int z = 0; z <= ceilRadiusZ; ++z) {
                 final double zn = nextZn;
                 nextZn = (z + 1) * invRadiusZ;
 
@@ -2119,18 +2115,15 @@ public class EditSession {
         final int ceilRadiusZ = (int) Math.ceil(radiusZ);
 
         double nextXn = 0;
-        forX:
-        for (int x = 0; x <= ceilRadiusX; ++x) {
+        forX: for (int x = 0; x <= ceilRadiusX; ++x) {
             final double xn = nextXn;
             nextXn = (x + 1) * invRadiusX;
             double nextYn = 0;
-            forY:
-            for (int y = 0; y <= ceilRadiusY; ++y) {
+            forY: for (int y = 0; y <= ceilRadiusY; ++y) {
                 final double yn = nextYn;
                 nextYn = (y + 1) * invRadiusY;
                 double nextZn = 0;
-                forZ:
-                for (int z = 0; z <= ceilRadiusZ; ++z) {
+                forZ: for (int z = 0; z <= ceilRadiusZ; ++z) {
                     final double zn = nextZn;
                     nextZn = (z + 1) * invRadiusZ;
 
@@ -2244,7 +2237,7 @@ public class EditSession {
     public int thaw(Vector pos, double radius)
             throws MaxChangedBlocksException {
         int affected = 0;
-        double radiusSq = radius*radius;
+        double radiusSq = radius * radius;
 
         int ox = pos.getBlockX();
         int oy = pos.getBlockY();
@@ -2260,7 +2253,7 @@ public class EditSession {
                     continue;
                 }
 
-                for (int y = 127; y >= 1; --y) {
+                for (int y = world.getMaxY(); y >= 1; --y) {
                     Vector pt = new Vector(x, y, z);
                     int id = getBlockType(pt);
 
@@ -2303,7 +2296,7 @@ public class EditSession {
     public int simulateSnow(Vector pos, double radius)
             throws MaxChangedBlocksException {
         int affected = 0;
-        double radiusSq = radius*radius;
+        double radiusSq = radius * radius;
 
         int ox = pos.getBlockX();
         int oy = pos.getBlockY();
@@ -2319,7 +2312,7 @@ public class EditSession {
                     continue;
                 }
 
-                for (int y = 127; y >= 1; --y) {
+                for (int y = world.getMaxY(); y >= 1; --y) {
                     Vector pt = new Vector(x, y, z);
                     int id = getBlockType(pt);
 
@@ -2341,7 +2334,7 @@ public class EditSession {
                     }
 
                     // Too high?
-                    if (y == 127) {
+                    if (y == world.getMaxY()) {
                         break;
                     }
 
@@ -2368,35 +2361,45 @@ public class EditSession {
     public int green(Vector pos, double radius)
             throws MaxChangedBlocksException {
         int affected = 0;
-        double radiusSq = radius*radius;
+        final double radiusSq = radius * radius;
 
-        int ox = pos.getBlockX();
-        int oy = pos.getBlockY();
-        int oz = pos.getBlockZ();
+        final int ox = pos.getBlockX();
+        final int oy = pos.getBlockY();
+        final int oz = pos.getBlockZ();
 
-        BaseBlock grass = new BaseBlock(BlockID.GRASS);
+        final BaseBlock grass = new BaseBlock(BlockID.GRASS);
 
-        int ceilRadius = (int) Math.ceil(radius);
+        final int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
             for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
                 if ((new Vector(x, oy, z)).distanceSq(pos) > radiusSq) {
                     continue;
                 }
 
-                for (int y = 127; y >= 1; --y) {
-                    Vector pt = new Vector(x, y, z);
-                    int id = getBlockType(pt);
+                loop: for (int y = world.getMaxY(); y >= 1; --y) {
+                    final Vector pt = new Vector(x, y, z);
+                    final int id = getBlockType(pt);
 
-                    if (BlockType.canPassThrough(id)) {
-                        continue;
-                    }
-
-                    if (id == BlockID.DIRT) {
+                    switch (id) {
+                    case BlockID.DIRT:
                         if (setBlock(pt, grass)) {
                             ++affected;
                         }
+                        break loop;
+
+                    case BlockID.WATER:
+                    case BlockID.STATIONARY_WATER:
+                    case BlockID.LAVA:
+                    case BlockID.STATIONARY_LAVA:
+                        // break on liquids...
+                        break loop;
+
+                    default:
+                        // ...and all non-passable blocks
+                        if (!BlockType.canPassThrough(id)) {
+                            break loop;
+                        }
                     }
-                    break;
                 }
             }
         }
@@ -2642,8 +2645,8 @@ public class EditSession {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z", "type", "data");
         expression.optimize();
 
-        final RValue typeVariable = expression.getVariable("type");
-        final RValue dataVariable = expression.getVariable("data");
+        final RValue typeVariable = expression.getVariable("type", false);
+        final RValue dataVariable = expression.getVariable("data", false);
 
         final ArbitraryShape shape = new ArbitraryShape(region) {
             @Override
@@ -2655,7 +2658,7 @@ public class EditSession {
                         return null;
                     }
 
-                    return new BaseBlock((int)typeVariable.getValue(), (int)dataVariable.getValue());
+                    return new BaseBlock((int) typeVariable.getValue(), (int) dataVariable.getValue());
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
@@ -2670,9 +2673,9 @@ public class EditSession {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z");
         expression.optimize();
 
-        final RValue x = expression.getVariable("x");
-        final RValue y = expression.getVariable("y");
-        final RValue z = expression.getVariable("z");
+        final RValue x = expression.getVariable("x", false);
+        final RValue y = expression.getVariable("y", false);
+        final RValue z = expression.getVariable("z", false);
 
         Vector zero2 = zero.add(0.5, 0.5, 0.5);
 
@@ -2709,5 +2712,101 @@ public class EditSession {
         }
 
         return affected;
+    }
+
+    Vector[] recurseDirections = {
+        PlayerDirection.NORTH.vector(),
+        PlayerDirection.EAST.vector(),
+        PlayerDirection.SOUTH.vector(),
+        PlayerDirection.WEST.vector(),
+        PlayerDirection.UP.vector(),
+        PlayerDirection.DOWN.vector(),
+    };
+
+    /**
+     * Hollows out the region (It's treated as if it was a cuboid if it's not).
+     *
+     * @param region
+     * @param block
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int hollowOutRegion(Region region) throws MaxChangedBlocksException {
+        int affected = 0;
+
+        Set<BlockVector> outside = new HashSet<BlockVector>();
+
+        Vector min = region.getMinimumPoint();
+        Vector max = region.getMaximumPoint();
+
+        int minX = min.getBlockX();
+        int minY = min.getBlockY();
+        int minZ = min.getBlockZ();
+        int maxX = max.getBlockX();
+        int maxY = max.getBlockY();
+        int maxZ = max.getBlockZ();
+
+        for (int x = minX; x <= maxX; ++x) {
+            for (int y = minY; y <= maxY; ++y) {
+                recurseHollow(region, new BlockVector(x, y, minZ), outside);
+                recurseHollow(region, new BlockVector(x, y, maxZ), outside);
+            }
+        }
+
+        for (int y = minY; y <= maxY; ++y) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                recurseHollow(region, new BlockVector(minX, y, z), outside);
+                recurseHollow(region, new BlockVector(maxX, y, z), outside);
+            }
+        }
+
+        for (int z = minZ; z <= maxZ; ++z) {
+            for (int x = minX; x <= maxX; ++x) {
+                recurseHollow(region, new BlockVector(x, minY, z), outside);
+                recurseHollow(region, new BlockVector(x, maxY, z), outside);
+            }
+        }
+
+        BaseBlock air = new BaseBlock(BlockID.AIR);
+
+        outer: for (BlockVector position : region) {
+            for (Vector recurseDirection: recurseDirections) {
+                BlockVector neighbor = position.add(recurseDirection).toBlockVector();
+
+                if (outside.contains(neighbor)) {
+                    continue outer;
+                }
+            }
+
+            if (setBlock(position, air)) {
+                ++affected;
+            }
+        }
+
+        return affected;
+    }
+
+    private void recurseHollow(Region region, BlockVector origin, Set<BlockVector> outside) {
+        final LinkedList<BlockVector> queue = new LinkedList<BlockVector>();
+        queue.addLast(origin);
+
+        while (!queue.isEmpty()) {
+            final BlockVector current = queue.removeFirst();
+            if (!BlockType.canPassThrough(getBlockType(current))) {
+                continue;
+            }
+
+            if (!outside.add(current)) {
+                continue;
+            }
+
+            if (!region.contains(current)) {
+                continue;
+            }
+
+            for (Vector recurseDirection: recurseDirections) {
+                queue.addLast(current.add(recurseDirection).toBlockVector());
+            }
+        } // while
     }
 }

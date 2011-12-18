@@ -66,10 +66,10 @@ public class YAMLProcessor extends YAMLNode {
     private Yaml yaml;
     private File file;
     private String header = null;
-    
+
     public YAMLProcessor(File file, boolean writeDefaults, YAMLFormat format) {
         super(new HashMap<String, Object>(), writeDefaults);
-        
+
         DumperOptions options = new DumperOptions();
         options.setIndent(4);
         options.setDefaultFlowStyle(format.getStyle());
@@ -77,22 +77,22 @@ public class YAMLProcessor extends YAMLNode {
         representer.setDefaultFlowStyle(format.getStyle());
 
         yaml = new Yaml(new SafeConstructor(), representer, options);
-        
+
         this.file = file;
     }
 
     public YAMLProcessor(File file, boolean writeDefaults) {
         this(file, writeDefaults, YAMLFormat.COMPACT);
     }
-    
+
     /**
      * Loads the configuration file.
      * 
      * @throws java.io.IOException
      */
-    public void load() throws IOException {        
+    public void load() throws IOException {
         FileInputStream stream = null;
-        
+
         try {
             stream = new FileInputStream(file);
             read(yaml.load(new UnicodeReader(stream)));
@@ -171,7 +171,8 @@ public class YAMLProcessor extends YAMLNode {
             }
             yaml.dump(root, writer);
             return true;
-        } catch (IOException e) {} finally {
+        } catch (IOException e) {
+        } finally {
             try {
                 if (stream != null) {
                     stream.close();
@@ -181,20 +182,20 @@ public class YAMLProcessor extends YAMLNode {
 
         return false;
     }
-    
+
     @SuppressWarnings("unchecked")
     private void read(Object input) throws YAMLProcessorException {
         try {
-            if ( null == input ) {
+            if (null == input) {
                 root = new HashMap<String, Object>();
             } else {
-                root = (Map<String, Object>)input;
+                root = (Map<String, Object>) input;
             }
         } catch (ClassCastException e) {
             throw new YAMLProcessorException("Root document must be an key-value structure");
         }
     }
-    
+
     /**
      * This method returns an empty ConfigurationNode for using as a 
      * default in methods that select a node from a node list.

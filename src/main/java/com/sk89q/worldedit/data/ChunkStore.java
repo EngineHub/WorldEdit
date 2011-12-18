@@ -36,8 +36,8 @@ public abstract class ChunkStore {
      * @return
      */
     public static BlockVector2D toChunk(Vector pos) {
-        int chunkX = (int)Math.floor(pos.getBlockX() / 16.0);
-        int chunkZ = (int)Math.floor(pos.getBlockZ() / 16.0);
+        int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
+        int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
 
         return new BlockVector2D(chunkX, chunkZ);
     }
@@ -50,7 +50,7 @@ public abstract class ChunkStore {
      * @throws DataException
      * @throws IOException
      */
-    public abstract CompoundTag getChunkTag(Vector2D pos, String world)
+    public abstract CompoundTag getChunkTag(Vector2D pos, LocalWorld world)
             throws DataException, IOException;
 
     /**
@@ -62,9 +62,9 @@ public abstract class ChunkStore {
      * @throws IOException
      * @throws DataException
      */
-    public Chunk getChunk(Vector2D pos, String world)
+    public Chunk getChunk(Vector2D pos, LocalWorld world)
             throws DataException, IOException {
-        return new Chunk(getChunkTag(pos, world));
+        return new Chunk(world, getChunkTag(pos, world));
     }
 
     /**

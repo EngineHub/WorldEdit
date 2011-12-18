@@ -32,29 +32,29 @@ public abstract class RegionSelection implements Selection {
     private World world;
     private RegionSelector selector;
     private Region region;
-    
+
     public RegionSelection(World world) {
         this.world = world;
     }
-    
+
     public RegionSelection(World world, RegionSelector selector, Region region) {
         this.world = world;
         this.region = region;
         this.selector = selector;
     }
-    
+
     protected Region getRegion() {
         return region;
     }
-    
+
     protected void setRegion(Region region) {
         this.region = region;
     }
-    
+
     public RegionSelector getRegionSelector() {
         return selector;
     }
-    
+
     protected void setRegionSelector(RegionSelector selector) {
         this.selector = selector;
     }
@@ -99,7 +99,7 @@ public abstract class RegionSelection implements Selection {
         if (!pt.getWorld().equals(world)) {
             return false;
         }
-        
+
         return region.contains(toVector(pt));
     }
 

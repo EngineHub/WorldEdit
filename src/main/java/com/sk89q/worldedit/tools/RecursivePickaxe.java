@@ -21,6 +21,7 @@ package com.sk89q.worldedit.tools;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
@@ -34,21 +35,21 @@ import com.sk89q.worldedit.blocks.BlockID;
 public class RecursivePickaxe implements BlockTool {
     private static final BaseBlock air = new BaseBlock(0);
     private double range;
-    
+
     public RecursivePickaxe(double range) {
         this.range = range;
     }
-    
+
     public boolean canUse(LocalPlayer player) {
         return player.hasPermission("worldedit.superpickaxe.recursive");
     }
-    
+
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         LocalWorld world = clicked.getWorld();
-        
+
         int initialType = world.getBlockType(clicked);
-        
+
         if (initialType == BlockID.AIR) {
             return true;
         }
@@ -89,21 +90,25 @@ public class RecursivePickaxe implements BlockTool {
             Vector origin, double size, int initialType,
             Set<BlockVector> visited, boolean drop)
             throws MaxChangedBlocksException {
-        
-        if (origin.distance(pos) > size || visited.contains(pos)) {
+
+        final double distanceSq = origin.distanceSq(pos);
+        if (distanceSq > size*size || visited.contains(pos)) {
             return;
         }
 
         visited.add(pos);
 
-        if (editSession.getBlock(pos).getType() == initialType) {
-            if (drop) {
-                world.simulateBlockMine(pos);
-            }
-            editSession.setBlock(pos, air);
-        } else {
+        if (editSession.getBlock(pos).getType() != initialType) {
             return;
         }
+
+        if (drop) {
+            world.simulateBlockMine(pos);
+        }
+
+        world.queueBlockBreakEffect(server, pos, initialType, distanceSq);
+
+        editSession.setBlock(pos, air);
 
         recurse(server, editSession, world, pos.add(1, 0, 0).toBlockVector(),
                 origin, size, initialType, visited, drop);

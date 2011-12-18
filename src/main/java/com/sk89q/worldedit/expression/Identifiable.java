@@ -50,6 +50,8 @@ public interface Identifiable {
      * F - For
      * r - Return
      * b - Break (includes continue)
+     * S - SimpleFor
+     * C - Switch
      * </pre>
      */
     public abstract char id();

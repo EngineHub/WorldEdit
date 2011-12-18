@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sk89q</groupId>
   <artifactId>worldedit</artifactId>
-  <version>4.8-SNAPSHOT</version>
+  <version>5.1-SNAPSHOT</version>
   <name>WorldEdit</name>
   <description>WorldEdit allows for editing the Minecraft SMP world
     en-masse, de-griefing, and fixing issues.</description>
@@ -41,7 +41,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.0.0-R1-SNAPSHOT</version>
+      <version>1.0.1-R1</version>
     </dependency>
 
     <!-- Archive reading library for snapshots -->
@@ -68,13 +68,12 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-    
-    <!-- YAML -->
+
     <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>1.7</version>
-      <type>jar</type>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.9.0-rc1</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

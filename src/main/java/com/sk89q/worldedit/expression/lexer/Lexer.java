@@ -51,50 +51,50 @@ public class Lexer {
     }
 
     private final DecisionTree operatorTree = new DecisionTree(null,
-            '+', new DecisionTree("+",
-                    '=', new DecisionTree("+="),
-                    '+', new DecisionTree("++")
-            ),
-            '-', new DecisionTree("-",
-                    '=', new DecisionTree("-="),
-                    '-', new DecisionTree("--")
-            ),
-            '*', new DecisionTree("*",
-                    '=', new DecisionTree("*="),
-                    '*', new DecisionTree("**")
-            ),
-            '/', new DecisionTree("/",
-                    '=', new DecisionTree("/=")
-            ),
-            '%', new DecisionTree("%",
-                    '=', new DecisionTree("%=")
-            ),
-            '^', new DecisionTree("^",
-                    '=', new DecisionTree("^=")
-            ),
-            '=', new DecisionTree("=",
-                    '=', new DecisionTree("==")
-            ),
-            '!', new DecisionTree("!",
-                    '=', new DecisionTree("!=")
-            ),
-            '<', new DecisionTree("<",
-                    '<', new DecisionTree("<<"),
-                    '=', new DecisionTree("<=")
-            ),
-            '>', new DecisionTree(">",
-                    '>', new DecisionTree(">>"),
-                    '=', new DecisionTree(">=")
-            ),
-            '&', new DecisionTree(null, // not implemented
-                    '&', new DecisionTree("&&")
-            ),
-            '|', new DecisionTree(null, // not implemented
-                    '|', new DecisionTree("||")
-            ),
-            '~', new DecisionTree("~",
-                    '=', new DecisionTree("~=")
-            )
+        '+', new DecisionTree("+",
+            '=', new DecisionTree("+="),
+            '+', new DecisionTree("++")
+        ),
+        '-', new DecisionTree("-",
+            '=', new DecisionTree("-="),
+            '-', new DecisionTree("--")
+        ),
+        '*', new DecisionTree("*",
+            '=', new DecisionTree("*="),
+            '*', new DecisionTree("**")
+        ),
+        '/', new DecisionTree("/",
+            '=', new DecisionTree("/=")
+        ),
+        '%', new DecisionTree("%",
+            '=', new DecisionTree("%=")
+        ),
+        '^', new DecisionTree("^",
+            '=', new DecisionTree("^=")
+        ),
+        '=', new DecisionTree("=",
+            '=', new DecisionTree("==")
+        ),
+        '!', new DecisionTree("!",
+            '=', new DecisionTree("!=")
+        ),
+        '<', new DecisionTree("<",
+            '<', new DecisionTree("<<"),
+            '=', new DecisionTree("<=")
+        ),
+        '>', new DecisionTree(">",
+            '>', new DecisionTree(">>"),
+            '=', new DecisionTree(">=")
+        ),
+        '&', new DecisionTree(null, // not implemented
+            '&', new DecisionTree("&&")
+        ),
+        '|', new DecisionTree(null, // not implemented
+            '|', new DecisionTree("||")
+        ),
+        '~', new DecisionTree("~",
+            '=', new DecisionTree("~=")
+        )
     );
 
     private static final Set<Character> characterTokens = new HashSet<Character>();
@@ -105,9 +105,11 @@ public class Lexer {
         characterTokens.add('{');
         characterTokens.add('}');
         characterTokens.add(';');
+        characterTokens.add('?');
+        characterTokens.add(':');
     }
 
-    private static final Set<String> keywords = new HashSet<String>(Arrays.asList("if", "else", "while", "do", "for", "break", "continue", "return"));
+    private static final Set<String> keywords = new HashSet<String>(Arrays.asList("if", "else", "while", "do", "for", "break", "continue", "return", "switch", "case", "default"));
 
     private static final Pattern numberPattern = Pattern.compile("^([0-9]*(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)");
     private static final Pattern identifierPattern = Pattern.compile("^([A-Za-z][0-9A-Za-z_]*)");

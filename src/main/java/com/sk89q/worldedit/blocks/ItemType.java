@@ -146,7 +146,7 @@ public enum ItemType {
     FENCE_GATE(BlockID.FENCE_GATE, "Fence gate", "fencegate", "gate"),
     BRICK_STAIRS(BlockID.BRICK_STAIRS, "Brick stairs", "brickstairs", "bricksteps"),
     STONE_BRICK_STAIRS(BlockID.STONE_BRICK_STAIRS, "Stone brick stairs", "stonebrickstairs", "smoothstonebrickstairs"),
-    MYCELIUM(BlockID.MYCELIUM, "Mycelium", "fungus" ,"mycel"),
+    MYCELIUM(BlockID.MYCELIUM, "Mycelium", "fungus", "mycel"),
     LILY_PAD(BlockID.LILY_PAD, "Lily pad", "lilypad", "waterlily"),
     NETHER_BRICK(BlockID.NETHER_BRICK, "Nether brick", "netherbrick"),
     NETHER_BRICK_FENCE(BlockID.NETHER_BRICK_FENCE, "Nether brick fence", "netherbrickfence", "netherfence"),
@@ -158,6 +158,7 @@ public enum ItemType {
     END_PORTAL(BlockID.END_PORTAL, "End Portal", "endportal", "blackstuff", "airportal", "weirdblackstuff"),
     END_PORTAL_FRAME(BlockID.END_PORTAL_FRAME, "End Portal Frame", "endportalframe", "airportalframe", "crystalblock"),
     END_STONE(BlockID.END_STONE, "End Stone", "endstone", "enderstone", "endersand"),
+    DRAGON_EGG(BlockID.DRAGON_EGG, "Dragon Egg", "dragonegg", "dragons"),
 
     // Items
     IRON_SHOVEL(ItemID.IRON_SHOVEL, "Iron shovel", "ironshovel"),
@@ -306,11 +307,11 @@ public enum ItemType {
     /**
      * Stores a map of the IDs for fast access.
      */
-    private static final Map<Integer,ItemType> ids = new HashMap<Integer,ItemType>();
+    private static final Map<Integer, ItemType> ids = new HashMap<Integer, ItemType>();
     /**
      * Stores a map of the names for fast access.
      */
-    private static final Map<String,ItemType> lookup = new LinkedHashMap<String,ItemType>();
+    private static final Map<String, ItemType> lookup = new LinkedHashMap<String, ItemType>();
 
     private final int id;
     private final String name;
@@ -335,7 +336,7 @@ public enum ItemType {
     ItemType(int id, String name, String lookupKey) {
         this.id = id;
         this.name = name;
-        this.lookupKeys = new String[] {lookupKey};
+        this.lookupKeys = new String[] { lookupKey };
     }
 
     /**
@@ -344,7 +345,7 @@ public enum ItemType {
      * @param id
      * @param name
      */
-    ItemType(int id, String name, String ... lookupKeys) {
+    ItemType(int id, String name, String... lookupKeys) {
         this.id = id;
         this.name = name;
         this.lookupKeys = lookupKeys;
@@ -412,32 +413,32 @@ public enum ItemType {
      */
     public static ItemType lookup(String name, boolean fuzzy) {
         String testName = name.replace(" ", "").toLowerCase();
-        
+
         ItemType type = lookup.get(testName);
-        
+
         if (type != null) {
             return type;
         }
-        
+
         if (!fuzzy) {
             return null;
         }
-        
+
         int minDist = -1;
-        
+
         for (Entry<String, ItemType> entry : lookup.entrySet()) {
             if (entry.getKey().charAt(0) != testName.charAt(0)) {
                 continue;
             }
-            
+
             int dist = StringUtil.getLevenshteinDistance(entry.getKey(), testName);
-            
+
             if ((dist < minDist || minDist == -1) && dist < 2) {
                 minDist = dist;
                 type = entry.getValue();
             }
         }
-        
+
         return type;
     }
 

@@ -85,16 +85,16 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
     public String getTileEntityID() {
         return "Music";
     }
-    
+
     /**
      * Store additional tile entity data. Returns true if the data is used.
      *
      * @return map of values
      * @throws DataException
      */
-    public Map<String,Tag> toTileEntityNBT()
+    public Map<String, Tag> toTileEntityNBT()
             throws DataException {
-        Map<String,Tag> values = new HashMap<String,Tag>();
+        Map<String, Tag> values = new HashMap<String, Tag>();
         values.put("note", new ByteTag("note", note));
         return values;
     }
@@ -105,22 +105,22 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
      * @param values
      * @throws DataException
      */
-    public void fromTileEntityNBT(Map<String,Tag> values)
-            throws DataException  {
+    public void fromTileEntityNBT(Map<String, Tag> values)
+            throws DataException {
         if (values == null) {
             return;
         }
-        
+
         Tag t;
 
         t = values.get("id");
-        if (!(t instanceof StringTag) || !((StringTag)t).getValue().equals("Music")) {
+        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Music")) {
             throw new DataException("'Music' tile entity expected");
         }
 
         t = values.get("note");
         if (t instanceof ByteTag) {
-            note = ((ByteTag)t).getValue();
+            note = ((ByteTag) t).getValue();
         }
     }
 }

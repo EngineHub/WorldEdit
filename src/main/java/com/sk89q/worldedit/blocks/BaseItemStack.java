@@ -61,7 +61,7 @@ public class BaseItemStack extends BaseItem {
         super(id, damage);
         this.amount = amount;
     }
-    
+
     /**
      * @return the amount
      */

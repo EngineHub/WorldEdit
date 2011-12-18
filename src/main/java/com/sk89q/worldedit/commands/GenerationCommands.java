@@ -36,18 +36,28 @@ import com.sk89q.worldedit.util.TreeGenerator;
  * @author sk89q
  */
 public class GenerationCommands {
+    private final WorldEdit we;
+    
+    public GenerationCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "/hcyl" },
         usage = "<block> <radius>[,<radius>] [height]",
-        desc = "Generate a hollow cylinder",
+        desc = "Generates a hollow cylinder.",
+        help =
+            "Generates a hollow cylinder.\n" +
+            "By specifying 2 radii, separated by a comma,\n" +
+            "you can generate elliptical cylinders.\n" +
+            "The 1st radius is north/south, the 2nd radius is east/west.",
         min = 2,
         max = 3
     )
     @CommandPermissions("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
-    public static void hcyl(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void hcyl(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
         String[] radiuses = args.getString(1).split(",");
@@ -76,15 +86,19 @@ public class GenerationCommands {
     @Command(
         aliases = { "/cyl" },
         usage = "<block> <radius>[,<radius>] [height]",
-        desc = "Generate a cylinder",
+        desc = "Generates a cylinder.",
+        help =
+            "Generates a cylinder.\n" +
+            "By specifying 2 radii, separated by a comma,\n" +
+            "you can generate elliptical cylinders.\n" +
+            "The 1st radius is north/south, the 2nd radius is east/west.",
         min = 2,
         max = 3
     )
     @CommandPermissions("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
-    public static void cyl(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void cyl(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
         String[] radiuses = args.getString(1).split(",");
@@ -113,15 +127,19 @@ public class GenerationCommands {
     @Command(
         aliases = { "/hsphere" },
         usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-        desc = "Generate a hollow sphere.",
+        desc = "Generates a hollow sphere.",
+        help =
+            "Generates a hollow sphere.\n" +
+            "By specifying 3 radii, separated by commas,\n" +
+            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
+            "is north/south, up/down, east/west.",
         min = 2,
         max = 3
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
-    public static void hsphere(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void hsphere(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         final Pattern block = we.getBlockPattern(player, args.getString(0));
         String[] radiuses = args.getString(1).split(",");
@@ -161,15 +179,19 @@ public class GenerationCommands {
     @Command(
         aliases = { "/sphere" },
         usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-        desc = "Generate a filled sphere.",
+        desc = "Generates a filled sphere.",
+        help =
+            "Generates a filled sphere.\n" +
+            "By specifying 3 radii, separated by commas,\n" +
+            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
+            "is north/south, up/down, east/west.",
         min = 2,
         max = 3
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
-    public static void sphere(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void sphere(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
         String[] radiuses = args.getString(1).split(",");
@@ -215,9 +237,8 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.forest")
     @Logging(POSITION)
-    public static void forestGen(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void forestGen(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 10;
         TreeGenerator.TreeType type = args.argsLength() > 1 ?
@@ -229,12 +250,12 @@ public class GenerationCommands {
             player.printError("Tree type '" + args.getString(1) + "' is unknown.");
             return;
         }
-        
+
         int affected = editSession.makeForest(player.getPosition(),
                 size, density, new TreeGenerator(type));
         player.print(affected + " trees created.");
     }
-    
+
     @Command(
         aliases = { "pumpkins" },
         usage = "[size]",
@@ -244,16 +265,15 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.pumpkins")
     @Logging(POSITION)
-    public static void pumpkins(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void pumpkins(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 10;
 
         int affected = editSession.makePumpkinPatches(player.getPosition(), size);
         player.print(affected + " pumpkin patches created.");
     }
-    
+
     @Command(
         aliases = { "/pyramid" },
         usage = "<block> <size>",
@@ -263,20 +283,19 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
-    public static void pyramid(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void pyramid(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
         int size = Math.max(1, args.getInteger(1));
         Vector pos = session.getPlacementPosition(player);
-        
+
         int affected = editSession.makePyramid(pos, block, size, true);
-        
+
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }
-    
+
     @Command(
         aliases = { "/hpyramid" },
         usage = "<block> <size>",
@@ -286,16 +305,15 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
-    public static void hpyramid(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void hpyramid(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         Pattern block = we.getBlockPattern(player, args.getString(0));
         int size = Math.max(1, args.getInteger(1));
         Vector pos = session.getPlacementPosition(player);
-        
+
         int affected = editSession.makePyramid(pos, block, size, false);
-        
+
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }
@@ -303,16 +321,25 @@ public class GenerationCommands {
     @Command(
         aliases = { "/generate", "/gen", "/g" },
         usage = "<block> <expression>",
-        desc = "Generates a shape according to a formula. -h for hollow, -r for raw coordinates, -o for unscaled, but offset from placement",
+        desc = "Generates a shape according to a formula.",
+        help =
+            "Generates a shape according to a formula that is expected to\n" +
+            "return positive numbers (true) if the point is inside the shape\n" +
+            "Optionally set type/data to the desired block.\n" +
+            "Flags:\n" +
+            "  -h to generate a hollow shape\n" +
+            "  -r to use raw minecraft coordinates\n" +
+            "  -o is like -r, except offset from placement.\n" +
+            "If neither -r nor -o is given, the selection is mapped to -1..1\n" +
+            "See also tinyurl.com/wesyntax.",
         flags = "hro",
         min = 1,
         max = -1
     )
     @CommandPermissions("worldedit.generation.shape")
     @Logging(ALL)
-    public static void generate(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void generate(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         final Pattern pattern = we.getBlockPattern(player, args.getString(0));
         final Region region = session.getSelection(player.getWorld());

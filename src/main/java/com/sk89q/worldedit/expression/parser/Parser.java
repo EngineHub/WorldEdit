@@ -22,8 +22,7 @@ package com.sk89q.worldedit.expression.parser;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
+import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.Identifiable;
 import com.sk89q.worldedit.expression.lexer.tokens.IdentifierToken;
 import com.sk89q.worldedit.expression.lexer.tokens.KeywordToken;
@@ -35,10 +34,12 @@ import com.sk89q.worldedit.expression.runtime.Conditional;
 import com.sk89q.worldedit.expression.runtime.Constant;
 import com.sk89q.worldedit.expression.runtime.For;
 import com.sk89q.worldedit.expression.runtime.Functions;
+import com.sk89q.worldedit.expression.runtime.LValue;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.expression.runtime.Return;
 import com.sk89q.worldedit.expression.runtime.Sequence;
-import com.sk89q.worldedit.expression.runtime.Variable;
+import com.sk89q.worldedit.expression.runtime.SimpleFor;
+import com.sk89q.worldedit.expression.runtime.Switch;
 import com.sk89q.worldedit.expression.runtime.While;
 
 /**
@@ -58,6 +59,7 @@ public class Parser {
             return '\0';
         }
 
+        @Override
         public String toString() {
             return "NullToken";
         }
@@ -65,15 +67,15 @@ public class Parser {
 
     private final List<Token> tokens;
     private int position = 0;
-    private Map<String, RValue> variables;
+    private Expression expression;
 
-    private Parser(List<Token> tokens, Map<String, RValue> variables) {
+    private Parser(List<Token> tokens, Expression expression) {
         this.tokens = tokens;
-        this.variables = variables;
+        this.expression = expression;
     }
 
-    public static final RValue parse(List<Token> tokens, Map<String, RValue> variables) throws ParserException {
-        return new Parser(tokens, variables).parse();
+    public static final RValue parse(List<Token> tokens, Expression expression) throws ParserException {
+        return new Parser(tokens, expression).parse();
     }
 
     private RValue parse() throws ParserException {
@@ -87,10 +89,8 @@ public class Parser {
 
     private RValue parseStatements(boolean singleStatement) throws ParserException {
         List<RValue> statements = new ArrayList<RValue>();
-        loop: while (true) {
-            if (position >= tokens.size()) {
-                break;
-            }
+        loop: while (position < tokens.size()) {
+            boolean expectSemicolon = false;
 
             final Token current = peek();
             switch (current.id()) {
@@ -101,9 +101,6 @@ public class Parser {
 
                 consumeCharacter('}');
 
-                if (singleStatement) {
-                    break loop;
-                }
                 break;
 
             case '}':
@@ -138,7 +135,11 @@ public class Parser {
                     break;
                 }
 
-                case 'd': { // do
+                case 'd': { // do/default
+                    if (hasKeyword("default")) {
+                        break loop;
+                    }
+
                     ++position;
                     final RValue body = parseStatements(true);
 
@@ -147,21 +148,54 @@ public class Parser {
                     final RValue condition = parseBracket();
 
                     statements.add(new While(current.getPosition(), condition, body, true));
+
+                    expectSemicolon = true;
                     break;
                 }
 
                 case 'f': { // for
                     ++position;
                     consumeCharacter('(');
+                    int oldPosition = position;
                     final RValue init = parseExpression(true);
-                    consumeCharacter(';');
-                    final RValue condition = parseExpression(true);
-                    consumeCharacter(';');
-                    final RValue increment = parseExpression(true);
-                    consumeCharacter(')');
-                    final RValue body = parseStatements(true);
+                    //if ((init instanceof LValue) && )
+                    if (peek().id() == ';') {
+                        ++position;
+                        final RValue condition = parseExpression(true);
+                        consumeCharacter(';');
+                        final RValue increment = parseExpression(true);
+                        consumeCharacter(')');
+                        final RValue body = parseStatements(true);
 
-                    statements.add(new For(current.getPosition(), init, condition, increment, body));
+                        statements.add(new For(current.getPosition(), init, condition, increment, body));
+                    } else {
+                        position = oldPosition;
+
+                        final Token variableToken = peek();
+                        if (!(variableToken instanceof IdentifierToken)) {
+                            throw new ParserException(variableToken.getPosition(), "Expected identifier");
+                        }
+
+                        RValue variable = expression.getVariable(((IdentifierToken) variableToken).value, true);
+                        if (!(variable instanceof LValue)) {
+                            throw new ParserException(variableToken.getPosition(), "Expected variable");
+                        }
+                        ++position;
+
+                        final Token equalsToken = peek();
+                        if (!(equalsToken instanceof OperatorToken) || !((OperatorToken) equalsToken).operator.equals("=")) {
+                            throw new ParserException(variableToken.getPosition(), "Expected '=' or a term and ';'");
+                        }
+                        ++position;
+
+                        final RValue first = parseExpression(true);
+                        consumeCharacter(',');
+                        final RValue last = parseExpression(true);
+                        consumeCharacter(')');
+                        final RValue body = parseStatements(true);
+
+                        statements.add(new SimpleFor(current.getPosition(), (LValue) variable, first, last, body));
+                    } // switch (keyword.charAt(0))
                     break;
                 }
 
@@ -170,7 +204,11 @@ public class Parser {
                     statements.add(new Break(current.getPosition(), false));
                     break;
 
-                case 'c': // continue
+                case 'c': // continue/case
+                    if (hasKeyword("case")) {
+                        break loop;
+                    }
+
                     ++position;
                     statements.add(new Break(current.getPosition(), true));
                     break;
@@ -179,46 +217,88 @@ public class Parser {
                     ++position;
                     statements.add(new Return(current.getPosition(), parseExpression(true)));
 
-                    if (peek().id() == ';') {
-                        ++position;
-                        break;
+                    expectSemicolon = true;
+                    break;
+
+                case 's': // switch
+                    ++position;
+                    final RValue parameter = parseBracket();
+                    final List<Double> values = new ArrayList<Double>();
+                    final List<RValue> caseStatements = new ArrayList<RValue>();
+                    RValue defaultCase = null;
+
+                    consumeCharacter('{');
+                    while (peek().id() != '}') {
+                        if (position >= tokens.size()) {
+                            throw new ParserException(current.getPosition(), "Expected '}' instead of EOF");
+                        }
+                        if (defaultCase != null) {
+                            throw new ParserException(current.getPosition(), "Expected '}' instead of " + peek());
+                        }
+
+                        if (hasKeyword("case")) {
+                            ++position;
+
+                            final Token valueToken = peek();
+                            if (!(valueToken instanceof NumberToken)) {
+                                throw new ParserException(current.getPosition(), "Expected number instead of " + peek());
+                            }
+
+                            ++position;
+
+                            values.add(((NumberToken) valueToken).value);
+
+                            consumeCharacter(':');
+                            caseStatements.add(parseStatements(false));
+                        } else if (hasKeyword("default")) {
+                            ++position;
+
+                            consumeCharacter(':');
+                            defaultCase = parseStatements(false);
+                        } else {
+                            throw new ParserException(current.getPosition(), "Expected 'case' or 'default' instead of " + peek());
+                        }
                     }
-                    else {
-                        break loop;
-                    }
+                    consumeCharacter('}');
+
+                    statements.add(new Switch(current.getPosition(), parameter, values, caseStatements, defaultCase));
+                    break;
 
                 default:
-                    throw new ParserException(current.getPosition(), "Unimplemented keyword '" + keyword + "'");
+                    throw new ParserException(current.getPosition(), "Unexpected keyword '" + keyword + "'");
+                }
+                switch (1) {
+                default:
                 }
 
-                if (singleStatement) {
-                    break loop;
-                }
                 break;
 
             default:
                 statements.add(parseExpression(true));
 
+                expectSemicolon = true;
+            } // switch (current.id())
+
+            if (expectSemicolon) {
                 if (peek().id() == ';') {
                     ++position;
-                    if (singleStatement) {
-                        break loop;
-                    }
+                } else {
                     break;
                 }
-                else {
-                    break loop;
-                }
             }
-        }
+
+            if (singleStatement) {
+                break;
+            }
+        } // while (position < tokens.size())
 
         switch (statements.size()) {
         case 0:
             if (singleStatement) {
                 throw new ParserException(peek().getPosition(), "Statement expected.");
-            } else {
-                return new Sequence(peek().getPosition());
             }
+
+            return new Sequence(peek().getPosition());
 
         case 1:
             return statements.get(0);
@@ -251,14 +331,11 @@ public class Parser {
                 if (next.id() == '(') {
                     halfProcessed.add(parseFunctionCall(identifierToken));
                 } else {
-                    RValue variable = variables.get(identifierToken.value);
+                    // Ugly hack to make temporary variables work while not sacrificing error reporting.
+                    final boolean isSimpleAssignment = next instanceof OperatorToken && ((OperatorToken) next).operator.equals("=");
+                    RValue variable = expression.getVariable(identifierToken.value, isSimpleAssignment);
                     if (variable == null) {
-                        if (next instanceof OperatorToken && ((OperatorToken)next).operator.equals("=")) {
-                            // Ugly hack to make temporary variables work while not sacrificing error reporting.
-                            variables.put(identifierToken.value, variable = new Variable(0));
-                        } else {
-                            throw new ParserException(current.getPosition(), "Variable '" + identifierToken.value + "' not found");
-                        }
+                        throw new ParserException(current.getPosition(), "Variable '" + identifierToken.value + "' not found");
                     }
                     halfProcessed.add(variable);
                 }
@@ -316,6 +393,7 @@ public class Parser {
 
         try {
             if (peek().id() == ')') {
+                ++position;
                 return Functions.getFunction(identifierToken.getPosition(), identifierToken.value);
             }
 
@@ -341,7 +419,7 @@ public class Parser {
 
             return Functions.getFunction(identifierToken.getPosition(), identifierToken.value, args.toArray(new RValue[args.size()]));
         } catch (NoSuchMethodException e) {
-            throw new ParserException(identifierToken.getPosition(), "Function not found", e);
+            throw new ParserException(identifierToken.getPosition(), "Function '" + identifierToken.value + "' not found", e);
         }
     }
 

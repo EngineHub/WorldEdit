@@ -95,8 +95,7 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
             }
         } else {
             Pattern pattern = Pattern.compile(".*\\.mcr$");
-            for (Enumeration<? extends ZipEntry> e = zip.entries();
-                    e.hasMoreElements();) {
+            for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements(); ) {
                 ZipEntry testEntry = (ZipEntry) e.nextElement();
                 // Check for world
                 if (testEntry.getName().startsWith(worldname + "/")) {
@@ -105,10 +104,10 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
                         name = folder + "/" + name;
                         break;
                     }
-                    
+
                 }
             }
-            
+
             // Check if world is found
             if (folder == null) {
                 throw new MissingWorldException("Target world is not present in ZIP.", worldname);
@@ -152,8 +151,7 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
 
     @Override
     public boolean isValid() {
-        for (Enumeration<? extends ZipEntry> e = zip.entries();
-                e.hasMoreElements();) {
+        for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements(); ) {
 
             ZipEntry testEntry = e.nextElement();
 

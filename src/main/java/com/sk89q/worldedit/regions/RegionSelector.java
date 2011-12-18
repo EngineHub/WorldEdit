@@ -39,7 +39,7 @@ public interface RegionSelector {
      * @return true if something changed
      */
     public boolean selectPrimary(Vector pos);
-    
+
     /**
      * Called when the second point is selected.
      * 
@@ -55,7 +55,7 @@ public interface RegionSelector {
      * @param session 
      * @param pos 
      */
-    public void explainPrimarySelection(LocalPlayer player, 
+    public void explainPrimarySelection(LocalPlayer player,
             LocalSession session, Vector pos);
 
     /**
@@ -67,7 +67,7 @@ public interface RegionSelector {
      */
     public void explainSecondarySelection(LocalPlayer player,
             LocalSession session, Vector pos);
-    
+
     /**
      * The the player information about the region's changes. This may resend
      * all the defining region information if needed.
@@ -76,7 +76,7 @@ public interface RegionSelector {
      * @param session
      */
     public void explainRegionAdjust(LocalPlayer player, LocalSession session);
-    
+
     /**
      * Get the primary position.
      * 
@@ -84,7 +84,7 @@ public interface RegionSelector {
      * @throws IncompleteRegionException 
      */
     public BlockVector getPrimaryPosition() throws IncompleteRegionException;
-    
+
     /**
      * Get the selection.
      * 
@@ -92,52 +92,52 @@ public interface RegionSelector {
      * @throws IncompleteRegionException 
      */
     public Region getRegion() throws IncompleteRegionException;
-    
+
     /**
      * Get the region even if it's not fully defined.
      * 
      * @return
      */
     public Region getIncompleteRegion();
-    
+
     /**
      * Returns whether the region has been fully defined.
      * 
      * @return
      */
     public boolean isDefined();
-    
+
     /**
      * Get the number of blocks inside the region.
      * 
      * @return number of blocks or -1 if undefined
      */
     public int getArea();
-    
+
     /**
      * Update the selector with changes to the region.
      */
     public void learnChanges();
-    
+
     /**
      * Clear the selection.
      */
     public void clear();
-    
+
     /**
      * Get a lowercase name of this region selector type.
      * 
      * @return
      */
     public String getTypeName();
-    
+
     /**
      * Get a lowecase space-less ID.
      * 
      * @return
      */
     public String getTypeId();
-    
+
     /**
      * Get lines of information about the selection.
      * 

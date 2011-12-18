@@ -35,7 +35,7 @@ public class BlockDataTest {
     public void testRotateFlip() {
         for (int type = 0; type < 256; ++type) {
             for (int data = 0; data < 16; ++data) {
-                final String message = type+"/"+data;
+                final String message = type + "/" + data;
 
                 //Test r90(r-90(x))==x
                 assertEquals(message, data, BlockData.rotate90(type, BlockData.rotate90Reverse(type, data)));
@@ -75,11 +75,10 @@ public class BlockDataTest {
     public void testCycle() {
         // Test monotony
         for (int type = 0; type < 256; ++type) {
-            if (type == BlockID.CLOTH)
-                continue;
+            if (type == BlockID.CLOTH) continue;
 
             for (int data = 0; data < 16; ++data) {
-                final String message = type+"/"+data;
+                final String message = type + "/" + data;
 
                 final int cycled = BlockData.cycle(type, data, 1);
 
@@ -87,7 +86,7 @@ public class BlockDataTest {
                     continue;
                 }
 
-                assertEquals(message, data+1, cycled);
+                assertEquals(message, data + 1, cycled);
             }
         }
 
@@ -104,14 +103,14 @@ public class BlockDataTest {
             final TreeSet<Integer> datas = (TreeSet<Integer>) datasTemplate.clone();
             while (!datas.isEmpty()) {
                 final int start = datas.pollFirst();
-                String message = type+"/"+start;
+                String message = type + "/" + start;
                 int current = start;
                 boolean first = true;
                 while (true) {
                     current = BlockData.cycle(type, current, increment);
                     if (first && current == -1) break;
                     first = false;
-                    message += "->"+current;
+                    message += "->" + current;
                     assertTrue(message, current >= 0);
                     assertTrue(message, current < 16);
                     if (current == start) break;

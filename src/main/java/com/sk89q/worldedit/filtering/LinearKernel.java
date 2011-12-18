@@ -35,9 +35,9 @@ public class LinearKernel extends Kernel {
 
     private static float[] createKernel(int radius) {
         int diameter = radius * 2 + 1;
-        float[] data = new float[diameter*diameter];
-        
-        for (int i = 0; i < data.length; data[i++] = 1.0f/data.length) ;
+        float[] data = new float[diameter * diameter];
+
+        for (int i = 0; i < data.length; data[i++] = 1.0f / data.length) ;
 
         return data;
     }

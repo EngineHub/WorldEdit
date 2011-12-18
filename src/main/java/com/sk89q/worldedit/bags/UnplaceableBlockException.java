@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.bags;
 
-
 /**
  * 
  * @author sk89q

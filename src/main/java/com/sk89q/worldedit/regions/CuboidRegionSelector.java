@@ -25,6 +25,7 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.cui.CUIPointBasedRegion;
 import com.sk89q.worldedit.cui.SelectionPointEvent;
@@ -37,47 +38,76 @@ import com.sk89q.worldedit.cui.SelectionPointEvent;
 public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion {
     protected BlockVector pos1;
     protected BlockVector pos2;
-    protected CuboidRegion region = new CuboidRegion(new Vector(), new Vector());
+    protected CuboidRegion region;
+    
+    public CuboidRegionSelector(LocalWorld world) {
+       region = new CuboidRegion(world, new Vector(), new Vector());
+    }
+
+    public CuboidRegionSelector() {
+        this((LocalWorld)null);
+    }
+
+    public CuboidRegionSelector(RegionSelector oldSelector) {
+        region = new CuboidRegion(oldSelector.getIncompleteRegion().getWorld(), new Vector(), new Vector());
+        if (oldSelector instanceof CuboidRegionSelector) {
+            final CuboidRegionSelector cuboidRegionSelector = (CuboidRegionSelector) oldSelector;
+
+            pos1 = cuboidRegionSelector.pos1;
+            pos2 = cuboidRegionSelector.pos2;
+        } else {
+            final Region oldRegion;
+            try {
+                oldRegion = oldSelector.getRegion();
+            } catch (IncompleteRegionException e) {
+                return;
+            }
+
+            pos1 = oldRegion.getMinimumPoint().toBlockVector();
+            pos2 = oldRegion.getMaximumPoint().toBlockVector();
+        }
+
+        region.setPos1(pos1);
+        region.setPos2(pos2);
+    }
 
     public boolean selectPrimary(Vector pos) {
-        if (pos1 != null && pos1.equals(pos)) {
+        if (pos.equals(pos1)) {
             return false;
         }
+
         pos1 = pos.toBlockVector();
-        region.setPos1(pos1);   
+        region.setPos1(pos1);
         return true;
     }
 
     public boolean selectSecondary(Vector pos) {
-        if (pos2 != null && pos2.equals(pos)) {
+        if (pos.equals(pos2)) {
             return false;
         }
+
         pos2 = pos.toBlockVector();
         region.setPos2(pos2);
         return true;
     }
 
-    public void explainPrimarySelection(LocalPlayer player,
-            LocalSession session, Vector pos) {
+    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector pos) {
         if (pos1 != null && pos2 != null) {
-            player.print("First position set to " + pos1
-                    + " (" + region.getArea() + ").");
+            player.print("First position set to " + pos1 + " (" + region.getArea() + ").");
         } else {
             player.print("First position set to " + pos1 + ".");
         }
-        
+
         session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos, getArea()));
     }
 
-    public void explainSecondarySelection(LocalPlayer player,
-            LocalSession session, Vector pos) {
+    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
         if (pos1 != null && pos2 != null) {
-            player.print("Second position set to " + pos2
-                    + " (" + region.getArea() + ").");
+            player.print("Second position set to " + pos2 + " (" + region.getArea() + ").");
         } else {
             player.print("Second position set to " + pos2 + ".");
         }
-        
+
         session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos, getArea()));
     }
 
@@ -85,19 +115,20 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         if (pos1 != null) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos1, getArea()));
         }
+
         if (pos2 != null) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos2, getArea()));
         }
     }
-    
+
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
         if (pos1 == null) {
             throw new IncompleteRegionException();
         }
-        
+
         return pos1;
     }
-    
+
     public boolean isDefined() {
         return pos1 != null && pos2 != null;
     }
@@ -106,7 +137,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         if (pos1 == null || pos2 == null) {
             throw new IncompleteRegionException();
         }
-        
+
         return region;
     }
 
@@ -118,7 +149,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         pos1 = region.getPos1().toBlockVector();
         pos2 = region.getPos2().toBlockVector();
     }
-    
+
     public void clear() {
         pos1 = null;
         pos2 = null;
@@ -129,16 +160,16 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
     }
 
     public List<String> getInformationLines() {
-        List<String> lines = new ArrayList<String>();
-        
+        final List<String> lines = new ArrayList<String>();
+
         if (pos1 != null) {
             lines.add("Position 1: " + pos1);
         }
-        
+
         if (pos2 != null) {
             lines.add("Position 2: " + pos2);
         }
-        
+
         return lines;
     }
 
@@ -150,16 +181,21 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         if (pos1 != null) {
             player.dispatchCUIEvent(new SelectionPointEvent(0, pos1, getArea()));
         }
+
         if (pos2 != null) {
             player.dispatchCUIEvent(new SelectionPointEvent(1, pos2, getArea()));
         }
     }
 
     public int getArea() {
-        if (pos1 != null && pos2 != null) {
-            return region.getArea();
+        if (pos1 == null) {
+            return -1;
         }
-        
-        return -1;
+
+        if (pos2 == null) {
+            return -1;
+        }
+
+        return region.getArea();
     }
 }

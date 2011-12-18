@@ -17,9 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.bukkit.migration;
+package com.sk89q.wepif;
 
 import com.sk89q.util.yaml.YAMLProcessor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
@@ -54,7 +55,7 @@ public class PermissionsExResolver implements PermissionsResolver {
     }
 
     public boolean hasPermission(String name, String permission) {
-        Player player = server.getPlayer(name);
+        Player player = server.getPlayerExact(name);
         return manager.has(name, permission, player == null ? null : player.getWorld().getName());
     }
 
@@ -76,6 +77,23 @@ public class PermissionsExResolver implements PermissionsResolver {
             return new String[0];
         }
         return user.getGroupsNames();
+    }
+
+    public boolean hasPermission(OfflinePlayer player, String permission) {
+        Player onlinePlayer = player.getPlayer();
+        return manager.has(player.getName(), permission, onlinePlayer == null ? null : onlinePlayer.getWorld().getName());
+    }
+
+    public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
+        return hasPermission(worldName, player.getName(), permission);
+    }
+
+    public boolean inGroup(OfflinePlayer player, String group) {
+        return inGroup(player.getName(), group);
+    }
+
+    public String[] getGroups(OfflinePlayer player) {
+        return getGroups(player.getName());
     }
 
     public String getDetectionMessage() {

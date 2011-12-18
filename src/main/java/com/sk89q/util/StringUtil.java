@@ -37,7 +37,7 @@ public class StringUtil {
         if (str.length() > len) {
             return str.substring(0, len);
         }
-        
+
         return str;
     }
 
@@ -156,7 +156,7 @@ public class StringUtil {
                 if (i > 0) {
                     buffer.append(delimiter);
                 }
-                
+
                 buffer.append(o.toString());
             }
             ++i;

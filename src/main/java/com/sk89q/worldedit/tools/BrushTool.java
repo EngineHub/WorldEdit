@@ -43,7 +43,7 @@ public class BrushTool implements TraceTool {
     private Pattern material = new SingleBlockPattern(new BaseBlock(BlockID.COBBLESTONE));
     private double size = 1;
     private String permission;
-    
+
     /**
      * Construct the tool.
      * 
@@ -52,7 +52,7 @@ public class BrushTool implements TraceTool {
     public BrushTool(String permission) {
         this.permission = permission;
     }
-    
+
     /**
      * Checks to see if the player can still be using this tool (considering
      * permissions and such).
@@ -63,7 +63,7 @@ public class BrushTool implements TraceTool {
     public boolean canUse(LocalPlayer player) {
         return player.hasPermission(permission);
     }
-    
+
     /**
      * Get the filter.
      * 
@@ -92,7 +92,7 @@ public class BrushTool implements TraceTool {
         this.brush = brush;
         this.permission = perm;
     }
-    
+
     /**
      * Get the current brush.
      * 
@@ -101,7 +101,7 @@ public class BrushTool implements TraceTool {
     public Brush getBrush() {
         return brush;
     }
-    
+
     /**
      * Set the material.
      * 
@@ -110,7 +110,7 @@ public class BrushTool implements TraceTool {
     public void setFill(Pattern material) {
         this.material = material;
     }
-    
+
     /**
      * Get the material.
      * 
@@ -137,7 +137,7 @@ public class BrushTool implements TraceTool {
     public void setSize(double radius) {
         this.size = radius;
     }
-    
+
     /**
      * Get the set brush range.
      * 
@@ -168,14 +168,14 @@ public class BrushTool implements TraceTool {
             LocalPlayer player, LocalSession session) {
         WorldVector target = null;
         target = player.getBlockTrace(getRange(), true);
-        
+
         if (target == null) {
             player.printError("No block in sight!");
             return true;
         }
-        
+
         BlockBag bag = session.getBlockBag(player);
-        
+
         EditSession editSession = session.createEditSession(player);
         Mask existingMask = editSession.getMask();
         if (existingMask == null) {
@@ -187,7 +187,7 @@ public class BrushTool implements TraceTool {
             newMask.add(mask);
             editSession.setMask(newMask);
         }
-        
+
         try {
             brush.build(editSession, target, material, size);
         } catch (MaxChangedBlocksException e) {
@@ -198,7 +198,7 @@ public class BrushTool implements TraceTool {
             }
             session.remember(editSession);
         }
-        
+
         return true;
     }
 

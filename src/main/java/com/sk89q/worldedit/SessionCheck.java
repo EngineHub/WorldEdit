@@ -25,7 +25,7 @@ package com.sk89q.worldedit;
  * @author sk89q
  */
 public interface SessionCheck {
-    
+
     /**
      * Checks if a player is online.
      * 
@@ -33,5 +33,5 @@ public interface SessionCheck {
      * @return
      */
     public boolean isOnlinePlayer(String name);
-    
+
 }

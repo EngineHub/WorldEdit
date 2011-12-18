@@ -146,7 +146,7 @@ public enum BlockType {
     FENCE_GATE(BlockID.FENCE_GATE, "Fence gate", "fencegate", "gate"),
     BRICK_STAIRS(BlockID.BRICK_STAIRS, "Brick stairs", "brickstairs", "bricksteps"),
     STONE_BRICK_STAIRS(BlockID.STONE_BRICK_STAIRS, "Stone brick stairs", "stonebrickstairs", "smoothstonebrickstairs"),
-    MYCELIUM(BlockID.MYCELIUM, "Mycelium", "fungus" ,"mycel"),
+    MYCELIUM(BlockID.MYCELIUM, "Mycelium", "fungus", "mycel"),
     LILY_PAD(BlockID.LILY_PAD, "Lily pad", "lilypad", "waterlily"),
     NETHER_BRICK(BlockID.NETHER_BRICK, "Nether brick", "netherbrick"),
     NETHER_BRICK_FENCE(BlockID.NETHER_BRICK_FENCE, "Nether brick fence", "netherbrickfence", "netherfence"),
@@ -157,23 +157,24 @@ public enum BlockType {
     CAULDRON(BlockID.CAULDRON, "Cauldron"),
     END_PORTAL(BlockID.END_PORTAL, "End Portal", "endportal", "blackstuff", "airportal", "weirdblackstuff"),
     END_PORTAL_FRAME(BlockID.END_PORTAL_FRAME, "End Portal Frame", "endportalframe", "airportalframe", "crystalblock"),
-    END_STONE(BlockID.END_STONE, "End Stone", "endstone", "enderstone", "endersand");
+    END_STONE(BlockID.END_STONE, "End Stone", "endstone", "enderstone", "endersand"),
+    DRAGON_EGG(BlockID.DRAGON_EGG, "Dragon Egg", "dragonegg", "dragons");
 
     /**
      * Stores a map of the IDs for fast access.
      */
-    private static final Map<Integer,BlockType> ids = new HashMap<Integer,BlockType>();
+    private static final Map<Integer, BlockType> ids = new HashMap<Integer, BlockType>();
     /**
      * Stores a map of the names for fast access.
      */
-    private static final Map<String,BlockType> lookup = new HashMap<String,BlockType>();
+    private static final Map<String, BlockType> lookup = new HashMap<String, BlockType>();
 
     private final int id;
     private final String name;
     private final String[] lookupKeys;
 
     static {
-        for(BlockType type : EnumSet.allOf(BlockType.class)) {
+        for (BlockType type : EnumSet.allOf(BlockType.class)) {
             ids.put(type.id, type);
             for (String key : type.lookupKeys) {
                 lookup.put(key, type);
@@ -200,7 +201,7 @@ public enum BlockType {
      * @param id
      * @param name
      */
-    BlockType(int id, String name, String ... lookupKeys) {
+    BlockType(int id, String name, String... lookupKeys) {
         this.id = id;
         this.name = name;
         this.lookupKeys = lookupKeys;
@@ -947,7 +948,7 @@ public enum BlockType {
         addIdentity(BlockID.STONE_PRESSURE_PLATE); // rule 1
         addIdentities(BlockID.IRON_DOOR, 8); // rule 2
         addIdentity(BlockID.WOODEN_PRESSURE_PLATE); // rule 1
-        addIdentity(BlockID.REDSTONE_ORE);  // rule 4
+        addIdentity(BlockID.REDSTONE_ORE); // rule 4
         nonDataBlockBagItems.put(BlockID.GLOWING_REDSTONE_ORE, new BaseItem(BlockID.REDSTONE_ORE)); // rule 4
         nonDataBlockBagItems.put(BlockID.REDSTONE_TORCH_OFF, new BaseItem(BlockID.REDSTONE_TORCH_ON)); // rule 3
         addIdentity(BlockID.REDSTONE_TORCH_ON); // rule 1
@@ -1029,7 +1030,7 @@ public enum BlockType {
     private static void addIdentity(int type) {
         nonDataBlockBagItems.put(type, new BaseItem(type));
     }
-    
+
     private static void addIdentities(int type, int maxData) {
         for (int data = 0; data < maxData; ++data) {
             dataBlockBagItems.put(typeDataKey(type, data), new BaseItem(type, (short) data));

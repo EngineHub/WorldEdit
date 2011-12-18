@@ -42,16 +42,21 @@ import com.sk89q.worldedit.snapshots.SnapshotRestore;
 
 public class SnapshotUtilCommands {
 
-    private static Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+    private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+
+    private final WorldEdit we;
+
+    public SnapshotUtilCommands(WorldEdit we) {
+        this.we = we;
+    }
 
     @Command(
             aliases = { "snapshot", "snap" },
             desc = "Snapshot commands"
     )
     @NestedCommand(SnapshotCommands.class)
-    public static void snapshot(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void snapshot(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
     }
 
     @Command(
@@ -62,9 +67,8 @@ public class SnapshotUtilCommands {
             max = 1
     )
     @CommandPermissions("worldedit.snapshots.restore")
-    public static void restore(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void restore(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 

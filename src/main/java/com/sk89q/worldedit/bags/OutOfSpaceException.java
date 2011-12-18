@@ -25,7 +25,7 @@ package com.sk89q.worldedit.bags;
  */
 public class OutOfSpaceException extends BlockBagException {
     private static final long serialVersionUID = -2962840237632916821L;
-    
+
     /**
      * Stores the block ID.
      */

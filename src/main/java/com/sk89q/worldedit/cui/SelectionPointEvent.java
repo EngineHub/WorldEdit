@@ -26,7 +26,7 @@ public class SelectionPointEvent implements CUIEvent {
     protected int id;
     protected Vector pos;
     protected int area;
-    
+
     public SelectionPointEvent(int id, Vector pos, int area) {
         this.id = id;
         this.pos = pos;

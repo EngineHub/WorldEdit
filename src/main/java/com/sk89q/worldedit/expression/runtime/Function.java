@@ -25,13 +25,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * Wrapper for a Java method and its arguments (other Invokables)
+ * Wrapper for a Java method and its arguments (other Nodes)
  *
  * @author TomyLobo
  */
 public class Function extends Node {
     /**
-     * Add this annotation on functions that don't always return the same value for the same inputs.
+     * Add this annotation on functions that don't always return the same value
+     * for the same inputs and on functions with side-effects.
      */
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Dynamic { }
@@ -83,7 +84,7 @@ public class Function extends Node {
     }
 
     @Override
-    public Node optimize() throws EvaluationException {
+    public RValue optimize() throws EvaluationException {
         final RValue[] optimizedArgs = new RValue[args.length];
         boolean optimizable = !method.isAnnotationPresent(Dynamic.class);
         int position = getPosition();

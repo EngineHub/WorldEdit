@@ -45,14 +45,14 @@ import com.sk89q.worldedit.patterns.Pattern;
 public class CraftScriptContext extends CraftScriptEnvironment {
     private List<EditSession> editSessions = new ArrayList<EditSession>();
     private String[] args;
-    
+
     public CraftScriptContext(WorldEdit controller,
             ServerInterface server, LocalConfiguration config,
             LocalSession session, LocalPlayer player, String[] args) {
         super(controller, server, config, session, player);
         this.args = args;
     }
-    
+
     /**
      * Get an edit session. Every subsequent call returns a new edit session.
      * Usually you only need to use one edit session.
@@ -67,7 +67,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
         editSessions.add(editSession);
         return editSession;
     }
-    
+
     /**
      * Get the player.
      * 
@@ -76,7 +76,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     public LocalPlayer getPlayer() {
         return player;
     }
-    
+
     /**
      * Get the player's session.
      * 
@@ -85,7 +85,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     public LocalSession getSession() {
         return session;
     }
-    
+
     /**
      * Get the configuration for WorldEdit.
      * 
@@ -94,7 +94,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     public LocalConfiguration getConfiguration() {
         return config;
     }
-    
+
     /**
      * Get a list of edit sessions that have been created.
      * 
@@ -103,7 +103,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     public List<EditSession> getEditSessions() {
         return Collections.unmodifiableList(editSessions);
     }
-    
+
     /**
      * Print a regular message to the user.
      * 
@@ -112,7 +112,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     public void print(String msg) {
         player.print(msg);
     }
-    
+
     /**
      * Print an error message to the user.
      * 
@@ -121,7 +121,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     public void error(String msg) {
         player.printError(msg);
     }
-    
+
     /**
      * Print an raw message to the user.
      * 
@@ -172,7 +172,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
             throws UnknownItemException, DisallowedItemException {
         return controller.getBlock(player, id, false);
     }
-    
+
     /**
      * Get a list of blocks as a set. This returns a Pattern.
      *
@@ -199,7 +199,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
             throws UnknownItemException, DisallowedItemException {
         return controller.getBlockIDs(player, list, allBlocksAllowed);
     }
-    
+
     /**
      * Gets the path to a file. This method will check to see if the filename
      * has valid characters and has an extension. It also prevents directory
@@ -216,9 +216,9 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     @Deprecated
     public File getSafeFile(String folder, String filename) throws FilenameException {
         File dir = controller.getWorkingDirectoryFile(folder);
-        return controller.getSafeOpenFile(player, dir, filename, null, null);
+        return controller.getSafeOpenFile(player, dir, filename, null, (String[]) null);
     }
-    
+
     /**
      * Gets the path to a file for opening. This method will check to see if the
      * filename has valid characters and has an extension. It also prevents
@@ -236,12 +236,12 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws FilenameException 
      */
     public File getSafeOpenFile(String folder, String filename,
-            String defaultExt, String[] exts)
+            String defaultExt, String... exts)
             throws FilenameException {
         File dir = controller.getWorkingDirectoryFile(folder);
         return controller.getSafeOpenFile(player, dir, filename, defaultExt, exts);
     }
-    
+
     /**
      * Gets the path to a file for saving. This method will check to see if the
      * filename has valid characters and has an extension. It also prevents
@@ -259,7 +259,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws FilenameException 
      */
     public File getSafeSaveFile(String folder, String filename,
-            String defaultExt, String[] exts)
+            String defaultExt, String... exts)
             throws FilenameException {
         File dir = controller.getWorkingDirectoryFile(folder);
         return controller.getSafeSaveFile(player, dir, filename, defaultExt, exts);

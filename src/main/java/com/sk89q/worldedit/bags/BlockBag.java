@@ -40,7 +40,7 @@ public abstract class BlockBag {
     public void storeDroppedBlock(int id) throws BlockBagException {
         storeDroppedBlock(id, 0);
     }
-    
+
     /**
      * Stores a block as if it was mined.
      * 
@@ -55,7 +55,7 @@ public abstract class BlockBag {
 
         storeItem(dropped);
     }
-    
+
     /**
      * Sets a block as if it was placed by hand.
      *
@@ -63,6 +63,7 @@ public abstract class BlockBag {
      * @throws BlockBagException
      * @deprecated Use {@link #fetchPlacedBlock(int,int)} instead
      */
+    @Deprecated
     public void fetchPlacedBlock(int id) throws BlockBagException {
         fetchPlacedBlock(id, 0);
     }
@@ -149,7 +150,7 @@ public abstract class BlockBag {
     public void storeBlock(int id) throws BlockBagException {
         storeItem(new BaseItem(id));
     }
-    
+
     /**
      * Store a block.
      * 
@@ -161,7 +162,7 @@ public abstract class BlockBag {
     public void storeItem(BaseItem item) throws BlockBagException {
         storeBlock(item.getType());
     }
-    
+
     /**
      * Checks to see if a block exists without removing it.
      * 
@@ -177,7 +178,7 @@ public abstract class BlockBag {
             return false;
         }
     }
-    
+
     /**
      * Flush any changes. This is called at the end.
      */
@@ -189,6 +190,7 @@ public abstract class BlockBag {
      * @param pos
      */
     public abstract void addSourcePosition(Vector pos);
+
     /**
      * Adds a position to be used a source.
      *

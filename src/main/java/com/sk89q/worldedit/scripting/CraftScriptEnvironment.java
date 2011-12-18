@@ -31,7 +31,7 @@ public abstract class CraftScriptEnvironment {
     protected LocalConfiguration config;
     protected LocalSession session;
     protected ServerInterface server;
-    
+
     public CraftScriptEnvironment(WorldEdit controller, ServerInterface server,
             LocalConfiguration config, LocalSession session, LocalPlayer player) {
         this.controller = controller;

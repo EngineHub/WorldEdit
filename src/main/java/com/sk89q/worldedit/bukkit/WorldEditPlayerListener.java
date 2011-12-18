@@ -21,7 +21,7 @@ package com.sk89q.worldedit.bukkit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
@@ -66,7 +66,7 @@ public class WorldEditPlayerListener extends PlayerListener {
      */
     @Override
     public void onPlayerQuit(PlayerQuitEvent event) {
-        plugin.getWorldEdit().markExpire(wrapPlayer(event.getPlayer()));
+        plugin.getWorldEdit().markExpire(plugin.wrapPlayer(event.getPlayer()));
     }
 
     /**
@@ -82,13 +82,13 @@ public class WorldEditPlayerListener extends PlayerListener {
 
         String[] split = event.getMessage().split(" ");
 
-        if (plugin.getWorldEdit().handleCommand(wrapPlayer(event.getPlayer()), split)) {
+        if (plugin.getWorldEdit().handleCommand(plugin.wrapPlayer(event.getPlayer()), split)) {
             event.setCancelled(true);
         }
     }
 
     private boolean ignoreLeftClickAir = false;
-    
+
     /**
      * Called when a player interacts
      *
@@ -96,7 +96,11 @@ public class WorldEditPlayerListener extends PlayerListener {
      */
     @Override
     public void onPlayerInteract(PlayerInteractEvent event) {
-        final LocalPlayer player = wrapPlayer(event.getPlayer());
+        if (event.useItemInHand() == Event.Result.DENY) {
+            return;
+        }
+        
+        final LocalPlayer player = plugin.wrapPlayer(event.getPlayer());
         final LocalWorld world = player.getWorld();
         final WorldEdit we = plugin.getWorldEdit();
 
@@ -115,9 +119,11 @@ public class WorldEditPlayerListener extends PlayerListener {
             }
 
             if (!ignoreLeftClickAir) {
-                final int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() { public void run() {
-                    ignoreLeftClickAir = false;
-                }}, 2);
+                final int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    public void run() {
+                        ignoreLeftClickAir = false;
+                    }
+                }, 2);
 
                 if (taskId != -1) {
                     ignoreLeftClickAir = true;
@@ -159,9 +165,5 @@ public class WorldEditPlayerListener extends PlayerListener {
             }
             break;
         }
-    }
-
-    private BukkitPlayer wrapPlayer(Player player) {
-        return new BukkitPlayer(plugin, plugin.getServerInterface(), player);
     }
 }

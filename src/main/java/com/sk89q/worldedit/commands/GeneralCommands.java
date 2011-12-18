@@ -22,6 +22,7 @@ package com.sk89q.worldedit.commands;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Console;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.ItemType;
@@ -33,6 +34,12 @@ import com.sk89q.worldedit.masks.Mask;
  * @author sk89q
  */
 public class GeneralCommands {
+    private final WorldEdit we;
+
+    public GeneralCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "/limit" },
         usage = "<limit>",
@@ -41,9 +48,8 @@ public class GeneralCommands {
         max = 1
     )
     @CommandPermissions("worldedit.limit")
-    public static void limit(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void limit(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
@@ -56,7 +62,7 @@ public class GeneralCommands {
                 return;
             }
         }
-        
+
         session.setBlockChangeLimit(limit);
         player.print("Block change limit set to " + limit + ".");
     }
@@ -69,9 +75,8 @@ public class GeneralCommands {
         max = 1
     )
     @CommandPermissions("worldedit.fast")
-    public static void fast(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void fast(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         String newState = args.getString(0, null);
         if (session.hasFastMode()) {
@@ -101,9 +106,8 @@ public class GeneralCommands {
         max = -1
     )
     @CommandPermissions("worldedit.global-mask")
-    public static void mask(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void mask(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         if (args.argsLength() == 0) {
             session.setMask(null);
             player.print("Global mask disabled.");
@@ -121,9 +125,8 @@ public class GeneralCommands {
         min = 0,
         max = 0
     )
-    public static void togglePlace(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void togglePlace(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         if (session.togglePlacementPosition()) {
             player.print("Now placing at pos #1.");
@@ -137,37 +140,42 @@ public class GeneralCommands {
         usage = "<query>",
         flags = "bi",
         desc = "Search for an item",
+        help =
+            "Searches for an item.\n" +
+            "Flags:\n" +
+            "  -b only search for blocks\n" +
+            "  -i only search for items",
         min = 1,
         max = 1
     )
-    public static void searchItem(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    @Console
+    public void searchItem(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         String query = args.getString(0).trim().toLowerCase();
         boolean blocksOnly = args.hasFlag('b');
         boolean itemsOnly = args.hasFlag('i');
-        
+
         try {
             int id = Integer.parseInt(query);
-            
+
             ItemType type = ItemType.fromID(id);
-            
+
             if (type != null) {
                 player.print("#" + type.getID() + " (" + type.getName() + ")");
             } else {
                 player.printError("No item found by ID " + id);
             }
-            
+
             return;
         } catch (NumberFormatException e) {
         }
-        
+
         if (query.length() <= 2) {
             player.printError("Enter a longer search string (len > 2).");
             return;
         }
-        
+
         if (!blocksOnly && !itemsOnly) {
             player.print("Searching for: " + query);
         } else if (blocksOnly && itemsOnly) {
@@ -178,23 +186,23 @@ public class GeneralCommands {
         } else {
             player.print("Searching for items: " + query);
         }
-        
+
         int found = 0;
-        
+
         for (ItemType type : ItemType.values()) {
             if (found >= 15) {
                 player.print("Too many results!");
                 break;
             }
-            
+
             if (blocksOnly && type.getID() > 255) {
                 continue;
             }
-            
+
             if (itemsOnly && type.getID() <= 255) {
                 continue;
             }
-            
+
             for (String alias : type.getAliases()) {
                 if (alias.contains(query)) {
                     player.print("#" + type.getID() + " (" + type.getName() + ")");
@@ -203,7 +211,7 @@ public class GeneralCommands {
                 }
             }
         }
-        
+
         if (found == 0) {
             player.printError("No items found.");
         }
@@ -214,8 +222,8 @@ public class GeneralCommands {
         desc = "WorldEdit commands"
     )
     @NestedCommand(WorldEditCommands.class)
-    public static void we(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    @Console
+    public void we(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
     }
 }

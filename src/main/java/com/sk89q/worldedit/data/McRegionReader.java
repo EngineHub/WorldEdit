@@ -74,7 +74,7 @@ public class McRegionReader {
 
     protected ForwardSeekableInputStream stream;
     protected DataInputStream dataStream;
-    
+
     protected int offsets[];
 
     /**
@@ -87,10 +87,10 @@ public class McRegionReader {
     public McRegionReader(InputStream stream) throws DataException, IOException {
         this.stream = new ForwardSeekableInputStream(stream);
         this.dataStream = new DataInputStream(this.stream);
-        
+
         readHeader();
     }
-    
+
     /**
      * Read the header.
      * 
@@ -119,13 +119,13 @@ public class McRegionReader {
 
         int x = pos.getBlockX() & 31;
         int z = pos.getBlockZ() & 31;
-        
+
         if (x < 0 || x >= 32 || z < 0 || z >= 32) {
             throw new DataException("MCRegion file does not contain " + x + "," + z);
         }
 
         int offset = getOffset(x, z);
-        
+
         // The chunk hasn't been generated
         if (offset == 0) {
             return null;
@@ -143,7 +143,7 @@ public class McRegionReader {
         }
 
         byte version = dataStream.readByte();
-        
+
         if (version == VERSION_GZIP) {
             byte[] data = new byte[length - 1];
             if (dataStream.read(data) < length - 1) {
@@ -185,7 +185,7 @@ public class McRegionReader {
     public boolean hasChunk(int x, int z) {
         return getOffset(x, z) != 0;
     }
-    
+
     /**
      * Close the stream.
      * 

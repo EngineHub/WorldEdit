@@ -19,8 +19,7 @@
 
 package com.sk89q.bukkit.migration;
 
-public interface PermissionsResolver extends PermissionsProvider {
-    public void load();
 
-    public String getDetectionMessage();
+@Deprecated
+public interface PermissionsResolver extends com.sk89q.wepif.PermissionsResolver {
 }

@@ -1,3 +1,22 @@
+// $Id$
+/*
+ * WorldEdit
+ * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.sk89q.worldedit.expression.parser;
 
 import java.util.Collections;
@@ -9,6 +28,7 @@ import java.util.Map;
 import com.sk89q.worldedit.expression.Identifiable;
 import com.sk89q.worldedit.expression.lexer.tokens.OperatorToken;
 import com.sk89q.worldedit.expression.lexer.tokens.Token;
+import com.sk89q.worldedit.expression.runtime.Conditional;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.expression.runtime.Operators;
 
@@ -35,32 +55,32 @@ public final class ParserProcessors {
 
         final Object[][][] binaryOpsLA = {
                 {
-                    { "^", "pow" },
-                    { "**", "pow" },
+                        { "^", "pow" },
+                        { "**", "pow" },
                 },
                 {
-                    { "*", "mul" },
-                    { "/", "div" },
-                    { "%", "mod" },
+                        { "*", "mul" },
+                        { "/", "div" },
+                        { "%", "mod" },
                 },
                 {
-                    { "+", "add" },
-                    { "-", "sub" },
+                        { "+", "add" },
+                        { "-", "sub" },
                 },
                 {
-                    { "<<", "shl" },
-                    { ">>", "shr" },
+                        { "<<", "shl" },
+                        { ">>", "shr" },
                 },
                 {
-                    { "<", "lth" },
-                    { ">", "gth" },
-                    { "<=", "leq" },
-                    { ">=", "geq" },
+                        { "<", "lth" },
+                        { ">", "gth" },
+                        { "<=", "leq" },
+                        { ">=", "geq" },
                 },
                 {
-                    { "==", "equ" },
-                    { "!=", "neq" },
-                    { "~=", "near" },
+                        { "==", "equ" },
+                        { "!=", "neq" },
+                        { "~=", "near" },
                 },
                 {
                     { "&&", "and" },
@@ -71,13 +91,13 @@ public final class ParserProcessors {
         };
         final Object[][][] binaryOpsRA = {
                 {
-                    { "=", "ass" },
-                    { "+=", "aadd" },
-                    { "-=", "asub" },
-                    { "*=", "amul" },
-                    { "/=", "adiv" },
-                    { "%=", "amod" },
-                    { "^=", "aexp" },
+                        { "=", "ass" },
+                        { "+=", "aadd" },
+                        { "-=", "asub" },
+                        { "*=", "amul" },
+                        { "/=", "adiv" },
+                        { "%=", "amod" },
+                        { "^=", "aexp" },
                 },
         };
 
@@ -216,7 +236,61 @@ public final class ParserProcessors {
     }
 
     private static RValue processTernaryOps(LinkedList<Identifiable> input) throws ParserException {
-        return processBinaryOpsLA(input, binaryOpMapsLA.length - 1);
+        LinkedList<Identifiable> lhs = new LinkedList<Identifiable>();
+        LinkedList<Identifiable> mhs = new LinkedList<Identifiable>();
+        LinkedList<Identifiable> rhs = new LinkedList<Identifiable>();
+
+        int partsFound = 0;
+        int conditionalsFound = 0;
+
+        for (Identifiable identifiable : input) {
+            final char character = identifiable.id();
+            switch (character) {
+            case '?':
+                ++conditionalsFound;
+                break;
+            case ':':
+                --conditionalsFound;
+                break;
+            }
+
+            if (conditionalsFound < 0) {
+                throw new ParserException(identifiable.getPosition(), "Unexpected ':'");
+            }
+
+            switch (partsFound) {
+            case 0:
+                if (character == '?') {
+                    System.out.println("question mark found");
+                    partsFound = 1;
+                } else {
+                    lhs.addLast(identifiable);
+                }
+                break;
+
+            case 1:
+                if (conditionalsFound == 0 && character == ':') {
+                    System.out.println("matching colon found");
+                    partsFound = 2;
+                } else {
+                    mhs.addLast(identifiable);
+                }
+                break;
+
+            case 2:
+                rhs.addLast(identifiable);
+            }
+        }
+
+        if (partsFound < 2) {
+            return processBinaryOpsLA(input, binaryOpMapsLA.length - 1);
+        }
+
+        RValue lhsInvokable = processBinaryOpsLA(lhs, binaryOpMapsLA.length - 1);
+        RValue mhsInvokable = processTernaryOps(mhs);
+        RValue rhsInvokable = processTernaryOps(rhs);
+
+        return new Conditional(input.get(lhs.size()).getPosition(), lhsInvokable, mhsInvokable, rhsInvokable);
     }
 
     private static RValue processUnaryOps(LinkedList<Identifiable> input) throws ParserException {
@@ -230,19 +304,17 @@ public final class ParserProcessors {
 
             final Identifiable last = input.removeLast();
             if (last instanceof OperatorToken) {
-                postfixes.addLast(new UnaryOperator(last.getPosition(), "x"+((OperatorToken)last).operator));
-            }
-            else if (last instanceof UnaryOperator) {
-                postfixes.addLast(new UnaryOperator(last.getPosition(), "x"+((UnaryOperator)last).operator));
-            }
-            else {
+                postfixes.addLast(new UnaryOperator(last.getPosition(), "x" + ((OperatorToken) last).operator));
+            } else if (last instanceof UnaryOperator) {
+                postfixes.addLast(new UnaryOperator(last.getPosition(), "x" + ((UnaryOperator) last).operator));
+            } else {
                 center = last;
                 break;
             }
         } while (true);
 
         if (!(center instanceof RValue)) {
-            throw new ParserException(center.getPosition(), "Expected expression, found "+center);
+            throw new ParserException(center.getPosition(), "Expected expression, found " + center);
         }
 
         input.addAll(postfixes);

@@ -58,7 +58,6 @@ public class LocalSession {
     private LocalConfiguration config;
 
     private long expirationTime = 0;
-    private LocalWorld selectionWorld;
     private RegionSelector selector = new CuboidRegionSelector();
     private boolean placeAtPos1 = false;
     private LinkedList<EditSession> history = new LinkedList<EditSession>();
@@ -77,7 +76,6 @@ public class LocalSession {
     private boolean fastMode = false;
     private Mask mask;
     private TimeZone timezone = TimeZone.getDefault();
-    //private Boolean jumptoBlock = true;
 
     /**
      * Construct the object.
@@ -167,7 +165,7 @@ public class LocalSession {
         if (historyPointer < history.size()) {
             EditSession editSession = history.get(historyPointer);
             EditSession newEditSession =
-                new EditSession(editSession.getWorld(), -1, newBlockBag);
+                    new EditSession(editSession.getWorld(), -1, newBlockBag);
             newEditSession.enableQueue();
             newEditSession.setFastMode(fastMode);
             editSession.redo(newEditSession);
@@ -186,10 +184,10 @@ public class LocalSession {
      * @return position
      */
     public RegionSelector getRegionSelector(LocalWorld world) {
-        if (selectionWorld == null) {
-            selectionWorld = world;
-        } else if (!selectionWorld.equals(world)) {
-            selectionWorld = world;
+        if (selector.getIncompleteRegion().getWorld() == null) {
+            selector = new CuboidRegionSelector(world);
+        } else if (!selector.getIncompleteRegion().getWorld().equals(world)) {
+            selector.getIncompleteRegion().setWorld(world);
             selector.clear();
         }
         return selector;
@@ -201,6 +199,7 @@ public class LocalSession {
      *
      * @return position
      */
+    @Deprecated
     public RegionSelector getRegionSelector() {
         return selector;
     }
@@ -212,7 +211,7 @@ public class LocalSession {
      * @param selector
      */
     public void setRegionSelector(LocalWorld world, RegionSelector selector) {
-        selectionWorld = world;
+        selector.getIncompleteRegion().setWorld(world);
         this.selector = selector;
     }
 
@@ -233,7 +232,7 @@ public class LocalSession {
      * @return
      */
     public boolean isSelectionDefined(LocalWorld world) {
-        if (selectionWorld == null || !selectionWorld.equals(world)) {
+        if (selector.getIncompleteRegion().getWorld() == null || !selector.getIncompleteRegion().getWorld().equals(world)) {
             return false;
         }
         return selector.isDefined();
@@ -261,7 +260,7 @@ public class LocalSession {
      * @throws IncompleteRegionException
      */
     public Region getSelection(LocalWorld world) throws IncompleteRegionException {
-        if (selectionWorld == null || !selectionWorld.equals(world)) {
+        if (selector.getIncompleteRegion().getWorld() == null || !selector.getIncompleteRegion().getWorld().equals(world)) {
             throw new IncompleteRegionException();
         }
         return selector.getRegion();
@@ -273,7 +272,7 @@ public class LocalSession {
      * @return
      */
     public LocalWorld getSelectionWorld() {
-        return selectionWorld;
+        return selector.getIncompleteRegion().getWorld();
     }
 
     /**
@@ -467,7 +466,7 @@ public class LocalSession {
             setTool(item, tool);
         }
 
-        return (BrushTool)tool;
+        return (BrushTool) tool;
     }
 
     /**
@@ -659,7 +658,7 @@ public class LocalSession {
 
         // Create an edit session
         EditSession editSession =
-                new EditSession(player.getWorld(),
+                new EditSession(player.isPlayer() ? player.getWorld() : null,
                         getBlockChangeLimit(), blockBag);
         editSession.setFastMode(fastMode);
         editSession.setMask(mask);

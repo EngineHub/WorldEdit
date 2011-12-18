@@ -110,7 +110,7 @@ public class CommandContext {
 
             // Not a flag?
             if (arg.charAt(0) != '-' || arg.length() == 1 || !arg.matches("^-[a-zA-Z]+$")) {
-                originalArgIndices.add(argIndexList.get(nextArg-1));
+                originalArgIndices.add(argIndexList.get(nextArg - 1));
                 parsedArgs.add(arg);
                 continue;
             }
@@ -134,7 +134,7 @@ public class CommandContext {
                     }
 
                     if (nextArg >= argList.size()) {
-                        throw new CommandException("No value specified for the '-"+flagName+"' flag.");
+                        throw new CommandException("No value specified for the '-" + flagName + "' flag.");
                     }
 
                     // If it is a value flag, read another argument and add it

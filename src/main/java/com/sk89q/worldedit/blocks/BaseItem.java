@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.blocks;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Represents an item.
  *
@@ -33,6 +36,8 @@ public class BaseItem {
      * Item damage.
      */
     private short damage;
+
+    private Map<Integer, Integer> enchantments = new HashMap<Integer, Integer>();
 
     /**
      * Construct the object.
@@ -81,5 +86,9 @@ public class BaseItem {
      */
     public void setDamage(short damage) {
         this.damage = damage;
+    }
+
+    public Map<Integer, Integer> getEnchantments() {
+        return enchantments;
     }
 }

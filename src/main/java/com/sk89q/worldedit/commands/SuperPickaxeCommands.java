@@ -32,7 +32,13 @@ import com.sk89q.worldedit.tools.AreaPickaxe;
 import com.sk89q.worldedit.tools.RecursivePickaxe;
 import com.sk89q.worldedit.tools.SinglePickaxe;
 
-public class SuperPickaxeCommands {    
+public class SuperPickaxeCommands {
+    private final WorldEdit we;
+
+    public SuperPickaxeCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "single" },
         usage = "",
@@ -41,15 +47,14 @@ public class SuperPickaxeCommands {
         max = 0
     )
     @CommandPermissions("worldedit.superpickaxe")
-    public static void single(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void single(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         session.setSuperPickaxe(new SinglePickaxe());
         session.enableSuperPickAxe();
         player.print("Mode changed. Left click with a pickaxe. // to disable.");
     }
-    
+
     @Command(
         aliases = { "area" },
         usage = "<radius>",
@@ -58,23 +63,22 @@ public class SuperPickaxeCommands {
         max = 1
     )
     @CommandPermissions("worldedit.superpickaxe.area")
-    public static void area(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void area(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
         int range = args.getInteger(0);
-        
+
         if (range > config.maxSuperPickaxeSize) {
             player.printError("Maximum range: " + config.maxSuperPickaxeSize);
             return;
         }
-        
+
         session.setSuperPickaxe(new AreaPickaxe(range));
         session.enableSuperPickAxe();
         player.print("Mode changed. Left click with a pickaxe. // to disable.");
     }
-    
+
     @Command(
         aliases = { "recur", "recursive" },
         usage = "<radius>",
@@ -83,18 +87,17 @@ public class SuperPickaxeCommands {
         max = 1
     )
     @CommandPermissions("worldedit.superpickaxe.recursive")
-    public static void recursive(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void recursive(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
         double range = args.getDouble(0);
-        
+
         if (range > config.maxSuperPickaxeSize) {
             player.printError("Maximum range: " + config.maxSuperPickaxeSize);
             return;
         }
-        
+
         session.setSuperPickaxe(new RecursivePickaxe(range));
         session.enableSuperPickAxe();
         player.print("Mode changed. Left click with a pickaxe. // to disable.");

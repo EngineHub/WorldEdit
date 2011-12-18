@@ -17,9 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.bukkit.migration;
+package com.sk89q.wepif;
 
 import com.sk89q.util.yaml.YAMLProcessor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -41,6 +42,11 @@ public class PluginPermissionsResolver implements PermissionsResolver {
         for (Plugin plugin : server.getPluginManager().getPlugins()) {
             if (plugin instanceof PermissionsProvider) {
                 return new PluginPermissionsResolver((PermissionsProvider) plugin, plugin);
+            }
+
+            final PermissionsProvider legacyPermissionsProvider = LegacyPermissionsProviderWrapper.wrap(plugin);
+            if (legacyPermissionsProvider != null) {
+                return new PluginPermissionsResolver(legacyPermissionsProvider, plugin);
             }
         }
 
@@ -68,6 +74,22 @@ public class PluginPermissionsResolver implements PermissionsResolver {
     }
 
     public String[] getGroups(String player) {
+        return resolver.getGroups(player);
+    }
+
+    public boolean hasPermission(OfflinePlayer player, String permission) {
+        return resolver.hasPermission(player, permission);
+    }
+
+    public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
+        return resolver.hasPermission(worldName, player, permission);
+    }
+
+    public boolean inGroup(OfflinePlayer player, String group) {
+        return resolver.inGroup(player, group);
+    }
+
+    public String[] getGroups(OfflinePlayer player) {
         return resolver.getGroups(player);
     }
 

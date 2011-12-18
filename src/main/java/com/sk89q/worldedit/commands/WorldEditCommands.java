@@ -26,6 +26,7 @@ import java.util.TimeZone;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Console;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
@@ -33,8 +34,14 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 
 public class WorldEditCommands {
-    private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
     
+    private final WorldEdit we;
+    
+    public WorldEditCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "version", "ver" },
         usage = "",
@@ -42,9 +49,9 @@ public class WorldEditCommands {
         min = 0,
         max = 0
     )
-    public static void version(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    @Console
+    public void version(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         player.print("WorldEdit version " + WorldEdit.getVersion());
         player.print("http://www.sk89q.com/projects/worldedit/");
@@ -58,9 +65,9 @@ public class WorldEditCommands {
         max = 0
     )
     @CommandPermissions("worldedit.reload")
-    public static void reload(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    @Console
+    public void reload(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         we.getServer().reload();
         player.print("Configuration reloaded!");
@@ -73,9 +80,8 @@ public class WorldEditCommands {
         min = 0,
         max = 0
     )
-    public static void cui(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void cui(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         session.setCUISupport(true);
         session.dispatchCUISetup(player);
     }
@@ -87,13 +93,28 @@ public class WorldEditCommands {
         min = 1,
         max = 1
     )
-    public static void tz(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    @Console
+    public void tz(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         TimeZone tz = TimeZone.getTimeZone(args.getString(0));
         session.setTimezone(tz);
         player.print("Timezone set for this session to: " + tz.getDisplayName());
         player.print("The current time in that timezone is: "
                 + dateFormat.format(Calendar.getInstance(tz).getTime()));
+    }
+
+    @Command(
+        aliases = { "help" },
+        usage = "[<command>]",
+        desc = "Displays help for the given command or lists all commands.",
+        min = 0,
+        max = -1
+    )
+    @Console
+    public static void help(CommandContext args, WorldEdit we,
+            LocalSession session, LocalPlayer player, EditSession editSession)
+            throws WorldEditException {
+
+        UtilityCommands.help(args, we, session, player, editSession);
     }
 }

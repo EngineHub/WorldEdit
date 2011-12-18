@@ -31,24 +31,24 @@ import com.sk89q.worldedit.Vector;
  */
 public class BlockTypeMask implements Mask {
     protected Set<Integer> types;
-    
+
     public BlockTypeMask() {
         types = new HashSet<Integer>();
     }
-    
+
     public BlockTypeMask(Set<Integer> types) {
         this.types = types;
     }
-    
+
     public BlockTypeMask(int type) {
         this();
         add(type);
     }
-    
+
     public void add(int type) {
         types.add(type);
     }
-    
+
     public boolean matches(EditSession editSession, Vector pos) {
         return types.contains(editSession.getBlockType(pos));
     }

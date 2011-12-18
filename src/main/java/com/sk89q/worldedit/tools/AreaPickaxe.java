@@ -31,15 +31,15 @@ import com.sk89q.worldedit.blocks.BlockID;
 public class AreaPickaxe implements BlockTool {
     private static final BaseBlock air = new BaseBlock(0);
     private int range;
-    
+
     public AreaPickaxe(int range) {
         this.range = range;
     }
-    
+
     public boolean canUse(LocalPlayer player) {
         return player.hasPermission("worldedit.superpickaxe.area");
     }
-    
+
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         LocalWorld world = clicked.getWorld();
@@ -47,29 +47,32 @@ public class AreaPickaxe implements BlockTool {
         int oy = clicked.getBlockY();
         int oz = clicked.getBlockZ();
         int initialType = world.getBlockType(clicked);
-        
+
         if (initialType == 0) {
             return true;
         }
-    
+
         if (initialType == BlockID.BEDROCK && !player.canDestroyBedrock()) {
             return true;
         }
 
         EditSession editSession = session.createEditSession(player);
-        
+
         try {
             for (int x = ox - range; x <= ox + range; ++x) {
                 for (int y = oy - range; y <= oy + range; ++y) {
                     for (int z = oz - range; z <= oz + range; ++z) {
                         Vector pos = new Vector(x, y, z);
-                        if (world.getBlockType(pos) == initialType) {
-                            if (config.superPickaxeManyDrop) {
-                                world.simulateBlockMine(pos);
-                            }
-                            
-                            editSession.setBlock(pos, air);
+                        if (world.getBlockType(pos) != initialType) {
+                            continue;
                         }
+                        if (config.superPickaxeManyDrop) {
+                            world.simulateBlockMine(pos);
+                        }
+
+                        world.queueBlockBreakEffect(server, pos, initialType, clicked.distanceSq(pos));
+
+                        editSession.setBlock(pos, air);
                     }
                 }
             }
@@ -78,7 +81,7 @@ public class AreaPickaxe implements BlockTool {
         } finally {
             session.remember(editSession);
         }
-    
+
         return true;
     }
 }

@@ -236,7 +236,7 @@ public abstract class LocalPlayer {
             return false;
         }
 
-        while (y <= 127) {
+        while (y <= world.getMaxY()) {
             // Found a ceiling!
             if (!BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
@@ -263,7 +263,7 @@ public abstract class LocalPlayer {
         int initialY = Math.max(0, pos.getBlockY());
         int y = Math.max(0, pos.getBlockY() + 1);
         int z = pos.getBlockZ();
-        int maxY = Math.min(128, initialY + distance);
+        int maxY = Math.min(getWorld().getMaxY() + 1, initialY + distance);
         LocalWorld world = getPosition().getWorld();
 
         while (y <= 129) {
@@ -322,6 +322,7 @@ public abstract class LocalPlayer {
         TargetBlock tb = new TargetBlock(this, range, 0.2);
         return (useLastBlock ? tb.getAnyTargetBlockFace() : tb.getTargetBlockFace());
     }
+
     /**
      * Get the point of the block being looked at. May return null.
      *
@@ -556,7 +557,7 @@ public abstract class LocalPlayer {
      * @param pos
      */
     public void setPosition(Vector pos) {
-        setPosition(pos, (float)getPitch(), (float)getYaw());
+        setPosition(pos, (float) getPitch(), (float) getYaw());
     }
 
     /**
@@ -637,7 +638,7 @@ public abstract class LocalPlayer {
         if (!(other instanceof LocalPlayer)) {
             return false;
         }
-        LocalPlayer other2 = (LocalPlayer)other;
+        LocalPlayer other2 = (LocalPlayer) other;
         return other2.getName().equals(getName());
     }
 
@@ -652,8 +653,12 @@ public abstract class LocalPlayer {
     }
 
     public void checkPermission(String permission) throws WorldEditPermissionException {
-       if (!hasPermission(permission)) {
-           throw new WorldEditPermissionException();
-       }
+        if (!hasPermission(permission)) {
+            throw new WorldEditPermissionException();
+        }
+    }
+
+    public boolean isPlayer() {
+        return true;
     }
 }

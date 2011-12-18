@@ -30,7 +30,7 @@ import com.sk89q.util.StringUtil;
 public class FileDialogUtil {
     public static File showSaveDialog(String[] exts) {
         JFileChooser dialog = new JFileChooser();
-        
+
         if (exts != null) {
             dialog.setFileFilter(new ExtensionFilter(exts));
         }
@@ -40,13 +40,13 @@ public class FileDialogUtil {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             return dialog.getSelectedFile();
         }
-        
+
         return null;
     }
-    
+
     public static File showOpenDialog(String[] exts) {
         JFileChooser dialog = new JFileChooser();
-        
+
         if (exts != null) {
             dialog.setFileFilter(new ExtensionFilter(exts));
         }
@@ -56,20 +56,20 @@ public class FileDialogUtil {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             return dialog.getSelectedFile();
         }
-        
+
         return null;
     }
-    
+
     private static class ExtensionFilter extends FileFilter {
         private Set<String> exts;
         private String desc;
-        
+
         public ExtensionFilter(String[] exts) {
             this.exts = new HashSet<String>(Arrays.asList(exts));
-            
+
             desc = StringUtil.joinString(exts, ",");
         }
-        
+
         @Override
         public boolean accept(File f) {
             if (f.isDirectory()) {

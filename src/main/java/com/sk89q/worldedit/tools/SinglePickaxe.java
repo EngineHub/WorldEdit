@@ -28,16 +28,17 @@ import com.sk89q.worldedit.blocks.BlockID;
  * @author sk89q
  */
 public class SinglePickaxe implements BlockTool {
-    
+
     public boolean canUse(LocalPlayer player) {
         return player.hasPermission("worldedit.superpickaxe");
     }
-    
+
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         LocalWorld world = clicked.getWorld();
-        
-        if (world.getBlockType(clicked) == BlockID.BEDROCK
+
+        final int blockType = world.getBlockType(clicked);
+        if (blockType == BlockID.BEDROCK
                 && !player.canDestroyBedrock()) {
             return true;
         }
@@ -45,9 +46,11 @@ public class SinglePickaxe implements BlockTool {
         if (config.superPickaxeDrop) {
             world.simulateBlockMine(clicked);
         }
-        
+
         world.setBlockType(clicked, BlockID.AIR);
-        
+
+        world.playEffect(clicked, 2001, blockType);
+
         return true;
     }
 

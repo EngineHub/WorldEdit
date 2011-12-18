@@ -20,9 +20,9 @@
 package com.sk89q.worldedit.cui;
 
 public class SelectionShapeEvent implements CUIEvent {
-    
+
     protected String shapeName;
-    
+
     public SelectionShapeEvent(String shapeName) {
         this.shapeName = shapeName;
     }

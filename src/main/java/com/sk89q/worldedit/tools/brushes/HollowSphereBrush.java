@@ -27,7 +27,7 @@ import com.sk89q.worldedit.patterns.Pattern;
 public class HollowSphereBrush implements Brush {
     public HollowSphereBrush() {
     }
-    
+
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
             throws MaxChangedBlocksException {
         editSession.makeSphere(pos, mat, size, size, size, false);

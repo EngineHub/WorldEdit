@@ -33,22 +33,22 @@ import com.sk89q.worldedit.patterns.Pattern;
 public class FloodFillTool implements BlockTool {
     private int range;
     private Pattern pattern;
-    
+
     public FloodFillTool(int range, Pattern pattern) {
         this.range = range;
         this.pattern = pattern;
     }
-    
+
     public boolean canUse(LocalPlayer player) {
         return player.hasPermission("worldedit.tool.flood-fill");
     }
-    
+
     public boolean actPrimary(ServerInterface server, LocalConfiguration config,
             LocalPlayer player, LocalSession session, WorldVector clicked) {
         LocalWorld world = clicked.getWorld();
-        
+
         int initialType = world.getBlockType(clicked);
-        
+
         if (initialType == BlockID.AIR) {
             return true;
         }
@@ -88,7 +88,7 @@ public class FloodFillTool implements BlockTool {
             Vector origin, int size, int initialType,
             Set<BlockVector> visited)
             throws MaxChangedBlocksException {
-        
+
         if (origin.distance(pos) > size || visited.contains(pos)) {
             return;
         }

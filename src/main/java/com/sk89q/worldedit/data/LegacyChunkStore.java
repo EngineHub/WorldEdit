@@ -74,7 +74,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
      * @throws IOException
      */
     @Override
-    public CompoundTag getChunkTag(Vector2D pos, String world)
+    public CompoundTag getChunkTag(Vector2D pos, LocalWorld world)
             throws DataException, IOException {
         int x = pos.getBlockX();
         int z = pos.getBlockZ();
@@ -96,14 +96,14 @@ public abstract class LegacyChunkStore extends ChunkStore {
                         + tag.getClass().getName());
             }
 
-            Map<String,Tag> children = (Map<String,Tag>)((CompoundTag)tag).getValue();
+            Map<String, Tag> children = (Map<String, Tag>) ((CompoundTag) tag).getValue();
             CompoundTag rootTag = null;
 
             // Find Level tag
-            for (Map.Entry<String,Tag> entry : children.entrySet()) {
+            for (Map.Entry<String, Tag> entry : children.entrySet()) {
                 if (entry.getKey().equals("Level")) {
                     if (entry.getValue() instanceof CompoundTag) {
-                        rootTag = (CompoundTag)entry.getValue();
+                        rootTag = (CompoundTag) entry.getValue();
                         break;
                     } else {
                         throw new ChunkStoreException("CompoundTag expected for 'Level'; got "
@@ -130,7 +130,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
      * @return
      */
     private static int divisorMod(int a, int n) {
-        return (int)(a - n * Math.floor(Math.floor(a) / (double)n));
+        return (int) (a - n * Math.floor(Math.floor(a) / (double) n));
     }
 
     /**
