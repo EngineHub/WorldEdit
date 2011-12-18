@@ -173,6 +173,8 @@ public class WorldEdit {
                 super.invokeMethod(parent, args, player, method, instance, methodArgs, level);
             }
         };
+        
+        commands.setInjector(new SimpleInjector(this));
 
         commands.register(ChunkCommands.class);
         commands.register(ClipboardCommands.class);
@@ -1256,7 +1258,7 @@ public class WorldEdit {
             long start = System.currentTimeMillis();
 
             try {
-                commands.execute(split, player, this, session, player, editSession);
+                commands.execute(split, player, session, player, editSession);
             } catch (CommandPermissionsException e) {
                 player.printError("You don't have permission to do this.");
             } catch (MissingNestedCommandException e) {

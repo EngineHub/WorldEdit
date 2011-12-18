@@ -30,6 +30,12 @@ import com.sk89q.worldedit.*;
  * @author sk89q
  */
 public class HistoryCommands {
+    private final WorldEdit we;
+    
+    public HistoryCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "/undo", "undo" },
         usage = "[times] [player]",
@@ -38,9 +44,8 @@ public class HistoryCommands {
         max = 2
     )
     @CommandPermissions("worldedit.history.undo")
-    public static void undo(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void undo(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         int times = Math.max(1, args.getInteger(0, 1));
         for (int i = 0; i < times; ++i) {
@@ -74,9 +79,8 @@ public class HistoryCommands {
         max = 2
     )
     @CommandPermissions("worldedit.history.redo")
-    public static void redo(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void redo(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         int times = Math.max(1, args.getInteger(0, 1));
 
@@ -110,9 +114,8 @@ public class HistoryCommands {
         max = 0
     )
     @CommandPermissions("worldedit.history.clear")
-    public static void clearHistory(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void clearHistory(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         session.clearHistory();
         player.print("History cleared.");

@@ -36,6 +36,12 @@ import com.sk89q.worldedit.data.McRegionChunkStore;
  * @author sk89q
  */
 public class ChunkCommands {
+    private final WorldEdit we;
+    
+    public ChunkCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "chunkinfo" },
         usage = "",
@@ -44,9 +50,8 @@ public class ChunkCommands {
         max = 0
     )
     @CommandPermissions("worldedit.chunkinfo")
-    public static void chunkInfo(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void chunkInfo(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         Vector pos = player.getBlockIn();
         int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
@@ -71,9 +76,8 @@ public class ChunkCommands {
         max = 0
     )
     @CommandPermissions("worldedit.listchunks")
-    public static void listChunks(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void listChunks(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         Set<Vector2D> chunks = session.getSelection(player.getWorld()).getChunks();
 
@@ -91,9 +95,8 @@ public class ChunkCommands {
     )
     @CommandPermissions("worldedit.delchunks")
     @Logging(REGION)
-    public static void deleteChunks(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void deleteChunks(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         player.print("Note that this command does not yet support the mcregion format.");
         LocalConfiguration config = we.getConfiguration();

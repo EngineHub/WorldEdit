@@ -34,7 +34,13 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 
 public class WorldEditCommands {
-    private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+    
+    private final WorldEdit we;
+    
+    public WorldEditCommands(WorldEdit we) {
+        this.we = we;
+    }
 
     @Command(
         aliases = { "version", "ver" },
@@ -44,9 +50,8 @@ public class WorldEditCommands {
         max = 0
     )
     @Console
-    public static void version(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void version(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         player.print("WorldEdit version " + WorldEdit.getVersion());
         player.print("http://www.sk89q.com/projects/worldedit/");
@@ -61,9 +66,8 @@ public class WorldEditCommands {
     )
     @CommandPermissions("worldedit.reload")
     @Console
-    public static void reload(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void reload(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         we.getServer().reload();
         player.print("Configuration reloaded!");
@@ -76,9 +80,8 @@ public class WorldEditCommands {
         min = 0,
         max = 0
     )
-    public static void cui(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void cui(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         session.setCUISupport(true);
         session.dispatchCUISetup(player);
     }
@@ -91,9 +94,8 @@ public class WorldEditCommands {
         max = 1
     )
     @Console
-    public static void tz(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void tz(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         TimeZone tz = TimeZone.getTimeZone(args.getString(0));
         session.setTimezone(tz);
         player.print("Timezone set for this session to: " + tz.getDisplayName());

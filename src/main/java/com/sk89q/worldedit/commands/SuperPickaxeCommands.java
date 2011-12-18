@@ -33,6 +33,12 @@ import com.sk89q.worldedit.tools.RecursivePickaxe;
 import com.sk89q.worldedit.tools.SinglePickaxe;
 
 public class SuperPickaxeCommands {
+    private final WorldEdit we;
+
+    public SuperPickaxeCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "single" },
         usage = "",
@@ -41,9 +47,8 @@ public class SuperPickaxeCommands {
         max = 0
     )
     @CommandPermissions("worldedit.superpickaxe")
-    public static void single(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void single(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         session.setSuperPickaxe(new SinglePickaxe());
         session.enableSuperPickAxe();
@@ -58,9 +63,8 @@ public class SuperPickaxeCommands {
         max = 1
     )
     @CommandPermissions("worldedit.superpickaxe.area")
-    public static void area(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void area(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
         int range = args.getInteger(0);
@@ -83,9 +87,8 @@ public class SuperPickaxeCommands {
         max = 1
     )
     @CommandPermissions("worldedit.superpickaxe.recursive")
-    public static void recursive(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void recursive(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
         double range = args.getDouble(0);

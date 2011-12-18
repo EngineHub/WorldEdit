@@ -42,6 +42,12 @@ import com.sk89q.worldedit.regions.RegionOperationException;
  * @author sk89q
  */
 public class RegionCommands {
+    private final WorldEdit we;
+    
+    public RegionCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "/set" },
         usage = "<block>",
@@ -51,9 +57,8 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.set")
     @Logging(REGION)
-    public static void set(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void set(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
 
@@ -79,9 +84,8 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.replace")
     @Logging(REGION)
-    public static void replace(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void replace(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         Set<BaseBlock> from;
         Pattern to;
@@ -113,9 +117,8 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.overlay")
     @Logging(REGION)
-    public static void overlay(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void overlay(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         Pattern pat = we.getBlockPattern(player, args.getString(0));
 
@@ -139,9 +142,8 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.naturalize")
     @Logging(REGION)
-    public static void naturalize(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void naturalize(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         Region region = session.getSelection(player.getWorld());
         int affected = editSession.naturalizeCuboidBlocks(region);
@@ -157,9 +159,8 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.walls")
     @Logging(REGION)
-    public static void walls(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void walls(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         int affected;
@@ -181,9 +182,8 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.faces")
     @Logging(REGION)
-    public static void faces(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void faces(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         int affected;
@@ -209,9 +209,8 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.smooth")
     @Logging(REGION)
-    public static void smooth(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void smooth(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         int iterations = 1;
         if (args.argsLength() > 0) {
@@ -239,9 +238,8 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.move")
     @Logging(ORIENTATION_REGION)
-    public static void move(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void move(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         int count = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         Vector dir = we.getDirection(player,
@@ -289,9 +287,8 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.stack")
     @Logging(ORIENTATION_REGION)
-    public static void stack(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void stack(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         int count = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         Vector dir = we.getDiagonalDirection(player,
@@ -332,9 +329,8 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.regen")
     @Logging(REGION)
-    public static void regenerateChunk(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void regenerateChunk(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         Region region = session.getSelection(player.getWorld());
         Mask mask = session.getMask();
@@ -359,9 +355,8 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.deform")
     @Logging(ALL)
-    public static void deform(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void deform(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         final Region region = session.getSelection(player.getWorld());
 
@@ -406,9 +401,8 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.hollow")
     @Logging(REGION)
-    public static void hollow(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void hollow(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         int affected = editSession.hollowOutRegion(session.getSelection(player.getWorld()));
 

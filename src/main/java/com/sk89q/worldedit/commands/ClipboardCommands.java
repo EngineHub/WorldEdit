@@ -38,6 +38,12 @@ import com.sk89q.worldedit.regions.Region;
  * @author sk89q
  */
 public class ClipboardCommands {
+    private final WorldEdit we;
+    
+    public ClipboardCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "/copy" },
         usage = "",
@@ -46,9 +52,8 @@ public class ClipboardCommands {
         max = 0
     )
     @CommandPermissions("worldedit.clipboard.copy")
-    public static void copy(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void copy(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
             
         Region region = session.getSelection(player.getWorld());
         Vector min = region.getMinimumPoint();
@@ -73,9 +78,8 @@ public class ClipboardCommands {
     )
     @CommandPermissions("worldedit.clipboard.cut")
     @Logging(REGION)
-    public static void cut(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void cut(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         BaseBlock block = new BaseBlock(BlockID.AIR);
 
@@ -113,9 +117,8 @@ public class ClipboardCommands {
     )
     @CommandPermissions("worldedit.clipboard.paste")
     @Logging(PLACEMENT)
-    public static void paste(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void paste(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         boolean atOrigin = args.hasFlag('o');
         boolean pasteNoAir = args.hasFlag('a');
@@ -141,9 +144,8 @@ public class ClipboardCommands {
         max = 1
     )
     @CommandPermissions("worldedit.clipboard.rotate")
-    public static void rotate(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void rotate(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         int angle = args.getInteger(0);
 
@@ -169,9 +171,8 @@ public class ClipboardCommands {
         max = 1
     )
     @CommandPermissions("worldedit.clipboard.flip")
-    public static void flip(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void flip(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         CuboidClipboard.FlipDirection dir = we.getFlipDirection(player,
                 args.argsLength() > 0 ? args.getString(0).toLowerCase() : "me");
@@ -189,9 +190,8 @@ public class ClipboardCommands {
         max = 1
     )
     @CommandPermissions("worldedit.clipboard.load")
-    public static void load(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void load(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
@@ -225,9 +225,8 @@ public class ClipboardCommands {
         max = 1
     )
     @CommandPermissions("worldedit.clipboard.save")
-    public static void save(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void save(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
@@ -268,9 +267,8 @@ public class ClipboardCommands {
         max = 0
     )
     @CommandPermissions("worldedit.clipboard.clear")
-    public static void clearClipboard(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void clearClipboard(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         session.setClipboard(null);
         player.print("Clipboard cleared.");

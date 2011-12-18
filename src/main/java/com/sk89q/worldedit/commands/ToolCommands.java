@@ -31,6 +31,12 @@ import com.sk89q.worldedit.tools.*;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 public class ToolCommands {
+    private final WorldEdit we;
+
+    public ToolCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "none" },
         usage = "",
@@ -38,9 +44,8 @@ public class ToolCommands {
         min = 0,
         max = 0
     )
-    public static void none(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void none(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         session.setTool(player.getItemInHand(), null);
         player.print("Tool unbound from your current item.");
@@ -54,9 +59,8 @@ public class ToolCommands {
         max = 0
     )
     @CommandPermissions("worldedit.tool.info")
-    public static void info(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void info(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         session.setTool(player.getItemInHand(), new QueryTool());
         player.print("Info tool bound to "
@@ -71,9 +75,8 @@ public class ToolCommands {
         max = 1
     )
     @CommandPermissions("worldedit.tool.tree")
-    public static void tree(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void tree(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         TreeGenerator.TreeType type = args.argsLength() > 0 ?
                 type = TreeGenerator.lookup(args.getString(0))
@@ -97,9 +100,8 @@ public class ToolCommands {
         max = 1
     )
     @CommandPermissions("worldedit.tool.replacer")
-    public static void repl(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void repl(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         BaseBlock targetBlock = we.getBlock(player, args.getString(0));
         session.setTool(player.getItemInHand(), new BlockReplacer(targetBlock));
@@ -115,9 +117,8 @@ public class ToolCommands {
         max = 0
     )
     @CommandPermissions("worldedit.tool.data-cycler")
-    public static void cycler(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void cycler(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         session.setTool(player.getItemInHand(), new BlockDataCyler());
         player.print("Block data cycler tool bound to "
@@ -132,9 +133,8 @@ public class ToolCommands {
         max = 2
     )
     @CommandPermissions("worldedit.tool.flood-fill")
-    public static void floodFill(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void floodFill(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
         int range = args.getInteger(1);
@@ -155,9 +155,8 @@ public class ToolCommands {
         desc = "Brush tool"
     )
     @NestedCommand(BrushCommands.class)
-    public static void brush(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void brush(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
     }
 
     @Command(
@@ -168,9 +167,8 @@ public class ToolCommands {
             max = 0
     )
     @CommandPermissions("worldedit.tool.deltree")
-    public static void deltree(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void deltree(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
     session.setTool(player.getItemInHand(), new FloatingTreeRemover());
     player.print("Floating tree remover tool bound to "
@@ -185,9 +183,8 @@ public class ToolCommands {
             max = 0
     )
     @CommandPermissions("worldedit.tool.farwand")
-    public static void farwand(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void farwand(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         session.setTool(player.getItemInHand(), new DistanceWand());
         player.print("Far wand tool bound to " + ItemType.toHeldName(player.getItemInHand()) + ".");
@@ -201,9 +198,8 @@ public class ToolCommands {
             max = 2
     )
     @CommandPermissions("worldedit.tool.lrbuild")
-    public static void longrangebuildtool(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void longrangebuildtool(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         BaseBlock secondary = we.getBlock(player, args.getString(0));
         BaseBlock primary = we.getBlock(player, args.getString(1));

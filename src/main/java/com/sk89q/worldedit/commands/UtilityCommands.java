@@ -44,6 +44,12 @@ import com.sk89q.worldedit.regions.Region;
  * @author sk89q
  */
 public class UtilityCommands {
+    private final WorldEdit we;
+
+    public UtilityCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "/fill" },
         usage = "<block> <radius> [depth]",
@@ -53,9 +59,8 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.fill")
     @Logging(PLACEMENT)
-    public static void fill(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void fill(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         double radius = Math.max(1, args.getDouble(1));
@@ -83,9 +88,8 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.fill.recursive")
     @Logging(PLACEMENT)
-    public static void fillr(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void fillr(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         double radius = Math.max(1, args.getDouble(1));
@@ -113,9 +117,8 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.drain")
     @Logging(PLACEMENT)
-    public static void drain(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void drain(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
@@ -133,9 +136,8 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.fixlava")
     @Logging(PLACEMENT)
-    public static void fixLava(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void fixLava(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
@@ -153,9 +155,8 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.fixwater")
     @Logging(PLACEMENT)
-    public static void fixWater(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void fixWater(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
@@ -173,9 +174,8 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.removeabove")
     @Logging(PLACEMENT)
-    public static void removeAbove(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void removeAbove(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
@@ -196,9 +196,8 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.removebelow")
     @Logging(PLACEMENT)
-    public static void removeBelow(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void removeBelow(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
@@ -218,9 +217,8 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.removenear")
     @Logging(PLACEMENT)
-    public static void removeNear(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void removeNear(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         BaseBlock block = we.getBlock(player, args.getString(0), true);
         int size = Math.max(1, args.getInteger(1, 50));
@@ -240,9 +238,8 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.replacenear")
     @Logging(PLACEMENT)
-    public static void replaceNear(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void replaceNear(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         int size = Math.max(1, args.getInteger(0));
         int affected;
@@ -278,9 +275,8 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.snow")
     @Logging(PLACEMENT)
-    public static void snow(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void snow(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
 
@@ -297,9 +293,8 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.thaw")
     @Logging(PLACEMENT)
-    public static void thaw(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void thaw(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
 
@@ -316,9 +311,8 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.green")
     @Logging(PLACEMENT)
-    public static void green(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void green(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
 
@@ -335,9 +329,8 @@ public class UtilityCommands {
         )
     @CommandPermissions("worldedit.extinguish")
     @Logging(PLACEMENT)
-    public static void extinguish(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void extinguish(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
@@ -367,9 +360,8 @@ public class UtilityCommands {
     @CommandPermissions("worldedit.butcher")
     @Logging(PLACEMENT)
     @Console
-    public static void butcher(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void butcher(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         int radius = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : -1;
 
@@ -400,9 +392,8 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.remove")
     @Logging(PLACEMENT)
-    public static void remove(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void remove(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         String typeStr = args.getString(0);
         int radius = args.getInteger(1);

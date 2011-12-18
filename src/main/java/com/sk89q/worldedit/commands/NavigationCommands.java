@@ -32,6 +32,12 @@ import com.sk89q.worldedit.*;
  * @author sk89q
  */
 public class NavigationCommands {
+    private final WorldEdit we;
+
+    public NavigationCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "unstuck", "!" },
         usage = "",
@@ -40,9 +46,8 @@ public class NavigationCommands {
         max = 0
     )
     @CommandPermissions("worldedit.navigation.unstuck")
-    public static void unstuck(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void unstuck(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         player.print("There you go!");
         player.findFreePosition();
@@ -56,9 +61,8 @@ public class NavigationCommands {
         max = 1
     )
     @CommandPermissions("worldedit.navigation.ascend")
-    public static void ascend(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void ascend(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         int levelsToAscend = 0;
         if (args.argsLength() == 0) {
             levelsToAscend = 1;
@@ -84,9 +88,8 @@ public class NavigationCommands {
         max = 1
     )
     @CommandPermissions("worldedit.navigation.descend")
-    public static void descend(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void descend(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         int levelsToDescend = 0;
         if (args.argsLength() == 0) {
             levelsToDescend = 1;
@@ -113,9 +116,8 @@ public class NavigationCommands {
     )
     @CommandPermissions("worldedit.navigation.ceiling")
     @Logging(POSITION)
-    public static void ceiling(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void ceiling(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         int clearence = args.argsLength() > 0 ?
             Math.max(0, args.getInteger(0)) : 0;
@@ -135,9 +137,8 @@ public class NavigationCommands {
         max = 0
     )
     // @CommandPermissions("worldedit.navigation.thru.command") // TODO: Remove old permission
-    public static void thru(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void thru(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         if (!(player.hasPermission("worldedit.navigation.thru") ||
                 player.hasPermission("worldedit.navigation.thru.command"))) {
             throw new WorldEditPermissionException();
@@ -158,9 +159,8 @@ public class NavigationCommands {
         max = 0
     )
     // @CommandPermissions("worldedit.navigation.jumpto.command") //TODO: Remove old permission
-    public static void jumpTo(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void jumpTo(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         if (!(player.hasPermission("worldedit.navigation.jumpto") ||
                 player.hasPermission("worldedit.navigation.jumpto.command"))) {
@@ -185,9 +185,8 @@ public class NavigationCommands {
     )
     @CommandPermissions("worldedit.navigation.up")
     @Logging(POSITION)
-    public static void up(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void up(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         int distance = args.getInteger(0);
 

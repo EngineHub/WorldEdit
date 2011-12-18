@@ -49,6 +49,12 @@ import com.sk89q.worldedit.tools.brushes.SphereBrush;
  * @author sk89q
  */
 public class BrushCommands {
+	private final WorldEdit we;
+	
+	public BrushCommands(WorldEdit we) {
+		this.we = we;
+	}
+
     @Command(
         aliases = { "sphere", "s" },
         usage = "<block> [radius]",
@@ -61,9 +67,8 @@ public class BrushCommands {
         max = 2
     )
     @CommandPermissions("worldedit.brush.sphere")
-    public static void sphereBrush(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void sphereBrush(CommandContext args, LocalSession session,
+            LocalPlayer player, EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
@@ -101,9 +106,8 @@ public class BrushCommands {
         max = 3
     )
     @CommandPermissions("worldedit.brush.cylinder")
-    public static void cylinderBrush(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void cylinderBrush(CommandContext args, LocalSession session,
+            LocalPlayer player, EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
@@ -148,9 +152,8 @@ public class BrushCommands {
         max = 0
     )
     @CommandPermissions("worldedit.brush.clipboard")
-    public static void clipboardBrush(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void clipboardBrush(CommandContext args, LocalSession session,
+            LocalPlayer player, EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
@@ -189,9 +192,8 @@ public class BrushCommands {
         max = 2
     )
     @CommandPermissions("worldedit.brush.smooth")
-    public static void smoothBrush(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void smoothBrush(CommandContext args, LocalSession session,
+            LocalPlayer player, EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
@@ -220,9 +222,8 @@ public class BrushCommands {
         max = 1
     )
     @CommandPermissions("worldedit.brush.ex")
-    public static void extinguishBrush(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void extinguishBrush(CommandContext args, LocalSession session,
+            LocalPlayer player, EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 

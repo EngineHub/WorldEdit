@@ -33,6 +33,12 @@ import com.sk89q.worldedit.*;
  * @author sk89q
  */
 public class ScriptingCommands {
+    private final WorldEdit we;
+
+    public ScriptingCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "cs" },
         usage = "<filename> [args...]",
@@ -42,9 +48,8 @@ public class ScriptingCommands {
     )
     @CommandPermissions("worldedit.scripting.execute")
     @Logging(ALL)
-    public static void execute(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void execute(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         String[] scriptArgs = args.getSlice(1);
         String name = args.getString(0);
@@ -71,9 +76,8 @@ public class ScriptingCommands {
     )
     @CommandPermissions("worldedit.scripting.execute")
     @Logging(ALL)
-    public static void executeLast(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void executeLast(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         String lastScript = session.getLastScript();
 

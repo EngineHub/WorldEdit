@@ -34,6 +34,12 @@ import com.sk89q.worldedit.masks.Mask;
  * @author sk89q
  */
 public class GeneralCommands {
+    private final WorldEdit we;
+
+    public GeneralCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "/limit" },
         usage = "<limit>",
@@ -42,9 +48,8 @@ public class GeneralCommands {
         max = 1
     )
     @CommandPermissions("worldedit.limit")
-    public static void limit(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void limit(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
@@ -70,9 +75,8 @@ public class GeneralCommands {
         max = 1
     )
     @CommandPermissions("worldedit.fast")
-    public static void fast(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void fast(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         String newState = args.getString(0, null);
         if (session.hasFastMode()) {
@@ -102,9 +106,8 @@ public class GeneralCommands {
         max = -1
     )
     @CommandPermissions("worldedit.global-mask")
-    public static void mask(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void mask(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         if (args.argsLength() == 0) {
             session.setMask(null);
             player.print("Global mask disabled.");
@@ -122,9 +125,8 @@ public class GeneralCommands {
         min = 0,
         max = 0
     )
-    public static void togglePlace(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void togglePlace(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         if (session.togglePlacementPosition()) {
             player.print("Now placing at pos #1.");
@@ -147,9 +149,8 @@ public class GeneralCommands {
         max = 1
     )
     @Console
-    public static void searchItem(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void searchItem(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         String query = args.getString(0).trim().toLowerCase();
         boolean blocksOnly = args.hasFlag('b');
@@ -222,8 +223,7 @@ public class GeneralCommands {
     )
     @NestedCommand(WorldEditCommands.class)
     @Console
-    public static void we(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void we(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
     }
 }

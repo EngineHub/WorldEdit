@@ -33,6 +33,12 @@ import com.sk89q.worldedit.patterns.Pattern;
  * @author sk89q
  */
 public class ToolUtilCommands {
+    private final WorldEdit we;
+
+    public ToolUtilCommands(WorldEdit we) {
+        this.we = we;
+    }
+
     @Command(
         aliases = { "/", "," },
         usage = "[on|off]",
@@ -41,9 +47,8 @@ public class ToolUtilCommands {
         max = 1
     )
     @CommandPermissions("worldedit.superpickaxe")
-    public static void togglePickaxe(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void togglePickaxe(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         String newState = args.getString(0, null);
         if (session.hasSuperPickAxe()) {
@@ -70,9 +75,8 @@ public class ToolUtilCommands {
         desc = "Select super pickaxe mode"
     )
     @NestedCommand(SuperPickaxeCommands.class)
-    public static void pickaxe(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void pickaxe(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
     }
 
     @Command(
@@ -80,9 +84,8 @@ public class ToolUtilCommands {
         desc = "Select a tool to bind"
     )
     @NestedCommand(ToolCommands.class)
-    public static void tool(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void tool(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
     }
 
     @Command(
@@ -93,9 +96,8 @@ public class ToolUtilCommands {
         max = -1
     )
     @CommandPermissions("worldedit.brush.options.mask")
-    public static void mask(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void mask(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         if (args.argsLength() == 0) {
             session.getBrushTool(player.getItemInHand()).setMask(null);
             player.print("Brush mask disabled.");
@@ -114,9 +116,8 @@ public class ToolUtilCommands {
         max = 1
     )
     @CommandPermissions("worldedit.brush.options.material")
-    public static void material(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void material(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         session.getBrushTool(player.getItemInHand()).setFill(pattern);
         player.print("Brush material set.");
@@ -130,9 +131,8 @@ public class ToolUtilCommands {
             max = 1
         )
     @CommandPermissions("worldedit.brush.options.range")
-    public static void range(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void range(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         int range = args.getInteger(0);
         session.getBrushTool(player.getItemInHand()).setRange(range);
         player.print("Brush range set.");
@@ -146,9 +146,8 @@ public class ToolUtilCommands {
         max = 1
     )
     @CommandPermissions("worldedit.brush.options.size")
-    public static void size(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void size(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
 
