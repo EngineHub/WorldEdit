@@ -302,7 +302,7 @@ public class RegionCommands {
                 final Region region = session.getSelection(player.getWorld());
                 final Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint());
 
-                final Vector shiftVector = dir.multiply(count * Math.abs(size.dot(size)));
+                final Vector shiftVector = dir.multiply(count * (Math.abs(dir.dot(size))+1));
                 region.expand(shiftVector);
                 region.contract(shiftVector);
 
