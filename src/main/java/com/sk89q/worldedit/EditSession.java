@@ -2731,7 +2731,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int hollowOutRegion(Region region) throws MaxChangedBlocksException {
+    public int hollowOutRegion(Region region, int thickness) throws MaxChangedBlocksException {
         int affected = 0;
 
         Set<BlockVector> outside = new HashSet<BlockVector>();
@@ -2768,6 +2768,23 @@ public class EditSession {
         }
 
         BaseBlock air = new BaseBlock(BlockID.AIR);
+
+
+        for (int i = 1; i < thickness; ++i) {
+            final Set<BlockVector> newOutside = new HashSet<BlockVector>(outside);
+            outer: for (BlockVector position : region) {
+                for (Vector recurseDirection: recurseDirections) {
+                    BlockVector neighbor = position.add(recurseDirection).toBlockVector();
+
+                    if (outside.contains(neighbor)) {
+                        newOutside.add(position);
+                        continue outer;
+                    }
+                }
+            }
+
+            outside = newOutside;
+        }
 
         outer: for (BlockVector position : region) {
             for (Vector recurseDirection: recurseDirections) {
