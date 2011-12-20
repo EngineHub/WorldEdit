@@ -2724,27 +2724,29 @@ public class EditSession {
     };
 
     /**
-     * Hollows out the region (It's treated as if it was a cuboid if it's not).
+     * Hollows out the region (Semi-well-defined for non-cuboid selections).
      *
-     * @param region
-     * @param block
+     * @param region the region to hollow out.
+     * @param thickness the thickness of the shell to leave (manhattan distance)
+     * @param patternThe block pattern to use
+     * 
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int hollowOutRegion(Region region, int thickness) throws MaxChangedBlocksException {
+    public int hollowOutRegion(Region region, int thickness, Pattern pattern) throws MaxChangedBlocksException {
         int affected = 0;
 
-        Set<BlockVector> outside = new HashSet<BlockVector>();
+        final Set<BlockVector> outside = new HashSet<BlockVector>();
 
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
+        final Vector min = region.getMinimumPoint();
+        final Vector max = region.getMaximumPoint();
 
-        int minX = min.getBlockX();
-        int minY = min.getBlockY();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxY = max.getBlockY();
-        int maxZ = max.getBlockZ();
+        final int minX = min.getBlockX();
+        final int minY = min.getBlockY();
+        final int minZ = min.getBlockZ();
+        final int maxX = max.getBlockX();
+        final int maxY = max.getBlockY();
+        final int maxZ = max.getBlockZ();
 
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
@@ -2767,11 +2769,8 @@ public class EditSession {
             }
         }
 
-        BaseBlock air = new BaseBlock(BlockID.AIR);
-
-
         for (int i = 1; i < thickness; ++i) {
-            final Set<BlockVector> newOutside = new HashSet<BlockVector>(outside);
+            final Set<BlockVector> newOutside = new HashSet<BlockVector>();
             outer: for (BlockVector position : region) {
                 for (Vector recurseDirection: recurseDirections) {
                     BlockVector neighbor = position.add(recurseDirection).toBlockVector();
@@ -2783,7 +2782,7 @@ public class EditSession {
                 }
             }
 
-            outside = newOutside;
+            outside.addAll(newOutside);
         }
 
         outer: for (BlockVector position : region) {
@@ -2795,7 +2794,7 @@ public class EditSession {
                 }
             }
 
-            if (setBlock(position, air)) {
+            if (setBlock(position, pattern.next(position))) {
                 ++affected;
             }
         }

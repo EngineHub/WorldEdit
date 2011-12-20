@@ -394,19 +394,24 @@ public class RegionCommands {
 
     @Command(
         aliases = { "/hollow" },
-        usage = "[<thickness>]",
+        usage = "[<thickness>[ <block>]]",
         desc = "Hollows out the object contained in this selection",
+        help =
+            "Hollows out the object contained in this selection.\n" +
+            "Optionally fills the hollowed out part with the given block.\n" +
+            "Thickness is measured in manhattan distance.",
         min = 0,
-        max = 1
+        max = 2
     )
     @CommandPermissions("worldedit.region.hollow")
     @Logging(REGION)
     public void hollow(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        int thickness = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
+        final int thickness = args.argsLength() >= 1 ? Math.max(1, args.getInteger(0)) : 1;
+        final Pattern pattern = args.argsLength() >= 2 ? we.getBlockPattern(player, args.getString(1)) : new SingleBlockPattern(new BaseBlock(BlockID.AIR));
 
-        int affected = editSession.hollowOutRegion(session.getSelection(player.getWorld()), thickness);
+        final int affected = editSession.hollowOutRegion(session.getSelection(player.getWorld()), thickness, pattern);
 
         player.print(affected + " block(s) have been changed.");
     }
