@@ -346,14 +346,15 @@ public class UtilityCommands {
     @Command(
         aliases = { "butcher" },
         usage = "[radius]",
-        flags = "pna",
+        flags = "plan",
         desc = "Kill all or nearby mobs",
         help =
             "Kills nearby mobs, or all mobs if you don't specify a radius.\n" +
             "Flags:" +
             "  -p also kills pets.\n" +
             "  -n also kills NPCs.\n" +
-            "  -a also kills animals.",
+            "  -a also kills animals.\n" +
+            "  -l strikes lightning on each killed mob.",
         min = 0,
         max = 1
     )
@@ -369,6 +370,7 @@ public class UtilityCommands {
         if (args.hasFlag('p')) flags |= KillFlags.PETS;
         if (args.hasFlag('n')) flags |= KillFlags.NPCS;
         if (args.hasFlag('a')) flags |= KillFlags.ANIMALS;
+        if (args.hasFlag('l') && player.hasPermission("worldedit.butcher.lightning")) flags |= KillFlags.WITH_LIGHTNING;
 
         int killed;
         if (player.isPlayer()) {

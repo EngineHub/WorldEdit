@@ -475,6 +475,7 @@ public class BukkitWorld extends LocalWorld {
         boolean killPets = (flags & KillFlags.PETS) != 0;
         boolean killNPCs = (flags & KillFlags.NPCS) != 0;
         boolean killAnimals = (flags & KillFlags.ANIMALS) != 0;
+        boolean withLightning = (flags & KillFlags.WITH_LIGHTNING) != 0;
 
         int num = 0;
         double radiusSq = radius * radius;
@@ -502,6 +503,9 @@ public class BukkitWorld extends LocalWorld {
             } catch (ClassNotFoundException e) {}
 
             if (radius < 0 || bukkitOrigin.distanceSquared(ent.getLocation()) <= radiusSq) {
+                if (withLightning) {
+                    world.strikeLightningEffect(ent.getLocation());
+                }
                 ent.remove();
                 ++num;
             }
