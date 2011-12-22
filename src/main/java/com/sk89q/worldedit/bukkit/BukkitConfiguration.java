@@ -88,6 +88,8 @@ public class BukkitConfiguration extends LocalConfiguration {
         allowedDataCycleBlocks = new HashSet<Integer>(config.getIntList("limits.allowed-data-cycle-blocks", null));
 
         noOpPermissions = config.getBoolean("no-op-permissions", false);
+        naturalDirections = config.getBoolean("natural-directions", naturalDirections);
+
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(0, config.getInt("history.size", 15));
         LocalSession.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;
