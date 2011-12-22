@@ -111,9 +111,8 @@ public class WorldEditCommands {
         max = -1
     )
     @Console
-    public static void help(CommandContext args, WorldEdit we,
-            LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void help(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
 
         UtilityCommands.help(args, we, session, player, editSession);
     }
