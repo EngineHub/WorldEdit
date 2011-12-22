@@ -820,10 +820,34 @@ public class WorldEdit {
         }
     }
 
+    private char getActualDirection(char direction) {
+    	if (!config.naturalDirections) return direction;
+    	char newDirection;
+    	switch (direction) {
+    	case 'n':
+    		newDirection = 'e';
+    		break;
+    	case 'w':
+    		newDirection = 'n';
+    		break;
+    	case 's':
+    		newDirection = 'w';
+    		break;
+    	case 'e':
+    		newDirection = 's';
+    		break;
+    	default:
+    		newDirection = direction;
+    	}
+    	return newDirection;
+    }
+    
     private PlayerDirection getPlayerDirection(LocalPlayer player, String dirStr) throws UnknownDirectionException {
         final PlayerDirection dir;
-
-        switch (dirStr.charAt(0)) {
+        
+        char direction = getActualDirection(dirStr.charAt(0));
+        
+        switch (direction) {
         case 'w':
             dir = PlayerDirection.WEST;
             break;

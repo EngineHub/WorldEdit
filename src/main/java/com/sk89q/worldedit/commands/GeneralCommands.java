@@ -226,4 +226,35 @@ public class GeneralCommands {
     public void we(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
     }
+    
+    @Command(
+            aliases = { "/ndirections" },
+            usage = "[on|off]",
+            desc = "Toggle natural directions (sun rises in the east)",
+            min = 0,
+            max = 1
+        )
+    @CommandPermissions("worldedit.ndirections")
+    public void ndirections(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
+
+    	String newState = args.getString(0, null);
+        if (session.hasNaturalDirections()) {
+            if ("on".equals(newState)) {
+                player.printError("Natural directions already enabled.");
+                return;
+            }
+
+            session.setNaturalDirections(false);
+            player.print("Natural directions disabled.");
+        } else {
+            if ("off".equals(newState)) {
+                player.printError("Natural directions already disabled.");
+                return;
+            }
+
+            session.setNaturalDirections(true);
+            player.print("Natural directions enabled. The sun now rises in the East and sets in the West.");
+        }
+    }
 }

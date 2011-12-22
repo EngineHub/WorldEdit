@@ -74,7 +74,7 @@ public class LocalSession {
     private boolean fastMode = false;
     private Mask mask;
     private TimeZone timezone = TimeZone.getDefault();
-
+    
     /**
      * Construct the object.
      *
@@ -664,6 +664,24 @@ public class LocalSession {
      */
     public void setFastMode(boolean fastMode) {
         this.fastMode = fastMode;
+    }
+    
+    /**
+     * Checks if the session has natural directions enabled.
+     * 
+     * @return
+     */
+    public boolean hasNaturalDirections() {
+    	return config.naturalDirections;
+    }
+    
+    /** 
+     * Set direction mode
+     * 
+     * @param naturalDirections
+     */
+    public void setNaturalDirections(boolean naturalDirections) {
+    	config.naturalDirections = naturalDirections;
     }
 
     /**
