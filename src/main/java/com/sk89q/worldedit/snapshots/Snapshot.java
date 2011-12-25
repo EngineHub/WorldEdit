@@ -19,7 +19,8 @@
 package com.sk89q.worldedit.snapshots;
 
 import com.sk89q.worldedit.data.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;

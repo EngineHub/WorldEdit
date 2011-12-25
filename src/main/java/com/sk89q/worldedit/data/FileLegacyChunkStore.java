@@ -19,7 +19,11 @@
 
 package com.sk89q.worldedit.data;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Represents the chunk store used by Minecraft alpha.

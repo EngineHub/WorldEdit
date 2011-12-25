@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.util;
 
-import java.io.*;
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;

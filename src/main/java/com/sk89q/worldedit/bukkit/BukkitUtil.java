@@ -19,15 +19,17 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.bukkit.block.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.Vector;
 
 public class BukkitUtil {
     private BukkitUtil() {

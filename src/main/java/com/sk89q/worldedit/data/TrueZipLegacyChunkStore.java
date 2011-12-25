@@ -19,11 +19,14 @@
 
 package com.sk89q.worldedit.data;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.regex.Pattern;
 import java.util.zip.ZipException;
 import java.util.Enumeration;
-import de.schlichtherle.util.zip.*;
+import de.schlichtherle.util.zip.ZipEntry;
+import de.schlichtherle.util.zip.ZipFile;
 
 /**
  * Represents the chunk store used by Minecraft alpha but zipped. Uses

@@ -19,7 +19,10 @@
 
 package com.sk89q.worldedit.scripting;
 
-import org.mozilla.javascript.*;
+import org.mozilla.javascript.Callable;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.Scriptable;
 
 public class RhinoContextFactory extends ContextFactory {
     protected int timeLimit;

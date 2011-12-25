@@ -19,16 +19,25 @@
 
 package com.sk89q.worldedit;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 
 import javax.script.ScriptException;
 
 import com.sk89q.minecraft.util.commands.*;
-import com.sk89q.minecraft.util.commands.Console;
 
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;

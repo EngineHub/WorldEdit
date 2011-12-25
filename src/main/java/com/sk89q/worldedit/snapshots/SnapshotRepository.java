@@ -19,7 +19,8 @@
 package com.sk89q.worldedit.snapshots;
 
 import com.sk89q.worldedit.data.MissingWorldException;
-import java.io.*;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;

@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import org.bukkit.*;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import com.sk89q.util.StringUtil;

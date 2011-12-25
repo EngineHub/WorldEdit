@@ -24,7 +24,11 @@ import java.util.List;
 
 import com.sk89q.bukkit.util.CommandRegistration;
 import com.sk89q.minecraft.util.commands.Command;
-import org.bukkit.*;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.entity.CreatureType;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;

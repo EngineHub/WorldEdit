@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.data;
 
-import java.io.*;
+import java.io.IOException;
 import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.*;
 

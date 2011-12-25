@@ -54,8 +54,13 @@
 
 package com.sk89q.worldedit.data;
 
-import java.io.*;
-import java.util.zip.*;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
+
 import com.sk89q.worldedit.Vector2D;
 
 /**
