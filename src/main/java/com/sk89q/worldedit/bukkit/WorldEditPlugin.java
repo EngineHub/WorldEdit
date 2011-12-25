@@ -56,7 +56,7 @@ public class WorldEditPlugin extends JavaPlugin {
     /**
      * The server interface that all server-related API goes through.
      */
-    private ServerInterface server;
+    private BukkitServerInterface server;
     /**
      * Main WorldEdit instance.
      */
@@ -121,6 +121,7 @@ public class WorldEditPlugin extends JavaPlugin {
         }
         controller.clearSessions();
         config.unload();
+        server.unregisterCommands();
         this.getServer().getScheduler().cancelTasks(this);
     }
 

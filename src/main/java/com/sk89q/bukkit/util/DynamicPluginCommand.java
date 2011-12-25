@@ -18,29 +18,30 @@
 
 package com.sk89q.bukkit.util;
 
-import org.bukkit.command.CommandMap;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerListener;
+import com.sk89q.minecraft.util.commands.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
+
+import java.util.Arrays;
 
 /**
 * @author zml2008
 */
-public class FallbackRegistrationListener extends PlayerListener {
+public class DynamicPluginCommand extends org.bukkit.command.Command {
 
-    private final CommandMap commandRegistration;
+    protected final Plugin plugin;
 
-    public FallbackRegistrationListener(CommandMap commandRegistration) {
-        this.commandRegistration = commandRegistration;
+    public DynamicPluginCommand(Command command, Plugin plugin) {
+        super(command.aliases()[0], command.desc(), command.usage(), Arrays.asList(command.aliases()));
+        this.plugin = plugin;
     }
 
     @Override
-    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
-        if (commandRegistration.dispatch(event.getPlayer(), event.getMessage())) {
-            event.setCancelled(true);
-        }
+    public boolean execute(CommandSender sender, String label, String[] args) {
+        return plugin.onCommand(sender, this, label, args);
+    }
+    
+    public Plugin getPlugin() {
+        return plugin;
     }
 }

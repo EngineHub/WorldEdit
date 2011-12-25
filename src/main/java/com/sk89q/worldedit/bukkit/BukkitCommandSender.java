@@ -1,8 +1,6 @@
 package com.sk89q.worldedit.bukkit;
 
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -31,23 +29,30 @@ public class BukkitCommandSender extends LocalPlayer {
 
     @Override
     public void printRaw(String msg) {
-        System.out.println(msg);
-    }
-
-    @Override
-    public void printDebug(String msg) {
-        Bukkit.getLogger().log(Level.WARNING, msg);
-
+        for (String part : msg.split("\n")) {
+            sender.sendMessage(part);
+        }
     }
 
     @Override
     public void print(String msg) {
-        Bukkit.getLogger().info(msg);
+        for (String part : msg.split("\n")) {
+            sender.sendMessage("\u00A7d" + part);
+        }
+    }
+
+    @Override
+    public void printDebug(String msg) {
+        for (String part : msg.split("\n")) {
+            sender.sendMessage("\u00A77" + part);
+        }
     }
 
     @Override
     public void printError(String msg) {
-        Bukkit.getLogger().log(Level.SEVERE, msg);
+        for (String part : msg.split("\n")) {
+            sender.sendMessage("\u00A7c" + part);
+        }
     }
 
     @Override

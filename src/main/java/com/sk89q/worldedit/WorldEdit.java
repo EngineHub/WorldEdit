@@ -176,19 +176,19 @@ public class WorldEdit {
         
         commands.setInjector(new SimpleInjector(this));
 
-        commands.register(ChunkCommands.class);
-        commands.register(ClipboardCommands.class);
-        commands.register(GeneralCommands.class);
-        commands.register(GenerationCommands.class);
-        commands.register(HistoryCommands.class);
-        commands.register(NavigationCommands.class);
-        commands.register(RegionCommands.class);
-        commands.register(ScriptingCommands.class);
-        commands.register(SelectionCommands.class);
-        commands.register(SnapshotUtilCommands.class);
-        commands.register(ToolUtilCommands.class);
-        commands.register(ToolCommands.class);
-        commands.register(UtilityCommands.class);
+        server.onCommandRegistration(commands.registerAndReturn(ChunkCommands.class));
+        server.onCommandRegistration(commands.registerAndReturn(ClipboardCommands.class));
+        server.onCommandRegistration(commands.registerAndReturn(GeneralCommands.class));
+        server.onCommandRegistration(commands.registerAndReturn(GenerationCommands.class));
+        server.onCommandRegistration(commands.registerAndReturn(HistoryCommands.class));
+        server.onCommandRegistration(commands.registerAndReturn(NavigationCommands.class));
+        server.onCommandRegistration(commands.registerAndReturn(RegionCommands.class));
+        server.onCommandRegistration(commands.registerAndReturn(ScriptingCommands.class));
+        server.onCommandRegistration(commands.registerAndReturn(SelectionCommands.class));
+        server.onCommandRegistration(commands.registerAndReturn(SnapshotUtilCommands.class));
+        server.onCommandRegistration(commands.registerAndReturn(ToolUtilCommands.class));
+        server.onCommandRegistration(commands.registerAndReturn(ToolCommands.class));
+        server.onCommandRegistration(commands.registerAndReturn(UtilityCommands.class));
     }
 
     /**
@@ -1222,27 +1222,7 @@ public class WorldEdit {
      */
     public boolean handleCommand(LocalPlayer player, String[] split) {
         try {
-            split[0] = split[0].substring(1);
-
-            // Quick script shortcut
-            if (split[0].matches("^[^/].*\\.js$")) {
-                String[] newSplit = new String[split.length + 1];
-                System.arraycopy(split, 0, newSplit, 1, split.length);
-                newSplit[0] = "cs";
-                newSplit[1] = newSplit[1];
-                split = newSplit;
-            }
-
-            String searchCmd = split[0].toLowerCase();
-
-            // Try to detect the command
-            if (commands.hasCommand(searchCmd)) {
-            } else if (config.noDoubleSlash && commands.hasCommand("/" + searchCmd)) {
-                split[0] = "/" + split[0];
-            } else if (split[0].length() >= 2 && split[0].charAt(0) == '/'
-                    && commands.hasCommand(searchCmd.substring(1))) {
-                split[0] = split[0].substring(1);
-            }
+            split = commandDetection(split);
 
             // No command found!
             if (!commands.hasCommand(split[0])) {
@@ -1336,6 +1316,31 @@ public class WorldEdit {
         }
 
         return true;
+    }
+    
+    public String[] commandDetection(String[] split) {
+        split[0] = split[0].substring(1);
+
+        // Quick script shortcut
+        if (split[0].matches("^[^/].*\\.js$")) {
+            String[] newSplit = new String[split.length + 1];
+            System.arraycopy(split, 0, newSplit, 1, split.length);
+            newSplit[0] = "cs";
+            newSplit[1] = newSplit[1];
+            split = newSplit;
+        }
+
+        String searchCmd = split[0].toLowerCase();
+
+        // Try to detect the command
+        if (commands.hasCommand(searchCmd)) {
+        } else if (config.noDoubleSlash && commands.hasCommand("/" + searchCmd)) {
+            split[0] = "/" + split[0];
+        } else if (split[0].length() >= 2 && split[0].charAt(0) == '/'
+                && commands.hasCommand(searchCmd.substring(1))) {
+            split[0] = split[0].substring(1);
+        }
+        return split;
     }
 
     /**

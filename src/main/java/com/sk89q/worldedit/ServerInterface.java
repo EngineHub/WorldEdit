@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.minecraft.util.commands.Command;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -63,5 +65,9 @@ public abstract class ServerInterface {
 
     public List<LocalWorld> getWorlds() {
         return Collections.emptyList();
+    }
+    
+    public void onCommandRegistration(List<Command> commands) {
+        // Do nothing :)
     }
 }

@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.sk89q.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event;
@@ -57,7 +58,7 @@ public class WorldEditPlayerListener extends PlayerListener {
 
         plugin.registerEvent("PLAYER_QUIT", this);
         plugin.registerEvent("PLAYER_INTERACT", this);
-        plugin.registerEvent("PLAYER_COMMAND_PREPROCESS", this);
+        plugin.registerEvent("PLAYER_COMMAND_PREPROCESS", this, Event.Priority.Low);
     }
 
     /**
@@ -83,9 +84,12 @@ public class WorldEditPlayerListener extends PlayerListener {
 
         String[] split = event.getMessage().split(" ");
 
-        if (plugin.getWorldEdit().handleCommand(plugin.wrapPlayer(event.getPlayer()), split)) {
-            event.setCancelled(true);
+        if (split.length > 0) {
+            split = plugin.getWorldEdit().commandDetection(split);
+            split[0] += "/";
         }
+
+        event.setMessage(StringUtil.joinString(split, " "));
     }
 
     private boolean ignoreLeftClickAir = false;
