@@ -64,7 +64,7 @@ public class CommandContext {
         List<String> argList = new ArrayList<String>(args.length);
         for (int i = 1; i < args.length; ++i) {
             String arg = args[i];
-            if (arg.isEmpty()) {
+            if (arg.length() == 0) {
                 continue;
             }
 
@@ -93,6 +93,11 @@ public class CommandContext {
                 if (endIndex < args.length) {
                     arg = build.toString();
                     i = endIndex;
+                }
+
+                // In case there is an empty quoted string
+                if (arg.length() == 0) {
+                    continue;
                 }
                 // else raise exception about hanging quotes?
             }

@@ -143,4 +143,15 @@ public class CommandContextTest {
             fail("Error creating CommandContext");
         }
     }
+
+    @Test
+    public void testEmptyQuote() {
+        try {
+            CommandContext context = new CommandContext("region flag xmas blocked-cmds \"\"");
+            assertEquals(context.argsLength(), 3);
+        } catch (CommandException e) {
+            e.printStackTrace();
+            fail("Error creating CommandContext");
+        }
+    }
 }

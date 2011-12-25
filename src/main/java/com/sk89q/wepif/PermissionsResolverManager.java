@@ -241,8 +241,8 @@ public class PermissionsResolverManager implements PermissionsResolver {
         }
 
         if (keys.contains("dinner-perms") || keys.contains("dinnerperms")) {
-            config.setProperty("dinner-perms", null);
-            config.setProperty("dinnerperms", null);
+            config.removeProperty("dinner-perms");
+            config.removeProperty("dinnerperms");
             isUpdated = true;
         }
         if (!keys.contains("permissions")) {
