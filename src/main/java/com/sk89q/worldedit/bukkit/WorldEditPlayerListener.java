@@ -22,6 +22,7 @@ package com.sk89q.worldedit.bukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
@@ -104,8 +105,8 @@ public class WorldEditPlayerListener extends PlayerListener {
         final LocalWorld world = player.getWorld();
         final WorldEdit we = plugin.getWorldEdit();
 
-        switch (event.getAction()) {
-        case LEFT_CLICK_BLOCK: {
+        Action action = event.getAction();
+        if (action == Action.LEFT_CLICK_BLOCK) {
             final Block clickedBlock = event.getClickedBlock();
             final WorldVector pos = new WorldVector(world, clickedBlock.getX(),
                     clickedBlock.getY(), clickedBlock.getZ());
@@ -129,22 +130,17 @@ public class WorldEditPlayerListener extends PlayerListener {
                     ignoreLeftClickAir = true;
                 }
             }
-
-            break;
-        }
-
-        case LEFT_CLICK_AIR:
+        } else if (action == Action.LEFT_CLICK_AIR) {
             if (ignoreLeftClickAir) {
-                break;
+                return;
             }
 
             if (we.handleArmSwing(player)) {
                 event.setCancelled(true);
             }
 
-            break;
 
-        case RIGHT_CLICK_BLOCK: {
+        } else if (action == Action.RIGHT_CLICK_BLOCK) {
             final Block clickedBlock = event.getClickedBlock();
             final WorldVector pos = new WorldVector(world, clickedBlock.getX(),
                     clickedBlock.getY(), clickedBlock.getZ());
@@ -156,14 +152,10 @@ public class WorldEditPlayerListener extends PlayerListener {
             if (we.handleRightClick(player)) {
                 event.setCancelled(true);
             }
-            break;
-        }
-
-        case RIGHT_CLICK_AIR:
+        } else if (action == Action.RIGHT_CLICK_AIR) {
             if (we.handleRightClick(player)) {
                 event.setCancelled(true);
             }
-            break;
         }
     }
 }
