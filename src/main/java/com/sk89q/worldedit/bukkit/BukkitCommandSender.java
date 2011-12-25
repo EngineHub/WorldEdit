@@ -1,6 +1,5 @@
 package com.sk89q.worldedit.bukkit;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

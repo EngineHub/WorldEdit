@@ -27,7 +27,6 @@ import java.util.List;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
-import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.commands.ChunkCommands;
 import com.sk89q.worldedit.commands.ClipboardCommands;
 import com.sk89q.worldedit.commands.GeneralCommands;

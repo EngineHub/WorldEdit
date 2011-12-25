@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
  * @author zml2008
  */
 public class ReflectionUtil {
+    @SuppressWarnings("unchecked")
     public static <T> T getField(Object from, String name) {
         Class<?> checkClass = from.getClass();
         do {

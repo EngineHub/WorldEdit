@@ -19,7 +19,6 @@
 package com.sk89q.bukkit.util;
 
 import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.util.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
