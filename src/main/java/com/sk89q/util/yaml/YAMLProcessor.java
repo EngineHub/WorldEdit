@@ -25,11 +25,7 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,10 +91,11 @@ public class YAMLProcessor extends YAMLNode {
      * @throws java.io.IOException
      */
     public void load() throws IOException {
-        FileInputStream stream = null;
+        InputStream stream = null;
 
         try {
-            stream = new FileInputStream(file);
+            stream = getInputStream();
+            if (stream == null) throw new IOException("Stream is null!");
             read(yaml.load(new UnicodeReader(stream)));
         } catch (YAMLProcessorException e) {
             root = new HashMap<String, Object>();
@@ -158,7 +155,7 @@ public class YAMLProcessor extends YAMLNode {
      * @return true if it was successful
      */
     public boolean save() {
-        FileOutputStream stream = null;
+        OutputStream stream = null;
 
         File parent = file.getParentFile();
 
@@ -167,7 +164,8 @@ public class YAMLProcessor extends YAMLNode {
         }
 
         try {
-            stream = new FileOutputStream(file);
+            stream = getOutputStream();
+            if (stream == null) return false;
             OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
             if (header != null) {
                 writer.append(header);
@@ -198,6 +196,14 @@ public class YAMLProcessor extends YAMLNode {
         } catch (ClassCastException e) {
             throw new YAMLProcessorException("Root document must be an key-value structure");
         }
+    }
+
+    public InputStream getInputStream() throws IOException {
+        return new FileInputStream(file);
+    }
+
+    public OutputStream getOutputStream() throws IOException {
+        return new FileOutputStream(file);
     }
 
     /**
