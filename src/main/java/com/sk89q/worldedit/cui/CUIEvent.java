@@ -22,7 +22,7 @@ package com.sk89q.worldedit.cui;
 public interface CUIEvent {
 
     // The required protocol versions for communicating with the CUI
-    public static final int MIN_PROTOCOL = 0, CURRENT_PROTOCOL = 0;
+    public static final int MIN_PROTOCOL = -1, CURRENT_PROTOCOL = 0; // TODO: Yetanotherx releases a new WECUI with protocol version 0.
 
     public String getTypeId();
 
