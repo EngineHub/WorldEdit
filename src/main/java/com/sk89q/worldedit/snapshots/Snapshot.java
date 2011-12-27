@@ -132,7 +132,7 @@ public class Snapshot implements Comparable<Snapshot> {
         try {
             if (file.getName().toLowerCase().endsWith(".zip")) {
                 ZipFile entry = new ZipFile(file);
-                return entry.getEntry(worldname) != null;
+                return entry.getEntry(worldname + "/level.dat") != null;
             } else if (file.getName().toLowerCase().endsWith(".tar.bz2")
                     || file.getName().toLowerCase().endsWith(".tar.gz")
                     || file.getName().toLowerCase().endsWith(".tar")) {
