@@ -50,7 +50,7 @@ public class Polygonal2DRegion implements Region {
      * Construct the region
      */
     public Polygonal2DRegion() {
-        this(null);
+        this((LocalWorld) null);
     }
     
     /**
@@ -82,6 +82,11 @@ public class Polygonal2DRegion implements Region {
         hasY = true;
         this.world = world;
         recalculate();
+    }
+
+    public Polygonal2DRegion(Polygonal2DRegion region) {
+        this(region.world, region.points, region.minY, region.maxY);
+        hasY = region.hasY;
     }
 
     /**

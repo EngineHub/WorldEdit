@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.regions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import com.sk89q.worldedit.BlockVector;
@@ -41,9 +42,42 @@ import com.sk89q.worldedit.cui.SelectionShapeEvent;
 public class Polygonal2DRegionSelector implements RegionSelector, CUIPointBasedRegion {
     protected BlockVector pos1;
     protected Polygonal2DRegion region;
-    
+
     public Polygonal2DRegionSelector(LocalWorld world) {
         region = new Polygonal2DRegion(world);
+    }
+
+    public Polygonal2DRegionSelector(RegionSelector oldSelector) {
+        this(oldSelector.getIncompleteRegion().getWorld());
+        if (oldSelector instanceof Polygonal2DRegionSelector) {
+            final Polygonal2DRegionSelector polygonal2DRegionSelector = (Polygonal2DRegionSelector) oldSelector;
+
+            pos1 = polygonal2DRegionSelector.pos1;
+            region = new Polygonal2DRegion(polygonal2DRegionSelector.region);
+        } else {
+            final Region oldRegion;
+            try {
+                oldRegion = oldSelector.getRegion();
+            } catch (IncompleteRegionException e) {
+                return;
+            }
+
+            BlockVector min = oldRegion.getMinimumPoint().toBlockVector();
+            BlockVector max = oldRegion.getMaximumPoint().toBlockVector();
+
+            int minY = min.getBlockY();
+            int maxY = max.getBlockY();
+
+            List<BlockVector2D> points = new ArrayList<BlockVector2D>(4);
+
+            points.add(new BlockVector2D(min.getX(), min.getZ()));
+            points.add(new BlockVector2D(min.getX(), max.getZ()));
+            points.add(new BlockVector2D(max.getX(), max.getZ()));
+            points.add(new BlockVector2D(max.getX(), min.getZ()));
+
+            pos1 = min;
+            region = new Polygonal2DRegion(oldRegion.getWorld(), points, minY, maxY);
+        }
     }
 
     public boolean selectPrimary(Vector pos) {

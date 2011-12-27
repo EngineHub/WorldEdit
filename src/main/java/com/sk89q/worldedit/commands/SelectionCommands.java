@@ -616,7 +616,7 @@ public class SelectionCommands {
             selector = new ExtendingCuboidRegionSelector(oldSelector);
             player.print("Cuboid: left click for a starting point, right click to extend");
         } else if (typeName.equalsIgnoreCase("poly")) {
-            selector = new Polygonal2DRegionSelector(world);
+            selector = new Polygonal2DRegionSelector(oldSelector);
             player.print("2D polygon selector: Left/right click to add a point.");
         } else {
             player.printError("Only 'cuboid', 'extend' and 'poly' are accepted.");
