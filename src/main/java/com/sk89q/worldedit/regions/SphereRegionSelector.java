@@ -1,0 +1,67 @@
+// $Id$
+/*
+ * WorldEdit
+ * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+package com.sk89q.worldedit.regions;
+
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.Vector;
+
+/**
+ * Selector for cuboids.
+ *
+ * @author sk89q
+ */
+public class SphereRegionSelector extends EllipsoidRegionSelector {
+    public SphereRegionSelector(LocalWorld world) {
+        super(world);
+    }
+
+    public SphereRegionSelector() {
+        super();
+    }
+
+    public SphereRegionSelector(RegionSelector oldSelector) {
+        super(oldSelector);
+        // TODO: extend ellipsoid to enclosing sphere
+    }
+
+    @Override
+    public boolean selectSecondary(Vector pos) {
+        final Vector diff = pos.subtract(region.getCenter());
+        final Vector minRadius = Vector.getMaximum(diff, diff.multiply(-1.0));
+
+        double minRadiusScalar = Math.max(Math.max(minRadius.getX(), minRadius.getY()), minRadius.getZ());
+
+        region.extendRadius(new Vector(minRadiusScalar, minRadiusScalar, minRadiusScalar));
+        return true;
+    }
+
+    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
+        if (isDefined()) {
+            player.print("Radius set to " + region.getRadius() + " (" + region.getArea() + ").");
+        } else {
+            player.print("Radius set to " + region.getRadius() + ".");
+        }
+
+        //session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getRadius(), getArea()));
+        describeCUI(player); // TEMP!
+    }
+}

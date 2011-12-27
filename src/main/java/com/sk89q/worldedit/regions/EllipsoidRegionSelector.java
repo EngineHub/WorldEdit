@@ -35,27 +35,24 @@ import com.sk89q.worldedit.cui.SelectionPointEvent;
  *
  * @author sk89q
  */
-public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion {
-    protected BlockVector pos1;
-    protected BlockVector pos2;
-    protected CuboidRegion region;
+public class EllipsoidRegionSelector implements RegionSelector, CUIPointBasedRegion {
+    protected EllipsoidRegion region;
 
-    public CuboidRegionSelector(LocalWorld world) {
-        region = new CuboidRegion(world, new Vector(), new Vector());
+    public EllipsoidRegionSelector(LocalWorld world) {
+        region = new EllipsoidRegion(world, new Vector(), new Vector());
     }
 
-    public CuboidRegionSelector() {
+    public EllipsoidRegionSelector() {
         this((LocalWorld) null);
     }
 
-    public CuboidRegionSelector(RegionSelector oldSelector) {
+    public EllipsoidRegionSelector(RegionSelector oldSelector) {
         this(oldSelector.getIncompleteRegion().getWorld());
-        if (oldSelector instanceof CuboidRegionSelector) {
-            final CuboidRegionSelector cuboidRegionSelector = (CuboidRegionSelector) oldSelector;
+        if (oldSelector instanceof EllipsoidRegionSelector) {
+            final EllipsoidRegionSelector ellipsoidRegionSelector = (EllipsoidRegionSelector) oldSelector;
 
-            pos1 = cuboidRegionSelector.pos1;
-            pos2 = cuboidRegionSelector.pos2;
-        } else {
+            region = new EllipsoidRegion(ellipsoidRegionSelector.getIncompleteRegion());
+        }/* else {
             final Region oldRegion;
             try {
                 oldRegion = oldSelector.getRegion();
@@ -68,91 +65,74 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         }
 
         region.setPos1(pos1);
-        region.setPos2(pos2);
+        region.setPos2(pos2);*/
     }
 
     public boolean selectPrimary(Vector pos) {
-        if (pos.equals(pos1)) {
+        if (pos.equals(region.getCenter()) && region.getRadius().lengthSq() == 0) {
             return false;
         }
 
-        pos1 = pos.toBlockVector();
-        region.setPos1(pos1);
+        region.setCenter(pos.toBlockVector());
+        region.setRadius(new Vector());
         return true;
     }
 
     public boolean selectSecondary(Vector pos) {
-        if (pos.equals(pos2)) {
-            return false;
-        }
-
-        pos2 = pos.toBlockVector();
-        region.setPos2(pos2);
+        final Vector diff = pos.subtract(region.getCenter());
+        final Vector minRadius = Vector.getMaximum(diff, diff.multiply(-1.0));
+        region.extendRadius(minRadius);
         return true;
     }
 
     public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector pos) {
-        if (pos1 != null && pos2 != null) {
-            player.print("First position set to " + pos1 + " (" + region.getArea() + ").");
+        if (isDefined()) {
+            player.print("Center position set to " + region.getCenter() + " (" + region.getArea() + ").");
         } else {
-            player.print("First position set to " + pos1 + ".");
+            player.print("Center position set to " + region.getCenter() + ".");
         }
 
-        session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos, getArea()));
+        //session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getCenter(), getArea()));
+        describeCUI(player); // TEMP!
     }
 
     public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
-        if (pos1 != null && pos2 != null) {
-            player.print("Second position set to " + pos2 + " (" + region.getArea() + ").");
+        if (isDefined()) {
+            player.print("Radius set to " + region.getRadius() + " (" + region.getArea() + ").");
         } else {
-            player.print("Second position set to " + pos2 + ".");
+            player.print("Radius set to " + region.getRadius() + ".");
         }
 
-        session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos, getArea()));
+        //session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getRadius(), getArea()));
+        describeCUI(player); // TEMP!
     }
 
     public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
-        if (pos1 != null) {
-            session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos1, getArea()));
-        }
-
-        if (pos2 != null) {
-            session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos2, getArea()));
-        }
-    }
-
-    public BlockVector getPrimaryPosition() throws IncompleteRegionException {
-        if (pos1 == null) {
-            throw new IncompleteRegionException();
-        }
-
-        return pos1;
+        describeCUI(player);
     }
 
     public boolean isDefined() {
-        return pos1 != null && pos2 != null;
+        return region.getRadius().lengthSq() > 0;
     }
 
-    public CuboidRegion getRegion() throws IncompleteRegionException {
-        if (pos1 == null || pos2 == null) {
+    public EllipsoidRegion getRegion() throws IncompleteRegionException {
+        if (!isDefined()) {
             throw new IncompleteRegionException();
         }
 
         return region;
     }
 
-    public CuboidRegion getIncompleteRegion() {
+    public EllipsoidRegion getIncompleteRegion() {
         return region;
     }
 
     public void learnChanges() {
-        pos1 = region.getPos1().toBlockVector();
-        pos2 = region.getPos2().toBlockVector();
     }
 
     public void clear() {
-        pos1 = null;
-        pos2 = null;
+        region.setCenter(new Vector());
+        region.setRadius(new Vector());
     }
 
     public String getTypeName() {
@@ -162,40 +142,37 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
     public List<String> getInformationLines() {
         final List<String> lines = new ArrayList<String>();
 
-        if (pos1 != null) {
-            lines.add("Position 1: " + pos1);
+        final Vector center = region.getCenter();
+        if (center.lengthSq() > 0) {
+            lines.add("Center: " + center);
         }
 
-        if (pos2 != null) {
-            lines.add("Position 2: " + pos2);
+        final Vector radius = region.getRadius();
+        if (radius.lengthSq() > 0) {
+            lines.add("X/Y/Z radius: " + radius);
         }
 
         return lines;
     }
 
     public String getTypeId() {
+        // TEMP: temporarily showing ellipsoids as cuboids
         return "cuboid";
     }
 
     public void describeCUI(LocalPlayer player) {
-        if (pos1 != null) {
-            player.dispatchCUIEvent(new SelectionPointEvent(0, pos1, getArea()));
-        }
+        // TEMP: temporarily showing ellipsoids as cuboids
+        player.dispatchCUIEvent(new SelectionPointEvent(0, region.getMinimumPoint(), getArea()));
+        player.dispatchCUIEvent(new SelectionPointEvent(1, region.getMaximumPoint(), getArea()));
 
-        if (pos2 != null) {
-            player.dispatchCUIEvent(new SelectionPointEvent(1, pos2, getArea()));
-        }
     }
 
     public int getArea() {
-        if (pos1 == null) {
-            return -1;
-        }
-
-        if (pos2 == null) {
-            return -1;
-        }
-
         return region.getArea();
+    }
+
+    @Override
+    public BlockVector getPrimaryPosition() throws IncompleteRegionException {
+        return region.getCenter().toBlockVector();
     }
 }
