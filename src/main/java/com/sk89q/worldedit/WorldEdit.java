@@ -718,7 +718,7 @@ public class WorldEdit {
     private File getSafeFile(LocalPlayer player, File dir, String filename,
             String defaultExt, String[] extensions, boolean isSave)
             throws FilenameException {
-        if (extensions.length == 1 && extensions[0] == null) extensions = null;
+        if (extensions != null && (extensions.length == 1 && extensions[0] == null)) extensions = null;
 
         File f;
 
@@ -1258,6 +1258,7 @@ public class WorldEdit {
             } catch (WrappedCommandException e) {
                 throw e.getCause();
             } catch (UnhandledCommandException e) {
+                player.printError("Command could not be handled; invalid sender!");
                 return false;
             } finally {
                 session.remember(editSession);
