@@ -37,6 +37,8 @@ import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.cui.CUIPointBasedRegion;
 import com.sk89q.worldedit.cui.CUIEvent;
 import com.sk89q.worldedit.cui.SelectionShapeEvent;
+import com.sk89q.worldedit.cui.UpdateEvent;
+import com.sk89q.worldedit.cui.VersionEvent;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.Region;
@@ -557,6 +559,7 @@ public class LocalSession {
     public void dispatchCUISetup(LocalPlayer player) {
         if (selector != null) {
             dispatchCUISelection(player);
+            dispatchCUIWEVersion(player);
         }
     }
 
@@ -575,6 +578,21 @@ public class LocalSession {
         if (selector instanceof CUIPointBasedRegion) {
             ((CUIPointBasedRegion) selector).describeCUI(player);
         }
+    }
+    
+    /**
+     * Send the information about the WorldEdit version to the player.
+     *
+     * @param player
+     */
+    public void dispatchCUIWEVersion(LocalPlayer player) {
+        if (!hasCUISupport) {
+            return;
+        }
+
+        player.dispatchCUIEvent(new UpdateEvent());
+        player.dispatchCUIEvent(new VersionEvent(WorldEdit.getVersion()));
+
     }
 
     /**
