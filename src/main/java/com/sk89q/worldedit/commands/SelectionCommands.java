@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandAlias;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
@@ -603,6 +604,7 @@ public class SelectionCommands {
         if (args.argsLength() == 0) {
             session.getRegionSelector(world).clear();
             session.dispatchCUISelection(player);
+            player.print("Selection cleared.");
             return;
         }
 
@@ -625,5 +627,11 @@ public class SelectionCommands {
         }
         session.setRegionSelector(world, selector);
         session.dispatchCUISelection(player);
+    }
+
+    @Command(aliases = {"/desel", "/deselect"}, desc = "Deselect the current selection")
+    @CommandAlias("/sel")
+    public void deselect() {
+
     }
 }
