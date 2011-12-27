@@ -20,6 +20,10 @@
 package com.sk89q.worldedit.cui;
 
 public interface CUIEvent {
+
+    // The required protocol versions for communicating with the CUI
+    public static final int MIN_PROTOCOL = 0, CURRENT_PROTOCOL = 0;
+
     public String getTypeId();
 
     public String[] getParameters();
