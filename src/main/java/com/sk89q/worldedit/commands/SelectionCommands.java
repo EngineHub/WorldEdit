@@ -602,6 +602,7 @@ public class SelectionCommands {
         final LocalWorld world = player.getWorld();
         if (args.argsLength() == 0) {
             session.getRegionSelector(world).clear();
+            session.dispatchCUISelection(player);
             return;
         }
 
