@@ -41,7 +41,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
     protected CuboidRegion region;
 
     public CuboidRegionSelector(LocalWorld world) {
-       region = new CuboidRegion(world, new Vector(), new Vector());
+        region = new CuboidRegion(world, new Vector(), new Vector());
     }
 
     public CuboidRegionSelector() {
