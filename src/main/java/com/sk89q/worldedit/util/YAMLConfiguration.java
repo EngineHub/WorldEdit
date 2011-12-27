@@ -94,7 +94,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         LocalSession.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;
 
         String snapshotsDir = config.getString("snapshots.directory", "");
-        if (!snapshotsDir.isEmpty()) {
+        if (snapshotsDir.length() > 0) {
             snapshotRepo = new SnapshotRepository(snapshotsDir);
         }
 

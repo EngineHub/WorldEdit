@@ -139,7 +139,7 @@ public class Lexer {
             final Matcher numberMatcher = numberPattern.matcher(expression.substring(position));
             if (numberMatcher.lookingAt()) {
                 String numberPart = numberMatcher.group(1);
-                if (!numberPart.isEmpty()) {
+                if (numberPart.length() > 0) {
                     try {
                         tokens.add(new NumberToken(position, Double.parseDouble(numberPart)));
                     } catch (NumberFormatException e) {
@@ -154,7 +154,7 @@ public class Lexer {
             final Matcher identifierMatcher = identifierPattern.matcher(expression.substring(position));
             if (identifierMatcher.lookingAt()) {
                 String identifierPart = identifierMatcher.group(1);
-                if (!identifierPart.isEmpty()) {
+                if (identifierPart.length() > 0) {
                     if (keywords.contains(identifierPart)) {
                         tokens.add(new KeywordToken(position, identifierPart));
                     } else {

@@ -99,7 +99,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 
         String snapshotsDir = getString("snapshots-dir", "");
-        if (!snapshotsDir.isEmpty()) {
+        if (snapshotsDir.length() > 0) {
             snapshotRepo = new SnapshotRepository(snapshotsDir);
         }
 

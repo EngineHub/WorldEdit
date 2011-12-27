@@ -298,7 +298,7 @@ public abstract class CommandsManager<T> {
         command.append(getArguments(cmd));
 
         final String help = cmd.help();
-        if (!help.isEmpty()) {
+        if (help.length() > 0) {
             command.append("\n\n");
             command.append(help);
         }
