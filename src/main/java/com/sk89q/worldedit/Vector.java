@@ -437,12 +437,19 @@ public class Vector {
     /**
      * Get the length of the vector.
      *
-     * @return distance
+     * @return length
      */
     public double length() {
-        return Math.sqrt(Math.pow(x, 2) +
-                Math.pow(y, 2) +
-                Math.pow(z, 2));
+        return Math.sqrt(x * x + y * y + z * z);
+    }
+
+    /**
+     * Get the length^2 of the vector.
+     *
+     * @return length^2
+     */
+    public double lengthSq() {
+        return x * x + y * y + z * z;
     }
 
     /**
