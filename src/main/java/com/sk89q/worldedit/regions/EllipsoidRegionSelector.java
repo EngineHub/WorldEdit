@@ -28,7 +28,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.cui.CUIPointBasedRegion;
-import com.sk89q.worldedit.cui.SelectionEllipsoidPointEvent;
+import com.sk89q.worldedit.cui.SelectionEllipsoidEvent;
 import com.sk89q.worldedit.cui.SelectionPointEvent;
 
 /**
@@ -93,7 +93,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIPointBasedReg
             player.print("Center position set to " + region.getCenter() + ".");
         }
 
-        session.dispatchCUIEvent(player, new SelectionEllipsoidPointEvent(0, region.getCenter(), getArea()));
+        session.dispatchCUIEvent(player, new SelectionEllipsoidEvent(0, region.getCenter()));
         legacyDescribeCUI(player, session);
     }
 
@@ -104,7 +104,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIPointBasedReg
             player.print("Radius set to " + region.getRadius() + ".");
         }
 
-        session.dispatchCUIEvent(player, new SelectionEllipsoidPointEvent(1, region.getRadius(), getArea()));
+        session.dispatchCUIEvent(player, new SelectionEllipsoidEvent(1, region.getRadius()));
         legacyDescribeCUI(player, session);
     }
 
@@ -161,8 +161,8 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIPointBasedReg
     }
 
     public void describeCUI(LocalPlayer player) {
-        player.dispatchCUIEvent(new SelectionEllipsoidPointEvent(0, region.getCenter(), getArea()));
-        player.dispatchCUIEvent(new SelectionEllipsoidPointEvent(1, region.getRadius(), getArea()));
+        player.dispatchCUIEvent(new SelectionEllipsoidEvent(0, region.getCenter()));
+        player.dispatchCUIEvent(new SelectionEllipsoidEvent(1, region.getRadius()));
         legacyDescribeCUI(player);
     }
 
