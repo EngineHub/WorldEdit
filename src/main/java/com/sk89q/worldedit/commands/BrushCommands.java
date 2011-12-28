@@ -36,12 +36,7 @@ import com.sk89q.worldedit.masks.BlockTypeMask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.tools.BrushTool;
-import com.sk89q.worldedit.tools.brushes.ClipboardBrush;
-import com.sk89q.worldedit.tools.brushes.CylinderBrush;
-import com.sk89q.worldedit.tools.brushes.HollowCylinderBrush;
-import com.sk89q.worldedit.tools.brushes.HollowSphereBrush;
-import com.sk89q.worldedit.tools.brushes.SmoothBrush;
-import com.sk89q.worldedit.tools.brushes.SphereBrush;
+import com.sk89q.worldedit.tools.brushes.*;
 
 /**
  * Brush shape commands.
@@ -242,6 +237,39 @@ public class BrushCommands {
         tool.setBrush(new SphereBrush(), "worldedit.brush.ex");
 
         player.print(String.format("Extinguisher equipped (%.0f).",
+                radius));
+    }
+
+    @Command(
+            aliases = { "gravity", "grav" },
+            usage = "[radius]",
+            flags = "h",
+            desc = "Gravity brush",
+            help =
+                "This brush simulates the affect of gravity.\n" +
+                "The -h flag makes it affect blocks starting at the world's max y, " +
+                    "instead of the clicked block's y + radius.",
+            min = 0,
+            max = 1
+    )
+    @CommandPermissions("worldedit.brush.gravity")
+    public void gravityBrush(CommandContext args, LocalSession session,
+                                LocalPlayer player, EditSession editSession) throws WorldEditException {
+
+        LocalConfiguration config = we.getConfiguration();
+
+        double radius = args.argsLength() > 0 ? args.getDouble(0) : 5;
+        if (radius > config.maxBrushRadius) {
+            player.printError("Maximum allowed brush radius: "
+                    + config.maxBrushRadius);
+            return;
+        }
+
+        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        tool.setSize(radius);
+        tool.setBrush(new GravityBrush(args.hasFlag('h')), "worldedit.brush.gravity");
+
+        player.print(String.format("Gravity brush equipped (%.0f).",
                 radius));
     }
 }
