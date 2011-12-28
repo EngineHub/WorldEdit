@@ -28,6 +28,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.cui.CUIPointBasedRegion;
+import com.sk89q.worldedit.cui.SelectionEllipsoidPointEvent;
 import com.sk89q.worldedit.cui.SelectionPointEvent;
 
 /**
@@ -92,8 +93,8 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIPointBasedReg
             player.print("Center position set to " + region.getCenter() + ".");
         }
 
-        //session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getCenter(), getArea()));
-        describeCUI(player); // TEMP!
+        session.dispatchCUIEvent(player, new SelectionEllipsoidPointEvent(0, region.getCenter(), getArea()));
+        legacyDescribeCUI(player, session);
     }
 
     public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
@@ -103,12 +104,12 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIPointBasedReg
             player.print("Radius set to " + region.getRadius() + ".");
         }
 
-        //session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getRadius(), getArea()));
-        describeCUI(player); // TEMP!
+        session.dispatchCUIEvent(player, new SelectionEllipsoidPointEvent(1, region.getRadius(), getArea()));
+        legacyDescribeCUI(player, session);
     }
 
     public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
-        describeCUI(player);
+        legacyDescribeCUI(player, session);
     }
 
     public boolean isDefined() {
@@ -136,7 +137,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIPointBasedReg
     }
 
     public String getTypeName() {
-        return "cuboid";
+        return "ellipsoid";
     }
 
     public List<String> getInformationLines() {
@@ -156,15 +157,25 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIPointBasedReg
     }
 
     public String getTypeId() {
-        // TEMP: temporarily showing ellipsoids as cuboids
-        return "cuboid";
+        return "ellipsoid";
     }
 
     public void describeCUI(LocalPlayer player) {
-        // TEMP: temporarily showing ellipsoids as cuboids
+        player.dispatchCUIEvent(new SelectionEllipsoidPointEvent(0, region.getCenter(), getArea()));
+        player.dispatchCUIEvent(new SelectionEllipsoidPointEvent(1, region.getRadius(), getArea()));
+        legacyDescribeCUI(player);
+    }
+
+    private void legacyDescribeCUI(LocalPlayer player, LocalSession session) {
+        if (!session.hasCUISupport()) {
+            return;
+        }
+
+        legacyDescribeCUI(player);
+    }
+    private void legacyDescribeCUI(LocalPlayer player) {
         player.dispatchCUIEvent(new SelectionPointEvent(0, region.getMinimumPoint(), getArea()));
         player.dispatchCUIEvent(new SelectionPointEvent(1, region.getMaximumPoint(), getArea()));
-
     }
 
     public int getArea() {

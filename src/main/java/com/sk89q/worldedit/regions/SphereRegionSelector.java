@@ -64,4 +64,9 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
         //session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getRadius(), getArea()));
         describeCUI(player); // TEMP!
     }
+
+    @Override
+    public String getTypeName() {
+        return "sphere";
+    }
 }
