@@ -97,6 +97,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIPointBasedReg
         session.dispatchCUIEvent(player, new SelectionShapeEvent(getTypeId()));
         session.dispatchCUIEvent(player, new SelectionEllipsoidEvent(0, region.getCenter()));
         legacyDescribeCUI(player, session);
+        
     }
 
     public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
