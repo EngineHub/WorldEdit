@@ -30,6 +30,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.cui.CUIPointBasedRegion;
 import com.sk89q.worldedit.cui.SelectionEllipsoidEvent;
 import com.sk89q.worldedit.cui.SelectionPointEvent;
+import com.sk89q.worldedit.cui.SelectionShapeEvent;
 
 /**
  * Selector for cuboids.
@@ -93,6 +94,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIPointBasedReg
             player.print("Center position set to " + region.getCenter() + ".");
         }
 
+        session.dispatchCUIEvent(player, new SelectionShapeEvent(getTypeId()));
         session.dispatchCUIEvent(player, new SelectionEllipsoidEvent(0, region.getCenter()));
         legacyDescribeCUI(player, session);
     }
