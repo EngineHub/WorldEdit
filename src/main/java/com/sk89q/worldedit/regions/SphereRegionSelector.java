@@ -15,8 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+ */
 package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.LocalPlayer;
@@ -30,6 +29,7 @@ import com.sk89q.worldedit.Vector;
  * @author sk89q
  */
 public class SphereRegionSelector extends EllipsoidRegionSelector {
+
     public SphereRegionSelector(LocalWorld world) {
         super(world);
     }
