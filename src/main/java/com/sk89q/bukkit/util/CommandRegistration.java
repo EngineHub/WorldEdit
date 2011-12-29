@@ -27,6 +27,7 @@ import java.util.Set;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.util.ReflectionUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.Event;
@@ -37,10 +38,16 @@ import org.bukkit.plugin.Plugin;
  */
 public class CommandRegistration {
 	private final Plugin plugin;
+    private final CommandExecutor executor;
 	private CommandMap fallbackCommands;
 
     public CommandRegistration(Plugin plugin) {
+        this(plugin, plugin);
+    }
+
+    public CommandRegistration(Plugin plugin, CommandExecutor executor) {
         this.plugin = plugin;
+        this.executor = executor;
     }
     
     public boolean registerAll(List<Command> registered) {
@@ -49,12 +56,13 @@ public class CommandRegistration {
             return false;
         }
         for (Command command : registered) {
-            commandMap.register(plugin.getDescription().getName(), new DynamicPluginCommand(command, plugin));
+            commandMap.register(plugin.getDescription().getName(),
+                    new DynamicPluginCommand(command.aliases(), command.desc(), command.usage(), executor));
         }
         return true;
     }
 
-    private CommandMap getCommandMap() {
+    public CommandMap getCommandMap() {
         CommandMap commandMap = ReflectionUtil.getField(plugin.getServer().getPluginManager(), "commandMap");
         if (commandMap == null) {
             if (fallbackCommands != null) {
@@ -80,7 +88,7 @@ public class CommandRegistration {
         }
         for (Iterator<org.bukkit.command.Command> i = knownCommands.values().iterator(); i.hasNext();) {
             org.bukkit.command.Command cmd = i.next();
-            if (cmd instanceof DynamicPluginCommand && ((DynamicPluginCommand) cmd).getPlugin().equals(plugin)) {
+            if (cmd instanceof DynamicPluginCommand && ((DynamicPluginCommand) cmd).getOwner().equals(plugin)) {
                 i.remove();
                 for (String alias : cmd.getAliases()) {
                     org.bukkit.command.Command aliasCmd = knownCommands.get(alias);

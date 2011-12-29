@@ -19,6 +19,7 @@
 package com.sk89q.bukkit.util;
 
 import com.sk89q.minecraft.util.commands.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
@@ -29,19 +30,19 @@ import java.util.Arrays;
 */
 public class DynamicPluginCommand extends org.bukkit.command.Command {
 
-    protected final Plugin plugin;
+    protected final CommandExecutor owner;
 
-    public DynamicPluginCommand(Command command, Plugin plugin) {
-        super(command.aliases()[0], command.desc(), command.usage(), Arrays.asList(command.aliases()));
-        this.plugin = plugin;
+    public DynamicPluginCommand(String[] aliases, String desc, String usage, CommandExecutor owner) {
+        super(aliases[0], desc, usage, Arrays.asList(aliases));
+        this.owner = owner;
     }
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
-        return plugin.onCommand(sender, this, label, args);
+        return owner.onCommand(sender, this, label, args);
     }
     
-    public Plugin getPlugin() {
-        return plugin;
+    public Object getOwner() {
+        return owner;
     }
 }

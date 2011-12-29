@@ -20,6 +20,7 @@ package com.sk89q.bukkit.util;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandsManager;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
@@ -32,6 +33,11 @@ public class CommandsManagerRegistration extends CommandRegistration {
 
     public CommandsManagerRegistration(Plugin plugin, CommandsManager<?> commands) {
         super(plugin);
+        this.commands = commands;
+    }
+
+    public CommandsManagerRegistration(Plugin plugin, CommandExecutor executor, CommandsManager<?> commands) {
+        super(plugin, executor);
         this.commands = commands;
     }
 
