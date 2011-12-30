@@ -178,6 +178,10 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIPointBasedR
         return "polygon2d";
     }
 
+    public String getLegacyTypeId() {
+        return null;
+    }
+
     public int getArea() {
         return region.getArea();
     }

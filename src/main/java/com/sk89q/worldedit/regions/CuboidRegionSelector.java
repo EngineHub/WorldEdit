@@ -177,6 +177,10 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         return "cuboid";
     }
 
+    public String getLegacyTypeId() {
+        return null;
+    }
+
     public void describeCUI(LocalPlayer player) {
         if (pos1 != null) {
             player.dispatchCUIEvent(new SelectionPointEvent(0, pos1, getArea()));

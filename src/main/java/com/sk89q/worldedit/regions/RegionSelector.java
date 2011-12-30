@@ -132,11 +132,18 @@ public interface RegionSelector {
     public String getTypeName();
 
     /**
-     * Get a lowecase space-less ID.
+     * Get a lowercase space-less ID.
      * 
      * @return
      */
     public String getTypeId();
+
+    /**
+     * Gets an alternative ID, for which this region selector also sends data.
+     * 
+     * @return
+     */
+    public String getLegacyTypeId();
 
     /**
      * Get lines of information about the selection.
