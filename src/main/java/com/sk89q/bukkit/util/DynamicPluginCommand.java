@@ -18,11 +18,8 @@
 
 package com.sk89q.bukkit.util;
 
-import com.sk89q.minecraft.util.commands.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
-
 import java.util.Arrays;
 
 /**
