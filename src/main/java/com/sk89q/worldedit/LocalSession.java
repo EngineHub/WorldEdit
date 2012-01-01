@@ -571,10 +571,6 @@ public class LocalSession {
             return;
         }
 
-        final String legacyTypeId = selector.getLegacyTypeId();
-        if (legacyTypeId != null) {
-            player.dispatchCUIEvent(new SelectionShapeEvent(legacyTypeId));
-        }
         player.dispatchCUIEvent(new SelectionShapeEvent(selector.getTypeId()));
 
         if (selector instanceof CUIPointBasedRegion) {
