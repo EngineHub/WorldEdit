@@ -23,7 +23,6 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.cui.SelectionEllipsoidPointEvent;
 
 /**
  * Selector for spheres.
@@ -65,8 +64,7 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
             player.print("Radius set to " + region.getRadius().getX() + ".");
         }
 
-        session.dispatchCUIEvent(player, new SelectionEllipsoidPointEvent(1, region.getRadius()));
-        legacyDescribeCUI(player, session);
+        session.describeCUI(player);
     }
 
     @Override
