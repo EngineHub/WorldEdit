@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit.selections;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.sk89q.worldedit.BlockVector;
@@ -52,13 +53,14 @@ public class Polygonal2DSelection extends RegionSelection {
         Polygonal2DRegionSelector sel = new Polygonal2DRegionSelector(lWorld);
         poly2d = new Polygonal2DRegion(lWorld, points, minY, maxY);
 
-        BlockVector2D pt = points.get(0);
+        Iterator<BlockVector2D> it = points.iterator();
+        BlockVector2D pt = it.next();
         sel.selectPrimary(new BlockVector(pt.getBlockX(), minY, pt.getBlockZ()));
 
-        for (int i=1; i<points.size(); i++) {
-            pt = points.get(i);
+        do {
+            pt = it.next();
             sel.selectSecondary(new BlockVector(pt.getBlockX(), maxY, pt.getBlockZ()));
-        }
+        } while (it.hasNext());
 
         setRegionSelector(sel);
         setRegion(poly2d);
