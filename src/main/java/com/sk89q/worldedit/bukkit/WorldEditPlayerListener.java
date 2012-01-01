@@ -24,6 +24,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
@@ -32,15 +33,17 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldVector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Handles all events thrown in relation to a Player
  */
 public class WorldEditPlayerListener extends PlayerListener {
-    /**
-     * Plugin.
-     */
+    
     private WorldEditPlugin plugin;
+    private boolean ignoreLeftClickAir = false;
+    private final static Pattern cuipattern = Pattern.compile("u00a74u00a75u00a73u00a74([^|]*)\\|?(.*)");
 
     /**
      * Called when a player plays an animation, such as an arm swing
@@ -59,6 +62,7 @@ public class WorldEditPlayerListener extends PlayerListener {
         plugin.registerEvent("PLAYER_QUIT", this);
         plugin.registerEvent("PLAYER_INTERACT", this);
         plugin.registerEvent("PLAYER_COMMAND_PREPROCESS", this, Event.Priority.Low);
+        plugin.registerEvent("PLAYER_CHAT", this);
     }
 
     /**
@@ -91,8 +95,6 @@ public class WorldEditPlayerListener extends PlayerListener {
 
         event.setMessage(StringUtil.joinString(split, " "));
     }
-
-    private boolean ignoreLeftClickAir = false;
 
     /**
      * Called when a player interacts
@@ -160,6 +162,28 @@ public class WorldEditPlayerListener extends PlayerListener {
             if (we.handleRightClick(player)) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @Override
+    public void onPlayerChat(PlayerChatEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        
+        Matcher matcher = cuipattern.matcher(event.getMessage());
+        if (matcher.find()) {
+            String type = matcher.group(1);
+            String args = matcher.group(2);
+            
+            if( type.equals("v") ) {
+                try {
+                    plugin.getSession(event.getPlayer()).setCUIVersion(Integer.parseInt(args));
+                    event.setCancelled(true);
+                } catch( NumberFormatException e ) {
+                }
+            }
+            
         }
     }
 }
