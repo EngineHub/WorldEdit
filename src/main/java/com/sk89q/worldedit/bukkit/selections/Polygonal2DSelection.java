@@ -41,13 +41,17 @@ public class Polygonal2DSelection extends RegionSelection {
         super(world);
         LocalWorld lWorld = BukkitUtil.getLocalWorld(world);
 
+        // Validate input
         minY = Math.min(Math.max(0, minY), world.getMaxHeight());
         maxY = Math.min(Math.max(0, maxY), world.getMaxHeight());
 
-        Polygonal2DRegionSelector sel = new Polygonal2DRegionSelector(BukkitUtil.getLocalWorld(world));
-        poly2d = new Polygonal2DRegion(lWorld, points, minY, maxY);
-        sel.learnChanges();
+        // Create and set up new selector
+        Polygonal2DRegionSelector sel = new Polygonal2DRegionSelector(lWorld, points, minY, maxY);
 
+        // set up CuboidSelection
+        poly2d = sel.getIncompleteRegion();
+
+        // set up RegionSelection
         setRegionSelector(sel);
         setRegion(poly2d);
     }

@@ -80,6 +80,12 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
         }
     }
 
+    public Polygonal2DRegionSelector(LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
+        final BlockVector2D pos2D = points.get(0);
+        pos1 = new BlockVector(pos2D.getX(), minY, pos2D.getZ());
+        region = new Polygonal2DRegion(world, points, minY, maxY);
+    }
+
     public boolean selectPrimary(Vector pos) {
         if (pos.equals(pos1)) {
             return false;

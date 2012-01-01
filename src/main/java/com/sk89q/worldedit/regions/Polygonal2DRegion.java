@@ -76,7 +76,7 @@ public class Polygonal2DRegion implements Region {
      * @param maxY
      */
     public Polygonal2DRegion(LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
-        this.points = points;
+        this.points = new ArrayList<BlockVector2D>(points);
         this.minY = minY;
         this.maxY = maxY;
         hasY = true;

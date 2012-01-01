@@ -21,7 +21,6 @@ package com.sk89q.worldedit.bukkit.selections;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.*;
@@ -37,6 +36,7 @@ public class CuboidSelection extends RegionSelection {
     public CuboidSelection(World world, Vector pt1, Vector pt2) {
         super(world);
 
+        // Validate input
         if (pt1 == null) {
             throw new IllegalArgumentException("Null point 1 not permitted");
         }
@@ -44,17 +44,18 @@ public class CuboidSelection extends RegionSelection {
         if (pt2 == null) {
             throw new IllegalArgumentException("Null point 2 not permitted");
         }
-        
+
+        // Create new selector
         CuboidRegionSelector sel = new CuboidRegionSelector(BukkitUtil.getLocalWorld(world));
+
+        // set up selector
         sel.selectPrimary(pt1);
         sel.selectSecondary(pt2);
 
-        try {
-            cuboid = sel.getRegion();
-        } catch (IncompleteRegionException e) {
-            throw new RuntimeException("IncompleteRegionException unexpectedly thrown");
-        }
+        // set up CuboidSelection
+        cuboid = sel.getIncompleteRegion();
 
+        // set up RegionSelection
         setRegionSelector(sel);
         setRegion(cuboid);
     }
