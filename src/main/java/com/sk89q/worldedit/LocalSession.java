@@ -71,6 +71,7 @@ public class LocalSession {
     private String lastScript;
     private boolean beenToldVersion = false;
     private boolean hasCUISupport = false;
+    private int cuiVersion = -1;
     private boolean fastMode = false;
     private Mask mask;
     private TimeZone timezone = TimeZone.getDefault();
@@ -597,6 +598,24 @@ public class LocalSession {
      */
     public void setCUISupport(boolean support) {
         hasCUISupport = true;
+    }
+
+    /**
+     * Gets the client's CUI protocol version
+     * 
+     * @return 
+     */
+    public int getCUIVersion() {
+        return cuiVersion;
+    }
+
+    /**
+     * Sets the client's CUI protocol version
+     * 
+     * @param CUIVersion 
+     */
+    public void setCUIVersion(int CUIVersion) {
+        this.cuiVersion = CUIVersion;
     }
 
     /**
