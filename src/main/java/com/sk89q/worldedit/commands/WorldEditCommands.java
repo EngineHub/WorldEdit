@@ -32,7 +32,6 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.cui.CUIEvent;
 
 public class WorldEditCommands {
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
@@ -79,13 +78,10 @@ public class WorldEditCommands {
         usage = "",
         desc = "Complete CUI handshake",
         min = 0,
-        max = 1
+        max = 0
     )
     public void cui(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        if (args.getInteger(0, -1) < CUIEvent.MIN_PROTOCOL) {
-            player.printError("You are using an outdated version of WorldEdit CUI! The CUI may have reduced functionality until you update.");
-        }
         session.setCUISupport(true);
         session.dispatchCUISetup(player);
     }

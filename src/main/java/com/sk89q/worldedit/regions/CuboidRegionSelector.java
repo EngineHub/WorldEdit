@@ -27,7 +27,7 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.cui.CUIPointBasedRegion;
+import com.sk89q.worldedit.cui.CUIRegion;
 import com.sk89q.worldedit.cui.SelectionPointEvent;
 
 /**
@@ -35,7 +35,7 @@ import com.sk89q.worldedit.cui.SelectionPointEvent;
  *
  * @author sk89q
  */
-public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion {
+public class CuboidRegionSelector implements RegionSelector, CUIRegion {
     protected BlockVector pos1;
     protected BlockVector pos2;
     protected CuboidRegion region;
@@ -173,24 +173,6 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
         return lines;
     }
 
-    public String getTypeId() {
-        return "cuboid";
-    }
-
-    public String getLegacyTypeId() {
-        return null;
-    }
-
-    public void describeCUI(LocalPlayer player) {
-        if (pos1 != null) {
-            player.dispatchCUIEvent(new SelectionPointEvent(0, pos1, getArea()));
-        }
-
-        if (pos2 != null) {
-            player.dispatchCUIEvent(new SelectionPointEvent(1, pos2, getArea()));
-        }
-    }
-
     public int getArea() {
         if (pos1 == null) {
             return -1;
@@ -202,4 +184,32 @@ public class CuboidRegionSelector implements RegionSelector, CUIPointBasedRegion
 
         return region.getArea();
     }
+
+    public void describeCUI(LocalSession session, LocalPlayer player) {
+        if (pos1 != null) {
+            session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos1, getArea()));
+        }
+
+        if (pos2 != null) {
+            session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos2, getArea()));
+        }
+    }
+
+    public void describeLegacyCUI(LocalSession session, LocalPlayer player) {
+        describeCUI(session, player);
+    }
+
+    public int getProtocolVersion() {
+        return 0;
+    }
+
+    public String getTypeID() {
+        return "cuboid";
+    }
+
+    public String getLegacyTypeID() {
+        return "cuboid";
+    }
+
+    
 }

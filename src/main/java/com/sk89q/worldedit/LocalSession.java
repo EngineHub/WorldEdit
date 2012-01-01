@@ -34,7 +34,7 @@ import com.sk89q.worldedit.tools.SinglePickaxe;
 import com.sk89q.worldedit.tools.BlockTool;
 import com.sk89q.worldedit.tools.Tool;
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.cui.CUIPointBasedRegion;
+import com.sk89q.worldedit.cui.CUIRegion;
 import com.sk89q.worldedit.cui.CUIEvent;
 import com.sk89q.worldedit.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.masks.Mask;
@@ -71,6 +71,7 @@ public class LocalSession {
     private String lastScript;
     private boolean beenToldVersion = false;
     private boolean hasCUISupport = false;
+    private int cuiVersion = -1;
     private boolean fastMode = false;
     private Mask mask;
     private TimeZone timezone = TimeZone.getDefault();
@@ -570,14 +571,34 @@ public class LocalSession {
             return;
         }
 
-        final String legacyTypeId = selector.getLegacyTypeId();
-        if (legacyTypeId != null) {
-            player.dispatchCUIEvent(new SelectionShapeEvent(legacyTypeId));
-        }
-        player.dispatchCUIEvent(new SelectionShapeEvent(selector.getTypeId()));
+        if (selector instanceof CUIRegion) {
+            CUIRegion tempSel = (CUIRegion) selector;
 
-        if (selector instanceof CUIPointBasedRegion) {
-            ((CUIPointBasedRegion) selector).describeCUI(player);
+            if (tempSel.getProtocolVersion() > cuiVersion) {
+                player.dispatchCUIEvent(new SelectionShapeEvent(tempSel.getLegacyTypeID()));
+                tempSel.describeLegacyCUI(this, player);
+            } else {
+                player.dispatchCUIEvent(new SelectionShapeEvent(tempSel.getTypeID()));
+                tempSel.describeCUI(this, player);
+            }
+
+        }
+    }
+    
+    public void describeCUI(LocalPlayer player) {
+        if (!hasCUISupport) {
+            return;
+        }
+
+        if (selector instanceof CUIRegion) {
+            CUIRegion tempSel = (CUIRegion) selector;
+
+            if (tempSel.getProtocolVersion() > cuiVersion) {
+                tempSel.describeLegacyCUI(this, player);
+            } else {
+                tempSel.describeCUI(this, player);
+            }
+
         }
     }
 
@@ -597,6 +618,24 @@ public class LocalSession {
      */
     public void setCUISupport(boolean support) {
         hasCUISupport = true;
+    }
+
+    /**
+     * Gets the client's CUI protocol version
+     * 
+     * @return 
+     */
+    public int getCUIVersion() {
+        return cuiVersion;
+    }
+
+    /**
+     * Sets the client's CUI protocol version
+     * 
+     * @param CUIVersion 
+     */
+    public void setCUIVersion(int CUIVersion) {
+        this.cuiVersion = CUIVersion;
     }
 
     /**
