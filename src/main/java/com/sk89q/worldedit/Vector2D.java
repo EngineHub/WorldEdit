@@ -165,7 +165,7 @@ public class Vector2D {
         if (!(obj instanceof Vector2D)) {
             return false;
         }
-        Vector other = (Vector) obj;
+        Vector2D other = (Vector2D) obj;
         return other.x == this.x && other.z == this.z;
 
     }

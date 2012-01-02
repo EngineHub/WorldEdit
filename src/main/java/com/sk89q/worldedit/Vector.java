@@ -508,7 +508,7 @@ public class Vector {
     public boolean containedWithinBlock(Vector min, Vector max) {
         return getBlockX() >= min.getBlockX() && getBlockX() <= max.getBlockX()
                 && getBlockY() >= min.getBlockY() && getBlockY() <= max.getBlockY()
-                && getBlockZ() >= min.getBlockZ() && getBlockZ() <= max.getBlockY();
+                && getBlockZ() >= min.getBlockZ() && getBlockZ() <= max.getBlockZ();
     }
 
     /**
