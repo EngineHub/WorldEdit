@@ -190,4 +190,13 @@ public class Vector2D {
     public String toString() {
         return "(" + x + ", " + z + ")";
     }
+
+    /**
+     * Creates a 3D vector by adding a zero Y component to this vector.
+     *
+     * @return Vector
+     */
+    public Vector toVector() {
+        return new Vector(x, 0, z);
+    }
 }

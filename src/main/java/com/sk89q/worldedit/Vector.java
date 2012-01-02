@@ -620,6 +620,15 @@ public class Vector {
     }
 
     /**
+     * Creates a 2D vector by dropping the Y component from this vector.
+     *
+     * @return Vector2D
+     */
+    public Vector2D toVector2D() {
+        return new Vector2D(x, z);
+    }
+
+    /**
      * Gets the dot product of this and another vector.
      *
      * @param other
