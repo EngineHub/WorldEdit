@@ -37,6 +37,7 @@ import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.SphereRegionSelector;
 import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.regions.CylinderRegionSelector;
 
 /**
  * Selection commands.
@@ -593,7 +594,7 @@ public class SelectionCommands {
 
     @Command(
         aliases = { "/sel", ";" },
-        usage = "[cuboid|extend|poly|ellipsoid|sphere]",
+        usage = "[cuboid|extend|poly|ellipsoid|sphere|cyl]",
         desc = "Choose a region selector",
         min = 0,
         max = 1
@@ -628,8 +629,11 @@ public class SelectionCommands {
         } else if (typeName.equalsIgnoreCase("sphere")) {
             selector = new SphereRegionSelector(oldSelector);
             player.print("Sphere selector: left click=center, right click to extend");
+        } else if (typeName.equalsIgnoreCase("cyl")) {
+            selector = new CylinderRegionSelector(oldSelector);
+            player.print("Cylindrical selector: Left click=center, right click to extend.");
         } else {
-            player.printError("Only cuboid|extend|poly|ellipsoid|sphere are accepted.");
+            player.printError("Only cuboid|extend|poly|ellipsoid|sphere|cyl are accepted.");
             return;
         }
 
