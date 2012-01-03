@@ -473,6 +473,33 @@ public class Vector2D {
     }
 
     /**
+     * Rounds all components down.
+     *
+     * @return
+     */
+    public Vector2D floor() {
+        return new Vector2D(Math.floor(x), Math.floor(z));
+    }
+
+    /**
+     * Rounds all components up.
+     *
+     * @return
+     */
+    public Vector2D ceil() {
+        return new Vector2D(Math.ceil(x), Math.ceil(z));
+    }
+
+    /**
+     * Rounds all components to the closest integer.
+     *
+     * @return
+     */
+    public Vector2D round() {
+        return new Vector2D(Math.floor(x + 0.5), Math.floor(z + 0.5));
+    }
+
+    /**
      * 2D transformation.
      *
      * @param angle in degrees

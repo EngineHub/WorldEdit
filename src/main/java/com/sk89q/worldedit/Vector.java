@@ -547,6 +547,33 @@ public class Vector {
     }
 
     /**
+     * Rounds all components down.
+     *
+     * @return
+     */
+    public Vector floor() {
+        return new Vector(Math.floor(x), Math.floor(y), Math.floor(z));
+    }
+
+    /**
+     * Rounds all components up.
+     *
+     * @return
+     */
+    public Vector ceil() {
+        return new Vector(Math.ceil(x), Math.ceil(y), Math.ceil(z));
+    }
+
+    /**
+     * Rounds all components to the closest integer.
+     *
+     * @return
+     */
+    public Vector round() {
+        return new Vector(Math.floor(x + 0.5), Math.floor(y + 0.5), Math.floor(z + 0.5));
+    }
+
+    /**
      * 2D transformation.
      *
      * @param angle in degrees
