@@ -38,13 +38,13 @@ import com.sk89q.worldedit.data.ChunkStore;
  * @author sk89q
  */
 public class Polygonal2DRegion implements Region {
-    protected List<BlockVector2D> points;
-    protected BlockVector min;
-    protected BlockVector max;
-    protected int minY;
-    protected int maxY;
-    protected boolean hasY = false;
-    protected LocalWorld world;
+    private List<BlockVector2D> points;
+    private BlockVector min;
+    private BlockVector max;
+    private int minY;
+    private int maxY;
+    private boolean hasY = false;
+    private LocalWorld world;
 
     /**
      * Construct the region
@@ -52,7 +52,7 @@ public class Polygonal2DRegion implements Region {
     public Polygonal2DRegion() {
         this((LocalWorld) null);
     }
-    
+
     /**
      * Construct the region.
      * 
@@ -596,5 +596,13 @@ public class Polygonal2DRegion implements Region {
 
     public void setWorld(LocalWorld world) {
         this.world = world;
+    }
+
+    public int getMinY() {
+        return minY;
+    }
+
+    public int getMaxY() {
+        return maxY;
     }
 }
