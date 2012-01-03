@@ -217,55 +217,7 @@ public class EllipsoidRegion implements Region {
      * @return iterator of points inside the region
      */
     public Iterator<BlockVector> iterator() {
-        return new Iterator<BlockVector>() {
-            private Vector min = getMinimumPoint();
-            private Vector max = getMaximumPoint();
-            private int nextX = min.getBlockX();
-            private int nextY = min.getBlockY();
-            private int nextZ = min.getBlockZ();
-            {
-                forward();
-            }
-
-            public boolean hasNext() {
-                return (nextX != Integer.MIN_VALUE);
-            }
-
-            private void forward() {
-                while (hasNext() && !contains(new BlockVector(nextX, nextY, nextZ))) {
-                    forwardOne();
-                }
-            }
-
-            public BlockVector next() {
-                if (!hasNext()) throw new java.util.NoSuchElementException();
-                BlockVector answer = new BlockVector(nextX, nextY, nextZ);
-                forwardOne();
-                forward();
-                return answer;
-            }
-
-            private void forwardOne() {
-                if (++nextX <= max.getBlockX()) {
-                    return;
-                }
-                nextX = min.getBlockX();
-
-                if (++nextY <= max.getBlockY()) {
-                    return;
-                }
-                nextY = min.getBlockY();
-
-                if (++nextZ <= max.getBlockZ()) {
-                    return;
-                }
-                nextX = Integer.MIN_VALUE;
-            }
-
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
+        return new RegionIterator(this);
     }
 
     /**
