@@ -53,20 +53,21 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
             final EllipsoidRegionSelector ellipsoidRegionSelector = (EllipsoidRegionSelector) oldSelector;
 
             region = new EllipsoidRegion(ellipsoidRegionSelector.getIncompleteRegion());
-        }/* else {
-            final Region oldRegion;
+        } else {
+            Region oldRegion = null;
             try {
                 oldRegion = oldSelector.getRegion();
             } catch (IncompleteRegionException e) {
                 return;
             }
 
-            pos1 = oldRegion.getMinimumPoint().toBlockVector();
-            pos2 = oldRegion.getMaximumPoint().toBlockVector();
+            BlockVector pos1 = oldRegion.getMinimumPoint().toBlockVector();
+            BlockVector pos2 = oldRegion.getMaximumPoint().toBlockVector();
+            
+            Vector center = pos1.add(pos2).divide(2).floor();
+            region.setCenter(center);
+            region.setRadius(pos2.subtract(center));
         }
-
-        region.setPos1(pos1);
-        region.setPos2(pos2);*/
     }
 
     public boolean selectPrimary(Vector pos) {
