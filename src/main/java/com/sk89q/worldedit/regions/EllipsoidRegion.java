@@ -59,11 +59,11 @@ public class EllipsoidRegion extends AbstractRegion {
     public EllipsoidRegion(LocalWorld world, Vector center, Vector radius) {
         super(world);
         this.center = center;
-        this.radius = radius;
+        setRadius(radius);
     }
 
     public EllipsoidRegion(EllipsoidRegion ellipsoidRegion) {
-        this(ellipsoidRegion.world, ellipsoidRegion.center, ellipsoidRegion.radius);
+        this(ellipsoidRegion.world, ellipsoidRegion.center, ellipsoidRegion.getRadius());
     }
 
     /**
