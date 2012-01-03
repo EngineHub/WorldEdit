@@ -128,7 +128,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
     }
 
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
-        if (region.getCenter().equals(new Vector(0, 0, 0))) {
+        if (!isDefined()) {
             throw new IncompleteRegionException();
         }
 
@@ -180,17 +180,12 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
     }
 
     public void describeCUI(LocalSession session, LocalPlayer player) {
-        if (!region.getCenter().equals(new Vector(0, 0, 0))) {
-            session.dispatchCUIEvent(player, new SelectionCylinderEvent(region.getCenter(), region.getRadius()));
-            session.dispatchCUIEvent(player, new SelectionMinMaxEvent(region.getMinimumY(), region.getMaximumY()));
-        } else {
-            session.dispatchCUIEvent(player, new SelectionCylinderEvent(new Vector(0, 0, 0), new Vector2D(0, 0)));
-            session.dispatchCUIEvent(player, new SelectionMinMaxEvent(0, 0));
-        }
+        session.dispatchCUIEvent(player, new SelectionCylinderEvent(region.getCenter(), region.getRadius()));
+        session.dispatchCUIEvent(player, new SelectionMinMaxEvent(region.getMinimumY(), region.getMaximumY()));
     }
 
     public void describeLegacyCUI(LocalSession session, LocalPlayer player) {
-        if (!region.getCenter().equals(new Vector(0, 0, 0))) {
+        if (isDefined()) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getMinimumPoint(), getArea()));
             session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getMaximumPoint(), getArea()));
         } else {
