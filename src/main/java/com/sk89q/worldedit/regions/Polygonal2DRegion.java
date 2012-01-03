@@ -59,12 +59,8 @@ public class Polygonal2DRegion implements Region {
      * @param world
      */
     public Polygonal2DRegion(LocalWorld world) {
-        points = new ArrayList<BlockVector2D>();
-        minY = 0;
-        maxY = 0;
+        this(world, Collections.<BlockVector2D>emptyList(), 0, 0);
         hasY = false;
-        this.world = world;
-        recalculate();
     }
 
     /**
