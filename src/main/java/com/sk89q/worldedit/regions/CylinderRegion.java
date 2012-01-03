@@ -19,9 +19,7 @@
 package com.sk89q.worldedit.regions;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
@@ -32,14 +30,13 @@ import com.sk89q.worldedit.data.ChunkStore;
  *
  * @author yetanotherx
  */
-public class CylinderRegion implements Region {
-
+public class CylinderRegion extends AbstractRegion {
     private Vector center;
+    private Vector2D center2D;
     private Vector2D radius;
     private int minY;
     private int maxY;
     private boolean hasY = false;
-    private LocalWorld world;
 
     /**
      * Construct the region
@@ -54,7 +51,7 @@ public class CylinderRegion implements Region {
      * @param world
      */
     public CylinderRegion(LocalWorld world) {
-        this(world, new Vector(0, 0, 0), new Vector2D(0.5, 0.5), 0, 0);
+        this(world, new Vector(), new Vector2D(), 0, 0);
         hasY = false;
     }
 
@@ -67,26 +64,35 @@ public class CylinderRegion implements Region {
      * @param maxY
      */
     public CylinderRegion(LocalWorld world, Vector center, Vector2D radius, int minY, int maxY) {
+        super(world);
         this.center = center;
-        this.radius = radius;
+        setRadius(radius);
         this.minY = minY;
         this.maxY = maxY;
         hasY = true;
-        this.world = world;
     }
 
     public CylinderRegion(CylinderRegion region) {
-        this(region.world, region.center, region.radius, region.minY, region.maxY);
+        this(region.world, region.center, region.getRadius(), region.minY, region.maxY);
         hasY = region.hasY;
     }
 
     /**
-     * Returns the center point of the cylinder
+     * Returns the main center point of the cylinder
      * 
      * @return 
      */
     public Vector getCenter() {
         return center;
+    }
+
+    /**
+     * Sets the main center point of the region
+     * 
+     */
+    public void setCenter(Vector center) {
+        this.center = center;
+        this.center2D = center.toVector2D();
     }
 
     /**
@@ -99,29 +105,21 @@ public class CylinderRegion implements Region {
     }
 
     /**
-     * Sets the main center point of the region
-     * 
-     */
-    public void setCenter(Vector center) {
-        this.center = center;
-    }
-
-    /**
-     * Extends the radius based on a given point
-     * 
-     * @param minRadius
-     */
-    public void extendRadius(Vector2D minRadius) {
-        setRadius(Vector2D.getMaximum(minRadius, getRadius()));
-    }
-
-    /**
-     * Sets the raw radius of the cylinder
+     * Sets the radius of the cylinder
      * 
      * @param radius 
      */
     public void setRadius(Vector2D radius) {
         this.radius = radius.add(0.5, 0.5);
+    }
+
+    /**
+     * Extends the radius to be at least the given radius
+     * 
+     * @param minRadius
+     */
+    public void extendRadius(Vector2D minRadius) {
+        setRadius(Vector2D.getMaximum(minRadius, getRadius()));
     }
 
     /**
@@ -150,7 +148,7 @@ public class CylinderRegion implements Region {
      * @return min. point
      */
     public Vector getMinimumPoint() {
-        return center.setY(minY).add(-radius.getX(), 0, -radius.getZ());
+        return center2D.subtract(getRadius()).toVector(minY);
     }
 
     /**
@@ -159,7 +157,7 @@ public class CylinderRegion implements Region {
      * @return max. point
      */
     public Vector getMaximumPoint() {
-        return center.setY(maxY).add(radius.getX(), 0, radius.getZ());
+        return center2D.add(getRadius()).toVector(maxY);
     }
 
     /**
@@ -238,20 +236,37 @@ public class CylinderRegion implements Region {
      * @param change
      */
     public void contract(Vector change) throws RegionOperationException {
-        expand(change);
+        if (change.getBlockX() != 0 || change.getBlockZ() != 0) {
+            throw new RegionOperationException("Cylinders can only be expanded vertically.");
+        }
+
+        int changeY = change.getBlockY();
+        if (changeY > 0) {
+            minY += changeY;
+        } else {
+            maxY += changeY;
+        }
+    }
+
+    @Override
+    public void shift(Vector change) throws RegionOperationException {
+        setCenter(getCenter().add(change));
+
+        int changeY = change.getBlockY();
+        maxY += changeY;
+        minY += changeY;
     }
 
     /**
      * Checks to see if a point is inside this region.
      */
     public boolean contains(Vector pt) {
-        if (pt.toVector2D().subtract(center.toVector2D()).divide(radius).lengthSq() > 1) {
+        final int blockY = pt.getBlockY();
+        if (blockY < minY || blockY > maxY) {
             return false;
         }
-        if (pt.getBlockY() < minY || pt.getBlockY() > maxY) {
-            return false;
-        }
-        return true;
+
+        return pt.toVector2D().subtract(center2D).divide(radius).lengthSq() <= 1;
     }
 
     /**
@@ -266,12 +281,10 @@ public class CylinderRegion implements Region {
         Vector max = getMaximumPoint();
 
         for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
-            for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
-                for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
-                    Vector pt = new Vector(x, y, z);
-                    if (contains(pt)) { // Not the best
-                        chunks.add(ChunkStore.toChunk(pt));
-                    }
+            for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
+                Vector pt = new Vector(x, minY, z);
+                if (contains(pt)) {
+                    chunks.add(ChunkStore.toChunk(pt));
                 }
             }
         }
@@ -303,68 +316,6 @@ public class CylinderRegion implements Region {
     }
 
     /**
-     * Get the iterator.
-     * 
-     * @return iterator of points inside the region
-     */
-    public Iterator<BlockVector> iterator() {
-        return new Iterator<BlockVector>() {
-
-            private Vector min = getMinimumPoint();
-            private Vector max = getMaximumPoint();
-            private int nextX = min.getBlockX();
-            private int nextY = min.getBlockY();
-            private int nextZ = min.getBlockZ();
-
-            {
-                forward();
-            }
-
-            public boolean hasNext() {
-                return (nextX != Integer.MIN_VALUE);
-            }
-
-            private void forward() {
-                while (hasNext() && !contains(new BlockVector(nextX, nextY, nextZ))) {
-                    forwardOne();
-                }
-            }
-
-            public BlockVector next() {
-                if (!hasNext()) {
-                    throw new java.util.NoSuchElementException();
-                }
-                BlockVector answer = new BlockVector(nextX, nextY, nextZ);
-                forwardOne();
-                forward();
-                return answer;
-            }
-
-            private void forwardOne() {
-                if (++nextX <= max.getBlockX()) {
-                    return;
-                }
-                nextX = min.getBlockX();
-
-                if (++nextY <= max.getBlockY()) {
-                    return;
-                }
-                nextY = min.getBlockY();
-
-                if (++nextZ <= max.getBlockZ()) {
-                    return;
-                }
-                nextX = Integer.MIN_VALUE;
-            }
-
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-
-    }
-
-    /**
      * Returns string representation in the format
      * "(centerX, centerY, centerZ) - (radiusX, radiusZ)"
      * 
@@ -373,13 +324,5 @@ public class CylinderRegion implements Region {
     @Override
     public String toString() {
         return center + " - " + radius;
-    }
-
-    public LocalWorld getWorld() {
-        return world;
-    }
-
-    public void setWorld(LocalWorld world) {
-        this.world = world;
     }
 }

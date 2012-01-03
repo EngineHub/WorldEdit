@@ -40,7 +40,6 @@ import java.text.NumberFormat;
  * @author sk89q
  */
 public class CylinderRegionSelector implements RegionSelector, CUIRegion {
-
     protected CylinderRegion region;
     protected static final NumberFormat format;
 
@@ -125,7 +124,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
     }
 
     public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
-        session.dispatchCUIEvent(player, new SelectionMinMaxEvent(region.getMinimumY(), region.getMaximumY()));
+        session.describeCUI(player);
     }
 
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
@@ -195,7 +194,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getMinimumPoint(), getArea()));
             session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getMaximumPoint(), getArea()));
         } else {
-            session.dispatchCUIEvent(player, new SelectionShapeEvent(this.getLegacyTypeID()));
+            session.dispatchCUIEvent(player, new SelectionShapeEvent(getLegacyTypeID()));
         }
     }
 
