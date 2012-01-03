@@ -486,6 +486,30 @@ public class Vector {
     }
 
     /**
+     * Gets the dot product of this and another vector.
+     *
+     * @param other
+     * @return the dot product of this and the other vector
+     */
+    public double dot(Vector other) {
+        return x * other.x + y * other.y + z * other.z;
+    }
+
+    /**
+     * Gets the dot product of this and another vector.
+     *
+     * @param other
+     * @return the dot product of this and the other vector
+     */
+    public Vector cross(Vector other) {
+        return new Vector(
+            y * other.z + z * other.y,
+            z * other.x + x * other.z,
+            x * other.y + y * other.x
+        );
+    }
+
+    /**
      * Checks to see if a vector is contained with another.
      *
      * @param min
@@ -626,16 +650,6 @@ public class Vector {
      */
     public Vector2D toVector2D() {
         return new Vector2D(x, z);
-    }
-
-    /**
-     * Gets the dot product of this and another vector.
-     *
-     * @param other
-     * @return the dot product of this and the other vector
-     */
-    public double dot(Vector other) {
-        return x * other.x + y * other.y + z * other.z;
     }
 
     /**
