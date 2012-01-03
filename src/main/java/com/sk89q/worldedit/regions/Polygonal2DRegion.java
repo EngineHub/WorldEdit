@@ -166,6 +166,15 @@ public class Polygonal2DRegion implements Region {
     }
 
     /**
+     * Get the minimum Y.
+     * 
+     * @return min y
+     */
+    public int getMininumY() {
+        return minY;
+    }
+
+    /**
      * Set the minimum Y.
      * 
      * @param y
@@ -177,7 +186,16 @@ public class Polygonal2DRegion implements Region {
     }
 
     /**
-     * Se the maximum Y.
+     * Get the maximum Y.
+     * 
+     * @return max y
+     */
+    public int getMaximumY() {
+        return maxY;
+    }
+
+    /**
+     * Set the maximum Y.
      * 
      * @param y
      */
@@ -596,13 +614,5 @@ public class Polygonal2DRegion implements Region {
 
     public void setWorld(LocalWorld world) {
         this.world = world;
-    }
-
-    public int getMinY() {
-        return minY;
-    }
-
-    public int getMaxY() {
-        return maxY;
     }
 }
