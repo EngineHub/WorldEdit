@@ -576,6 +576,15 @@ public class Vector2D {
     }
 
     /**
+     * Creates a 3D vector by adding the specified Y component to this vector.
+     *
+     * @return Vector
+     */
+    public Vector toVector(double y) {
+        return new Vector(x, y, z);
+    }
+
+    /**
      * Gets the minimum components of two vectors.
      *
      * @param v1
