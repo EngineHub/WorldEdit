@@ -37,14 +37,13 @@ import com.sk89q.worldedit.data.ChunkStore;
  *
  * @author sk89q
  */
-public class Polygonal2DRegion implements Region {
+public class Polygonal2DRegion extends AbstractRegion {
     private List<BlockVector2D> points;
     private BlockVector min;
     private BlockVector max;
     private int minY;
     private int maxY;
     private boolean hasY = false;
-    private LocalWorld world;
 
     /**
      * Construct the region
@@ -72,11 +71,11 @@ public class Polygonal2DRegion implements Region {
      * @param maxY
      */
     public Polygonal2DRegion(LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
+        super(world);
         this.points = new ArrayList<BlockVector2D>(points);
         this.minY = minY;
         this.maxY = maxY;
         hasY = true;
-        this.world = world;
         recalculate();
     }
 
@@ -440,6 +439,7 @@ public class Polygonal2DRegion implements Region {
      * 
      * @return iterator of points inside the region
      */
+    @Override
     public Iterator<BlockVector> iterator() {
         return new Polygonal2DRegionIterator(this);
 
@@ -602,13 +602,5 @@ public class Polygonal2DRegion implements Region {
         public void remove() {
             throw new UnsupportedOperationException("Not supported");
         }
-    }
-
-    public LocalWorld getWorld() {
-        return world;
-    }
-
-    public void setWorld(LocalWorld world) {
-        this.world = world;
     }
 }

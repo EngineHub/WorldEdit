@@ -19,12 +19,10 @@
 
 package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.data.ChunkStore;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -32,7 +30,7 @@ import java.util.HashSet;
  *
  * @author TomyLobo
  */
-public class EllipsoidRegion implements Region {
+public class EllipsoidRegion extends AbstractRegion {
     /**
      * Stores the center.
      */
@@ -41,11 +39,6 @@ public class EllipsoidRegion implements Region {
      * Stores the radiuses plus 0.5 on each axis.
      */
     private Vector radius;
-    /**
-     * Stores the world.
-     */
-    private LocalWorld world;
-
     /**
      * Construct a new instance of this ellipsoid region.
      *
@@ -64,7 +57,7 @@ public class EllipsoidRegion implements Region {
      * @param radius
      */
     public EllipsoidRegion(LocalWorld world, Vector center, Vector radius) {
-        this.world = world;
+        super(world);
         this.center = center;
         this.radius = radius;
     }
@@ -212,15 +205,6 @@ public class EllipsoidRegion implements Region {
     }
 
     /**
-     * Get the iterator.
-     *
-     * @return iterator of points inside the region
-     */
-    public Iterator<BlockVector> iterator() {
-        return new RegionIterator(this);
-    }
-
-    /**
      * Returns string representation in the format
      * "(centerX, centerY, centerZ) - (radiusX, radiusY, radiusZ)".
      *
@@ -229,14 +213,6 @@ public class EllipsoidRegion implements Region {
     @Override
     public String toString() {
         return center + " - " + getRadius();
-    }
-
-    public LocalWorld getWorld() {
-        return world;
-    }
-
-    public void setWorld(LocalWorld world) {
-        this.world = world;
     }
 
     public void extendRadius(Vector minRadius) {

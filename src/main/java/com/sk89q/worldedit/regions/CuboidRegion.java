@@ -32,7 +32,7 @@ import java.util.HashSet;
  *
  * @author sk89q
  */
-public class CuboidRegion implements Region {
+public class CuboidRegion extends AbstractRegion {
     /**
      * Store the first point.
      */
@@ -41,11 +41,6 @@ public class CuboidRegion implements Region {
      * Store the second point.
      */
     private Vector pos2;
-    /**
-     * Stores the world.
-     */
-    private LocalWorld world;
-
     /**
      * Construct a new instance of this cuboid region.
      *
@@ -64,8 +59,8 @@ public class CuboidRegion implements Region {
      * @param pos2
      */
     public CuboidRegion(LocalWorld world, Vector pos1, Vector pos2) {
+        super(world);
         this.pos1 = pos1;
-        this.world = world;
         this.pos2 = pos2;
     }
 
@@ -327,6 +322,7 @@ public class CuboidRegion implements Region {
      *
      * @return iterator of points inside the region
      */
+    @Override
     public Iterator<BlockVector> iterator() {
         return new Iterator<BlockVector>() {
             private Vector min = getMinimumPoint();
@@ -369,13 +365,5 @@ public class CuboidRegion implements Region {
     @Override
     public String toString() {
         return getMinimumPoint() + " - " + getMaximumPoint();
-    }
-
-    public LocalWorld getWorld() {
-        return world;
-    }
-
-    public void setWorld(LocalWorld world) {
-        this.world = world;
     }
 }
