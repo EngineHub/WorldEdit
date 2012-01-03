@@ -146,6 +146,354 @@ public class Vector2D {
     }
 
     /**
+     * Adds two points.
+     *
+     * @param other
+     * @return New point
+     */
+    public Vector2D add(Vector2D other) {
+        return new Vector2D(x + other.x, z + other.z);
+    }
+
+    /**
+     * Adds two points.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return New point
+     */
+    public Vector2D add(double x, double z) {
+        return new Vector2D(this.x + x, this.z + z);
+    }
+
+    /**
+     * Adds two points.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return New point
+     */
+    public Vector2D add(int x, int z) {
+        return new Vector2D(this.x + x, this.z + z);
+    }
+
+    /**
+     * Adds points.
+     *
+     * @param others
+     * @return New point
+     */
+    public Vector2D add(Vector2D... others) {
+        double newX = x, newZ = z;
+
+        for (int i = 0; i < others.length; ++i) {
+            newX += others[i].x;
+            newZ += others[i].z;
+        }
+        return new Vector2D(newX, newZ);
+    }
+
+    /**
+     * Subtracts two points.
+     *
+     * @param other
+     * @return New point
+     */
+    public Vector2D subtract(Vector2D other) {
+        return new Vector2D(x - other.x, z - other.z);
+    }
+
+    /**
+     * Subtract two points.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return New point
+     */
+    public Vector2D subtract(double x, double z) {
+        return new Vector2D(this.x - x, this.z - z);
+    }
+
+    /**
+     * Subtract two points.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return New point
+     */
+    public Vector2D subtract(int x, int z) {
+        return new Vector2D(this.x - x, this.z - z);
+    }
+
+    /**
+     * Subtract points.
+     *
+     * @param others
+     * @return New point
+     */
+    public Vector2D subtract(Vector2D... others) {
+        double newX = x, newZ = z;
+
+        for (int i = 0; i < others.length; ++i) {
+            newX -= others[i].x;
+            newZ -= others[i].z;
+        }
+        return new Vector2D(newX, newZ);
+    }
+
+    /**
+     * Multiplies two points.
+     *
+     * @param other
+     * @return New point
+     */
+    public Vector2D multiply(Vector2D other) {
+        return new Vector2D(x * other.x, z * other.z);
+    }
+
+    /**
+     * Multiply two points.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return New point
+     */
+    public Vector2D multiply(double x, double z) {
+        return new Vector2D(this.x * x, this.z * z);
+    }
+
+    /**
+     * Multiply two points.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return New point
+     */
+    public Vector2D multiply(int x, int z) {
+        return new Vector2D(this.x * x, this.z * z);
+    }
+
+    /**
+     * Multiply points.
+     *
+     * @param others
+     * @return New point
+     */
+    public Vector2D multiply(Vector2D... others) {
+        double newX = x, newZ = z;
+
+        for (int i = 0; i < others.length; ++i) {
+            newX *= others[i].x;
+            newZ *= others[i].z;
+        }
+        return new Vector2D(newX, newZ);
+    }
+
+    /**
+     * Scalar multiplication.
+     *
+     * @param n
+     * @return New point
+     */
+    public Vector2D multiply(double n) {
+        return new Vector2D(this.x * n, this.z * n);
+    }
+
+    /**
+     * Scalar multiplication.
+     *
+     * @param n
+     * @return New point
+     */
+    public Vector2D multiply(float n) {
+        return new Vector2D(this.x * n, this.z * n);
+    }
+
+    /**
+     * Scalar multiplication.
+     *
+     * @param n
+     * @return New point
+     */
+    public Vector2D multiply(int n) {
+        return new Vector2D(this.x * n, this.z * n);
+    }
+
+    /**
+     * Divide two points.
+     *
+     * @param other
+     * @return New point
+     */
+    public Vector2D divide(Vector2D other) {
+        return new Vector2D(x / other.x, z / other.z);
+    }
+
+    /**
+     * Divide two points.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return New point
+     */
+    public Vector2D divide(double x, double z) {
+        return new Vector2D(this.x / x, this.z / z);
+    }
+
+    /**
+     * Divide two points.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return New point
+     */
+    public Vector2D divide(int x, int z) {
+        return new Vector2D(this.x / x, this.z / z);
+    }
+
+    /**
+     * Scalar division.
+     *
+     * @param n
+     * @return new point
+     */
+    public Vector2D divide(int n) {
+        return new Vector2D(x / n, z / n);
+    }
+
+    /**
+     * Scalar division.
+     *
+     * @param n
+     * @return new point
+     */
+    public Vector2D divide(double n) {
+        return new Vector2D(x / n, z / n);
+    }
+
+    /**
+     * Scalar division.
+     *
+     * @param n
+     * @return new point
+     */
+    public Vector2D divide(float n) {
+        return new Vector2D(x / n, z / n);
+    }
+
+    /**
+     * Get the length of the vector.
+     *
+     * @return length
+     */
+    public double length() {
+        return Math.sqrt(x * x + z * z);
+    }
+
+    /**
+     * Get the length^2 of the vector.
+     *
+     * @return length^2
+     */
+    public double lengthSq() {
+        return x * x + z * z;
+    }
+
+    /**
+     * Get the distance away from a point.
+     *
+     * @param pt
+     * @return distance
+     */
+    public double distance(Vector2D pt) {
+        return Math.sqrt(Math.pow(pt.x - x, 2) +
+                Math.pow(pt.z - z, 2));
+    }
+
+    /**
+     * Get the distance away from a point, squared.
+     *
+     * @param pt
+     * @return distance
+     */
+    public double distanceSq(Vector2D pt) {
+        return Math.pow(pt.x - x, 2) +
+                Math.pow(pt.z - z, 2);
+    }
+
+    /**
+     * Get the normalized vector.
+     *
+     * @return vector
+     */
+    public Vector2D normalize() {
+        return divide(length());
+    }
+
+    /**
+     * Gets the dot product of this and another vector.
+     *
+     * @param other
+     * @return the dot product of this and the other vector
+     */
+    public double dot(Vector2D other) {
+        return x * other.x + z * other.z;
+    }
+
+    /**
+     * Checks to see if a vector is contained with another.
+     *
+     * @param min
+     * @param max
+     * @return
+     */
+    public boolean containedWithin(Vector2D min, Vector2D max) {
+        return x >= min.getX() && x <= max.getX()
+                && z >= min.getZ() && z <= max.getZ();
+    }
+
+    /**
+     * Checks to see if a vector is contained with another.
+     *
+     * @param min
+     * @param max
+     * @return
+     */
+    public boolean containedWithinBlock(Vector2D min, Vector2D max) {
+        return getBlockX() >= min.getBlockX() && getBlockX() <= max.getBlockX()
+                && getBlockZ() >= min.getBlockZ() && getBlockZ() <= max.getBlockZ();
+    }
+
+    /**
+     * 2D transformation.
+     *
+     * @param angle in degrees
+     * @param aboutX
+     * @param aboutZ
+     * @param translateX
+     * @param translateZ
+     * @return
+     */
+    public Vector2D transform2D(double angle,
+            double aboutX, double aboutZ, double translateX, double translateZ) {
+        angle = Math.toRadians(angle);
+        double x = this.x;
+        double z = this.z;
+        double x2 = x * Math.cos(angle) - z * Math.sin(angle);
+        double z2 = x * Math.sin(angle) + z * Math.cos(angle);
+        return new Vector2D(x2 + aboutX + translateX,
+                          z2 + aboutZ + translateZ);
+    }
+
+    /**
      * Gets a BlockVector version.
      *
      * @return BlockVector
@@ -198,5 +546,33 @@ public class Vector2D {
      */
     public Vector toVector() {
         return new Vector(x, 0, z);
+    }
+
+    /**
+     * Gets the minimum components of two vectors.
+     *
+     * @param v1
+     * @param v2
+     * @return minimum
+     */
+    public static Vector2D getMinimum(Vector2D v1, Vector2D v2) {
+        return new Vector2D(
+            Math.min(v1.x, v2.x),
+            Math.min(v1.z, v2.z)
+        );
+    }
+
+    /**
+     * Gets the maximum components of two vectors.
+     *
+     * @param v1
+     * @param v2
+     * @return maximum
+     */
+    public static Vector2D getMaximum(Vector2D v1, Vector2D v2) {
+        return new Vector2D(
+            Math.max(v1.x, v2.x),
+            Math.max(v1.z, v2.z)
+        );
     }
 }
