@@ -302,6 +302,23 @@ public class Polygonal2DRegion extends AbstractRegion {
         recalculate();
     }
 
+    @Override
+    public void shift(Vector change) throws RegionOperationException {
+        final double changeX = change.getX();
+        final double changeY = change.getY();
+        final double changeZ = change.getZ();
+
+        for (int i = 0; i < points.size(); ++i) {
+            BlockVector2D point = points.get(i);
+            points.set(i, new BlockVector2D(point.getX() + changeX, point.getZ() + changeZ));
+        }
+
+        minY += changeY;
+        maxY += changeY;
+
+        recalculate();
+    }
+
     /**
      * Checks to see if a point is inside this region.
      */

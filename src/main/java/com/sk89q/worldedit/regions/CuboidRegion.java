@@ -184,8 +184,7 @@ public class CuboidRegion extends AbstractRegion {
             }
         }
 
-        pos1 = pos1.clampY(0, world == null ? 127 : world.getMaxY());
-        pos2 = pos2.clampY(0, world == null ? 127 : world.getMaxY());
+        recalculate();
     }
 
     /**
@@ -236,8 +235,20 @@ public class CuboidRegion extends AbstractRegion {
             }
         }
 
+        recalculate();
+    }
+
+    private void recalculate() {
         pos1 = pos1.clampY(0, world == null ? 127 : world.getMaxY());
         pos2 = pos2.clampY(0, world == null ? 127 : world.getMaxY());
+    }
+
+    @Override
+    public void shift(Vector change) throws RegionOperationException {
+        pos1 = pos1.add(change);
+        pos2 = pos2.add(change);
+
+        recalculate();
     }
 
     /**

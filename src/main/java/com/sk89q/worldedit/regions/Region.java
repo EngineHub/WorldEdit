@@ -89,6 +89,14 @@ public interface Region extends Iterable<BlockVector> {
     public void contract(Vector change) throws RegionOperationException;
 
     /**
+     * Shift the region.
+     *
+     * @param change
+     * @throws RegionOperationException
+     */
+    public void shift(Vector multiply) throws RegionOperationException;
+
+    /**
      * Returns true based on whether the region contains the point,
      *
      * @param pt

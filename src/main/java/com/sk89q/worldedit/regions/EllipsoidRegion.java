@@ -136,6 +136,11 @@ public class EllipsoidRegion extends AbstractRegion {
     public void contract(Vector change) {
     }
 
+    @Override
+    public void shift(Vector change) throws RegionOperationException {
+        center = center.add(change);
+    }
+
     /**
      * Get the center.
      *

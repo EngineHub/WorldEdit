@@ -407,10 +407,9 @@ public class SelectionCommands {
 
         try {
             Region region = session.getSelection(player.getWorld());
-            region.expand(dir.multiply(change));
-            region.contract(dir.multiply(change));
+            region.shift(dir.multiply(change));
             session.getRegionSelector(player.getWorld()).learnChanges();
-            
+
             session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
 
             player.print("Region shifted.");

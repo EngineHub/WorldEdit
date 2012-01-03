@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.Vector;
 
 public abstract class AbstractRegion implements Region {
     /**
@@ -30,5 +31,10 @@ public abstract class AbstractRegion implements Region {
 
     public void setWorld(LocalWorld world) {
         this.world = world;
+    }
+
+    public void shift(Vector change) throws RegionOperationException {
+        expand(change);
+        contract(change);
     }
 }
