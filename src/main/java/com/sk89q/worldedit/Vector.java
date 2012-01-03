@@ -661,9 +661,10 @@ public class Vector {
      */
     public static Vector getMinimum(Vector v1, Vector v2) {
         return new Vector(
-                Math.min(v1.getX(), v2.getX()),
-                Math.min(v1.getY(), v2.getY()),
-                Math.min(v1.getZ(), v2.getZ()));
+            Math.min(v1.x, v2.x),
+            Math.min(v1.y, v2.y),
+            Math.min(v1.z, v2.z)
+        );
     }
 
     /**
@@ -675,8 +676,9 @@ public class Vector {
      */
     public static Vector getMaximum(Vector v1, Vector v2) {
         return new Vector(
-                Math.max(v1.getX(), v2.getX()),
-                Math.max(v1.getY(), v2.getY()),
-                Math.max(v1.getZ(), v2.getZ()));
+            Math.max(v1.x, v2.x),
+            Math.max(v1.y, v2.y),
+            Math.max(v1.z, v2.z)
+        );
     }
 }
