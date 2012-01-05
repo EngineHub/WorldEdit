@@ -600,6 +600,43 @@ public class Vector {
         );
     }
 
+    public boolean isCollinearWith(Vector other) {
+        if (x == 0 && y == 0 && z == 0) {
+            // this is a zero vector
+            return true;
+        }
+
+        final double otherX = other.x;
+        final double otherY = other.y;
+        final double otherZ = other.z;
+
+        if (otherX == 0 && otherY == 0 && otherZ == 0) {
+            // other is a zero vector
+            return true;
+        }
+
+        if ((x == 0) != (otherX == 0)) return false;
+        if ((y == 0) != (otherY == 0)) return false;
+        if ((z == 0) != (otherZ == 0)) return false;
+
+        final double quotientX = otherX / x;
+        if (!Double.isNaN(quotientX)) {
+            return other.equals(multiply(quotientX));
+        }
+
+        final double quotientY = otherY / y;
+        if (!Double.isNaN(quotientY)) {
+            return other.equals(multiply(quotientY));
+        }
+
+        final double quotientZ = otherZ / z;
+        if (!Double.isNaN(quotientZ)) {
+            return other.equals(multiply(quotientZ));
+        }
+
+        throw new RuntimeException("This should not happen");
+    }
+
     /**
      * Get a block point from a point.
      *
@@ -643,7 +680,6 @@ public class Vector {
 
         Vector other = (Vector) obj;
         return other.getX() == this.x && other.getY() == this.y && other.getZ() == this.z;
-
     }
 
     /**
