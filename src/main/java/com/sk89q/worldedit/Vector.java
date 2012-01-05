@@ -708,4 +708,19 @@ public class Vector {
             Math.max(v1.z, v2.z)
         );
     }
+
+    /**
+     * Gets the midpoint of two vectors.
+     *
+     * @param v1
+     * @param v2
+     * @return maximum
+     */
+    public static Vector getMidpoint(Vector v1, Vector v2) {
+        return new Vector(
+            (v1.x + v2.x) / 2,
+            (v1.y + v2.y) / 2,
+            (v1.z + v2.z) / 2
+        );
+    }
 }
