@@ -246,7 +246,7 @@ public class Vector2D {
     }
 
     /**
-     * Multiplies two points.
+     * Component-wise multiplication
      *
      * @param other
      * @return New point
@@ -256,7 +256,7 @@ public class Vector2D {
     }
 
     /**
-     * Multiply two points.
+     * Component-wise multiplication
      *
      * @param x
      * @param y
@@ -268,7 +268,7 @@ public class Vector2D {
     }
 
     /**
-     * Multiply two points.
+     * Component-wise multiplication
      *
      * @param x
      * @param y
@@ -280,7 +280,7 @@ public class Vector2D {
     }
 
     /**
-     * Multiply points.
+     * Component-wise multiplication
      *
      * @param others
      * @return New point
@@ -326,7 +326,7 @@ public class Vector2D {
     }
 
     /**
-     * Divide two points.
+     * Component-wise division
      *
      * @param other
      * @return New point
@@ -336,7 +336,7 @@ public class Vector2D {
     }
 
     /**
-     * Divide two points.
+     * Component-wise division
      *
      * @param x
      * @param y
@@ -348,7 +348,7 @@ public class Vector2D {
     }
 
     /**
-     * Divide two points.
+     * Component-wise division
      *
      * @param x
      * @param y
@@ -491,7 +491,9 @@ public class Vector2D {
     }
 
     /**
-     * Rounds all components to the closest integer.
+     * Rounds all components to the closest integer.<br>
+     *<br>
+     * Components < 0.5 are rounded down, otherwise up
      *
      * @return
      */
@@ -542,6 +544,7 @@ public class Vector2D {
         if (!(obj instanceof Vector2D)) {
             return false;
         }
+
         Vector2D other = (Vector2D) obj;
         return other.x == this.x && other.z == this.z;
 

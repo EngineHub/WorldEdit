@@ -290,7 +290,7 @@ public class Vector {
     }
 
     /**
-     * Multiplies two points.
+     * Component-wise multiplication
      *
      * @param other
      * @return New point
@@ -300,7 +300,7 @@ public class Vector {
     }
 
     /**
-     * Multiply two points.
+     * Component-wise multiplication
      *
      * @param x
      * @param y
@@ -312,7 +312,7 @@ public class Vector {
     }
 
     /**
-     * Multiply two points.
+     * Component-wise multiplication
      *
      * @param x
      * @param y
@@ -324,7 +324,7 @@ public class Vector {
     }
 
     /**
-     * Multiply points.
+     * Component-wise multiplication
      *
      * @param others
      * @return New point
@@ -371,7 +371,7 @@ public class Vector {
     }
 
     /**
-     * Divide two points.
+     * Component-wise division
      *
      * @param other
      * @return New point
@@ -381,7 +381,7 @@ public class Vector {
     }
 
     /**
-     * Divide two points.
+     * Component-wise division
      *
      * @param x
      * @param y
@@ -393,7 +393,7 @@ public class Vector {
     }
 
     /**
-     * Divide two points.
+     * Component-wise division
      *
      * @param x
      * @param y
@@ -565,7 +565,9 @@ public class Vector {
     }
 
     /**
-     * Rounds all components to the closest integer.
+     * Rounds all components to the closest integer.<br>
+     *<br>
+     * Components < 0.5 are rounded down, otherwise up
      *
      * @return
      */
@@ -606,10 +608,12 @@ public class Vector {
      * @param z
      * @return point
      */
-    public static Vector toBlockPoint(double x, double y, double z) {
-        return new Vector((int) Math.floor(x),
-                         (int) Math.floor(y),
-                         (int) Math.floor(z));
+    public static BlockVector toBlockPoint(double x, double y, double z) {
+        return new BlockVector(
+            Math.floor(x),
+            Math.floor(y),
+            Math.floor(z)
+        );
     }
 
     /**
@@ -618,9 +622,11 @@ public class Vector {
      * @return point
      */
     public BlockVector toBlockPoint() {
-        return new BlockVector((int) Math.floor(x),
-                 (int) Math.floor(y),
-                 (int) Math.floor(z));
+        return new BlockVector(
+            Math.floor(x),
+            Math.floor(y),
+            Math.floor(z)
+        );
     }
 
     /**
@@ -634,6 +640,7 @@ public class Vector {
         if (!(obj instanceof Vector)) {
             return false;
         }
+
         Vector other = (Vector) obj;
         return other.getX() == this.x && other.getY() == this.y && other.getZ() == this.z;
 
