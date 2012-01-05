@@ -33,6 +33,18 @@ public abstract class AbstractRegion implements Region {
         this.world = world;
     }
 
+    public void expand(Vector... changes) throws RegionOperationException {
+        for (Vector change : changes) {
+            expand(change);
+        }
+    }
+
+    public void contract(Vector... changes) throws RegionOperationException {
+        for (Vector change : changes) {
+            contract(change);
+        }
+    }
+
     public void shift(Vector change) throws RegionOperationException {
         expand(change);
         contract(change);

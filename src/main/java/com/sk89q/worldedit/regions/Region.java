@@ -81,12 +81,28 @@ public interface Region extends Iterable<BlockVector> {
     public void expand(Vector change) throws RegionOperationException;
 
     /**
+     * Expand the region.
+     *
+     * @param changes array/arguments with multiple related changes
+     * @throws RegionOperationException
+     */
+    public void expand(Vector... changes) throws RegionOperationException;
+
+    /**
      * Contract the region.
      *
      * @param change
      * @throws RegionOperationException
      */
     public void contract(Vector change) throws RegionOperationException;
+
+    /**
+     * Contract the region.
+     *
+     * @param changes array/arguments with multiple related changes
+     * @throws RegionOperationException
+     */
+    public void contract(Vector... changes) throws RegionOperationException;
 
     /**
      * Shift the region.
