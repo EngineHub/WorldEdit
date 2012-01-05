@@ -90,4 +90,9 @@ public class BlockVector2D extends Vector2D {
         return (Integer.valueOf((int) x).hashCode() >> 13) ^
                 Integer.valueOf((int) z).hashCode();
     }
+
+    @Override
+    public BlockVector2D toBlockVector2D() {
+        return this;
+    }
 }

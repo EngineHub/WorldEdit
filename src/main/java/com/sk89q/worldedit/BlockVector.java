@@ -97,4 +97,9 @@ public class BlockVector extends Vector {
                 (Integer.valueOf((int) y).hashCode() << 12) ^
                 Integer.valueOf((int) z).hashCode();
     }
+
+    @Override
+    public BlockVector toBlockVector() {
+        return this;
+    }
 }
