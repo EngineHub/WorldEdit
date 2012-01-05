@@ -524,6 +524,36 @@ public class Vector2D {
         );
     }
 
+    public boolean isCollinearWith(Vector2D other) {
+        if (x == 0 && z == 0) {
+            // this is a zero vector
+            return true;
+        }
+
+        final double otherX = other.x;
+        final double otherZ = other.z;
+
+        if (otherX == 0 && otherZ == 0) {
+            // other is a zero vector
+            return true;
+        }
+
+        if ((x == 0) != (otherX == 0)) return false;
+        if ((z == 0) != (otherZ == 0)) return false;
+
+        final double quotientX = otherX / x;
+        if (!Double.isNaN(quotientX)) {
+            return other.equals(multiply(quotientX));
+        }
+
+        final double quotientZ = otherZ / z;
+        if (!Double.isNaN(quotientZ)) {
+            return other.equals(multiply(quotientZ));
+        }
+
+        throw new RuntimeException("This should not happen");
+    }
+
     /**
      * Gets a BlockVector version.
      *
