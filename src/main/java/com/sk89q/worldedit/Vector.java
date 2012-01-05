@@ -577,22 +577,25 @@ public class Vector {
      * 2D transformation.
      *
      * @param angle in degrees
-     * @param aboutX
-     * @param aboutZ
-     * @param translateX
-     * @param translateZ
+     * @param aboutX about which x coordinate to rotate
+     * @param aboutZ about which z coordinate to rotate
+     * @param translateX what to add after rotation
+     * @param translateZ what to add after rotation
      * @return
      */
     public Vector transform2D(double angle,
             double aboutX, double aboutZ, double translateX, double translateZ) {
         angle = Math.toRadians(angle);
-        double x = this.x;
-        double z = this.z;
+        double x = this.x - aboutX;
+        double z = this.z - aboutZ;
         double x2 = x * Math.cos(angle) - z * Math.sin(angle);
         double z2 = x * Math.sin(angle) + z * Math.cos(angle);
-        return new Vector(x2 + aboutX + translateX,
-                          y,
-                          z2 + aboutZ + translateZ);
+
+        return new Vector(
+            x2 + aboutX + translateX,
+            y,
+            z2 + aboutZ + translateZ
+        );
     }
 
     /**
