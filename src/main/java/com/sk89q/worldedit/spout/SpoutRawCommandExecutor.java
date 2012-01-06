@@ -18,7 +18,6 @@
 
 package com.sk89q.worldedit.spout;
 
-import org.bukkit.Bukkit;
 import org.getspout.api.command.CommandException;
 import org.getspout.api.command.CommandSource;
 import org.getspout.api.command.RawCommandExecutor;
@@ -37,7 +36,6 @@ public class SpoutRawCommandExecutor implements RawCommandExecutor {
 
     @Override
     public void execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
-        Bukkit.getServer().getCommandAliases();
         args[baseIndex] = "/" + args[baseIndex];
         if (!plugin.getWorldEdit().handleCommand(plugin.wrapCommandSender(source), MiscCompatibilityUtils.arrayCopyOfRange(args, baseIndex, args.length))) {
             throw new CommandException("Unknown command: '" + args[baseIndex] + "'!");
