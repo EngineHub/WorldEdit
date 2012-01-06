@@ -37,6 +37,7 @@ import org.getspout.api.player.Player;
 
 public class SpoutPlayer extends LocalPlayer {
     private Player player;
+    @SuppressWarnings("unused")
     private WorldEditPlugin plugin;
 
     public SpoutPlayer(WorldEditPlugin plugin, ServerInterface server, Player player) {

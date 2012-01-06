@@ -8,14 +8,12 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
 import org.getspout.api.ChatColor;
-import org.getspout.api.Spout;
 import org.getspout.api.command.CommandSource;
 import org.getspout.api.player.Player;
 
-import java.util.logging.Level;
-
 public class SpoutCommandSender extends LocalPlayer {
     private CommandSource sender;
+    @SuppressWarnings("unused")
     private WorldEditPlugin plugin;
 
     public SpoutCommandSender(WorldEditPlugin plugin, ServerInterface server, CommandSource sender) {

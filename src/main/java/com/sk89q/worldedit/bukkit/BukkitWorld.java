@@ -458,8 +458,7 @@ public class BukkitWorld extends LocalWorld {
     public void dropItem(Vector pt, BaseItemStack item) {
         ItemStack bukkitItem = new ItemStack(item.getType(), item.getAmount(),
                 (byte) item.getDamage());
-        world.dropItemNaturally(toLocation(pt), bukkitItem);
-
+        world.dropItemNaturally(BukkitUtil.toLocation(world, pt), bukkitItem);
     }
 
     /**
@@ -571,10 +570,6 @@ public class BukkitWorld extends LocalWorld {
         }
 
         return num;
-    }
-
-    private Location toLocation(Vector pt) {
-        return new Location(world, pt.getX(), pt.getY(), pt.getZ());
     }
 
     /**

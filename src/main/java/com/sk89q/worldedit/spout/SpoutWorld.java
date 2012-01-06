@@ -29,7 +29,6 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.regions.Region;
 
 import org.getspout.api.geo.World;
-import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.material.MaterialData;
 
 public class SpoutWorld extends LocalWorld {
@@ -443,7 +442,7 @@ public class SpoutWorld extends LocalWorld {
     public void dropItem(Vector pt, BaseItemStack item) {
         /*ItemStack bukkitItem = new ItemStack(item.getType(), item.getAmount(),
                 (byte) item.getDamage());
-        world.dropItemNaturally(toLocation(pt), bukkitItem);*/
+        world.dropItemNaturally(SpoutUtil.toLocation(world, pt), bukkitItem);*/
 
     }
 
@@ -457,16 +456,16 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public int killMobs(Vector origin, double radius, int flags) {
-        boolean killPets = (flags & KillFlags.PETS) != 0;
+        /*boolean killPets = (flags & KillFlags.PETS) != 0;
         boolean killNPCs = (flags & KillFlags.NPCS) != 0;
-        boolean killAnimals = (flags & KillFlags.ANIMALS) != 0;
+        boolean killAnimals = (flags & KillFlags.ANIMALS) != 0;*/
 
         int num = 0;
-        double radiusSq = radius * radius;
+        /*double radiusSq = radius * radius;
 
         Point bukkitOrigin = SpoutUtil.toPoint(world, origin);
 
-        /*
+        
         for (LivingEntity ent : world.getLivingEntities()) {
             if (ent instanceof HumanEntity) {
                 continue;
@@ -506,9 +505,9 @@ public class SpoutWorld extends LocalWorld {
     @Override
     public int removeEntities(EntityType type, Vector origin, int radius) {
         int num = 0;
-        double radiusSq = radius * radius;
+        /*double radiusSq = radius * radius;
 
-        /*for (Entity ent : world.getEntities()) {
+        for (Entity ent : world.getEntities()) {
             if (radius != -1
                     && origin.distanceSq(SpoutUtil.toVector(ent.getTransform().getPosition())) > radiusSq) {
                 continue;
@@ -555,10 +554,6 @@ public class SpoutWorld extends LocalWorld {
         return num;
     }
 
-    private Point toLocation(Vector pt) {
-        return new Point(world, (float)pt.getX(), (float)pt.getY(), (float)pt.getZ());
-    }
-
     /**
      * Set a sign's text.
      * 
@@ -566,8 +561,8 @@ public class SpoutWorld extends LocalWorld {
      * @param text
      * @return
      */
-    private boolean setSignText(Vector pt, String[] text) {
-        /*Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+    /*private boolean setSignText(Vector pt, String[] text) {
+        Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (block == null) return false;
         BlockState state = block.getState();
         if (state == null || !(state instanceof Sign)) return false;
@@ -577,9 +572,8 @@ public class SpoutWorld extends LocalWorld {
         sign.setLine(2, text[2]);
         sign.setLine(3, text[3]);
         sign.update();
-        return true;*/
-        return false;
-    }
+        return true;
+    }*/
 
     /**
      * Get a sign's text.
@@ -587,8 +581,8 @@ public class SpoutWorld extends LocalWorld {
      * @param pt
      * @return
      */
-    private String[] getSignText(Vector pt) {
-        /*Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+    /*private String[] getSignText(Vector pt) {
+        Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (block == null) return new String[] { "", "", "", "" };
         BlockState state = block.getState();
         if (state == null || !(state instanceof Sign)) return new String[] { "", "", "", "" };
@@ -603,9 +597,7 @@ public class SpoutWorld extends LocalWorld {
                 line2 != null ? line2 : "",
                 line3 != null ? line3 : "",
             };
-        */
-        return new String[] {"", "", "", ""};
-    }
+    }*/
 
     /**
      * Get a container block's contents.
@@ -613,8 +605,8 @@ public class SpoutWorld extends LocalWorld {
      * @param pt
      * @return
      */
-    private BaseItemStack[] getContainerBlockContents(Vector pt) {
-        /*Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+    /*private BaseItemStack[] getContainerBlockContents(Vector pt) {
+        Block block = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (block == null) {
             return new BaseItemStack[0];
         }
@@ -641,10 +633,10 @@ public class SpoutWorld extends LocalWorld {
                     }
                 } catch (Throwable ignore) {}
             }
-        }*/
+        }
 
-        return new BaseItemStack[0];
-    }
+        return contents;
+    }*/
 
     /**
      * Set a container block's contents.
@@ -653,8 +645,8 @@ public class SpoutWorld extends LocalWorld {
      * @param contents
      * @return
      */
-    private boolean setContainerBlockContents(Vector pt, BaseItemStack[] contents) {
-        /*Block block = world.getBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+    /*private boolean setContainerBlockContents(Vector pt, BaseItemStack[] contents) {
+        Block block = world.getBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (block == null) {
             return false;
         }
@@ -687,9 +679,8 @@ public class SpoutWorld extends LocalWorld {
             }
         }
 
-        return true;*/
-        return false;
-    }
+        return true;
+    }*/
 
     /**
      * Returns whether a block has a valid ID.
