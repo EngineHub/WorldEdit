@@ -1,0 +1,7 @@
+name: WorldEdit
+main: com.sk89q.worldedit.spout.WorldEditPlugin
+version: ${project.version}
+platform: BOTH
+
+# Permissions aren't here. Read http://wiki.sk89q.com/wiki/WEPIF/DinnerPerms
+# for how WorldEdit permissions actually work.

@@ -1,6 +1,6 @@
 // $Id$
 /*
- * RegionBook
+ * WorldEdit
  * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,6 +27,7 @@ import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -98,7 +99,7 @@ public class YAMLProcessor extends YAMLNode {
             if (stream == null) throw new IOException("Stream is null!");
             read(yaml.load(new UnicodeReader(stream)));
         } catch (YAMLProcessorException e) {
-            root = new HashMap<String, Object>();
+            root = new LinkedHashMap<String, Object>();
         } finally {
             try {
                 if (stream != null) {
@@ -189,7 +190,7 @@ public class YAMLProcessor extends YAMLNode {
     private void read(Object input) throws YAMLProcessorException {
         try {
             if (null == input) {
-                root = new HashMap<String, Object>();
+                root = new LinkedHashMap<String, Object>();
             } else {
                 root = (Map<String, Object>) input;
             }

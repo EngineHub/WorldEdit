@@ -1,6 +1,6 @@
 // $Id$
 /*
- * RegionBook
+ * WorldEdit
  * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -111,7 +111,7 @@ public class YAMLNode {
      */
     private Object prepareSerialization(Object value) {
         if (value instanceof Vector) {
-            Map<String, Double> out = new HashMap<String, Double>();
+            Map<String, Double> out = new LinkedHashMap<String, Double>();
             Vector vec = (Vector) value;
             out.put("x", vec.getX());
             out.put("y", vec.getY());
@@ -152,7 +152,7 @@ public class YAMLNode {
 
             if (o == null || !(o instanceof Map)) {
                 // This will override existing configuration data!
-                o = new HashMap<String, Object>();
+                o = new LinkedHashMap<String, Object>();
                 node.put(parts[i], o);
             }
 
@@ -169,7 +169,7 @@ public class YAMLNode {
      * @return
      */
     public YAMLNode addNode(String path) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
         YAMLNode node = new YAMLNode(map, writeDefaults);
         setProperty(path, map);
         return node;
@@ -696,7 +696,7 @@ public class YAMLNode {
             return null;
         } else if (o instanceof Map) {
             Map<String, YAMLNode> nodes =
-                    new HashMap<String, YAMLNode>();
+                    new LinkedHashMap<String, YAMLNode>();
 
             for (Map.Entry<String, Object> entry : ((Map<String, Object>) o).entrySet()) {
                 if (entry.getValue() instanceof Map) {
