@@ -100,16 +100,16 @@ public class VectorTest {
         final Vector b = new Vector(bx,by,bz);
         assertTrue(a.isCollinearWith(b));
         assertTrue(b.isCollinearWith(a));
-        assertTrue(a.multiply(-1).isCollinearWith(b));
-        assertTrue(a.isCollinearWith(b.multiply(-1)));
+        assertTrue(a.multiply(-1.0).isCollinearWith(b));
+        assertTrue(a.isCollinearWith(b.multiply(-1.0)));
     }
     private void assertNotCollinear(double ax, double ay, double az, double bx, double by, double bz) {
         final Vector a = new Vector(ax,ay,az);
         final Vector b = new Vector(bx,by,bz);
         assertFalse(a.isCollinearWith(b));
         assertFalse(b.isCollinearWith(a));
-        assertFalse(a.multiply(-1).isCollinearWith(b));
-        assertFalse(a.isCollinearWith(b.multiply(-1)));
+        assertFalse(a.multiply(-1.0).isCollinearWith(b));
+        assertFalse(a.isCollinearWith(b.multiply(-1.0)));
     }
 
     private void assertCollinear(double ax, double az, double bx, double bz) {
@@ -117,15 +117,15 @@ public class VectorTest {
         final Vector2D b = new Vector2D(bx,bz);
         assertTrue(a.isCollinearWith(b));
         assertTrue(b.isCollinearWith(a));
-        assertTrue(a.multiply(-1).isCollinearWith(b));
-        assertTrue(a.isCollinearWith(b.multiply(-1)));
+        assertTrue(a.multiply(-1.0).isCollinearWith(b));
+        assertTrue(a.isCollinearWith(b.multiply(-1.0)));
     }
     private void assertNotCollinear(double ax, double az, double bx, double bz) {
         final Vector2D a = new Vector2D(ax,az);
         final Vector2D b = new Vector2D(bx,bz);
         assertFalse(a.isCollinearWith(b));
         assertFalse(b.isCollinearWith(a));
-        assertFalse(a.multiply(-1).isCollinearWith(b));
-        assertFalse(a.isCollinearWith(b.multiply(-1)));
+        assertFalse(a.multiply(-1.0).isCollinearWith(b));
+        assertFalse(a.isCollinearWith(b.multiply(-1.0)));
     }
 }
