@@ -116,7 +116,7 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public String[] getGroups() {
-        return new String[0];
+        return player.getGroups();
     }
 
     @Override
@@ -126,7 +126,7 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public boolean hasPermission(String perm) {
-        return true; // TODO: Implement permissions
+        return player.hasPermission(perm);
     }
 
     @Override

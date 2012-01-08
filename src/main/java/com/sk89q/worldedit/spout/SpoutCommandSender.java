@@ -24,8 +24,7 @@ public class SpoutCommandSender extends LocalPlayer {
 
     @Override
     public String getName() {
-        //return sender.getName();
-        return "Console";
+        return sender.getName();
     }
 
     @Override
@@ -51,14 +50,12 @@ public class SpoutCommandSender extends LocalPlayer {
 
     @Override
     public String[] getGroups() {
-        return new String[0];
+        return sender.getGroups();
     }
 
     @Override
     public boolean hasPermission(String perm) {
-        // TODO: Implement permissions
-        // return sender.isOp():
-        return true;
+        return sender.hasPermission(perm);
     }
 
     @Override
