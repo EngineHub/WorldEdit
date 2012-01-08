@@ -98,7 +98,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
                 continue;
             }
 
-            if (bukkitItem.getMaterial().getRawId() != id) {
+            if (bukkitItem.getMaterial().getId() != id) {
                 // Type id doesn't fit
                 continue;
             }
@@ -164,7 +164,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
                 continue;
             }
 
-            if (bukkitItem.getMaterial().getRawId() != id) {
+            if (bukkitItem.getMaterial().getId() != id) {
                 // Type id doesn't fit
                 continue;
             }

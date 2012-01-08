@@ -46,7 +46,7 @@ public class SpoutServerInterface extends ServerInterface {
     @Override
     public int resolveItem(String name) {
         Material mat = MaterialData.getMaterial(name);
-        return mat == null ? 0 : mat.getRawId();
+        return mat == null ? 0 : mat.getId();
     }
 
     @Override

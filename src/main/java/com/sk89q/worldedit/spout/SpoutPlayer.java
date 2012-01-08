@@ -49,7 +49,7 @@ public class SpoutPlayer extends LocalPlayer {
     @Override
     public int getItemInHand() {
         ItemStack itemStack = null;//player.getItemInHand();
-        return itemStack != null ? itemStack.getMaterial().getRawId() : 0;
+        return itemStack != null ? itemStack.getMaterial().getId() : 0;
     }
 
     @Override
