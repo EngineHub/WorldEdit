@@ -456,8 +456,8 @@ public class Vector2D {
      * @return
      */
     public boolean containedWithin(Vector2D min, Vector2D max) {
-        return x >= min.getX() && x <= max.getX()
-                && z >= min.getZ() && z <= max.getZ();
+        return x >= min.x && x <= max.x
+                && z >= min.z && z <= max.z;
     }
 
     /**
