@@ -496,10 +496,10 @@ public class Vector {
     }
 
     /**
-     * Gets the dot product of this and another vector.
+     * Gets the cross product of this and another vector.
      *
      * @param other
-     * @return the dot product of this and the other vector
+     * @return the cross product of this and the other vector
      */
     public Vector cross(Vector other) {
         return new Vector(
