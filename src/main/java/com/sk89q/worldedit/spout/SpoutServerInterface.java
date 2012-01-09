@@ -80,7 +80,7 @@ public class SpoutServerInterface extends ServerInterface {
     @Override
     public void onCommandRegistration(List<Command> commands) {
         for (Command command : commands) {
-            Spout.getGame().getRootCommand().sub(plugin, command.aliases()[0])
+            Spout.getGame().getRootCommand().addSubCommand(plugin, command.aliases()[0])
                     .addAlias(command.aliases()).setRawExecutor(executor).closeSubCommand();
         }
     }
