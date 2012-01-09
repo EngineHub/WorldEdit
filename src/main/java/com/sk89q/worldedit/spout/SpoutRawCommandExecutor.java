@@ -18,10 +18,10 @@
 
 package com.sk89q.worldedit.spout;
 
-import org.getspout.api.command.CommandException;
-import org.getspout.api.command.CommandSource;
-import org.getspout.api.command.RawCommandExecutor;
-import org.getspout.api.util.MiscCompatibilityUtils;
+import org.spout.api.command.CommandException;
+import org.spout.api.command.CommandSource;
+import org.spout.api.command.RawCommandExecutor;
+import org.spout.api.util.MiscCompatibilityUtils;
 
 /**
  * @author zml2008

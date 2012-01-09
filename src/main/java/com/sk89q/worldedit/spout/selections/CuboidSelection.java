@@ -25,8 +25,8 @@ import com.sk89q.worldedit.spout.SpoutUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.RegionSelector;
-import org.getspout.api.geo.World;
-import org.getspout.api.geo.discrete.Point;
+import org.spout.api.geo.World;
+import org.spout.api.geo.discrete.Point;
 
 public class CuboidSelection extends RegionSelection {
 

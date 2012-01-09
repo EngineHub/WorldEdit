@@ -22,11 +22,11 @@ package com.sk89q.worldedit.spout;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
-import org.getspout.api.Game;
-import org.getspout.api.Spout;
-import org.getspout.api.geo.World;
-import org.getspout.api.material.Material;
-import org.getspout.api.material.MaterialData;
+import org.spout.api.Game;
+import org.spout.api.Spout;
+import org.spout.api.geo.World;
+import org.spout.api.material.Material;
+import org.spout.api.material.MaterialData;
 
 import java.util.ArrayList;
 import java.util.Collection;

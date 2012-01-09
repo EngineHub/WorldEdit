@@ -27,7 +27,7 @@ import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegionSelector;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.spout.SpoutUtil;
-import org.getspout.api.geo.World;
+import org.spout.api.geo.World;
 
 import java.util.Collections;
 import java.util.List;

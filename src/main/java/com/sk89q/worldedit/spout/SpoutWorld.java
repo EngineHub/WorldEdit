@@ -28,8 +28,8 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.regions.Region;
 
-import org.getspout.api.geo.World;
-import org.getspout.api.material.MaterialData;
+import org.spout.api.geo.World;
+import org.spout.api.material.MaterialData;
 
 public class SpoutWorld extends LocalWorld {
     private World world;

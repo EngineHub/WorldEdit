@@ -24,13 +24,13 @@ import com.sk89q.worldedit.BlockWorldVector;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
-import org.getspout.api.Game;
-import org.getspout.api.geo.World;
-import org.getspout.api.geo.cuboid.Block;
-import org.getspout.api.geo.discrete.Point;
-import org.getspout.api.material.block.BlockFace;
-import org.getspout.api.math.Vector3;
-import org.getspout.api.player.Player;
+import org.spout.api.Game;
+import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Block;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.material.block.BlockFace;
+import org.spout.api.math.Vector3;
+import org.spout.api.player.Player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +70,7 @@ public class SpoutUtil {
         return new Vector(loc.getX(), loc.getY(), loc.getZ());
     }
 
-    public static Vector toVector(org.getspout.api.math.Vector3 vector) {
+    public static Vector toVector(org.spout.api.math.Vector3 vector) {
         return new Vector(vector.getX(), vector.getY(), vector.getZ());
     }
 

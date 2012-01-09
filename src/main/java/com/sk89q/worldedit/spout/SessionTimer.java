@@ -21,8 +21,8 @@ package com.sk89q.worldedit.spout;
 
 import com.sk89q.worldedit.SessionCheck;
 import com.sk89q.worldedit.WorldEdit;
-import org.getspout.api.Game;
-import org.getspout.api.player.Player;
+import org.spout.api.Game;
+import org.spout.api.player.Player;
 
 /**
  * Used to remove expired sessions in Bukkit.

@@ -86,7 +86,7 @@
 
     <!-- Spout -->
     <dependency>
-      <groupId>org.getspout</groupId>
+      <groupId>org.spout</groupId>
       <artifactId>spoutapi</artifactId>
       <version>dev-SNAPSHOT</version>
     </dependency>

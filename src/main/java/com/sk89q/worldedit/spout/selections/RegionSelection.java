@@ -25,8 +25,8 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.spout.SpoutUtil;
-import org.getspout.api.geo.World;
-import org.getspout.api.geo.discrete.Point;
+import org.spout.api.geo.World;
+import org.spout.api.geo.discrete.Point;
 
 public abstract class RegionSelection implements Selection {
 

@@ -27,13 +27,12 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.cui.CUIEvent;
-import org.getspout.api.geo.discrete.Point;
-import org.getspout.api.geo.discrete.Transform;
-import org.getspout.api.inventory.ItemStack;
-import org.getspout.api.math.MathHelper;
-import org.getspout.api.math.Quaternion;
-import org.getspout.api.math.Vector3;
-import org.getspout.api.player.Player;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
+import org.spout.api.inventory.ItemStack;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector3;
+import org.spout.api.player.Player;
 
 public class SpoutPlayer extends LocalPlayer {
     private Player player;
@@ -66,12 +65,12 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public double getPitch() {
-        return MathHelper.getDirectionVector(player.getEntity().getTransform().getRotation()).getY();
+        return player.getEntity().getTransform().getRotation().getAxisAngles().getY();
     }
 
     @Override
     public double getYaw() {
-        return MathHelper.getDirectionVector(player.getEntity().getTransform().getRotation()).getZ();
+        return player.getEntity().getTransform().getRotation().getAxisAngles().getZ();
     }
 
     @Override

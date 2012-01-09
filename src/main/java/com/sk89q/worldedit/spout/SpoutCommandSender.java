@@ -7,9 +7,9 @@ import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
-import org.getspout.api.ChatColor;
-import org.getspout.api.command.CommandSource;
-import org.getspout.api.player.Player;
+import org.spout.api.ChatColor;
+import org.spout.api.command.CommandSource;
+import org.spout.api.player.Player;
 
 public class SpoutCommandSender extends LocalPlayer {
     private CommandSource sender;

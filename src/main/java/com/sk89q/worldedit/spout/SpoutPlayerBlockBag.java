@@ -28,9 +28,9 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.ItemType;
-import org.getspout.api.inventory.ItemStack;
-import org.getspout.api.material.MaterialData;
-import org.getspout.api.player.Player;
+import org.spout.api.inventory.ItemStack;
+import org.spout.api.material.MaterialData;
+import org.spout.api.player.Player;
 
 public class SpoutPlayerBlockBag extends BlockBag {
     /**

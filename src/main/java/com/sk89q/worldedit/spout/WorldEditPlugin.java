@@ -30,11 +30,11 @@ import com.sk89q.worldedit.spout.selections.CuboidSelection;
 import com.sk89q.worldedit.spout.selections.Polygonal2DSelection;
 import com.sk89q.worldedit.spout.selections.Selection;
 import com.sk89q.worldedit.util.YAMLConfiguration;
-import org.getspout.api.command.CommandSource;
-import org.getspout.api.geo.World;
-import org.getspout.api.player.Player;
-import org.getspout.api.plugin.CommonPlugin;
-import org.getspout.api.util.Named;
+import org.spout.api.command.CommandSource;
+import org.spout.api.geo.World;
+import org.spout.api.player.Player;
+import org.spout.api.plugin.CommonPlugin;
+import org.spout.api.util.Named;
 
 import java.io.*;
 import java.util.jar.JarFile;

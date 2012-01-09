@@ -23,8 +23,8 @@ package com.sk89q.worldedit.spout.selections;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.RegionSelector;
-import org.getspout.api.geo.World;
-import org.getspout.api.geo.discrete.Point;
+import org.spout.api.geo.World;
+import org.spout.api.geo.discrete.Point;
 
 public interface Selection {
     /**
