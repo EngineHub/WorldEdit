@@ -457,7 +457,7 @@ public class BukkitWorld extends LocalWorld {
     @Override
     public void dropItem(Vector pt, BaseItemStack item) {
         ItemStack bukkitItem = new ItemStack(item.getType(), item.getAmount(),
-                (byte) item.getDamage());
+                item.getDamage());
         world.dropItemNaturally(BukkitUtil.toLocation(world, pt), bukkitItem);
     }
 
@@ -685,7 +685,7 @@ public class BukkitWorld extends LocalWorld {
             if (contents[i] != null) {
                 ItemStack toAdd = new ItemStack(contents[i].getType(),
                         contents[i].getAmount(),
-                        (byte) contents[i].getDamage());
+                        contents[i].getDamage());
                 try {
                     for (Map.Entry<Integer, Integer> entry : contents[i].getEnchantments().entrySet()) {
                         toAdd.addEnchantment(Enchantment.getById(entry.getKey()), entry.getValue());
