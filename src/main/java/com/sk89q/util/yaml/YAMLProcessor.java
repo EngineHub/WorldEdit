@@ -22,7 +22,11 @@ package com.sk89q.util.yaml;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.emitter.ScalarAnalysis;
+import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.reader.UnicodeReader;
+import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.*;
@@ -58,8 +62,6 @@ import java.util.Map;
  * <code>getBoolean("sturmeh.eats.babies", false)</code>. For lists, there are
  * methods such as <code>getStringList</code> that will return a type safe list.
  * 
- * <p>This class is currently incomplete. It is not yet possible to get a node.
- * </p>
  * 
  * @author sk89q
  */
@@ -71,10 +73,10 @@ public class YAMLProcessor extends YAMLNode {
     public YAMLProcessor(File file, boolean writeDefaults, YAMLFormat format) {
         super(new HashMap<String, Object>(), writeDefaults);
 
-        DumperOptions options = new DumperOptions();
+        DumperOptions options = new FancyDumperOptions();
         options.setIndent(4);
         options.setDefaultFlowStyle(format.getStyle());
-        Representer representer = new Representer();
+        Representer representer = new FancyRepresenter();
         representer.setDefaultFlowStyle(format.getStyle());
 
         yaml = new Yaml(new SafeConstructor(), representer, options);
@@ -214,5 +216,27 @@ public class YAMLProcessor extends YAMLNode {
      */
     public static YAMLNode getEmptyNode(boolean writeDefaults) {
         return new YAMLNode(new HashMap<String, Object>(), writeDefaults);
+    }
+    
+    private static class FancyDumperOptions extends DumperOptions {
+        @Override
+        public DumperOptions.ScalarStyle calculateScalarStyle(ScalarAnalysis analysis,
+                                                              DumperOptions.ScalarStyle style) {
+            if (analysis.scalar.contains("\n") || analysis.scalar.contains("\r")) {
+                return ScalarStyle.LITERAL;
+            } else {
+                return super.calculateScalarStyle(analysis, style);
+            }
+        }
+    }
+    
+    private static class FancyRepresenter extends Representer {
+        public FancyRepresenter() {
+            this.nullRepresenter = new Represent() {
+                public Node representData(Object o) {
+                    return representScalar(Tag.NULL, "");
+                }
+            };
+        }
     }
 }
