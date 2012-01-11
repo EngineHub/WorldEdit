@@ -218,6 +218,7 @@ public class YAMLProcessor extends YAMLNode {
         return new YAMLNode(new HashMap<String, Object>(), writeDefaults);
     }
     
+    // This will be included in snakeyaml 1.10, but until then we have to do it manually.
     private static class FancyDumperOptions extends DumperOptions {
         @Override
         public DumperOptions.ScalarStyle calculateScalarStyle(ScalarAnalysis analysis,
