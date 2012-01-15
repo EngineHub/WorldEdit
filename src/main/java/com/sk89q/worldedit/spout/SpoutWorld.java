@@ -70,7 +70,8 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean setBlockType(Vector pt, int type) {
-        return world.getBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setBlockId((short)type) != type;
+        world.setBlockId(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (short)type);
+        return world.getBlockId(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()) != type;
     }
 
     /**
@@ -94,8 +95,9 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean setTypeIdAndData(Vector pt, int type, int data) {
-        return world.setBlockId(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (short)type) != type
-                && world.setBlockData(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (byte)data) != data;
+        int origType = getBlockType(pt), origData = getBlockData(pt);
+        world.setBlockIdAndData(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (short) type, (short) data);
+        return origType != type && origData != data;
     }
 
     /**
@@ -109,7 +111,6 @@ public class SpoutWorld extends LocalWorld {
     @Override
     public boolean setTypeIdAndDataFast(Vector pt, int type, int data) {
         return setTypeIdAndData(pt, type, data);
-        //return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).setTypeIdAndData(type, (byte) data, false);
     }
 
     /**
@@ -131,7 +132,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public void setBlockData(Vector pt, int data) {
-        world.setBlockData(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (byte)data);
+        setTypeIdAndData(pt, world.getBlockId(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()), data);
     }
 
     /**
@@ -690,7 +691,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean isValidBlockType(int type) {
-        return type <= 255 && MaterialData.getMaterial((short)type) != null;
+        return MaterialData.getBlock((short)type) != null;
     }
 
     @Override
