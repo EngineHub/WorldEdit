@@ -27,9 +27,11 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.cui.CUIEvent;
+import org.hibernate.type.MaterializedClobType;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.inventory.ItemStack;
+import org.spout.api.material.MaterialData;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
@@ -47,7 +49,7 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public int getItemInHand() {
-        ItemStack itemStack = null;//player.getItemInHand();
+        ItemStack itemStack = player.getEntity().getInventory().getCurrentItem();
         return itemStack != null ? itemStack.getMaterial().getId() : 0;
     }
 
@@ -75,7 +77,7 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public void giveItem(int type, int amt) {
-        //player.getInventory().addItem(new ItemStack(type, amt));
+        player.getEntity().getInventory().addItem(new ItemStack(MaterialData.getMaterial((short)type), amt));
     }
 
     @Override

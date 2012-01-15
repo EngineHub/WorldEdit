@@ -28,6 +28,7 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.ItemType;
+import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.MaterialData;
 import org.spout.api.player.Player;
@@ -56,8 +57,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
      */
     private void loadInventory() {
         if (items == null) {
-            items = new ItemStack[0];
-            //items = player.getInventory().getContents();
+            items = player.getEntity().getInventory().getContents();
         }
     }
 
@@ -208,7 +208,10 @@ public class SpoutPlayerBlockBag extends BlockBag {
     @Override
     public void flushChanges() {
         if (items != null) {
-            //player.getInventory().setContents(items);
+            Inventory inv = player.getEntity().getInventory();
+            for (int i = 0; i < items.length && i < player.getEntity().getInventorySize(); ++i) {
+                inv.setItem(items[i], i);
+            }
             items = null;
         }
     }
