@@ -288,6 +288,7 @@ public enum ItemType {
     CAULDRON_ITEM(ItemID.CAULDRON, "Cauldron", "cauldron"),
     EYE_OF_ENDER(ItemID.EYE_OF_ENDER, "Eye of Ender", "eyeofender", "endereye"),
     GLISTERING_MELON(ItemID.GLISTERING_MELON, "Glistering Melon", "glisteringmelon", "goldmelon"),
+    SPAWN_EGG(ItemID.SPAWN_EGG, "Spawn Egg", "spawnegg", "spawn", "mobspawnegg"),
     DISC_13(ItemID.DISC_13, "Music Disc - 13", "disc_13"),
     DISC_CAT(ItemID.DISC_CAT, "Music Disc - Cat", "disc_cat"),
     DISC_BLOCKS(ItemID.DISC_BLOCKS, "Music Disc - blocks", "disc_blocks"),
@@ -301,8 +302,8 @@ public enum ItemType {
     DISC_11(ItemID.DISC_11, "Music Disc - 11", "disc_11"),
 
     // deprecated
-    GOLD_RECORD(ItemID.GOLD_RECORD, "Gold Record", "goldrecord", "golddisc"),
-    GREEN_RECORD(ItemID.GREEN_RECORD, "Green Record", "greenrecord", "greenddisc");
+    @Deprecated GOLD_RECORD(ItemID.GOLD_RECORD, "Gold Record", "goldrecord", "golddisc"),
+    @Deprecated GREEN_RECORD(ItemID.GREEN_RECORD, "Green Record", "greenrecord", "greenddisc");
 
     /**
      * Stores a map of the IDs for fast access.
@@ -631,6 +632,7 @@ public enum ItemType {
         usesDamageValue.add(ItemID.INK_SACK);
         usesDamageValue.add(ItemID.POTION);
         usesDamageValue.add(ItemID.GLASS_BOTTLE);
+        usesDamageValue.add(ItemID.SPAWN_EGG);
     }
 
     /**
