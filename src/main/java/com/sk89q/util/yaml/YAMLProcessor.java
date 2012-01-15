@@ -19,6 +19,7 @@
 
 package com.sk89q.util.yaml;
 
+import com.sk89q.util.StringUtil;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -30,9 +31,7 @@ import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * YAML configuration loader. To use this class, construct it with path to
@@ -66,12 +65,19 @@ import java.util.Map;
  * @author sk89q
  */
 public class YAMLProcessor extends YAMLNode {
-    private Yaml yaml;
-    private File file;
-    private String header = null;
+    public static final String LINE_BREAK = DumperOptions.LineBreak.getPlatformLineBreak().getString();
+    public static final char COMMENT_CHAR = '#';
+    protected final Yaml yaml;
+    protected final File file;
+    protected String header = null;
+    protected YAMLFormat format;
+
+    // Map from property key to comment. Comment may have multiple lines that are newline-separated.
+    private final Map<String, String> comments = new HashMap<String, String>();
 
     public YAMLProcessor(File file, boolean writeDefaults, YAMLFormat format) {
-        super(new HashMap<String, Object>(), writeDefaults);
+        super(new LinkedHashMap<String, Object>(), writeDefaults);
+        this.format = format;
 
         DumperOptions options = new FancyDumperOptions();
         options.setIndent(4);
@@ -123,7 +129,7 @@ public class YAMLProcessor extends YAMLNode {
 
         for (String line : headerLines) {
             if (header.length() > 0) {
-                header.append("\r\n");
+                header.append(LINE_BREAK);
             }
             header.append(line);
         }
@@ -172,9 +178,23 @@ public class YAMLProcessor extends YAMLNode {
             OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
             if (header != null) {
                 writer.append(header);
-                writer.append("\r\n");
+                writer.append(LINE_BREAK);
             }
-            yaml.dump(root, writer);
+            // Iterate over each root-level property and dump
+            for (Iterator<Map.Entry<String, Object>> i = root.entrySet().iterator(); i.hasNext();) {
+                Map.Entry<String, Object> entry = i.next();
+
+                // Output comment, if present
+                String comment = comments.get(entry.getKey());
+                if (comment != null) {
+                    writer.append(LINE_BREAK);
+                    writer.append(comment);
+                    writer.append(LINE_BREAK);
+                }
+
+                // Dump property
+                yaml.dump(Collections.singletonMap(entry.getKey(), entry.getValue()), writer);
+            }
             return true;
         } catch (IOException e) {
         } finally {
@@ -194,7 +214,7 @@ public class YAMLProcessor extends YAMLNode {
             if (null == input) {
                 root = new LinkedHashMap<String, Object>();
             } else {
-                root = (Map<String, Object>) input;
+                root = new LinkedHashMap<String, Object>((Map<String, Object>) input);
             }
         } catch (ClassCastException e) {
             throw new YAMLProcessorException("Root document must be an key-value structure");
@@ -210,20 +230,81 @@ public class YAMLProcessor extends YAMLNode {
     }
 
     /**
+     * Returns a root-level comment.
+     *
+     * @param key the property key
+     * @return the comment or <code>null</code>
+     */
+    public String getComment(String key) {
+        return comments.get(key);
+    }
+    
+    public void setComment(String key, String comment) {
+        if (comment != null) {
+            setComment(key, comment.split("\\r?\\n"));
+        } else {
+            comments.remove(key);
+        }
+    }
+
+    /**
+     * Set a root-level comment.
+     *
+     * @param key the property key
+     * @param comment the comment. May be <code>null</code>, in which case the comment
+     *   is removed.
+     */
+    public void setComment(String key, String... comment) {
+        if (comment != null && comment.length > 0) {
+            for (int i = 0; i < comment.length; ++i) {
+                if (!comment[i].matches("^" + COMMENT_CHAR + " ?")) {
+                    comment[i] = COMMENT_CHAR + " " + comment[i];
+                }
+            }
+            String s = StringUtil.joinString(comment, LINE_BREAK);
+            comments.put(key, s);
+        } else {
+            comments.remove(key);
+        }
+    }
+
+    /**
+     * Returns root-level comments.
+     *
+     * @return map of root-level comments
+     */
+    public Map<String, String> getComments() {
+        return Collections.unmodifiableMap(comments);
+    }
+
+    /**
+     * Set root-level comments from a map.
+     *
+     * @param comments comment map
+     */
+    public void setComments(Map<String, String> comments) {
+        this.comments.clear();
+        if (comments != null) {
+            this.comments.putAll(comments);
+        }
+    }
+
+    /**
      * This method returns an empty ConfigurationNode for using as a 
      * default in methods that select a node from a node list.
      * @return
      */
     public static YAMLNode getEmptyNode(boolean writeDefaults) {
-        return new YAMLNode(new HashMap<String, Object>(), writeDefaults);
+        return new YAMLNode(new LinkedHashMap<String, Object>(), writeDefaults);
     }
     
     // This will be included in snakeyaml 1.10, but until then we have to do it manually.
-    private static class FancyDumperOptions extends DumperOptions {
+    private class FancyDumperOptions extends DumperOptions {
         @Override
         public DumperOptions.ScalarStyle calculateScalarStyle(ScalarAnalysis analysis,
                                                               DumperOptions.ScalarStyle style) {
-            if (analysis.scalar.contains("\n") || analysis.scalar.contains("\r")) {
+            if (format == YAMLFormat.EXTENDED 
+                    && (analysis.scalar.contains("\n") || analysis.scalar.contains("\r"))) {
                 return ScalarStyle.LITERAL;
             } else {
                 return super.calculateScalarStyle(analysis, style);
