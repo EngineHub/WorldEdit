@@ -1,3 +1,27 @@
+5.1-SNAPSHOT:
+ - Added a //help command (alias /we help).
+ - Fixed a NullPointerException in conjunction with CraftBook.
+ - Added support for console commands to WorldEditPlugin.
+ - Made /butcher, /searchitem (and /search) and /worldedit (and /we) work on the console.
+ - Fixed //stack -s (again).
+ - Added a thickness parameter to //hollow.
+ - Added a block/pattern parameter to //hollow.
+ - Added a -l flag to /butcher, which spawns fake lightning on all killed entities.
+ - Added support for dynamic command registration.
+ - //sel poly now keeps the previous selection, converting its outline into a polygon if necessary.
+ - Fixed //sel selection clearing not being dispatched to CUI.
+ - Improve zip file recognition.
+ - Added WECUI protocol version support. Eventually, this will disable WECUI until the user updates, but not yet.
+ - Added //desel and //deselect as aliases for //sel
+ - Added a gravity brush.
+ - Added support for ellipsoid and sphere selections.
+ - Add cuiVersion to LocalSession and set it via incoming CUI event Refactor region selectors to handle legacy versions a bit better. Because chat doesn't allow the section sign to be sent, I have to send non-color codes. Meh. closes #158
+ - Some region selection fixes
+ - Removed redundant line from README.md.
+ - Add a cylindrical region selector.
+ - Added initial SpoutAPI compatibility
+ - Allow copying item stacks with damage of > Byte.MAX_VALUE. Closes #972
+
 5.0:
 - Added a //g[en[erate]] command that can generate a shape given a formula
 - Added a //deform command that deforms the current selection given a formula
