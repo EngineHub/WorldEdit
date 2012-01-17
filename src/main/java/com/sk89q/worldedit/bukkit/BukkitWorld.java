@@ -22,6 +22,7 @@ package com.sk89q.worldedit.bukkit;
 import java.util.HashMap;
 import java.util.Map;
 
+import gnu.trove.procedure.TIntIntProcedure;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
@@ -683,13 +684,20 @@ public class BukkitWorld extends LocalWorld {
             }
 
             if (contents[i] != null) {
-                ItemStack toAdd = new ItemStack(contents[i].getType(),
+                final ItemStack toAdd = new ItemStack(contents[i].getType(),
                         contents[i].getAmount(),
                         contents[i].getDamage());
                 try {
-                    for (Map.Entry<Integer, Integer> entry : contents[i].getEnchantments().entrySet()) {
-                        toAdd.addEnchantment(Enchantment.getById(entry.getKey()), entry.getValue());
-                    }
+                    contents[i].getEnchantments().forEachEntry(new TIntIntProcedure() {
+                        @Override
+                        public boolean execute(int key, int value) {
+                            Enchantment ench = Enchantment.getById(key);
+                            if (ench != null) {
+                                toAdd.addEnchantment(ench, value);
+                            }
+                            return true;
+                        }
+                    });
                 } catch (Throwable ignore) {}
                 inven.setItem(i, toAdd);
             } else {

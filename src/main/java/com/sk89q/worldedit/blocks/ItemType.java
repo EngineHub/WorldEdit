@@ -19,15 +19,14 @@
 
 package com.sk89q.worldedit.blocks;
 
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumSet;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import com.sk89q.util.StringUtil;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 /**
  * ItemType types.
@@ -308,7 +307,7 @@ public enum ItemType {
     /**
      * Stores a map of the IDs for fast access.
      */
-    private static final Map<Integer, ItemType> ids = new HashMap<Integer, ItemType>();
+    private static ItemType[] ids = new ItemType[3200];
     /**
      * Stores a map of the names for fast access.
      */
@@ -319,8 +318,13 @@ public enum ItemType {
     private final String[] lookupKeys;
 
     static {
-        for (ItemType type : EnumSet.allOf(ItemType.class)) {
-            ids.put(type.id, type);
+        for (ItemType type : values()) {
+            if (ids.length > type.id) {
+                ids[type.id] = type;
+            } else {
+                ids = Arrays.copyOf(ids, type.id + 10);
+                ids[type.id] = type;
+            }
             for (String key : type.lookupKeys) {
                 lookup.put(key, type);
             }
@@ -359,7 +363,11 @@ public enum ItemType {
      * @return
      */
     public static ItemType fromID(int id) {
-        return ids.get(id);
+        if (id < 0 || id >= ids.length) {
+            return null;
+        } else {
+            return ids[id];
+        }
     }
 
     /**
@@ -369,7 +377,7 @@ public enum ItemType {
      * @return
      */
     public static String toName(int id) {
-        ItemType type = ids.get(id);
+        ItemType type = fromID(id);
         if (type != null) {
             return type.getName();
         } else {
@@ -387,7 +395,7 @@ public enum ItemType {
         if (id == 0) {
             return "Hand";
         }
-        ItemType type = ids.get(id);
+        ItemType type = fromID(id);
         if (type != null) {
             return type.getName();
         } else {
@@ -470,7 +478,7 @@ public enum ItemType {
         return lookupKeys;
     }
 
-    private static final Set<Integer> shouldNotStack = new HashSet<Integer>();
+    private static final TIntSet shouldNotStack = new TIntHashSet();
     static {
         shouldNotStack.add(ItemID.IRON_SHOVEL);
         shouldNotStack.add(ItemID.IRON_PICK);
@@ -560,7 +568,7 @@ public enum ItemType {
         return shouldNotStack.contains(id);
     }
 
-    private static final Set<Integer> usesDamageValue = new HashSet<Integer>();
+    private static final TIntSet usesDamageValue = new TIntHashSet();
     static {
         usesDamageValue.add(BlockID.SAPLING);
         //usesDamageValue.add(BlockID.WATER);

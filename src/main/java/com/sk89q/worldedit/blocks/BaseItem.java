@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.blocks;
 
-import java.util.HashMap;
-import java.util.Map;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 /**
  * Represents an item.
@@ -37,7 +37,7 @@ public class BaseItem {
      */
     private short damage;
 
-    private Map<Integer, Integer> enchantments = new HashMap<Integer, Integer>();
+    private TIntIntMap enchantments = new TIntIntHashMap();
 
     /**
      * Construct the object.
@@ -88,7 +88,7 @@ public class BaseItem {
         this.damage = damage;
     }
 
-    public Map<Integer, Integer> getEnchantments() {
+    public TIntIntMap getEnchantments() {
         return enchantments;
     }
 }
