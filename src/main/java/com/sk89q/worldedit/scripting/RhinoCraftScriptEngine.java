@@ -61,7 +61,7 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
             if (e instanceof WrappedException) {
                 Throwable cause = ((WrappedException) e).getCause();
                 if (cause instanceof WorldEditException) {
-                    throw ((WrappedException) e).getCause();
+                    throw cause;
                 }
             }
 

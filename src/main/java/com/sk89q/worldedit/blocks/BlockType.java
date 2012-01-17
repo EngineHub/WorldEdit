@@ -320,6 +320,10 @@ public enum BlockType {
         shouldPlaceLast.add(BlockID.VINE);
         shouldPlaceLast.add(BlockID.LILY_PAD);
         shouldPlaceLast.add(BlockID.NETHER_WART);
+        shouldPlaceLast.add(BlockID.PISTON_BASE);
+        shouldPlaceLast.add(BlockID.PISTON_STICKY_BASE);
+        shouldPlaceLast.add(BlockID.PISTON_EXTENSION);
+        shouldPlaceLast.add(BlockID.PISTON_MOVING_PIECE);
     }
 
     /**
@@ -346,13 +350,15 @@ public enum BlockType {
      */
     private static final Set<Integer> shouldPlaceFinal = new HashSet<Integer>();
     static {
-        shouldPlaceLast.add(BlockID.SIGN_POST);
-        shouldPlaceLast.add(BlockID.WOODEN_DOOR);
-        shouldPlaceLast.add(BlockID.WALL_SIGN);
-        shouldPlaceLast.add(BlockID.IRON_DOOR);
-        shouldPlaceLast.add(BlockID.CACTUS);
-        shouldPlaceLast.add(BlockID.REED);
-        shouldPlaceLast.add(BlockID.CAKE_BLOCK);
+        shouldPlaceFinal.add(BlockID.SIGN_POST);
+        shouldPlaceFinal.add(BlockID.WOODEN_DOOR);
+        shouldPlaceFinal.add(BlockID.WALL_SIGN);
+        shouldPlaceFinal.add(BlockID.IRON_DOOR);
+        shouldPlaceFinal.add(BlockID.CACTUS);
+        shouldPlaceFinal.add(BlockID.REED);
+        shouldPlaceFinal.add(BlockID.CAKE_BLOCK);
+        shouldPlaceFinal.add(BlockID.PISTON_EXTENSION);
+        shouldPlaceFinal.add(BlockID.PISTON_MOVING_PIECE);
     }
 
     /**
