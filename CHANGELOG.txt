@@ -1,4 +1,4 @@
-5.1-SNAPSHOT:
+5.1:
  - Added a //help command (alias /we help).
  - Fixed a NullPointerException in conjunction with CraftBook.
  - Added support for console commands to WorldEditPlugin.
