@@ -30,7 +30,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 
 /**
@@ -71,8 +70,7 @@ public class CommandRegistration {
                 Bukkit.getServer().getLogger().severe(plugin.getDescription().getName() +
                         ": Could not retrieve server CommandMap, using fallback instead! Please report to http://redmine.sk89q.com");
                 fallbackCommands = commandMap = new SimpleCommandMap(Bukkit.getServer());
-                Bukkit.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS,
-                        new FallbackRegistrationListener(fallbackCommands), Event.Priority.Normal, plugin);
+                Bukkit.getServer().getPluginManager().registerEvents(new FallbackRegistrationListener(fallbackCommands), plugin);
             }
         }
         return commandMap;
