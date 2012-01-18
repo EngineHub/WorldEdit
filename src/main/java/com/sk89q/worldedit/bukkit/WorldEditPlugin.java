@@ -103,7 +103,7 @@ public class WorldEditPlugin extends JavaPlugin {
         api = new WorldEditAPI(this);
 
         // Now we can register events!
-        registerEvents();
+        getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
 
         getServer().getScheduler().scheduleAsyncRepeatingTask(this,
                 new SessionTimer(controller, getServer()), 120, 120);
@@ -132,40 +132,6 @@ public class WorldEditPlugin extends JavaPlugin {
         config.unload();
         config.load();
         getPermissionsResolver().load();
-    }
-
-    /**
-     * Register the events used by WorldEdit.
-     */
-    protected void registerEvents() {
-        new WorldEditPlayerListener(this);
-        new WorldEditCriticalPlayerListener(this);
-    }
-
-    /**
-     * Register an event.
-     * 
-     * @param typeName
-     * @param listener
-     * @param priority
-     */
-    public void registerEvent(String typeName, Listener listener, Priority priority) {
-        try {
-            Event.Type type = Event.Type.valueOf(typeName);
-            getServer().getPluginManager().registerEvent(type, listener, priority, this);
-        } catch (IllegalArgumentException e) {
-            logger.info("WorldEdit: Unable to register missing event type " + typeName);
-        }
-    }
-
-    /**
-     * Register an event at normal priority.
-     * 
-     * @param typeName
-     * @param listener
-     */
-    public void registerEvent(String typeName, Listener listener) {
-        registerEvent(typeName, listener, Event.Priority.Normal);
     }
 
     /**

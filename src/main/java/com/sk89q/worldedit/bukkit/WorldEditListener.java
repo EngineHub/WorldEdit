@@ -1,7 +1,7 @@
 // $Id$
 /*
  * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com>
+ * Copyright (C) 2012 sk89q <http://www.sk89q.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,21 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+ */
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
-import org.bukkit.event.Event;
+import org.bukkit.event.Event.Result;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerListener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
@@ -39,7 +41,7 @@ import java.util.regex.Pattern;
 /**
  * Handles all events thrown in relation to a Player
  */
-public class WorldEditPlayerListener extends PlayerListener {
+public class WorldEditListener implements Listener {
     
     private WorldEditPlugin plugin;
     private boolean ignoreLeftClickAir = false;
@@ -56,13 +58,13 @@ public class WorldEditPlayerListener extends PlayerListener {
      * 
      * @param plugin
      */
-    public WorldEditPlayerListener(WorldEditPlugin plugin) {
+    public WorldEditListener(WorldEditPlugin plugin) {
         this.plugin = plugin;
+    }
 
-        plugin.registerEvent("PLAYER_QUIT", this);
-        plugin.registerEvent("PLAYER_INTERACT", this);
-        plugin.registerEvent("PLAYER_COMMAND_PREPROCESS", this, Event.Priority.Low);
-        plugin.registerEvent("PLAYER_CHAT", this);
+    @EventHandler(event = PlayerJoinEvent.class, priority = EventPriority.LOWEST)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        plugin.wrapPlayer(event.getPlayer()).dispatchCUIHandshake();
     }
 
     /**
@@ -70,7 +72,7 @@ public class WorldEditPlayerListener extends PlayerListener {
      *
      * @param event Relevant event details
      */
-    @Override
+    @EventHandler(event = PlayerQuitEvent.class)
     public void onPlayerQuit(PlayerQuitEvent event) {
         plugin.getWorldEdit().markExpire(plugin.wrapPlayer(event.getPlayer()));
     }
@@ -80,7 +82,7 @@ public class WorldEditPlayerListener extends PlayerListener {
      *
      * @param event Relevant event details
      */
-    @Override
+    @EventHandler(event = PlayerCommandPreprocessEvent.class, priority = EventPriority.LOW)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         if (event.isCancelled()) {
             return;
@@ -101,9 +103,9 @@ public class WorldEditPlayerListener extends PlayerListener {
      *
      * @param event Relevant event details
      */
-    @Override
+    @EventHandler(event = PlayerInteractEvent.class)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.useItemInHand() == Event.Result.DENY) {
+        if (event.useItemInHand() == Result.DENY) {
             return;
         }
         
@@ -165,7 +167,7 @@ public class WorldEditPlayerListener extends PlayerListener {
         }
     }
 
-    @Override
+    @EventHandler(event = PlayerChatEvent.class)
     public void onPlayerChat(PlayerChatEvent event) {
         if (event.isCancelled()) {
             return;
