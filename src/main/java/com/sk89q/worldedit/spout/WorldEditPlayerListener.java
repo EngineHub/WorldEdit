@@ -61,7 +61,7 @@ public class WorldEditPlayerListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(event = PlayerJoinEvent.class, order = Order.EARLIEST)
+    @EventHandler(order = Order.EARLIEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         plugin.wrapPlayer(event.getPlayer()).dispatchCUIHandshake();
     }
@@ -71,7 +71,7 @@ public class WorldEditPlayerListener implements Listener {
      *
      * @param event Relevant event details
      */
-    @EventHandler(event = PlayerLeaveEvent.class)
+    @EventHandler
     public void onPlayerQuit(PlayerLeaveEvent event) {
         plugin.getWorldEdit().markExpire(plugin.wrapPlayer(event.getPlayer()));
     }
@@ -81,7 +81,7 @@ public class WorldEditPlayerListener implements Listener {
      *
      * @param event Relevant event details
      */
-    //@EventHandler(event = PreCommandEvent.class, order = Order.EARLY)
+    //@EventHandler(order = Order.EARLY)
     public void onPlayerCommandPreprocess(PreCommandEvent event) {
 
         String[] split = event.getMessage().split(" ");
@@ -98,7 +98,7 @@ public class WorldEditPlayerListener implements Listener {
      *
      * @param event Relevant event details
      */
-    @EventHandler(event = PlayerInteractEvent.class)
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
 
         final LocalPlayer player = plugin.wrapPlayer(event.getPlayer());
@@ -154,7 +154,7 @@ public class WorldEditPlayerListener implements Listener {
         }
     }
 
-    @EventHandler(event = PlayerChatEvent.class)
+    @EventHandler
     public void onPlayerChat(PlayerChatEvent event) {
         if (event.isCancelled()) {
             return;
