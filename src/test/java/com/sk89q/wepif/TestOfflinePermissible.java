@@ -1,5 +1,6 @@
 package com.sk89q.wepif;
 
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
@@ -128,6 +129,10 @@ public class TestOfflinePermissible implements OfflinePlayer, Permissible {
     }
 
     public boolean hasPlayedBefore() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Location getBedSpawnLocation() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

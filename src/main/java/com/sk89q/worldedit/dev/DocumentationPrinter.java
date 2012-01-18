@@ -196,6 +196,7 @@ public class DocumentationPrinter {
         stream.println("name: WorldEdit");
         stream.println("main: com.sk89q.worldedit.bukkit.WorldEditPlugin");
         stream.println("version: ${project.version}");
+        stream.println("softdepend: [Spout] #hack to fix trove errors");
 
         stream.println();
         stream.println();
