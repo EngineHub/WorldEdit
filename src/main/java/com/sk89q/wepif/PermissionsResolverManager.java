@@ -261,7 +261,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     }
 
     class ServerListener implements org.bukkit.event.Listener {
-        @EventHandler(event = PluginEnableEvent.class)
+        @EventHandler
         public void onPluginEnable(PluginEnableEvent event) {
             Plugin plugin = event.getPlugin();
             String name = plugin.getDescription().getName();
@@ -272,7 +272,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
             }
         }
 
-        @EventHandler(event = PluginDisableEvent.class)
+        @EventHandler
         public void onPluginDisable(PluginDisableEvent event) {
             String name = event.getPlugin().getDescription().getName();
 

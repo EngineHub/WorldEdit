@@ -62,7 +62,7 @@ public class WorldEditListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(event = PlayerJoinEvent.class, priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         plugin.wrapPlayer(event.getPlayer()).dispatchCUIHandshake();
     }
@@ -72,7 +72,7 @@ public class WorldEditListener implements Listener {
      *
      * @param event Relevant event details
      */
-    @EventHandler(event = PlayerQuitEvent.class)
+    @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         plugin.getWorldEdit().markExpire(plugin.wrapPlayer(event.getPlayer()));
     }
@@ -82,7 +82,7 @@ public class WorldEditListener implements Listener {
      *
      * @param event Relevant event details
      */
-    @EventHandler(event = PlayerCommandPreprocessEvent.class, priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         if (event.isCancelled()) {
             return;
@@ -103,7 +103,7 @@ public class WorldEditListener implements Listener {
      *
      * @param event Relevant event details
      */
-    @EventHandler(event = PlayerInteractEvent.class)
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.useItemInHand() == Result.DENY) {
             return;
@@ -167,7 +167,7 @@ public class WorldEditListener implements Listener {
         }
     }
 
-    @EventHandler(event = PlayerChatEvent.class)
+    @EventHandler
     public void onPlayerChat(PlayerChatEvent event) {
         if (event.isCancelled()) {
             return;
