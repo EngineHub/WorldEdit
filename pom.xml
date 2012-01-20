@@ -37,11 +37,12 @@
   </repositories>
 
   <dependencies>
-    <!-- Used for PermissionsEx support -->
+    <!-- Used for Permissions support (this version has both the legacy API 
+      and the new Permissions API to compile against -->
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>dummypermscompat</artifactId>
-      <version>1.5</version>
+      <version>1.4</version>
     </dependency>
 
     <!-- Bukkit -->
