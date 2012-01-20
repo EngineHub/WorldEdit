@@ -86,6 +86,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[] {
             PluginPermissionsResolver.class,
             PermissionsExResolver.class,
+            NijiPermissionsResolver.class,
             DinnerPermsResolver.class,
             FlatFilePermissionsResolver.class
     };
