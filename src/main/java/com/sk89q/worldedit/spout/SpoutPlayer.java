@@ -28,7 +28,7 @@ import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.cui.CUIEvent;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Transform;
+import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.MaterialData;
 import org.spout.api.math.Quaternion;
