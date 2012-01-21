@@ -27,12 +27,12 @@
       <url>http://mvn2.sk89q.com/repo</url>
     </repository>
     <repository>
-      <id>bukkit-releases</id>
-      <url>http://repo.bukkit.org/content/repositories/releases</url>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/content/groups/public</url>
     </repository>
     <repository>
-        <id>spout-repo</id>
-        <url>http://repo.getspout.org</url>
+      <id>spout-repo</id>
+      <url>http://repo.getspout.org</url>
     </repository>
   </repositories>
 
