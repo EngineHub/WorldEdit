@@ -20,14 +20,13 @@
 package com.sk89q.bukkit.util;
 
 import org.bukkit.command.CommandMap;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerListener;
 
 /**
 * @author zml2008
 */
-public class FallbackRegistrationListener implements Listener {
+public class FallbackRegistrationListener extends PlayerListener {
 
     private final CommandMap commandRegistration;
 
@@ -35,7 +34,7 @@ public class FallbackRegistrationListener implements Listener {
         this.commandRegistration = commandRegistration;
     }
 
-    @EventHandler
+    @Override
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         if (event.isCancelled()) {
             return;

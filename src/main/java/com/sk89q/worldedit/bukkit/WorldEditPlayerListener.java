@@ -15,21 +15,19 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+*/
+
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
-import org.bukkit.event.Event.Result;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
@@ -41,7 +39,7 @@ import java.util.regex.Pattern;
 /**
  * Handles all events thrown in relation to a Player
  */
-public class WorldEditListener implements Listener {
+public class WorldEditPlayerListener extends PlayerListener {
     
     private WorldEditPlugin plugin;
     private boolean ignoreLeftClickAir = false;
@@ -58,13 +56,13 @@ public class WorldEditListener implements Listener {
      * 
      * @param plugin
      */
-    public WorldEditListener(WorldEditPlugin plugin) {
+    public WorldEditPlayerListener(WorldEditPlugin plugin) {
         this.plugin = plugin;
-    }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        plugin.wrapPlayer(event.getPlayer()).dispatchCUIHandshake();
+        plugin.registerEvent("PLAYER_QUIT", this);
+        plugin.registerEvent("PLAYER_INTERACT", this);
+        plugin.registerEvent("PLAYER_COMMAND_PREPROCESS", this, Event.Priority.Low);
+        plugin.registerEvent("PLAYER_CHAT", this);
     }
 
     /**
@@ -72,7 +70,7 @@ public class WorldEditListener implements Listener {
      *
      * @param event Relevant event details
      */
-    @EventHandler
+    @Override
     public void onPlayerQuit(PlayerQuitEvent event) {
         plugin.getWorldEdit().markExpire(plugin.wrapPlayer(event.getPlayer()));
     }
@@ -82,7 +80,7 @@ public class WorldEditListener implements Listener {
      *
      * @param event Relevant event details
      */
-    @EventHandler(priority = EventPriority.LOW)
+    @Override
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         if (event.isCancelled()) {
             return;
@@ -103,9 +101,9 @@ public class WorldEditListener implements Listener {
      *
      * @param event Relevant event details
      */
-    @EventHandler
+    @Override
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.useItemInHand() == Result.DENY) {
+        if (event.useItemInHand() == Event.Result.DENY) {
             return;
         }
         
@@ -167,7 +165,7 @@ public class WorldEditListener implements Listener {
         }
     }
 
-    @EventHandler
+    @Override
     public void onPlayerChat(PlayerChatEvent event) {
         if (event.isCancelled()) {
             return;

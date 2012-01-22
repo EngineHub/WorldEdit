@@ -23,7 +23,7 @@ import com.sk89q.util.yaml.YAMLFormat;
 import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
-import org.bukkit.event.EventHandler;
+import org.bukkit.event.Event;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
@@ -261,8 +261,9 @@ public class PermissionsResolverManager implements PermissionsResolver {
         private static final long serialVersionUID = 7044832912491608706L;
     }
 
-    class ServerListener implements org.bukkit.event.Listener {
-        @EventHandler
+    class ServerListener extends org.bukkit.event.server.ServerListener {
+
+        @Override
         public void onPluginEnable(PluginEnableEvent event) {
             Plugin plugin = event.getPlugin();
             String name = plugin.getDescription().getName();
@@ -273,7 +274,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
             }
         }
 
-        @EventHandler
+        @Override
         public void onPluginDisable(PluginDisableEvent event) {
             String name = event.getPlugin().getDescription().getName();
 
@@ -282,9 +283,12 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 load();
             }
         }
-
+        
         void register(Plugin plugin) {
-            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            plugin.getServer().getPluginManager().registerEvent(Event.Type.PLUGIN_ENABLE,
+                    this, Event.Priority.Normal, plugin);
+            plugin.getServer().getPluginManager().registerEvent(Event.Type.PLUGIN_DISABLE,
+                    this, Event.Priority.Normal, plugin);
         }
     }
 
