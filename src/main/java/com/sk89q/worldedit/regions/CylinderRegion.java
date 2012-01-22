@@ -66,7 +66,7 @@ public class CylinderRegion extends AbstractRegion {
      */
     public CylinderRegion(LocalWorld world, Vector center, Vector2D radius, int minY, int maxY) {
         super(world);
-        this.center = center;
+        setCenter(center);
         setRadius(radius);
         this.minY = minY;
         this.maxY = maxY;
