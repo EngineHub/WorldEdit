@@ -90,14 +90,6 @@
       <artifactId>spoutapi</artifactId>
       <version>dev-SNAPSHOT</version>
     </dependency>
-
-    <dependency>
-      <groupId>net.sf.trove4j</groupId>
-      <artifactId>trove4j</artifactId>
-      <version>3.0.2</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -181,10 +173,8 @@
                 <!-- We want to bundle in the modified jchronic library -->
                 <includes>
                   <include>com.sk89q:jchronic</include>
-                  <include>net.sf.trove4j:trove4j</include>
                 </includes>
               </artifactSet>
-              <minimizeJar>true</minimizeJar>
             </configuration>
           </execution>
         </executions>

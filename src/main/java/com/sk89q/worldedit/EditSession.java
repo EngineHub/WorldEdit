@@ -39,8 +39,6 @@ import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.*;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 
 /**
  * This class can wrap all block editing operations into one "edit session" that
@@ -120,7 +118,7 @@ public class EditSession {
     /**
      * List of missing blocks;
      */
-    private TIntSet missingBlocks = new TIntHashSet();
+    private Set<Integer> missingBlocks = new HashSet<Integer>();
 
     /**
      * Mask to cover operations.
@@ -662,9 +660,9 @@ public class EditSession {
      *
      * @return
      */
-    public TIntSet popMissingBlocks() {
-        TIntSet missingBlocks = this.missingBlocks;
-        this.missingBlocks = new TIntHashSet();
+    public Set<Integer> popMissingBlocks() {
+        Set<Integer> missingBlocks = this.missingBlocks;
+        this.missingBlocks = new HashSet<Integer>();
         return missingBlocks;
     }
 

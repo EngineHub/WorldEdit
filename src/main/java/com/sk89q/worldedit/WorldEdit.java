@@ -49,7 +49,6 @@ import com.sk89q.worldedit.scripting.*;
 import com.sk89q.worldedit.tools.*;
 import com.sk89q.worldedit.masks.*;
 import com.sk89q.worldedit.patterns.*;
-import gnu.trove.set.TIntSet;
 
 /**
  * This class is the main entry point for WorldEdit. All events are routed
@@ -975,7 +974,7 @@ public class WorldEdit {
             blockBag.flushChanges();
         }
 
-        TIntSet missingBlocks = editSession.popMissingBlocks();
+        Set<Integer> missingBlocks = editSession.popMissingBlocks();
 
         if (missingBlocks.size() > 0) {
             StringBuilder str = new StringBuilder();
@@ -983,12 +982,12 @@ public class WorldEdit {
             int size = missingBlocks.size();
             int i = 0;
 
-            for (int id : missingBlocks.toArray()) {
+            for (Integer id : missingBlocks) {
                 BlockType type = BlockType.fromID(id);
 
                 str.append(type != null
                         ? type.getName() + " (" + id + ")"
-                        : id);
+                        : id.toString());
 
                 ++i;
 
