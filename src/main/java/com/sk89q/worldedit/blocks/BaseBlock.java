@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.blocks;
 
+import java.util.Collection;
+
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 
 /**
@@ -162,6 +164,10 @@ public class BaseBlock {
     }
 
     public boolean inIterable(Iterable<BaseBlock> iter) {
+        if (iter instanceof Collection) {
+            return ((Collection<?>) iter).contains(this);
+        }
+
         for (BaseBlock block : iter) {
             if (block.equals(this)) {
                 return true;
