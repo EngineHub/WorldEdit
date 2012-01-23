@@ -86,6 +86,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[] {
             PluginPermissionsResolver.class,
             PermissionsExResolver.class,
+            bPermissionsResolver.class,
             NijiPermissionsResolver.class,
             DinnerPermsResolver.class,
             FlatFilePermissionsResolver.class
@@ -268,7 +269,8 @@ public class PermissionsResolverManager implements PermissionsResolver {
             String name = plugin.getDescription().getName();
             if (plugin instanceof PermissionsProvider) {
                 setPluginPermissionsResolver(plugin);
-            } else if ("Permissions".equals(name) || "PermissionsEx".equals(name)) {
+            } else if ("Permissions".equals(name) || "PermissionsEx".equals(name)
+                    || "bPermissions".equals(name)) {
                 load();
             }
         }
@@ -278,7 +280,8 @@ public class PermissionsResolverManager implements PermissionsResolver {
             String name = event.getPlugin().getDescription().getName();
 
             if (event.getPlugin() instanceof PermissionsProvider 
-                    || "Permissions".equals(name) || "PermissionsEx".equals(name)) {
+                    || "Permissions".equals(name) || "PermissionsEx".equals(name)
+                    || "bPermissions".equals(name)) {
                 load();
             }
         }
