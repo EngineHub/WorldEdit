@@ -1,3 +1,8 @@
+5.1.1:
+ - Fixed some compatibility issues with SpoutPlugin
+ - Readded Permissions 2/3 support
+ - Fixed an issue with CylinderRegion
+
 5.1:
  - Added a //help command (alias /we help).
  - Fixed a NullPointerException in conjunction with CraftBook.
