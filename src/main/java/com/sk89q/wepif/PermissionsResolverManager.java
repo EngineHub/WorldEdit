@@ -134,7 +134,6 @@ public class PermissionsResolverManager implements PermissionsResolver {
 
     public void load() {
         findResolver();
-        permissionResolver.load();
     }
 
     public boolean hasPermission(String name, String permission) {
