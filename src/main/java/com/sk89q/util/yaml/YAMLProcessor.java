@@ -183,20 +183,24 @@ public class YAMLProcessor extends YAMLNode {
                 writer.append(header);
                 writer.append(LINE_BREAK);
             }
-            // Iterate over each root-level property and dump
-            for (Iterator<Map.Entry<String, Object>> i = root.entrySet().iterator(); i.hasNext();) {
-                Map.Entry<String, Object> entry = i.next();
+            if (comments.size() == 0) {
+                yaml.dump(root, writer);
+            } else {
+                // Iterate over each root-level property and dump
+                for (Iterator<Map.Entry<String, Object>> i = root.entrySet().iterator(); i.hasNext(); ) {
+                    Map.Entry<String, Object> entry = i.next();
 
-                // Output comment, if present
-                String comment = comments.get(entry.getKey());
-                if (comment != null) {
-                    writer.append(LINE_BREAK);
-                    writer.append(comment);
-                    writer.append(LINE_BREAK);
+                    // Output comment, if present
+                    String comment = comments.get(entry.getKey());
+                    if (comment != null) {
+                        writer.append(LINE_BREAK);
+                        writer.append(comment);
+                        writer.append(LINE_BREAK);
+                    }
+
+                    // Dump property
+                    yaml.dump(Collections.singletonMap(entry.getKey(), entry.getValue()), writer);
                 }
-
-                // Dump property
-                yaml.dump(Collections.singletonMap(entry.getKey(), entry.getValue()), writer);
             }
             return true;
         } catch (IOException e) {
