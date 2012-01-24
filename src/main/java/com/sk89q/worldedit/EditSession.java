@@ -2586,7 +2586,7 @@ public class EditSession {
      * @param region
      * @return
      */
-    public List<Countable<Integer>> getBlockDistribution(Region region, boolean useData) {
+    public List<Countable<Integer>> getBlockDistribution(Region region) {
         List<Countable<Integer>> distribution = new ArrayList<Countable<Integer>>();
         Map<Integer, Countable<Integer>> map = new HashMap<Integer, Countable<Integer>>();
 
@@ -2608,9 +2608,6 @@ public class EditSession {
                         Vector pt = new Vector(x, y, z);
 
                         int id = getBlockType(pt);
-                        if (useData) {
-                            id = (id << 16) | getBlockData(pt);
-                        }
 
                         if (map.containsKey(id)) {
                             map.get(id).increment();
@@ -2625,15 +2622,70 @@ public class EditSession {
         } else {
             for (Vector pt : region) {
                 int id = getBlockType(pt);
-                if (useData) {
-                    id = (id << 16) | getBlockData(pt);
-                }
 
                 if (map.containsKey(id)) {
                     map.get(id).increment();
                 } else {
                     Countable<Integer> c = new Countable<Integer>(id, 1);
                     map.put(id, c);
+                }
+            }
+        }
+
+        Collections.sort(distribution);
+        // Collections.reverse(distribution);
+
+        return distribution;
+    }
+
+    /**
+     * Get the block distribution (with data values) inside a region.
+     *
+     * @param region
+     * @return
+     */
+    public List<Countable<BaseBlock>> getBlockDistributionWithData(Region region) {
+        List<Countable<BaseBlock>> distribution = new ArrayList<Countable<BaseBlock>>();
+        Map<BaseBlock, Countable<BaseBlock>> map = new HashMap<BaseBlock, Countable<BaseBlock>>();
+
+        if (region instanceof CuboidRegion) {
+            // Doing this for speed
+            Vector min = region.getMinimumPoint();
+            Vector max = region.getMaximumPoint();
+
+            int minX = min.getBlockX();
+            int minY = min.getBlockY();
+            int minZ = min.getBlockZ();
+            int maxX = max.getBlockX();
+            int maxY = max.getBlockY();
+            int maxZ = max.getBlockZ();
+
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    for (int z = minZ; z <= maxZ; ++z) {
+                        Vector pt = new Vector(x, y, z);
+
+                        BaseBlock blk = new BaseBlock(getBlockType(pt), getBlockData(pt));
+
+                        if (map.containsKey(blk)) {
+                            map.get(blk).increment();
+                        } else {
+                            Countable<BaseBlock> c = new Countable<BaseBlock>(blk,1);
+                            map.put(blk, c);
+                            distribution.add(c);
+                        }
+                    }
+                }
+            }
+        } else {
+            for (Vector pt : region) {
+                BaseBlock blk = new BaseBlock(getBlockType(pt), getBlockData(pt));
+
+                if (map.containsKey(blk)) {
+                    map.get(blk).increment();
+                } else {
+                    Countable<BaseBlock> c = new Countable<BaseBlock>(blk, 1);
+                    map.put(blk, c);
                 }
             }
         }
