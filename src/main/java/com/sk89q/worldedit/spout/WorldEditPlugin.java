@@ -66,6 +66,11 @@ public class WorldEditPlugin extends CommonPlugin implements Named {
      */
     private YAMLConfiguration config;
 
+    private static WorldEditPlugin instance;
+    {
+        instance = this;
+    }
+
     /**
      * Called on plugin enable.
      */
@@ -350,5 +355,9 @@ public class WorldEditPlugin extends CommonPlugin implements Named {
     @Override
     public String getName() {
         return getDescription().getName();
+    }
+
+    static WorldEditPlugin getInstance() {
+        return instance;
     }
 }
