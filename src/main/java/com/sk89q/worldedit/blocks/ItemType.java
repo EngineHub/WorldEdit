@@ -414,6 +414,10 @@ public enum ItemType {
      */
     public static ItemType lookup(String name, boolean fuzzy) {
         String testName = name.replace(" ", "").toLowerCase();
+        
+        if (testName.length() == 0) {
+            return null;
+        }
 
         ItemType type = lookup.get(testName);
 

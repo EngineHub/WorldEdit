@@ -236,6 +236,10 @@ public enum BlockType {
      */
     public static BlockType lookup(String name, boolean fuzzy) {
         String testName = name.replace(" ", "").toLowerCase();
+        
+        if (testName.length() == 0) {
+            return null;
+        }
 
         BlockType type = lookup.get(testName);
 
