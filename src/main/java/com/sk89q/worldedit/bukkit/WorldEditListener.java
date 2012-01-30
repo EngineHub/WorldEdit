@@ -47,7 +47,7 @@ public class WorldEditListener implements Listener {
     
     private WorldEditPlugin plugin;
     private boolean ignoreLeftClickAir = false;
-    private final static Pattern cuipattern = Pattern.compile("u00a74u00a75u00a73u00a74([^|]*)\\|?(.*)");
+    private final static Pattern cuipattern = Pattern.compile("u00a74u00a75u00a73u00a74([^\\|]*)\\|?(.*)");
 
     /**
      * Called when a player plays an animation, such as an arm swing
