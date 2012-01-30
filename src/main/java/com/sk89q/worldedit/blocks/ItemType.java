@@ -24,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumSet;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import com.sk89q.util.StringUtil;
@@ -413,38 +412,7 @@ public enum ItemType {
      * @return
      */
     public static ItemType lookup(String name, boolean fuzzy) {
-        String testName = name.replace(" ", "").toLowerCase();
-        
-        if (testName.length() == 0) {
-            return null;
-        }
-
-        ItemType type = lookup.get(testName);
-
-        if (type != null) {
-            return type;
-        }
-
-        if (!fuzzy) {
-            return null;
-        }
-
-        int minDist = -1;
-
-        for (Entry<String, ItemType> entry : lookup.entrySet()) {
-            if (entry.getKey().charAt(0) != testName.charAt(0)) {
-                continue;
-            }
-
-            int dist = StringUtil.getLevenshteinDistance(entry.getKey(), testName);
-
-            if ((dist < minDist || minDist == -1) && dist < 2) {
-                minDist = dist;
-                type = entry.getValue();
-            }
-        }
-
-        return type;
+        return StringUtil.lookup(lookup, name, fuzzy);
     }
 
     /**

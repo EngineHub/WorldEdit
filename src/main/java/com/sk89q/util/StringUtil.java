@@ -19,6 +19,7 @@
 package com.sk89q.util;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * String utilities.
@@ -269,5 +270,40 @@ public class StringUtil {
         // our last action in the above loop was to switch d and p, so p now
         // actually has the most recent cost counts
         return p[n];
+    }
+
+    public static <T extends Enum<?>> T lookup(Map<String, T> lookup, String name, boolean fuzzy) {
+        String testName = name.replace("[ _]", "").toLowerCase();
+
+        T type = lookup.get(testName);
+        if (type != null) {
+            return type;
+        }
+
+        if (!fuzzy) {
+            return null;
+        }
+
+        int minDist = Integer.MAX_VALUE;
+
+        for (Map.Entry<String, T> entry : lookup.entrySet()) {
+            final String key = entry.getKey();
+            if (key.charAt(0) != testName.charAt(0)) {
+                continue;
+            }
+
+            int dist = getLevenshteinDistance(key, testName);
+
+            if (dist >= minDist) {
+                minDist = dist;
+                type = entry.getValue();
+            }
+        }
+
+        if (minDist > 1) {
+            return null;
+        }
+
+        return type;
     }
 }
