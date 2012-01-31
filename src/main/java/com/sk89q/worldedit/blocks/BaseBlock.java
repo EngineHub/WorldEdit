@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.blocks;
 
-import java.util.Collection;
-
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 
 /**
@@ -147,8 +145,12 @@ public class BaseBlock {
         if (!(o instanceof BaseBlock)) {
             return false;
         }
-        return (type == ((BaseBlock) o).type)
-                && (data == ((BaseBlock) o).data || data == -1 || ((BaseBlock) o).data == -1);
+
+        return type == ((BaseBlock) o).type && data == ((BaseBlock) o).data;
+    }
+
+    public boolean equalsFuzzy(BaseBlock o) {
+        return (type == o.type && data == o.data) || data == -1 || o.data == -1;
     }
 
     @Override
@@ -163,13 +165,17 @@ public class BaseBlock {
         return "BaseBlock id: " + getType() + " with damage: " + getData();
     }
 
+    /**
+     * 
+     *
+     * @param iter
+     * @return
+     * @deprecated This method is silly
+     */
+    @Deprecated
     public boolean inIterable(Iterable<BaseBlock> iter) {
-        if (iter instanceof Collection) {
-            return ((Collection<?>) iter).contains(this);
-        }
-
         for (BaseBlock block : iter) {
-            if (block.equals(this)) {
+            if (block.equalsFuzzy(this)) {
                 return true;
             }
         }
