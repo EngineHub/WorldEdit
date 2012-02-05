@@ -234,7 +234,11 @@ public enum BlockType {
      * @return
      */
     public static BlockType lookup(String name, boolean fuzzy) {
-        return StringUtil.lookup(lookup, name, fuzzy);
+        try {
+            return fromID(Integer.parseInt(name));
+        } catch (NumberFormatException e) {
+            return StringUtil.lookup(lookup, name, fuzzy);
+        }
     }
 
     /**
