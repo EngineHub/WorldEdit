@@ -1489,7 +1489,7 @@ public class EditSession {
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
                 Vector minV = new Vector(x, y, minZ);
-                if (setBlock(min, pattern.next(minV))) {
+                if (setBlock(minV, pattern.next(minV))) {
                     ++affected;
                 }
                 Vector maxV = new Vector(x, y, maxZ);
