@@ -1248,11 +1248,13 @@ public class EditSession {
         Set<BaseBlock> definiteBlockTypes = new HashSet<BaseBlock>();
         Set<Integer> fuzzyBlockTypes = new HashSet<Integer>();
 
-        for (BaseBlock block : fromBlockTypes) {
-            if (block.getData() == -1) {
-                fuzzyBlockTypes.add(block.getType());
-            } else {
-                definiteBlockTypes.add(block);
+        if (fromBlockTypes != null) {
+            for (BaseBlock block : fromBlockTypes) {
+                if (block.getData() == -1) {
+                    fuzzyBlockTypes.add(block.getType());
+                } else {
+                    definiteBlockTypes.add(block);
+                }
             }
         }
 
@@ -1275,9 +1277,17 @@ public class EditSession {
                     for (int z = minZ; z <= maxZ; ++z) {
                         Vector pt = new Vector(x, y, z);
                         BaseBlock curBlockType = getBlock(pt);
-                        //replace <from-block> <to-block>
-                        if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
-                            continue;
+
+                        if (fromBlockTypes == null) {
+                            //replace <to-block>
+                            if (curBlockType.isAir()) {
+                                continue;
+                            }
+                        } else {
+                            //replace <from-block> <to-block>
+                            if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                                continue;
+                            }
                         }
 
                         if (setBlock(pt, toBlock)) {
@@ -1290,9 +1300,16 @@ public class EditSession {
             for (Vector pt : region) {
                 BaseBlock curBlockType = getBlock(pt);
 
-                //replace <from-block> <to-block>
-                if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
-                    continue;
+                if (fromBlockTypes == null) {
+                    //replace <to-block>
+                    if (curBlockType.isAir()) {
+                        continue;
+                    }
+                } else {
+                    //replace <from-block> <to-block>
+                    if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                        continue;
+                    }
                 }
 
                 if (setBlock(pt, toBlock)) {
