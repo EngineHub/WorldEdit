@@ -327,6 +327,17 @@ public abstract class LocalWorld {
     public boolean isValidBlockType(int type) {
         return BlockType.fromID(type) != null;
     }
+    
+    /**
+     * Returns whether a block uses its data value.
+     * 
+     * @param type block ID type
+     * @return true if the block uses data value
+     */
+    public boolean usesBlockData(int type) {
+        // We future proof here by assuming all unknown blocks use data
+        return BlockType.usesData(type) || BlockType.fromID(type) == null;
+    }
 
     /**
      * Checks if the chunk pt is in is loaded. if not, loads the chunk

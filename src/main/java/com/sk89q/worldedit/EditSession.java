@@ -217,7 +217,7 @@ public class EditSession {
 
         final boolean result;
 
-        if (BlockType.usesData(type)) {
+        if (world.usesBlockData(type)) {
             if (fastMode) {
                 result = world.setTypeIdAndDataFast(pt, type, block.getData() > -1 ? block.getData() : 0);
             } else {
