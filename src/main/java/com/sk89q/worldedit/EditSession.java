@@ -1333,12 +1333,13 @@ public class EditSession {
     public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, Pattern pattern) throws MaxChangedBlocksException {
         Set<BaseBlock> definiteBlockTypes = new HashSet<BaseBlock>();
         Set<Integer> fuzzyBlockTypes = new HashSet<Integer>();
-
-        for (BaseBlock block : fromBlockTypes) {
-            if (block.getData() == -1) {
-                fuzzyBlockTypes.add(block.getType());
-            } else {
-                definiteBlockTypes.add(block);
+        if (fromBlockTypes != null) {
+            for (BaseBlock block : fromBlockTypes) {
+                if (block.getData() == -1) {
+                    fuzzyBlockTypes.add(block.getType());
+                } else {
+                    definiteBlockTypes.add(block);
+                }
             }
         }
 
@@ -1362,14 +1363,14 @@ public class EditSession {
                         Vector pt = new Vector(x, y, z);
                         BaseBlock curBlockType = getBlock(pt);
 
-                        if (definiteBlockTypes == null) {
+                        if (fromBlockTypes == null) {
                             //replace <to-block>
                             if (curBlockType.isAir()) {
                                 continue;
                             }
                         } else {
                             //replace <from-block> <to-block>
-                            if (!definiteBlockTypes.contains(curBlockType) && fuzzyBlockTypes.contains(curBlockType.getType())) {
+                            if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
                                 continue;
                             }
                         }
@@ -1384,14 +1385,14 @@ public class EditSession {
             for (Vector pt : region) {
                 BaseBlock curBlockType = getBlock(pt);
 
-                if (definiteBlockTypes == null) {
+                if (fromBlockTypes == null) {
                     //replace <to-block>
                     if (curBlockType.isAir()) {
                         continue;
                     }
                 } else {
                     //replace <from-block> <to-block>
-                    if (!definiteBlockTypes.contains(curBlockType) && fuzzyBlockTypes.contains(curBlockType.getType())) {
+                    if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
                         continue;
                     }
                 }
