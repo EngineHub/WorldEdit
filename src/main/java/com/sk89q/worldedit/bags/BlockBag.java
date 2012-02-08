@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.bags;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.*;
 
 /**
@@ -189,12 +189,12 @@ public abstract class BlockBag {
      *
      * @param pos
      */
-    public abstract void addSourcePosition(Vector pos);
+    public abstract void addSourcePosition(WorldVector pos);
 
     /**
      * Adds a position to be used a source.
      *
      * @param pos
      */
-    public abstract void addSingleSourcePosition(Vector pos);
+    public abstract void addSingleSourcePosition(WorldVector pos);
 }

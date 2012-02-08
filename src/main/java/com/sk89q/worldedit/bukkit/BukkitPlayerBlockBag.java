@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.sk89q.worldedit.WorldVector;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bags.*;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -214,7 +214,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
      * @param pos
      */
     @Override
-    public void addSourcePosition(Vector pos) {
+    public void addSourcePosition(WorldVector pos) {
     }
 
     /**
@@ -223,6 +223,6 @@ public class BukkitPlayerBlockBag extends BlockBag {
      * @param pos
      */
     @Override
-    public void addSingleSourcePosition(Vector pos) {
+    public void addSingleSourcePosition(WorldVector pos) {
     }
 }
