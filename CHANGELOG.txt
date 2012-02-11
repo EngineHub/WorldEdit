@@ -13,6 +13,7 @@
  - Update for new events system
  - Fixed /scriptname.js and no-double-slash settings not working
  - Corrected usage message for maze.js
+ - Fixed mimimum height check for cylinder generation
 
 5.1.1:
  - Fixed some compatibility issues with SpoutPlugin

@@ -2077,8 +2077,8 @@ public class EditSession {
             pos = pos.subtract(0, height, 0);
         }
 
-        if (pos.getBlockY() - height - 1 < 0) {
-            height = pos.getBlockY() + 1;
+        if (pos.getBlockY() < 0) {
+            pos = pos.setY(0);
         } else if (pos.getBlockY() + height - 1 > world.getMaxY()) {
             height = world.getMaxY() - pos.getBlockY() + 1;
         }
