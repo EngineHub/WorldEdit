@@ -189,7 +189,6 @@
           <preparationGoals>assembly:assembly</preparationGoals>
           <goals>assembly:assembly</goals>
           <tagNameFormat>@{project.version}</tagNameFormat>
-          <scmCommentPrefix>[RELEASE] </scmCommentPrefix>
         </configuration>
       </plugin>
 
