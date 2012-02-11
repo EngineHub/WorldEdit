@@ -20,7 +20,7 @@
 importPackage(Packages.com.sk89q.worldedit);
 importPackage(Packages.com.sk89q.worldedit.blocks);
 
-context.checkArgs(1, -1, "<block> [width] [height]");
+context.checkArgs(1, -1, "<block> [width] [length]");
 
 var sess = context.remember();
 
