@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sk89q</groupId>
   <artifactId>worldedit</artifactId>
-  <version>5.2-SNAPSHOT</version>
+  <version>5.2</version>
   <name>WorldEdit</name>
   <description>WorldEdit allows for editing the Minecraft SMP world
     en-masse, de-griefing, and fixing issues.</description>
@@ -49,7 +49,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.1-R1-SNAPSHOT</version>
+      <version>1.1-R3</version>
     </dependency>
 
     <!-- Archive reading library for snapshots -->
