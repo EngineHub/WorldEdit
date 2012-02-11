@@ -1,16 +1,17 @@
 5.2:
-- Made BlockBag use WorldVectors for add(Single)SourcePosition
-- Fixed north face not being set with non-singleblockpatterns.
-- Moved the block data check to LocalWorld, adding preliminary support for custom blocks.
-- Lookup by id if the string passed to Block/ItemType.lookup() is an integer
-- Fixed issues with //replace.
-- Factored lookup code from BlockType and ItemType into a method in StringUtil.
-- BaseBlock changes
-- Properly escape cuipattern
-- Fix handling of empty strings passed to Block/ItemType
-- Improved formatting and performance of YAMLProcessor when no comments are present
-- Added bPermissions support
-- Update for new events system
+ - Made BlockBag use WorldVectors for add(Single)SourcePosition
+ - Fixed north face not being set with non-singleblockpatterns.
+ - Moved the block data check to LocalWorld, adding preliminary support for custom blocks.
+ - Lookup by id if the string passed to Block/ItemType.lookup() is an integer
+ - Fixed issues with //replace.
+ - Factored lookup code from BlockType and ItemType into a method in StringUtil.
+ - BaseBlock changes
+ - Properly escape cuipattern
+ - Fix handling of empty strings passed to Block/ItemType
+ - Improved formatting and performance of YAMLProcessor when no comments are present
+ - Added bPermissions support
+ - Update for new events system
+ - Fixed /scriptname.js and no-double-slash settings not working
 
 5.1.1:
  - Fixed some compatibility issues with SpoutPlugin

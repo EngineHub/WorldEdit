@@ -96,8 +96,20 @@ public class WorldEditListener implements Listener {
             split = plugin.getWorldEdit().commandDetection(split);
             split[0] = "/" + split[0];
         }
+        
+        final String newMessage = StringUtil.joinString(split, " ");
 
-        event.setMessage(StringUtil.joinString(split, " "));
+        if (!newMessage.equals(event.getMessage())) {
+            event.setMessage(newMessage);
+            plugin.getServer().getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                if (event.getMessage().length() > 0) {
+                    plugin.getServer().dispatchCommand(event.getPlayer(), 
+                            event.getMessage().substring(1));
+                }
+                event.setCancelled(true);
+            }
+        }
     }
 
     /**
