@@ -14,6 +14,7 @@
  - Fixed /scriptname.js and no-double-slash settings not working
  - Corrected usage message for maze.js
  - Fixed mimimum height check for cylinder generation
+ - Get the items to be dropped for a block break from Bukkit
 
 5.1.1:
  - Fixed some compatibility issues with SpoutPlugin

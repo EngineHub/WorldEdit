@@ -762,4 +762,9 @@ public class BukkitWorld extends LocalWorld {
 
         return true;
     }
+    
+    @Override
+    public void simulateBlockMine(Vector pt) {
+        world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).breakNaturally();
+    }
 }
