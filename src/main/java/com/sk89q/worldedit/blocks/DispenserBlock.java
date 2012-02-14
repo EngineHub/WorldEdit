@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
 /**
  * Represents dispensers.
@@ -109,6 +110,21 @@ public class DispenserBlock extends BaseBlock implements TileEntityBlock, Contai
                 data.put("Damage", new ShortTag("Damage", item.getDamage()));
                 data.put("Count", new ByteTag("Count", (byte) item.getAmount()));
                 data.put("Slot", new ByteTag("Slot", (byte) i));
+                if(item.getEnchantments().size() > 0) {
+                    Map<String, Tag> ench = new HashMap<String, Tag>();
+                    CompoundTag compound = new CompoundTag("tag", ench);
+                    List<Tag> list = new ArrayList<Tag>();
+                    ListTag enchlist = new ListTag("ench", CompoundTag.class, list);
+                    for(Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
+                        Map<String, Tag> enchantment = new HashMap<String, Tag>();
+                        CompoundTag enchantcompound = new CompoundTag(null, ench);
+                        enchantment.put("id", new ShortTag("id", entry.getKey().shortValue()));
+                        enchantment.put("lvl", new ShortTag("lvl", entry.getValue().shortValue()));
+                        list.add(enchantcompound);
+                    }
+                    ench.put("ench", enchlist);
+                    data.put("tag", compound);
+                }
                 itemsList.add(itemTag);
             }
         }
@@ -135,7 +151,7 @@ public class DispenserBlock extends BaseBlock implements TileEntityBlock, Contai
         }
 
         ListTag items = (ListTag) Chunk.getChildTag(values, "Items", ListTag.class);
-        BaseItemStack[] newItems = new BaseItemStack[27];
+        BaseItemStack[] newItems = new BaseItemStack[9];
 
         for (Tag tag : items.getValue()) {
             if (!(tag instanceof CompoundTag)) {
@@ -145,17 +161,25 @@ public class DispenserBlock extends BaseBlock implements TileEntityBlock, Contai
             CompoundTag item = (CompoundTag) tag;
             Map<String, Tag> itemValues = item.getValue();
 
-            short id = (Short) ((ShortTag) Chunk.getChildTag(itemValues, "id", ShortTag.class))
-                    .getValue();
-            short damage = (Short) ((ShortTag) Chunk.getChildTag(itemValues, "Damage", ShortTag.class))
-                    .getValue();
-            byte count = (Byte) ((ByteTag) Chunk.getChildTag(itemValues, "Count", ByteTag.class))
-                    .getValue();
-            byte slot = (Byte) ((ByteTag) Chunk.getChildTag(itemValues, "Slot", ByteTag.class))
-                    .getValue();
+            short id = Chunk.getChildTag(itemValues, "id", ShortTag.class).getValue();
+            short damage = Chunk.getChildTag(itemValues, "Damage", ShortTag.class).getValue();
+            byte count = Chunk.getChildTag(itemValues, "Count", ByteTag.class).getValue();
+            byte slot = Chunk.getChildTag(itemValues, "Slot", ByteTag.class).getValue();
 
             if (slot >= 0 && slot <= 8) {
-                newItems[slot] = new BaseItemStack(id, count, damage);
+                BaseItemStack itemstack = new BaseItemStack(id, count, damage);
+
+                if(itemValues.containsKey("tag")) {
+                    ListTag ench = (ListTag) Chunk.getChildTag(itemValues, "tag", CompoundTag.class).getValue().get("ench");
+                    for(Tag e : ench.getValue()) {
+                        Map<String, Tag> vars = ((CompoundTag) e).getValue();
+                        short enchid = Chunk.getChildTag(vars, "id", ShortTag.class).getValue();
+                        short enchlvl = Chunk.getChildTag(vars, "lvl", ShortTag.class).getValue();
+                        itemstack.getEnchantments().put((int) enchid, (int)enchlvl);
+                    }
+                }
+                
+                newItems[slot] = itemstack;
             }
         }
 
