@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
 /**
  * Represents chests.
@@ -109,6 +110,21 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock, ContainerB
                 data.put("Damage", new ShortTag("Damage", item.getDamage()));
                 data.put("Count", new ByteTag("Count", (byte) item.getAmount()));
                 data.put("Slot", new ByteTag("Slot", (byte) i));
+                if(item.getEnchantments().size() > 0) {
+                    Map<String, Tag> ench = new HashMap<String, Tag>();
+                    CompoundTag compound = new CompoundTag("tag", ench);
+                    List<Tag> list = new ArrayList<Tag>();
+                    ListTag enchlist = new ListTag("ench", CompoundTag.class, list);
+                    for(Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
+                        Map<String, Tag> enchantment = new HashMap<String, Tag>();
+                        CompoundTag enchantcompound = new CompoundTag(null, ench);
+                        enchantment.put("id", new ShortTag("id", entry.getKey().shortValue()));
+                        enchantment.put("lvl", new ShortTag("lvl", entry.getValue().shortValue()));
+                        list.add(enchantcompound);
+                    }
+                    ench.put("ench", enchlist);
+                    data.put("tag", compound);
+                }
                 itemsList.add(itemTag);
             }
         }
@@ -155,7 +171,19 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock, ContainerB
                     .getValue();
 
             if (slot >= 0 && slot <= 26) {
-                newItems[slot] = new BaseItemStack(id, count, damage);
+                BaseItemStack itemstack = new BaseItemStack(id, count, damage);
+
+                if(itemValues.containsKey("tag")) {
+                    ListTag ench = (ListTag) Chunk.getChildTag(itemValues, "tag", CompoundTag.class).getValue().get("ench");
+                    for(Tag e : ench.getValue()) {
+                        Map<String, Tag> vars = ((CompoundTag) e).getValue();
+                        short enchid = Chunk.getChildTag(vars, "id", ShortTag.class).getValue();
+                        short enchlvl = Chunk.getChildTag(vars, "lvl", ShortTag.class).getValue();
+                        itemstack.getEnchantments().put((int) enchid, (int)enchlvl);
+                    }
+                }
+                
+                newItems[slot] = itemstack;
             }
         }
 
