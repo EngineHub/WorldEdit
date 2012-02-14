@@ -161,14 +161,10 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock, ContainerB
             CompoundTag item = (CompoundTag) tag;
             Map<String, Tag> itemValues = item.getValue();
 
-            short id = (Short) ((ShortTag) Chunk.getChildTag(itemValues, "id", ShortTag.class))
-                    .getValue();
-            short damage = (Short) ((ShortTag) Chunk.getChildTag(itemValues, "Damage", ShortTag.class))
-                    .getValue();
-            byte count = (Byte) ((ByteTag) Chunk.getChildTag(itemValues, "Count", ByteTag.class))
-                    .getValue();
-            byte slot = (Byte) ((ByteTag) Chunk.getChildTag(itemValues, "Slot", ByteTag.class))
-                    .getValue();
+            short id = Chunk.getChildTag(itemValues, "id", ShortTag.class).getValue();
+            short damage = Chunk.getChildTag(itemValues, "Damage", ShortTag.class).getValue();
+            byte count = Chunk.getChildTag(itemValues, "Count", ByteTag.class).getValue();
+            byte slot = Chunk.getChildTag(itemValues, "Slot", ByteTag.class).getValue();
 
             if (slot >= 0 && slot <= 26) {
                 BaseItemStack itemstack = new BaseItemStack(id, count, damage);
