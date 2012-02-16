@@ -59,19 +59,19 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public WorldVector getPosition() {
-        Point loc = player.getEntity().getTransform().getPosition();
+        Point loc = player.getEntity().getPoint();
         return new WorldVector(SpoutUtil.getLocalWorld(loc.getWorld()),
                 loc.getX(), loc.getY(), loc.getZ());
     }
 
     @Override
     public double getPitch() {
-        return player.getEntity().getTransform().getRotation().getAxisAngles().getY();
+        return player.getEntity().getPitch();
     }
 
     @Override
     public double getYaw() {
-        return player.getEntity().getTransform().getRotation().getAxisAngles().getZ();
+        return player.getEntity().getYaw();
     }
 
     @Override
@@ -109,9 +109,9 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public void setPosition(Vector pos, float pitch, float yaw) {
-        Transform t = player.getEntity().getTransform();
-        t.setPosition(new Point(t.getPosition().getWorld(), (float) pos.getX(), (float) pos.getY(), (float) pos.getZ()));
-        t.setRotation(new Quaternion(pitch, Vector3.UNIT_Z).rotate(yaw, Vector3.UNIT_Y));
+        player.getEntity().setPoint((float)pos.getX(), (float)pos.getY(), (float)pos.getZ());
+        player.getEntity().setPitch(pitch);
+        player.getEntity().setYaw(yaw);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public LocalWorld getWorld() {
-        return SpoutUtil.getLocalWorld(player.getEntity().getTransform().getPosition().getWorld());
+        return SpoutUtil.getLocalWorld(player.getEntity().getPoint().getWorld());
     }
 
     @Override

@@ -81,7 +81,8 @@ public class SpoutServerInterface extends ServerInterface {
     public void onCommandRegistration(List<Command> commands) {
         for (Command command : commands) {
             Spout.getGame().getRootCommand().addSubCommand(plugin, command.aliases()[0])
-                    .addAlias(command.aliases()).setRawExecutor(executor).closeSubCommand();
+                    .addAlias(command.aliases()).setRawExecutor(executor).
+                    setUsage(command.usage()).setHelp(command.desc()).closeSubCommand();
         }
     }
 }
