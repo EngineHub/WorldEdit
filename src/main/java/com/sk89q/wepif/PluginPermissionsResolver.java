@@ -43,11 +43,6 @@ public class PluginPermissionsResolver implements PermissionsResolver {
             if (plugin instanceof PermissionsProvider) {
                 return new PluginPermissionsResolver((PermissionsProvider) plugin, plugin);
             }
-
-            final PermissionsProvider legacyPermissionsProvider = LegacyPermissionsProviderWrapper.wrap(plugin);
-            if (legacyPermissionsProvider != null) {
-                return new PluginPermissionsResolver(legacyPermissionsProvider, plugin);
-            }
         }
 
         return null;
