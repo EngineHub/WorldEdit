@@ -101,6 +101,10 @@ public abstract class LocalConfiguration {
     public String saveDir = "schematics";
     public String scriptsDir = "craftscripts";
     public boolean showFirstUseVersion = true;
+    public int butcherDefaultRadius = 50;
+    public boolean butcherPetKill = false;
+    public boolean butcherAnimalKill = false;
+    public boolean butcherNpcKill = false;
 
     /**
      * Loads the configuration.
