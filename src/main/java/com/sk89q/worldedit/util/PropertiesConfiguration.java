@@ -95,6 +95,10 @@ public class PropertiesConfiguration extends LocalConfiguration {
         navigationWand = getInt("nav-wand-item", navigationWand);
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);
         scriptTimeout = getInt("scripting-timeout", scriptTimeout);
+        butcherDefaultRadius = getInt("butcher-default-radius", butcherDefaultRadius);
+        butcherPetKill = getBool("butcher-petkill", butcherPetKill);
+        butcherAnimalKill = getBool("butcher-animalkill", butcherAnimalKill);
+        butcherNpcKill = getBool("butcher-npckill", butcherNpcKill);
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 
