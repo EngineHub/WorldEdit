@@ -38,10 +38,10 @@ import java.util.*;
  * a file and call its load() method. For specifying node paths in the
  * various get*() methods, they support SK's path notation, allowing you to
  * select child nodes by delimiting node names with periods.
- * 
+ *
  * <p>
  * For example, given the following configuration file:</p>
- * 
+ *
  * <pre>members:
  *     - Hollie
  *     - Jason
@@ -56,12 +56,12 @@ import java.util.*;
  *     cool: false
  *     eats:
  *         babies: true</pre>
- * 
+ *
  * <p>Calling code could access sturmeh's baby eating state by using
  * <code>getBoolean("sturmeh.eats.babies", false)</code>. For lists, there are
  * methods such as <code>getStringList</code> that will return a type safe list.
- * 
- * 
+ *
+ *
  * @author sk89q
  */
 public class YAMLProcessor extends YAMLNode {
@@ -72,7 +72,7 @@ public class YAMLProcessor extends YAMLNode {
     protected String header = null;
     protected YAMLFormat format;
 
-    /* 
+    /*
      * Map from property key to comment. Comment may have multiple lines that are newline-separated.
      * Comments support based on ZerothAngel's AnnotatedYAMLConfiguration
      * Comments are only supported with YAMLFormat.EXTENDED
@@ -100,7 +100,7 @@ public class YAMLProcessor extends YAMLNode {
 
     /**
      * Loads the configuration file.
-     * 
+     *
      * @throws java.io.IOException
      */
     public void load() throws IOException {
@@ -246,7 +246,7 @@ public class YAMLProcessor extends YAMLNode {
     public String getComment(String key) {
         return comments.get(key);
     }
-    
+
     public void setComment(String key, String comment) {
         if (comment != null) {
             setComment(key, comment.split("\\r?\\n"));
@@ -298,20 +298,20 @@ public class YAMLProcessor extends YAMLNode {
     }
 
     /**
-     * This method returns an empty ConfigurationNode for using as a 
+     * This method returns an empty ConfigurationNode for using as a
      * default in methods that select a node from a node list.
      * @return
      */
     public static YAMLNode getEmptyNode(boolean writeDefaults) {
         return new YAMLNode(new LinkedHashMap<String, Object>(), writeDefaults);
     }
-    
+
     // This will be included in snakeyaml 1.10, but until then we have to do it manually.
     private class FancyDumperOptions extends DumperOptions {
         @Override
         public DumperOptions.ScalarStyle calculateScalarStyle(ScalarAnalysis analysis,
                                                               DumperOptions.ScalarStyle style) {
-            if (format == YAMLFormat.EXTENDED 
+            if (format == YAMLFormat.EXTENDED
                     && (analysis.scalar.contains("\n") || analysis.scalar.contains("\r"))) {
                 return ScalarStyle.LITERAL;
             } else {
@@ -319,7 +319,7 @@ public class YAMLProcessor extends YAMLNode {
             }
         }
     }
-    
+
     private static class FancyRepresenter extends Representer {
         public FancyRepresenter() {
             this.nullRepresenter = new Represent() {
