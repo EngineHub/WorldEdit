@@ -70,7 +70,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Get the world handle.
-     * 
+     *
      * @return
      */
     public World getWorld() {
@@ -79,7 +79,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Get the name of the world
-     * 
+     *
      * @return
      */
     @Override
@@ -89,7 +89,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Set block type.
-     * 
+     *
      * @param pt
      * @param type
      * @return
@@ -101,7 +101,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Set block type.
-     * 
+     *
      * @param pt
      * @param type
      * @return
@@ -116,7 +116,7 @@ public class BukkitWorld extends LocalWorld {
      * @param pt
      * @param type
      * @param data
-     * @return 
+     * @return
      */
     @Override
     public boolean setTypeIdAndData(Vector pt, int type, int data) {
@@ -128,7 +128,7 @@ public class BukkitWorld extends LocalWorld {
      * @param pt
      * @param type
      * @param data
-     * @return 
+     * @return
      */
     @Override
     public boolean setTypeIdAndDataFast(Vector pt, int type, int data) {
@@ -137,7 +137,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Get block type.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -148,7 +148,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Set block data.
-     * 
+     *
      * @param pt
      * @param data
      */
@@ -159,7 +159,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Set block data.
-     * 
+     *
      * @param pt
      * @param data
      */
@@ -170,7 +170,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Get block data.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -181,7 +181,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Get block light level.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -192,7 +192,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Regenerate an area.
-     * 
+     *
      * @param region
      * @param editSession
      * @return
@@ -221,7 +221,7 @@ public class BukkitWorld extends LocalWorld {
                 t.printStackTrace();
             }
 
-            // Then restore 
+            // Then restore
             for (int x = 0; x < 16; ++x) {
                 for (int y = 0; y < (getMaxY() + 1); ++y) {
                     for (int z = 0; z < 16; ++z) {
@@ -245,7 +245,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Attempts to accurately copy a BaseBlock's extra data to the world.
-     * 
+     *
      * @param pt
      * @param block
      * @return
@@ -306,7 +306,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Attempts to read a BaseBlock's extra data from the world.
-     * 
+     *
      * @param pt
      * @param block
      * @return
@@ -368,7 +368,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Clear a chest's contents.
-     * 
+     *
      * @param pt
      */
     @Override
@@ -390,7 +390,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Generate a tree at a location.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -402,7 +402,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Generate a big tree at a location.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -414,7 +414,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Generate a birch tree at a location.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -426,7 +426,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Generate a redwood tree at a location.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -438,7 +438,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Generate a redwood tree at a location.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -463,7 +463,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Kill mobs in an area.
-     * 
+     *
      * @param origin The center of the area to kill mobs in.
      * @param radius Maximum distance to kill mobs at; radius < 0 means kill all mobs
      * @param flags various flags that determine what to kill
@@ -515,7 +515,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Remove entities in an area.
-     * 
+     *
      * @param origin
      * @param radius
      * @return
@@ -530,7 +530,7 @@ public class BukkitWorld extends LocalWorld {
                     && origin.distanceSq(BukkitUtil.toVector(ent.getLocation())) > radiusSq) {
                 continue;
             }
-            
+
             if (type == EntityType.ARROWS) {
                 if (ent instanceof Arrow) {
                     ent.remove();
@@ -574,7 +574,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Set a sign's text.
-     * 
+     *
      * @param pt
      * @param text
      * @return
@@ -595,7 +595,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Get a sign's text.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -619,7 +619,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Get a container block's contents.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -640,7 +640,7 @@ public class BukkitWorld extends LocalWorld {
 
         for (int i = 0; i < size; ++i) {
             ItemStack bukkitStack = inven.getItem(i);
-            if (bukkitStack.getTypeId() > 0) {
+            if (bukkitStack != null && bukkitStack.getTypeId() > 0) {
                 contents[i] = new BaseItemStack(
                         bukkitStack.getTypeId(),
                         bukkitStack.getAmount(),
@@ -658,7 +658,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Set a container block's contents.
-     * 
+     *
      * @param pt
      * @param contents
      * @return
@@ -702,7 +702,7 @@ public class BukkitWorld extends LocalWorld {
 
     /**
      * Returns whether a block has a valid ID.
-     * 
+     *
      * @param type
      * @return
      */
@@ -762,7 +762,7 @@ public class BukkitWorld extends LocalWorld {
 
         return true;
     }
-    
+
     @Override
     public void simulateBlockMine(Vector pt) {
         world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).breakNaturally();
