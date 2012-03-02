@@ -75,7 +75,6 @@ public class WorldEditPlugin extends JavaPlugin {
         final String pluginYmlVersion = getDescription().getVersion();
         final String manifestVersion = WorldEdit.getVersion();
 
-        logger.info("WorldEdit " + pluginYmlVersion + " enabled.");
         if (!manifestVersion.equalsIgnoreCase(pluginYmlVersion)) {
             WorldEdit.setVersion(manifestVersion + " (" + pluginYmlVersion + ")");
         }
