@@ -21,7 +21,7 @@ package com.sk89q.worldedit.blocks;
 
 /**
  * List of block IDs.
- * 
+ *
  * @author sk89q
  */
 public final class BlockID {
@@ -149,4 +149,6 @@ public final class BlockID {
     public static final int END_PORTAL_FRAME = 120;
     public static final int END_STONE = 121;
     public static final int DRAGON_EGG = 122;
+    public static final int REDSTONE_LAMP_OFF = 123;
+    public static final int REDSTONE_LAMP_ON = 124;
 }

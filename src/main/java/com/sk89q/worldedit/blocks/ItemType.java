@@ -158,6 +158,8 @@ public enum ItemType {
     END_PORTAL_FRAME(BlockID.END_PORTAL_FRAME, "End Portal Frame", "endportalframe", "airportalframe", "crystalblock"),
     END_STONE(BlockID.END_STONE, "End Stone", "endstone", "enderstone", "endersand"),
     DRAGON_EGG(BlockID.DRAGON_EGG, "Dragon Egg", "dragonegg", "dragons"),
+    REDSTONE_LAMP_OFF(BlockID.REDSTONE_LAMP_OFF, "Redstone lamp (off)", "redstonelamp", "redstonelampoff", "rslamp", "rslampoff", "rsglow", "rsglowoff"),
+    REDSTONE_LAMP_ON(BlockID.REDSTONE_LAMP_ON, "Redstone lamp (on)", "redstonelampon", "rslampon", "rsglowon"),
 
     // Items
     IRON_SHOVEL(ItemID.IRON_SHOVEL, "Iron shovel", "ironshovel"),
@@ -287,6 +289,8 @@ public enum ItemType {
     CAULDRON_ITEM(ItemID.CAULDRON, "Cauldron", "cauldron"),
     EYE_OF_ENDER(ItemID.EYE_OF_ENDER, "Eye of Ender", "eyeofender", "endereye"),
     GLISTERING_MELON(ItemID.GLISTERING_MELON, "Glistering Melon", "glisteringmelon", "goldmelon"),
+    BOTTLE_O_ENCHANTING(ItemID.BOTTLE_O_ENCHANTING, "Bottle o' Enchanting", "expbottle", "bottleoenchanting", "experiencebottle", "exppotion", "experiencepotion"),
+    FIRE_CHARGE(ItemID.FIRE_CHARGE, "Fire Charge", "firecharge", "firestarter", "firerock"),
     SPAWN_EGG(ItemID.SPAWN_EGG, "Spawn Egg", "spawnegg", "spawn", "mobspawnegg"),
     DISC_13(ItemID.DISC_13, "Music Disc - 13", "disc_13"),
     DISC_CAT(ItemID.DISC_CAT, "Music Disc - Cat", "disc_cat"),
@@ -439,7 +443,7 @@ public enum ItemType {
 
     /**
      * Get a list of aliases.
-     * 
+     *
      * @return
      */
     public String[] getAliases() {
@@ -528,7 +532,7 @@ public enum ItemType {
 
     /**
      * Returns true if an item should not be stacked.
-     * 
+     *
      * @param id
      * @return
      */
@@ -609,12 +613,13 @@ public enum ItemType {
         usesDamageValue.add(ItemID.POTION);
         usesDamageValue.add(ItemID.GLASS_BOTTLE);
         usesDamageValue.add(ItemID.SPAWN_EGG);
+        usesDamageValue.add(ItemID.MAP);
     }
 
     /**
      * Returns true if an item uses its damage value for something
      * other than damage.
-     * 
+     *
      * @param id
      * @return
      */

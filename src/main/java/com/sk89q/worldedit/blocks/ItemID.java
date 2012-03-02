@@ -21,7 +21,7 @@ package com.sk89q.worldedit.blocks;
 
 /**
  * List of item IDs.
- * 
+ *
  * @author sk89q
  */
 public final class ItemID {
@@ -153,6 +153,8 @@ public final class ItemID {
     public static final int EYE_OF_ENDER = 381;
     public static final int GLISTERING_MELON = 382;
     public static final int SPAWN_EGG = 383;
+    public static final int BOTTLE_O_ENCHANTING = 384;
+    public static final int FIRE_CHARGE = 385;
     @Deprecated public static final int GOLD_RECORD = 2256; // deprecated, but leave it there
     @Deprecated public static final int GREEN_RECORD = 2257; // deprecated, but leave it there
     public static final int DISC_13 = 2256;

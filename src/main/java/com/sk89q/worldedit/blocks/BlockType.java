@@ -157,7 +157,9 @@ public enum BlockType {
     END_PORTAL(BlockID.END_PORTAL, "End Portal", "endportal", "blackstuff", "airportal", "weirdblackstuff"),
     END_PORTAL_FRAME(BlockID.END_PORTAL_FRAME, "End Portal Frame", "endportalframe", "airportalframe", "crystalblock"),
     END_STONE(BlockID.END_STONE, "End Stone", "endstone", "enderstone", "endersand"),
-    DRAGON_EGG(BlockID.DRAGON_EGG, "Dragon Egg", "dragonegg", "dragons");
+    DRAGON_EGG(BlockID.DRAGON_EGG, "Dragon Egg", "dragonegg", "dragons"),
+    REDSTONE_LAMP_OFF(BlockID.REDSTONE_LAMP_OFF, "Redstone lamp (off)", "redstonelamp", "redstonelampoff", "rslamp", "rslampoff", "rsglow", "rsglowoff"),
+    REDSTONE_LAMP_ON(BlockID.REDSTONE_LAMP_ON, "Redstone lamp (on)", "redstonelampon", "rslampon", "rsglowon");
 
     /**
      * Stores a map of the IDs for fast access.
@@ -746,6 +748,7 @@ public enum BlockType {
         emitsLight.add(BlockID.BROWN_MUSHROOM_CAP);
         emitsLight.add(BlockID.RED_MUSHROOM_CAP);
         emitsLight.add(BlockID.END_PORTAL);
+        emitsLight.add(BlockID.REDSTONE_LAMP_ON);
     }
 
     /**
@@ -848,7 +851,7 @@ public enum BlockType {
     static {
         /*
          * rules:
-         * 
+         *
          * 1. block yields itself => addIdentity
          * 2. block is part of a 2-block object => drop an appropriate item for one of the 2 blocks
          * 3. block can be placed by right-clicking an obtainable item on the ground => use that item
@@ -981,6 +984,9 @@ public enum BlockType {
         nonDataBlockBagItems.put(BlockID.END_PORTAL, doNotDestroy);
         nonDataBlockBagItems.put(BlockID.END_PORTAL_FRAME, doNotDestroy);
         addIdentity(BlockID.END_STONE);
+
+        addIdentity(BlockID.REDSTONE_LAMP_OFF);
+        nonDataBlockBagItems.put(BlockID.REDSTONE_LAMP_ON, new BaseItem(BlockID.REDSTONE_LAMP_OFF));
     }
 
     /**
@@ -1278,7 +1284,7 @@ public enum BlockType {
 
     /**
      * Returns the direction to the block(B) this block(A) is attached to.
-     * Attached means that if block B is destroyed, block A will pop off. 
+     * Attached means that if block B is destroyed, block A will pop off.
      *
      * @param type The block id of block A
      * @param data The data value of block A
