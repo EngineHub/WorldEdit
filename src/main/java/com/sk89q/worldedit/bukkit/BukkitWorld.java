@@ -284,7 +284,7 @@ public class BukkitWorld extends LocalWorld {
             if (!(state instanceof CreatureSpawner)) return false;
             CreatureSpawner bukkit = (CreatureSpawner) state;
             MobSpawnerBlock we = (MobSpawnerBlock) block;
-            bukkit.setCreatureTypeId(we.getMobType());
+            bukkit.setCreatureTypeByName(we.getMobType());
             bukkit.setDelay(we.getDelay());
             return true;
         }
@@ -347,7 +347,7 @@ public class BukkitWorld extends LocalWorld {
             if (!(state instanceof CreatureSpawner)) return false;
             CreatureSpawner bukkit = (CreatureSpawner) state;
             MobSpawnerBlock we = (MobSpawnerBlock) block;
-            we.setMobType(bukkit.getCreatureTypeId());
+            we.setMobType(bukkit.getCreatureTypeName());
             we.setDelay((short) bukkit.getDelay());
             return true;
         }
@@ -378,11 +378,11 @@ public class BukkitWorld extends LocalWorld {
             return false;
         }
         BlockState state = block.getState();
-        if (!(state instanceof org.bukkit.block.ContainerBlock)) {
+        if (!(state instanceof org.bukkit.inventory.InventoryHolder)) {
             return false;
         }
 
-        org.bukkit.block.ContainerBlock chest = (org.bukkit.block.ContainerBlock) state;
+        org.bukkit.inventory.InventoryHolder chest = (org.bukkit.inventory.InventoryHolder) state;
         Inventory inven = chest.getInventory();
         inven.clear();
         return true;
@@ -629,11 +629,11 @@ public class BukkitWorld extends LocalWorld {
             return new BaseItemStack[0];
         }
         BlockState state = block.getState();
-        if (!(state instanceof org.bukkit.block.ContainerBlock)) {
+        if (!(state instanceof org.bukkit.inventory.InventoryHolder)) {
             return new BaseItemStack[0];
         }
 
-        org.bukkit.block.ContainerBlock container = (org.bukkit.block.ContainerBlock) state;
+        org.bukkit.inventory.InventoryHolder container = (org.bukkit.inventory.InventoryHolder) state;
         Inventory inven = container.getInventory();
         int size = inven.getSize();
         BaseItemStack[] contents = new BaseItemStack[size];
@@ -669,11 +669,11 @@ public class BukkitWorld extends LocalWorld {
             return false;
         }
         BlockState state = block.getState();
-        if (!(state instanceof org.bukkit.block.ContainerBlock)) {
+        if (!(state instanceof org.bukkit.inventory.InventoryHolder)) {
             return false;
         }
 
-        org.bukkit.block.ContainerBlock chest = (org.bukkit.block.ContainerBlock) state;
+        org.bukkit.inventory.InventoryHolder chest = (org.bukkit.inventory.InventoryHolder) state;
         Inventory inven = chest.getInventory();
         int size = inven.getSize();
 

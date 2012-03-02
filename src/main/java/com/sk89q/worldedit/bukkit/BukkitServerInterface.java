@@ -29,7 +29,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.entity.CreatureType;
+import org.bukkit.entity.EntityType;
+
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 
@@ -52,7 +53,8 @@ public class BukkitServerInterface extends ServerInterface {
 
     @Override
     public boolean isValidMobType(String type) {
-        return CreatureType.fromName(type) != null;
+        final EntityType entityType = EntityType.fromName(type);
+        return entityType != null && entityType.isAlive();
     }
 
     @Override
