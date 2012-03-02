@@ -41,7 +41,7 @@ import com.sk89q.worldedit.regions.*;
 
 /**
  * Plugin for Bukkit.
- * 
+ *
  * @author sk89q
  */
 public class WorldEditPlugin extends JavaPlugin {
@@ -92,7 +92,7 @@ public class WorldEditPlugin extends JavaPlugin {
         PermissionsResolverManager.initialize(this);
 
         // Load the configuration
-        loadConfiguration();
+        config.load();
 
         // Setup interfaces
         server = new BukkitServerInterface(this, getServer());
@@ -133,7 +133,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
     /**
      * Create a default configuration file from the .jar.
-     * 
+     *
      * @param name
      */
     protected void createDefaultConfiguration(String name) {
@@ -201,7 +201,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
     /**
      * Gets the session for the player.
-     * 
+     *
      * @param player
      * @return
      */
@@ -211,7 +211,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
     /**
      * Gets the session for the player.
-     * 
+     *
      * @param player
      * @return
      */
@@ -229,7 +229,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
     /**
      * Remember an edit session.
-     * 
+     *
      * @param player
      * @param editSession
      */
@@ -245,7 +245,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
     /**
      * Wrap an operation into an EditSession.
-     * 
+     *
      * @param player
      * @param op
      * @throws Throwable
@@ -265,7 +265,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
     /**
      * Get the API.
-     * 
+     *
      * @return
      */
     @Deprecated
@@ -275,7 +275,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
     /**
      * Returns the configuration used by WorldEdit.
-     * 
+     *
      * @return
      */
     public BukkitConfiguration getLocalConfiguration() {
@@ -284,7 +284,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
     /**
      * Get the permissions resolver in use.
-     * 
+     *
      * @return
      */
     public PermissionsResolverManager getPermissionsResolver() {
@@ -293,7 +293,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
     /**
      * Used to wrap a Bukkit Player as a LocalPlayer.
-     * 
+     *
      * @param player
      * @return
      */
@@ -308,10 +308,10 @@ public class WorldEditPlugin extends JavaPlugin {
 
         return new BukkitCommandSender(this, this.server, sender);
     }
-    
+
     /**
      * Get the server interface.
-     * 
+     *
      * @return
      */
     public ServerInterface getServerInterface() {
@@ -320,7 +320,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
     /**
      * Get WorldEdit.
-     * 
+     *
      * @return
      */
     public WorldEdit getWorldEdit() {
@@ -329,7 +329,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
     /**
      * Gets the region selection for the player.
-     * 
+     *
      * @param player
      * @return the selection or null if there was none
      */
@@ -362,7 +362,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
     /**
      * Sets the region selection for a player.
-     * 
+     *
      * @param player
      * @param selection
      */
