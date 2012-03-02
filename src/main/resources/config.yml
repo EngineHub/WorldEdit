@@ -1,4 +1,4 @@
-#
+
 # WorldEdit's configuration file
 #
 # About editing this file:
@@ -59,3 +59,11 @@ shell-save-type:
 no-double-slash: false
 no-op-permissions: false
 debug: false
+
+butcher:
+    default:
+       butcher-default-radius: 50
+    allow:
+       butcher-petkill: false
+       butcher-npc: false
+       butcher-animal: false
