@@ -54,7 +54,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Construct the region.
-     * 
+     *
      * @param world
      */
     public Polygonal2DRegion(LocalWorld world) {
@@ -64,7 +64,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Construct the region.
-     * 
+     *
      * @param world
      * @param points
      * @param minY
@@ -86,7 +86,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Get the list of points.
-     * 
+     *
      * @return
      */
     public List<BlockVector2D> getPoints() {
@@ -123,8 +123,8 @@ public class Polygonal2DRegion extends AbstractRegion {
         minY = Math.min(oldMinY, oldMaxY);
         maxY = Math.max(oldMinY, oldMaxY);
 
-        minY = Math.min(Math.max(0, minY), world == null ? 127 : world.getMaxY());
-        maxY = Math.min(Math.max(0, maxY), world == null ? 127 : world.getMaxY());
+        minY = Math.min(Math.max(0, minY), world == null ? 255 : world.getMaxY());
+        maxY = Math.min(Math.max(0, maxY), world == null ? 255 : world.getMaxY());
 
         min = new BlockVector(minX, minY, minZ);
         max = new BlockVector(maxX, maxY, maxZ);
@@ -132,7 +132,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Add a point to the list.
-     * 
+     *
      * @param pt
      */
     public void addPoint(Vector2D pt) {
@@ -142,7 +142,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Add a point to the list.
-     * 
+     *
      * @param pt
      */
     public void addPoint(BlockVector2D pt) {
@@ -152,7 +152,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Add a point to the list.
-     * 
+     *
      * @param pt
      */
     public void addPoint(Vector pt) {
@@ -162,7 +162,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Get the minimum Y.
-     * 
+     *
      * @return min y
      */
     public int getMininumY() {
@@ -171,7 +171,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Set the minimum Y.
-     * 
+     *
      * @param y
      */
     public void setMinimumY(int y) {
@@ -182,7 +182,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Get the maximum Y.
-     * 
+     *
      * @return max y
      */
     public int getMaximumY() {
@@ -191,7 +191,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Set the maximum Y.
-     * 
+     *
      * @param y
      */
     public void setMaximumY(int y) {
@@ -202,7 +202,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Get the lower point of a region.
-     * 
+     *
      * @return min. point
      */
     public Vector getMinimumPoint() {
@@ -211,7 +211,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Get the upper point of a region.
-     * 
+     *
      * @return max. point
      */
     public Vector getMaximumPoint() {
@@ -220,7 +220,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Get the number of blocks in the region.
-     * 
+     *
      * @return number of blocks
      */
     public int getArea() {
@@ -328,12 +328,12 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Checks to see if a point is inside a region.
-     * 
-     * @param points 
-     * @param minY 
-     * @param maxY 
-     * @param pt 
-     * @return 
+     *
+     * @param points
+     * @param minY
+     * @param maxY
+     * @param pt
+     * @return
      */
     public static boolean contains(List<BlockVector2D> points, int minY,
             int maxY, Vector pt) {
@@ -396,7 +396,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Get a list of chunks.
-     * 
+     *
      * @return
      */
     public Set<Vector2D> getChunks() {
@@ -421,7 +421,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Return the number of points.
-     * 
+     *
      * @return
      */
     public int size() {
@@ -430,8 +430,8 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Expand the height of the polygon to fit the specified Y.
-     * 
-     * @param y 
+     *
+     * @param y
      * @return true if the area was expanded
      */
     public boolean expandY(int y) {
@@ -453,7 +453,7 @@ public class Polygonal2DRegion extends AbstractRegion {
 
     /**
      * Get the iterator.
-     * 
+     *
      * @return iterator of points inside the region
      */
     @Override
@@ -464,7 +464,7 @@ public class Polygonal2DRegion extends AbstractRegion {
     /**
      * Returns string representation in the format
      * "(x1, z1) - ... - (xN, zN) * (minY - maxY)"
-     * 
+     *
      * @return string
      */
     @Override

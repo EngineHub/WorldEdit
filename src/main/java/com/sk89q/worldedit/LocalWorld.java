@@ -28,7 +28,7 @@ import com.sk89q.worldedit.regions.Region;
 
 /**
  * Represents a world.
- * 
+ *
  * @author sk89q
  */
 public abstract class LocalWorld {
@@ -49,14 +49,14 @@ public abstract class LocalWorld {
 
     /**
      * Get the name of the world.
-     * 
+     *
      * @return
      */
     public abstract String getName();
 
     /**
      * Set block type.
-     * 
+     *
      * @param pt
      * @param type
      * @return
@@ -65,7 +65,7 @@ public abstract class LocalWorld {
 
     /**
      * Set block type.
-     * 
+     *
      * @param pt
      * @param type
      * @return
@@ -76,7 +76,7 @@ public abstract class LocalWorld {
 
     /**
      * Get block type.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -84,7 +84,7 @@ public abstract class LocalWorld {
 
     /**
      * Set block data.
-     * 
+     *
      * @param pt
      * @param data
      */
@@ -93,7 +93,7 @@ public abstract class LocalWorld {
 
     /**
      * Set block data.
-     * 
+     *
      * @param pt
      * @param data
      */
@@ -117,7 +117,7 @@ public abstract class LocalWorld {
      * @param pt
      * @param type
      * @param data
-     * @return 
+     * @return
      */
     public boolean setTypeIdAndDataFast(Vector pt, int type, int data) {
         boolean ret = setBlockTypeFast(pt, type);
@@ -127,7 +127,7 @@ public abstract class LocalWorld {
 
     /**
      * Get block data.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -135,7 +135,7 @@ public abstract class LocalWorld {
 
     /**
      * Get block light level.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -143,7 +143,7 @@ public abstract class LocalWorld {
 
     /**
      * Regenerate an area.
-     * 
+     *
      * @param region
      * @param editSession
      * @return
@@ -152,7 +152,7 @@ public abstract class LocalWorld {
 
     /**
      * Attempts to accurately copy a BaseBlock's extra data to the world.
-     * 
+     *
      * @param pt
      * @param block
      * @return
@@ -161,7 +161,7 @@ public abstract class LocalWorld {
 
     /**
      * Attempts to read a BaseBlock's extra data from the world.
-     * 
+     *
      * @param pt
      * @param block
      * @return
@@ -170,7 +170,7 @@ public abstract class LocalWorld {
 
     /**
      * Clear a chest's contents.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -178,7 +178,7 @@ public abstract class LocalWorld {
 
     /**
      * Generate a tree at a location.
-     * 
+     *
      * @param editSession
      * @param pt
      * @return
@@ -189,7 +189,7 @@ public abstract class LocalWorld {
 
     /**
      * Generate a big tree at a location.
-     * 
+     *
      * @param editSession
      * @param pt
      * @return
@@ -200,7 +200,7 @@ public abstract class LocalWorld {
 
     /**
      * Generate a birch tree at a location.
-     * 
+     *
      * @param editSession
      * @param pt
      * @return
@@ -211,7 +211,7 @@ public abstract class LocalWorld {
 
     /**
      * Generate a redwood tree at a location.
-     * 
+     *
      * @param editSession
      * @param pt
      * @return
@@ -222,20 +222,20 @@ public abstract class LocalWorld {
 
     /**
      * Generate a tall redwood tree at a location.
-     * 
-     * @param editSession 
+     *
+     * @param editSession
      * @param pt
      * @return
-     * @throws MaxChangedBlocksException 
+     * @throws MaxChangedBlocksException
      */
     public abstract boolean generateTallRedwoodTree(EditSession editSession, Vector pt)
             throws MaxChangedBlocksException;
 
     /**
      * Drop an item.
-     * 
+     *
      * @param pt
-     * @param item 
+     * @param item
      * @param times
      */
     public void dropItem(Vector pt, BaseItemStack item, int times) {
@@ -246,7 +246,7 @@ public abstract class LocalWorld {
 
     /**
      * Drop an item.
-     * 
+     *
      * @param pt
      * @param item
      */
@@ -254,7 +254,7 @@ public abstract class LocalWorld {
 
     /**
      * Simulate a block being mined.
-     * 
+     *
      * @param pt
      */
     public void simulateBlockMine(Vector pt) {
@@ -273,7 +273,7 @@ public abstract class LocalWorld {
 
     /**
      * Kill mobs in an area, excluding pet wolves.
-     * 
+     *
      * @param origin
      * @param radius
      * @return
@@ -285,7 +285,7 @@ public abstract class LocalWorld {
 
     /**
      * Kill mobs in an area.
-     * 
+     *
      * @param origin
      * @param radius -1 for all mobs
      * @param flags various flags that determine what to kill
@@ -298,7 +298,7 @@ public abstract class LocalWorld {
 
     /**
      * Kill mobs in an area.
-     * 
+     *
      * @param origin
      * @param radius
      * @param killflags
@@ -310,8 +310,8 @@ public abstract class LocalWorld {
 
     /**
      * Remove entities in an area.
-     * 
-     * @param type 
+     *
+     * @param type
      * @param origin
      * @param radius
      * @return
@@ -320,17 +320,17 @@ public abstract class LocalWorld {
 
     /**
      * Returns whether a block has a valid ID.
-     * 
+     *
      * @param type
      * @return
      */
     public boolean isValidBlockType(int type) {
         return BlockType.fromID(type) != null;
     }
-    
+
     /**
      * Returns whether a block uses its data value.
-     * 
+     *
      * @param type block ID type
      * @return true if the block uses data value
      */
@@ -349,7 +349,7 @@ public abstract class LocalWorld {
 
     /**
      * Compare if the other world is equal.
-     * 
+     *
      * @param other
      * @return
      */
@@ -358,7 +358,7 @@ public abstract class LocalWorld {
 
     /**
      * Hash code.
-     * 
+     *
      * @return
      */
     @Override
@@ -366,16 +366,16 @@ public abstract class LocalWorld {
 
     /**
      * Get the world's height
-     * 
+     *
      * @return
      */
     public int getMaxY() {
-        return 127;
+        return 255;
     }
 
     /**
      * Does some post-processing. Should be called after using fast mode
-     * 
+     *
      * @param chunks the chunks to fix
      */
     public void fixAfterFastMode(Iterable<BlockVector2D> chunks) {
@@ -419,7 +419,7 @@ public abstract class LocalWorld {
     private int taskId = -1;
     public boolean queueBlockBreakEffect(ServerInterface server, Vector position, int blockId, double priority) {
         if (taskId == -1) {
-            taskId = server.schedule(0, 1, new Runnable() { 
+            taskId = server.schedule(0, 1, new Runnable() {
                 public void run() {
                     int max = Math.max(1, Math.min(30, effectQueue.size() / 3));
                     for (int i = 0; i < max; ++i) {

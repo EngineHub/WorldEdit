@@ -77,7 +77,7 @@ public abstract class LocalPlayer {
 
         byte free = 0;
 
-        while (y <= 129) {
+        while (y <= world.getMaxY() + 2) {
             if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 ++free;
             } else {
@@ -142,7 +142,7 @@ public abstract class LocalPlayer {
         byte free = 0;
         byte spots = 0;
 
-        while (y <= 129) {
+        while (y <= world.getMaxY() + 2) {
             if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 ++free;
             } else {
@@ -266,7 +266,7 @@ public abstract class LocalPlayer {
         int maxY = Math.min(getWorld().getMaxY() + 1, initialY + distance);
         LocalWorld world = getPosition().getWorld();
 
-        while (y <= 129) {
+        while (y <= world.getMaxY() + 2) {
             if (!BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 break; // Hit something
             } else if (y > maxY + 1) {

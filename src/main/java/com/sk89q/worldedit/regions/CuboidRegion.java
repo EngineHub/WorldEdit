@@ -50,10 +50,10 @@ public class CuboidRegion extends AbstractRegion {
     public CuboidRegion(Vector pos1, Vector pos2) {
         this(null, pos1, pos2);
     }
-    
+
     /**
      * Construct a new instance of this cuboid region.
-     * 
+     *
      * @param world
      * @param pos1
      * @param pos2
@@ -239,8 +239,8 @@ public class CuboidRegion extends AbstractRegion {
     }
 
     private void recalculate() {
-        pos1 = pos1.clampY(0, world == null ? 127 : world.getMaxY());
-        pos2 = pos2.clampY(0, world == null ? 127 : world.getMaxY());
+        pos1 = pos1.clampY(0, world == null ? 255 : world.getMaxY());
+        pos2 = pos2.clampY(0, world == null ? 255 : world.getMaxY());
     }
 
     @Override
