@@ -32,7 +32,6 @@ public class OperatorToken extends Token {
         this.operator = operator;
     }
 
-    @Override
     public char id() {
         return 'o';
     }

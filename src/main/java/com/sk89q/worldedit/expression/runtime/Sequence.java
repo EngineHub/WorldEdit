@@ -36,12 +36,10 @@ public class Sequence extends Node {
         this.sequence = sequence;
     }
 
-    @Override
     public char id() {
         return 's';
     }
 
-    @Override
     public double getValue() throws EvaluationException {
         double ret = 0;
         for (RValue invokable : sequence) {

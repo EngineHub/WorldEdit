@@ -38,7 +38,6 @@ public class GravityBrush implements Brush {
         this.fullHeight = fullHeight;
     }
 
-    @Override
     public void build(EditSession editSession, Vector pos, Pattern mat, double size) throws MaxChangedBlocksException {
         final BaseBlock air = new BaseBlock(BlockID.AIR, 0);
         final double startY = fullHeight ? editSession.getWorld().getMaxY() : pos.getBlockY() + size;

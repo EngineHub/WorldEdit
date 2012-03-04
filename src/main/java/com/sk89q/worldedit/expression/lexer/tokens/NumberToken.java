@@ -32,7 +32,6 @@ public class NumberToken extends Token {
         this.value = value;
     }
 
-    @Override
     public char id() {
         return '0';
     }

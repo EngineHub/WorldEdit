@@ -32,7 +32,6 @@ public class IdentifierToken extends Token {
         this.value = value;
     }
 
-    @Override
     public char id() {
         return 'i';
     }

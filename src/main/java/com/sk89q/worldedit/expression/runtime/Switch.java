@@ -59,12 +59,10 @@ public class Switch extends Node implements RValue {
         this.defaultCase = defaultCase;
     }
 
-    @Override
     public char id() {
         return 'W';
     }
 
-    @Override
     public double getValue() throws EvaluationException {
         final double parameter = this.parameter.getValue();
 

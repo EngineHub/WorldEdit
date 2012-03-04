@@ -34,7 +34,6 @@ public class SpoutRawCommandExecutor implements RawCommandExecutor {
         this.plugin = plugin;
     }
 
-    @Override
     public void execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
         args[baseIndex] = "/" + args[baseIndex];
         if (!plugin.getWorldEdit().handleCommand(plugin.wrapCommandSender(source), MiscCompatibilityUtils.arrayCopyOfRange(args, baseIndex, args.length))) {

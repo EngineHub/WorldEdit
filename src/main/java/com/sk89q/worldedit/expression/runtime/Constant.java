@@ -32,7 +32,6 @@ public final class Constant extends Node {
         this.value = value;
     }
 
-    @Override
     public double getValue() {
         return value;
     }
@@ -42,7 +41,6 @@ public final class Constant extends Node {
         return String.valueOf(value);
     }
 
-    @Override
     public char id() {
         return 'c';
     }
