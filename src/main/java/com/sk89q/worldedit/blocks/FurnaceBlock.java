@@ -50,8 +50,8 @@ public class FurnaceBlock extends BaseBlock implements TileEntityBlock, Containe
 
     /**
      * Construct the chest block.
-     * 
-     * @param type 
+     *
+     * @param type
      */
     public FurnaceBlock(int type) {
         super(type);
@@ -61,7 +61,7 @@ public class FurnaceBlock extends BaseBlock implements TileEntityBlock, Containe
     /**
      * Construct the chest block.
      *
-     * @param type 
+     * @param type
      * @param data
      */
     public FurnaceBlock(int type, int data) {
@@ -72,7 +72,7 @@ public class FurnaceBlock extends BaseBlock implements TileEntityBlock, Containe
     /**
      * Construct the chest block.
      *
-     * @param type 
+     * @param type
      * @param data
      * @param items
      */
@@ -127,7 +127,7 @@ public class FurnaceBlock extends BaseBlock implements TileEntityBlock, Containe
 
     /**
      * Get the tile entity ID.
-     * 
+     *
      * @return
      */
     public String getTileEntityID() {
@@ -159,7 +159,7 @@ public class FurnaceBlock extends BaseBlock implements TileEntityBlock, Containe
                     ListTag enchlist = new ListTag("ench", CompoundTag.class, list);
                     for(Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
                         Map<String, Tag> enchantment = new HashMap<String, Tag>();
-                        CompoundTag enchantcompound = new CompoundTag(null, ench);
+                        CompoundTag enchantcompound = new CompoundTag(null, enchantment);
                         enchantment.put("id", new ShortTag("id", entry.getKey().shortValue()));
                         enchantment.put("lvl", new ShortTag("lvl", entry.getValue().shortValue()));
                         list.add(enchantcompound);
@@ -222,7 +222,7 @@ public class FurnaceBlock extends BaseBlock implements TileEntityBlock, Containe
                         itemstack.getEnchantments().put((int) enchid, (int)enchlvl);
                     }
                 }
-                
+
                 newItems[slot] = itemstack;
             }
         }

@@ -85,7 +85,7 @@ public class DispenserBlock extends BaseBlock implements TileEntityBlock, Contai
 
     /**
      * Get the tile entity ID.
-     * 
+     *
      * @return
      */
     public String getTileEntityID() {
@@ -117,7 +117,7 @@ public class DispenserBlock extends BaseBlock implements TileEntityBlock, Contai
                     ListTag enchlist = new ListTag("ench", CompoundTag.class, list);
                     for(Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
                         Map<String, Tag> enchantment = new HashMap<String, Tag>();
-                        CompoundTag enchantcompound = new CompoundTag(null, ench);
+                        CompoundTag enchantcompound = new CompoundTag(null, enchantment);
                         enchantment.put("id", new ShortTag("id", entry.getKey().shortValue()));
                         enchantment.put("lvl", new ShortTag("lvl", entry.getValue().shortValue()));
                         list.add(enchantcompound);
@@ -178,7 +178,7 @@ public class DispenserBlock extends BaseBlock implements TileEntityBlock, Contai
                         itemstack.getEnchantments().put((int) enchid, (int)enchlvl);
                     }
                 }
-                
+
                 newItems[slot] = itemstack;
             }
         }
