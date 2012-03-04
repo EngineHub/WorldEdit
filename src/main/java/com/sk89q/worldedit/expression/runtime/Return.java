@@ -33,12 +33,10 @@ public class Return extends Node {
         this.value = value;
     }
 
-    @Override
     public double getValue() throws EvaluationException {
         throw new ReturnException(value.getValue());
     }
 
-    @Override
     public char id() {
         return 'r';
     }

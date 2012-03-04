@@ -46,7 +46,6 @@ public class Function extends Node {
         this.args = args;
     }
 
-    @Override
     public final double getValue() throws EvaluationException {
         return invokeMethod(method, args);
     }
@@ -78,7 +77,6 @@ public class Function extends Node {
         return ret.append(')').toString();
     }
 
-    @Override
     public char id() {
         return 'f';
     }

@@ -37,7 +37,6 @@ public class While extends Node {
         this.footChecked = footChecked;
     }
 
-    @Override
     public double getValue() throws EvaluationException {
         int iterations = 0;
         double ret = 0.0;
@@ -81,7 +80,6 @@ public class While extends Node {
         return ret;
     }
 
-    @Override
     public char id() {
         return 'w';
     }
