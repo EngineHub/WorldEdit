@@ -99,10 +99,17 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
             }
         } else {
             Pattern pattern = Pattern.compile(".*\\.mcr$");
+            Pattern patternmca = Pattern.compile(".*\\.mca$"); // TODO: does this need a separate class?
             for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements(); ) {
                 ZipEntry testEntry = (ZipEntry) e.nextElement();
                 // Check for world
                 if (testEntry.getName().startsWith(worldname + "/")) {
+                    // TODO: does this need a separate class?
+                    if (patternmca.matcher(testEntry.getName()).matches()) {
+                        folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf("/"));
+                        name = folder + "/" + name.replace("mcr", "mca");
+                        break;
+                    }
                     if (pattern.matcher(testEntry.getName()).matches()) {
                         folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf("/"));
                         name = folder + "/" + name;
@@ -159,7 +166,7 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
 
             ZipEntry testEntry = e.nextElement();
 
-            if (testEntry.getName().matches(".*\\.mcr$")) {
+            if (testEntry.getName().matches(".*\\.mcr$") || testEntry.getName().matches(".*\\.mca$")) { // TODO: does this need a separate class?
                 return true;
             }
         }

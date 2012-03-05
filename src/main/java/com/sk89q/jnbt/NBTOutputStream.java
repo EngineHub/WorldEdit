@@ -157,6 +157,8 @@ public final class NBTOutputStream implements Closeable {
         case NBTConstants.TYPE_COMPOUND:
             writeCompoundTagPayload((CompoundTag) tag);
             break;
+        case NBTConstants.TYPE_INT_ARRAY:
+            writeIntArrayTagPayload((IntArrayTag) tag);
         default:
             throw new IOException("Invalid tag type: " + type + ".");
         }
@@ -307,6 +309,14 @@ public final class NBTOutputStream implements Closeable {
      */
     private void writeEndTagPayload(EndTag tag) {
         /* empty */
+    }
+    
+    private void writeIntArrayTagPayload(IntArrayTag tag) throws IOException {
+        int[] data = tag.getValue();
+        os.writeInt(data.length);
+        for (int i = 0; i < data.length; i++) {
+            os.writeInt(data[i]);
+        } 
     }
 
     public void close() throws IOException {
