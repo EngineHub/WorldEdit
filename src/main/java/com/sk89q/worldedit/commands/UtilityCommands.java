@@ -349,7 +349,7 @@ public class UtilityCommands {
         flags = "plan",
         desc = "Kill all or nearby mobs",
         help =
-            "Kills nearby mobs, or all mobs if you don't specify a radius.\n" +
+            "Kills nearby mobs, based on radius, if none is given uses default in configuration.\n" +
             "Flags:" +
             "  -p also kills pets.\n" +
             "  -n also kills NPCs.\n" +
@@ -364,14 +364,31 @@ public class UtilityCommands {
     public void butcher(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        int radius = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : -1;
-
+        LocalConfiguration config = we.getConfiguration();
+    	
+        final int radius;
+        
+        if(args.argsLength() > 0){
+        	radius =  Math.max(1, args.getInteger(0));
+        }
+        else{
+        	radius = config.butcherDefaultRadius;
+        }
+        
         int flags = 0;
-        if (args.hasFlag('p')) flags |= KillFlags.PETS;
-        if (args.hasFlag('n')) flags |= KillFlags.NPCS;
-        if (args.hasFlag('a')) flags |= KillFlags.ANIMALS;
+        if(player.hasPermission("worldedit.butcher.pets") && (args.hasFlag('p'))){
+            flags |= KillFlags.PETS;
+        }
+       
+        if(player.hasPermission("worldedit.butcher.npc") && (args.hasFlag('n'))){
+            flags |= KillFlags.NPCS;
+        }
+        
+        if(player.hasPermission("worldedit.butcher.animals") && (args.hasFlag('a'))){
+            flags |= KillFlags.ANIMALS;
+        }
+        
         if (args.hasFlag('l') && player.hasPermission("worldedit.butcher.lightning")) flags |= KillFlags.WITH_LIGHTNING;
-
         int killed;
         if (player.isPlayer()) {
             killed = player.getWorld().killMobs(session.getPlacementPosition(player), radius, flags);

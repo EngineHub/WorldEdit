@@ -83,6 +83,7 @@ public class YAMLConfiguration extends LocalConfiguration {
 
         scriptTimeout = config.getInt("scripting.timeout", scriptTimeout);
         scriptsDir = config.getString("scripting.dir", scriptsDir);
+        butcherDefaultRadius = config.getInt("butcher-default-radius", butcherDefaultRadius);
 
         saveDir = config.getString("saving.dir", saveDir);
 
