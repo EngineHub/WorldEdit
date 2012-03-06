@@ -54,6 +54,9 @@ history:
     size: 15
     expiration: 10
 
+butcher:
+       butcher-default-radius: -1
+
 wand-item: 271
 shell-save-type: 
 no-double-slash: false

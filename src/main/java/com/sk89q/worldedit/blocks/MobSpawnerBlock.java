@@ -151,8 +151,8 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
             throw new DataException("'MobSpawner' tile entity expected");
         }
 
-        StringTag mobTypeTag = (StringTag) Chunk.getChildTag(values, "EntityId", StringTag.class);
-        ShortTag delayTag = (ShortTag) Chunk.getChildTag(values, "Delay", ShortTag.class);
+        StringTag mobTypeTag = (StringTag) NBTUtils.getChildTag(values, "EntityId", StringTag.class);
+        ShortTag delayTag = (ShortTag) NBTUtils.getChildTag(values, "Delay", ShortTag.class);
 
         this.mobType = mobTypeTag.getValue();
         this.delay = delayTag.getValue();

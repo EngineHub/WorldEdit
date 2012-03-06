@@ -45,7 +45,13 @@ public class FileMcRegionChunkStore extends McRegionChunkStore {
     protected InputStream getInputStream(String name, String world) throws IOException,
             DataException {
         String fileName = "region" + File.separator + name;
-        File file = new File(path, fileName);
+        File file = new File(path, fileName.replace("mcr", "mca")); // TODO: does this need a separate class?
+        if (!file.exists()) {
+            file = new File(path, fileName);
+        }
+        if (!file.exists()) {
+            file = new File(path, "DIM-1" + File.separator + fileName.replace("mcr", "mca")); // TODO: does this need a separate class?
+        }
         if (!file.exists()) {
             file = new File(path, "DIM-1" + File.separator + fileName);
         }

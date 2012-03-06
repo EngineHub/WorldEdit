@@ -150,7 +150,7 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock, ContainerB
             throw new DataException("'Chest' tile entity expected");
         }
 
-        ListTag items = (ListTag) Chunk.getChildTag(values, "Items", ListTag.class);
+        ListTag items = (ListTag) NBTUtils.getChildTag(values, "Items", ListTag.class);
         BaseItemStack[] newItems = new BaseItemStack[27];
 
         for (Tag tag : items.getValue()) {
@@ -161,20 +161,20 @@ public class ChestBlock extends BaseBlock implements TileEntityBlock, ContainerB
             CompoundTag item = (CompoundTag) tag;
             Map<String, Tag> itemValues = item.getValue();
 
-            short id = Chunk.getChildTag(itemValues, "id", ShortTag.class).getValue();
-            short damage = Chunk.getChildTag(itemValues, "Damage", ShortTag.class).getValue();
-            byte count = Chunk.getChildTag(itemValues, "Count", ByteTag.class).getValue();
-            byte slot = Chunk.getChildTag(itemValues, "Slot", ByteTag.class).getValue();
+            short id = NBTUtils.getChildTag(itemValues, "id", ShortTag.class).getValue();
+            short damage = NBTUtils.getChildTag(itemValues, "Damage", ShortTag.class).getValue();
+            byte count = NBTUtils.getChildTag(itemValues, "Count", ByteTag.class).getValue();
+            byte slot = NBTUtils.getChildTag(itemValues, "Slot", ByteTag.class).getValue();
 
             if (slot >= 0 && slot <= 26) {
                 BaseItemStack itemstack = new BaseItemStack(id, count, damage);
 
                 if(itemValues.containsKey("tag")) {
-                    ListTag ench = (ListTag) Chunk.getChildTag(itemValues, "tag", CompoundTag.class).getValue().get("ench");
+                    ListTag ench = (ListTag) NBTUtils.getChildTag(itemValues, "tag", CompoundTag.class).getValue().get("ench");
                     for(Tag e : ench.getValue()) {
                         Map<String, Tag> vars = ((CompoundTag) e).getValue();
-                        short enchid = Chunk.getChildTag(vars, "id", ShortTag.class).getValue();
-                        short enchlvl = Chunk.getChildTag(vars, "lvl", ShortTag.class).getValue();
+                        short enchid = NBTUtils.getChildTag(vars, "id", ShortTag.class).getValue();
+                        short enchlvl = NBTUtils.getChildTag(vars, "lvl", ShortTag.class).getValue();
                         itemstack.getEnchantments().put((int) enchid, (int)enchlvl);
                     }
                 }
