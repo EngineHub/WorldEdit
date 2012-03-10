@@ -102,7 +102,7 @@ public class WorldEdit {
 
     /**
      * Construct an instance of the plugin
-     * 
+     *
      * @param server
      * @param config
      */
@@ -182,22 +182,22 @@ public class WorldEdit {
                 super.invokeMethod(parent, args, player, method, instance, methodArgs, level);
             }
         };
-        
+
         commands.setInjector(new SimpleInjector(this));
 
-        server.onCommandRegistration(commands.registerAndReturn(ChunkCommands.class));
-        server.onCommandRegistration(commands.registerAndReturn(ClipboardCommands.class));
-        server.onCommandRegistration(commands.registerAndReturn(GeneralCommands.class));
-        server.onCommandRegistration(commands.registerAndReturn(GenerationCommands.class));
-        server.onCommandRegistration(commands.registerAndReturn(HistoryCommands.class));
-        server.onCommandRegistration(commands.registerAndReturn(NavigationCommands.class));
-        server.onCommandRegistration(commands.registerAndReturn(RegionCommands.class));
-        server.onCommandRegistration(commands.registerAndReturn(ScriptingCommands.class));
-        server.onCommandRegistration(commands.registerAndReturn(SelectionCommands.class));
-        server.onCommandRegistration(commands.registerAndReturn(SnapshotUtilCommands.class));
-        server.onCommandRegistration(commands.registerAndReturn(ToolUtilCommands.class));
-        server.onCommandRegistration(commands.registerAndReturn(ToolCommands.class));
-        server.onCommandRegistration(commands.registerAndReturn(UtilityCommands.class));
+        server.onCommandRegistration(commands.registerAndReturn(ChunkCommands.class), commands);
+        server.onCommandRegistration(commands.registerAndReturn(ClipboardCommands.class), commands);
+        server.onCommandRegistration(commands.registerAndReturn(GeneralCommands.class), commands);
+        server.onCommandRegistration(commands.registerAndReturn(GenerationCommands.class), commands);
+        server.onCommandRegistration(commands.registerAndReturn(HistoryCommands.class), commands);
+        server.onCommandRegistration(commands.registerAndReturn(NavigationCommands.class), commands);
+        server.onCommandRegistration(commands.registerAndReturn(RegionCommands.class), commands);
+        server.onCommandRegistration(commands.registerAndReturn(ScriptingCommands.class), commands);
+        server.onCommandRegistration(commands.registerAndReturn(SelectionCommands.class), commands);
+        server.onCommandRegistration(commands.registerAndReturn(SnapshotUtilCommands.class), commands);
+        server.onCommandRegistration(commands.registerAndReturn(ToolUtilCommands.class), commands);
+        server.onCommandRegistration(commands.registerAndReturn(ToolCommands.class), commands);
+        server.onCommandRegistration(commands.registerAndReturn(UtilityCommands.class), commands);
     }
 
     /**
@@ -262,7 +262,7 @@ public class WorldEdit {
 
     /**
      * Returns true if the player has a session.
-     * 
+     *
      * @param player
      * @return
      */
@@ -498,8 +498,8 @@ public class WorldEdit {
      * @param player
      * @param patternString
      * @return pattern
-     * @throws UnknownItemException 
-     * @throws DisallowedItemException 
+     * @throws UnknownItemException
+     * @throws DisallowedItemException
      */
     public Pattern getBlockPattern(LocalPlayer player, String patternString)
             throws UnknownItemException, DisallowedItemException {
@@ -648,8 +648,8 @@ public class WorldEdit {
      * @param list
      * @param allBlocksAllowed
      * @return set
-     * @throws UnknownItemException 
-     * @throws DisallowedItemException 
+     * @throws UnknownItemException
+     * @throws DisallowedItemException
      */
     public Set<Integer> getBlockIDs(LocalPlayer player,
             String list, boolean allBlocksAllowed)
@@ -668,8 +668,8 @@ public class WorldEdit {
      * has valid characters and has an extension. It also prevents directory
      * traversal exploits by checking the root directory and the file directory.
      * On success, a <code>java.io.File</code> object will be returned.
-     * 
-     * @param player 
+     *
+     * @param player
      * @param dir sub-directory to look in
      * @param filename filename (user-submitted)
      * @param defaultExt append an extension if missing one, null to not use
@@ -688,8 +688,8 @@ public class WorldEdit {
      * has valid characters and has an extension. It also prevents directory
      * traversal exploits by checking the root directory and the file directory.
      * On success, a <code>java.io.File</code> object will be returned.
-     * 
-     * @param player 
+     *
+     * @param player
      * @param dir sub-directory to look in
      * @param filename filename (user-submitted)
      * @param defaultExt append an extension if missing one, null to not use
@@ -705,7 +705,7 @@ public class WorldEdit {
 
     /**
      * Get a safe path to a file.
-     * 
+     *
      * @param player
      * @param dir
      * @param filename
@@ -775,7 +775,7 @@ public class WorldEdit {
     /**
      * Get a file relative to the defined working directory. If the specified
      * path is absolute, then the working directory is not used.
-     * 
+     *
      * @param path
      * @return
      */
@@ -790,7 +790,7 @@ public class WorldEdit {
 
     /**
      * Modulus, divisor-style.
-     * 
+     *
      * @param a
      * @param n
      * @return
@@ -802,11 +802,11 @@ public class WorldEdit {
     /**
      * Get the direction vector for a player's direction. May return
      * null if a direction could not be found.
-     * 
+     *
      * @param player
-     * @param dirStr 
+     * @param dirStr
      * @return
-     * @throws UnknownDirectionException 
+     * @throws UnknownDirectionException
      */
     public Vector getDirection(LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
@@ -897,11 +897,11 @@ public class WorldEdit {
     /**
      * Get diagonal direction vector for a player's direction. May return
      * null if a direction could not be found.
-     * 
+     *
      * @param player
-     * @param dirStr 
+     * @param dirStr
      * @return
-     * @throws UnknownDirectionException 
+     * @throws UnknownDirectionException
      */
     public Vector getDiagonalDirection(LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
@@ -913,9 +913,9 @@ public class WorldEdit {
      * Get the flip direction for a player's direction.
      *
      * @param player
-     * @param dirStr 
+     * @param dirStr
      * @return
-     * @throws UnknownDirectionException 
+     * @throws UnknownDirectionException
      */
     public FlipDirection getFlipDirection(LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
@@ -941,7 +941,7 @@ public class WorldEdit {
 
     /**
      * Remove a session.
-     * 
+     *
      * @param player
      */
     public void removeSession(LocalPlayer player) {
@@ -961,7 +961,7 @@ public class WorldEdit {
 
     /**
      * Flush a block bag's changes to a player.
-     * 
+     *
      * @param player
      * @param editSession
      */
@@ -1064,9 +1064,9 @@ public class WorldEdit {
 
     /**
      * Called on arm swing.
-     * 
+     *
      * @param player
-     * @return 
+     * @return
      */
     public boolean handleArmSwing(LocalPlayer player) {
         if (player.getItemInHand() == config.navigationWand) {
@@ -1103,9 +1103,9 @@ public class WorldEdit {
 
     /**
      * Called on right click (not on a block).
-     * 
+     *
      * @param player
-     * @return 
+     * @return
      */
     public boolean handleRightClick(LocalPlayer player) {
         if (player.getItemInHand() == config.navigationWand) {
@@ -1327,7 +1327,7 @@ public class WorldEdit {
 
         return true;
     }
-    
+
     public String[] commandDetection(String[] split) {
         split[0] = split[0].substring(1);
 
@@ -1355,11 +1355,11 @@ public class WorldEdit {
 
     /**
      * Executes a WorldEdit script.
-     * 
+     *
      * @param player
      * @param f
      * @param args
-     * @throws WorldEditException 
+     * @throws WorldEditException
      */
     public void runScript(LocalPlayer player, File f, String[] args)
             throws WorldEditException {
@@ -1444,7 +1444,7 @@ public class WorldEdit {
 
     /**
      * Get Worldedit's configuration.
-     * 
+     *
      * @return
      */
     public LocalConfiguration getConfiguration() {
@@ -1453,7 +1453,7 @@ public class WorldEdit {
 
     /**
      * Get the server interface.
-     * 
+     *
      * @return
      */
     public ServerInterface getServer() {

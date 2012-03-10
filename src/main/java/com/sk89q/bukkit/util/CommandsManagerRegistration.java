@@ -20,10 +20,14 @@
 package com.sk89q.bukkit.util;
 
 import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,7 +47,21 @@ public class CommandsManagerRegistration extends CommandRegistration {
     }
 
     public boolean register(Class<?> clazz) {
-        List<Command> registered = commands.registerAndReturn(clazz);
-        return registerAll(registered);
+        return registerAll(commands.registerAndReturn(clazz));
+    }
+
+    public boolean registerAll(List<Command> registered) {
+        List<CommandInfo> toRegister = new ArrayList<CommandInfo>();
+        for (Command command : registered) {
+            String[] permissions = null;
+            Method cmdMethod = commands.getMethods().get(null).get(command.aliases()[0]);
+            if (cmdMethod != null && cmdMethod.isAnnotationPresent(CommandPermissions.class)) {
+                permissions = cmdMethod.getAnnotation(CommandPermissions.class).value();
+            }
+
+            toRegister.add(new CommandInfo(command.usage(), command.desc(), command.aliases(), commands, permissions));
+        }
+
+        return register(toRegister);
     }
 }

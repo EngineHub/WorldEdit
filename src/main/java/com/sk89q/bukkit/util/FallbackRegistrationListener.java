@@ -35,12 +35,8 @@ public class FallbackRegistrationListener implements Listener {
         this.commandRegistration = commandRegistration;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         if (commandRegistration.dispatch(event.getPlayer(), event.getMessage())) {
             event.setCancelled(true);
         }

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.util.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
@@ -37,8 +36,13 @@ import org.bukkit.plugin.Plugin;
  * @author zml2008
  */
 public class CommandRegistration {
-	private final Plugin plugin;
-    private final CommandExecutor executor;
+
+    static {
+      Bukkit.getServer().getHelpMap().registerHelpTopicFactory(DynamicPluginCommand.class, new DynamicPluginCommandHelpTopic.Factory());
+    }
+
+	protected final Plugin plugin;
+    protected final CommandExecutor executor;
 	private CommandMap fallbackCommands;
 
     public CommandRegistration(Plugin plugin) {
@@ -49,15 +53,17 @@ public class CommandRegistration {
         this.plugin = plugin;
         this.executor = executor;
     }
-    
-    public boolean registerAll(List<Command> registered) {
+
+    public boolean register(List<CommandInfo> registered) {
         CommandMap commandMap = getCommandMap();
         if (registered == null || commandMap == null) {
             return false;
         }
-        for (Command command : registered) {
-            commandMap.register(plugin.getDescription().getName(),
-                    new DynamicPluginCommand(command.aliases(), command.desc(), "/" + command.aliases()[0] + " " + command.usage(), executor));
+        for (CommandInfo command : registered) {
+            DynamicPluginCommand cmd = new DynamicPluginCommand(command.getAliases(),
+                    command.getDesc(), "/" + command.getAliases()[0] + " " + command.getUsage(), executor, command.getRegisteredWith());
+            cmd.setPermissions(command.getPermissions());
+            commandMap.register(plugin.getDescription().getName(), cmd);
         }
         return true;
     }

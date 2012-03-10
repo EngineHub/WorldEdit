@@ -20,6 +20,7 @@
 package com.sk89q.worldedit;
 
 import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandsManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,16 +33,16 @@ public abstract class ServerInterface {
     /**
      * Resolves an item name to its ID.
      *
-     * @param name
-     * @return
+     * @param name The name to look up
+     * @return The id that corresponds to the name, or -1 if no such ID exists
      */
     public abstract int resolveItem(String name);
 
     /**
      * Checks if a mob type is valid.
      *
-     * @param type
-     * @return
+     * @param type The mob type name to check
+     * @return Whether the name is a valid mod bype
      */
     public abstract boolean isValidMobType(String type);
 
@@ -66,8 +67,13 @@ public abstract class ServerInterface {
     public List<LocalWorld> getWorlds() {
         return Collections.emptyList();
     }
-    
+
+    @Deprecated
     public void onCommandRegistration(List<Command> commands) {
         // Do nothing :)
+    }
+
+    public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
+        onCommandRegistration(commands);
     }
 }
