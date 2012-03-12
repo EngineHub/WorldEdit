@@ -26,7 +26,6 @@ import java.util.Map;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import com.sk89q.worldedit.*;
@@ -58,24 +57,32 @@ public class BukkitUtil {
         return new BlockWorldVector(getLocalWorld(block.getWorld()), block.getX(), block.getY(), block.getZ());
     }
 
-    public static Vector toVector(Location loc) {
+    public static Vector toVector(org.bukkit.Location loc) {
         return new Vector(loc.getX(), loc.getY(), loc.getZ());
+    }
+
+    public static Location toLocation(org.bukkit.Location loc) {
+        return new Location(
+            getLocalWorld(loc.getWorld()),
+            new Vector(loc.getX(), loc.getY(), loc.getZ()),
+            loc.getYaw(), loc.getPitch()
+        );
     }
 
     public static Vector toVector(org.bukkit.util.Vector vector) {
         return new Vector(vector.getX(), vector.getY(), vector.getZ());
     }
 
-    public static Location toLocation(WorldVector pt) {
-        return new Location(toWorld(pt), pt.getX(), pt.getY(), pt.getZ());
+    public static org.bukkit.Location toLocation(WorldVector pt) {
+        return new org.bukkit.Location(toWorld(pt), pt.getX(), pt.getY(), pt.getZ());
     }
 
-    public static Location toLocation(World world, Vector pt) {
-        return new Location(world, pt.getX(), pt.getY(), pt.getZ());
+    public static org.bukkit.Location toLocation(World world, Vector pt) {
+        return new org.bukkit.Location(world, pt.getX(), pt.getY(), pt.getZ());
     }
 
-    public static Location center(Location loc) {
-        return new Location(
+    public static org.bukkit.Location center(org.bukkit.Location loc) {
+        return new org.bukkit.Location(
                 loc.getWorld(),
                 loc.getBlockX() + 0.5,
                 loc.getBlockY() + 0.5,
@@ -105,7 +112,7 @@ public class BukkitUtil {
      * Bukkit's Location class has serious problems with floating point
      * precision.
      */
-    public static boolean equals(Location a, Location b) {
+    public static boolean equals(org.bukkit.Location a, org.bukkit.Location b) {
         if (Math.abs(a.getX() - b.getX()) > EQUALS_PRECISION) return false;
         if (Math.abs(a.getY() - b.getY()) > EQUALS_PRECISION) return false;
         if (Math.abs(a.getZ() - b.getZ()) > EQUALS_PRECISION) return false;
@@ -113,4 +120,13 @@ public class BukkitUtil {
     }
 
     public static final double EQUALS_PRECISION = 0.0001;
+
+    public static org.bukkit.Location toLocation(Location teleportLocation) {
+        final LocalWorld world = teleportLocation.getWorld();
+        return toLocation(toWorld(world), teleportLocation.getPosition());
+    }
+
+    public static World toWorld(final LocalWorld world) {
+        return ((BukkitWorld) world).getWorld();
+    }
 }
