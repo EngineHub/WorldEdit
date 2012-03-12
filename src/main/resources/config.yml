@@ -61,4 +61,11 @@ wand-item: 271
 shell-save-type: 
 no-double-slash: false
 no-op-permissions: false
+# Currently Bukkit's internal permissions API has no understanding of an "OP" value (whereby the player is given the 
+# permission if they are an operator). This is a workaround for this which allows us to use the default permissions defined 
+# in WorldEdit (OPs can do everything) and allows us to disable certain features an OP can use, using permissions. For 
+# example they can use all commands if they are an OP (as by default) but if I define 'worldedit.region.set: false' in a 
+# group the OP is a member of it disallows that OP to set blocks. There is no point setting this to true if 
+# no-op-permissions is set to true aswell.
+override-op-permissions: false
 debug: false
