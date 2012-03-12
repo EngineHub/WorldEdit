@@ -27,6 +27,8 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.cui.CUIEvent;
+
+import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.MaterialData;
@@ -56,7 +58,7 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public WorldVector getPosition() {
-        Point loc = player.getEntity().getPoint();
+        Point loc = player.getEntity().getPosition();
         return new WorldVector(SpoutUtil.getLocalWorld(loc.getWorld()),
                 loc.getX(), loc.getY(), loc.getZ());
     }
@@ -106,9 +108,10 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public void setPosition(Vector pos, float pitch, float yaw) {
-        player.getEntity().setPoint((float)pos.getX(), (float)pos.getY(), (float)pos.getZ());
-        player.getEntity().setPitch(pitch);
-        player.getEntity().setYaw(yaw);
+        final Entity entity = player.getEntity();
+        entity.setPosition(SpoutUtil.toPoint(entity.getWorld(), pos));
+        entity.setPitch(pitch);
+        entity.setYaw(yaw);
     }
 
     @Override
@@ -128,7 +131,7 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public LocalWorld getWorld() {
-        return SpoutUtil.getLocalWorld(player.getEntity().getPoint().getWorld());
+        return SpoutUtil.getLocalWorld(player.getEntity().getWorld());
     }
 
     @Override

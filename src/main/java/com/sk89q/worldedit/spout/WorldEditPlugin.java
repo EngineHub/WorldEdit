@@ -311,7 +311,7 @@ public class WorldEditPlugin extends CommonPlugin implements Named {
         }
 
         LocalSession session = controller.getSession(wrapPlayer(player));
-        RegionSelector selector = session.getRegionSelector(SpoutUtil.getLocalWorld(player.getEntity().getPoint().getWorld()));
+        RegionSelector selector = session.getRegionSelector(SpoutUtil.getLocalWorld(player.getEntity().getWorld()));
 
         try {
             Region region = selector.getRegion();
@@ -348,7 +348,7 @@ public class WorldEditPlugin extends CommonPlugin implements Named {
 
         LocalSession session = controller.getSession(wrapPlayer(player));
         RegionSelector sel = selection.getRegionSelector();
-        session.setRegionSelector(SpoutUtil.getLocalWorld(player.getEntity().getPoint().getWorld()), sel);
+        session.setRegionSelector(SpoutUtil.getLocalWorld(player.getEntity().getWorld()), sel);
         session.dispatchCUISelection(wrapPlayer(player));
     }
 
