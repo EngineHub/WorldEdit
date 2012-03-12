@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 public class BukkitConfiguration extends YAMLConfiguration {
 
     public boolean noOpPermissions = false;
+    public boolean overridePermissions = false;
 
     public BukkitConfiguration(YAMLProcessor config, Logger logger) {
         super(config, logger);
@@ -39,5 +40,6 @@ public class BukkitConfiguration extends YAMLConfiguration {
     public void load() {
         super.load();
         noOpPermissions = config.getBoolean("no-op-permissions", false);
+        overridePermissions = config.getBoolean("override-op-permissions", false); // Feel free to pick a better name! Just something to get things started.
     }
 }
