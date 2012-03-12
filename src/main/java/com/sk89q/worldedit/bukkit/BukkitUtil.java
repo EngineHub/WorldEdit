@@ -28,7 +28,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.Server;
 import org.bukkit.World;
-import com.sk89q.worldedit.*;
+
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockWorldVector;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.Location;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldVector;
 
 public class BukkitUtil {
     private BukkitUtil() {
@@ -122,8 +128,12 @@ public class BukkitUtil {
     public static final double EQUALS_PRECISION = 0.0001;
 
     public static org.bukkit.Location toLocation(Location teleportLocation) {
-        final LocalWorld world = teleportLocation.getWorld();
-        return toLocation(toWorld(world), teleportLocation.getPosition());
+        Vector pt = teleportLocation.getPosition();
+        return new org.bukkit.Location(
+            toWorld(teleportLocation.getWorld()),
+            pt.getX(), pt.getY(), pt.getZ(),
+            teleportLocation.getYaw(), teleportLocation.getPitch()
+        );
     }
 
     public static World toWorld(final LocalWorld world) {
