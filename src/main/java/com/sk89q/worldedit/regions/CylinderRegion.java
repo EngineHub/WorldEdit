@@ -213,6 +213,21 @@ public class CylinderRegion extends AbstractRegion {
         return (int) (2 * radius.getZ());
     }
 
+    private Vector2D getTotalXZChanges(Vector... changes) throws RegionOperationException {
+        Vector2D diff = new Vector2D();
+        Vector2D total = new Vector2D();
+        for (Vector change : changes) {
+            diff = diff.add(change.toVector2D());
+            total = total.add(change.toVector2D().positive());
+        }
+
+        if (diff.getBlockX() != 0 || diff.getBlockZ() != 0) {
+            throw new RegionOperationException("Cylinders changes must be equal for both directions of each horizontal dimensions.");
+        }
+
+        return total.divide(2).floor();
+    }
+
     /**
      * Expand the region.
      *
@@ -232,6 +247,20 @@ public class CylinderRegion extends AbstractRegion {
     }
 
     /**
+     * Expand the region.
+     * Expand the region.
+     *
+     * @param changes array/arguments with multiple related changes
+     * @throws RegionOperationException
+     */
+    public void expand(Vector... changes) throws RegionOperationException {
+        radius = radius.add(getTotalXZChanges(changes));
+        for (Vector change : changes) {
+            expand(new Vector(0, change.getBlockY(), 0));
+        }
+    }
+
+    /**
      * Contract the region.
      *
      * @param change
@@ -246,6 +275,20 @@ public class CylinderRegion extends AbstractRegion {
             minY += changeY;
         } else {
             maxY += changeY;
+        }
+    }
+
+    /**
+     * Contract the region.
+     *
+     * @param changes array/arguments with multiple related changes
+     * @throws RegionOperationException
+     */
+    public void contract(Vector... changes) throws RegionOperationException {
+        Vector2D newRadius = radius.subtract(getTotalXZChanges(changes));
+        radius = Vector2D.getMaximum(new Vector2D(1.5, 1.5), newRadius);
+        for (Vector change : changes) {
+            contract(new Vector(0, change.getBlockY(), 0));
         }
     }
 
