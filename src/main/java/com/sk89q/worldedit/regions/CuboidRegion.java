@@ -32,7 +32,7 @@ import java.util.HashSet;
  *
  * @author sk89q
  */
-public class CuboidRegion extends AbstractRegion {
+public class CuboidRegion extends AbstractRegion implements FlatRegion {
     /**
      * Store the first point.
      */
@@ -367,6 +367,16 @@ public class CuboidRegion extends AbstractRegion {
 
             public void remove() {
                 throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    @Override
+    public Iterable<Vector2D> asFlatRegion() {
+        return new Iterable<Vector2D>() {
+            @Override
+            public Iterator<Vector2D> iterator() {
+                return new FlatRegionIterator(CuboidRegion.this);
             }
         };
     }
