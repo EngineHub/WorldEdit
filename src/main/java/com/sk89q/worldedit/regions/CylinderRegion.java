@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.regions;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
@@ -31,7 +32,7 @@ import com.sk89q.worldedit.data.ChunkStore;
  *
  * @author yetanotherx
  */
-public class CylinderRegion extends AbstractRegion {
+public class CylinderRegion extends AbstractRegion implements FlatRegion {
     private Vector center;
     private Vector2D center2D;
     private Vector2D radius;
@@ -340,6 +341,16 @@ public class CylinderRegion extends AbstractRegion {
         }
 
         return false;
+    }
+
+    @Override
+    public Iterable<Vector2D> asFlatRegion() {
+        return new Iterable<Vector2D>() {
+            @Override
+            public Iterator<Vector2D> iterator() {
+                return new FlatRegionIterator(CylinderRegion.this);
+            }
+        };
     }
 
     /**
