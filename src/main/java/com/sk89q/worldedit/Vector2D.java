@@ -502,6 +502,15 @@ public class Vector2D {
     }
 
     /**
+     * Returns a vector with the absolute values of the components of this vector.
+     *
+     * @return
+     */
+    public Vector2D positive() {
+        return new Vector2D(Math.abs(x), Math.abs(z));
+    }
+
+    /**
      * 2D transformation.
      *
      * @param angle in degrees
