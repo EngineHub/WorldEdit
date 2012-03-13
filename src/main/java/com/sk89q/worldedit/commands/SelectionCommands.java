@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -435,31 +436,11 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.outset")
     public void outset(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        int change = args.getInteger(0);
-
         Region region = session.getSelection(player.getWorld());
-
-        try {
-            if (!args.hasFlag('h')) {
-                region.expand((new Vector(0, 1, 0)).multiply(change));
-                region.expand((new Vector(0, -1, 0)).multiply(change));
-            }
-
-            if (!args.hasFlag('v')) {
-                region.expand((new Vector(1, 0, 0)).multiply(change));
-                region.expand((new Vector(-1, 0, 0)).multiply(change));
-                region.expand((new Vector(0, 0, 1)).multiply(change));
-                region.expand((new Vector(0, 0, -1)).multiply(change));
-            }
-
-            session.getRegionSelector(player.getWorld()).learnChanges();
-            
-            session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
-
-            player.print("Region outset.");
-        } catch (RegionOperationException e) {
-            player.printError(e.getMessage());
-        }
+        region.expand(getChangesForEachDir(args));
+        session.getRegionSelector(player.getWorld()).learnChanges();
+        session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
+        player.print("Region outset.");
     }
 
     @Command(
@@ -478,27 +459,30 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.inset")
     public void inset(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
+        Region region = session.getSelection(player.getWorld());
+        region.contract(getChangesForEachDir(args));
+        session.getRegionSelector(player.getWorld()).learnChanges();
+        session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
+        player.print("Region inset.");
+    }
+
+    private Vector[] getChangesForEachDir(CommandContext args) {
+        List<Vector> changes = new ArrayList<Vector>(6);
         int change = args.getInteger(0);
 
-        Region region = session.getSelection(player.getWorld());
-
         if (!args.hasFlag('h')) {
-            region.contract((new Vector(0, 1, 0)).multiply(change));
-            region.contract((new Vector(0, -1, 0)).multiply(change));
+            changes.add((new Vector(0, 1, 0)).multiply(change));
+            changes.add((new Vector(0, -1, 0)).multiply(change));
         }
 
         if (!args.hasFlag('v')) {
-            region.contract((new Vector(1, 0, 0)).multiply(change));
-            region.contract((new Vector(-1, 0, 0)).multiply(change));
-            region.contract((new Vector(0, 0, 1)).multiply(change));
-            region.contract((new Vector(0, 0, -1)).multiply(change));
+            changes.add((new Vector(1, 0, 0)).multiply(change));
+            changes.add((new Vector(-1, 0, 0)).multiply(change));
+            changes.add((new Vector(0, 0, 1)).multiply(change));
+            changes.add((new Vector(0, 0, -1)).multiply(change));
         }
 
-        session.getRegionSelector(player.getWorld()).learnChanges();
-        
-        session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
-
-        player.print("Region inset.");
+        return changes.toArray(new Vector[0]);
     }
 
     @Command(
