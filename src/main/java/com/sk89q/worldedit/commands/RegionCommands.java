@@ -259,8 +259,7 @@ public class RegionCommands {
         if (args.hasFlag('s')) {
             try {
                 Region region = session.getSelection(player.getWorld());
-                region.expand(dir.multiply(count));
-                region.contract(dir.multiply(count));
+                region.shift(dir.multiply(count));
 
                 session.getRegionSelector(player.getWorld()).learnChanges();
                 session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
@@ -303,8 +302,7 @@ public class RegionCommands {
                 final Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint());
 
                 final Vector shiftVector = dir.multiply(count * (Math.abs(dir.dot(size))+1));
-                region.expand(shiftVector);
-                region.contract(shiftVector);
+                region.shift(shiftVector);
 
                 session.getRegionSelector(player.getWorld()).learnChanges();
                 session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);

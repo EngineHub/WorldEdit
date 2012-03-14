@@ -267,6 +267,7 @@ public class SelectionCommands {
         max = 3
     )
     @CommandPermissions("worldedit.selection.expand")
+    @SuppressWarnings("deprecation")
     public void expand(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
@@ -279,8 +280,9 @@ public class SelectionCommands {
             Region region = session.getSelection(player.getWorld());
             try {
                 int oldSize = region.getArea();
-                region.expand(new Vector(0, (player.getWorld().getMaxY() + 1), 0));
-                region.expand(new Vector(0, -(player.getWorld().getMaxY() + 1), 0));
+                region.expand(
+                        new Vector(0, (player.getWorld().getMaxY() + 1), 0),
+                        new Vector(0, -(player.getWorld().getMaxY() + 1), 0));
                 session.getRegionSelector(player.getWorld()).learnChanges();
                 int newSize = region.getArea();
                 session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
@@ -342,6 +344,7 @@ public class SelectionCommands {
         max = 3
     )
     @CommandPermissions("worldedit.selection.contract")
+    @SuppressWarnings("deprecation")
     public void contract(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 

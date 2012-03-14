@@ -269,16 +269,20 @@ public class Polygonal2DRegion extends AbstractRegion {
      *
      * @param change
      */
-    public void expand(Vector change) throws RegionOperationException {
-        if (change.getBlockX() != 0 || change.getBlockZ() != 0) {
-            throw new RegionOperationException("Polygons can only be expanded vertically.");
+    public void expand(Vector... changes) throws RegionOperationException {
+        for (Vector change : changes) {
+            if (change.getBlockX() != 0 || change.getBlockZ() != 0) {
+                throw new RegionOperationException("Polygons can only be expanded vertically.");
+            }
         }
 
-        int changeY = change.getBlockY();
-        if (changeY > 0) {
-            maxY += changeY;
-        } else {
-            minY += changeY;
+        for (Vector change : changes) {
+            int changeY = change.getBlockY();
+            if (changeY > 0) {
+                maxY += changeY;
+            } else {
+                minY += changeY;
+            }
         }
         recalculate();
     }
@@ -288,16 +292,20 @@ public class Polygonal2DRegion extends AbstractRegion {
      *
      * @param change
      */
-    public void contract(Vector change) throws RegionOperationException {
-        if (change.getBlockX() != 0 || change.getBlockZ() != 0) {
-            throw new RegionOperationException("Polygons can only be contracted vertically.");
+    public void contract(Vector... changes) throws RegionOperationException {
+        for (Vector change : changes) {
+            if (change.getBlockX() != 0 || change.getBlockZ() != 0) {
+                throw new RegionOperationException("Polygons can only be contracted vertically.");
+            }
         }
 
-        int changeY = change.getBlockY();
-        if (changeY > 0) {
-            minY += changeY;
-        } else {
-            maxY += changeY;
+        for (Vector change : changes) {
+            int changeY = change.getBlockY();
+            if (changeY > 0) {
+                minY += changeY;
+            } else {
+                maxY += changeY;
+            }
         }
         recalculate();
     }
