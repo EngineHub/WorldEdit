@@ -271,8 +271,6 @@ public class SelectionCommands {
     public void expand(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        Vector dir;
-
         // Special syntax (//expand vert) to expand the selection between
         // sky and bedrock.
         if (args.getString(0).equalsIgnoreCase("vert")
@@ -295,6 +293,7 @@ public class SelectionCommands {
             return;
         }
 
+        Vector dir;
         int change = args.getInteger(0);
         int reverseChange = 0;
 
@@ -302,7 +301,7 @@ public class SelectionCommands {
         case 2:
             // Either a reverse amount or a direction
             try {
-                reverseChange = args.getInteger(1) * -1;
+                reverseChange = args.getInteger(1);
                 dir = we.getDirection(player, "me");
             } catch (NumberFormatException e) {
                 dir = we.getDirection(player,
@@ -312,7 +311,7 @@ public class SelectionCommands {
 
         case 3:
             // Both reverse amount and direction
-            reverseChange = args.getInteger(1) * -1;
+            reverseChange = args.getInteger(1);
             dir = we.getDirection(player,
                     args.getString(2).toLowerCase());
             break;
@@ -322,10 +321,11 @@ public class SelectionCommands {
 
         Region region = session.getSelection(player.getWorld());
         int oldSize = region.getArea();
-        region.expand(dir.multiply(change));
 
-        if (reverseChange != 0) {
-            region.expand(dir.multiply(reverseChange));
+        if (reverseChange == 0) {
+            region.expand(dir.multiply(change));
+        } else {
+            region.expand(dir.multiply(change), dir.multiply(-reverseChange));
         }
 
         session.getRegionSelector(player.getWorld()).learnChanges();
@@ -356,7 +356,7 @@ public class SelectionCommands {
         case 2:
             // Either a reverse amount or a direction
             try {
-                reverseChange = args.getInteger(1) * -1;
+                reverseChange = args.getInteger(1);
                 dir = we.getDirection(player, "me");
             } catch (NumberFormatException e) {
                 dir = we.getDirection(player, args.getString(1).toLowerCase());
@@ -365,7 +365,7 @@ public class SelectionCommands {
 
         case 3:
             // Both reverse amount and direction
-            reverseChange = args.getInteger(1) * -1;
+            reverseChange = args.getInteger(1);
             dir = we.getDirection(player, args.getString(2).toLowerCase());
             break;
         default:
@@ -375,9 +375,10 @@ public class SelectionCommands {
         try {
             Region region = session.getSelection(player.getWorld());
             int oldSize = region.getArea();
-            region.contract(dir.multiply(change));
-            if (reverseChange != 0) {
-                region.contract(dir.multiply(reverseChange));
+            if (reverseChange == 0) {
+                region.contract(dir.multiply(change));
+            } else {
+                region.contract(dir.multiply(change), dir.multiply(-reverseChange));
             }
             session.getRegionSelector(player.getWorld()).learnChanges();
             int newSize = region.getArea();

@@ -120,28 +120,24 @@ public class EllipsoidRegion extends AbstractRegion {
         return (int) (2 * radius.getZ());
     }
 
-    private Vector getTotalChanges(Vector... changes) throws RegionOperationException {
-        Vector diff = new Vector();
+    private Vector calculateDiff(Vector... changes) throws RegionOperationException {
+        Vector diff = new Vector().add(changes);
+
+        if ((diff.getBlockX() & 1) + (diff.getBlockY() & 1) + (diff.getBlockZ() & 1) != 0) {
+            throw new RegionOperationException(
+                    "Ellipsoid changes must be even for each dimensions.");
+        }
+        
+        return diff.divide(2).floor();
+    }
+
+    private Vector calculateChanges(Vector... changes) {
         Vector total = new Vector();
         for (Vector change : changes) {
-            diff = diff.add(change);
             total = total.add(change.abs());
         }
 
-        if (diff.getBlockX() != 0 || diff.getBlockY() != 0 || diff.getBlockZ() != 0) {
-            throw new RegionOperationException(
-                    "Ellipsoid changes must be equal for both directions of each dimensions.");
-        }
-
         return total.divide(2).floor();
-    }
-
-    /**
-     * Expands the ellipsoid in a direction.
-     *
-     * @param change
-     */
-    public void expand(Vector change) {
     }
 
     /**
@@ -151,15 +147,8 @@ public class EllipsoidRegion extends AbstractRegion {
      * @throws RegionOperationException
      */
     public void expand(Vector... changes) throws RegionOperationException {
-        radius = radius.add(getTotalChanges(changes));
-    }
-
-    /**
-     * Contracts the ellipsoid in a direction.
-     *
-     * @param change
-     */
-    public void contract(Vector change) {
+        center = center.add(calculateDiff(changes));
+        radius = radius.add(calculateChanges(changes));
     }
 
     /**
@@ -169,7 +158,8 @@ public class EllipsoidRegion extends AbstractRegion {
      * @throws RegionOperationException
      */
     public void contract(Vector... changes) throws RegionOperationException {
-        Vector newRadius = radius.subtract(getTotalChanges(changes));
+        center = center.subtract(calculateDiff(changes));
+        Vector newRadius = radius.subtract(calculateChanges(changes));
         radius = Vector.getMaximum(new Vector(1.5, 1.5, 1.5), newRadius);
     }
 
