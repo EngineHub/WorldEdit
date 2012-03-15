@@ -177,15 +177,17 @@ public class BrushTool implements TraceTool {
         BlockBag bag = session.getBlockBag(player);
 
         EditSession editSession = session.createEditSession(player);
-        Mask existingMask = editSession.getMask();
-        if (existingMask == null) {
-            editSession.setMask(mask);
-        } else if (existingMask instanceof CombinedMask) {
-            ((CombinedMask) existingMask).add(mask);
-        } else {
-            CombinedMask newMask = new CombinedMask(existingMask);
-            newMask.add(mask);
-            editSession.setMask(newMask);
+        if (mask != null) {
+            Mask existingMask = editSession.getMask();
+            if (existingMask == null) {
+                editSession.setMask(mask);
+            } else if (existingMask instanceof CombinedMask) {
+                ((CombinedMask) existingMask).add(mask);
+            } else {
+                CombinedMask newMask = new CombinedMask(existingMask);
+                newMask.add(mask);
+                editSession.setMask(newMask);
+            }
         }
 
         try {
