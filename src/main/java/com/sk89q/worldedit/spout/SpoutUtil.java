@@ -75,15 +75,15 @@ public class SpoutUtil {
     }
 
     public static Point toPoint(WorldVector pt) {
-        return new Point(toWorld(pt), (float)pt.getX(), (float)pt.getY(), (float)pt.getZ());
+        return Point.create(toWorld(pt), (float)pt.getX(), (float)pt.getY(), (float)pt.getZ());
     }
 
     public static Point toPoint(World world, Vector pt) {
-        return new Point(world, (float)pt.getX(), (float)pt.getY(), (float)pt.getZ());
+        return Point.create(world, (float)pt.getX(), (float)pt.getY(), (float)pt.getZ());
     }
 
     public static Point center(Point loc) {
-        return new Point(
+        return Point.create(
                 loc.getWorld(),
                 loc.getX() + 0.5F,
                 loc.getY() + 0.5F,
