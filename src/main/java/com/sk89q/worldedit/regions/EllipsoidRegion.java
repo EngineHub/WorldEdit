@@ -120,20 +120,47 @@ public class EllipsoidRegion extends AbstractRegion {
         return (int) (2 * radius.getZ());
     }
 
-    /**
-     * Expands the ellipsoid in a direction.
-     *
-     * @param change
-     */
-    public void expand(Vector change) {
+    private Vector calculateDiff(Vector... changes) throws RegionOperationException {
+        Vector diff = new Vector().add(changes);
+
+        if ((diff.getBlockX() & 1) + (diff.getBlockY() & 1) + (diff.getBlockZ() & 1) != 0) {
+            throw new RegionOperationException(
+                    "Ellipsoid changes must be even for each dimensions.");
+        }
+        
+        return diff.divide(2).floor();
+    }
+
+    private Vector calculateChanges(Vector... changes) {
+        Vector total = new Vector();
+        for (Vector change : changes) {
+            total = total.add(change.abs());
+        }
+
+        return total.divide(2).floor();
     }
 
     /**
-     * Contracts the ellipsoid in a direction.
+     * Expand the region.
      *
-     * @param change
+     * @param changes array/arguments with multiple related changes
+     * @throws RegionOperationException
      */
-    public void contract(Vector change) {
+    public void expand(Vector... changes) throws RegionOperationException {
+        center = center.add(calculateDiff(changes));
+        radius = radius.add(calculateChanges(changes));
+    }
+
+    /**
+     * Contract the region.
+     *
+     * @param changes array/arguments with multiple related changes
+     * @throws RegionOperationException
+     */
+    public void contract(Vector... changes) throws RegionOperationException {
+        center = center.subtract(calculateDiff(changes));
+        Vector newRadius = radius.subtract(calculateChanges(changes));
+        radius = Vector.getMaximum(new Vector(1.5, 1.5, 1.5), newRadius);
     }
 
     @Override

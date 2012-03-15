@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -266,10 +267,9 @@ public class SelectionCommands {
         max = 3
     )
     @CommandPermissions("worldedit.selection.expand")
+    @SuppressWarnings("deprecation")
     public void expand(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-
-        Vector dir;
 
         // Special syntax (//expand vert) to expand the selection between
         // sky and bedrock.
@@ -278,8 +278,9 @@ public class SelectionCommands {
             Region region = session.getSelection(player.getWorld());
             try {
                 int oldSize = region.getArea();
-                region.expand(new Vector(0, (player.getWorld().getMaxY() + 1), 0));
-                region.expand(new Vector(0, -(player.getWorld().getMaxY() + 1), 0));
+                region.expand(
+                        new Vector(0, (player.getWorld().getMaxY() + 1), 0),
+                        new Vector(0, -(player.getWorld().getMaxY() + 1), 0));
                 session.getRegionSelector(player.getWorld()).learnChanges();
                 int newSize = region.getArea();
                 session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
@@ -292,6 +293,7 @@ public class SelectionCommands {
             return;
         }
 
+        Vector dir;
         int change = args.getInteger(0);
         int reverseChange = 0;
 
@@ -299,7 +301,7 @@ public class SelectionCommands {
         case 2:
             // Either a reverse amount or a direction
             try {
-                reverseChange = args.getInteger(1) * -1;
+                reverseChange = args.getInteger(1);
                 dir = we.getDirection(player, "me");
             } catch (NumberFormatException e) {
                 dir = we.getDirection(player,
@@ -309,7 +311,7 @@ public class SelectionCommands {
 
         case 3:
             // Both reverse amount and direction
-            reverseChange = args.getInteger(1) * -1;
+            reverseChange = args.getInteger(1);
             dir = we.getDirection(player,
                     args.getString(2).toLowerCase());
             break;
@@ -319,10 +321,11 @@ public class SelectionCommands {
 
         Region region = session.getSelection(player.getWorld());
         int oldSize = region.getArea();
-        region.expand(dir.multiply(change));
 
-        if (reverseChange != 0) {
-            region.expand(dir.multiply(reverseChange));
+        if (reverseChange == 0) {
+            region.expand(dir.multiply(change));
+        } else {
+            region.expand(dir.multiply(change), dir.multiply(-reverseChange));
         }
 
         session.getRegionSelector(player.getWorld()).learnChanges();
@@ -341,6 +344,7 @@ public class SelectionCommands {
         max = 3
     )
     @CommandPermissions("worldedit.selection.contract")
+    @SuppressWarnings("deprecation")
     public void contract(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
@@ -352,7 +356,7 @@ public class SelectionCommands {
         case 2:
             // Either a reverse amount or a direction
             try {
-                reverseChange = args.getInteger(1) * -1;
+                reverseChange = args.getInteger(1);
                 dir = we.getDirection(player, "me");
             } catch (NumberFormatException e) {
                 dir = we.getDirection(player, args.getString(1).toLowerCase());
@@ -361,7 +365,7 @@ public class SelectionCommands {
 
         case 3:
             // Both reverse amount and direction
-            reverseChange = args.getInteger(1) * -1;
+            reverseChange = args.getInteger(1);
             dir = we.getDirection(player, args.getString(2).toLowerCase());
             break;
         default:
@@ -371,9 +375,10 @@ public class SelectionCommands {
         try {
             Region region = session.getSelection(player.getWorld());
             int oldSize = region.getArea();
-            region.contract(dir.multiply(change));
-            if (reverseChange != 0) {
-                region.contract(dir.multiply(reverseChange));
+            if (reverseChange == 0) {
+                region.contract(dir.multiply(change));
+            } else {
+                region.contract(dir.multiply(change), dir.multiply(-reverseChange));
             }
             session.getRegionSelector(player.getWorld()).learnChanges();
             int newSize = region.getArea();
@@ -435,31 +440,11 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.outset")
     public void outset(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        int change = args.getInteger(0);
-
         Region region = session.getSelection(player.getWorld());
-
-        try {
-            if (!args.hasFlag('h')) {
-                region.expand((new Vector(0, 1, 0)).multiply(change));
-                region.expand((new Vector(0, -1, 0)).multiply(change));
-            }
-
-            if (!args.hasFlag('v')) {
-                region.expand((new Vector(1, 0, 0)).multiply(change));
-                region.expand((new Vector(-1, 0, 0)).multiply(change));
-                region.expand((new Vector(0, 0, 1)).multiply(change));
-                region.expand((new Vector(0, 0, -1)).multiply(change));
-            }
-
-            session.getRegionSelector(player.getWorld()).learnChanges();
-            
-            session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
-
-            player.print("Region outset.");
-        } catch (RegionOperationException e) {
-            player.printError(e.getMessage());
-        }
+        region.expand(getChangesForEachDir(args));
+        session.getRegionSelector(player.getWorld()).learnChanges();
+        session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
+        player.print("Region outset.");
     }
 
     @Command(
@@ -478,27 +463,30 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.inset")
     public void inset(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
+        Region region = session.getSelection(player.getWorld());
+        region.contract(getChangesForEachDir(args));
+        session.getRegionSelector(player.getWorld()).learnChanges();
+        session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
+        player.print("Region inset.");
+    }
+
+    private Vector[] getChangesForEachDir(CommandContext args) {
+        List<Vector> changes = new ArrayList<Vector>(6);
         int change = args.getInteger(0);
 
-        Region region = session.getSelection(player.getWorld());
-
         if (!args.hasFlag('h')) {
-            region.contract((new Vector(0, 1, 0)).multiply(change));
-            region.contract((new Vector(0, -1, 0)).multiply(change));
+            changes.add((new Vector(0, 1, 0)).multiply(change));
+            changes.add((new Vector(0, -1, 0)).multiply(change));
         }
 
         if (!args.hasFlag('v')) {
-            region.contract((new Vector(1, 0, 0)).multiply(change));
-            region.contract((new Vector(-1, 0, 0)).multiply(change));
-            region.contract((new Vector(0, 0, 1)).multiply(change));
-            region.contract((new Vector(0, 0, -1)).multiply(change));
+            changes.add((new Vector(1, 0, 0)).multiply(change));
+            changes.add((new Vector(-1, 0, 0)).multiply(change));
+            changes.add((new Vector(0, 0, 1)).multiply(change));
+            changes.add((new Vector(0, 0, -1)).multiply(change));
         }
 
-        session.getRegionSelector(player.getWorld()).learnChanges();
-        
-        session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
-
-        player.print("Region inset.");
+        return changes.toArray(new Vector[0]);
     }
 
     @Command(

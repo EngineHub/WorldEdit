@@ -213,39 +213,65 @@ public class CylinderRegion extends AbstractRegion {
         return (int) (2 * radius.getZ());
     }
 
-    /**
-     * Expand the region.
-     *
-     * @param change
-     */
-    public void expand(Vector change) throws RegionOperationException {
-        if (change.getBlockX() != 0 || change.getBlockZ() != 0) {
-            throw new RegionOperationException("Cylinders can only be expanded vertically.");
+    private Vector2D calculateDiff2D(Vector... changes) throws RegionOperationException {
+        Vector2D diff = new Vector2D();
+        for (Vector change : changes) {
+            diff = diff.add(change.toVector2D());
+        }
+        
+        if ((diff.getBlockX() & 1) + (diff.getBlockZ() & 1) != 0) {
+            throw new RegionOperationException("Cylinders changes must be even for each horizontal dimensions.");
+        }
+        
+        return diff.divide(2).floor();
+    }
+
+    private Vector2D calculateChanges2D(Vector... changes) {
+        Vector2D total = new Vector2D();
+        for (Vector change : changes) {
+            total = total.add(change.toVector2D().abs());
         }
 
-        int changeY = change.getBlockY();
-        if (changeY > 0) {
-            maxY += changeY;
-        } else {
-            minY += changeY;
+        return total.divide(2).floor();
+    }
+
+    /**
+     * Expand the region.
+     * Expand the region.
+     *
+     * @param changes array/arguments with multiple related changes
+     * @throws RegionOperationException
+     */
+    public void expand(Vector... changes) throws RegionOperationException {
+        setCenter(getCenter().add(calculateDiff2D(changes).toVector()));
+        radius = radius.add(calculateChanges2D(changes));
+        for (Vector change : changes) {
+            int changeY = change.getBlockY();
+            if (changeY > 0) {
+                maxY += changeY;
+            } else {
+                minY += changeY;
+            }
         }
     }
 
     /**
      * Contract the region.
      *
-     * @param change
+     * @param changes array/arguments with multiple related changes
+     * @throws RegionOperationException
      */
-    public void contract(Vector change) throws RegionOperationException {
-        if (change.getBlockX() != 0 || change.getBlockZ() != 0) {
-            throw new RegionOperationException("Cylinders can only be expanded vertically.");
-        }
-
-        int changeY = change.getBlockY();
-        if (changeY > 0) {
-            minY += changeY;
-        } else {
-            maxY += changeY;
+    public void contract(Vector... changes) throws RegionOperationException {
+        setCenter(getCenter().subtract(calculateDiff2D(changes).toVector()));
+        Vector2D newRadius = radius.subtract(calculateChanges2D(changes));
+        radius = Vector2D.getMaximum(new Vector2D(1.5, 1.5), newRadius);
+        for (Vector change : changes) {
+            int changeY = change.getBlockY();
+            if (changeY > 0) {
+                minY += changeY;
+            } else {
+                maxY += changeY;
+            }
         }
     }
 

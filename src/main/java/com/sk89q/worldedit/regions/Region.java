@@ -75,9 +75,11 @@ public interface Region extends Iterable<BlockVector> {
     /**
      * Expand the region.
      *
+     * @deprecated will be seamlessly replaced by {@link #expand(Vector...)
      * @param change
      * @throws RegionOperationException
      */
+    @Deprecated
     public void expand(Vector change) throws RegionOperationException;
 
     /**
@@ -91,9 +93,11 @@ public interface Region extends Iterable<BlockVector> {
     /**
      * Contract the region.
      *
+     * @deprecated will be seamlessly replaced by {@link #contract(Vector...)
      * @param change
      * @throws RegionOperationException
      */
+    @Deprecated
     public void contract(Vector change) throws RegionOperationException;
 
     /**

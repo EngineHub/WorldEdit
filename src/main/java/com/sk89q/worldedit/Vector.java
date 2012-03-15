@@ -576,6 +576,15 @@ public class Vector {
     }
 
     /**
+     * Changes all components to their absolute value.
+     *
+     * @return
+     */
+    public Vector abs() {
+        return new Vector(Math.abs(x), Math.abs(y), Math.abs(z));
+    }
+
+    /**
      * 2D transformation.
      *
      * @param angle in degrees
