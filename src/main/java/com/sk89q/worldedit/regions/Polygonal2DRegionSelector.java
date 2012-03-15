@@ -135,7 +135,8 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
     }
 
     public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
-        session.dispatchCUIEvent(player, new SelectionMinMaxEvent(region.getMininumY(), region.getMaximumY()));
+        session.dispatchCUIEvent(player, new SelectionShapeEvent(getTypeID()));
+        describeCUI(session, player);
     }
 
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
