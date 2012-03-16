@@ -353,6 +353,7 @@ public class UtilityCommands {
             "Flags:" +
             "  -p also kills pets.\n" +
             "  -n also kills NPCs.\n" +
+            "  -g also kills Golems.\n" +
             "  -a also kills animals.\n" +
             "  -l strikes lightning on each killed mob.",
         min = 0,
@@ -382,6 +383,10 @@ public class UtilityCommands {
        
         if (player.hasPermission("worldedit.butcher.npcs") && (args.hasFlag('n'))) {
             flags |= KillFlags.NPCS;
+        }
+
+        if (player.hasPermission("worldedit.butcher.golems") && (args.hasFlag('g'))) {
+            flags |= KillFlags.GOLEMS;
         }
         
         if (player.hasPermission("worldedit.butcher.animals") && (args.hasFlag('a'))) {
