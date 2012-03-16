@@ -475,6 +475,7 @@ public class BukkitWorld extends LocalWorld {
         boolean killNPCs = (flags & KillFlags.NPCS) != 0;
         boolean killAnimals = (flags & KillFlags.ANIMALS) != 0;
         boolean withLightning = (flags & KillFlags.WITH_LIGHTNING) != 0;
+        boolean killGolems = (flags & KillFlags.GOLEMS) != 0;
 
         int num = 0;
         double radiusSq = radius * radius;
@@ -493,6 +494,13 @@ public class BukkitWorld extends LocalWorld {
             if (!killPets && ent instanceof Tameable && ((Tameable) ent).isTamed()) {
                 continue; // tamed wolf
             }
+
+            try {
+                // Temporary solution to fix Golems being butchered.
+                if (!killGolems && Class.forName("org.bukkit.entity.Golem").isAssignableFrom(ent.getClass())) {
+                    continue;
+                }
+            } catch (ClassNotFoundException e) {}
 
             try {
                 // Temporary solution until org.bukkit.entity.NPC is widely deployed.
