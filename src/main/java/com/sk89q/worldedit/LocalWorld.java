@@ -103,6 +103,14 @@ public abstract class LocalWorld {
     public abstract void setBlockDataFast(Vector pt, int data);
 
     /**
+     * Get biome type
+     *
+     * @param pt
+     * @return
+     */
+    public abstract BiomeType getBiome(Vector2D pt);
+
+    /**
      * set block type & data
      * @param pt
      * @param type

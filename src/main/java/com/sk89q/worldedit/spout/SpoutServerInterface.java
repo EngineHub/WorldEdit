@@ -23,6 +23,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 import org.spout.api.Game;
@@ -40,10 +41,12 @@ public class SpoutServerInterface extends ServerInterface {
     public Game game;
     public WorldEditPlugin plugin;
     private final SpoutRawCommandExecutor executor;
+    private SpoutBiomeTypes biomes;
 
     public SpoutServerInterface(WorldEditPlugin plugin, Game game) {
         this.plugin = plugin;
         this.game = game;
+        this.biomes = new SpoutBiomeTypes(); 
         this.executor = new SpoutRawCommandExecutor(plugin);
     }
 
@@ -62,6 +65,11 @@ public class SpoutServerInterface extends ServerInterface {
     @Override
     public void reload() {
         plugin.loadConfiguration();
+    }
+
+    @Override
+    public BiomeTypes getBiomes() {
+        return biomes;
     }
 
     @Override

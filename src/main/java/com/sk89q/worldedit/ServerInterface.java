@@ -52,6 +52,13 @@ public abstract class ServerInterface {
     public abstract void reload();
 
     /**
+     * Returns all available biomes.
+     *
+     * @return
+     */
+    public abstract BiomeTypes getBiomes();
+
+    /**
      * Schedules the given <code>task</code> to be invoked once every <code>period</code> ticks
      * after an initial delay of <code>delay</code> ticks.
      *
