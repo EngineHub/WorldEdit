@@ -1,6 +1,6 @@
 <!--
   Maven build file for WorldEdit
-  Copyright (c) 2011 sk89q <http://www.sk89q.com> 
+  Copyright (c) 2011 sk89q <http://www.sk89q.com>
   WorldEdit is available under the GNU General Public License v3
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -37,7 +37,7 @@
   </repositories>
 
   <dependencies>
-    <!-- Used for Permissions support (this version has both the legacy API 
+    <!-- Used for Permissions support (this version has both the legacy API
       and the new Permissions API to compile against -->
     <dependency>
       <groupId>com.sk89q</groupId>
@@ -49,7 +49,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.1-R6</version>
+      <version>1.2.3-R0.3-SNAPSHOT</version>
     </dependency>
 
     <!-- Archive reading library for snapshots -->
@@ -66,8 +66,8 @@
       <version>1.7R2</version>
     </dependency>
 
-    <!-- Time related functions, used for snapshots. This is NOT the original 
-      jchronic as it has been modified to have some extra timezone related methods 
+    <!-- Time related functions, used for snapshots. This is NOT the original
+      jchronic as it has been modified to have some extra timezone related methods
       (which were hacked in) -->
     <dependency>
       <groupId>com.sk89q</groupId>
@@ -143,7 +143,7 @@
             </manifest>
             <manifestEntries>
               <Class-Path>truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar</Class-Path>
-              <!-- This is a legacy manifest entry for older versions of 
+              <!-- This is a legacy manifest entry for older versions of
                 WorldEdit (like really old) -->
               <WorldEdit-Version>${project.version}</WorldEdit-Version>
             </manifestEntries>

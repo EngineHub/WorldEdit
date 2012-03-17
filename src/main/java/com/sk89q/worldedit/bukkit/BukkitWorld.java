@@ -19,9 +19,12 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.util.TreeGenerator;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
@@ -395,9 +398,9 @@ public class BukkitWorld extends LocalWorld {
      * @return
      */
     @Override
+    @Deprecated
     public boolean generateTree(EditSession editSession, Vector pt) {
-        return world.generateTree(BukkitUtil.toLocation(world, pt), TreeType.TREE,
-                new EditSessionBlockChangeDelegate(editSession));
+        return generateTree(TreeGenerator.TreeType.TREE, editSession, pt);
     }
 
     /**
@@ -407,9 +410,9 @@ public class BukkitWorld extends LocalWorld {
      * @return
      */
     @Override
+    @Deprecated
     public boolean generateBigTree(EditSession editSession, Vector pt) {
-        return world.generateTree(BukkitUtil.toLocation(world, pt), TreeType.BIG_TREE,
-                new EditSessionBlockChangeDelegate(editSession));
+        return generateTree(TreeGenerator.TreeType.BIG_TREE, editSession, pt);
     }
 
     /**
@@ -419,9 +422,9 @@ public class BukkitWorld extends LocalWorld {
      * @return
      */
     @Override
+    @Deprecated
     public boolean generateBirchTree(EditSession editSession, Vector pt) {
-        return world.generateTree(BukkitUtil.toLocation(world, pt), TreeType.BIRCH,
-                new EditSessionBlockChangeDelegate(editSession));
+        return generateTree(TreeGenerator.TreeType.BIRCH, editSession, pt);
     }
 
     /**
@@ -431,9 +434,9 @@ public class BukkitWorld extends LocalWorld {
      * @return
      */
     @Override
+    @Deprecated
     public boolean generateRedwoodTree(EditSession editSession, Vector pt) {
-        return world.generateTree(BukkitUtil.toLocation(world, pt), TreeType.REDWOOD,
-                new EditSessionBlockChangeDelegate(editSession));
+        return generateTree(TreeGenerator.TreeType.REDWOOD, editSession, pt);
     }
 
     /**
@@ -443,8 +446,53 @@ public class BukkitWorld extends LocalWorld {
      * @return
      */
     @Override
+    @Deprecated
     public boolean generateTallRedwoodTree(EditSession editSession, Vector pt) {
-        return world.generateTree(BukkitUtil.toLocation(world, pt), TreeType.TALL_REDWOOD,
+        return generateTree(TreeGenerator.TreeType.TALL_REDWOOD, editSession, pt);
+    }
+
+    /**
+     * An EnumMap that stores which WorldEdit TreeTypes apply to which Bukkit TreeTypes
+     */
+    private static final EnumMap<TreeGenerator.TreeType, TreeType> treeTypeMapping =
+            new EnumMap<TreeGenerator.TreeType, TreeType>(TreeGenerator.TreeType.class);
+
+    static {
+        // Mappings for new TreeType values not yet in Bukkit
+        treeTypeMapping.put(TreeGenerator.TreeType.SWAMP, TreeType.TREE);
+        treeTypeMapping.put(TreeGenerator.TreeType.JUNGLE_BUSH, TreeType.TREE);
+        try {
+            treeTypeMapping.put(TreeGenerator.TreeType.SHORT_JUNGLE, TreeType.valueOf("SMALL_JUNGLE"));
+        } catch (IllegalArgumentException e) {
+            treeTypeMapping.put(TreeGenerator.TreeType.SHORT_JUNGLE, TreeType.TREE);
+        }
+        for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
+            try {
+                TreeType bukkitType = TreeType.valueOf(type.name());
+                treeTypeMapping.put(type, bukkitType);
+            } catch (IllegalArgumentException e) {
+                // Unhandled TreeType
+            }
+        }
+        // Other mappings for WE-specific values
+        treeTypeMapping.put(TreeGenerator.TreeType.RANDOM, TreeType.BROWN_MUSHROOM);
+        treeTypeMapping.put(TreeGenerator.TreeType.RANDOM_REDWOOD, TreeType.REDWOOD);
+        treeTypeMapping.put(TreeGenerator.TreeType.PINE, TreeType.REDWOOD);
+        for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
+            if (treeTypeMapping.get(type) == null) {
+                WorldEdit.logger.severe("No TreeType mapping for TreeGenerator.TreeType." + type);
+            }
+        }
+    }
+
+    public static TreeType toBukkitTreeType(TreeGenerator.TreeType type) {
+        return treeTypeMapping.get(type);
+    }
+
+    @Override
+    public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector pt) {
+        TreeType bukkitType = toBukkitTreeType(type);
+        return type != null && world.generateTree(BukkitUtil.toLocation(world, pt), bukkitType,
                 new EditSessionBlockChangeDelegate(editSession));
     }
 

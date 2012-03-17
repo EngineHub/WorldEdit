@@ -789,7 +789,7 @@ public class EditSession {
 
                     final PlayerDirection attachment = BlockType.getAttachment(type, data);
                     if (attachment == null) {
-                        // Block is not attached to anything => we can place it 
+                        // Block is not attached to anything => we can place it
                         break;
                     }
 
@@ -2787,8 +2787,8 @@ public class EditSession {
      *
      * @param region the region to hollow out.
      * @param thickness the thickness of the shell to leave (manhattan distance)
-     * @param patternThe block pattern to use
-     * 
+     * @param pattern The block pattern to use
+     *
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */

@@ -25,6 +25,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
  * Represents a world.
@@ -33,7 +34,7 @@ import com.sk89q.worldedit.regions.Region;
  */
 public abstract class LocalWorld {
     /**
-     * Named flags to use as parameters to {@link LocalWorld#killMobs(Vector, int, int)}
+     * Named flags to use as parameters to {@link LocalWorld#killMobs(Vector, double, int)}
      */
     public class KillFlags {
         public static final int PETS = 1 << 0;
@@ -185,9 +186,13 @@ public abstract class LocalWorld {
      * @param pt
      * @return
      * @throws MaxChangedBlocksException
+     * @deprecated use {@link #generateTree(com.sk89q.worldedit.util.TreeGenerator.TreeType, EditSession, Vector)} instead
      */
-    public abstract boolean generateTree(EditSession editSession, Vector pt)
-            throws MaxChangedBlocksException;
+    @Deprecated
+    public boolean generateTree(EditSession editSession, Vector pt)
+            throws MaxChangedBlocksException {
+        return false;
+    }
 
     /**
      * Generate a big tree at a location.
@@ -196,9 +201,13 @@ public abstract class LocalWorld {
      * @param pt
      * @return
      * @throws MaxChangedBlocksException
+     * @deprecated use {@link #generateTree(com.sk89q.worldedit.util.TreeGenerator.TreeType, EditSession, Vector)} instead
      */
-    public abstract boolean generateBigTree(EditSession editSession, Vector pt)
-            throws MaxChangedBlocksException;
+    @Deprecated
+    public boolean generateBigTree(EditSession editSession, Vector pt)
+            throws MaxChangedBlocksException {
+        return false;
+    }
 
     /**
      * Generate a birch tree at a location.
@@ -207,9 +216,13 @@ public abstract class LocalWorld {
      * @param pt
      * @return
      * @throws MaxChangedBlocksException
+     * @deprecated use {@link #generateTree(com.sk89q.worldedit.util.TreeGenerator.TreeType, EditSession, Vector)} instead
      */
-    public abstract boolean generateBirchTree(EditSession editSession, Vector pt)
-            throws MaxChangedBlocksException;
+    @Deprecated
+    public boolean generateBirchTree(EditSession editSession, Vector pt)
+            throws MaxChangedBlocksException {
+        return false;
+    }
 
     /**
      * Generate a redwood tree at a location.
@@ -218,9 +231,13 @@ public abstract class LocalWorld {
      * @param pt
      * @return
      * @throws MaxChangedBlocksException
+     * @deprecated use {@link #generateTree(com.sk89q.worldedit.util.TreeGenerator.TreeType, EditSession, Vector)} instead
      */
-    public abstract boolean generateRedwoodTree(EditSession editSession, Vector pt)
-            throws MaxChangedBlocksException;
+    @Deprecated
+    public boolean generateRedwoodTree(EditSession editSession, Vector pt)
+            throws MaxChangedBlocksException {
+        return false;
+    }
 
     /**
      * Generate a tall redwood tree at a location.
@@ -229,9 +246,38 @@ public abstract class LocalWorld {
      * @param pt
      * @return
      * @throws MaxChangedBlocksException
+     * @deprecated use {@link #generateTree(com.sk89q.worldedit.util.TreeGenerator.TreeType, EditSession, Vector)} instead
      */
-    public abstract boolean generateTallRedwoodTree(EditSession editSession, Vector pt)
-            throws MaxChangedBlocksException;
+    @Deprecated
+    public boolean generateTallRedwoodTree(EditSession editSession, Vector pt)
+            throws MaxChangedBlocksException {
+        return false;
+    }
+
+    /**
+     * Generates a tree
+     * @param type The type of tree to generate
+     * @param editSession The EditSession to pass block changes through
+     * @param pt The point where the base of the tree should be located
+     * @return Whether the tree generation was successful
+     * @throws MaxChangedBlocksException if too many blocks were changed by the EditSession
+     */
+    public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector pt)
+            throws MaxChangedBlocksException {
+        switch (type) {
+            case BIG_TREE:
+                return generateBigTree(editSession, pt);
+            case BIRCH:
+                return generateBirchTree(editSession, pt);
+            case REDWOOD:
+                return generateRedwoodTree(editSession, pt);
+            case TALL_REDWOOD:
+                return generateTallRedwoodTree(editSession, pt);
+            default:
+            case TREE:
+                return generateTree(editSession, pt);
+        }
+    }
 
     /**
      * Drop an item.
@@ -276,8 +322,7 @@ public abstract class LocalWorld {
     /**
      * Kill mobs in an area, excluding pet wolves.
      *
-     * @param origin
-     * @param radius
+     * @param origin  -1 for the whole world
      * @return
      */
     @Deprecated
@@ -288,9 +333,9 @@ public abstract class LocalWorld {
     /**
      * Kill mobs in an area.
      *
-     * @param origin
+     * @param origin The center of the area to kill mobs in
      * @param radius -1 for all mobs
-     * @param flags various flags that determine what to kill
+     * @param killPets whether to kill pets
      * @return
      */
     @Deprecated
@@ -303,7 +348,7 @@ public abstract class LocalWorld {
      *
      * @param origin
      * @param radius
-     * @param killflags
+     * @param flags
      * @return
      */
     public int killMobs(Vector origin, double radius, int flags) {

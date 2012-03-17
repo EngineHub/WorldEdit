@@ -23,11 +23,13 @@ import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EntityType;
 import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.regions.Region;
 
+import com.sk89q.worldedit.util.TreeGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.material.MaterialData;
 
@@ -44,7 +46,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Get the world handle.
-     * 
+     *
      * @return
      */
     public World getWorld() {
@@ -53,7 +55,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Get the name of the world
-     * 
+     *
      * @return
      */
     @Override
@@ -63,7 +65,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Set block type.
-     * 
+     *
      * @param pt
      * @param type
      * @return
@@ -75,7 +77,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Set block type.
-     * 
+     *
      * @param pt
      * @param type
      * @return
@@ -90,7 +92,7 @@ public class SpoutWorld extends LocalWorld {
      * @param pt
      * @param type
      * @param data
-     * @return 
+     * @return
      */
     @Override
     public boolean setTypeIdAndData(Vector pt, int type, int data) {
@@ -103,7 +105,7 @@ public class SpoutWorld extends LocalWorld {
      * @param pt
      * @param type
      * @param data
-     * @return 
+     * @return
      */
     @Override
     public boolean setTypeIdAndDataFast(Vector pt, int type, int data) {
@@ -112,7 +114,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Get block type.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -123,7 +125,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Set block data.
-     * 
+     *
      * @param pt
      * @param data
      */
@@ -134,7 +136,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Set block data.
-     * 
+     *
      * @param pt
      * @param data
      */
@@ -145,7 +147,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Get block data.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -156,7 +158,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Get block light level.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -167,7 +169,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Regenerate an area.
-     * 
+     *
      * @param region
      * @param editSession
      * @return
@@ -196,7 +198,7 @@ public class SpoutWorld extends LocalWorld {
                 t.printStackTrace();
             }
 
-            // Then restore 
+            // Then restore
             for (int x = 0; x < 16; ++x) {
                 for (int y = 0; y < (getMaxY() + 1); ++y) {
                     for (int z = 0; z < 16; ++z) {
@@ -221,7 +223,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Attempts to accurately copy a BaseBlock's extra data to the world.
-     * 
+     *
      * @param pt
      * @param block
      * @return
@@ -282,7 +284,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Attempts to read a BaseBlock's extra data from the world.
-     * 
+     *
      * @param pt
      * @param block
      * @return
@@ -344,7 +346,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Clear a chest's contents.
-     * 
+     *
      * @param pt
      */
     @Override
@@ -365,69 +367,10 @@ public class SpoutWorld extends LocalWorld {
         return false;
     }
 
-    /**
-     * Generate a tree at a location.
-     * 
-     * @param pt
-     * @return
-     */
     @Override
-    public boolean generateTree(EditSession editSession, Vector pt) {
-        /*return world.generateTree(SpoutUtil.toLocation(world, pt), TreeType.TREE,
-                new EditSessionBlockChangeDelegate(editSession));*/
-        return false;
-    }
-
-    /**
-     * Generate a big tree at a location.
-     *
-     * @param pt
-     * @return
-     */
-    @Override
-    public boolean generateBigTree(EditSession editSession, Vector pt) {
-        /*return world.generateTree(SpoutUtil.toLocation(world, pt), TreeType.BIG_TREE,
-                new EditSessionBlockChangeDelegate(editSession));*/
-        return false;
-    }
-
-    /**
-     * Generate a birch tree at a location.
-     *
-     * @param pt
-     * @return
-     */
-    @Override
-    public boolean generateBirchTree(EditSession editSession, Vector pt) {
-        /*return world.generateTree(SpoutUtil.toLocation(world, pt), TreeType.BIRCH,
-                new EditSessionBlockChangeDelegate(editSession));*/
-        return false;
-    }
-
-    /**
-     * Generate a redwood tree at a location.
-     *
-     * @param pt
-     * @return
-     */
-    @Override
-    public boolean generateRedwoodTree(EditSession editSession, Vector pt) {
-        /*return world.generateTree(SpoutUtil.toLocation(world, pt), TreeType.REDWOOD,
-                new EditSessionBlockChangeDelegate(editSession));*/
-        return false;
-    }
-
-    /**
-     * Generate a redwood tree at a location.
-     *
-     * @param pt
-     * @return
-     */
-    @Override
-    public boolean generateTallRedwoodTree(EditSession editSession, Vector pt) {
-        /*return world.generateTree(SpoutUtil.toLocation(world, pt), TreeType.TALL_REDWOOD,
-                new EditSessionBlockChangeDelegate(editSession));*/
-        return false;
+    public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector pt)
+            throws MaxChangedBlocksException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**
@@ -463,7 +406,7 @@ public class SpoutWorld extends LocalWorld {
 
         Point bukkitOrigin = SpoutUtil.toPoint(world, origin);
 
-        
+
         for (LivingEntity ent : world.getLivingEntities()) {
             if (ent instanceof HumanEntity) {
                 continue;
@@ -510,7 +453,7 @@ public class SpoutWorld extends LocalWorld {
                     && origin.distanceSq(SpoutUtil.toVector(ent.getTransform().getPosition())) > radiusSq) {
                 continue;
             }
-            
+
             if (type == EntityType.ARROWS) {
                 if (ent instanceof Arrow) {
                     ent.remove();
@@ -554,7 +497,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Set a sign's text.
-     * 
+     *
      * @param pt
      * @param text
      * @return
@@ -575,7 +518,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Get a sign's text.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -599,7 +542,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Get a container block's contents.
-     * 
+     *
      * @param pt
      * @return
      */
@@ -638,7 +581,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Set a container block's contents.
-     * 
+     *
      * @param pt
      * @param contents
      * @return
@@ -682,7 +625,7 @@ public class SpoutWorld extends LocalWorld {
 
     /**
      * Returns whether a block has a valid ID.
-     * 
+     *
      * @param type
      * @return
      */
