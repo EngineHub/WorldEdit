@@ -185,6 +185,7 @@ public class WorldEdit {
 
         commands.setInjector(new SimpleInjector(this));
 
+        server.onCommandRegistration(commands.registerAndReturn(BiomeCommands.class), commands);
         server.onCommandRegistration(commands.registerAndReturn(ChunkCommands.class), commands);
         server.onCommandRegistration(commands.registerAndReturn(ClipboardCommands.class), commands);
         server.onCommandRegistration(commands.registerAndReturn(GeneralCommands.class), commands);
@@ -589,7 +590,7 @@ public class WorldEdit {
         }
     }
 
-    private Mask getBlockMaskComponent(LocalPlayer player, LocalSession session, List<Mask> masks, String component) throws IncompleteRegionException, UnknownItemException, DisallowedItemException {
+    private Mask getBlockMaskComponent(LocalPlayer player, LocalSession session, List<Mask> masks, String component) throws WorldEditException {
         final char firstChar = component.charAt(0);
         switch (firstChar) {
         case '#':
@@ -630,6 +631,15 @@ public class WorldEdit {
             }
 
             return new UnderOverlayMask(ids, over);
+
+        case '$':
+            Set<BiomeType> biomes = new HashSet<BiomeType>();
+            String[] biomesList = component.substring(1).split(",");
+            for (String biomeName : biomesList) {
+                BiomeType biome = server.getBiomes().get(biomeName);
+                biomes.add(biome);
+            }
+            return new BiomeTypeMask(biomes);
 
         case '!':
             if (component.length() > 1) {

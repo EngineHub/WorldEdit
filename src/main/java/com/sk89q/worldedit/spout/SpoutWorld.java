@@ -19,12 +19,14 @@
 
 package com.sk89q.worldedit.spout;
 
+import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EntityType;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.regions.Region;
@@ -165,6 +167,16 @@ public class SpoutWorld extends LocalWorld {
     @Override
     public int getBlockLightLevel(Vector pt) {
         return world.getBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getLightLevel();
+    }
+
+    /**
+     * Get biome type
+     *
+     * @param pt
+     * @return
+     */
+    public BiomeType getBiome(Vector2D pt) {
+        return new BiomeType("Unknown");
     }
 
     /**

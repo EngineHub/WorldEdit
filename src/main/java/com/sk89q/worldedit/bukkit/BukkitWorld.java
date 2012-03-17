@@ -25,6 +25,7 @@ import java.util.Map;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.TreeGenerator;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
@@ -52,6 +53,7 @@ import org.bukkit.Material;
 import org.bukkit.TreeType;
 import org.bukkit.World;
 
+import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
@@ -192,6 +194,17 @@ public class BukkitWorld extends LocalWorld {
     @Override
     public int getBlockLightLevel(Vector pt) {
         return world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getLightLevel();
+    }
+
+    /**
+     * Get biome type
+     *
+     * @param pt
+     * @return
+     */
+    public BiomeType getBiome(Vector2D pt) {
+        Biome bukkitBiome = world.getBiome(pt.getBlockX(), pt.getBlockZ());
+        return new BiomeType(bukkitBiome.name());
     }
 
     /**
