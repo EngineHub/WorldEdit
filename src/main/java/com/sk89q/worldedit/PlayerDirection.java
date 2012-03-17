@@ -23,14 +23,14 @@ package com.sk89q.worldedit;
  * Direction.
  */
 public enum PlayerDirection {
-    NORTH(new Vector(-1, 0, 0), new Vector(0, 0, 1), true),
-    NORTH_EAST((new Vector(-1, 0, -1)).normalize(), (new Vector(-1, 0, 1)).normalize(), false),
-    EAST(new Vector(0, 0, -1), new Vector(-1, 0, 0), true),
-    SOUTH_EAST((new Vector(1, 0, -1)).normalize(), (new Vector(-1, 0, -1)).normalize(), false),
-    SOUTH(new Vector(1, 0, 0), new Vector(0, 0, -1), true),
-    SOUTH_WEST((new Vector(1, 0, 1)).normalize(), (new Vector(1, 0, -1)).normalize(), false),
-    WEST(new Vector(0, 0, 1), new Vector(1, 0, 0), true),
-    NORTH_WEST((new Vector(-1, 0, 1)).normalize(), (new Vector(1, 0, 1)).normalize(), false),
+    NORTH(new Vector(0, 0, -1), new Vector(0, 0, 1), true),
+    NORTH_EAST((new Vector(1, 0, -1)).normalize(), (new Vector(-1, 0, -1)).normalize(), false),
+    EAST(new Vector(1, 0, 0), new Vector(-1, 0, 0), true),
+    SOUTH_EAST((new Vector(1, 0, 1)).normalize(), (new Vector(-1, 0, 1)).normalize(), false),
+    SOUTH(new Vector(0, 0, 1), new Vector(0, 0, -1), true),
+    SOUTH_WEST((new Vector(-1, 0, 1)).normalize(), (new Vector(1, 0, 1)).normalize(), false),
+    WEST(new Vector(-1, 0, 0), new Vector(1, 0, 0), true),
+    NORTH_WEST((new Vector(-1, 0, -1)).normalize(), (new Vector(1, 0, -1)).normalize(), false),
     UP(new Vector(0, 1, 0), new Vector(0, 0, 1), true),
     DOWN(new Vector(0, -1, 0), new Vector(0, 0, 1), true);
 
