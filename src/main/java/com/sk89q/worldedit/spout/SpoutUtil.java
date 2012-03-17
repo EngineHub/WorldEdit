@@ -29,6 +29,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 
@@ -57,7 +58,7 @@ public class SpoutUtil {
     public static BlockVector toVector(BlockFace face) {
         return toBlockVector(face.getOffset());
     }
-    
+
     public static BlockVector toBlockVector(Vector3 vector) {
         return new BlockVector(vector.getX(), vector.getY(), vector.getZ());
     }
@@ -85,9 +86,9 @@ public class SpoutUtil {
     public static Point center(Point loc) {
         return new Point(
                 loc.getWorld(),
-                loc.getX() + 0.5F,
-                loc.getY() + 0.5F,
-                loc.getZ() + 0.5F
+                MathHelper.floor(loc.getX()) + 0.5F,
+                MathHelper.floor(loc.getY()) + 0.5F,
+                MathHelper.floor(loc.getZ()) + 0.5F
         );
     }
 

@@ -54,7 +54,7 @@ public class WorldEditPlayerListener implements Listener {
 
     /**
      * Construct the object;
-     * 
+     *
      * @param plugin
      */
     public WorldEditPlayerListener(WorldEditPlugin plugin) {
@@ -81,8 +81,13 @@ public class WorldEditPlayerListener implements Listener {
      *
      * @param event Relevant event details
      */
-    //@EventHandler(order = Order.EARLY)
+    @EventHandler(order = Order.EARLY)
     public void onPlayerCommandPreprocess(PreCommandEvent event) {
+
+        if (event.getMessage().startsWith("nowe:")) {
+            event.setMessage(event.getMessage().substring(5));
+            return;
+        }
 
         String[] split = event.getMessage().split(" ");
 

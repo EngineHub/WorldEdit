@@ -43,7 +43,7 @@ import java.util.zip.ZipEntry;
 
 /**
  * Plugin for Spout.
- * 
+ *
  * @author sk89q
  */
 public class WorldEditPlugin extends CommonPlugin implements Named {
@@ -331,7 +331,7 @@ public class WorldEditPlugin extends CommonPlugin implements Named {
 
     /**
      * Sets the region selection for a player.
-     * 
+     *
      * @param player
      * @param selection
      */
