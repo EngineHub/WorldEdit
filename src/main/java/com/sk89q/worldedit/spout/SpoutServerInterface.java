@@ -20,6 +20,9 @@
 package com.sk89q.worldedit.spout;
 
 import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 import org.spout.api.Game;
@@ -28,6 +31,7 @@ import org.spout.api.geo.World;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialData;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -76,13 +80,18 @@ public class SpoutServerInterface extends ServerInterface {
 
         return ret;
     }
-    
+
     @Override
-    public void onCommandRegistration(List<Command> commands) {
+    public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
         for (Command command : commands) {
-            Spout.getGame().getRootCommand().addSubCommand(plugin, command.aliases()[0])
+            org.spout.api.command.Command spoutCommand = Spout.getGame().getRootCommand().addSubCommand(plugin, command.aliases()[0])
                     .addAlias(command.aliases()).setRawExecutor(executor).
-                    setUsage(command.usage()).setHelp(command.desc()).closeSubCommand();
+                    setUsage(command.usage()).setHelp(command.desc());
+            Method cmdMethod = manager.getMethods().get(null).get(command.aliases()[0]);
+            if (cmdMethod != null && cmdMethod.isAnnotationPresent(CommandPermissions.class)) {
+                spoutCommand.setPermissions(false, cmdMethod.getAnnotation(CommandPermissions.class).value());
+            }
+            spoutCommand.closeSubCommand();
         }
     }
 }

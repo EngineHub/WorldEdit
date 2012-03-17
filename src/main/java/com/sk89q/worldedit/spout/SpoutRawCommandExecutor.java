@@ -18,6 +18,7 @@
 
 package com.sk89q.worldedit.spout;
 
+import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.RawCommandExecutor;
 import org.spout.api.exception.CommandException;
@@ -35,8 +36,8 @@ public class SpoutRawCommandExecutor implements RawCommandExecutor {
     }
 
     @Override
-    public void execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
-        args[baseIndex] = "/" + args[baseIndex];
+    public void execute(Command cmd, CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
+        args[baseIndex] = "/" + cmd.getPreferredName();
         if (!plugin.getWorldEdit().handleCommand(plugin.wrapCommandSender(source), MiscCompatibilityUtils.arrayCopyOfRange(args, baseIndex, args.length))) {
             throw new CommandException("Unknown command: '" + args[baseIndex] + "'!");
         }
