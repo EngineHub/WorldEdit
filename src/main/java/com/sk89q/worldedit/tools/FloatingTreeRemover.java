@@ -29,7 +29,7 @@ import com.sk89q.worldedit.blocks.BlockID;
 /**
  * A pickaxe mode that removes floating treetops (logs and leaves not connected
  * to anything else)
- * 
+ *
  * @author Moo0
  */
 public class FloatingTreeRemover implements BlockTool {
@@ -54,6 +54,7 @@ public class FloatingTreeRemover implements BlockTool {
         case BlockID.LEAVES:
         case BlockID.BROWN_MUSHROOM_CAP:
         case BlockID.RED_MUSHROOM_CAP:
+        case BlockID.VINE:
             break;
 
         default:
@@ -77,6 +78,7 @@ public class FloatingTreeRemover implements BlockTool {
                 case BlockID.LEAVES:
                 case BlockID.BROWN_MUSHROOM_CAP:
                 case BlockID.RED_MUSHROOM_CAP:
+                case BlockID.VINE:
                     editSession.setBlock(blockVector, AIR);
                 }
             }
@@ -132,13 +134,15 @@ public class FloatingTreeRemover implements BlockTool {
                     case BlockID.LEAVES:
                     case BlockID.BROWN_MUSHROOM_CAP:
                     case BlockID.RED_MUSHROOM_CAP:
+                    case BlockID.VINE:
                         // queue next point
                         queue.addLast(next);
                         break;
 
                     default:
                         // we hit something solid - evaluate where we came from
-                        if (world.getBlockType(current) == BlockID.LEAVES) {
+                        final int curId = world.getBlockType(current);
+                        if (curId == BlockID.LEAVES || curId == BlockID.VINE) {
                             // leaves touching a wall/the ground => stop walking this route
                             continue;
                         } else {
