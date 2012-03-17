@@ -346,7 +346,7 @@ public class UtilityCommands {
     @Command(
         aliases = { "butcher" },
         usage = "[radius]",
-        flags = "plan",
+        flags = "plangf",
         desc = "Kill all or nearby mobs",
         help =
             "Kills nearby mobs, based on radius, if none is given uses default in configuration.\n" +
@@ -355,6 +355,7 @@ public class UtilityCommands {
             "  -n also kills NPCs.\n" +
             "  -g also kills Golems.\n" +
             "  -a also kills animals.\n" +
+            "  -f compounds all previous flags.\n" +
             "  -l strikes lightning on each killed mob.",
         min = 0,
         max = 1
@@ -377,19 +378,20 @@ public class UtilityCommands {
         }
         
         int flags = 0;
-        if (player.hasPermission("worldedit.butcher.pets") && (args.hasFlag('p'))) {
+        boolean friendly_flag = args.hasFlag('f');
+        if (player.hasPermission("worldedit.butcher.pets") && (friendly_flag || (args.hasFlag('p')))) {
             flags |= KillFlags.PETS;
         }
        
-        if (player.hasPermission("worldedit.butcher.npcs") && (args.hasFlag('n'))) {
+        if (player.hasPermission("worldedit.butcher.npcs") && (friendly_flag || (args.hasFlag('n')))) {
             flags |= KillFlags.NPCS;
         }
 
-        if (player.hasPermission("worldedit.butcher.golems") && (args.hasFlag('g'))) {
+        if (player.hasPermission("worldedit.butcher.golems") && (friendly_flag || (args.hasFlag('g')))) {
             flags |= KillFlags.GOLEMS;
         }
         
-        if (player.hasPermission("worldedit.butcher.animals") && (args.hasFlag('a'))) {
+        if (player.hasPermission("worldedit.butcher.animals") && (friendly_flag || (args.hasFlag('a')))) {
             flags |= KillFlags.ANIMALS;
         }
         
