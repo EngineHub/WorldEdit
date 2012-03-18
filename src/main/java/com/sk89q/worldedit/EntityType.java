@@ -25,6 +25,7 @@ package com.sk89q.worldedit;
 public enum EntityType {
     ARROWS,
     ITEMS,
+    FALLING_BLOCKS,
     PAINTINGS,
     BOATS,
     MINECARTS,

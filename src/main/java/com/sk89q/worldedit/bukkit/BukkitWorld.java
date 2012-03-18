@@ -36,6 +36,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.FallingSand;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -599,6 +600,11 @@ public class BukkitWorld extends LocalWorld {
                 }
             } else if (type == EntityType.ITEMS) {
                 if (ent instanceof Item) {
+                    ent.remove();
+                    ++num;
+                }
+            } else if (type == EntityType.FALLING_BLOCKS) {
+                if (ent instanceof FallingSand) {
                     ent.remove();
                     ++num;
                 }
