@@ -22,6 +22,8 @@ package com.sk89q.worldedit;
 import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
+import com.sk89q.worldedit.regions.Region;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -257,8 +259,10 @@ public class CuboidClipboard {
      * Copy to the clipboard.
      *
      * @param editSession
+     *
+     * @deprecated As of release 5.3, replaced with {@link #copy(EditSession, Region)}
      */
-    public void copy(EditSession editSession) {
+    @Deprecated public void copy(EditSession editSession) {
         for (int x = 0; x < size.getBlockX(); ++x) {
             for (int y = 0; y < size.getBlockY(); ++y) {
                 for (int z = 0; z < size.getBlockZ(); ++z) {
@@ -269,6 +273,26 @@ public class CuboidClipboard {
         }
     }
 
+    /**
+     * Copy to the clipboard without blocks outside the region
+     *
+     * @param editSession
+     * @param region
+     */
+	public void copy(EditSession editSession, Region region) {
+		for (int x = 0; x < size.getBlockX(); ++x) {
+			for (int y = 0; y < size.getBlockY(); ++y) {
+				for (int z = 0; z < size.getBlockZ(); ++z) {
+					Vector pt = new Vector(x, y, z).add(getOrigin());
+					if (region.contains(pt)) {
+						data[x][y][z] = editSession.getBlock(pt);
+					} else {
+						data[x][y][x] = new BaseBlock(BlockID.AIR);
+					}
+				}
+			}
+		}
+	}
     /**
      * Paste from the clipboard.
      *
