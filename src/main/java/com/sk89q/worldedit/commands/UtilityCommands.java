@@ -445,6 +445,8 @@ public class UtilityCommands {
         } else if (typeStr.matches("items?")
                 || typeStr.matches("drops?")) {
             type = EntityType.ITEMS;
+        } else if (typeStr.matches("falling(blocks?|sand|gravel)")) {
+            type = EntityType.FALLING_BLOCKS;
         } else if (typeStr.matches("paintings?")
                 || typeStr.matches("art")) {
             type = EntityType.PAINTINGS;
