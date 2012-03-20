@@ -519,4 +519,10 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
         sb.append(" * (" + minY + " - " + maxY + ")");
         return sb.toString();
     }
+
+    public Polygonal2DRegion clone() {
+        Polygonal2DRegion clone = (Polygonal2DRegion) super.clone();
+        clone.points = new ArrayList<BlockVector2D>(points);
+        return clone; 
+    }
 }
