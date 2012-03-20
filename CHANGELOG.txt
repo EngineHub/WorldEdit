@@ -1,3 +1,32 @@
+5.3:
+ - Changed Spout maven repo to more stable url
+ - Added Falling sand/gravel entities to /remove command
+ - Added support for new tree types to TreeGenerator and make adding more tree types later easier
+ - Updated for changes to SpoutAPI
+ - Fixed FloatingTreeRemover (/tool deltree) to work correctly with jungle trees
+ - Fix bPermissions instanlled check
+ - Add a -f (friendly) flag to butcher which applies -a, -n, -p, and -g, and a -g flag which allows butchering of iron and snow golems
+ - Add FlatRegion interface and an associated iterator (for developers!)
+ - Fix a NPE with brush using a global mask and no brush mask
+ - Fixed //shift not updating polygonal regions properly.
+ - Add support for expand with reverse dir for Cylinder & Ellipsoid
+ - Make inset/outset use varargs contract/expand, so they can be used with cylinders and ellipses.
+ - Add positive() to Vector and Vector2D
+ - In WorldGuard, teleport/spawn location yaw/pitch should now work.
+ - Register command permissions, integrate with the Bukkit help API 
+ - Allow annotation-free registering of commands with other plugins (for developers!)
+ - Added default radius setting for butcher and added permissions for killing pets, npcs, and non hostile animals.
+ - Added support for new Anvil saving format, fixed old chunk saving format.
+ - Clean up some stray 128 values and update the fallbacks
+ - Add support for Bukkit 1.1-R5 and newer, as well as 1.2.3-R0.3 and newer
+ - Updated for new 1.2 blocks, items, and mobs
+ - Fix Dispensers, Furnaces and remove redundant casts.
+ - Fix restoring enchantments from snapshots/schematics.
+ - Made tree planter tool try 10 times to make the tree before giving up.
+ 
+ Thanks to Nidan, aumgn, Jadedwolf, wizjany, SpectralEdge, md_5, and desht for their contributions
+
+
 5.2:
  - Made BlockBag use WorldVectors for add(Single)SourcePosition
  - Fixed north face not being set with non-singleblockpatterns.
