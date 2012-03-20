@@ -28,7 +28,7 @@ public class RegionMask implements Mask {
     private Region region;
 
     public RegionMask(Region region) {
-        this.region = region;
+        this.region = region.clone();
     }
 
     public boolean matches(EditSession editSession, Vector pos) {
