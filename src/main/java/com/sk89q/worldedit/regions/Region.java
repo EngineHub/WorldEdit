@@ -29,7 +29,7 @@ import java.util.Set;
  *
  * @author sk89q
  */
-public interface Region extends Iterable<BlockVector> {
+public interface Region extends Iterable<BlockVector>, Cloneable {
     /**
      * Get the lower point of a region.
      *
@@ -151,4 +151,6 @@ public interface Region extends Iterable<BlockVector> {
      * @return
      */
     public void setWorld(LocalWorld world);
+
+    public Region clone();
 }

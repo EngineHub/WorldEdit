@@ -434,4 +434,8 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
     public String toString() {
         return getMinimumPoint() + " - " + getMaximumPoint();
     }
+
+    public CuboidRegion clone() {
+        return (CuboidRegion) super.clone();
+    }
 }
