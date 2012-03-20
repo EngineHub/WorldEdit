@@ -23,6 +23,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.masks.Mask;
 
 /**
  * History little commands.
@@ -46,8 +47,12 @@ public class HistoryCommands {
     @CommandPermissions("worldedit.history.undo")
     public void undo(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
+
         int times = Math.max(1, args.getInteger(0, 1));
+
+        Mask mask = session.getMask();
+        session.setMask(null);
+
         for (int i = 0; i < times; ++i) {
             EditSession undone;
             if (args.argsLength() < 2) {
@@ -61,6 +66,7 @@ public class HistoryCommands {
                 }
                 undone = sess.undo(session.getBlockBag(player));
             }
+
             if (undone != null) {
                 player.print("Undo successful.");
                 we.flushBlockBag(player, undone);
@@ -69,6 +75,8 @@ public class HistoryCommands {
                 break;
             }
         }
+
+        session.setMask(mask);
     }
 
     @Command(
@@ -81,8 +89,11 @@ public class HistoryCommands {
     @CommandPermissions("worldedit.history.redo")
     public void redo(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
+
         int times = Math.max(1, args.getInteger(0, 1));
+
+        Mask mask = session.getMask();
+        session.setMask(null);
 
         for (int i = 0; i < times; ++i) {
             EditSession redone;
@@ -97,6 +108,7 @@ public class HistoryCommands {
                 }
                 redone = sess.redo(session.getBlockBag(player));
             }
+
             if (redone != null) {
                 player.print("Redo successful.");
                 we.flushBlockBag(player, redone);
@@ -104,6 +116,8 @@ public class HistoryCommands {
                 player.printError("Nothing left to redo.");
             }
         }
+
+        session.setMask(mask);
     }
 
     @Command(
