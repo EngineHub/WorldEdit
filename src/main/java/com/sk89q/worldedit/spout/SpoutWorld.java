@@ -39,11 +39,11 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.MaterialData;
 import org.spout.api.math.Vector3;
-import org.spout.vanilla.entity.object.Item;
-import org.spout.vanilla.entity.object.falling.PrimedTnt;
-import org.spout.vanilla.entity.object.projectile.Arrow;
-import org.spout.vanilla.entity.object.vehicle.Boat;
-import org.spout.vanilla.entity.object.vehicle.Minecart;
+import org.spout.vanilla.controller.object.Item;
+import org.spout.vanilla.controller.object.falling.PrimedTnt;
+import org.spout.vanilla.controller.object.projectile.Arrow;
+import org.spout.vanilla.controller.object.vehicle.Boat;
+import org.spout.vanilla.controller.object.vehicle.Minecart;
 
 public class SpoutWorld extends LocalWorld {
     private World world;

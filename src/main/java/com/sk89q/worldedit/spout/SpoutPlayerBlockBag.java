@@ -27,7 +27,6 @@ import com.sk89q.worldedit.bags.OutOfSpaceException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.ItemType;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;

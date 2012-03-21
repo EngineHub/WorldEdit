@@ -23,7 +23,6 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 import org.spout.api.Game;
