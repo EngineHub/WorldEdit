@@ -340,7 +340,7 @@ public class WorldEdit {
         if (data == -1) { // Block data not yet detected
             // Parse the block data (optional)
             try {
-                data = typeAndData.length > 1 ? Integer.parseInt(typeAndData[1]) : (allowNoData ? -1 : 0);
+                data = (typeAndData.length > 1 && typeAndData[1].length() > 0) ? Integer.parseInt(typeAndData[1]) : (allowNoData ? -1 : 0);
                 if (data > 15 || (data < 0 && !(allAllowed && data == -1))) {
                     data = 0;
                 }
