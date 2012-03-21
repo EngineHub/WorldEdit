@@ -5,6 +5,8 @@ import java.util.Set;
 
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 
 public class BiomeTypeMask implements Mask {
@@ -17,6 +19,9 @@ public class BiomeTypeMask implements Mask {
 
     public BiomeTypeMask(Set<BiomeType> biomes) {
         this.biomes = biomes;
+    }
+
+    public void prepare(LocalSession session, LocalPlayer player, Vector target) {
     }
 
     public boolean matches(EditSession editSession, Vector pos) {

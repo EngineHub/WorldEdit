@@ -22,6 +22,8 @@ package com.sk89q.worldedit.masks;
 import java.util.HashSet;
 import java.util.Set;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 
 /**
@@ -47,6 +49,9 @@ public class BlockTypeMask implements Mask {
 
     public void add(int type) {
         types.add(type);
+    }
+
+    public void prepare(LocalSession session, LocalPlayer player, Vector target) {
     }
 
     public boolean matches(EditSession editSession, Vector pos) {

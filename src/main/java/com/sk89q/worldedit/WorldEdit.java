@@ -600,6 +600,10 @@ public class WorldEdit {
         case '#':
             if (component.equalsIgnoreCase("#existing")) {
                 return new ExistingBlockMask();
+            } else if (component.equalsIgnoreCase("#dregion")
+                    || component.equalsIgnoreCase("#dselection")
+                    || component.equalsIgnoreCase("#dsel")) {
+                return new DynamicRegionMask();
             } else if (component.equalsIgnoreCase("#selection")
                     || component.equalsIgnoreCase("#region")
                     || component.equalsIgnoreCase("#sel")) {
