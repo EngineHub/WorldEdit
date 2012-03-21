@@ -27,6 +27,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.TreeGenerator;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Chest;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Sign;
@@ -388,6 +389,9 @@ public class BukkitWorld extends LocalWorld {
 
         org.bukkit.inventory.InventoryHolder chest = (org.bukkit.inventory.InventoryHolder) state;
         Inventory inven = chest.getInventory();
+        if (chest instanceof Chest) {
+            inven = ((Chest) chest).getBlockInventory();
+        }
         inven.clear();
         return true;
     }
@@ -697,6 +701,9 @@ public class BukkitWorld extends LocalWorld {
 
         org.bukkit.inventory.InventoryHolder container = (org.bukkit.inventory.InventoryHolder) state;
         Inventory inven = container.getInventory();
+        if (container instanceof Chest) {
+            inven = ((Chest) container).getBlockInventory();
+        }
         int size = inven.getSize();
         BaseItemStack[] contents = new BaseItemStack[size];
 
@@ -737,6 +744,9 @@ public class BukkitWorld extends LocalWorld {
 
         org.bukkit.inventory.InventoryHolder chest = (org.bukkit.inventory.InventoryHolder) state;
         Inventory inven = chest.getInventory();
+        if (chest instanceof Chest) {
+            inven = ((Chest) chest).getBlockInventory();
+        }
         int size = inven.getSize();
 
         for (int i = 0; i < size; ++i) {
