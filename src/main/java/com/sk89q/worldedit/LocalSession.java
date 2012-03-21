@@ -686,6 +686,9 @@ public class LocalSession {
                 new EditSession(player.isPlayer() ? player.getWorld() : null,
                         getBlockChangeLimit(), blockBag);
         editSession.setFastMode(fastMode);
+        if (mask != null) {
+            mask.prepare(this, player, null);
+        }
         editSession.setMask(mask);
 
         return editSession;

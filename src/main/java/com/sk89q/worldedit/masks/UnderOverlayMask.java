@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockID;
 
@@ -42,6 +44,9 @@ public class UnderOverlayMask implements Mask {
 
     public void addAll(Set<Integer> ids) {
         this.ids.addAll(ids);
+    }
+
+    public void prepare(LocalSession session, LocalPlayer player, Vector target) {
     }
 
     public boolean matches(EditSession editSession, Vector pos) {

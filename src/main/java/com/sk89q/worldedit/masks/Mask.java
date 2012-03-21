@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.masks;
 
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 
 /**
@@ -29,6 +31,16 @@ import com.sk89q.worldedit.Vector;
  * @author sk89q
  */
 public interface Mask {
+
+    /**
+     * Called one time before each edit session.
+     *
+     * @param session
+     * @param player
+     * @param target target of the brush, null if not a brush mask
+     */
+    public void prepare(LocalSession session, LocalPlayer player, Vector target);
+
     /**
      * Given a block position, this method returns true if the block at
      * that position matches the filter. Block information is not provided
