@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -144,23 +143,7 @@ public class TreeGenerator {
         return type.generate(editSession, pos);
     }
 
-    /**
-     * Generate a tree.
-     *
-     * @param type
-     * @param editSession
-     * @param pos
-     * @return
-     * @throws MaxChangedBlocksException
-     * @deprecated use {@link TreeType#generate(com.sk89q.worldedit.EditSession, com.sk89q.worldedit.Vector)} instead
-     */
-    @Deprecated
-    private boolean generate(TreeType type, EditSession editSession, Vector pos)
-            throws MaxChangedBlocksException {
-        return type.generate(editSession, pos);
-    }
-
-    /**
+     /**
      * Makes a terrible looking pine tree.
      *
      * @param basePos
