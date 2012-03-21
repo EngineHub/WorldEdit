@@ -31,7 +31,6 @@ public class BiomeCommands {
         aliases = { "biomelist", "biomels" },
         usage = "[page]",
         desc = "Gets all biomes available.",
-        min = 0,
         max = 1
     )
     @CommandPermissions("worldedit.biome.list")
@@ -66,22 +65,20 @@ public class BiomeCommands {
 
     @Command(
         aliases = { "biomeinfo" },
-        usage = "",
-        flags = "ts",
+        flags = "pt",
         desc = "Get the biome of the targeted block.",
         help =
             "Get the biome of the block.\n" +
-            "By default use the block you are currently in.\n" +
+            "By default use all the blocks contained in your selection.\n" +
             "-t use the block you are looking at.\n" +
-            "-s use all the blocks contained in your selection",
-        min = 0,
+            "-p use the block you are currently in",
         max = 0
     )
     @CommandPermissions("worldedit.biome.info")
     public void biomeInfo(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        if (args.hasFlag('s')) {
+        if (!args.hasFlag('l')) {
             LocalWorld world = player.getWorld();
             Region region = session.getSelection(world);
             Set<BiomeType> biomes = new HashSet<BiomeType>();
@@ -114,6 +111,52 @@ public class BiomeCommands {
             }
             BiomeType biome = player.getWorld().getBiome(pos);
             player.print("Biome: " + biome.getName());
+        }
+    }
+
+    @Command(
+            aliases = { "/setbiome" },
+            usage = "<biome>",
+            flags = "p",
+            desc = "Sets the biome of the player's current block or region.",
+            help =
+                    "Set the biome of the region.\n" +
+                            "By default use all the blocks contained in your selection.\n" +
+                            "-p use the block you are currently in",
+            min = 1,
+            max = 1
+    )
+    @CommandPermissions("worldedit.biome.set")
+    public void setBiome(CommandContext args, LocalSession session, LocalPlayer player,
+                          EditSession editSession) throws WorldEditException {
+
+        final BiomeType target = we.getServer().getBiomes().get(args.getString(0));
+        if (!args.hasFlag('l')) {
+            int affected = 0;
+            LocalWorld world = player.getWorld();
+            Region region = session.getSelection(world);
+
+            if (region instanceof FlatRegion) {
+                for (Vector2D pt : ((FlatRegion) region).asFlatRegion()) {
+                    world.setBiome(pt, target);
+                    ++affected;
+                }
+            } else {
+                HashSet<Long> alreadyVisited = new HashSet<Long>();
+                for (Vector pt : region) {
+                    if (!alreadyVisited.contains((long)pt.getBlockX() << 32 | pt.getBlockZ() & 0xFFFFFFFFL)) {
+                        alreadyVisited.add(((long)pt.getBlockX() << 32 | pt.getBlockZ() & 0xFFFFFFFFL));
+                        world.setBiome(pt.toVector2D(), target);
+                        ++affected;
+                    }
+                }
+            }
+
+            player.print("Biome changed to " + target.getName() + ". " + affected + " columns affected.");
+        } else {
+            Vector2D pos = player.getPosition().toVector2D();
+            player.getWorld().setBiome(pos, target);
+            player.print("Biome changed to " + target.getName() + " at your current location.");
         }
     }
 }
