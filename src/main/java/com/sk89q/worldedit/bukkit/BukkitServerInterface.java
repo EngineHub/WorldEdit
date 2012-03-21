@@ -36,6 +36,7 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
+import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 
@@ -43,10 +44,12 @@ public class BukkitServerInterface extends ServerInterface {
     public Server server;
     public WorldEditPlugin plugin;
     private CommandRegistration dynamicCommands;
+    private BukkitBiomeTypes biomes;
 
     public BukkitServerInterface(WorldEditPlugin plugin, Server server) {
         this.plugin = plugin;
         this.server = server;
+        this.biomes = new BukkitBiomeTypes();
         dynamicCommands = new CommandRegistration(plugin);
     }
 
@@ -65,6 +68,11 @@ public class BukkitServerInterface extends ServerInterface {
     @Override
     public void reload() {
         plugin.loadConfiguration();
+    }
+
+    @Override
+    public BiomeTypes getBiomes() {
+        return biomes;
     }
 
     @Override
