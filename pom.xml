@@ -32,7 +32,7 @@
     </repository>
     <repository>
       <id>spout-repo</id>
-      <url>http://nexus.spout.org/content/groups/public/</url>
+      <url>http://repo.spout.org/</url>
     </repository>
   </repositories>
 
@@ -88,6 +88,11 @@
     <dependency>
       <groupId>org.spout</groupId>
       <artifactId>spoutapi</artifactId>
+      <version>dev-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.spout</groupId>
+      <artifactId>vanilla</artifactId>
       <version>dev-SNAPSHOT</version>
     </dependency>
   </dependencies>

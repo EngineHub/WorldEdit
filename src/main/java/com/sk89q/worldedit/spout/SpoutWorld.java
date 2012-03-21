@@ -30,8 +30,17 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.regions.Region;
 
 import com.sk89q.worldedit.util.TreeGenerator;
+import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.MaterialData;
+import org.spout.api.math.Vector3;
+import org.spout.vanilla.entity.object.Item;
+import org.spout.vanilla.entity.object.falling.PrimedTnt;
+import org.spout.vanilla.entity.object.projectile.Arrow;
+import org.spout.vanilla.entity.object.vehicle.Boat;
+import org.spout.vanilla.entity.object.vehicle.Minecart;
 
 public class SpoutWorld extends LocalWorld {
     private World world;
@@ -381,10 +390,8 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public void dropItem(Vector pt, BaseItemStack item) {
-        /*ItemStack bukkitItem = new ItemStack(item.getType(), item.getAmount(),
-                (byte) item.getDamage());
-        world.dropItemNaturally(SpoutUtil.toLocation(world, pt), bukkitItem);*/
-
+        ItemStack bukkitItem = new ItemStack(MaterialData.getMaterial((short)item.getType(), item.getDamage()), item.getAmount(), item.getDamage());
+        world.createAndSpawnEntity(SpoutUtil.toPoint(world, pt), new Item(bukkitItem, new Vector3(pt.getX(), pt.getY(), pt.getZ())));
     }
 
     /**
@@ -446,51 +453,51 @@ public class SpoutWorld extends LocalWorld {
     @Override
     public int removeEntities(EntityType type, Vector origin, int radius) {
         int num = 0;
-        /*double radiusSq = radius * radius;
+        double radiusSq = radius * radius;
 
-        for (Entity ent : world.getEntities()) {
+        for (Entity ent : world.getAll()) {
             if (radius != -1
-                    && origin.distanceSq(SpoutUtil.toVector(ent.getTransform().getPosition())) > radiusSq) {
+                    && origin.distanceSq(SpoutUtil.toVector(ent.getPosition())) > radiusSq) {
                 continue;
             }
 
             if (type == EntityType.ARROWS) {
-                if (ent instanceof Arrow) {
-                    ent.remove();
+                if (ent.getController() instanceof Arrow) {
+                    ent.kill();
                     ++num;
                 }
             } else if (type == EntityType.BOATS) {
-                if (ent instanceof Boat) {
-                    ent.remove();
+                if (ent.getController() instanceof Boat) {
+                    ent.kill();
                     ++num;
                 }
             } else if (type == EntityType.ITEMS) {
-                if (ent instanceof Item) {
-                    ent.remove();
+                if (ent.getController() instanceof Item) {
+                    ent.kill();
                     ++num;
                 }
             } else if (type == EntityType.MINECARTS) {
-                if (ent instanceof Minecart) {
-                    ent.remove();
+                if (ent.getController() instanceof Minecart) {
+                    ent.kill();
                     ++num;
                 }
-            } else if (type == EntityType.PAINTINGS) {
-                if (ent instanceof Painting) {
-                    ent.remove();
+            } /*else if (type == EntityType.PAINTINGS) {
+                if (ent.getController() instanceof Painting) {
+                    ent.kill();
                     ++num;
                 }
-            } else if (type == EntityType.TNT) {
-                if (ent instanceof TNTPrimed) {
-                    ent.remove();
+            }*/ else if (type == EntityType.TNT) {
+                if (ent.getController() instanceof PrimedTnt) {
+                    ent.kill();
                     ++num;
                 }
-            } else if (type == EntityType.XP_ORBS) {
+            } /*else if (type == EntityType.XP_ORBS) {
                 if (ent instanceof ExperienceOrb) {
-                    ent.remove();
+                    ent.kill();
                     ++num;
                 }
-            }
-        }*/
+            }*/
+        }
 
         return num;
     }
@@ -636,9 +643,7 @@ public class SpoutWorld extends LocalWorld {
 
     @Override
     public void checkLoadedChunk(Vector pt) {
-        /*if (!world.isChunkLoaded(pt.getBlockX() >> 4, pt.getBlockZ() >> 4)) {
-            world.loadChunk(pt.getBlockX() >> 4, pt.getBlockZ() >> 4);
-        }*/
+        world.getChunk(pt.getBlockX() << Chunk.CHUNK_SIZE_BITS, pt.getBlockY() << Chunk.CHUNK_SIZE_BITS, pt.getBlockZ() << Chunk.CHUNK_SIZE_BITS);
     }
 
     @Override
