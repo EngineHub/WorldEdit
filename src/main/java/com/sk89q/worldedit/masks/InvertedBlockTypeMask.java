@@ -28,6 +28,7 @@ import com.sk89q.worldedit.Vector;
  *
  * @author sk89q
  */
+@Deprecated
 public class InvertedBlockTypeMask extends BlockTypeMask {
     public InvertedBlockTypeMask() {
     }
