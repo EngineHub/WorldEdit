@@ -208,6 +208,17 @@ public class BukkitWorld extends LocalWorld {
         return new BiomeType(bukkitBiome.name());
     }
 
+    @Override
+    public void setBiome(Vector2D pt, BiomeType biome) {
+        Biome bukkitBiome;
+        try {
+            bukkitBiome = Biome.valueOf(biome.getName().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return;
+        }
+        world.setBiome(pt.getBlockX(), pt.getBlockZ(), bukkitBiome);
+    }
+
     /**
      * Regenerate an area.
      *

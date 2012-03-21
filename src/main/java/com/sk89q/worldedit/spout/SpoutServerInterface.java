@@ -46,7 +46,7 @@ public class SpoutServerInterface extends ServerInterface {
     public SpoutServerInterface(WorldEditPlugin plugin, Game game) {
         this.plugin = plugin;
         this.game = game;
-        this.biomes = new SpoutBiomeTypes(); 
+        this.biomes = new SpoutBiomeTypes();
         this.executor = new SpoutRawCommandExecutor(plugin);
     }
 
@@ -68,7 +68,7 @@ public class SpoutServerInterface extends ServerInterface {
     }
 
     @Override
-    public BiomeTypes getBiomes() {
+    public SpoutBiomeTypes getBiomes() {
         return biomes;
     }
 

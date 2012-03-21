@@ -55,7 +55,7 @@ public class WorldEditPlugin extends CommonPlugin implements Named {
     /**
      * The server interface that all server-related API goes through.
      */
-    private ServerInterface server;
+    private SpoutServerInterface server;
     /**
      * Main WorldEdit instance.
      */
@@ -283,7 +283,7 @@ public class WorldEditPlugin extends CommonPlugin implements Named {
      *
      * @return
      */
-    public ServerInterface getServerInterface() {
+    public SpoutServerInterface getServerInterface() {
         return server;
     }
 

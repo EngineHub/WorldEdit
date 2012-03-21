@@ -34,6 +34,8 @@ import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.event.player.PlayerJoinEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.event.server.PreCommandEvent;
+import org.spout.api.event.world.WorldLoadEvent;
+import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.geo.discrete.Point;
 
 import java.util.regex.Matcher;
@@ -178,6 +180,13 @@ public class WorldEditPlayerListener implements Listener {
                 }
             }
 
+        }
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent event) {
+        if (event.getWorld().getGenerator() instanceof BiomeGenerator) {
+            plugin.getServerInterface().getBiomes().registerBiomeTypes((BiomeGenerator) event.getWorld().getGenerator());
         }
     }
 }

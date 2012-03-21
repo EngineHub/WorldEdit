@@ -33,6 +33,7 @@ import com.sk89q.worldedit.regions.Region;
 
 import com.sk89q.worldedit.util.TreeGenerator;
 import org.spout.api.entity.Entity;
+import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.inventory.ItemStack;
@@ -83,7 +84,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean setBlockType(Vector pt, int type) {
-        return world.setBlockId(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (short)type, WorldEditPlugin.getInstance());
+        return world.setBlockId(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (short) type, WorldEditPlugin.getInstance());
     }
 
     /**
@@ -185,7 +186,18 @@ public class SpoutWorld extends LocalWorld {
      * @return
      */
     public BiomeType getBiome(Vector2D pt) {
+        if (world.getGenerator() instanceof BiomeGenerator) {
+            BiomeGenerator gen = (BiomeGenerator) world.getGenerator();
+            return new SpoutBiomeType(gen.getBiome(pt.getBlockX(), pt.getBlockZ(), world.getSeed()));
+        }
         return new BiomeType("Unknown");
+    }
+
+    public void setBiome(Vector2D pt, BiomeType biome) {
+        if (world.getGenerator() instanceof BiomeGenerator) {
+            BiomeGenerator gen = (BiomeGenerator) world.getGenerator();
+            gen.setBiome(new Vector3(pt.getBlockX(), 0, pt.getBlockZ()), ((SpoutBiomeType) biome).getSpoutBiome());
+        }
     }
 
     /**

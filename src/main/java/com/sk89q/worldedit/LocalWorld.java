@@ -105,10 +105,17 @@ public abstract class LocalWorld {
     /**
      * Get biome type
      *
-     * @param pt
-     * @return
+     * @param pt The (x, z) location to check the biome at
+     * @return The biome type at the location
      */
     public abstract BiomeType getBiome(Vector2D pt);
+
+    /**
+     * Set the biome type
+     * @param pt The (x, z) location to set the biome at
+     * @param biome The biome type to set to
+     */
+    public abstract void setBiome(Vector2D pt, BiomeType biome);
 
     /**
      * set block type & data
