@@ -38,7 +38,7 @@ public class CombinedMask implements Mask {
     }
 
     public CombinedMask(List<Mask> masks) {
-        masks.addAll(masks);
+        this.masks.addAll(masks);
     }
 
     public void add(Mask mask) {
