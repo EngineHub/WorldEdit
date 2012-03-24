@@ -46,6 +46,7 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Painting;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Tameable;
+import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Effect;
@@ -396,6 +397,34 @@ public class BukkitWorld extends LocalWorld {
     }
 
     /**
+     * Gets the single block inventory for a potentially double chest.
+     * Handles people who have an old version of Bukkit.
+     * This should be replaced with {@link org.bukkit.block.Chest#getBlockInventory()}
+     * in a few months (now = March 2012)
+     *
+     * @param chest The chest to get a single block inventory for
+     * @return The chest's inventory
+     */
+    private Inventory getBlockInventory(Chest chest) {
+        try {
+            return chest.getBlockInventory();
+        } catch (Throwable t) {
+            if (chest.getInventory() instanceof DoubleChestInventory) {
+                DoubleChestInventory inven = (DoubleChestInventory) chest.getInventory();
+                if (inven.getLeftSide().getHolder().equals(chest)) {
+                    return inven.getLeftSide();
+                } else if (inven.getRightSide().getHolder().equals(chest)) {
+                    return inven.getRightSide();
+                } else {
+                    return inven;
+                }
+            } else {
+                return chest.getInventory();
+            }
+        }
+    }
+
+    /**
      * Clear a chest's contents.
      *
      * @param pt
@@ -414,7 +443,7 @@ public class BukkitWorld extends LocalWorld {
         org.bukkit.inventory.InventoryHolder chest = (org.bukkit.inventory.InventoryHolder) state;
         Inventory inven = chest.getInventory();
         if (chest instanceof Chest) {
-            inven = ((Chest) chest).getBlockInventory();
+            inven = getBlockInventory((Chest) chest);
         }
         inven.clear();
         return true;
@@ -726,7 +755,7 @@ public class BukkitWorld extends LocalWorld {
         org.bukkit.inventory.InventoryHolder container = (org.bukkit.inventory.InventoryHolder) state;
         Inventory inven = container.getInventory();
         if (container instanceof Chest) {
-            inven = ((Chest) container).getBlockInventory();
+            inven = getBlockInventory((Chest) container);
         }
         int size = inven.getSize();
         BaseItemStack[] contents = new BaseItemStack[size];
@@ -769,7 +798,7 @@ public class BukkitWorld extends LocalWorld {
         org.bukkit.inventory.InventoryHolder chest = (org.bukkit.inventory.InventoryHolder) state;
         Inventory inven = chest.getInventory();
         if (chest instanceof Chest) {
-            inven = ((Chest) chest).getBlockInventory();
+            inven = getBlockInventory((Chest) chest);
         }
         int size = inven.getSize();
 
