@@ -1,7 +1,6 @@
-// $Id$
 /*
  * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com> and contributors
+ * Copyright (C) 2012 sk89q <http://www.sk89q.com> and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +14,10 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
+
+// $Id$
+
 
 package com.sk89q.worldedit.spout;
 
@@ -31,7 +33,8 @@ import com.sk89q.worldedit.cui.CUIEvent;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;
-import org.spout.api.material.MaterialData;
+import org.spout.api.material.MaterialRegistry;
+import org.spout.api.material.source.MaterialData;
 import org.spout.api.player.Player;
 
 public class SpoutPlayer extends LocalPlayer {
@@ -75,7 +78,7 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public void giveItem(int type, int amt) {
-        player.getEntity().getInventory().addItem(new ItemStack(MaterialData.getMaterial((short)type), amt));
+        player.getEntity().getInventory().addItem(new ItemStack(MaterialRegistry.get((short) type), amt));
     }
 
     @Override

@@ -1,7 +1,6 @@
-// $Id$
 /*
  * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com> and contributors
+ * Copyright (C) 2012 sk89q <http://www.sk89q.com> and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +14,10 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
+
+// $Id$
+
 
 package com.sk89q.worldedit.spout;
 
@@ -37,7 +39,9 @@ import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.inventory.ItemStack;
-import org.spout.api.material.MaterialData;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.Material;
+import org.spout.api.material.MaterialRegistry;
 import org.spout.api.math.Vector3;
 import org.spout.vanilla.controller.object.Item;
 import org.spout.vanilla.controller.object.falling.PrimedTnt;
@@ -84,7 +88,11 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean setBlockType(Vector pt, int type) {
-        return world.setBlockId(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (short) type, WorldEditPlugin.getInstance());
+        Material mat = MaterialRegistry.get((short) type);
+        if (mat != null && mat instanceof BlockMaterial) {
+            return world.setBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (BlockMaterial) mat, (short)0, true, WorldEditPlugin.getInstance());
+        }
+        return false;
     }
 
     /**
@@ -108,7 +116,11 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean setTypeIdAndData(Vector pt, int type, int data) {
-        return world.setBlockIdAndData(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (short) type, (short) data, WorldEditPlugin.getInstance());
+        Material mat = MaterialRegistry.get((short) type);
+        if (mat != null && mat instanceof BlockMaterial) {
+            return world.setBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (BlockMaterial) mat, (short)data, true, WorldEditPlugin.getInstance());
+        }
+        return false;
     }
 
     /**
@@ -132,7 +144,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public int getBlockType(Vector pt) {
-        return world.getBlockId(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        return world.getBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getId();
     }
 
     /**
@@ -143,7 +155,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public void setBlockData(Vector pt, int data) {
-        setTypeIdAndData(pt, world.getBlockId(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()), data);
+        world.setBlockData(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (short) data, true, WorldEditPlugin.getInstance());
     }
 
     /**
@@ -414,7 +426,11 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public void dropItem(Vector pt, BaseItemStack item) {
-        ItemStack bukkitItem = new ItemStack(MaterialData.getMaterial((short)item.getType(), item.getDamage()), item.getAmount(), item.getDamage());
+        Material mat = MaterialRegistry.get((short) item.getType());
+        if (mat.hasSubMaterials()) {
+            mat = mat.getSubMaterial(item.getDamage());
+        }
+        ItemStack bukkitItem = new ItemStack(mat, item.getDamage(), item.getAmount());
         world.createAndSpawnEntity(SpoutUtil.toPoint(world, pt), new Item(bukkitItem, new Vector3(pt.getX(), pt.getY(), pt.getZ())));
     }
 
@@ -662,7 +678,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean isValidBlockType(int type) {
-        return MaterialData.getBlock((short)type) != null;
+        return MaterialRegistry.get((short)type) instanceof BlockMaterial;
     }
 
     @Override

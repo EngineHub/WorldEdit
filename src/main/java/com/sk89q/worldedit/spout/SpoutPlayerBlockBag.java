@@ -1,7 +1,6 @@
-// $Id$
 /*
  * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com> and contributors
+ * Copyright (C) 2012 sk89q <http://www.sk89q.com> and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +14,10 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
+
+// $Id$
+
 
 package com.sk89q.worldedit.spout;
 
@@ -30,7 +32,7 @@ import com.sk89q.worldedit.blocks.BlockID;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
-import org.spout.api.material.MaterialData;
+import org.spout.api.material.MaterialRegistry;
 import org.spout.api.player.Player;
 
 public class SpoutPlayerBlockBag extends BlockBag {
@@ -81,7 +83,10 @@ public class SpoutPlayerBlockBag extends BlockBag {
         final short damage = item.getDamage();
         int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
         assert(amount == 1);
-        final Material mat = MaterialData.getMaterial(id, damage);
+        Material mat = MaterialRegistry.get(id);
+        if (mat.hasSubMaterials()) {
+            mat = mat.getSubMaterial(damage);
+        }
 
         if (id == BlockID.AIR) {
             throw new IllegalArgumentException("Can't fetch air block");
@@ -132,9 +137,12 @@ public class SpoutPlayerBlockBag extends BlockBag {
      */
     @Override
     public void storeItem(BaseItem item) throws BlockBagException {
-        final int id = item.getType();
+        final short id = (short) item.getType();
         final short damage = item.getDamage();
-        final Material mat = MaterialData.getMaterial((short) id, damage);
+        Material mat = MaterialRegistry.get(id);
+        if (mat.hasSubMaterials()) {
+            mat = mat.getSubMaterial(damage);
+        }
         int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
         assert(amount <= mat.getMaxStackSize());
 
