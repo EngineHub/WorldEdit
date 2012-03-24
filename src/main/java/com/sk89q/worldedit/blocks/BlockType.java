@@ -420,6 +420,7 @@ public enum BlockType {
      */
     private static final Set<Integer> usesData = new HashSet<Integer>();
     static {
+        usesData.add(BlockID.WOOD);
         usesData.add(BlockID.SAPLING);
         usesData.add(BlockID.WATER);
         usesData.add(BlockID.STATIONARY_WATER);
@@ -428,6 +429,7 @@ public enum BlockType {
         usesData.add(BlockID.LOG);
         usesData.add(BlockID.LEAVES);
         usesData.add(BlockID.DISPENSER);
+        usesData.add(BlockID.SANDSTONE);
         usesData.add(BlockID.BED);
         usesData.add(BlockID.POWERED_RAIL);
         usesData.add(BlockID.DETECTOR_RAIL);
