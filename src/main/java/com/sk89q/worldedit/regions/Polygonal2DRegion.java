@@ -39,8 +39,8 @@ import com.sk89q.worldedit.data.ChunkStore;
  */
 public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
     private List<BlockVector2D> points;
-    private BlockVector min;
-    private BlockVector max;
+    private Vector2D min;
+    private Vector2D max;
     private int minY;
     private int maxY;
     private boolean hasY = false;
@@ -99,8 +99,10 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      */
     protected void recalculate() {
         if (points.size() == 0) {
-            min = new BlockVector(0, 0, 0);
-            max = new BlockVector(0, 0, 0);
+            min = new Vector2D(0, 0);
+            minY = 0;
+            max = new Vector2D(0, 0);
+            maxY = 0;
             return;
         }
 
@@ -126,8 +128,8 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
         minY = Math.min(Math.max(0, minY), world == null ? 255 : world.getMaxY());
         maxY = Math.min(Math.max(0, maxY), world == null ? 255 : world.getMaxY());
 
-        min = new BlockVector(minX, minY, minZ);
-        max = new BlockVector(maxX, maxY, maxZ);
+        min = new Vector2D(minX, minZ);
+        max = new Vector2D(maxX, maxZ);
     }
 
     /**
@@ -206,7 +208,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      * @return min. point
      */
     public Vector getMinimumPoint() {
-        return min;
+        return min.toVector(minY);
     }
 
     /**
@@ -215,7 +217,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      * @return max. point
      */
     public Vector getMaximumPoint() {
-        return max;
+        return max.toVector(maxY);
     }
 
     /**
@@ -252,7 +254,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      * @return height
      */
     public int getHeight() {
-        return max.getBlockY() - min.getBlockY();
+        return maxY - minY;
     }
 
     /**
