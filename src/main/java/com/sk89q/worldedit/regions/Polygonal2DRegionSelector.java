@@ -40,8 +40,8 @@ import com.sk89q.worldedit.cui.SelectionShapeEvent;
  * @author sk89q
  */
 public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
-    private BlockVector pos1;
-    private Polygonal2DRegion region;
+    protected BlockVector pos1;
+    protected Polygonal2DRegion region;
 
     public Polygonal2DRegionSelector(LocalWorld world) {
         region = new Polygonal2DRegion(world);
