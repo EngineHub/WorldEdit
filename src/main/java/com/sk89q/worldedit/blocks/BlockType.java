@@ -486,6 +486,8 @@ public enum BlockType {
         usesData.add(BlockID.BREWING_STAND);
         usesData.add(BlockID.CAULDRON);
         usesData.add(BlockID.END_PORTAL_FRAME);
+        usesData.add(BlockID.WOOD);
+        usesData.add(BlockID.SANDSTONE);
     }
 
     /**
