@@ -63,7 +63,7 @@ public class ClipboardCommands {
         CuboidClipboard clipboard = new CuboidClipboard(
                 max.subtract(min).add(new Vector(1, 1, 1)),
                 min, min.subtract(pos));
-        clipboard.copy(editSession);
+        clipboard.copy(editSession, region);
         session.setClipboard(clipboard);
 
         player.print("Block(s) copied.");
@@ -95,7 +95,7 @@ public class ClipboardCommands {
         CuboidClipboard clipboard = new CuboidClipboard(
                 max.subtract(min).add(new Vector(1, 1, 1)),
                 min, min.subtract(pos));
-        clipboard.copy(editSession);
+        clipboard.copy(editSession, region);
         session.setClipboard(clipboard);
 
         editSession.setBlocks(session.getSelection(player.getWorld()), block);
