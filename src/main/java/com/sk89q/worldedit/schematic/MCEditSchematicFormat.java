@@ -22,6 +22,7 @@ import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.NBTConstants;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.NBTOutputStream;
 import com.sk89q.jnbt.ShortTag;
@@ -34,6 +35,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.data.DataException;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -242,6 +244,31 @@ public class MCEditSchematicFormat extends SchematicFormat {
         NBTOutputStream stream = new NBTOutputStream(new FileOutputStream(file));
         stream.writeTag(schematicTag);
         stream.close();
+    }
+
+    @Override
+    public boolean isOfFormat(File file) {
+        DataInputStream str = null;
+        try {
+            str = new DataInputStream(new GZIPInputStream(new FileInputStream(file)));
+            if ((str.readByte() & 0xFF) != NBTConstants.TYPE_COMPOUND) {
+                return false;
+            }
+            byte[] nameBytes = new byte[str.readShort() & 0xFFFF];
+            str.readFully(nameBytes);
+            String name = new String(nameBytes, NBTConstants.CHARSET);
+            return name.equals("Schematic");
+        } catch (IOException e) {
+            return false;
+        } finally {
+            if (str != null) {
+                try {
+                    str.close();
+                } catch (IOException ignore) {
+                    // blargh
+                }
+            }
+        }
     }
 
     /**

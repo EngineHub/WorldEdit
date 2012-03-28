@@ -47,9 +47,9 @@ public class SchematicCommands {
 
     @Command(
             aliases = { "load" },
-            usage = "<format> <filename>",
+            usage = "[format] <filename>",
             desc = "Load a schematic into your clipboard",
-            min = 2,
+            min = 1,
             max = 2
     )
     @CommandPermissions("worldedit.clipboard.load")
@@ -57,15 +57,28 @@ public class SchematicCommands {
                      EditSession editSession) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
-        SchematicFormat format = SchematicFormat.getFormat(args.getString(0));
+        String fileName;
+        String formatName;
+
+        if (args.argsLength() == 1) {
+            formatName = null;
+            fileName = args.getString(0);
+        } else {
+            formatName = args.getString(0);
+            fileName = args.getString(1);
+        }
+        File dir = we.getWorkingDirectoryFile(config.saveDir);
+        File f = we.getSafeOpenFile(player, dir, fileName, "schematic", "schematic");
+
+        SchematicFormat format = formatName == null ? null : SchematicFormat.getFormat(formatName);
         if (format == null) {
-            player.printError("Unknown schematic format: " + args.getString(0));
-            return;
+            format = SchematicFormat.getFormat(f);
         }
 
-        String filename = args.getString(1);
-        File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = we.getSafeOpenFile(player, dir, filename, "schematic", "schematic");
+        if (format == null) {
+            player.printError("Unknown schematic format: " + formatName);
+            return;
+        }
 
         try {
             String filePath = f.getCanonicalPath();
@@ -76,7 +89,7 @@ public class SchematicCommands {
             } else {
                 session.setClipboard(format.load(f));
                 WorldEdit.logger.info(player.getName() + " loaded " + filePath);
-                player.print(filename + " loaded. Paste it with //paste");
+                player.print(fileName + " loaded. Paste it with //paste");
             }
         } catch (DataException e) {
             player.printError("Load error: " + e.getMessage());
@@ -154,6 +167,30 @@ public class SchematicCommands {
             }
             first = true;
             player.print(builder.toString());
+        }
+    }
+
+    @Command(
+            aliases = {"list", "all"},
+            desc = "List available schematics",
+            max = 0
+    )
+    public void list(CommandContext args, LocalSession session, LocalPlayer player,
+                        EditSession editSession) throws WorldEditException {
+        File dir = we.getWorkingDirectoryFile(we.getConfiguration().saveDir);
+        player.print("Available schematics (Filename - Format)");
+        StringBuilder builder;
+        for (File file : dir.listFiles()) {
+            if (!file.isFile()) {
+                continue;
+            }
+
+            SchematicFormat format = SchematicFormat.getFormat(file);
+            if (format == null) {
+                continue;
+            }
+
+            player.print(file.getName() + ": " + format.getName());
         }
     }
 }

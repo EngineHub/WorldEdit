@@ -45,6 +45,8 @@ import java.util.Set;
  */
 public abstract class SchematicFormat {
     private static final Map<String, SchematicFormat> SCHEMATIC_FORMATS = new HashMap<String, SchematicFormat>();
+
+    // Built-in schematic formats
     public static final SchematicFormat MCEDIT = new MCEditSchematicFormat();
 
     public static Set<SchematicFormat> getFormats() {
@@ -53,6 +55,19 @@ public abstract class SchematicFormat {
 
     public static SchematicFormat getFormat(String lookupName) {
         return SCHEMATIC_FORMATS.get(lookupName.toLowerCase());
+    }
+
+    public static SchematicFormat getFormat(File file) {
+        if (!file.isFile()) {
+            return null;
+        }
+
+        for (SchematicFormat format : SCHEMATIC_FORMATS.values()) {
+            if (format.isOfFormat(file)) {
+                return format;
+            }
+        }
+        return null;
     }
 
     private final String name;
@@ -137,4 +152,6 @@ public abstract class SchematicFormat {
      * @throws DataException If the clipboard has data which cannot be stored
      */
     public abstract void save(CuboidClipboard clipboard, File file) throws IOException, DataException;
+
+    public abstract boolean isOfFormat(File file);
 }

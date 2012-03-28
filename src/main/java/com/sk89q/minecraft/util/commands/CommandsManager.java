@@ -223,7 +223,7 @@ public abstract class CommandsManager<T> {
                     String previous = helpMessages.put(key, helpMessage);
 
                     if (previous != null && !previous.replaceAll("^/[^ ]+ ", "").equals(helpMessage.replaceAll("^/[^ ]+ ", ""))) {
-                        helpMessages.put(key, previous+"\n\n"+helpMessage);
+                        helpMessages.put(key, previous + "\n\n" + helpMessage);
                     }
                 }
 

@@ -34,4 +34,14 @@ public class SpoutBiomeType extends com.sk89q.worldedit.BiomeType {
     public BiomeType getSpoutBiome() {
         return type;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof SpoutBiomeType && ((SpoutBiomeType)other).type.equals(this.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 + type.hashCode();
+    }
 }
