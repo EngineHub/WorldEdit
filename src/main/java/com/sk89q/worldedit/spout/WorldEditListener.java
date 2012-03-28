@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
 /**
  * Handles all events thrown in relation to a Player
  */
-public class WorldEditPlayerListener implements Listener {
+public class WorldEditListener implements Listener {
     /**
      * Plugin.
      */
@@ -61,7 +61,7 @@ public class WorldEditPlayerListener implements Listener {
      *
      * @param plugin
      */
-    public WorldEditPlayerListener(WorldEditPlugin plugin) {
+    public WorldEditListener(WorldEditPlugin plugin) {
         this.plugin = plugin;
     }
 

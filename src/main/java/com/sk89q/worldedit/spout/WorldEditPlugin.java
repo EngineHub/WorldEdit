@@ -49,10 +49,6 @@ import java.util.zip.ZipEntry;
  * @author sk89q
  */
 public class WorldEditPlugin extends CommonPlugin implements Named {
-    /**
-     * WorldEdit messages get sent here.
-     */
-    private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
 
     /**
      * The server interface that all server-related API goes through.
@@ -80,7 +76,7 @@ public class WorldEditPlugin extends CommonPlugin implements Named {
         final String pluginYmlVersion = getDescription().getVersion();
         final String manifestVersion = WorldEdit.getVersion();
 
-        logger.info("WorldEdit " + pluginYmlVersion + " enabled.");
+        getLogger().info("WorldEdit " + pluginYmlVersion + " enabled.");
         if (!manifestVersion.equalsIgnoreCase(pluginYmlVersion)) {
             WorldEdit.setVersion(manifestVersion + " (" + pluginYmlVersion + ")");
         }
@@ -93,7 +89,7 @@ public class WorldEditPlugin extends CommonPlugin implements Named {
 
         // Set up configuration and such, including the permissions
         // resolver
-        config = new YAMLConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml"), true), logger);
+        config = new SpoutConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml"), true), this);
 
         // Load the configuration
         loadConfiguration();
@@ -136,7 +132,7 @@ public class WorldEditPlugin extends CommonPlugin implements Named {
      * Register the events used by WorldEdit.
      */
     protected void registerEvents() {
-        getGame().getEventManager().registerEvents(new WorldEditPlayerListener(this), this);
+        getGame().getEventManager().registerEvents(new WorldEditListener(this), this);
     }
 
     /**
@@ -155,7 +151,7 @@ public class WorldEditPlugin extends CommonPlugin implements Named {
                 if (copy == null) throw new FileNotFoundException();
                 input = file.getInputStream(copy);
             } catch (IOException e) {
-                logger.severe(getDescription().getName() + ": Unable to read default configuration: " + name);
+                getLogger().severe("Unable to read default configuration: " + name);
             }
             if (input != null) {
                 FileOutputStream output = null;
@@ -168,22 +164,19 @@ public class WorldEditPlugin extends CommonPlugin implements Named {
                         output.write(buf, 0, length);
                     }
 
-                    logger.info(getDescription().getName()
-                            + ": Default configuration file written: " + name);
+                    getLogger().info("Default configuration file written: " + name);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
                     try {
-                        if (input != null) {
-                            input.close();
-                        }
-                    } catch (IOException e) {}
+                        input.close();
+                    } catch (IOException ignore) {}
 
                     try {
                         if (output != null) {
                             output.close();
                         }
-                    } catch (IOException e) {}
+                    } catch (IOException ignore) {}
                 }
             }
         }

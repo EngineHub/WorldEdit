@@ -25,6 +25,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LogFormat;
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.logging.FileHandler;
@@ -105,7 +106,8 @@ public class YAMLConfiguration extends LocalConfiguration {
         String logFile = config.getString("logging.file", "");
         if (!logFile.equals("")) {
             try {
-                logFileHandler = new FileHandler(logFile, true);
+                logFileHandler = new FileHandler(new File(getWorkingDirectory(),
+                        logFile).getAbsolutePath(), true);
                 logFileHandler.setFormatter(new LogFormat());
                 logger.addHandler(logFileHandler);
             } catch (IOException e) {

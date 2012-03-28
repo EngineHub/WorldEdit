@@ -21,23 +21,54 @@ package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.util.YAMLConfiguration;
+import org.apache.commons.io.FileUtils;
 
-import java.util.logging.Logger;
+import java.io.File;
+import java.io.IOException;
 
 /**
- * YAMLConfiguration but with setting for no op permissions.
+ * YAMLConfiguration but with setting for no op permissions and plugin root data folder
  */
 public class BukkitConfiguration extends YAMLConfiguration {
 
     public boolean noOpPermissions = false;
+    private final WorldEditPlugin plugin;
 
-    public BukkitConfiguration(YAMLProcessor config, Logger logger) {
-        super(config, logger);
+    public BukkitConfiguration(YAMLProcessor config, WorldEditPlugin plugin) {
+        super(config, plugin.getLogger());
+        this.plugin = plugin;
     }
-    
+
     @Override
     public void load() {
         super.load();
         noOpPermissions = config.getBoolean("no-op-permissions", false);
+        migrateLegacyFolders();
+    }
+
+    private void migrateLegacyFolders() {
+        migrate(scriptsDir, "craftscripts");
+        migrate(saveDir, "schematics");
+        migrate("drawings", "draw.js images");
+    }
+
+    private void migrate(String file, String name) {
+        File fromDir = new File(".", file);
+        File toDir = new File(getWorkingDirectory(), file);
+        if (fromDir.exists() & !toDir.exists()) {
+            try {
+                FileUtils.moveDirectory(fromDir, toDir);
+                plugin.getLogger().info("Migrated " + name + " folder '" + file +
+                        "' from server root to plugin data folder." );
+            } catch (IOException e) {
+                plugin.getLogger().warning("Error while migrating " + name + " folder: " +
+                        e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public File getWorkingDirectory() {
+        return plugin.getDataFolder();
     }
 }
