@@ -34,28 +34,36 @@ public @interface Command {
      * A list of aliases for the command. The first alias is the most
      * important -- it is the main name of the command. (The method name
      * is never used for anything).
+     *
+     * @return Aliases for a command
      */
     String[] aliases();
 
     /**
      * Usage instruction. Example text for usage could be
-     * <code>[-h] [name] [message]</code>.
+     * <code>[-h harps] [name] [message]</code>.
+     *
+     * @return Usage instructions for a command
      */
     String usage() default "";
 
     /**
-     * A short description for the command.
+     * @return A short description for the command.
      */
     String desc();
 
     /**
      * The minimum number of arguments. This should be 0 or above.
+     *
+     * @return the minimum number of arguments
      */
     int min() default 0;
 
     /**
      * The maximum number of arguments. Use -1 for an unlimited number
      * of arguments.
+     *
+     * @return the maximum number of arguments
      */
     int max() default -1;
 
@@ -65,11 +73,20 @@ public @interface Command {
      * each character being a flag. Use A-Z and a-z as possible flags.
      * Appending a flag with a : makes the flag character before a value flag,
      * meaning that if it is given it must have a value
+     *
+     * @return Flags matching a-zA-Z
      */
     String flags() default "";
 
     /**
-     * A long description for the command.
+     * @return A long description for the command.
      */
     String help() default "";
+
+    /**
+     *
+     *
+     * @return Whether any flag can be provided to the command, even if it is not in {@link #flags()}
+     */
+    boolean anyFlags() default false;
 }

@@ -36,7 +36,7 @@ import com.sk89q.util.StringUtil;
 /**
  * <p>Manager for handling commands. This allows you to easily process commands,
  * including nested commands, by correctly annotating methods of a class.</p>
- * 
+ *
  * <p>To use this, it is merely a matter of registering classes containing
  * the commands (as methods with the proper annotations) with the
  * manager. When you want to process a command, use one of the
@@ -47,16 +47,16 @@ import com.sk89q.util.StringUtil;
  * <p>Methods of a class to be registered can be static, but if an injector
  * is registered with the class, the instances of the command classes
  * will be created automatically and methods will be called non-statically.</p>
- * 
+ *
  * <p>To mark a method as a command, use {@link Command}. For nested commands,
  * see {@link NestedCommand}. To handle permissions, use
  * {@link CommandPermissions}.</p>
- * 
+ *
  * <p>This uses Java reflection extensively, but to reduce the overhead of
  * reflection, command lookups are completely cached on registration. This
  * allows for fast command handling. Method invocation still has to be done
  * with reflection, but this is quite fast in that of itself.</p>
- * 
+ *
  * @author sk89q
  * @param <T> command sender class
  */
@@ -104,7 +104,7 @@ public abstract class CommandsManager<T> {
      * class will be registered to be called statically. Otherwise, new
      * instances will be created of the command classes and methods will
      * not be called statically.
-     * 
+     *
      * @param cls
      */
     public void register(Class<?> cls) {
@@ -140,8 +140,7 @@ public abstract class CommandsManager<T> {
             if (getInjector() == null) {
                 return registerMethods(cls, parent, null);
             } else {
-                Object obj = null;
-                obj = getInjector().getInstance(cls);
+                Object obj = getInjector().getInstance(cls);
                 return registerMethods(cls, parent, obj);
             }
         } catch (InvocationTargetException e) {
@@ -156,9 +155,11 @@ public abstract class CommandsManager<T> {
 
     /**
      * Register the methods of a class.
-     * 
+     *
      * @param cls
      * @param parent
+     * @param obj
+     * @return
      */
     private List<Command> registerMethods(Class<?> cls, Method parent, Object obj) {
         Map<String, Method> map;
@@ -213,11 +214,11 @@ public abstract class CommandsManager<T> {
                 String help = cmd.help();
                 if (help.length() == 0) {
                     help = desc;
-                }                     
+                }
 
                 final CharSequence arguments = getArguments(cmd);
                 for (String alias : cmd.aliases()) {
-                    final String helpMessage = "/"+alias+" "+arguments+"\n\n"+help;
+                    final String helpMessage = "/" + alias + " " + arguments + "\n\n" + help;
                     final String key = alias.replaceAll("/", "");
                     String previous = helpMessages.put(key, helpMessage);
 
@@ -242,13 +243,18 @@ public abstract class CommandsManager<T> {
                 }
             }
         }
+
+        if (cls.getSuperclass() != null) {
+            registerMethods(cls.getSuperclass(), parent, obj);
+        }
+
         return registered;
     }
 
     /**
      * Checks to see whether there is a command named such at the root level.
      * This will check aliases as well.
-     * 
+     *
      * @param command
      * @return
      */
@@ -258,7 +264,7 @@ public abstract class CommandsManager<T> {
 
     /**
      * Get a list of command descriptions. This is only for root commands.
-     * 
+     *
      * @return
      */
     public Map<String, String> getCommands() {
@@ -271,7 +277,7 @@ public abstract class CommandsManager<T> {
 
     /**
      * Get a map from command name to help message. This is only for root commands.
-     * 
+     *
      * @return
      */
     public Map<String, String> getHelpMessages() {
@@ -280,7 +286,7 @@ public abstract class CommandsManager<T> {
 
     /**
      * Get the usage string for a command.
-     * 
+     *
      * @param args
      * @param level
      * @param cmd
@@ -328,7 +334,7 @@ public abstract class CommandsManager<T> {
 
     /**
      * Get the usage string for a nested command.
-     * 
+     *
      * @param args
      * @param level
      * @param method
@@ -384,12 +390,12 @@ public abstract class CommandsManager<T> {
     /**
      * Attempt to execute a command. This version takes a separate command
      * name (for the root command) and then a list of following arguments.
-     * 
+     *
      * @param cmd command to run
      * @param args arguments
      * @param player command source
      * @param methodArgs method arguments
-     * @throws CommandException 
+     * @throws CommandException
      */
     public void execute(String cmd, String[] args, T player,
             Object... methodArgs) throws CommandException {
@@ -405,11 +411,11 @@ public abstract class CommandsManager<T> {
 
     /**
      * Attempt to execute a command.
-     * 
+     *
      * @param args
      * @param player
      * @param methodArgs
-     * @throws CommandException 
+     * @throws CommandException
      */
     public void execute(String[] args, T player,
             Object... methodArgs) throws CommandException {
@@ -421,13 +427,13 @@ public abstract class CommandsManager<T> {
 
     /**
      * Attempt to execute a command.
-     * 
+     *
      * @param parent
      * @param args
      * @param player
      * @param methodArgs
      * @param level
-     * @throws CommandException 
+     * @throws CommandException
      */
     public void executeMethod(Method parent, String[] args,
             T player, Object[] methodArgs, int level) throws CommandException {
@@ -488,9 +494,11 @@ public abstract class CommandsManager<T> {
                 throw new CommandUsageException("Too many arguments.", getUsage(args, level, cmd));
             }
 
-            for (char flag : context.getFlags()) {
-                if (!newFlags.contains(flag)) {
-                    throw new CommandUsageException("Unknown flag: " + flag, getUsage(args, level, cmd));
+            if (!cmd.anyFlags()) {
+                for (char flag : context.getFlags()) {
+                    if (!newFlags.contains(flag)) {
+                        throw new CommandUsageException("Unknown flag: " + flag, getUsage(args, level, cmd));
+                    }
                 }
             }
 
@@ -527,7 +535,7 @@ public abstract class CommandsManager<T> {
 
     /**
      * Returns whether a player has access to a command.
-     * 
+     *
      * @param method
      * @param player
      * @return
@@ -549,7 +557,7 @@ public abstract class CommandsManager<T> {
 
     /**
      * Returns whether a player permission..
-     * 
+     *
      * @param player
      * @param perm
      * @return
