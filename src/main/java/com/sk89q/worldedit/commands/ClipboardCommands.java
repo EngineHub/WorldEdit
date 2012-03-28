@@ -26,6 +26,8 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
+
+import com.sk89q.minecraft.util.commands.NestedCommand;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
@@ -34,12 +36,12 @@ import com.sk89q.worldedit.regions.Region;
 
 /**
  * Clipboard commands.
- * 
+ *
  * @author sk89q
  */
 public class ClipboardCommands {
     private final WorldEdit we;
-    
+
     public ClipboardCommands(WorldEdit we) {
         this.we = we;
     }
@@ -54,7 +56,7 @@ public class ClipboardCommands {
     @CommandPermissions("worldedit.clipboard.copy")
     public void copy(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-            
+
         Region region = session.getSelection(player.getWorld());
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
@@ -146,7 +148,7 @@ public class ClipboardCommands {
     @CommandPermissions("worldedit.clipboard.rotate")
     public void rotate(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
+
         int angle = args.getInteger(0);
 
         if (angle % 90 == 0) {
@@ -186,78 +188,36 @@ public class ClipboardCommands {
         aliases = { "/load" },
         usage = "<filename>",
         desc = "Load a schematic into your clipboard",
-        min = 1,
+        min = 0,
         max = 1
     )
+    @Deprecated
     @CommandPermissions("worldedit.clipboard.load")
     public void load(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
-        LocalConfiguration config = we.getConfiguration();
-
-        String filename = args.getString(0);
-        File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = we.getSafeOpenFile(player, dir, filename, "schematic", "schematic");
-
-        try {
-            String filePath = f.getCanonicalPath();
-            String dirPath = dir.getCanonicalPath();
-
-            if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
-                player.printError("Schematic could not read or it does not exist.");
-            } else {
-                session.setClipboard(CuboidClipboard.loadSchematic(f));
-                WorldEdit.logger.info(player.getName() + " loaded " + filePath);
-                player.print(filename + " loaded. Paste it with //paste");
-            }
-        } catch (DataException e) {
-            player.printError("Load error: " + e.getMessage());
-        } catch (IOException e) {
-            player.printError("Schematic could not read or it does not exist: " + e.getMessage());
-        }
+        player.printError("This command is no longer used. See //schematic load.");
     }
 
     @Command(
         aliases = { "/save" },
         usage = "<filename>",
         desc = "Save a schematic into your clipboard",
-        min = 1,
+        min = 0,
         max = 1
     )
+    @Deprecated
     @CommandPermissions("worldedit.clipboard.save")
     public void save(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
-        LocalConfiguration config = we.getConfiguration();
-
-        String filename = args.getString(0);
-
-        File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = we.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
-
-        if (!dir.exists()) {
-            if (!dir.mkdir()) {
-                player.printError("The storage folder could not be created.");
-                return;
-            }
-        }
-
-        try {
-            // Create parent directories
-            File parent = f.getParentFile();
-            if (parent != null && !parent.exists()) {
-                parent.mkdirs();
-            }
-
-            session.getClipboard().saveSchematic(f);
-            WorldEdit.logger.info(player.getName() + " saved " + f.getCanonicalPath());
-            player.print(filename + " saved.");
-        } catch (DataException se) {
-            player.printError("Save error: " + se.getMessage());
-        } catch (IOException e) {
-            player.printError("Schematic could not written: " + e.getMessage());
-        }
+        player.printError("This command is no longer used. See //schematic save.");
     }
+
+    @Command(
+            aliases = { "/schematic", "/schem"},
+            desc = "Schematic-related commands"
+    )
+    @NestedCommand(SchematicCommands.class)
+    public void schematic() {}
 
     @Command(
         aliases = { "clearclipboard" },

@@ -72,17 +72,17 @@ public class WorldEdit {
     /**
      * Interface to the server.
      */
-    private ServerInterface server;
+    private final ServerInterface server;
 
     /**
      * Configuration. This is a subclass.
      */
-    private LocalConfiguration config;
+    private final LocalConfiguration config;
 
     /**
      * List of commands.
      */
-    private CommandsManager<LocalPlayer> commands;
+    private final CommandsManager<LocalPlayer> commands;
 
     /**
      * Stores a list of WorldEdit sessions, keyed by players' names. Sessions
@@ -91,7 +91,7 @@ public class WorldEdit {
      * without any WorldEdit abilities or never use WorldEdit in a session will
      * not have a session object generated for them.
      */
-    private HashMap<String, LocalSession> sessions = new HashMap<String, LocalSession>();
+    private final HashMap<String, LocalSession> sessions = new HashMap<String, LocalSession>();
 
     /**
      * Initialize statically.
@@ -185,20 +185,24 @@ public class WorldEdit {
 
         commands.setInjector(new SimpleInjector(this));
 
-        server.onCommandRegistration(commands.registerAndReturn(BiomeCommands.class), commands);
-        server.onCommandRegistration(commands.registerAndReturn(ChunkCommands.class), commands);
-        server.onCommandRegistration(commands.registerAndReturn(ClipboardCommands.class), commands);
-        server.onCommandRegistration(commands.registerAndReturn(GeneralCommands.class), commands);
-        server.onCommandRegistration(commands.registerAndReturn(GenerationCommands.class), commands);
-        server.onCommandRegistration(commands.registerAndReturn(HistoryCommands.class), commands);
-        server.onCommandRegistration(commands.registerAndReturn(NavigationCommands.class), commands);
-        server.onCommandRegistration(commands.registerAndReturn(RegionCommands.class), commands);
-        server.onCommandRegistration(commands.registerAndReturn(ScriptingCommands.class), commands);
-        server.onCommandRegistration(commands.registerAndReturn(SelectionCommands.class), commands);
-        server.onCommandRegistration(commands.registerAndReturn(SnapshotUtilCommands.class), commands);
-        server.onCommandRegistration(commands.registerAndReturn(ToolUtilCommands.class), commands);
-        server.onCommandRegistration(commands.registerAndReturn(ToolCommands.class), commands);
-        server.onCommandRegistration(commands.registerAndReturn(UtilityCommands.class), commands);
+        reg(BiomeCommands.class);
+        reg(ChunkCommands.class);
+        reg(ClipboardCommands.class);
+        reg(GeneralCommands.class);
+        reg(GenerationCommands.class);
+        reg(HistoryCommands.class);
+        reg(NavigationCommands.class);
+        reg(RegionCommands.class);
+        reg(ScriptingCommands.class);
+        reg(SelectionCommands.class);
+        reg(SnapshotUtilCommands.class);
+        reg(ToolUtilCommands.class);
+        reg(ToolCommands.class);
+        reg(UtilityCommands.class);
+    }
+
+    private void reg(Class<?> clazz) {
+        server.onCommandRegistration(commands.registerAndReturn(clazz), commands);
     }
 
     /**
