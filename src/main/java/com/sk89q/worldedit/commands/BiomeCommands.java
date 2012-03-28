@@ -78,7 +78,19 @@ public class BiomeCommands {
     public void biomeInfo(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        if (!args.hasFlag('l')) {
+        if (args.hasFlag('t')) {
+            Vector blockPosition = player.getBlockTrace(300);
+            if (blockPosition == null) {
+                player.printError("No block in sight!");
+                return;
+            }
+
+            BiomeType biome = player.getWorld().getBiome(blockPosition.toVector2D());
+            player.print("Biome: " + biome.getName());
+        } else if (args.hasFlag('p')) {
+            BiomeType biome = player.getWorld().getBiome(player.getPosition().toVector2D());
+            player.print("Biome: " + biome.getName());
+        } else {
             LocalWorld world = player.getWorld();
             Region region = session.getSelection(world);
             Set<BiomeType> biomes = new HashSet<BiomeType>();
@@ -97,20 +109,6 @@ public class BiomeCommands {
             for (BiomeType biome : biomes) {
                 player.print(" " + biome.getName());
             }
-        } else {
-            Vector2D pos;
-            if (args.hasFlag('t')) {
-                Vector blockPosition = player.getBlockTrace(300);
-                if (blockPosition == null) {
-                    player.printError("No block in sight!");
-                    return;
-                }
-                pos = blockPosition.toVector2D();
-            } else {
-                pos = player.getPosition().toVector2D();
-            }
-            BiomeType biome = player.getWorld().getBiome(pos);
-            player.print("Biome: " + biome.getName());
         }
     }
 
@@ -131,7 +129,11 @@ public class BiomeCommands {
                           EditSession editSession) throws WorldEditException {
 
         final BiomeType target = we.getServer().getBiomes().get(args.getString(0));
-        if (!args.hasFlag('l')) {
+        if (args.hasFlag('p')) {
+            Vector2D pos = player.getPosition().toVector2D();
+            player.getWorld().setBiome(pos, target);
+            player.print("Biome changed to " + target.getName() + " at your current location.");
+        } else {
             int affected = 0;
             LocalWorld world = player.getWorld();
             Region region = session.getSelection(world);
@@ -144,8 +146,8 @@ public class BiomeCommands {
             } else {
                 HashSet<Long> alreadyVisited = new HashSet<Long>();
                 for (Vector pt : region) {
-                    if (!alreadyVisited.contains((long)pt.getBlockX() << 32 | pt.getBlockZ() & 0xFFFFFFFFL)) {
-                        alreadyVisited.add(((long)pt.getBlockX() << 32 | pt.getBlockZ() & 0xFFFFFFFFL));
+                    if (!alreadyVisited.contains((long)pt.getBlockX() << 32 | pt.getBlockZ())) {
+                        alreadyVisited.add(((long)pt.getBlockX() << 32 | pt.getBlockZ()));
                         world.setBiome(pt.toVector2D(), target);
                         ++affected;
                     }
@@ -153,10 +155,6 @@ public class BiomeCommands {
             }
 
             player.print("Biome changed to " + target.getName() + ". " + affected + " columns affected.");
-        } else {
-            Vector2D pos = player.getPosition().toVector2D();
-            player.getWorld().setBiome(pos, target);
-            player.print("Biome changed to " + target.getName() + " at your current location.");
         }
     }
 }
