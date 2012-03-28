@@ -24,10 +24,10 @@ import com.sk89q.worldedit.Vector2D;
 
 public class SelectionPoint2DEvent implements CUIEvent {
 
-    protected int id;
-    protected int blockx;
-    protected int blockz;
-    protected int area;
+    protected final int id;
+    protected final int blockx;
+    protected final int blockz;
+    protected final int area;
 
     public SelectionPoint2DEvent(int id, Vector2D pos, int area) {
         this.id = id;

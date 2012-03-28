@@ -23,9 +23,9 @@ import com.sk89q.worldedit.Vector;
 
 public class SelectionPointEvent implements CUIEvent {
 
-    protected int id;
-    protected Vector pos;
-    protected int area;
+    protected final int id;
+    protected final Vector pos;
+    protected final int area;
 
     public SelectionPointEvent(int id, Vector pos, int area) {
         this.id = id;

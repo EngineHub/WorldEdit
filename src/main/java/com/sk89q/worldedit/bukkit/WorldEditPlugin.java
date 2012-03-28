@@ -24,6 +24,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -45,6 +47,12 @@ import com.sk89q.worldedit.regions.*;
  * @author sk89q
  */
 public class WorldEditPlugin extends JavaPlugin {
+
+    /**
+     * The name of the CUI's plugin channel registration
+     */
+    public static final String CUI_PLUGIN_CHANNEL = "WECUI";
+
     /**
      * WorldEdit messages get sent here.
      */
@@ -67,6 +75,11 @@ public class WorldEditPlugin extends JavaPlugin {
      * Holds the configuration for WorldEdit.
      */
     private BukkitConfiguration config;
+
+    /**
+     * Stores players who are using plugin channels for the cui
+     */
+    private final Map<String, Boolean> pluginChannelCui = new HashMap<String, Boolean>();
 
     /**
      * Called on plugin enable.
@@ -97,6 +110,8 @@ public class WorldEditPlugin extends JavaPlugin {
         server = new BukkitServerInterface(this, getServer());
         controller = new WorldEdit(server, config);
         api = new WorldEditAPI(this);
+        getServer().getMessenger().registerIncomingPluginChannel(this, CUI_PLUGIN_CHANNEL, new CUIChannelListener(this));
+        getServer().getMessenger().registerOutgoingPluginChannel(this, CUI_PLUGIN_CHANNEL);
 
         // Now we can register events!
         getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
@@ -380,5 +395,18 @@ public class WorldEditPlugin extends JavaPlugin {
         RegionSelector sel = selection.getRegionSelector();
         session.setRegionSelector(BukkitUtil.getLocalWorld(player.getWorld()), sel);
         session.dispatchCUISelection(wrapPlayer(player));
+    }
+
+    public void setPluginChannelCUI(String name, boolean value) {
+        pluginChannelCui.put(name, value);
+    }
+
+    public boolean hasPluginChannelCUI(String name) {
+        Boolean val = pluginChannelCui.get(name);
+        if (val == null) {
+            return false;
+        } else {
+            return val;
+        }
     }
 }

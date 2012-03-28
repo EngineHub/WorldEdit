@@ -21,8 +21,8 @@ package com.sk89q.worldedit.cui;
 
 public class SelectionMinMaxEvent implements CUIEvent {
 
-    protected int min;
-    protected int max;
+    protected final int min;
+    protected final int max;
 
     public SelectionMinMaxEvent(int min, int max) {
         this.min = min;

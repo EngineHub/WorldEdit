@@ -23,6 +23,7 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -66,7 +67,16 @@ public class WorldEditListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        plugin.wrapPlayer(event.getPlayer()).dispatchCUIHandshake();
+        final Player player = event.getPlayer();
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            @Override
+            public void run() {
+                if (player.isOnline()) {
+                    plugin.wrapPlayer(player).dispatchCUIHandshake();
+                }
+            }
+        }, 20 * 2);
+
     }
 
     /**
@@ -77,6 +87,7 @@ public class WorldEditListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         plugin.getWorldEdit().markExpire(plugin.wrapPlayer(event.getPlayer()));
+        plugin.setPluginChannelCUI(event.getPlayer().getName(), false);
     }
 
     /**
@@ -177,7 +188,7 @@ public class WorldEditListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true) // TODO: Remove this in a bit
     public void onPlayerChat(PlayerChatEvent event) {
         Matcher matcher = cuipattern.matcher(event.getMessage());
         if (matcher.find()) {

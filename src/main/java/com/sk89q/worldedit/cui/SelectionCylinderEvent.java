@@ -23,8 +23,8 @@ import com.sk89q.worldedit.Vector2D;
 
 public class SelectionCylinderEvent implements CUIEvent {
 
-    protected Vector pos;
-    protected Vector2D radius;
+    protected final Vector pos;
+    protected final Vector2D radius;
 
     public SelectionCylinderEvent(Vector pos, Vector2D radius) {
         this.pos = pos;
