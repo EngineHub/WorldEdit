@@ -21,10 +21,8 @@ package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.util.YAMLConfiguration;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * YAMLConfiguration but with setting for no op permissions and plugin root data folder
@@ -56,13 +54,11 @@ public class BukkitConfiguration extends YAMLConfiguration {
         File fromDir = new File(".", file);
         File toDir = new File(getWorkingDirectory(), file);
         if (fromDir.exists() & !toDir.exists()) {
-            try {
-                FileUtils.moveDirectory(fromDir, toDir);
+            if (fromDir.renameTo(toDir)) {
                 plugin.getLogger().info("Migrated " + name + " folder '" + file +
-                        "' from server root to plugin data folder." );
-            } catch (IOException e) {
-                plugin.getLogger().warning("Error while migrating " + name + " folder: " +
-                        e.getMessage());
+                        "' from server root to plugin data folder.");
+            } else {
+                plugin.getLogger().warning("Error while migrating " + name + " folder!");
             }
         }
     }
