@@ -130,17 +130,24 @@ public interface Region extends Iterable<BlockVector> {
      * @return
      */
     public Set<Vector2D> getChunks();
-    
+
+    /**
+     * Return a list of 16*16*16 chunks in a region
+     *
+     * @return The chunk cubes this region overlaps with
+     */
+    public Set<Vector> getChunkCubes();
+
     /**
      * Get the world the selection is in
-     * 
+     *
      * @return
      */
     public LocalWorld getWorld();
-    
+
     /**
      * Sets the world the selection is in
-     * 
+     *
      * @return
      */
     public void setWorld(LocalWorld world);

@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
@@ -303,10 +304,26 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         Vector max = getMaximumPoint();
 
         for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
+            for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
+                chunks.add(new BlockVector2D(x >> ChunkStore.CHUNK_SHIFTS,
+                        z >> ChunkStore.CHUNK_SHIFTS));
+            }
+        }
+
+        return chunks;
+    }
+
+    public Set<Vector> getChunkCubes() {
+        Set<Vector> chunks = new HashSet<Vector>();
+
+        Vector min = getMinimumPoint();
+        Vector max = getMaximumPoint();
+
+        for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
-                    Vector pt = new Vector(x, y, z);
-                    chunks.add(ChunkStore.toChunk(pt));
+                    chunks.add(new BlockVector(x >> ChunkStore.CHUNK_SHIFTS,
+                            y >> ChunkStore.CHUNK_SHIFTS, z >> ChunkStore.CHUNK_SHIFTS));
                 }
             }
         }
@@ -376,7 +393,33 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         return new Iterable<Vector2D>() {
             @Override
             public Iterator<Vector2D> iterator() {
-                return new FlatRegionIterator(CuboidRegion.this);
+                return new Iterator<Vector2D>() {
+                    private Vector min = getMinimumPoint();
+                    private Vector max = getMaximumPoint();
+                    private int nextX = min.getBlockX();
+                    private int nextZ = min.getBlockZ();
+
+                    public boolean hasNext() {
+                        return (nextX != Integer.MIN_VALUE);
+                    }
+
+                    public Vector2D next() {
+                        if (!hasNext()) throw new java.util.NoSuchElementException();
+                        Vector2D answer = new Vector2D(nextX, nextZ);
+                        if (++nextX > max.getBlockX()) {
+                            nextX = min.getBlockX();
+                            if (++nextZ > max.getBlockZ()) {
+                                nextX = Integer.MIN_VALUE;
+                            }
+                        }
+                        return answer;
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
             }
         };
     }

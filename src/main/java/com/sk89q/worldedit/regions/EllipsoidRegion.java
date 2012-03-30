@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
@@ -48,10 +50,10 @@ public class EllipsoidRegion extends AbstractRegion {
     public EllipsoidRegion(Vector pos1, Vector pos2) {
         this(null, pos1, pos2);
     }
-    
+
     /**
      * Construct a new instance of this ellipsoid region.
-     * 
+     *
      * @param world
      * @param center
      * @param radius
@@ -198,7 +200,7 @@ public class EllipsoidRegion extends AbstractRegion {
     /**
      * Set radiuses.
      *
-     * @param radiuses
+     * @param radius
      */
     public void setRadius(Vector radius) {
         this.radius = radius.add(0.5, 0.5, 0.5);
@@ -218,8 +220,31 @@ public class EllipsoidRegion extends AbstractRegion {
         for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
-                    Vector pt = new Vector(x, y, z);
-                    chunks.add(ChunkStore.toChunk(pt));
+                    if (contains(new BlockVector(x, y, z))) {
+                        chunks.add(new BlockVector2D(x >> ChunkStore.CHUNK_SHIFTS,
+                                z >> ChunkStore.CHUNK_SHIFTS));
+                    }
+                }
+            }
+        }
+
+        return chunks;
+    }
+
+    @Override
+    public Set<Vector> getChunkCubes() {
+        Set<Vector> chunks = new HashSet<Vector>();
+
+        Vector min = getMinimumPoint();
+        Vector max = getMaximumPoint();
+
+        for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
+            for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
+                for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
+                    if (contains(new BlockVector(x, y, z))) {
+                        chunks.add(new BlockVector(x >> ChunkStore.CHUNK_SHIFTS,
+                                y >> ChunkStore.CHUNK_SHIFTS, z >> ChunkStore.CHUNK_SHIFTS));
+                    }
                 }
             }
         }
