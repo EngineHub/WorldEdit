@@ -26,6 +26,9 @@ import com.sk89q.worldedit.schematic.SchematicFormat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The clipboard remembers the state of a cuboid region.
  *
@@ -45,6 +48,7 @@ public class CuboidClipboard {
     private Vector offset;
     private Vector origin;
     private Vector size;
+    private List<CopiedEntity> entities = new ArrayList<CopiedEntity>();
 
     /**
      * Constructs the clipboard.
@@ -263,6 +267,11 @@ public class CuboidClipboard {
         }
     }
 
+    public void paste(EditSession editSession, Vector newOrigin, boolean noAir)
+            throws MaxChangedBlocksException {
+        paste(editSession, newOrigin, noAir, false);
+    }
+
     /**
      * Paste from the clipboard.
      *
@@ -271,9 +280,12 @@ public class CuboidClipboard {
      * @param noAir True to not paste air
      * @throws MaxChangedBlocksException
      */
-    public void paste(EditSession editSession, Vector newOrigin, boolean noAir)
+    public void paste(EditSession editSession, Vector newOrigin, boolean noAir, boolean entities)
             throws MaxChangedBlocksException {
         place(editSession, newOrigin.add(offset), noAir);
+        if (entities) {
+            pasteEntities(newOrigin.add(offset));
+        }
     }
 
     /**
@@ -296,6 +308,21 @@ public class CuboidClipboard {
                 }
             }
         }
+    }
+
+    public LocalEntity[] pasteEntities(Vector pos) {
+        LocalEntity[] entities = new LocalEntity[this.entities.size()];
+        for (int i = 0; i < this.entities.size(); ++i) {
+            CopiedEntity copied = this.entities.get(i);
+            if (copied.entity.spawn(copied.entity.getPosition().setPosition(copied.relativePosition.add(pos)))) {
+                entities[i] = copied.entity;
+            }
+        }
+        return entities;
+    }
+
+    public void storeEntity(LocalEntity entity) {
+        this.entities.add(new CopiedEntity(entity));
     }
 
     /**
@@ -383,5 +410,15 @@ public class CuboidClipboard {
      */
     public void setOffset(Vector offset) {
         this.offset = offset;
+    }
+
+    private class CopiedEntity {
+        private final LocalEntity entity;
+        private final Vector relativePosition;
+
+        public CopiedEntity(LocalEntity entity) {
+            this.entity = entity;
+            this.relativePosition = entity.getPosition().getPosition().subtract(getOrigin());
+        }
     }
 }

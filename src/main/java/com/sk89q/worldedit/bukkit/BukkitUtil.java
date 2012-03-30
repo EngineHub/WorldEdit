@@ -23,8 +23,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
+import com.sk89q.worldedit.bukkit.entity.BukkitExpOrb;
+import com.sk89q.worldedit.bukkit.entity.BukkitItem;
+import com.sk89q.worldedit.bukkit.entity.BukkitPainting;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -138,5 +146,19 @@ public class BukkitUtil {
 
     public static World toWorld(final LocalWorld world) {
         return ((BukkitWorld) world).getWorld();
+    }
+
+    public static BukkitEntity toLocalEntity(Entity e) {
+        switch (e.getType()) {
+            case EXPERIENCE_ORB:
+                return new BukkitExpOrb(toLocation(e.getLocation()), e.getUniqueId(), ((ExperienceOrb)e).getExperience());
+            /*case PAINTING: // TODO: Figure out what celticminstrel broke
+                Painting paint = (Painting) e;
+                return new BukkitPainting(toLocation(e.getLocation()), paint.getArt(), paint.getFacing(), e.getUniqueId());*/
+            case DROPPED_ITEM:
+                return new BukkitItem(toLocation(e.getLocation()), ((Item)e).getItemStack(), e.getUniqueId());
+            default:
+                return new BukkitEntity(toLocation(e.getLocation()), e.getType(), e.getUniqueId());
+        }
     }
 }

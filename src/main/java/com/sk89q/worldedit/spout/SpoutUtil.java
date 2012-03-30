@@ -24,9 +24,11 @@ package com.sk89q.worldedit.spout;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockWorldVector;
 import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.Location;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import org.spout.api.Game;
+import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
@@ -104,5 +106,9 @@ public class SpoutUtil {
 
     public static World toWorld(WorldVector pt) {
         return ((SpoutWorld) pt.getWorld()).getWorld();
+    }
+
+    public static Location toLocation(Entity ent) {
+        return new Location(getLocalWorld(ent.getWorld()), toVector(ent.getPosition()), ent.getYaw(), ent.getPitch());
     }
 }

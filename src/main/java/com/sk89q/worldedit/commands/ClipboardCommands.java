@@ -48,8 +48,12 @@ public class ClipboardCommands {
 
     @Command(
         aliases = { "/copy" },
-        usage = "",
+        flags = "e",
         desc = "Copy the selection to the clipboard",
+        help = "Copy the selection to the clipboard\n" +
+                "Flags:\n" +
+                "  -e controls whether entities are copied\n" +
+                "WARNING: Pasting entities cannot yet be undone!",
         min = 0,
         max = 0
     )
@@ -66,6 +70,11 @@ public class ClipboardCommands {
                 max.subtract(min).add(new Vector(1, 1, 1)),
                 min, min.subtract(pos));
         clipboard.copy(editSession);
+        if (args.hasFlag('e')) {
+            for (LocalEntity entity : player.getWorld().getEntities(region)) {
+                clipboard.storeEntity(entity);
+            }
+        }
         session.setClipboard(clipboard);
 
         player.print("Block(s) copied.");
@@ -75,6 +84,11 @@ public class ClipboardCommands {
         aliases = { "/cut" },
         usage = "[leave-id]",
         desc = "Cut the selection to the clipboard",
+        help = "Copy the selection to the clipboard\n" +
+                "Flags:\n" +
+                "  -e controls whether entities are copied\n" +
+                "WARNING: Cutting and pasting entities cannot yet be undone!",
+        flags = "e",
         min = 0,
         max = 1
     )
@@ -84,12 +98,13 @@ public class ClipboardCommands {
             EditSession editSession) throws WorldEditException {
 
         BaseBlock block = new BaseBlock(BlockID.AIR);
+        LocalWorld world = player.getWorld();
 
         if (args.argsLength() > 0) {
             block = we.getBlock(player, args.getString(0));
         }
 
-        Region region = session.getSelection(player.getWorld());
+        Region region = session.getSelection(world);
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
         Vector pos = session.getPlacementPosition(player);
@@ -98,9 +113,16 @@ public class ClipboardCommands {
                 max.subtract(min).add(new Vector(1, 1, 1)),
                 min, min.subtract(pos));
         clipboard.copy(editSession);
+        if (args.hasFlag('e')) {
+            LocalEntity[] entities = world.getEntities(region);
+            for (LocalEntity entity : entities) {
+                clipboard.storeEntity(entity);
+            }
+            world.killEntities(entities);
+        }
         session.setClipboard(clipboard);
 
-        editSession.setBlocks(session.getSelection(player.getWorld()), block);
+        editSession.setBlocks(session.getSelection(world), block);
         player.print("Block(s) cut.");
     }
 
@@ -128,11 +150,12 @@ public class ClipboardCommands {
         if (atOrigin) {
             Vector pos = session.getClipboard().getOrigin();
             session.getClipboard().place(editSession, pos, pasteNoAir);
+            session.getClipboard().pasteEntities(pos);
             player.findFreePosition();
             player.print("Pasted to copy origin. Undo with //undo");
         } else {
             Vector pos = session.getPlacementPosition(player);
-            session.getClipboard().paste(editSession, pos, pasteNoAir);
+            session.getClipboard().paste(editSession, pos, pasteNoAir, true);
             player.findFreePosition();
             player.print("Pasted relative to you. Undo with //undo");
         }

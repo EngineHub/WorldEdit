@@ -80,6 +80,11 @@ public class SchematicCommands {
             return;
         }
 
+        if (!format.isOfFormat(f)) {
+            player.printError(fileName + " is not of the " + format.getName() + " schematic format!");
+            return;
+        }
+
         try {
             String filePath = f.getCanonicalPath();
             String dirPath = dir.getCanonicalPath();

@@ -19,11 +19,19 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.WeakHashMap;
 
+import com.sk89q.worldedit.LocalEntity;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
 import com.sk89q.worldedit.util.TreeGenerator;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
@@ -891,5 +899,35 @@ public class BukkitWorld extends LocalWorld {
     @Override
     public void simulateBlockMine(Vector pt) {
         world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).breakNaturally();
+    }
+
+    public LocalEntity[] getEntities(Region region) {
+        List<BukkitEntity> entities = new ArrayList<BukkitEntity>();
+        for (Vector2D pt : region.getChunks()) {
+            if (world.isChunkLoaded(pt.getBlockX(), pt.getBlockZ())) {
+                Entity[] ents = world.getChunkAt(pt.getBlockX(), pt.getBlockZ()).getEntities();
+                for (Entity ent : ents) {
+                    if (region.contains(BukkitUtil.toVector(ent.getLocation()))) {
+                        entities.add(BukkitUtil.toLocalEntity(ent));
+                    }
+                }
+            }
+        }
+        return entities.toArray(new BukkitEntity[entities.size()]);
+    }
+
+    public int killEntities(LocalEntity... entities) {
+        int amount = 0;
+        Set<UUID> toKill = new HashSet<UUID>();
+        for (LocalEntity entity : entities) {
+            toKill.add(((BukkitEntity) entity).getEntityId());
+        }
+        for (Entity entity : world.getEntities()) {
+            if (toKill.contains(entity.getUniqueId())) {
+                entity.remove();
+                ++amount;
+            }
+        }
+        return amount;
     }
 }

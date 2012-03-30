@@ -501,4 +501,12 @@ public abstract class LocalWorld {
 
         return true;
     }
+
+    public LocalEntity[] getEntities(Region region) {
+        return new LocalEntity[0];
+    }
+
+    public int killEntities(LocalEntity... entities) {
+        return 0;
+    }
 }
