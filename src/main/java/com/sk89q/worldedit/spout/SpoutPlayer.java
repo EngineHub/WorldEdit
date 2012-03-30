@@ -78,7 +78,7 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public void giveItem(int type, int amt) {
-        player.getEntity().getInventory().addItem(new ItemStack(MaterialRegistry.get((short) type), amt));
+        player.getEntity().getInventory().addItem(new ItemStack(MaterialRegistry.get((short) type), amt), false);
     }
 
     @Override
