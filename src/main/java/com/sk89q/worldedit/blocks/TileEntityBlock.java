@@ -21,6 +21,7 @@ package com.sk89q.worldedit.blocks;
 
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.data.*;
+
 import java.util.Map;
 
 /**
@@ -29,12 +30,13 @@ import java.util.Map;
  * @author sk89q
  */
 public interface TileEntityBlock {
+
     /**
      * Return the name of the title entity ID.
      *
      * @return tile entity ID
      */
-    public String getTileEntityID();
+    public abstract String getTileEntityID();
 
     /**
      * Store additional tile entity data.
@@ -42,7 +44,7 @@ public interface TileEntityBlock {
      * @return map of values
      * @throws DataException When invalid data is encountered
      */
-    public Map<String, Tag> toTileEntityNBT()
+    public abstract Map<String, Tag> toTileEntityNBT()
             throws DataException;
 
     /**
@@ -51,6 +53,8 @@ public interface TileEntityBlock {
      * @param values map of data
      * @throws DataException When invalid data is encountered
      */
-    public void fromTileEntityNBT(Map<String, Tag> values)
+    public abstract void fromTileEntityNBT(Map<String, Tag> values)
             throws DataException;
+
+
 }

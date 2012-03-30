@@ -55,7 +55,7 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
     /**
      * Construct the note block.
      *
-     * @param data 
+     * @param data
      * @param note
      */
     public NoteBlock(int data, byte note) {

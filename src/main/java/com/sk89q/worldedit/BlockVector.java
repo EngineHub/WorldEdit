@@ -93,9 +93,9 @@ public class BlockVector extends Vector {
      */
     @Override
     public int hashCode() {
-        return (Integer.valueOf((int) x).hashCode() << 19) ^
-                (Integer.valueOf((int) y).hashCode() << 12) ^
-                Integer.valueOf((int) z).hashCode();
+        return ((int) x << 19) ^
+                ((int) y << 12) ^
+                (int) z;
     }
 
     @Override

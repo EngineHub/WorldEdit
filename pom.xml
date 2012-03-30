@@ -49,7 +49,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.2.3-R0.3-SNAPSHOT</version>
+      <version>1.2.4-R1.0</version>
     </dependency>
 
     <!-- Archive reading library for snapshots -->

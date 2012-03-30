@@ -19,24 +19,24 @@ import com.sk89q.worldedit.data.InvalidFormatException;
 
 /*
  * JNBT License
- * 
+ *
  * Copyright (c) 2010 Graham Edgecombe
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright notice,
  *       this list of conditions and the following disclaimer.
- *       
+ *
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *       
+ *
  *     * Neither the name of the JNBT team nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -47,20 +47,20 @@ import com.sk89q.worldedit.data.InvalidFormatException;
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE. 
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 
 /**
  * A class which contains NBT-related utility methods.
- * 
+ *
  * @author Graham Edgecombe
- * 
+ *
  */
 public final class NBTUtils {
 
     /**
      * Gets the type name of a tag.
-     * 
+     *
      * @param clazz
      *            The tag class.
      * @return The type name.
@@ -98,7 +98,7 @@ public final class NBTUtils {
 
     /**
      * Gets the type code of a tag class.
-     * 
+     *
      * @param clazz
      *            The tag class.
      * @return The type code.
@@ -129,7 +129,7 @@ public final class NBTUtils {
         } else if (clazz.equals(StringTag.class)) {
             return NBTConstants.TYPE_STRING;
         } else if (clazz.equals(IntArrayTag.class)) {
-            return NBTConstants.TYPE_INT_ARRAY;  
+            return NBTConstants.TYPE_INT_ARRAY;
         } else {
             throw new IllegalArgumentException("Invalid tag classs ("
                     + clazz.getName() + ").");
@@ -138,7 +138,7 @@ public final class NBTUtils {
 
     /**
      * Gets the class of a type of tag.
-     * 
+     *
      * @param type
      *            The type.
      * @return The class.
@@ -183,7 +183,7 @@ public final class NBTUtils {
     private NBTUtils() {
 
     }
-    
+
     /**
      * Get child tag of a NBT structure.
      *

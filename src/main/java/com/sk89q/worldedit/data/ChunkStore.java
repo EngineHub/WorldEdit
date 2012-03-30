@@ -32,6 +32,11 @@ import com.sk89q.worldedit.*;
  */
 public abstract class ChunkStore {
     /**
+     * >> to chunk
+     * << from chunk
+     */
+    public static final int CHUNK_SHIFTS = 4;
+    /**
      * Convert a position to a chunk.
      *
      * @param pos
@@ -66,7 +71,7 @@ public abstract class ChunkStore {
      */
     public Chunk getChunk(Vector2D pos, LocalWorld world)
             throws DataException, IOException {
-        
+
         CompoundTag tag = getChunkTag(pos, world);
         Map<String, Tag> tags = tag.getValue();
         if(tags.containsKey("Sections")) {

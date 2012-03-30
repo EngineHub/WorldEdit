@@ -42,7 +42,7 @@ public class BaseBlock {
      * @param type
      */
     public BaseBlock(int type) {
-        this.type = (short) type;
+        this(type, 0);
     }
 
     /**
@@ -166,7 +166,7 @@ public class BaseBlock {
     }
 
     /**
-     * 
+     *
      *
      * @param iter
      * @return
