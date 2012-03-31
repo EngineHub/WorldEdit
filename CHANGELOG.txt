@@ -1,4 +1,8 @@
 5.3:
+ - Made #region mask keep the region selected when the pask was added, and added #dregion mask that always uses the player's current 
+   selection
+ - Allow inverted and under/overlay masks to affect masks, making them more flexible. This allows for things like /gmask !$biome and 
+   /gmask >>>#region
  - Added basic entity handling with copy and paste. Paintings do not currently respawn properly, entity pastes cannot be undone yet, and 
    schematics do not yet store entities
  - Added getChunkCubes() to Region to get 16^3 chunks a region overlaps with
