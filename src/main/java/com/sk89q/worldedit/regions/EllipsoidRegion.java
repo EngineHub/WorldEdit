@@ -275,4 +275,8 @@ public class EllipsoidRegion extends AbstractRegion {
     public void extendRadius(Vector minRadius) {
         setRadius(Vector.getMaximum(minRadius, getRadius()));
     }
+
+    public EllipsoidRegion clone() {
+        return (EllipsoidRegion) super.clone();
+    }
 }

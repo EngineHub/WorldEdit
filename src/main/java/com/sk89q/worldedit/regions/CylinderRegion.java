@@ -388,4 +388,8 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     public String toString() {
         return center + " - " + radius;
     }
+
+    public CylinderRegion clone() {
+        return (CylinderRegion) super.clone();
+    }
 }

@@ -600,6 +600,10 @@ public class WorldEdit {
         case '#':
             if (component.equalsIgnoreCase("#existing")) {
                 return new ExistingBlockMask();
+            } else if (component.equalsIgnoreCase("#dregion")
+                    || component.equalsIgnoreCase("#dselection")
+                    || component.equalsIgnoreCase("#dsel")) {
+                return new DynamicRegionMask();
             } else if (component.equalsIgnoreCase("#selection")
                     || component.equalsIgnoreCase("#region")
                     || component.equalsIgnoreCase("#sel")) {
@@ -610,31 +614,13 @@ public class WorldEdit {
 
         case '>':
         case '<':
-            final LocalWorld world = player.getWorld();
-            final boolean over = firstChar == '>';
-            final String idString = component.substring(1);
-            final Set<Integer> ids = new HashSet<Integer>();
-
-            if (!(idString.equals("*") || idString.equals(""))) {
-                for (String sid : idString.split(",")) {
-                    try {
-                        final int pid = Integer.parseInt(sid);
-                        if (!world.isValidBlockType(pid)) {
-                            throw new UnknownItemException(sid);
-                        }
-                        ids.add(pid);
-                    } catch (NumberFormatException e) {
-                        final BlockType type = BlockType.lookup(sid);
-                        final int id = type.getID();
-                        if (!world.isValidBlockType(id)) {
-                            throw new UnknownItemException(sid);
-                        }
-                        ids.add(id);
-                    }
-                }
+            Mask submask;
+            if (component.length() > 1) {
+                submask = getBlockMaskComponent(player, session, masks, component.substring(1));
+            } else {
+                submask = new ExistingBlockMask();
             }
-
-            return new UnderOverlayMask(ids, over);
+            return new UnderOverlayMask(submask, firstChar == '>'); 
 
         case '$':
             Set<BiomeType> biomes = new HashSet<BiomeType>();
@@ -647,7 +633,7 @@ public class WorldEdit {
 
         case '!':
             if (component.length() > 1) {
-                return new InvertedBlockTypeMask(getBlockIDs(player, component.substring(1), true));
+                return new InvertedMask(getBlockMaskComponent(player, session, masks, component.substring(1)));
             }
 
         default:

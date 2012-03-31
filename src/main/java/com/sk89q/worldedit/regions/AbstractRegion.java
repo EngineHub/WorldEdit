@@ -66,4 +66,12 @@ public abstract class AbstractRegion implements Region {
         expand(change);
         contract(change);
     }
+
+    public AbstractRegion clone() {
+        try {
+            return (AbstractRegion) super.clone();
+        } catch (CloneNotSupportedException exc) {
+            return null;
+        }
+    }
 }

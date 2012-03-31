@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.masks;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BlockID;
 
 /**
  *
@@ -32,21 +32,37 @@ import com.sk89q.worldedit.blocks.BlockID;
  */
 public class UnderOverlayMask implements Mask {
 
-    boolean overlay;
-    Set<Integer> ids = new HashSet<Integer>();
+    private int yMod;
+    private Mask mask;
 
+    @Deprecated
     public UnderOverlayMask(Set<Integer> ids, boolean overlay) {
-        addAll(ids);
-        this.overlay = overlay;
+        this(new BlockTypeMask(ids), overlay); 
+    }
+    
+    public UnderOverlayMask(Mask mask, boolean overlay) {
+        this.yMod = overlay ? -1 : 1;
+        this.mask = mask;
     }
 
+    @Deprecated
     public void addAll(Set<Integer> ids) {
-        this.ids.addAll(ids);
+        if (mask instanceof BlockTypeMask) {
+            BlockTypeMask blockTypeMask = (BlockTypeMask) mask;
+            for (Integer id : ids) {
+                blockTypeMask.add(id);
+            }
+        } else if (mask instanceof ExistingBlockMask) {
+            mask = new BlockTypeMask(ids);
+        }
+    }
+
+    public void prepare(LocalSession session, LocalPlayer player, Vector target) {
+        mask.prepare(session, player, target);
     }
 
     public boolean matches(EditSession editSession, Vector pos) {
-        int id = editSession.getBlock(pos.setY(pos.getBlockY() + (overlay ? -1 : 1))).getType();
-        return ids.isEmpty() ? id != BlockID.AIR : ids.contains(id);
+        return mask.matches(editSession, pos.add(0, yMod, 0));
     }
 
 }
