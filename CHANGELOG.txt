@@ -1,5 +1,16 @@
 5.3:
- - Changed Spout maven repo to more stable url
+ - Added basic entity handling with copy and paste. Paintings do not currently respawn properly, entity pastes cannot be undone yet, and 
+   schematics do not yet store entities
+ - Added getChunkCubes() to Region to get 16^3 chunks a region overlaps with
+ - Cleaned up ContainerBlock inventory reading from NBT.
+ - Added a command to list schematics and the abilitiy to autodetect schematic format when loading schematics
+ - Added support for multiple schematic formats
+ - Corrected flag checks for biome commands
+ - Added allFlags setting to Command to prevent it from restricting allowed flags (for dveleopers!)
+ - Make sure all WorldEdit files are in the plugins/WorldEdit folder
+ - Added initial support for plugin channels with WECUI
+ - Remove error-prone redundancy in Polygonal2D min/max management
+ - Updated for SpoutVanilla changes
  - Added Falling sand/gravel entities to /remove command
  - Added support for new tree types to TreeGenerator and make adding more tree types later easier
  - Updated for changes to SpoutAPI
@@ -17,9 +28,9 @@
  - Allow annotation-free registering of commands with other plugins (for developers!)
  - Added default radius setting for butcher and added permissions for killing pets, npcs, and non hostile animals.
  - Added support for new Anvil saving format, fixed old chunk saving format.
- - Clean up some stray 128 values and update the fallbacks
- - Add support for Bukkit 1.1-R5 and newer, as well as 1.2.3-R0.3 and newer
- - Updated for new 1.2 blocks, items, and mobs
+ - Clean up some stray 128 values and update the fallbacks to 256
+ - Add support for 1.2.4 and newer
+ - Updated for new 1.2 and 1.2.4 blocks, items, and mobs
  - Fix Dispensers, Furnaces and remove redundant casts.
  - Fix restoring enchantments from snapshots/schematics.
  - Made tree planter tool try 10 times to make the tree before giving up.
