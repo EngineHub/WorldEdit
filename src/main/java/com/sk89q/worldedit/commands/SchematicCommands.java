@@ -20,6 +20,7 @@ package com.sk89q.worldedit.commands;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
@@ -46,13 +47,17 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = { "load" },
+            aliases = { "load", "l" },
             usage = "[format] <filename>",
             desc = "Load a schematic into your clipboard",
+            help = "Load a schematic into your clipboard\n" +
+                    "Format is a format from \"//schematic formats\"\n" +
+                    "If the format is not provided, WorldEdit will\n" +
+                    "attempt to automatically detect the format of the schematic",
             min = 1,
             max = 2
     )
-    @CommandPermissions("worldedit.clipboard.load")
+    @CommandPermissions({"worldedit.clipboard.load", "worldedit.schematic.load"}) // TODO: Remove 'clipboard' perm
     public void load(CommandContext args, LocalSession session, LocalPlayer player,
                      EditSession editSession) throws WorldEditException {
 
@@ -104,15 +109,17 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = { "save" },
+            aliases = { "save", "s" },
             usage = "<format> <filename>",
             desc = "Save a schematic into your clipboard",
+            help = "Save a schematic into your clipboard\n" +
+                    "Format is a format from \"//schematic formats\"\n",
             min = 2,
             max = 2
     )
-    @CommandPermissions("worldedit.clipboard.save")
+    @CommandPermissions({"worldedit.clipboard.save", "worldedit.schematic.save"}) // TODO: Remove 'clipboard' perm
     public void save(CommandContext args, LocalSession session, LocalPlayer player,
-                     EditSession editSession) throws WorldEditException {
+                     EditSession editSession) throws WorldEditException, CommandException {
 
         LocalConfiguration config = we.getConfiguration();
         SchematicFormat format = SchematicFormat.getFormat(args.getString(0));
@@ -137,7 +144,9 @@ public class SchematicCommands {
             // Create parent directories
             File parent = f.getParentFile();
             if (parent != null && !parent.exists()) {
-                parent.mkdirs();
+                if (!parent.mkdirs()) {
+                    throw new CommandException("Could not create folder for schematics!");
+                }
             }
 
             format.save(session.getClipboard(), f);
@@ -151,10 +160,11 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = {"formats", "listformats"},
+            aliases = {"formats", "listformats", "f"},
             desc = "List available schematic formats",
             max = 0
     )
+    @CommandPermissions("worldedit.schematic.formats")
     public void formats(CommandContext args, LocalSession session, LocalPlayer player,
                      EditSession editSession) throws WorldEditException {
         player.print("Available schematic formats (Name: Lookup names)");
@@ -176,26 +186,22 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = {"list", "all"},
+            aliases = {"list", "all", "ls"},
             desc = "List available schematics",
             max = 0
     )
+    @CommandPermissions("worldedit.schematic.list")
     public void list(CommandContext args, LocalSession session, LocalPlayer player,
                         EditSession editSession) throws WorldEditException {
         File dir = we.getWorkingDirectoryFile(we.getConfiguration().saveDir);
         player.print("Available schematics (Filename - Format)");
-        StringBuilder builder;
         for (File file : dir.listFiles()) {
             if (!file.isFile()) {
                 continue;
             }
 
             SchematicFormat format = SchematicFormat.getFormat(file);
-            if (format == null) {
-                continue;
-            }
-
-            player.print(file.getName() + ": " + format.getName());
+            player.print(file.getName() + ": " + (format == null ? "Unknown" : format.getName()));
         }
     }
 }
