@@ -24,6 +24,7 @@ import org.bukkit.BlockChangeDelegate;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.WorldGuardMissingPermissionException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
@@ -43,7 +44,9 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
             return editSession.setBlock(new Vector(x, y, z), new BaseBlock(typeId));
         } catch (MaxChangedBlocksException ex) {
             return false;
-        }
+        } catch (WorldGuardMissingPermissionException e) {
+		return false;
+		}
     }
 
     public boolean setRawTypeIdAndData(int x, int y, int z, int typeId, int data) {
@@ -51,7 +54,9 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
             return editSession.setBlock(new Vector(x, y, z), new BaseBlock(typeId, data));
         } catch (MaxChangedBlocksException ex) {
             return false;
-        }
+        } catch (WorldGuardMissingPermissionException e) {
+		return false;
+		}
     }
 
     public boolean setTypeId(int x, int y, int z, int typeId) {

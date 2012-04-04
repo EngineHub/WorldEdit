@@ -23,6 +23,7 @@ import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldGuardMissingPermissionException;
 import com.sk89q.worldedit.patterns.Pattern;
 
 public class ClipboardBrush implements Brush {
@@ -35,7 +36,7 @@ public class ClipboardBrush implements Brush {
     }
 
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         clipboard.place(editSession, pos.subtract(clipboard.getSize().divide(2)), noAir);
     }
 }

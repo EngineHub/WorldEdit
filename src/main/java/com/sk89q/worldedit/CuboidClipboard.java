@@ -268,7 +268,7 @@ public class CuboidClipboard {
     }
 
     public void paste(EditSession editSession, Vector newOrigin, boolean noAir)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         paste(editSession, newOrigin, noAir, false);
     }
 
@@ -279,9 +279,10 @@ public class CuboidClipboard {
      * @param newOrigin Position to paste it from
      * @param noAir True to not paste air
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public void paste(EditSession editSession, Vector newOrigin, boolean noAir, boolean entities)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         place(editSession, newOrigin.add(offset), noAir);
         if (entities) {
             pasteEntities(newOrigin.add(offset));
@@ -295,8 +296,9 @@ public class CuboidClipboard {
      * @param pos
      * @param noAir
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
-    public void place(EditSession editSession, Vector pos, boolean noAir) throws MaxChangedBlocksException {
+    public void place(EditSession editSession, Vector pos, boolean noAir) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         for (int x = 0; x < size.getBlockX(); ++x) {
             for (int y = 0; y < size.getBlockY(); ++y) {
                 for (int z = 0; z < size.getBlockZ(); ++z) {

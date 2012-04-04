@@ -58,7 +58,9 @@ public class TreePlanter implements BlockTool {
             }
         } catch (MaxChangedBlocksException e) {
             player.printError("Max. blocks changed reached.");
-        } finally {
+        } catch (WorldGuardMissingPermissionException e) {
+		player.printError("Permission denied to edit.");
+		} finally {
             session.remember(editSession);
         }
 

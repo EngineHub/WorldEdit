@@ -195,7 +195,9 @@ public class BrushTool implements TraceTool {
             brush.build(editSession, target, material, size);
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
-        } finally {
+        } catch (WorldGuardMissingPermissionException e) {
+            player.printError("Permission denied to edit.");
+		} finally {
             if (bag != null) {
                 bag.flushChanges();
             }

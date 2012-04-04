@@ -22,6 +22,7 @@ package com.sk89q.worldedit.tools.brushes;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldGuardMissingPermissionException;
 import com.sk89q.worldedit.patterns.Pattern;
 
 public class CylinderBrush implements Brush {
@@ -32,7 +33,7 @@ public class CylinderBrush implements Brush {
     }
 
     public void build(EditSession editSession, Vector pos, Pattern mat, double size)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         editSession.makeCylinder(pos, mat, size, size, height, true);
     }
 }

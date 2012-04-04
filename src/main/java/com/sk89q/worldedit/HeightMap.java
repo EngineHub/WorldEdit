@@ -84,9 +84,10 @@ public class HeightMap {
      * @param iterations
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
 
-    public int applyFilter(HeightMapFilter filter, int iterations) throws MaxChangedBlocksException {
+    public int applyFilter(HeightMapFilter filter, int iterations) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int[] newData = new int[data.length];
         System.arraycopy(data, 0, newData, 0, data.length);
 
@@ -103,9 +104,10 @@ public class HeightMap {
      * @param data
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
 
-    public int apply(int[] data) throws MaxChangedBlocksException {
+    public int apply(int[] data) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         Vector minY = region.getMinimumPoint();
         int originX = minY.getBlockX();
         int originY = minY.getBlockY();

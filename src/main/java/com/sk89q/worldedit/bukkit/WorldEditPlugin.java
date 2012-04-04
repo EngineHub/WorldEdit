@@ -228,7 +228,8 @@ public class WorldEditPlugin extends JavaPlugin {
         BlockBag blockBag = session.getBlockBag(wePlayer);
 
         EditSession editSession =
-                new EditSession(wePlayer.getWorld(), session.getBlockChangeLimit(), blockBag);
+                new EditSession(wePlayer.getWorld(), session.getBlockChangeLimit(), blockBag, wePlayer);
+
         editSession.enableQueue();
 
         return editSession;

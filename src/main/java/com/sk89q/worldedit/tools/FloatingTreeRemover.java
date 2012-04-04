@@ -84,7 +84,9 @@ public class FloatingTreeRemover implements BlockTool {
             }
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
-        } finally {
+        } catch (WorldGuardMissingPermissionException e) {
+		player.printError("Permission denied to edit.");
+		} finally {
             session.remember(editSession);
         }
 

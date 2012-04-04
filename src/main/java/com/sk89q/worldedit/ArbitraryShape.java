@@ -141,8 +141,9 @@ public abstract class ArbitraryShape {
      * @param hollow Specifies whether to generate a hollow shape.
      * @return number of affected blocks.
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
-    public int generate(EditSession editSession, Pattern pattern, boolean hollow) throws MaxChangedBlocksException {
+    public int generate(EditSession editSession, Pattern pattern, boolean hollow) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         for (BlockVector position : getExtent()) {
