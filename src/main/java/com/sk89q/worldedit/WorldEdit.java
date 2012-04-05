@@ -315,8 +315,9 @@ public class WorldEdit {
             blockType = BlockType.lookup(testID);
             if (blockType == null) {
                 int t = server.resolveItem(testID);
-                if (t > 0 && t < 256) {
-                    blockType = BlockType.fromID(t);
+                if (t > 0) {
+                    blockType = BlockType.fromID(t); // Could be null
+                    blockId = t;
                 }
             }
         }
