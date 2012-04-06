@@ -78,6 +78,10 @@ public final class BlockData {
             case 1: return 3;
             case 2: return 1;
             case 3: return 0;
+            case 4: return 6;
+            case 5: return 7;
+            case 6: return 5;
+            case 7: return 4;
             }
             break;
 
@@ -238,6 +242,10 @@ public final class BlockData {
             case 3: return 1;
             case 1: return 2;
             case 0: return 3;
+            case 6: return 4;
+            case 7: return 5;
+            case 5: return 6;
+            case 4: return 7;
             }
             break;
 
@@ -429,9 +437,13 @@ public final class BlockData {
             switch (data) {
             case 0:
             case 1:
+            case 4:
+            case 5:
                 return data ^ flipX;
             case 2:
             case 3:
+            case 6:
+            case 7:
                 return data ^ flipZ;
             }
             break;
@@ -612,6 +624,9 @@ public final class BlockData {
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
         case BlockID.NETHER_BRICK_STAIRS:
+            if (data > 7) return -1;
+            return mod((data + increment), 4);
+            
         case BlockID.PUMPKIN:
         case BlockID.JACKOLANTERN:
         case BlockID.NETHER_WART:
