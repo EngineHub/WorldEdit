@@ -139,8 +139,8 @@ public class BukkitPlayer extends LocalPlayer {
         } else {
             if (plugin.getLocalConfiguration().enableWECUI) {
             player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + send);
+            }
         }
-    }
     }
 
     @Override
