@@ -138,7 +138,7 @@ public class BukkitPlayer extends LocalPlayer {
             player.sendPluginMessage(plugin, WorldEditPlugin.CUI_PLUGIN_CHANNEL, send.getBytes(CUIChannelListener.UTF_8_CHARSET));
         } else {
             if (plugin.getLocalConfiguration().enableWECUI) {
-            player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + send);
+                player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + send);
             }
         }
     }
