@@ -137,13 +137,15 @@ public class BukkitPlayer extends LocalPlayer {
         if (plugin.hasPluginChannelCUI(getName())) {
             player.sendPluginMessage(plugin, WorldEditPlugin.CUI_PLUGIN_CHANNEL, send.getBytes(CUIChannelListener.UTF_8_CHARSET));
         } else {
-            player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + send);
+            if (plugin.getLocalConfiguration().enableWECUI) {
+                player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + send);
+            }
         }
     }
 
     @Override
     public void dispatchCUIHandshake() {
-        if (!plugin.hasPluginChannelCUI(getName())) {
+        if (!plugin.hasPluginChannelCUI(getName()) && plugin.getLocalConfiguration().enableWECUI) {
             player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75");
             player.sendRawMessage("\u00A74\u00A75\u00A73\u00A74");
         }
