@@ -77,6 +77,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         }
 
         profile = getBool("profile", profile);
+        enableWECUI = getBool("enable-wecui-handshake", enableWECUI);
         disallowedBlocks = getIntSet("disallowed-blocks", defaultDisallowedBlocks);
         defaultChangeLimit = getInt("default-max-changed-blocks", defaultChangeLimit);
         maxChangeLimit = getInt("max-changed-blocks", maxChangeLimit);
