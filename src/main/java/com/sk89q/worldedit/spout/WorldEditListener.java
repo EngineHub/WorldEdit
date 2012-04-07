@@ -136,7 +136,7 @@ public class WorldEditListener implements Listener {
             }
 
             if (!event.isAir() && !ignoreLeftClickAir) {
-                final int taskId = Spout.getGame().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                final int taskId = Spout.getEngine().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         ignoreLeftClickAir = false;
                     }

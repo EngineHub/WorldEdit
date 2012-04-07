@@ -27,8 +27,7 @@ import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
-import org.spout.api.Game;
-import org.spout.api.Spout;
+import org.spout.api.Engine;
 import org.spout.api.geo.World;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
@@ -39,12 +38,12 @@ import java.util.Collection;
 import java.util.List;
 
 public class SpoutServerInterface extends ServerInterface {
-    public Game game;
+    public Engine game;
     public WorldEditPlugin plugin;
     private final SpoutRawCommandExecutor executor;
     private SpoutBiomeTypes biomes;
 
-    public SpoutServerInterface(WorldEditPlugin plugin, Game game) {
+    public SpoutServerInterface(WorldEditPlugin plugin, Engine game) {
         this.plugin = plugin;
         this.game = game;
         this.biomes = new SpoutBiomeTypes();
@@ -93,7 +92,7 @@ public class SpoutServerInterface extends ServerInterface {
     @Override
     public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
         for (Command command : commands) {
-            org.spout.api.command.Command spoutCommand = Spout.getGame().getRootCommand().addSubCommand(plugin, command.aliases()[0])
+            org.spout.api.command.Command spoutCommand = game.getRootCommand().addSubCommand(plugin, command.aliases()[0])
                     .addAlias(command.aliases()).setRawExecutor(executor).
                     setUsage(command.usage()).setHelp(command.desc());
             Method cmdMethod = manager.getMethods().get(null).get(command.aliases()[0]);

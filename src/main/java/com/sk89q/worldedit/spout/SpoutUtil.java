@@ -27,7 +27,7 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Location;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
@@ -96,7 +96,7 @@ public class SpoutUtil {
         );
     }
 
-    public static Player matchSinglePlayer(Game game, String name) {
+    public static Player matchSinglePlayer(Engine game, String name) {
         return game.getPlayer(name, false);
     }
 
