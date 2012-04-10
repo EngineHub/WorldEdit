@@ -206,11 +206,12 @@ public class SpoutWorld extends LocalWorld {
             BiomeGenerator gen = (BiomeGenerator) world.getGenerator();
             return new SpoutBiomeType(gen.getBiome(pt.getBlockX(), pt.getBlockZ(), world.getSeed()));
         }
-        return new BiomeType("Unknown");
+        return BiomeType.UNKNOWN;
     }
 
     public void setBiome(Vector2D pt, BiomeType biome) {
-        if (world.getGenerator() instanceof BiomeGenerator) {
+        if (biome instanceof SpoutBiomeType && 
+                world.getGenerator() instanceof BiomeGenerator) {
             BiomeGenerator gen = (BiomeGenerator) world.getGenerator();
             gen.setBiome(new Vector3(pt.getBlockX(), 0, pt.getBlockZ()), ((SpoutBiomeType) biome).getSpoutBiome());
         }

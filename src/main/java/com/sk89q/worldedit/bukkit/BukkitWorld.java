@@ -214,18 +214,20 @@ public class BukkitWorld extends LocalWorld {
      */
     public BiomeType getBiome(Vector2D pt) {
         Biome bukkitBiome = world.getBiome(pt.getBlockX(), pt.getBlockZ());
-        return new BiomeType(bukkitBiome.name());
+        try {
+            return BukkitBiomeType.valueOf(bukkitBiome.name());
+        } catch (IllegalArgumentException exc) {
+            return BiomeType.UNKNOWN;
+        }
     }
 
     @Override
     public void setBiome(Vector2D pt, BiomeType biome) {
-        Biome bukkitBiome;
-        try {
-            bukkitBiome = Biome.valueOf(biome.getName().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return;
+        if (biome instanceof BukkitBiomeType) {
+            Biome bukkitBiome;
+            bukkitBiome = ((BukkitBiomeType) biome).getBukkitBiome();
+            world.setBiome(pt.getBlockX(), pt.getBlockZ(), bukkitBiome);
         }
-        world.setBiome(pt.getBlockX(), pt.getBlockZ(), bukkitBiome);
     }
 
     /**

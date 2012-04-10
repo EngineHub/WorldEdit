@@ -23,12 +23,16 @@ import org.spout.api.generator.biome.BiomeType;
 /**
  * @author zml2008
  */
-public class SpoutBiomeType extends com.sk89q.worldedit.BiomeType {
+public class SpoutBiomeType implements com.sk89q.worldedit.BiomeType {
     private final BiomeType type;
 
     public SpoutBiomeType(BiomeType type) {
-        super(type.getName().toLowerCase().replace(" ", ""));
         this.type = type;
+    }
+
+    @Override
+    public String getName() {
+        return type.getName().toLowerCase().replace(" ", "");
     }
 
     public BiomeType getSpoutBiome() {

@@ -1,10 +1,8 @@
 package com.sk89q.worldedit.bukkit;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
-import org.bukkit.block.Biome;
 
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BiomeTypes;
@@ -18,7 +16,7 @@ public class BukkitBiomeTypes implements BiomeTypes {
     @Override
     public boolean has(String name) {
         try {
-            Biome.valueOf(name.toUpperCase(Locale.ENGLISH));
+            BukkitBiomeType.valueOf(name.toUpperCase(Locale.ENGLISH));
             return true;
         } catch (IllegalArgumentException exc) {
             return false;
@@ -28,8 +26,7 @@ public class BukkitBiomeTypes implements BiomeTypes {
     @Override
     public BiomeType get(String name) throws UnknownBiomeTypeException {
         try {
-            Biome biome = Biome.valueOf(name.toUpperCase(Locale.ENGLISH));
-            return new BiomeType(biome.name());
+            return BukkitBiomeType.valueOf(name.toUpperCase(Locale.ENGLISH));
         } catch (IllegalArgumentException exc) {
             throw new UnknownBiomeTypeException(name);
         }
@@ -37,11 +34,7 @@ public class BukkitBiomeTypes implements BiomeTypes {
 
     @Override
     public List<BiomeType> all() {
-        List<BiomeType> biomes = new ArrayList<BiomeType>();
-        for (Biome biome : Biome.values()) {
-            biomes.add(new BiomeType(biome.name()));
-        }
-        return biomes;
+        return Arrays.<BiomeType>asList(BukkitBiomeType.values());
     }
 
 }
