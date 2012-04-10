@@ -237,6 +237,7 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.forest")
     @Logging(POSITION)
+    @SuppressWarnings("deprecation")
     public void forestGen(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
         

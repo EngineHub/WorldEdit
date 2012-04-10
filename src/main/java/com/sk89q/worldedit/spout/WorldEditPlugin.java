@@ -40,7 +40,6 @@ import org.spout.api.util.Named;
 
 import java.io.*;
 import java.util.jar.JarFile;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
 /**
@@ -49,6 +48,8 @@ import java.util.zip.ZipEntry;
  * @author sk89q
  */
 public class WorldEditPlugin extends CommonPlugin implements Named {
+
+    private static final long serialVersionUID = 4506722000667924884L;
 
     /**
      * The server interface that all server-related API goes through.

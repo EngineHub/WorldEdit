@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.WeakHashMap;
 
 import com.sk89q.worldedit.LocalEntity;
 import com.sk89q.worldedit.WorldEdit;

@@ -22,7 +22,6 @@ import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.util.YAMLConfiguration;
 
 import java.io.File;
-import java.util.logging.Logger;
 
 /**
  * @author zml2008

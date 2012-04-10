@@ -756,7 +756,7 @@ public class SpoutWorld extends LocalWorld {
     }
 
     @Override
-    public int killEntities(LocalEntity[] entities) {
+    public int killEntities(LocalEntity... entities) {
         int amount = 0;
         for (LocalEntity weEnt : entities) {
             SpoutEntity entity = (SpoutEntity) weEnt;

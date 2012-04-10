@@ -34,7 +34,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.MaterialRegistry;
-import org.spout.api.material.source.MaterialData;
 import org.spout.api.player.Player;
 
 public class SpoutPlayer extends LocalPlayer {
