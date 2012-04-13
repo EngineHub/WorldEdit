@@ -22,6 +22,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Console;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
@@ -164,6 +165,7 @@ public class SchematicCommands {
             desc = "List available schematic formats",
             max = 0
     )
+    @Console
     @CommandPermissions("worldedit.schematic.formats")
     public void formats(CommandContext args, LocalSession session, LocalPlayer player,
                      EditSession editSession) throws WorldEditException {
@@ -190,18 +192,25 @@ public class SchematicCommands {
             desc = "List available schematics",
             max = 0
     )
+    @Console
     @CommandPermissions("worldedit.schematic.list")
     public void list(CommandContext args, LocalSession session, LocalPlayer player,
                         EditSession editSession) throws WorldEditException {
         File dir = we.getWorkingDirectoryFile(we.getConfiguration().saveDir);
-        player.print("Available schematics (Filename - Format)");
+        StringBuilder build = new StringBuilder("Available schematics (Filename (Format)): ");
+        boolean first = true;
         for (File file : dir.listFiles()) {
             if (!file.isFile()) {
                 continue;
             }
 
+            if (!first) {
+                build.append(", ");
+            }
             SchematicFormat format = SchematicFormat.getFormat(file);
-            player.print(file.getName() + ": " + (format == null ? "Unknown" : format.getName()));
+            build.append(file.getName()).append(": ").append(format == null ? "Unknown" : format.getName());
+            first = false;
         }
+        player.print(build.toString());
     }
 }
