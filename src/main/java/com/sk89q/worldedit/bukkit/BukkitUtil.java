@@ -150,9 +150,9 @@ public class BukkitUtil {
         switch (e.getType()) {
             case EXPERIENCE_ORB:
                 return new BukkitExpOrb(toLocation(e.getLocation()), e.getUniqueId(), ((ExperienceOrb)e).getExperience());
-            /*case PAINTING: // TODO: Figure out what celticminstrel broke
+            case PAINTING:
                 Painting paint = (Painting) e;
-                return new BukkitPainting(toLocation(e.getLocation()), paint.getArt(), paint.getFacing(), e.getUniqueId());*/
+                return new BukkitPainting(toLocation(e.getLocation()), paint.getArt(), paint.getFacing(), e.getUniqueId());
             case DROPPED_ITEM:
                 return new BukkitItem(toLocation(e.getLocation()), ((Item)e).getItemStack(), e.getUniqueId());
             default:

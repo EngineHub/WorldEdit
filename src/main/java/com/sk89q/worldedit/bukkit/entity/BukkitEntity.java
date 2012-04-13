@@ -45,6 +45,6 @@ public class BukkitEntity extends LocalEntity {
     @Override
     public boolean spawn(Location weLoc) {
         org.bukkit.Location loc = BukkitUtil.toLocation(weLoc);
-        return loc.getWorld().spawnCreature(loc, type) != null;
+        return loc.getWorld().spawn(loc, type.getEntityClass()) != null;
     }
 }
