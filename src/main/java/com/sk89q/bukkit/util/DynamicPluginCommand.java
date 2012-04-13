@@ -22,20 +22,25 @@ package com.sk89q.bukkit.util;
 import com.sk89q.util.StringUtil;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginIdentifiableCommand;
+import org.bukkit.plugin.Plugin;
+
 import java.util.Arrays;
 
 /**
 * @author zml2008
 */
-public class DynamicPluginCommand extends org.bukkit.command.Command {
+public class DynamicPluginCommand extends org.bukkit.command.Command implements PluginIdentifiableCommand {
 
     protected final CommandExecutor owner;
     protected final Object registeredWith;
+    protected final Plugin owningPlugin;
     protected String[] permissions = new String[0];
 
-    public DynamicPluginCommand(String[] aliases, String desc, String usage, CommandExecutor owner, Object registeredWith) {
+    public DynamicPluginCommand(String[] aliases, String desc, String usage, CommandExecutor owner, Object registeredWith, Plugin plugin) {
         super(aliases[0], desc, usage, Arrays.asList(aliases));
         this.owner = owner;
+        this.owningPlugin = plugin;
         this.registeredWith = registeredWith;
     }
 
@@ -61,5 +66,10 @@ public class DynamicPluginCommand extends org.bukkit.command.Command {
 
     public String[] getPermissions() {
         return permissions;
+    }
+
+    @Override
+    public Plugin getPlugin() {
+        return owningPlugin;
     }
 }

@@ -21,6 +21,7 @@ package com.sk89q.bukkit.util;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.wepif.PermissionsResolverManager;
 import com.sk89q.wepif.WEPIFRuntimeException;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.help.HelpTopic;
@@ -38,23 +39,49 @@ public class DynamicPluginCommandHelpTopic extends HelpTopic {
         this.cmd = cmd;
         this.name = "/" + cmd.getName();
 
+        String fullTextTemp = null;
+        StringBuilder fullText = new StringBuilder();
+
         if (cmd.getRegisteredWith() instanceof CommandsManager) {
             Map<String, String> helpText = ((CommandsManager<?>) cmd.getRegisteredWith()).getHelpMessages();
             final String lookupName = cmd.getName().replaceAll("/", "");
-            if (helpText.containsKey(lookupName)) {
-                this.fullText = helpText.get(lookupName);
+            if (helpText.containsKey(lookupName)) { // We have full help text for this command
+                fullTextTemp = helpText.get(lookupName);
             }
+            // No full help text, assemble help text from info
             helpText = ((CommandsManager<?>) cmd.getRegisteredWith()).getCommands();
             if (helpText.containsKey(cmd.getName())) {
                 final String shortText = helpText.get(cmd.getName());
-                if (this.fullText == null) {
-                    this.fullText = this.name + " " + shortText;
+                if (fullTextTemp == null) {
+                    fullTextTemp = this.name + " " + shortText;
                 }
                 this.shortText = shortText;
             }
         } else {
             this.shortText = cmd.getDescription();
         }
+
+        // Put the usage in the format: Usage string (newline) Aliases (newline) Help text
+        String[] split = fullTextTemp == null ? new String[2] : fullTextTemp.split("\n", 2);
+        fullText.append(ChatColor.BOLD).append(ChatColor.GOLD).append("Usage: ").append(ChatColor.WHITE);
+        fullText.append(split[0]).append("\n");
+
+        if (cmd.getAliases().size() > 0) {
+            fullText.append(ChatColor.BOLD).append(ChatColor.GOLD).append("Aliases: ").append(ChatColor.WHITE);
+            boolean first = true;
+            for (String alias : cmd.getAliases()) {
+                if (!first) {
+                    fullText.append(", ");
+                }
+                fullText.append(alias);
+                first = false;
+            }
+            fullText.append("\n");
+        }
+        if (split.length > 1) {
+            fullText.append(split[1]);
+        }
+        this.fullText = fullText.toString();
     }
 
     @Override
