@@ -52,8 +52,8 @@ public class BaseBlock {
      * @param data
      */
     public BaseBlock(int type, int data) {
-        this.type = (short) type;
-        this.data = (byte) data;
+        setType(type);
+        setData(data);
     }
 
     /**
@@ -67,6 +67,10 @@ public class BaseBlock {
      * @param type the type to set
      */
     public void setType(int type) {
+        if (type < 0) {
+            type += 256;
+        }
+
         this.type = (short) type;
     }
 
