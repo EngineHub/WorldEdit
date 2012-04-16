@@ -26,11 +26,14 @@ import java.util.Map;
 import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
 import com.sk89q.worldedit.bukkit.entity.BukkitExpOrb;
 import com.sk89q.worldedit.bukkit.entity.BukkitItem;
+import com.sk89q.worldedit.bukkit.entity.BukkitPainting;
+
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.Server;
 import org.bukkit.World;
