@@ -369,6 +369,11 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     }
 
     @Override
+    public Iterator<BlockVector> iterator() {
+        return new FlatRegion3DIterator(this);
+    }
+
+    @Override
     public Iterable<Vector2D> asFlatRegion() {
         return new Iterable<Vector2D>() {
             @Override

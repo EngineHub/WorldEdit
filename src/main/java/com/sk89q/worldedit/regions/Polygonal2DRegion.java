@@ -492,7 +492,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      */
     @Override
     public Iterator<BlockVector> iterator() {
-        return new RegionIterator(this);
+        return new FlatRegion3DIterator(this);
     }
 
     @Override
