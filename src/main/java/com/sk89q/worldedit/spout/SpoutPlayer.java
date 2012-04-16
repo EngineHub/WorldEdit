@@ -114,6 +114,7 @@ public class SpoutPlayer extends LocalPlayer {
         entity.setPosition(SpoutUtil.toPoint(entity.getWorld(), pos));
         entity.setPitch(pitch);
         entity.setYaw(yaw);
+        player.getNetworkSynchronizer().setPositionDirty();
     }
 
     @Override
