@@ -32,6 +32,7 @@ import com.sk89q.worldedit.data.ChunkStore;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.EllipsoidRegionSelector;
 import com.sk89q.worldedit.regions.ExtendingCuboidRegionSelector;
+import com.sk89q.worldedit.regions.Polygonal2DPointsDragNDrop;
 import com.sk89q.worldedit.regions.Polygonal2DRegionSelector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
@@ -582,7 +583,7 @@ public class SelectionCommands {
 
     @Command(
         aliases = { "/sel", ";" },
-        usage = "[cuboid|extend|poly|ellipsoid|sphere|cyl]",
+        usage = "[cuboid|extend|poly|polydd|ellipsoid|sphere|cyl]",
         desc = "Choose a region selector",
         min = 0,
         max = 1
@@ -611,6 +612,10 @@ public class SelectionCommands {
         } else if (typeName.equalsIgnoreCase("poly")) {
             selector = new Polygonal2DRegionSelector(oldSelector);
             player.print("2D polygon selector: Left/right click to add a point.");
+        } else if (typeName.equalsIgnoreCase("polydd")) {
+            selector = new Polygonal2DPointsDragNDrop(oldSelector);
+            player.print("2D polygon points drag and drop: left click to select a point, " +
+            		"right click to set its new position.");
         } else if (typeName.equalsIgnoreCase("ellipsoid")) {
             selector = new EllipsoidRegionSelector(oldSelector);
             player.print("Ellipsoid selector: left click=center, right click to extend");
@@ -621,7 +626,7 @@ public class SelectionCommands {
             selector = new CylinderRegionSelector(oldSelector);
             player.print("Cylindrical selector: Left click=center, right click to extend.");
         } else {
-            player.printError("Only cuboid|extend|poly|ellipsoid|sphere|cyl are accepted.");
+            player.printError("Only cuboid|extend|poly|polydd|ellipsoid|sphere|cyl are accepted.");
             return;
         }
 

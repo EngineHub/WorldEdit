@@ -163,6 +163,38 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
     }
 
     /**
+     * Get the index of the given point.
+     * Returns -1 if the point is not included.
+     *
+     * @param pt
+     * @return
+     */
+    public int indexOf(BlockVector2D pt) {
+        return points.indexOf(pt);
+    }
+
+    /**
+     * Get the point for the given index.
+     *
+     * @param index
+     * @return
+     */
+    public BlockVector2D getPoint(int index) {
+        return points.get(index);
+    }
+
+    /**
+     * Set the point at the given index.
+     *
+     * @param index
+     * @return
+     */
+    public void setPoint(int index, BlockVector2D pt) {
+        points.set(index, pt);
+        recalculate();
+    }
+
+    /**
      * Get the minimum Y.
      *
      * @return min y
