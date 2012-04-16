@@ -167,6 +167,11 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      *
      * @return min y
      */
+    public int getMinimumY() {
+        return minY;
+    }
+
+    @Deprecated
     public int getMininumY() {
         return minY;
     }
