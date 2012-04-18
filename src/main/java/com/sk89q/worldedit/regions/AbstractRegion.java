@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.regions;
 
+import java.util.Collections;
 import java.util.Iterator;
 
 import com.sk89q.worldedit.BlockVector;
@@ -42,6 +43,15 @@ public abstract class AbstractRegion implements Region {
      */
     public Iterator<BlockVector> iterator() {
         return new RegionIterator(this);
+    }
+
+    @Override
+    public Iterable<Vector> faces() {
+        return Collections.<Vector>emptyList();
+    }
+
+    public Iterable<Vector> walls() {
+        return Collections.<Vector>emptyList();
     }
 
     public LocalWorld getWorld() {

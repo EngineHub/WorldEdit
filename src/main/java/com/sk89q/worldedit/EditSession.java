@@ -43,6 +43,7 @@ import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 
@@ -1353,6 +1354,29 @@ public class EditSession {
     }
 
     /**
+     * Make faces of the region.
+     *
+     * @param region
+     * @param block
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int makeFaces(Region region, BaseBlock block)
+            throws MaxChangedBlocksException {
+        if (region instanceof CuboidRegion) {
+            return makeCuboidFaces(region, block);
+        } else {
+            int affected = 0;
+            for (Vector pt : region.faces()) {
+                if (setBlock(pt, block)) {
+                    ++affected;
+                }
+            }
+            return affected;
+        }
+    }
+
+    /**
      * Make faces of the region (as if it was a cuboid if it's not).
      *
      * @param region
@@ -1362,7 +1386,7 @@ public class EditSession {
      */
     public int makeCuboidFaces(Region region, BaseBlock block)
             throws MaxChangedBlocksException {
-        int affected = 0;
+        int affected = makeCuboidWalls(region, block);
 
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
@@ -1374,31 +1398,8 @@ public class EditSession {
         int maxY = max.getBlockY();
         int maxZ = max.getBlockZ();
 
-        for (int x = minX; x <= maxX; ++x) {
-            for (int y = minY; y <= maxY; ++y) {
-                if (setBlock(new Vector(x, y, minZ), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(x, y, maxZ), block)) {
-                    ++affected;
-                }
-                ++affected;
-            }
-        }
-
-        for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                if (setBlock(new Vector(minX, y, z), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(maxX, y, z), block)) {
-                    ++affected;
-                }
-            }
-        }
-
-        for (int z = minZ; z <= maxZ; ++z) {
-            for (int x = minX; x <= maxX; ++x) {
+        for (int z = minZ + 1; z < maxZ; ++z) {
+            for (int x = minX + 1; x < maxX; ++x) {
                 if (setBlock(new Vector(x, minY, z), block)) {
                     ++affected;
                 }
@@ -1412,6 +1413,29 @@ public class EditSession {
     }
 
     /**
+     * Make faces of the region.
+     *
+     * @param region
+     * @param pattern
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int makeFaces(Region region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        if (region instanceof CuboidRegion) {
+            return makeCuboidFaces(region, pattern);
+        } else {
+            int affected = 0;
+            for (Vector pt : region.faces()) {
+                if (setBlock(pt, pattern)) {
+                    ++affected;
+                }
+            }
+            return affected;
+        }
+    }
+
+    /**
      * Make faces of the region (as if it was a cuboid if it's not).
      *
      * @param region
@@ -1421,7 +1445,7 @@ public class EditSession {
      */
     public int makeCuboidFaces(Region region, Pattern pattern)
             throws MaxChangedBlocksException {
-        int affected = 0;
+        int affected = makeCuboidWalls(region, pattern);
 
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
@@ -1433,35 +1457,8 @@ public class EditSession {
         int maxY = max.getBlockY();
         int maxZ = max.getBlockZ();
 
-        for (int x = minX; x <= maxX; ++x) {
-            for (int y = minY; y <= maxY; ++y) {
-                Vector minV = new Vector(x, y, minZ);
-                if (setBlock(minV, pattern.next(minV))) {
-                    ++affected;
-                }
-                Vector maxV = new Vector(x, y, maxZ);
-                if (setBlock(maxV, pattern.next(maxV))) {
-                    ++affected;
-                }
-                ++affected;
-            }
-        }
-
-        for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                Vector minV = new Vector(minX, y, z);
-                if (setBlock(minV, pattern.next(minV))) {
-                    ++affected;
-                }
-                Vector maxV = new Vector(maxX, y, z);
-                if (setBlock(maxV, pattern.next(maxV))) {
-                    ++affected;
-                }
-            }
-        }
-
-        for (int z = minZ; z <= maxZ; ++z) {
-            for (int x = minX; x <= maxX; ++x) {
+        for (int z = minZ + 1; z < maxZ; ++z) {
+            for (int x = minX + 1; x < maxX; ++x) {
                 Vector minV = new Vector(x, minY, z);
                 if (setBlock(minV, pattern.next(minV))) {
                     ++affected;
@@ -1474,6 +1471,29 @@ public class EditSession {
         }
 
         return affected;
+    }
+
+    /**
+     * Make walls of the region.
+     *
+     * @param region
+     * @param block
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int makeWalls(FlatRegion region, BaseBlock block)
+            throws MaxChangedBlocksException {
+        if (region instanceof CuboidRegion) {
+            return makeCuboidWalls(region, block);
+        } else {
+            int affected = 0;
+            for (Vector pt : region.walls()) {
+                if (setBlock(pt, block)) {
+                    ++affected;
+                }
+            }
+            return affected;
+        }
     }
 
     /**
@@ -1506,12 +1526,11 @@ public class EditSession {
                 if (setBlock(new Vector(x, y, maxZ), block)) {
                     ++affected;
                 }
-                ++affected;
             }
         }
 
         for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
+            for (int z = minZ + 1; z < maxZ; ++z) {
                 if (setBlock(new Vector(minX, y, z), block)) {
                     ++affected;
                 }
@@ -1522,6 +1541,29 @@ public class EditSession {
         }
 
         return affected;
+    }
+
+    /**
+     * Make walls of the region.
+     *
+     * @param region
+     * @param pattern
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int makeWalls(FlatRegion region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        if (region instanceof CuboidRegion) {
+            return makeCuboidWalls(region, pattern);
+        } else {
+            int affected = 0;
+            for (Vector pt : region.walls()) {
+                if (setBlock(pt, pattern)) {
+                    ++affected;
+                }
+            }
+            return affected;
+        }
     }
 
     /**
@@ -1556,12 +1598,11 @@ public class EditSession {
                 if (setBlock(maxV, pattern.next(maxV))) {
                     ++affected;
                 }
-                ++affected;
             }
         }
 
         for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
+            for (int z = minZ + 1; z < maxZ; ++z) {
                 Vector minV = new Vector(minX, y, z);
                 if (setBlock(minV, pattern.next(minV))) {
                     ++affected;

@@ -139,6 +139,13 @@ public interface Region extends Iterable<BlockVector>, Cloneable {
     public Set<Vector> getChunkCubes();
 
     /**
+     * Get an iterable for this region faces
+     *
+     * @return
+     */
+    public Iterable<Vector> faces();
+
+    /**
      * Get the world the selection is in
      *
      * @return
