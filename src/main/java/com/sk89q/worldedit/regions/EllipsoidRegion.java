@@ -25,6 +25,8 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.data.ChunkStore;
+import com.sk89q.worldedit.regions.faces.EllipsoidRegionFaces;
+
 import java.util.Set;
 import java.util.HashSet;
 
@@ -259,6 +261,11 @@ public class EllipsoidRegion extends AbstractRegion {
      */
     public boolean contains(Vector pt) {
         return pt.subtract(center).divide(radius).lengthSq() <= 1;
+    }
+
+    @Override
+    public Iterable<Vector> faces(int thickness) {
+        return new EllipsoidRegionFaces(this, thickness);
     }
 
     /**

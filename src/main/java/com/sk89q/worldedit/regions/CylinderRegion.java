@@ -29,6 +29,8 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.data.ChunkStore;
+import com.sk89q.worldedit.regions.faces.CylinderRegionWalls;
+import com.sk89q.worldedit.regions.faces.FlatRegionFaces;
 
 /**
  * Represents a cylindrical region.
@@ -391,6 +393,16 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
                 return new FlatRegionIterator(CylinderRegion.this);
             }
         };
+    }
+
+    @Override
+    public Iterable<Vector> walls(int thickness) {
+        return new CylinderRegionWalls(this, thickness);
+    }
+
+    @Override
+    public Iterable<Vector> faces(int thickness) {
+        return new FlatRegionFaces(this, thickness);
     }
 
     /**
