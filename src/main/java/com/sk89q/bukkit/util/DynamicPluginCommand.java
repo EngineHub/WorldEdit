@@ -19,7 +19,10 @@
 
 package com.sk89q.bukkit.util;
 
+import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.util.StringUtil;
+import com.sk89q.wepif.PermissionsResolverManager;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
@@ -71,5 +74,32 @@ public class DynamicPluginCommand extends org.bukkit.command.Command implements 
     @Override
     public Plugin getPlugin() {
         return owningPlugin;
+    }
+
+    @Override
+    public boolean testPermissionSilent(CommandSender sender) {
+        if (permissions == null || permissions.length == 0) {
+            return true;
+        }
+
+        if (registeredWith instanceof CommandsManager<?>) {
+            try {
+                for (String permission : permissions) {
+                    if (((CommandsManager<?>) registeredWith).hasPermission(sender, permission)) {
+                        return true;
+                    }
+                }
+                return false;
+            } catch (Throwable ignore) {
+            }
+        } else if (PermissionsResolverManager.isInitialized() && sender instanceof OfflinePlayer) {
+            for (String permission : permissions) {
+                if (PermissionsResolverManager.getInstance().hasPermission((OfflinePlayer) sender, permission)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return super.testPermissionSilent(sender);
     }
 }
