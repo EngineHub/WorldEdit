@@ -55,7 +55,7 @@ public class LocalSession {
 
     private LocalConfiguration config;
 
-    private long expirationTime = 0;
+    private long expirationTime = System.currentTimeMillis() + EXPIRATION_GRACE;
     private RegionSelector selector = new CuboidRegionSelector();
     private boolean placeAtPos1 = false;
     private LinkedList<EditSession> history = new LinkedList<EditSession>();
@@ -584,7 +584,7 @@ public class LocalSession {
 
         }
     }
-    
+
     public void describeCUI(LocalPlayer player) {
         if (!hasCUISupport) {
             return;
@@ -622,8 +622,8 @@ public class LocalSession {
 
     /**
      * Gets the client's CUI protocol version
-     * 
-     * @return 
+     *
+     * @return
      */
     public int getCUIVersion() {
         return cuiVersion;
@@ -631,8 +631,8 @@ public class LocalSession {
 
     /**
      * Sets the client's CUI protocol version
-     * 
-     * @param CUIVersion 
+     *
+     * @param CUIVersion
      */
     public void setCUIVersion(int CUIVersion) {
         this.cuiVersion = CUIVersion;
