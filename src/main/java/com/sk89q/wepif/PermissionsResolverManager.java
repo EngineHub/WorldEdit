@@ -64,13 +64,17 @@ public class PermissionsResolverManager implements PermissionsResolver {
     private static PermissionsResolverManager instance;
 
     public static void initialize(Plugin plugin) {
-        if (instance == null) {
+        if (!isInitialized()) {
             instance = new PermissionsResolverManager(plugin);
         }
     }
 
+    public static boolean isInitialized() {
+        return instance != null;
+    }
+
     public static PermissionsResolverManager getInstance() {
-        if (instance == null) {
+        if (!isInitialized()) {
             throw new WEPIFRuntimeException("WEPIF has not yet been initialized!");
         }
         return instance;
@@ -214,7 +218,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 try {
                     next = Class.forName(getClass().getPackage().getName() + "." + nextName);
                 } catch (ClassNotFoundException e) {}
-                
+
                 if (next == null || !PermissionsResolver.class.isAssignableFrom(next)) {
                     logger.warning("WEPIF: Invalid or unknown class found in enabled resolvers: "
                             + nextName + ". Moving to disabled resolvers list.");
@@ -278,7 +282,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         public void onPluginDisable(PluginDisableEvent event) {
             String name = event.getPlugin().getDescription().getName();
 
-            if (event.getPlugin() instanceof PermissionsProvider 
+            if (event.getPlugin() instanceof PermissionsProvider
                     || "Permissions".equals(name) || "PermissionsEx".equals(name)
                     || "bPermissions".equals(name)) {
                 load();
