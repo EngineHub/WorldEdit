@@ -88,11 +88,11 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
     }
 
     public int getMinimumY() {
-        return Math.min(pos1.getBlockX(), pos2.getBlockY());
+        return Math.min(pos1.getBlockY(), pos2.getBlockY());
     }
 
     public int getMaximumY() {
-        return Math.max(pos1.getBlockX(), pos2.getBlockY());
+        return Math.max(pos1.getBlockY(), pos2.getBlockY());
     }
 
     /**
