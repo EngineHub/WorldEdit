@@ -71,7 +71,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
             Vector pos2 = oldRegion.getMaximumPoint();
 
             Vector center = pos1.add(pos2).divide(2).floor();
-            region.setCenter(center);
+            region.setCenter(center.toVector2D());
             region.setRadius(pos2.toVector2D().subtract(center.toVector2D()));
 
             region.setMaximumY(Math.max(pos1.getBlockY(), pos2.getBlockY()));
@@ -85,7 +85,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         }
 
         region = new CylinderRegion(region.getWorld());
-        region.setCenter(pos);
+        region.setCenter(pos.toVector2D());
         region.setY(pos.getBlockY());
 
         return true;
