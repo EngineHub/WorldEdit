@@ -107,10 +107,6 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
             if (lastPoint.getBlockX() == pos.getBlockX() && lastPoint.getBlockZ() == pos.getBlockZ()) {
                 return false;
             }
-
-            if (points.size() >= 20) {
-                return false;
-            }
         }
 
         region.addPoint(pos);
