@@ -761,6 +761,18 @@ public class WorldEdit {
         }
     }
 
+    public int getMaximumPolygonalPoints(LocalPlayer player) {
+        if (player.hasPermission("worldedit.limit.unrestricted") || config.maxPolygonalPoints < 0) {
+            return config.defaultMaxPolygonalPoints;
+        } else {
+            if (config.defaultMaxPolygonalPoints < 0) {
+                return config.maxPolygonalPoints;
+            }
+            return Math.min(config.defaultMaxPolygonalPoints,
+                    config.maxPolygonalPoints);
+        }
+    }
+
     /**
      * Checks to see if the specified radius is within bounds.
      *

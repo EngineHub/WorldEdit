@@ -65,6 +65,10 @@ public class YAMLConfiguration extends LocalConfiguration {
                 "limits.max-blocks-changed.default", defaultChangeLimit));
         maxChangeLimit = Math.max(-1,
                 config.getInt("limits.max-blocks-changed.maximum", maxChangeLimit));
+        defaultMaxPolygonalPoints = Math.max(-1,
+                config.getInt("limits.max-polygonal-points.default", defaultMaxPolygonalPoints));
+        maxPolygonalPoints = Math.max(-1,
+                config.getInt("limits.max-polygonal-points.maximum", maxPolygonalPoints));
         maxRadius = Math.max(-1, config.getInt("limits.max-radius", maxRadius));
         maxSuperPickaxeSize = Math.max(1, config.getInt(
                 "limits.max-super-pickaxe-size", maxSuperPickaxeSize));
