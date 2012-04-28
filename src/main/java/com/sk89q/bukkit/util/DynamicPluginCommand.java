@@ -85,7 +85,7 @@ public class DynamicPluginCommand extends org.bukkit.command.Command implements 
         if (registeredWith instanceof CommandsManager<?>) {
             try {
                 for (String permission : permissions) {
-                    if (((CommandsManager<?>) registeredWith).hasPermission(sender, permission)) {
+                    if (((CommandsManager) registeredWith).hasPermission(sender, permission)) {
                         return true;
                     }
                 }

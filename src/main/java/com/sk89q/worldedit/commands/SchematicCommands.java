@@ -55,6 +55,7 @@ public class SchematicCommands {
                     "Format is a format from \"//schematic formats\"\n" +
                     "If the format is not provided, WorldEdit will\n" +
                     "attempt to automatically detect the format of the schematic",
+            flags = "f",
             min = 1,
             max = 2
     )
@@ -86,7 +87,7 @@ public class SchematicCommands {
             return;
         }
 
-        if (!format.isOfFormat(f)) {
+        if (!format.isOfFormat(f) && !args.hasFlag('f')) {
             player.printError(fileName + " is not of the " + format.getName() + " schematic format!");
             return;
         }
