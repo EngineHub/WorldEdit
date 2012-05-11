@@ -207,8 +207,8 @@ public class SpoutPlayerBlockBag extends BlockBag {
     public void flushChanges() {
         if (items != null) {
             Inventory inv = player.getEntity().getInventory();
-            for (int i = 0; i < items.length && i < player.getEntity().getInventorySize(); ++i) {
-                inv.setItem(items[i], i);
+            for (int i = 0; i < items.length && i < inv.getSize(); ++i) {
+                inv.setItem(i, items[i]);
             }
             items = null;
         }

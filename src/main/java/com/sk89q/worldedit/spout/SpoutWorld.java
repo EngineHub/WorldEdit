@@ -94,7 +94,7 @@ public class SpoutWorld extends LocalWorld {
     public boolean setBlockType(Vector pt, int type) {
         Material mat = MaterialRegistry.get((short) type);
         if (mat != null && mat instanceof BlockMaterial) {
-            return world.setBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (BlockMaterial) mat, (short)0, true, WorldEditPlugin.getInstance());
+            return world.setBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (BlockMaterial) mat, (short)0, WorldEditPlugin.getInstance());
         }
         return false;
     }
@@ -122,7 +122,7 @@ public class SpoutWorld extends LocalWorld {
     public boolean setTypeIdAndData(Vector pt, int type, int data) {
         Material mat = MaterialRegistry.get((short) type);
         if (mat != null && mat instanceof BlockMaterial) {
-            return world.setBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (BlockMaterial) mat, (short)data, true, WorldEditPlugin.getInstance());
+            return world.setBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (BlockMaterial) mat, (short)data, WorldEditPlugin.getInstance());
         }
         return false;
     }
@@ -159,7 +159,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public void setBlockData(Vector pt, int data) {
-        world.setBlockData(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (short) data, true, WorldEditPlugin.getInstance());
+        world.setBlockData(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (short) data, WorldEditPlugin.getInstance());
     }
 
     /**
@@ -210,7 +210,7 @@ public class SpoutWorld extends LocalWorld {
     }
 
     public void setBiome(Vector2D pt, BiomeType biome) {
-        if (biome instanceof SpoutBiomeType && 
+        if (biome instanceof SpoutBiomeType &&
                 world.getGenerator() instanceof BiomeGenerator) {
             BiomeGenerator gen = (BiomeGenerator) world.getGenerator();
             gen.setBiome(new Vector3(pt.getBlockX(), 0, pt.getBlockZ()), ((SpoutBiomeType) biome).getSpoutBiome());

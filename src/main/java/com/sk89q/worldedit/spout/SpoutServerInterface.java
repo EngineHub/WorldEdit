@@ -93,8 +93,8 @@ public class SpoutServerInterface extends ServerInterface {
     public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
         for (Command command : commands) {
             org.spout.api.command.Command spoutCommand = game.getRootCommand().addSubCommand(plugin, command.aliases()[0])
-                    .addAlias(command.aliases()).setRawExecutor(executor).
-                    setUsage(command.usage()).setHelp(command.desc());
+                    .addAlias(command.aliases()).setRawExecutor(executor)
+                    .setHelp("/" + command.aliases()[0] + " " + command.usage() + " - " + command.desc());
             Method cmdMethod = manager.getMethods().get(null).get(command.aliases()[0]);
             if (cmdMethod != null && cmdMethod.isAnnotationPresent(CommandPermissions.class)) {
                 spoutCommand.setPermissions(false, cmdMethod.getAnnotation(CommandPermissions.class).value());

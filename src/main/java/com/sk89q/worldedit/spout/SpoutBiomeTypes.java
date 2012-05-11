@@ -26,7 +26,7 @@ import java.util.Map;
 import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.UnknownBiomeTypeException;
 import org.spout.api.generator.biome.BiomeGenerator;
-import org.spout.api.generator.biome.BiomeType;
+import org.spout.api.generator.biome.Biome;
 
 public class SpoutBiomeTypes implements BiomeTypes {
     private final Map<String, SpoutBiomeType> types = new HashMap<String, SpoutBiomeType>();
@@ -46,7 +46,7 @@ public class SpoutBiomeTypes implements BiomeTypes {
     }
 
     public void registerBiomeTypes(BiomeGenerator generator) {
-        for (BiomeType type : generator.getBiomes()) {
+        for (Biome type : generator.getBiomes()) {
             final SpoutBiomeType weType = new SpoutBiomeType(type);
             if (!types.containsKey(weType.getName())) {
                 types.put(weType.getName(), weType);

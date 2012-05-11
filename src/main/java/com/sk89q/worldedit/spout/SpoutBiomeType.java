@@ -18,15 +18,15 @@
 
 package com.sk89q.worldedit.spout;
 
-import org.spout.api.generator.biome.BiomeType;
+import org.spout.api.generator.biome.Biome;
 
 /**
  * @author zml2008
  */
 public class SpoutBiomeType implements com.sk89q.worldedit.BiomeType {
-    private final BiomeType type;
+    private final Biome type;
 
-    public SpoutBiomeType(BiomeType type) {
+    public SpoutBiomeType(Biome type) {
         this.type = type;
     }
 
@@ -35,7 +35,7 @@ public class SpoutBiomeType implements com.sk89q.worldedit.BiomeType {
         return type.getName().toLowerCase().replace(" ", "");
     }
 
-    public BiomeType getSpoutBiome() {
+    public Biome getSpoutBiome() {
         return type;
     }
 
