@@ -331,9 +331,10 @@ public class GenerationCommands {
             "  -h to generate a hollow shape\n" +
             "  -r to use raw minecraft coordinates\n" +
             "  -o is like -r, except offset from placement.\n" +
+            "  -c is like -r, except offset selection center.\n" +
             "If neither -r nor -o is given, the selection is mapped to -1..1\n" +
             "See also tinyurl.com/wesyntax.",
-        flags = "hro",
+        flags = "hroc",
         min = 1,
         max = -1
     )
@@ -357,6 +358,12 @@ public class GenerationCommands {
             unit = new Vector(1, 1, 1);
         } else if (args.hasFlag('o')) {
             zero = session.getPlacementPosition(player);
+            unit = new Vector(1, 1, 1);
+        } else if (args.hasFlag('c')) {
+            final Vector min = region.getMinimumPoint();
+            final Vector max = region.getMaximumPoint();
+
+            zero = max.add(min).multiply(0.5);
             unit = new Vector(1, 1, 1);
         } else {
             final Vector min = region.getMinimumPoint();
