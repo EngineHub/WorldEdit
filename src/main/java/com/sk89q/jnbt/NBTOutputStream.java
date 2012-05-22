@@ -159,6 +159,7 @@ public final class NBTOutputStream implements Closeable {
             break;
         case NBTConstants.TYPE_INT_ARRAY:
             writeIntArrayTagPayload((IntArrayTag) tag);
+            break;
         default:
             throw new IOException("Invalid tag type: " + type + ".");
         }
