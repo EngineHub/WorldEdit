@@ -77,6 +77,11 @@ public class SchematicCommands {
         File dir = we.getWorkingDirectoryFile(config.saveDir);
         File f = we.getSafeOpenFile(player, dir, fileName, "schematic", "schematic");
 
+        if (!f.exists()) {
+            player.printError("Schemtic " + fileName + " does not exist!");
+            return;
+        }
+
         SchematicFormat format = formatName == null ? null : SchematicFormat.getFormat(formatName);
         if (format == null) {
             format = SchematicFormat.getFormat(f);
@@ -112,11 +117,11 @@ public class SchematicCommands {
 
     @Command(
             aliases = { "save", "s" },
-            usage = "<format> <filename>",
+            usage = "[format] <filename>",
             desc = "Save a schematic into your clipboard",
             help = "Save a schematic into your clipboard\n" +
                     "Format is a format from \"//schematic formats\"\n",
-            min = 2,
+            min = 1,
             max = 2
     )
     @CommandPermissions({"worldedit.clipboard.save", "worldedit.schematic.save"}) // TODO: Remove 'clipboard' perm
@@ -124,13 +129,23 @@ public class SchematicCommands {
                      EditSession editSession) throws WorldEditException, CommandException {
 
         LocalConfiguration config = we.getConfiguration();
-        SchematicFormat format = SchematicFormat.getFormat(args.getString(0));
-        if (format == null) {
-            player.printError("Unknown schematic format: " + args.getString(0));
-            return;
+        SchematicFormat format;
+        if (args.argsLength() == 1) {
+            if (SchematicFormat.getFormats().size() == 1) {
+                format = SchematicFormat.getFormats().iterator().next();
+            } else {
+                player.printError("More than one schematic format is available. Please provide the desired format");
+                return;
+            }
+        } else {
+            format = SchematicFormat.getFormat(args.getString(0));
+            if (format == null) {
+                player.printError("Unknown schematic format: " + args.getString(0));
+                return;
+            }
         }
 
-        String filename = args.getString(1);
+        String filename = args.getString(args.argsLength() - 1);
 
         File dir = we.getWorkingDirectoryFile(config.saveDir);
         File f = we.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
