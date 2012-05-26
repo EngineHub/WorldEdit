@@ -129,6 +129,11 @@ public class BiomeCommands {
                           EditSession editSession) throws WorldEditException {
 
         final BiomeType target = we.getServer().getBiomes().get(args.getString(0));
+        if (target == null) {
+            player.printError("Biome '" + args.getString(0) + "' does not exist!");
+            return;
+        }
+
         if (args.hasFlag('p')) {
             Vector2D pos = player.getPosition().toVector2D();
             player.getWorld().setBiome(pos, target);

@@ -213,7 +213,8 @@ public class SpoutWorld extends LocalWorld {
         if (biome instanceof SpoutBiomeType &&
                 world.getGenerator() instanceof BiomeGenerator) {
             BiomeGenerator gen = (BiomeGenerator) world.getGenerator();
-            gen.setBiome(new Vector3(pt.getBlockX(), 0, pt.getBlockZ()), ((SpoutBiomeType) biome).getSpoutBiome());
+            throw new UnsupportedOperationException("Biome changing is not yet supported in Spout");
+            //gen.setBiome(new Vector3(pt.getBlockX(), 0, pt.getBlockZ()), ((SpoutBiomeType) biome).getSpoutBiome());
         }
     }
 
