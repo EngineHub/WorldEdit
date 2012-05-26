@@ -192,7 +192,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public int getBlockLightLevel(Vector pt) {
-        return world.getBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getLightLevel();
+        return world.getBlockLight(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
     }
 
     /**

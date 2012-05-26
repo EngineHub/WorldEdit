@@ -36,6 +36,7 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.geo.World;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.CommonPlugin;
+import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.Named;
 
 import java.io.*;
@@ -100,7 +101,7 @@ public class WorldEditPlugin extends CommonPlugin implements Named {
         registerEvents();
 
         getGame().getScheduler().scheduleAsyncRepeatingTask(this,
-                new SessionTimer(controller, getGame()), 120, 120);
+                new SessionTimer(controller, getGame()), 6 * 1000, 6 * 1000, TaskPriority.LOWEST);
     }
 
     /**
