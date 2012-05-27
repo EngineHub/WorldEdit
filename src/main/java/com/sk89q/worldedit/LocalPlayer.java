@@ -20,10 +20,9 @@
 package com.sk89q.worldedit;
 
 import java.io.File;
+
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.blocks.ItemID;
+import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.cui.CUIEvent;
 import com.sk89q.worldedit.util.TargetBlock;
 
@@ -240,7 +239,10 @@ public abstract class LocalPlayer {
             // Found a ceiling!
             if (!BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
-                world.setBlockType(new Vector(x, platformY, z), BlockID.GLASS);
+                Vector platform = new Vector(x, platformY, z);
+                if (BlockType.canPassThrough(world.getBlockType(platform))) {
+                    world.setBlockType(platform, BlockID.GLASS);
+                }
                 setPosition(new Vector(x + 0.5, platformY + 1, z + 0.5));
                 return true;
             }
@@ -272,7 +274,10 @@ public abstract class LocalPlayer {
             } else if (y > maxY + 1) {
                 break;
             } else if (y == maxY + 1) {
-                world.setBlockType(new Vector(x, y - 2, z), BlockID.GLASS);
+                Vector belowPlayer = new Vector(x, y - 2, z);
+                if (BlockType.canPassThrough(world.getBlockType(belowPlayer))) {
+                    world.setBlockType(belowPlayer, BlockID.GLASS);
+                }
                 setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
                 return true;
             }
