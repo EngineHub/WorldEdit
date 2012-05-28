@@ -34,6 +34,7 @@ import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.player.Player;
+import org.spout.vanilla.controller.living.player.VanillaPlayer;
 
 public class SpoutPlayerBlockBag extends BlockBag {
     /**
@@ -59,7 +60,8 @@ public class SpoutPlayerBlockBag extends BlockBag {
      */
     private void loadInventory() {
         if (items == null) {
-            items = player.getEntity().getInventory().getContents();
+            VanillaPlayer vanillaPlayer = (VanillaPlayer) player.getEntity().getController();
+            items = vanillaPlayer.getInventory().getContents();
         }
     }
 
@@ -206,7 +208,8 @@ public class SpoutPlayerBlockBag extends BlockBag {
     @Override
     public void flushChanges() {
         if (items != null) {
-            Inventory inv = player.getEntity().getInventory();
+            VanillaPlayer vanillaPlayer = (VanillaPlayer) player.getEntity().getController();
+            Inventory inv = vanillaPlayer.getInventory();
             for (int i = 0; i < items.length && i < inv.getSize(); ++i) {
                 inv.setItem(i, items[i]);
             }
