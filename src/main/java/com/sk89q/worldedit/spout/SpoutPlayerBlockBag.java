@@ -29,12 +29,12 @@ import com.sk89q.worldedit.bags.OutOfSpaceException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
-import org.spout.api.inventory.Inventory;
+import org.spout.api.inventory.InventoryBase;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.player.Player;
-import org.spout.vanilla.controller.living.player.VanillaPlayer;
+import org.spout.vanilla.util.VanillaPlayerUtil;
 
 public class SpoutPlayerBlockBag extends BlockBag {
     /**
@@ -60,8 +60,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
      */
     private void loadInventory() {
         if (items == null) {
-            VanillaPlayer vanillaPlayer = (VanillaPlayer) player.getEntity().getController();
-            items = vanillaPlayer.getInventory().getContents();
+            items = VanillaPlayerUtil.getInventory(player.getEntity()).getContents();
         }
     }
 
@@ -208,8 +207,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
     @Override
     public void flushChanges() {
         if (items != null) {
-            VanillaPlayer vanillaPlayer = (VanillaPlayer) player.getEntity().getController();
-            Inventory inv = vanillaPlayer.getInventory();
+            InventoryBase inv = VanillaPlayerUtil.getInventory(player.getEntity());
             for (int i = 0; i < items.length && i < inv.getSize(); ++i) {
                 inv.setItem(i, items[i]);
             }
