@@ -37,6 +37,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.biome.BiomeGenerator;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.inventory.ItemStack;
@@ -689,7 +690,7 @@ public class SpoutWorld extends LocalWorld {
 
     @Override
     public void checkLoadedChunk(Vector pt) {
-        world.getChunk(pt.getBlockX() << Chunk.CHUNK_SIZE_BITS, pt.getBlockY() << Chunk.CHUNK_SIZE_BITS, pt.getBlockZ() << Chunk.CHUNK_SIZE_BITS);
+        world.getChunk(pt.getBlockX() << Chunk.BLOCKS.BITS, pt.getBlockY() << Chunk.BLOCKS.BITS, pt.getBlockZ() << Chunk.BLOCKS.BITS);
     }
 
     @Override
@@ -743,7 +744,7 @@ public class SpoutWorld extends LocalWorld {
     public SpoutEntity[] getEntities(Region region) {
         List<SpoutEntity> entities = new ArrayList<SpoutEntity>();
         for (Vector pt : region.getChunkCubes()) {
-            Chunk chunk = world.getChunk(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), false);
+            Chunk chunk = world.getChunk(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), LoadOption.NO_LOAD);
             if (chunk == null) {
                 continue;
             }
