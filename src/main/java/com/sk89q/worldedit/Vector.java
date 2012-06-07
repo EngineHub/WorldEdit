@@ -23,7 +23,7 @@ package com.sk89q.worldedit;
  *
  * @author sk89q
  */
-public class Vector implements Comparable<BlockVector> {
+public class Vector implements Comparable<Vector> {
     protected final double x, y, z;
 
     /**
@@ -692,7 +692,7 @@ public class Vector implements Comparable<BlockVector> {
     }
 
     @Override
-    public int compareTo(BlockVector other) {
+    public int compareTo(Vector other) {
         if (y != other.y) return Double.compare(y, other.y);
         if (z != other.z) return Double.compare(z, other.z);
         if (x != other.x) return Double.compare(x, other.x);
