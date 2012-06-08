@@ -87,7 +87,6 @@ public class WorldEditListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         plugin.getWorldEdit().markExpire(plugin.wrapPlayer(event.getPlayer()));
-        plugin.setPluginChannelCUI(event.getPlayer().getName(), false);
     }
 
     /**
