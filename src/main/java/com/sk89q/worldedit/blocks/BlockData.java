@@ -628,6 +628,9 @@ public final class BlockData {
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
         case BlockID.NETHER_BRICK_STAIRS:
+            if (data > 7) return -1;
+            return mod((data + increment), 4);
+            
         case BlockID.PUMPKIN:
         case BlockID.JACKOLANTERN:
         case BlockID.NETHER_WART:
