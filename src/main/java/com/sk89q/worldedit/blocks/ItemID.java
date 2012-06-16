@@ -95,7 +95,12 @@ public final class ItemID {
     public static final int SIGN = 323;
     public static final int WOODEN_DOOR_ITEM = 324;
     public static final int BUCKET = 325;
+    public static final int BUKKIT = 325; // so that it will take bukkit like the /item command
     public static final int WATER_BUCKET = 326;
+    public static final int WATERBUCKET = 326;
+    public static final int WATERBUKKIT = 326; //makes it eaiser to use
+    public static final int LAVABUCKET = 327;
+    public static final int LAVABUKKIT = 327;
     public static final int LAVA_BUCKET = 327;
     public static final int MINECART = 328;
     public static final int SADDLE = 329;
