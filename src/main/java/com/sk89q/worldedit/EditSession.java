@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 import com.sk89q.worldedit.regions.*;
+import com.sk89q.worldedit.shape.ArbitraryShape;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.bags.*;
 import com.sk89q.worldedit.blocks.*;
