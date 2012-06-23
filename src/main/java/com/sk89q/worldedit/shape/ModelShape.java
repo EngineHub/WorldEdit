@@ -8,19 +8,20 @@ import java.util.TreeMap;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.shape.kdtree.KdTree;
 
 public class ModelShape extends ArbitraryShape {
     private final Vector offset;
     private final Vector scale;
     private final double radius;
-    private final Model model; 
+    private final KdTree kdTree;
 
     public ModelShape(Region extent, Model model, boolean preserveAspect) {
         super(extent);
-        this.model = model;
+        this.kdTree = new KdTree(model.getVertices());
 
-        Vector modelMin = model.getMinimumPoint();
-        Vector modelMax = model.getMaximumPoint();
+        Vector modelMin = kdTree.getMinimumPoint();
+        Vector modelMax = kdTree.getMaximumPoint();
         Vector modelSize = modelMax.subtract(modelMin);
 
         Vector regionMin = extent.getMinimumPoint();
@@ -106,7 +107,7 @@ public class ModelShape extends ArbitraryShape {
     private Iterable<Vertex> collectInRadius(Vector center, double radius) {
         List<Vertex> ret = new ArrayList<Vertex>();
 
-        for (Vertex vertex : model.getVertices()) {
+        for (Vertex vertex : kdTree.getVertices(center.subtract(radius, radius, radius), center.add(radius, radius, radius))) {
             if (vertex.getPosition().distance(center) <= radius) {
                 ret.add(vertex);
             }
@@ -118,7 +119,7 @@ public class ModelShape extends ArbitraryShape {
     private Iterable<Vertex> collectKNearest(Vector center, int amount) {
         SortedMap<Double, Vertex> ret = new TreeMap<Double, Vertex>(); // a TreeMap will eliminate entries at equal distance. I don't care right now since i only want one entry anyway...
 
-        for (Vertex vertex : model.getVertices()) {
+        for (Vertex vertex : kdTree.getVertices()) {
             final double distance = vertex.getPosition().distance(center);
 
             ret.put(distance, vertex);

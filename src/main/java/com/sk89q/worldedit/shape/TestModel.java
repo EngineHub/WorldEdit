@@ -22,17 +22,7 @@ public class TestModel implements Model {
     }
 
     @Override
-    public Iterable<Vertex> getVertices() {
+    public List<Vertex> getVertices() {
         return vertices;
-    }
-
-    @Override
-    public Vector getMinimumPoint() {
-        return new Vector(-1,-1,-1);
-    }
-
-    @Override
-    public Vector getMaximumPoint() {
-        return new Vector(1,1,1);
     }
 }

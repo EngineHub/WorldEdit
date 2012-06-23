@@ -41,44 +41,67 @@ public class KdTree {
         minimumPoint = new Vector(minX, minY, minZ);
         maximumPoint = new Vector(maxX, maxY, maxZ);
 
-        root = buildTree(vertices, minimumPoint, maximumPoint);
+        root = buildTree(vertices, 0, minimumPoint, maximumPoint);
     }
 
-    private Node buildTree(List<Vertex> vertices, Vector minimumPoint, Vector maximumPoint) {
+    private Node buildTree(List<Vertex> vertices, int depth, Vector minimumPoint, Vector maximumPoint) {
         if (vertices.size() <= 1)
             return new Leaf(vertices);
 
         // find dominant axis
-        final Vector boxSize = maximumPoint.subtract(minimumPoint);
         final Vector axis;
-        if (boxSize.getX() > boxSize.getY()) {
-            // x>y
-            if (boxSize.getX() > boxSize.getZ()) {
-                // x>y && x>z
-                axis = new Vector(1,0,0);
+        if ("!".isEmpty()) {
+            final Vector boxSize = maximumPoint.subtract(minimumPoint);
+            if (boxSize.getX() > boxSize.getY()) {
+                // x>y
+                if (boxSize.getX() > boxSize.getZ()) {
+                    // x>y && x>z
+                    axis = new Vector(1,0,0);
+                } else {
+                    // z>=x && x>y
+                    axis = new Vector(0,0,1);
+                }
             } else {
-                // z>=x && x>y
-                axis = new Vector(0,0,1);
+                // y>=x
+                if (boxSize.getY() > boxSize.getZ()) {
+                    // y>=x && y>z
+                    axis = new Vector(0,1,0);
+                } else {
+                    // z>=y && y>=x
+                    axis = new Vector(0,0,1);
+                }
             }
         } else {
-            // y>=x
-            if (boxSize.getY() > boxSize.getZ()) {
-                // y>=x && y>z
+            switch (depth%3) {
+            case 0:
+                axis = new Vector(1,0,0);
+                break;
+
+            case 1:
                 axis = new Vector(0,1,0);
-            } else {
-                // z>=y && y>=x
+                break;
+
+            default:
                 axis = new Vector(0,0,1);
             }
         }
 
         // find median
-        final double value = 0;
         Collections.sort(vertices, new Comparator<Vertex>() {
             @Override
             public int compare(Vertex lhs, Vertex rhs) {
                 return Double.compare(lhs.getPosition().dot(axis), rhs.getPosition().dot(axis));
             }
         });
+
+        final double value;
+        if (vertices.size() % 2 == 0) {
+            int i = vertices.size()/2;
+            value = vertices.get(i-1).getPosition().add(vertices.get(i).getPosition()).dot(axis)*0.5;
+        }
+        else {
+            value = vertices.get(vertices.size()/2).getPosition().dot(axis);
+        }
 
         // split up vertices at split plane
         final List<Vertex> leftVertices = new ArrayList<Vertex>();
@@ -91,11 +114,15 @@ public class KdTree {
             }
         }
 
+        if (leftVertices.isEmpty() || rightVertices.isEmpty()) { // OPTIMIZE: rightVertices can't be empty, replace by assert
+            return buildTree(vertices, depth+1, minimumPoint, maximumPoint); // FIXME: this is an infinite recursion for points that occur multiple times (with different normals/colors/etc)
+        }
+
         final Vector leftMaximumPoint = maximumPoint.add(axis.multiply(value - maximumPoint.dot(axis)));
         final Vector rightMinimumPoint = minimumPoint.add(axis.multiply(value - minimumPoint.dot(axis)));
 
-        final Node leftNode = buildTree(leftVertices, minimumPoint, leftMaximumPoint);
-        final Node rightNode = buildTree(rightVertices, rightMinimumPoint, maximumPoint);
+        final Node leftNode = buildTree(leftVertices, depth+1, minimumPoint, leftMaximumPoint);
+        final Node rightNode = buildTree(rightVertices, depth+1, rightMinimumPoint, maximumPoint);
 
         final SubTree subTree = new SubTree(axis, value, leftNode, rightNode);
         return subTree;
@@ -111,5 +138,13 @@ public class KdTree {
 
     public Vector getMaximumPoint() {
         return maximumPoint;
+    }
+
+    public List<Vertex> getVertices() {
+        return root.getVertices();
+    }
+
+    public List<Vertex> getVertices(Vector minimumPoint, Vector maximumPoint) {
+        return root.getVertices(minimumPoint, maximumPoint);
     }
 }
