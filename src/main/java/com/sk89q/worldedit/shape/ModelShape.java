@@ -116,7 +116,7 @@ public class ModelShape extends ArbitraryShape {
     }
 
     private Iterable<Vertex> collectKNearest(Vector center, int amount) {
-        SortedMap<Double, Vertex> ret = new TreeMap<Double, Vertex>();
+        SortedMap<Double, Vertex> ret = new TreeMap<Double, Vertex>(); // a TreeMap will eliminate entries at equal distance. I don't care right now since i only want one entry anyway...
 
         for (Vertex vertex : model.getVertices()) {
             final double distance = vertex.getPosition().distance(center);
