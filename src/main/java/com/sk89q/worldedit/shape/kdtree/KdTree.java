@@ -1,6 +1,7 @@
 package com.sk89q.worldedit.shape.kdtree;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -45,69 +46,41 @@ public class KdTree {
     }
 
     private Node buildTree(List<Vertex> vertices, int depth, Vector minimumPoint, Vector maximumPoint) {
-        if (vertices.size() <= 1)
+        if (depth > 20 || vertices.size() <= 3)
             return new Leaf(vertices);
 
-        // find dominant axis
-        final Vector axis;
-        if ("!".isEmpty()) {
-            final Vector boxSize = maximumPoint.subtract(minimumPoint);
-            if (boxSize.getX() > boxSize.getY()) {
-                // x>y
-                if (boxSize.getX() > boxSize.getZ()) {
-                    // x>y && x>z
-                    axis = new Vector(1,0,0);
-                } else {
-                    // z>=x && x>y
-                    axis = new Vector(0,0,1);
-                }
-            } else {
-                // y>=x
-                if (boxSize.getY() > boxSize.getZ()) {
-                    // y>=x && y>z
-                    axis = new Vector(0,1,0);
-                } else {
-                    // z>=y && y>=x
-                    axis = new Vector(0,0,1);
-                }
-            }
-        } else {
-            switch (depth%3) {
-            case 0:
-                axis = new Vector(1,0,0);
-                break;
+        // TODO: maybe check for duplicates here instead of in the model loader?
 
-            case 1:
-                axis = new Vector(0,1,0);
-                break;
-
-            default:
-                axis = new Vector(0,0,1);
-            }
-        }
+        // cycle through axes
+        final Axis axis = Axis.values()[depth % 3];
 
         // find median
         Collections.sort(vertices, new Comparator<Vertex>() {
             @Override
             public int compare(Vertex lhs, Vertex rhs) {
-                return Double.compare(lhs.getPosition().dot(axis), rhs.getPosition().dot(axis));
+                return Double.compare(axis.dot(lhs.getPosition()), axis.dot(rhs.getPosition()));
             }
         });
 
-        final double value;
-        if (vertices.size() % 2 == 0) {
-            int i = vertices.size()/2;
-            value = vertices.get(i-1).getPosition().add(vertices.get(i).getPosition()).dot(axis)*0.5;
+        final int mid = vertices.size() / 2;
+        final double median;
+        if ((vertices.size() & 1) == 0) {
+            // example: 6 elements => average index 3 and 2 of  0 1 >2< >3< 4 5
+            final double before = axis.dot(vertices.get(mid-1).getPosition());
+            final double after = axis.dot(vertices.get(mid).getPosition());
+
+            median = (before + after) * 0.5;
         }
         else {
-            value = vertices.get(vertices.size()/2).getPosition().dot(axis);
+            // example: 5 elements => index 2 of  0 1 >2< 3 4
+            median = axis.dot(vertices.get(mid).getPosition());
         }
 
         // split up vertices at split plane
         final List<Vertex> leftVertices = new ArrayList<Vertex>();
         final List<Vertex> rightVertices = new ArrayList<Vertex>();
         for (Vertex vertex : vertices) {
-            if (vertex.getPosition().dot(axis) < value) {
+            if (axis.dot(vertex.getPosition()) < median) {
                 leftVertices.add(vertex);
             } else {
                 rightVertices.add(vertex);
@@ -115,16 +88,18 @@ public class KdTree {
         }
 
         if (leftVertices.isEmpty() || rightVertices.isEmpty()) { // OPTIMIZE: rightVertices can't be empty, replace by assert
+            //System.out.println(median+"/"+axis.multiply(1)+"/"+leftVertices.isEmpty()+"/"+rightVertices.isEmpty());
+            //System.out.println(vertices);
             return buildTree(vertices, depth+1, minimumPoint, maximumPoint); // FIXME: this is an infinite recursion for points that occur multiple times (with different normals/colors/etc)
         }
 
-        final Vector leftMaximumPoint = maximumPoint.add(axis.multiply(value - maximumPoint.dot(axis)));
-        final Vector rightMinimumPoint = minimumPoint.add(axis.multiply(value - minimumPoint.dot(axis)));
+        final Vector leftMaximumPoint = maximumPoint.add(axis.multiply(median - axis.dot(maximumPoint)));
+        final Vector rightMinimumPoint = minimumPoint.add(axis.multiply(median - axis.dot(minimumPoint)));
 
         final Node leftNode = buildTree(leftVertices, depth+1, minimumPoint, leftMaximumPoint);
         final Node rightNode = buildTree(rightVertices, depth+1, rightMinimumPoint, maximumPoint);
 
-        final SubTree subTree = new SubTree(axis, value, leftNode, rightNode);
+        final SubTree subTree = new SubTree(axis, median, leftNode, rightNode);
         return subTree;
     }
 
@@ -140,11 +115,40 @@ public class KdTree {
         return maximumPoint;
     }
 
+    /**
+     * Returns all vertices in the tree.
+     * 
+     * @return
+     */
     public List<Vertex> getVertices() {
         return root.getVertices();
     }
 
+    /**
+     * Returns vertices in a given bounding box.
+     * 
+     * @param minimumPoint minimum point of the bounding box
+     * @param maximumPoint minimum point of the bounding box
+     * @return a list that contains all vertices inside the bounding box and none outside.
+     */
     public List<Vertex> getVertices(Vector minimumPoint, Vector maximumPoint) {
         return root.getVertices(minimumPoint, maximumPoint);
+    }
+
+    /**
+     * Like {@link #getVertices(Vector, Vector)}, except without doing any bounds checking in the leaves.
+     * 
+     * This means that that the returned list might contain elements outside the bounding box.
+     * 
+     * @param minimumPoint minimum point of the bounding box
+     * @param maximumPoint minimum point of the bounding box
+     * @return a list that contains all vertices inside the bounding box and maybe some outside.
+     */
+    public List<Vertex> getVerticesFast(Vector minimumPoint, Vector maximumPoint) {
+        return root.getVerticesFast(minimumPoint, maximumPoint);
+    }
+
+    public Collection<Vertex> getKNearestVertices(Vector center, int amount) {
+        return root.getKNearestVertices(center, amount).values();
     }
 }

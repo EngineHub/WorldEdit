@@ -9,7 +9,7 @@ public class Vertex {
     public Vertex(Vector position, Vector normal) {
         super();
         this.position = position;
-        this.normal = normal;
+        this.normal = normal.normalize();
     }
 
     public Vector getPosition() {
@@ -18,5 +18,10 @@ public class Vertex {
 
     public Vector getNormal() {
         return normal;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + getPosition() + ", " + getNormal() + ")";
     }
 }

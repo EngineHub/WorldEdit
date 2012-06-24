@@ -107,7 +107,8 @@ public class ModelShape extends ArbitraryShape {
     private Iterable<Vertex> collectInRadius(Vector center, double radius) {
         List<Vertex> ret = new ArrayList<Vertex>();
 
-        for (Vertex vertex : kdTree.getVertices(center.subtract(radius, radius, radius), center.add(radius, radius, radius))) {
+        double radius2 = radius * 2.0;
+        for (Vertex vertex : kdTree.getVerticesFast(center.subtract(radius2, radius2, radius2), center.add(radius2, radius2, radius2))) {
             if (vertex.getPosition().distance(center) <= radius) {
                 ret.add(vertex);
             }

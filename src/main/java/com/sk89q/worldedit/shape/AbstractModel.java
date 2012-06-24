@@ -2,13 +2,11 @@ package com.sk89q.worldedit.shape;
 
 import java.util.List;
 
-public abstract class FileModel implements Model {
+public abstract class AbstractModel implements Model {
     private final List<Vertex> vertices;
-    protected FileModel(String filename) {
-        vertices = load();
+    protected AbstractModel(List<Vertex> vertices) {
+        this.vertices = vertices;
     }
-
-    protected abstract List<Vertex> load();
 
     @Override
     public List<Vertex> getVertices() {

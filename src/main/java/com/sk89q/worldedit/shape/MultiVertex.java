@@ -13,7 +13,7 @@ public class MultiVertex extends Vertex {
     }
 
     private static Vector average(Vector... normal) {
-        return new Vector().add(normal).divide(normal.length);
+        return new Vector().add(normal).normalize();
     }
 
     public MultiVertex addNormal(Vector normal) {

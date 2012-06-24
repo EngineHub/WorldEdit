@@ -18,6 +18,7 @@
  */
 package com.sk89q.worldedit;
 
+import java.io.IOException;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
@@ -32,8 +33,9 @@ import java.util.Collections;
 import java.util.Random;
 import com.sk89q.worldedit.regions.*;
 import com.sk89q.worldedit.shape.ArbitraryShape;
+import com.sk89q.worldedit.shape.Model;
 import com.sk89q.worldedit.shape.ModelShape;
-import com.sk89q.worldedit.shape.TestModel;
+import com.sk89q.worldedit.shape.ObjFileModel;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.bags.*;
 import com.sk89q.worldedit.blocks.*;
@@ -2703,14 +2705,14 @@ public class EditSession {
         return distribution;
     }
 
-    public int makeShape(final Region region, final Vector zero, final Vector unit, final Pattern pattern, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException {
+    public int makeShape(final Region region, final Vector zero, final Vector unit, final Pattern pattern, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException, RegionOperationException {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z", "type", "data");
         expression.optimize();
 
         final RValue typeVariable = expression.getVariable("type", false);
         final RValue dataVariable = expression.getVariable("data", false);
 
-        final ArbitraryShape shape = /*new ArbitraryShape(region) {
+        final ArbitraryShape shape/* = new ArbitraryShape(region) {
             @Override
             protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
                 final Vector scaled = new Vector(x, y, z).subtract(zero).divide(unit);
@@ -2726,8 +2728,16 @@ public class EditSession {
                     return null;
                 }
             }
-        };*/
-        new ModelShape(region, new TestModel(), false);
+        }*/;
+
+        try {
+            final Model model = new ObjFileModel("teapot.obj", 0);
+            //final Model model = new TestModel();
+            shape = new ModelShape(region, model, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
+        }
 
         return shape.generate(this, pattern, hollow);
     }
