@@ -51,7 +51,7 @@ public class SpoutPlayer extends LocalPlayer {
     @Override
     public int getItemInHand() {
         VanillaPlayer vanillaPlayer = (VanillaPlayer) player.getEntity().getController();
-        ItemStack itemStack = vanillaPlayer.getInventory().getCurrentItem();
+        ItemStack itemStack = vanillaPlayer.getInventory().getQuickbar().getCurrentItem();
         return itemStack != null ? itemStack.getMaterial().getId() : 0;
     }
 
