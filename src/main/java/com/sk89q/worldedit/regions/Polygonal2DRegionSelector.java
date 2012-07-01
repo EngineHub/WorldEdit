@@ -45,7 +45,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
     private Polygonal2DRegion region;
 
     public Polygonal2DRegionSelector(LocalWorld world) {
-        this(world, 20);
+        this(world, 50);
     }
 
     public Polygonal2DRegionSelector(LocalWorld world, int maxPoints) {
@@ -54,7 +54,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
     }
 
     public Polygonal2DRegionSelector(RegionSelector oldSelector) {
-        this(oldSelector, 20);
+        this(oldSelector, 50);
     }
 
     public Polygonal2DRegionSelector(RegionSelector oldSelector, int maxPoints) {
