@@ -66,7 +66,9 @@ public class RecursivePickaxe implements BlockTool {
                     config.superPickaxeManyDrop);
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
-        } finally {
+        } catch (WorldGuardMissingPermissionException e) {
+            player.printError("Permission denied to edit.");
+		} finally {
             session.remember(editSession);
         }
 
@@ -84,12 +86,13 @@ public class RecursivePickaxe implements BlockTool {
      * @param size
      * @param initialType
      * @param visited
+     * @throws WorldGuardMissingPermissionException
      */
     private static void recurse(ServerInterface server, EditSession editSession,
             LocalWorld world, BlockVector pos,
             Vector origin, double size, int initialType,
             Set<BlockVector> visited, boolean drop)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
 
         final double distanceSq = origin.distanceSq(pos);
         if (distanceSq > size*size || visited.contains(pos)) {

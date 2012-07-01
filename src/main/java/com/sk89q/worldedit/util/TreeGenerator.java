@@ -26,6 +26,7 @@ import java.util.Random;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldGuardMissingPermissionException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 
@@ -42,13 +43,13 @@ public class TreeGenerator {
         TALL_REDWOOD("Tall redwood", "tallredwood", "tallsequoia", "tallsequoioideae"),
         BIRCH("Birch", "birch", "white", "whitebark"),
         PINE("Pine", "pine") {
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
                 makePineTree(editSession, pos);
                 return true;
             }
         },
         RANDOM_REDWOOD("Random redwood",  "randredwood", "randomredwood", "anyredwood" ) {
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
                 TreeType[] choices = new TreeType[] {
                         TreeType.REDWOOD, TreeType.TALL_REDWOOD
                 };
@@ -62,7 +63,7 @@ public class TreeGenerator {
         BROWN_MUSHROOM("Brown Mushroom", "brownmushroom", "browngiantmushroom"),
         SWAMP("Swamp", "swamp", "swamptree"),
         RANDOM("Random", "rand", "random" ) {
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
                 TreeType[] choices = new TreeType[] {
                         TreeType.TREE, TreeType.BIG_TREE, TreeType.BIRCH,
                         TreeType.REDWOOD, TreeType.TALL_REDWOOD, TreeType.PINE
@@ -92,7 +93,7 @@ public class TreeGenerator {
             this.lookupKeys = lookupKeys;
         }
 
-        public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+        public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
             return editSession.getWorld().generateTree(this, editSession, pos);
         }
 
@@ -137,9 +138,10 @@ public class TreeGenerator {
      * @param pos
      * @return
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public boolean generate(EditSession editSession, Vector pos)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         return type.generate(editSession, pos);
     }
 
@@ -147,9 +149,10 @@ public class TreeGenerator {
      * Makes a terrible looking pine tree.
      *
      * @param basePos
+     * @throws WorldGuardMissingPermissionException
      */
     private static void makePineTree(EditSession editSession, Vector basePos)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int trunkHeight = (int) Math.floor(Math.random() * 2) + 3;
         int height = (int) Math.floor(Math.random() * 5) + 8;
 

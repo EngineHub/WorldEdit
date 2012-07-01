@@ -59,7 +59,9 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
             return true;
         } catch (MaxChangedBlocksException e) {
             // one block? eat it
-        }
+        } catch (WorldGuardMissingPermissionException e) {
+		// same!
+		}
         return false;
 
     }
@@ -80,7 +82,9 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
             return true;
         } catch (MaxChangedBlocksException e) {
             // one block? eat it
-        }
+        } catch (WorldGuardMissingPermissionException e) {
+		// same!
+		}
         return false;
     }
 

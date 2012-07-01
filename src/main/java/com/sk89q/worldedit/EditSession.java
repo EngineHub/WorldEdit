@@ -34,11 +34,19 @@ import com.sk89q.worldedit.regions.*;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.bags.*;
 import com.sk89q.worldedit.blocks.*;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import com.sk89q.worldedit.bukkit.BukkitPlayer;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.*;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 /**
  * This class can wrap all block editing operations into one "edit session" that
@@ -125,19 +133,22 @@ public class EditSession {
      */
     private Mask mask;
 
+	private LocalPlayer player;
+
     /**
      * Construct the object with a maximum number of blocks.
      *
      * @param world
      * @param maxBlocks
      */
-    public EditSession(LocalWorld world, int maxBlocks) {
+    public EditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
         if (maxBlocks < -1) {
             throw new IllegalArgumentException("Max blocks must be >= -1");
         }
 
         this.maxBlocks = maxBlocks;
         this.world = world;
+        this.player = player;
     }
 
     /**
@@ -148,7 +159,7 @@ public class EditSession {
      * @param blockBag
      * @blockBag
      */
-    public EditSession(LocalWorld world, int maxBlocks, BlockBag blockBag) {
+    public EditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
         if (maxBlocks < -1) {
             throw new IllegalArgumentException("Max blocks must be >= -1");
         }
@@ -156,6 +167,7 @@ public class EditSession {
         this.maxBlocks = maxBlocks;
         this.blockBag = blockBag;
         this.world = world;
+        this.player = player;
     }
 
     /**
@@ -253,10 +265,23 @@ public class EditSession {
      * @param block
      * @return Whether the block changed -- not entirely dependable
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public boolean setBlock(Vector pt, BaseBlock block)
-            throws MaxChangedBlocksException {
-        BlockVector blockPt = pt.toBlockVector();
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
+		BlockVector blockPt = pt.toBlockVector();
+		try {
+			if (player instanceof BukkitPlayer) {
+				WorldGuardPlugin worldguard = getWorldGuard();
+				Player p = ((BukkitPlayer) player).getPlayer();
+				org.bukkit.Location location = BukkitUtil.toLocation(
+						p.getWorld(), pt);
+				if (!worldguard.canBuild(p, location)) {
+					throw new WorldGuardMissingPermissionException(location);
+				}
+			}
+		} catch (WorldGuardNotLoadedException e) {
+		}
 
         // if (!original.containsKey(blockPt)) {
         original.put(blockPt, getBlock(pt));
@@ -265,13 +290,25 @@ public class EditSession {
             throw new MaxChangedBlocksException(maxBlocks);
         }
         // }
-
         current.put(pt.toBlockVector(), block);
 
         return smartSetBlock(pt, block);
     }
 
-    /**
+    private WorldGuardPlugin getWorldGuard() throws WorldGuardNotLoadedException {
+		if (worldGuardPlugin == null || !(worldGuardPlugin instanceof WorldGuardPlugin)) {
+			worldGuardPlugin = Bukkit.getPluginManager().getPlugin("WorldGuard");
+
+			// WorldGuard may not be loaded
+			if (worldGuardPlugin == null || !(worldGuardPlugin instanceof WorldGuardPlugin)) {
+				throw new WorldGuardNotLoadedException();
+			}
+		}
+
+        return (WorldGuardPlugin) worldGuardPlugin;
+	}
+
+	/**
      * Insert a contrived block change into the history.
      *
      * @param pt
@@ -292,9 +329,10 @@ public class EditSession {
      * @param pat
      * @return Whether the block changed -- not entirely dependable
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public boolean setBlock(Vector pt, Pattern pat)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         return setBlock(pt, pat.next(pt));
     }
 
@@ -305,9 +343,10 @@ public class EditSession {
      * @param block
      * @return if block was changed
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public boolean setBlockIfAir(Vector pt, BaseBlock block)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         if (!getBlock(pt).isAir()) {
             return false;
         } else {
@@ -566,9 +605,10 @@ public class EditSession {
      * @param c 0-1 chance
      * @return whether a block was changed
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public boolean setChanceBlockIfAir(Vector pos, BaseBlock block, double c)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         if (Math.random() <= c) {
             return setBlockIfAir(pos, block);
         }
@@ -835,9 +875,10 @@ public class EditSession {
      * @param recursive
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int fillXZ(Vector origin, BaseBlock block, double radius, int depth,
-            boolean recursive) throws MaxChangedBlocksException {
+            boolean recursive) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
 
         int affected = 0;
         int originX = origin.getBlockX();
@@ -911,9 +952,10 @@ public class EditSession {
      * @param minY
      * @throws MaxChangedBlocksException
      * @return
+     * @throws WorldGuardMissingPermissionException
      */
     private int fillY(int x, int cy, int z, BaseBlock block, int minY)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         for (int y = cy; y >= minY; --y) {
@@ -940,9 +982,10 @@ public class EditSession {
      * @param recursive
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int fillXZ(Vector origin, Pattern pattern, double radius, int depth,
-            boolean recursive) throws MaxChangedBlocksException {
+            boolean recursive) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
 
         int affected = 0;
         int originX = origin.getBlockX();
@@ -1016,9 +1059,10 @@ public class EditSession {
      * @param minY
      * @throws MaxChangedBlocksException
      * @return
+     * @throws WorldGuardMissingPermissionException
      */
     private int fillY(int x, int cy, int z, Pattern pattern, int minY)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         for (int y = cy; y >= minY; --y) {
@@ -1043,9 +1087,10 @@ public class EditSession {
      * @param height
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int removeAbove(Vector pos, int size, int height)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int maxY = Math.min(world.getMaxY(), pos.getBlockY() + height - 1);
         --size;
         int affected = 0;
@@ -1078,9 +1123,10 @@ public class EditSession {
      * @param height
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int removeBelow(Vector pos, int size, int height)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int minY = Math.max(0, pos.getBlockY() - height);
         --size;
         int affected = 0;
@@ -1113,9 +1159,10 @@ public class EditSession {
      * @param size
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int removeNear(Vector pos, int blockType, int size)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
         BaseBlock air = new BaseBlock(BlockID.AIR);
 
@@ -1150,9 +1197,10 @@ public class EditSession {
      * @param block
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int setBlocks(Region region, BaseBlock block)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         if (region instanceof CuboidRegion) {
@@ -1196,9 +1244,10 @@ public class EditSession {
      * @param pattern
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int setBlocks(Region region, Pattern pattern)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         if (region instanceof CuboidRegion) {
@@ -1243,8 +1292,9 @@ public class EditSession {
      * @param toBlock
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
-    public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, BaseBlock toBlock) throws MaxChangedBlocksException {
+    public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, BaseBlock toBlock) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         Set<BaseBlock> definiteBlockTypes = new HashSet<BaseBlock>();
         Set<Integer> fuzzyBlockTypes = new HashSet<Integer>();
 
@@ -1329,8 +1379,9 @@ public class EditSession {
      * @param pattern
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
-    public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, Pattern pattern) throws MaxChangedBlocksException {
+    public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, Pattern pattern) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         Set<BaseBlock> definiteBlockTypes = new HashSet<BaseBlock>();
         Set<Integer> fuzzyBlockTypes = new HashSet<Integer>();
         if (fromBlockTypes != null) {
@@ -1413,9 +1464,10 @@ public class EditSession {
      * @param block
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int makeCuboidFaces(Region region, BaseBlock block)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         Vector min = region.getMinimumPoint();
@@ -1472,9 +1524,10 @@ public class EditSession {
      * @param pattern
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int makeCuboidFaces(Region region, Pattern pattern)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         Vector min = region.getMinimumPoint();
@@ -1537,9 +1590,10 @@ public class EditSession {
      * @param block
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int makeCuboidWalls(Region region, BaseBlock block)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         Vector min = region.getMinimumPoint();
@@ -1585,9 +1639,10 @@ public class EditSession {
      * @param block
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int makeCuboidWalls(Region region, Pattern pattern)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         Vector min = region.getMinimumPoint();
@@ -1637,9 +1692,10 @@ public class EditSession {
      * @param block
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int overlayCuboidBlocks(Region region, BaseBlock block)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
 
@@ -1679,9 +1735,10 @@ public class EditSession {
      * @param pattern
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int overlayCuboidBlocks(Region region, Pattern pattern)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
 
@@ -1721,9 +1778,10 @@ public class EditSession {
      * @param region
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int naturalizeCuboidBlocks(Region region)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
 
@@ -1796,9 +1854,10 @@ public class EditSession {
      * @param copyAir
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int stackCuboidRegion(Region region, Vector dir, int count,
-            boolean copyAir) throws MaxChangedBlocksException {
+            boolean copyAir) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         Vector min = region.getMinimumPoint();
@@ -1848,10 +1907,11 @@ public class EditSession {
      * @param replace
      * @return number of blocks moved
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int moveCuboidRegion(Region region, Vector dir, int distance,
             boolean copyAir, BaseBlock replace)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         Vector shift = dir.multiply(distance);
@@ -1911,9 +1971,10 @@ public class EditSession {
      * @param radius
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int drainArea(Vector pos, double radius)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         HashSet<BlockVector> visited = new HashSet<BlockVector>();
@@ -1979,9 +2040,10 @@ public class EditSession {
      * @param stationary
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int fixLiquid(Vector pos, double radius, int moving, int stationary)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         HashSet<BlockVector> visited = new HashSet<BlockVector>();
@@ -2047,8 +2109,9 @@ public class EditSession {
      * @param filled If false, only a shell will be generated.
      * @return number of blocks changed
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
-    public int makeCylinder(Vector pos, Pattern block, double radius, int height, boolean filled) throws MaxChangedBlocksException {
+    public int makeCylinder(Vector pos, Pattern block, double radius, int height, boolean filled) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         return makeCylinder(pos, block, radius, radius, height, filled);
     }
 
@@ -2063,8 +2126,9 @@ public class EditSession {
      * @param filled If false, only a shell will be generated.
      * @return number of blocks changed
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
-    public int makeCylinder(Vector pos, Pattern block, double radiusX, double radiusZ, int height, boolean filled) throws MaxChangedBlocksException {
+    public int makeCylinder(Vector pos, Pattern block, double radiusX, double radiusZ, int height, boolean filled) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         radiusX += 0.5;
@@ -2141,8 +2205,9 @@ public class EditSession {
     * @param filled If false, only a shell will be generated.
     * @return number of blocks changed
     * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
     */
-    public int makeSphere(Vector pos, Pattern block, double radius, boolean filled) throws MaxChangedBlocksException {
+    public int makeSphere(Vector pos, Pattern block, double radius, boolean filled) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         return makeSphere(pos, block, radius, radius, radius, filled);
     }
 
@@ -2157,8 +2222,9 @@ public class EditSession {
      * @param filled If false, only a shell will be generated.
      * @return number of blocks changed
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
-    public int makeSphere(Vector pos, Pattern block, double radiusX, double radiusY, double radiusZ, boolean filled) throws MaxChangedBlocksException {
+    public int makeSphere(Vector pos, Pattern block, double radiusX, double radiusY, double radiusZ, boolean filled) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         radiusX += 0.5;
@@ -2251,9 +2317,10 @@ public class EditSession {
      * @param filled
      * @return number of blocks changed
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int makePyramid(Vector pos, Pattern block, int size,
-            boolean filled) throws MaxChangedBlocksException {
+            boolean filled) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         int height = size;
@@ -2292,9 +2359,10 @@ public class EditSession {
      * @param radius
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int thaw(Vector pos, double radius)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
         double radiusSq = radius * radius;
 
@@ -2351,9 +2419,10 @@ public class EditSession {
      * @param radius
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int simulateSnow(Vector pos, double radius)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
         double radiusSq = radius * radius;
 
@@ -2416,9 +2485,10 @@ public class EditSession {
      * @param radius
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int green(Vector pos, double radius)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
         final double radiusSq = radius * radius;
 
@@ -2470,9 +2540,10 @@ public class EditSession {
      * Makes a pumpkin patch.
      *
      * @param basePos
+     * @throws WorldGuardMissingPermissionException
      */
     private void makePumpkinPatch(Vector basePos)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         // BaseBlock logBlock = new BaseBlock(BlockID.LOG);
         BaseBlock leavesBlock = new BaseBlock(BlockID.LEAVES);
 
@@ -2490,9 +2561,10 @@ public class EditSession {
      *
      * @param basePos
      * @param pos
+     * @throws WorldGuardMissingPermissionException
      */
     private void makePumpkinPatchVine(Vector basePos, Vector pos)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         if (pos.distance(basePos) > 4) return;
         if (getBlockType(pos) != 0) return;
 
@@ -2563,9 +2635,10 @@ public class EditSession {
      * @param size
      * @return number of trees created
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int makePumpkinPatches(Vector basePos, int size)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX()
@@ -2607,9 +2680,10 @@ public class EditSession {
      * @param treeGenerator
      * @return number of trees created
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public int makeForest(Vector basePos, int size, double density,
-            TreeGenerator treeGenerator) throws MaxChangedBlocksException {
+            TreeGenerator treeGenerator) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX()
@@ -2700,7 +2774,7 @@ public class EditSession {
         return distribution;
     }
 
-    public int makeShape(final Region region, final Vector zero, final Vector unit, final Pattern pattern, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException {
+    public int makeShape(final Region region, final Vector zero, final Vector unit, final Pattern pattern, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException, WorldGuardMissingPermissionException {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z", "type", "data");
         expression.optimize();
 
@@ -2728,7 +2802,7 @@ public class EditSession {
         return shape.generate(this, pattern, hollow);
     }
 
-    public int deformRegion(final Region region, final Vector zero, final Vector unit, final String expressionString) throws ExpressionException, MaxChangedBlocksException {
+    public int deformRegion(final Region region, final Vector zero, final Vector unit, final String expressionString) throws ExpressionException, MaxChangedBlocksException, WorldGuardMissingPermissionException {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z");
         expression.optimize();
 
@@ -2782,6 +2856,8 @@ public class EditSession {
         PlayerDirection.DOWN.vector(),
     };
 
+	private static Plugin worldGuardPlugin;
+
     /**
      * Hollows out the region (Semi-well-defined for non-cuboid selections).
      *
@@ -2791,8 +2867,9 @@ public class EditSession {
      *
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
-    public int hollowOutRegion(Region region, int thickness, Pattern pattern) throws MaxChangedBlocksException {
+    public int hollowOutRegion(Region region, int thickness, Pattern pattern) throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
         int affected = 0;
 
         final Set<BlockVector> outside = new HashSet<BlockVector>();
@@ -2884,4 +2961,8 @@ public class EditSession {
             }
         } // while
     }
+
+	public LocalPlayer getPlayer() {
+		return player;
+	}
 }

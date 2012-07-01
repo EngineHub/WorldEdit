@@ -64,7 +64,9 @@ public class FloodFillTool implements BlockTool {
                     clicked, range, initialType, new HashSet<BlockVector>());
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
-        } finally {
+        } catch (WorldGuardMissingPermissionException e) {
+		player.printError("Permission denied to edit");
+		} finally {
             session.remember(editSession);
         }
 
@@ -82,12 +84,13 @@ public class FloodFillTool implements BlockTool {
      * @param size
      * @param initialType
      * @param visited
+     * @throws WorldGuardMissingPermissionException
      */
     private void recurse(ServerInterface server, EditSession editSession,
             LocalWorld world, BlockVector pos,
             Vector origin, int size, int initialType,
             Set<BlockVector> visited)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
 
         if (origin.distance(pos) > size || visited.contains(pos)) {
             return;

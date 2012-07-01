@@ -78,7 +78,9 @@ public class AreaPickaxe implements BlockTool {
             }
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
-        } finally {
+        } catch (WorldGuardMissingPermissionException e) {
+		player.printError("Permission denied to edit here.");
+		} finally {
             session.remember(editSession);
         }
 

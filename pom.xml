@@ -95,6 +95,18 @@
       <artifactId>vanilla</artifactId>
       <version>1.2.5-SNAPSHOT</version>
     </dependency>
+    <dependency>
+	<groupId>com.sk89q</groupId>
+	<artifactId>worldguard</artifactId>
+	<version>5.4</version>
+	<exclusions>
+	<!-- We don't want to depend upon our self -->
+	<exclusion>
+	<groupId>com.sk89q</groupId>
+	<artifactId>worldedit</artifactId>
+	</exclusion>
+	</exclusions>
+    </dependency>
   </dependencies>
 
   <build>

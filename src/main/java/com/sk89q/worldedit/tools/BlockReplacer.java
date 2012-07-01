@@ -46,12 +46,13 @@ public class BlockReplacer implements DoubleActionBlockTool {
         BlockBag bag = session.getBlockBag(player);
 
         LocalWorld world = clicked.getWorld();
-        EditSession editSession = new EditSession(world, -1, bag);
+        EditSession editSession = new EditSession(world, -1, bag, player);
 
         try {
             editSession.setBlock(clicked, targetBlock);
         } catch (MaxChangedBlocksException e) {
-        } finally {
+        } catch (WorldGuardMissingPermissionException e) {
+		} finally {
             if (bag != null) {
                 bag.flushChanges();
             }
@@ -66,7 +67,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
             LocalSession session, WorldVector clicked) {
 
         LocalWorld world = clicked.getWorld();
-        targetBlock = (new EditSession(world, -1)).getBlock(clicked);
+        targetBlock = (new EditSession(world, -1, player)).getBlock(clicked);
         BlockType type = BlockType.fromID(targetBlock.getType());
 
         if (type != null) {

@@ -30,6 +30,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldGuardMissingPermissionException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.data.Chunk;
 import com.sk89q.worldedit.data.ChunkStore;
@@ -144,9 +145,10 @@ public class SnapshotRestore {
      *
      * @param editSession
      * @throws MaxChangedBlocksException
+     * @throws WorldGuardMissingPermissionException
      */
     public void restore(EditSession editSession)
-            throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException, WorldGuardMissingPermissionException {
 
         missingChunks = new ArrayList<Vector2D>();
         errorChunks = new ArrayList<Vector2D>();
