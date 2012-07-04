@@ -30,6 +30,7 @@ import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.cui.CUIEvent;
 
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;
@@ -93,21 +94,21 @@ public class SpoutPlayer extends LocalPlayer {
     @Override
     public void print(String msg) {
         for (String part : msg.split("\n")) {
-            player.sendMessage("\u00A7d" + part);
+            player.sendMessage(ChatStyle.PINK, part);
         }
     }
 
     @Override
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
-            player.sendMessage("\u00A77" + part);
+            player.sendMessage(ChatStyle.GRAY, part);
         }
     }
 
     @Override
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
-            player.sendMessage("\u00A7c" + part);
+            player.sendMessage(ChatStyle.RED,  part);
         }
     }
 

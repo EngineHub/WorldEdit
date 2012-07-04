@@ -28,7 +28,7 @@ import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
-import org.spout.api.ChatColor;
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandSource;
 import org.spout.api.player.Player;
 
@@ -55,18 +55,18 @@ public class SpoutCommandSender extends LocalPlayer {
 
     @Override
     public void printDebug(String msg) {
-        sender.sendMessage(ChatColor.GRAY + msg);
+        sender.sendMessage(ChatStyle.GRAY, msg);
 
     }
 
     @Override
     public void print(String msg) {
-        sender.sendMessage(ChatColor.PURPLE + msg);
+        sender.sendMessage(ChatStyle.PURPLE, msg);
     }
 
     @Override
     public void printError(String msg) {
-        sender.sendMessage(ChatColor.RED + msg);
+        sender.sendMessage(ChatStyle.RED, msg);
     }
 
     @Override
