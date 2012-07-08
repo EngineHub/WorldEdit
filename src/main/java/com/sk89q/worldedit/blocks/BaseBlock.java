@@ -34,7 +34,7 @@ public class BaseBlock {
     /**
      * BaseBlock data.
      */
-    private byte data = 0;
+    private short data = 0;
 
     /**
      * Construct the block with its type.
@@ -53,7 +53,7 @@ public class BaseBlock {
      */
     public BaseBlock(int type, int data) {
         this.type = (short) type;
-        this.data = (byte) data;
+        this.data = (short) data;
     }
 
     /**
@@ -81,7 +81,7 @@ public class BaseBlock {
      * @param data the data to set
      */
     public void setData(int data) {
-        this.data = (byte) data;
+        this.data = (short) data;
     }
 
     /**
@@ -98,7 +98,7 @@ public class BaseBlock {
      */
     public int rotate90() {
         int newData = BlockData.rotate90(type, data);
-        this.data = (byte) newData;
+        this.data = (short) newData;
         return data;
     }
 
@@ -107,7 +107,7 @@ public class BaseBlock {
      */
     public int rotate90Reverse() {
         int newData = BlockData.rotate90Reverse(type, data);
-        this.data = (byte) newData;
+        this.data = (short) newData;
         return newData;
     }
 
@@ -119,7 +119,7 @@ public class BaseBlock {
      */
     public int cycleData(int increment) {
         int newData = BlockData.cycle(this.type, this.data, increment);
-        this.data = (byte) newData;
+        this.data = (short) newData;
         return newData;
     }
 
@@ -127,7 +127,7 @@ public class BaseBlock {
      * Flip this block.
      */
     public BaseBlock flip() {
-        data = (byte) BlockData.flip(type, data);
+        data = (short) BlockData.flip(type, data);
         return this;
     }
 
@@ -136,7 +136,7 @@ public class BaseBlock {
      * @param direction
      */
     public BaseBlock flip(FlipDirection direction) {
-        data = (byte) BlockData.flip(type, data, direction);
+        data = (short) BlockData.flip(type, data, direction);
         return this;
     }
 

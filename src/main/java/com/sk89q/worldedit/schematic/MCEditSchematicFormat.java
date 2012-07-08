@@ -107,8 +107,19 @@ public class MCEditSchematicFormat extends SchematicFormat {
         }
 
         // Get blocks
-        byte[] blocks = getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
+        byte[] rawBlocks = getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
         byte[] blockData = getChildTag(schematic, "Data", ByteArrayTag.class).getValue();
+        short[] blocks = new short[rawBlocks.length];
+
+        if (schematic.containsKey("AddBlocks")) {
+            byte[] addBlockIds = getChildTag(schematic, "AddBlocks", ByteArrayTag.class).getValue();
+            for (int i = 0, index = 0; i < addBlockIds.length && index < blocks.length; ++i) {
+                blocks[index] = (short) (addBlockIds[i] & 0xF << 8 + rawBlocks[index++]);
+                if (index < blocks.length) {
+                    blocks[index] = (short) (((addBlockIds[i] << 4) & 0xF) << 8 + rawBlocks[index++]);
+                }
+            }
+        }
 
         // Need to pull out tile entities
         List<Tag> tileEntities = getChildTag(schematic, "TileEntities", ListTag.class)
@@ -201,6 +212,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
 
         // Copy
         byte[] blocks = new byte[width * height * length];
+        byte[] addBlocks = null;
         byte[] blockData = new byte[width * height * length];
         ArrayList<Tag> tileEntities = new ArrayList<Tag>();
 
@@ -209,6 +221,15 @@ public class MCEditSchematicFormat extends SchematicFormat {
                 for (int z = 0; z < length; ++z) {
                     int index = y * width * length + z * width + x;
                     BaseBlock block = clipboard.getPoint(new BlockVector(x, y, z));
+                    if (block.getType() > 255) {
+                        if (addBlocks == null) {
+                            addBlocks = new byte[blocks.length >> 1];
+                        }
+                        addBlocks[index >> 1] = (byte) (((index & 1) == 0) ?
+                                addBlocks[index >> 1] & 0xF0 | (block.getType() >> 8) & 0xF
+                                : addBlocks[index >> 1] & 0xF | ((block.getType() >> 8) & 0xF) << 4);
+                    }
+
                     blocks[index] = (byte) block.getType();
                     blockData[index] = (byte) block.getData();
 
@@ -238,6 +259,9 @@ public class MCEditSchematicFormat extends SchematicFormat {
         schematic.put("Data", new ByteArrayTag("Data", blockData));
         schematic.put("Entities", new ListTag("Entities", CompoundTag.class, new ArrayList<Tag>()));
         schematic.put("TileEntities", new ListTag("TileEntities", CompoundTag.class, tileEntities));
+        if (addBlocks != null) {
+            schematic.put("AddBlocks", new ByteArrayTag("AddBlocks", addBlocks));
+        }
 
         // Build and output
         CompoundTag schematicTag = new CompoundTag("Schematic", schematic);
