@@ -155,9 +155,6 @@ public class SnapshotRestore {
         for (Map.Entry<BlockVector2D, ArrayList<Vector>> entry : neededChunks.entrySet()) {
             BlockVector2D chunkPos = entry.getKey();
             Chunk chunk;
-            
-            boolean hasFastMode = editSession.hasFastMode();
-            editSession.setFastMode(true);
 
             try {
                 chunk = chunkStore.getChunk(chunkPos, editSession.getWorld());
@@ -179,8 +176,6 @@ public class SnapshotRestore {
             } catch (IOException ioe) {
                 errorChunks.add(chunkPos);
                 lastErrorMessage = ioe.getMessage();
-            } finally {
-                editSession.setFastMode(hasFastMode);
             }
         }
     }
