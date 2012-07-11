@@ -111,6 +111,8 @@ public class MCEditSchematicFormat extends SchematicFormat {
         byte[] blockData = getChildTag(schematic, "Data", ByteArrayTag.class).getValue();
         short[] blocks = new short[rawBlocks.length];
 
+        for (int i = 0; i < rawBlocks.length; i++) blocks[i] = (short) rawBlocks[i];
+        
         if (schematic.containsKey("AddBlocks")) {
             byte[] addBlockIds = getChildTag(schematic, "AddBlocks", ByteArrayTag.class).getValue();
             for (int i = 0, index = 0; i < addBlockIds.length && index < blocks.length; ++i) {
