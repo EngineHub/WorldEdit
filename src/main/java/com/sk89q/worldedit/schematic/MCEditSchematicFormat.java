@@ -119,6 +119,10 @@ public class MCEditSchematicFormat extends SchematicFormat {
                     blocks[index] = (short) (((addBlockIds[i] << 4) & 0xF) << 8 + rawBlocks[index++]);
                 }
             }
+        } else {
+            for (int i = 0; i < rawBlocks.length; ++i) {
+                blocks[i] = rawBlocks[i];
+            }
         }
 
         // Need to pull out tile entities
