@@ -309,6 +309,54 @@ public final class Functions {
         return setBufferItem(Expression.getInstance().getMegabuf(), (int) index.getValue(), value);
     }
 
+    @Dynamic
+    public static final double closest(RValue x, RValue y, RValue z, RValue index, RValue count, RValue stride) throws EvaluationException {
+        return findClosest(
+            Expression.getInstance().getMegabuf(),
+            x.getValue(),
+            y.getValue(),
+            z.getValue(),
+            (int) index.getValue(),
+            (int) count.getValue(),
+            (int) stride.getValue()
+        );
+    }
+
+    @Dynamic
+    public static final double gclosest(RValue x, RValue y, RValue z, RValue index, RValue count, RValue stride) throws EvaluationException {
+        return findClosest(
+            gmegabuf,
+            x.getValue(),
+            y.getValue(),
+            z.getValue(),
+            (int) index.getValue(),
+            (int) count.getValue(),
+            (int) stride.getValue()
+        );
+    }
+
+    private static double findClosest(Map<Integer, double[]> megabuf, double x, double y, double z, int index, int count, int stride) {
+        int closestIndex = -1;
+        double minDistanceSquared = Double.MAX_VALUE;
+
+        for (int i = 0; i < count; ++i) {
+            double currentX = getBufferItem(megabuf, index+0) - x;
+            double currentY = getBufferItem(megabuf, index+1) - y;
+            double currentZ = getBufferItem(megabuf, index+2) - z;
+
+            double currentDistanceSquared = currentX*currentX + currentY*currentY + currentZ*currentZ;
+
+            if (currentDistanceSquared < minDistanceSquared) {
+                minDistanceSquared = currentDistanceSquared;
+                closestIndex = index;
+            }
+
+            index += stride;
+        }
+
+        return closestIndex;
+    }
+
 
     private static final Random random = new Random();
 
