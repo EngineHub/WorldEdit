@@ -281,28 +281,32 @@ public final class Functions {
         return ret;
     }
 
+    private static double getBufferItem(final Map<Integer, double[]> megabuf, final int index) {
+        return getSubBuffer(megabuf, index & ~1023)[index & 1023];
+    }
+
+    private static double setBufferItem(final Map<Integer, double[]> megabuf, final int index, double value) {
+        return getSubBuffer(megabuf, index & ~1023)[index & 1023] = value;
+    }
+
     @Dynamic
     public static final double gmegabuf(RValue index) throws EvaluationException {
-        final int intIndex = (int) index.getValue();
-        return getSubBuffer(gmegabuf, intIndex & ~1023)[intIndex & 1023];
+        return getBufferItem(gmegabuf, (int) index.getValue());
     }
 
     @Dynamic
     public static final double gmegabuf(RValue index, double value) throws EvaluationException {
-        final int intIndex = (int) index.getValue();
-        return getSubBuffer(gmegabuf, intIndex & ~1023)[intIndex & 1023] = value;
+        return setBufferItem(gmegabuf, (int) index.getValue(), value);
     }
 
     @Dynamic
     public static final double megabuf(RValue index) throws EvaluationException {
-        final int intIndex = (int) index.getValue();
-        return getSubBuffer(Expression.getInstance().getMegabuf(), intIndex & ~1023)[intIndex & 1023];
+        return getBufferItem(Expression.getInstance().getMegabuf(), (int) index.getValue());
     }
 
     @Dynamic
     public static final double megabuf(RValue index, double value) throws EvaluationException {
-        final int intIndex = (int) index.getValue();
-        return getSubBuffer(Expression.getInstance().getMegabuf(), intIndex & ~1023)[intIndex & 1023] = value;
+        return setBufferItem(Expression.getInstance().getMegabuf(), (int) index.getValue(), value);
     }
 
 
