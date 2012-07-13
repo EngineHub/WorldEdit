@@ -74,6 +74,6 @@ public class Conditional extends Node {
             }
         }
 
-        return new Conditional(getPosition(), newCondition, truePart.optimize(), falsePart.optimize());
+        return new Conditional(getPosition(), newCondition, truePart.optimize(), falsePart == null ? null : falsePart.optimize());
     }
 }
