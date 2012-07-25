@@ -389,6 +389,24 @@ public class WorldEditPlugin extends JavaPlugin {
         session.setRegionSelector(BukkitUtil.getLocalWorld(player.getWorld()), sel);
         session.dispatchCUISelection(wrapPlayer(player));
     }
+    
+    /**
+     * Sets the region selection for the console.  Differs from setSelection in that it can be called from the console, specifying a world
+     *
+     * @param sender (console)
+     * @param world
+     * @param selection
+     */
+    public void setConsoleSelection(CommandSender sender, World world, Selection selection) {
+
+        if (selection == null) {
+            throw new IllegalArgumentException("Null selection not allowed");
+        }
+
+        LocalSession session = controller.getSession(wrapCommandSender(sender));
+        RegionSelector sel = selection.getRegionSelector();
+        session.setRegionSelector(BukkitUtil.getLocalWorld(world), sel);
+    }
 
     public void setPluginChannelCUI(String name, boolean value) {
         if (value) {
