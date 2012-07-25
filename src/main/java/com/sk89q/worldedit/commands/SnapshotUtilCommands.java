@@ -161,4 +161,143 @@ public class SnapshotUtilCommands {
             }
         }
     }
+    
+    @Command(
+            aliases = { "consolerestore", "/consolerestore" },
+            usage = "[snapshot]",
+            desc = "Restore the selection from a snapshot",
+            min = 1,
+            max = 2
+    )
+    @com.sk89q.minecraft.util.commands.Console
+    @CommandPermissions("worldedit.snapshots.restore")
+    public void consolerestore(CommandContext args, LocalSession session, LocalPlayer playerD,
+            EditSession editSession) throws WorldEditException {
+
+        LocalConfiguration config = we.getConfiguration();
+
+        if (config.snapshotRepo == null) {
+            System.out.println("Snapshot/backup restore is not configured.");
+            return;
+        }
+        
+        com.sk89q.worldedit.LocalWorld world = null;
+        try {
+            world = matchWorld(args.getString(0));
+        }
+        catch (CommandException e) {
+        	System.out.println("Command Exception: " + e.getLocalizedMessage());
+        	return;
+        }
+
+        Region region = session.getSelection(world);
+        Snapshot snapshot;
+
+        if (args.argsLength() > 1) {
+            try {
+                snapshot = config.snapshotRepo.getSnapshot(args.getString(1));
+            } catch (InvalidSnapshotException e) {
+                System.out.println("That snapshot does not exist or is not available.");
+                return;
+            }
+        } else {
+            snapshot = session.getSnapshot();
+        }
+
+        // No snapshot set?
+        if (snapshot == null) {
+            try {
+                snapshot = config.snapshotRepo.getDefaultSnapshot(world.getName());
+
+                if (snapshot == null) {
+                    System.out.println("No snapshots were found. See console for details.");
+
+                    // Okay, let's toss some debugging information!
+                    File dir = config.snapshotRepo.getDirectory();
+
+                    try {
+                        logger.info("WorldEdit found no snapshots: looked in: "
+                                + dir.getCanonicalPath());
+                    } catch (IOException e) {
+                        logger.info("WorldEdit found no snapshots: looked in "
+                                + "(NON-RESOLVABLE PATH - does it exist?): "
+                                + dir.getPath());
+                    }
+
+                    return;
+                }
+            } catch (MissingWorldException ex) {
+                System.out.println("No snapshots were found for this world.");
+                return;
+            }
+        }
+
+        ChunkStore chunkStore = null;
+
+        // Load chunk store
+        try {
+            chunkStore = snapshot.getChunkStore();
+            System.out.println("Snapshot '" + snapshot.getName() + "' loaded; now restoring...");
+        } catch (DataException e) {
+        	System.out.println("Failed to load snapshot: " + e.getMessage());
+            return;
+        } catch (IOException e) {
+        	System.out.println("Failed to load snapshot: " + e.getMessage());
+            return;
+        }
+
+        try {
+            // Restore snapshot
+            SnapshotRestore restore = new SnapshotRestore(chunkStore, region);
+            //player.print(restore.getChunksAffected() + " chunk(s) will be loaded.");
+
+            editSession = new EditSession(world, 0);
+            restore.restore(editSession);
+
+            if (restore.hadTotalFailure()) {
+                String error = restore.getLastErrorMessage();
+                if (error != null) {
+                	System.out.println("Errors prevented any blocks from being restored.");
+                	System.out.println("Last error: " + error);
+                } else {
+                	System.out.println("No chunks could be loaded. (Bad archive?)");
+                }
+            } else {
+            	System.out.println(String.format("Restored; %d "
+                        + "missing chunks and %d other errors.",
+                        restore.getMissingChunks().size(),
+                        restore.getErrorChunks().size()));
+            }
+        } finally {
+            try {
+                chunkStore.close();
+            } catch (IOException e) {
+            }
+        }
+    }
+   
+   public com.sk89q.worldedit.LocalWorld matchWorld(String filter) throws CommandException {
+       List<com.sk89q.worldedit.LocalWorld> worlds = this.we.getServer().getWorlds();
+
+       // Handle special hash tag groups
+       if (filter.charAt(0) == '#') {
+           // #main for the main world
+           if (filter.equalsIgnoreCase("#main")) {
+               return worlds.get(0);
+
+           } else {
+               throw new CommandException("Invalid identifier '" + filter + "'.");
+           }
+       }
+
+       for (com.sk89q.worldedit.LocalWorld world : worlds) {
+           if (world.getName().equals(filter)) {
+               return world;
+           }
+       }
+
+       throw new CommandException("No world by that exact name found.");
+   }
+   
+  
 }
