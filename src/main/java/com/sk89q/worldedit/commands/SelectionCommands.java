@@ -193,14 +193,15 @@ public class SelectionCommands {
 
         final Vector min;
         final Vector max;
+        final LocalWorld world = player.getWorld();
         if (args.hasFlag('s')) {
-            Region region = session.getSelection(player.getWorld());
+            Region region = session.getSelection(world);
 
             final Vector2D min2D = ChunkStore.toChunk(region.getMinimumPoint());
             final Vector2D max2D = ChunkStore.toChunk(region.getMaximumPoint());
 
             min = new Vector(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
-            max = new Vector(max2D.getBlockX() * 16 + 15, player.getWorld().getMaxY(), max2D.getBlockZ() * 16 + 15);
+            max = new Vector(max2D.getBlockX() * 16 + 15, world.getMaxY(), max2D.getBlockZ() * 16 + 15);
 
             player.print("Chunks selected: ("
                     + min2D.getBlockX() + ", " + min2D.getBlockZ() + ") - ("
@@ -209,16 +210,20 @@ public class SelectionCommands {
             final Vector2D min2D = ChunkStore.toChunk(player.getBlockIn());
 
             min = new Vector(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
-            max = min.add(15, player.getWorld().getMaxY(), 15);
+            max = min.add(15, world.getMaxY(), 15);
 
             player.print("Chunk selected: "
                     + min2D.getBlockX() + ", " + min2D.getBlockZ());
         }
 
-        CuboidRegionSelector selector = new CuboidRegionSelector(player.getWorld());
+        final CuboidRegionSelector selector;
+        if (session.getRegionSelector(world) instanceof ExtendingCuboidRegionSelector)
+            selector = new ExtendingCuboidRegionSelector(world);
+        else
+            selector = new CuboidRegionSelector(world);
         selector.selectPrimary(min);
         selector.selectSecondary(max);
-        session.setRegionSelector(player.getWorld(), selector);
+        session.setRegionSelector(world, selector);
 
         session.dispatchCUISelection(player);
 
