@@ -101,7 +101,7 @@ public class SpoutUtil {
     }
 
     public static Block toBlock(BlockWorldVector pt) {
-        return toWorld(pt).getBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        return toWorld(pt).getBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), WorldEditPlugin.getInstance());
     }
 
     public static World toWorld(WorldVector pt) {
