@@ -18,11 +18,13 @@
 
 package com.sk89q.worldedit.spout;
 
+import org.spout.api.chat.ChatSection;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.RawCommandExecutor;
 import org.spout.api.exception.CommandException;
-import org.spout.api.util.MiscCompatibilityUtils;
+
+import java.util.List;
 
 /**
  * @author zml2008
@@ -36,10 +38,15 @@ public class SpoutRawCommandExecutor implements RawCommandExecutor {
     }
 
     @Override
-    public void execute(Command cmd, CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
-        args[baseIndex] = "/" + cmd.getPreferredName();
-        if (!plugin.getWorldEdit().handleCommand(plugin.wrapCommandSender(source), MiscCompatibilityUtils.arrayCopyOfRange(args, baseIndex, args.length))) {
-            throw new CommandException("Unknown command: '" + args[baseIndex] + "'!");
+    public void execute(Command cmd, CommandSource source, String name, List<ChatSection> args, int baseIndex, boolean fuzzyLookup) throws CommandException {
+        String[] argArray = new String[args.size() - baseIndex + 1];
+        argArray[0] = "/" + cmd.getPreferredName();
+        for (int i = baseIndex; i < args.size(); ++i) {
+            argArray[i - baseIndex + 1] = args.get(i).getPlainString();
+        }
+
+        if (!plugin.getWorldEdit().handleCommand(plugin.wrapCommandSender(source), argArray)) {
+            throw new CommandException("Unknown command: '/" + name + "'!");
         }
     }
 }

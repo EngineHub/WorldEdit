@@ -27,6 +27,8 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldVector;
 import org.spout.api.Spout;
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.ChatSection;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
 import org.spout.api.event.Order;
@@ -41,6 +43,8 @@ import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.scheduler.TaskPriority;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -89,17 +93,28 @@ public class WorldEditListener implements Listener {
     @EventHandler(order = Order.EARLY)
     public void onPlayerCommandPreprocess(PreCommandEvent event) {
 
-        if (event.getMessage().startsWith("nowe:")) {
-            event.setMessage(event.getMessage().substring(5));
+        if (event.getCommand().startsWith("nowe:")) {
+            event.setCommand(event.getCommand().substring(5));
             return;
         }
 
-        String[] split = event.getMessage().split(" ");
+        List<ChatSection> args = event.getArguments().toSections(ChatSection.SplitType.WORD);
+        if (args.size() > 0) {
+            String[] split = new String[args.size() + 1];
+            split[0] = "/" + event.getCommand();
+            for (int i = 0; i < args.size(); ++i) {
+                split[i + 1] = args.get(i).getPlainString();
+            }
 
-        if (split.length > 0) {
-            split[0] = "/" + split[0];
-            split = plugin.getWorldEdit().commandDetection(split);
-            event.setMessage(StringUtil.joinString(split, " "));
+            String[] newSplit = plugin.getWorldEdit().commandDetection(split);
+            if (!Arrays.equals(split, newSplit)) {
+                event.setCommand(newSplit[0]);
+                ChatArguments newArgs = new ChatArguments();
+                for (int i = 1; i < newSplit.length; ++i) {
+                    newArgs.append(newSplit[i]);
+                }
+                event.setArguments(newArgs);
+            }
         }
     }
 
@@ -170,7 +185,7 @@ public class WorldEditListener implements Listener {
             return;
         }
 
-        Matcher matcher = cuipattern.matcher(event.getMessage());
+        Matcher matcher = cuipattern.matcher(event.getMessage().getPlainString());
         if (matcher.find()) {
             String type = matcher.group(1);
             String args = matcher.group(2);
