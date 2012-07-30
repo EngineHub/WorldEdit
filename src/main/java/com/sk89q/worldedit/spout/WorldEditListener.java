@@ -138,8 +138,8 @@ public class WorldEditListener implements Listener {
 
             if (!event.isAir()) {
                 final Point clickedBlock = event.getInteractedPoint();
-                final WorldVector pos = new WorldVector(world, clickedBlock.getX(),
-                        clickedBlock.getY(), clickedBlock.getZ());
+                final WorldVector pos = new WorldVector(world, clickedBlock.getBlockX(),
+                        clickedBlock.getBlockY(), clickedBlock.getBlockZ());
 
 
                 if (we.handleBlockLeftClick(player, pos)) {
@@ -165,8 +165,8 @@ public class WorldEditListener implements Listener {
         } else if (action == Action.RIGHT_CLICK) {
             if (!event.isAir()) {
                 final Point clickedBlock = event.getInteractedPoint();
-                final WorldVector pos = new WorldVector(world, clickedBlock.getX(),
-                        clickedBlock.getY(), clickedBlock.getZ());
+                final WorldVector pos = new WorldVector(world, clickedBlock.getBlockX(),
+                        clickedBlock.getBlockY(), clickedBlock.getBlockZ());
 
                 if (we.handleBlockRightClick(player, pos)) {
                     event.setCancelled(true);

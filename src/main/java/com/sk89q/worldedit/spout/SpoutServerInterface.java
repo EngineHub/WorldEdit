@@ -32,6 +32,7 @@ import org.spout.api.geo.World;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.scheduler.TaskPriority;
+import org.spout.vanilla.material.VanillaMaterial;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class SpoutServerInterface extends ServerInterface {
     @Override
     public int resolveItem(String name) {
         Material mat = MaterialRegistry.get(name);
-        return mat == null ? 0 : mat.getId();
+        return mat == null || !(mat instanceof VanillaMaterial) ? 0 : ((VanillaMaterial) mat).getMinecraftId();
     }
 
     @Override

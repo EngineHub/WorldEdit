@@ -34,8 +34,9 @@ import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;
-import org.spout.api.material.MaterialRegistry;
 import org.spout.api.player.Player;
+import org.spout.vanilla.material.VanillaMaterial;
+import org.spout.vanilla.material.VanillaMaterials;
 import org.spout.vanilla.controller.living.player.VanillaPlayer;
 
 public class SpoutPlayer extends LocalPlayer {
@@ -53,7 +54,7 @@ public class SpoutPlayer extends LocalPlayer {
     public int getItemInHand() {
         VanillaPlayer vanillaPlayer = (VanillaPlayer) player.getEntity().getController();
         ItemStack itemStack = vanillaPlayer.getInventory().getQuickbar().getCurrentItem();
-        return itemStack != null ? itemStack.getMaterial().getId() : 0;
+        return itemStack != null ? ((VanillaMaterial) itemStack.getMaterial()).getMinecraftId() : 0;
     }
 
     @Override
@@ -81,7 +82,7 @@ public class SpoutPlayer extends LocalPlayer {
     @Override
     public void giveItem(int type, int amt) {
         VanillaPlayer vanillaPlayer = (VanillaPlayer) player.getEntity().getController();
-        vanillaPlayer.getInventory().addItem(new ItemStack(MaterialRegistry.get((short) type), amt), false);
+        vanillaPlayer.getInventory().addItem(new ItemStack(VanillaMaterials.getMaterial((short) type), amt), false);
     }
 
     @Override
