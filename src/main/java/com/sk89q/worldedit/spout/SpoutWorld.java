@@ -43,13 +43,16 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
-import org.spout.api.material.MaterialRegistry;
 import org.spout.api.math.Vector3;
 import org.spout.vanilla.controller.object.moving.Item;
 import org.spout.vanilla.controller.object.moving.PrimedTnt;
 import org.spout.vanilla.controller.object.projectile.Arrow;
 import org.spout.vanilla.controller.object.vehicle.Boat;
 import org.spout.vanilla.controller.object.vehicle.Minecart;
+import org.spout.vanilla.material.VanillaMaterial;
+import org.spout.vanilla.material.VanillaMaterials;
+import org.spout.vanilla.world.generator.normal.object.tree.TreeObject;
+import org.spout.vanilla.world.generator.normal.object.tree.SmallTreeObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +96,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean setBlockType(Vector pt, int type) {
-        Material mat = MaterialRegistry.get((short) type);
+        Material mat = VanillaMaterials.getMaterial((short) type);
         if (mat != null && mat instanceof BlockMaterial) {
             return world.setBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (BlockMaterial) mat, (short)0, WorldEditPlugin.getInstance());
         }
@@ -121,7 +124,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean setTypeIdAndData(Vector pt, int type, int data) {
-        Material mat = MaterialRegistry.get((short) type);
+        Material mat = VanillaMaterials.getMaterial((short) type);
         if (mat != null && mat instanceof BlockMaterial) {
             return world.setBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (BlockMaterial) mat, (short)data, WorldEditPlugin.getInstance());
         }
@@ -149,7 +152,8 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public int getBlockType(Vector pt) {
-        return world.getBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getId();
+        Material mat = world.getBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        return mat instanceof VanillaMaterial? ((VanillaMaterial) mat).getMinecraftId() : 0;
     }
 
     /**
@@ -422,7 +426,12 @@ public class SpoutWorld extends LocalWorld {
     @Override
     public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector pt)
             throws MaxChangedBlocksException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        TreeObject tree = new SmallTreeObject(); //TODO: properly check for tree type
+        if (!tree.canPlaceObject(world, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ())) {
+            return false;
+        }
+        tree.placeObject(world, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        return true;
     }
 
     /**
@@ -433,12 +442,12 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public void dropItem(Vector pt, BaseItemStack item) {
-        Material mat = MaterialRegistry.get((short) item.getType());
+        Material mat = VanillaMaterials.getMaterial((short) item.getType());
         if (mat.hasSubMaterials()) {
             mat = mat.getSubMaterial(item.getDamage());
         }
-        ItemStack bukkitItem = new ItemStack(mat, item.getDamage(), item.getAmount());
-        world.createAndSpawnEntity(SpoutUtil.toPoint(world, pt), new Item(bukkitItem, new Vector3(pt.getX(), pt.getY(), pt.getZ())));
+        ItemStack spoutItem = new ItemStack(mat, item.getDamage(), item.getAmount());
+        world.createAndSpawnEntity(SpoutUtil.toPoint(world, pt), new Item(spoutItem, new Vector3(pt.getX(), pt.getY(), pt.getZ())));
     }
 
     /**
@@ -685,7 +694,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean isValidBlockType(int type) {
-        return MaterialRegistry.get((short)type) instanceof BlockMaterial;
+        return VanillaMaterials.getMaterial((short)type) instanceof BlockMaterial;
     }
 
     @Override
