@@ -117,7 +117,7 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
                 if (testEntry == null) {
                     for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements();) {
 
-                        testEntry = (ZipEntry) e.nextElement();
+                        testEntry = e.nextElement();
 
                         // Whoo, found level.dat!
                         if (pattern.matcher(testEntry.getName()).matches()) {

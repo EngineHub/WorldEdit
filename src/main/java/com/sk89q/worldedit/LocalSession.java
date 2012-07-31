@@ -19,28 +19,25 @@
 
 package com.sk89q.worldedit;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TimeZone;
 import com.sk89q.jchronic.Chronic;
 import com.sk89q.jchronic.Options;
 import com.sk89q.jchronic.utils.Span;
 import com.sk89q.jchronic.utils.Time;
-import com.sk89q.worldedit.snapshots.Snapshot;
-import com.sk89q.worldedit.tools.BrushTool;
-import com.sk89q.worldedit.tools.SinglePickaxe;
-import com.sk89q.worldedit.tools.BlockTool;
-import com.sk89q.worldedit.tools.Tool;
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.cui.CUIRegion;
 import com.sk89q.worldedit.cui.CUIEvent;
+import com.sk89q.worldedit.cui.CUIRegion;
 import com.sk89q.worldedit.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.snapshots.Snapshot;
+import com.sk89q.worldedit.tools.BlockTool;
+import com.sk89q.worldedit.tools.BrushTool;
+import com.sk89q.worldedit.tools.SinglePickaxe;
+import com.sk89q.worldedit.tools.Tool;
+
+import java.util.*;
 
 /**
  * An instance of this represents the WorldEdit session of a user. A session
@@ -231,10 +228,9 @@ public class LocalSession {
      * @return
      */
     public boolean isSelectionDefined(LocalWorld world) {
-        if (selector.getIncompleteRegion().getWorld() == null || !selector.getIncompleteRegion().getWorld().equals(world)) {
-            return false;
-        }
-        return selector.isDefined();
+
+        return !(selector.getIncompleteRegion().getWorld() == null || !selector.getIncompleteRegion().getWorld()
+                .equals(world)) && selector.isDefined();
     }
 
     /**

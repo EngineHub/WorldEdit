@@ -23,12 +23,13 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
+
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 
 /**
  * Generation commands.
@@ -212,11 +213,8 @@ public class GenerationCommands {
             return;
         }
         final boolean raised;
-        if (args.argsLength() > 2) {
-            raised = args.getString(2).equalsIgnoreCase("true") || args.getString(2).equalsIgnoreCase("yes");
-        } else {
-            raised = false;
-        }
+        raised = args.argsLength() > 2 && (args.getString(2).equalsIgnoreCase("true") || args.getString(2)
+                .equalsIgnoreCase("yes"));
 
         Vector pos = session.getPlacementPosition(player);
         if (raised) {

@@ -19,19 +19,15 @@
 
 package com.sk89q.wepif;
 
+import com.sk89q.util.yaml.YAMLProcessor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashMap;
-
-import com.sk89q.util.yaml.YAMLProcessor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
+import java.util.*;
 
 public class FlatFilePermissionsResolver implements PermissionsResolver {
     private Map<String, Set<String>> userPermissionsCache;
@@ -104,7 +100,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 if (input != null) {
                     input.close();
                 }
-            } catch (IOException e2) {
+            } catch (IOException ignored) {
             }
         }
 
@@ -169,7 +165,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 if (input != null) {
                     input.close();
                 }
-            } catch (IOException e2) {
+            } catch (IOException ignored) {
             }
         }
     }
@@ -198,11 +194,8 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
 
     public boolean inGroup(String player, String group) {
         Set<String> groups = userGroups.get(player.toLowerCase());
-        if (groups == null) {
-            return false;
-        }
+        return groups != null && groups.contains(group);
 
-        return groups.contains(group);
     }
 
     public String[] getGroups(String player) {

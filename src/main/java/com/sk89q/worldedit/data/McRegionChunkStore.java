@@ -55,7 +55,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
             } else {
                 try {
                     cachedReader.close();
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -82,7 +82,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
                         + tag.getClass().getName());
             }
 
-            Map<String, Tag> children = (Map<String, Tag>) ((CompoundTag) tag).getValue();
+            Map<String, Tag> children = ((CompoundTag) tag).getValue();
             CompoundTag rootTag = null;
 
             // Find Level tag

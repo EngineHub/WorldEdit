@@ -19,26 +19,19 @@
 
 package com.sk89q.worldedit.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandAlias;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.data.ChunkStore;
-import com.sk89q.worldedit.regions.CuboidRegionSelector;
-import com.sk89q.worldedit.regions.EllipsoidRegionSelector;
-import com.sk89q.worldedit.regions.ExtendingCuboidRegionSelector;
-import com.sk89q.worldedit.regions.Polygonal2DRegionSelector;
-import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.RegionOperationException;
-import com.sk89q.worldedit.regions.RegionSelector;
-import com.sk89q.worldedit.regions.SphereRegionSelector;
-import com.sk89q.worldedit.blocks.*;
-import com.sk89q.worldedit.regions.CylinderRegionSelector;
+import com.sk89q.worldedit.regions.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Selection commands.
@@ -491,7 +484,7 @@ public class SelectionCommands {
             changes.add((new Vector(0, 0, -1)).multiply(change));
         }
 
-        return changes.toArray(new Vector[0]);
+        return changes.toArray(new Vector[changes.size()]);
     }
 
     @Command(

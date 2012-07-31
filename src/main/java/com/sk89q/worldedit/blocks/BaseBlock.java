@@ -142,11 +142,9 @@ public class BaseBlock {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof BaseBlock)) {
-            return false;
-        }
 
-        return type == ((BaseBlock) o).type && data == ((BaseBlock) o).data;
+        return o instanceof BaseBlock && type == ((BaseBlock) o).type && data == ((BaseBlock) o).data;
+
     }
 
     public boolean equalsFuzzy(BaseBlock o) {

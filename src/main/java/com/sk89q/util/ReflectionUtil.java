@@ -33,8 +33,8 @@ public class ReflectionUtil {
                 Field field = checkClass.getDeclaredField(name);
                 field.setAccessible(true);
                 return (T) field.get(from);
-            } catch (NoSuchFieldException e) {
-            } catch (IllegalAccessException e) {
+            } catch (NoSuchFieldException ignored) {
+            } catch (IllegalAccessException ignored) {
             }
         } while (checkClass.getSuperclass() != Object.class && ((checkClass = checkClass.getSuperclass()) != null));
         return null;

@@ -210,7 +210,7 @@ public class EditSession {
             if (existing > 0) {
                 try {
                     blockBag.storeDroppedBlock(existing, world.getBlockData(pt));
-                } catch (BlockBagException e) {
+                } catch (BlockBagException ignored) {
                 }
             }
         }
@@ -308,11 +308,8 @@ public class EditSession {
      */
     public boolean setBlockIfAir(Vector pt, BaseBlock block)
             throws MaxChangedBlocksException {
-        if (!getBlock(pt).isAir()) {
-            return false;
-        } else {
-            return setBlock(pt, block);
-        }
+
+        return getBlock(pt).isAir() && setBlock(pt, block);
     }
 
     /**
@@ -464,8 +461,8 @@ public class EditSession {
      */
     public void undo(EditSession sess) {
         for (Map.Entry<BlockVector, BaseBlock> entry : original) {
-            BlockVector pt = (BlockVector) entry.getKey();
-            sess.smartSetBlock(pt, (BaseBlock) entry.getValue());
+            BlockVector pt = entry.getKey();
+            sess.smartSetBlock(pt, entry.getValue());
         }
         sess.flushQueue();
     }
@@ -477,8 +474,8 @@ public class EditSession {
      */
     public void redo(EditSession sess) {
         for (Map.Entry<BlockVector, BaseBlock> entry : current) {
-            BlockVector pt = (BlockVector) entry.getKey();
-            sess.smartSetBlock(pt, (BaseBlock) entry.getValue());
+            BlockVector pt = entry.getKey();
+            sess.smartSetBlock(pt, entry.getValue());
         }
         sess.flushQueue();
     }
@@ -569,10 +566,8 @@ public class EditSession {
      */
     public boolean setChanceBlockIfAir(Vector pos, BaseBlock block, double c)
             throws MaxChangedBlocksException {
-        if (Math.random() <= c) {
-            return setBlockIfAir(pos, block);
-        }
-        return false;
+
+        return Math.random() <= c && setBlockIfAir(pos, block);
     }
 
     /**
@@ -727,8 +722,8 @@ public class EditSession {
         final Set<BlockVector2D> dirtyChunks = new HashSet<BlockVector2D>();
 
         for (Map.Entry<BlockVector, BaseBlock> entry : queueAfter) {
-            BlockVector pt = (BlockVector) entry.getKey();
-            rawSetBlock(pt, (BaseBlock) entry.getValue());
+            BlockVector pt = entry.getKey();
+            rawSetBlock(pt, entry.getValue());
 
             // TODO: use ChunkStore.toChunk(pt) after optimizing it.
             if (fastMode) {
@@ -740,8 +735,8 @@ public class EditSession {
         // because it might cause the items to drop
         if (blockBag == null || missingBlocks.size() == 0) {
             for (Map.Entry<BlockVector, BaseBlock> entry : queueLast) {
-                BlockVector pt = (BlockVector) entry.getKey();
-                rawSetBlock(pt, (BaseBlock) entry.getValue());
+                BlockVector pt = entry.getKey();
+                rawSetBlock(pt, entry.getValue());
 
                 // TODO: use ChunkStore.toChunk(pt) after optimizing it.
                 if (fastMode) {

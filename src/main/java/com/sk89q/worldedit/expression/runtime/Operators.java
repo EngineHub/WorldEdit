@@ -29,7 +29,7 @@ public final class Operators {
         if (lhs instanceof LValue) {
             try {
                 return new Function(position, Operators.class.getMethod(name, LValue.class, RValue.class), lhs, rhs);
-            } catch (NoSuchMethodException e) {
+            } catch (NoSuchMethodException ignored) {
             }
         }
         return new Function(position, Operators.class.getMethod(name, RValue.class, RValue.class), lhs, rhs);
@@ -39,7 +39,7 @@ public final class Operators {
         if (argument instanceof LValue) {
             try {
                 return new Function(position, Operators.class.getMethod(name, LValue.class), argument);
-            } catch (NoSuchMethodException e) {
+            } catch (NoSuchMethodException ignored) {
             }
         }
         return new Function(position, Operators.class.getMethod(name, RValue.class), argument);

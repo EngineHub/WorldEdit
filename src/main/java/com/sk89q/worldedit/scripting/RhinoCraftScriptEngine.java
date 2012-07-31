@@ -59,7 +59,7 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
             throw new ScriptException(e.getMessage());
         } catch (RhinoException e) {
             if (e instanceof WrappedException) {
-                Throwable cause = ((WrappedException) e).getCause();
+                Throwable cause = e.getCause();
                 if (cause instanceof WorldEditException) {
                     throw cause;
                 }

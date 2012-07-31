@@ -518,10 +518,10 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
         Iterator<BlockVector2D> it = pts.iterator();
         while (it.hasNext()) {
             BlockVector2D current = it.next();
-            sb.append("(" + current.getBlockX() + ", " + current.getBlockZ() + ")");
+            sb.append("(").append(current.getBlockX()).append(", ").append(current.getBlockZ()).append(")");
             if (it.hasNext()) sb.append(" - ");
         }
-        sb.append(" * (" + minY + " - " + maxY + ")");
+        sb.append(" * (").append(minY).append(" - ").append(maxY).append(")");
         return sb.toString();
     }
 

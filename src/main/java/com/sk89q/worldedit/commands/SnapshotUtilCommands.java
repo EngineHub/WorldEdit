@@ -157,7 +157,7 @@ public class SnapshotUtilCommands {
         } finally {
             try {
                 chunkStore.close();
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
         }
     }

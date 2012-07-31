@@ -117,8 +117,7 @@ public final class ParserProcessors {
 
             default:
                 Map<String, String> m = lBinaryOpMapsLA[i] = new HashMap<String, String>();
-                for (int j = 0; j < a.length; ++j) {
-                    final Object[] element = a[j];
+                for (final Object[] element : a) {
                     m.put((String) element[0], (String) element[1]);
                 }
             }
@@ -140,8 +139,7 @@ public final class ParserProcessors {
 
             default:
                 Map<String, String> m = lBinaryOpMapsRA[i] = new HashMap<String, String>();
-                for (int j = 0; j < a.length; ++j) {
-                    final Object[] element = a[j];
+                for (final Object[] element : a) {
                     m.put((String) element[0], (String) element[1]);
                 }
             }

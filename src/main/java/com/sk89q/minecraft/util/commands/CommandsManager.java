@@ -19,19 +19,14 @@
 
 package com.sk89q.minecraft.util.commands;
 
+import com.sk89q.util.StringUtil;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.sk89q.util.StringUtil;
 
 /**
  * <p>Manager for handling commands. This allows you to easily process commands,
@@ -350,7 +345,7 @@ public abstract class CommandsManager<T> {
         command.append("/");
 
         for (int i = 0; i <= level; ++i) {
-            command.append(args[i] + " ");
+            command.append(args[i]).append(" ");
         }
 
         Map<String, Method> map = commands.get(method);

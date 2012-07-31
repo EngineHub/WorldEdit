@@ -206,9 +206,7 @@ public class Snapshot implements Comparable<Snapshot> {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Snapshot) {
-            return file.equals(((Snapshot) o).file);
-        }
-        return false;
+
+        return o instanceof Snapshot && file.equals(((Snapshot) o).file);
     }
 }

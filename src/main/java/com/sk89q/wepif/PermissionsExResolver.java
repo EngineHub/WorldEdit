@@ -65,10 +65,7 @@ public class PermissionsExResolver implements PermissionsResolver {
 
     public boolean inGroup(String player, String group) {
         PermissionUser user = manager.getUser(player);
-        if (user == null) {
-            return false;
-        }
-        return user.inGroup(group);
+        return user != null && user.inGroup(group);
     }
 
     public String[] getGroups(String player) {

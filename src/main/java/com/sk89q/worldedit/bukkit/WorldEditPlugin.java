@@ -176,13 +176,13 @@ public class WorldEditPlugin extends JavaPlugin {
                         if (input != null) {
                             input.close();
                         }
-                    } catch (IOException e) {}
+                    } catch (IOException ignored) {}
 
                     try {
                         if (output != null) {
                             output.close();
                         }
-                    } catch (IOException e) {}
+                    } catch (IOException ignored) {}
                 }
             }
         }

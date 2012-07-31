@@ -194,7 +194,7 @@ public class WorldEditListener implements Listener {
                 try {
                     plugin.getSession(event.getPlayer()).setCUIVersion(Integer.parseInt(args));
                     event.setCancelled(true);
-                } catch( NumberFormatException e ) {
+                } catch( NumberFormatException ignored) {
                 }
             }
 

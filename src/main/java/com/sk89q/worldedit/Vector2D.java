@@ -188,9 +188,9 @@ public class Vector2D {
     public Vector2D add(Vector2D... others) {
         double newX = x, newZ = z;
 
-        for (int i = 0; i < others.length; ++i) {
-            newX += others[i].x;
-            newZ += others[i].z;
+        for (Vector2D other : others) {
+            newX += other.x;
+            newZ += other.z;
         }
         return new Vector2D(newX, newZ);
     }
@@ -238,9 +238,9 @@ public class Vector2D {
     public Vector2D subtract(Vector2D... others) {
         double newX = x, newZ = z;
 
-        for (int i = 0; i < others.length; ++i) {
-            newX -= others[i].x;
-            newZ -= others[i].z;
+        for (Vector2D other : others) {
+            newX -= other.x;
+            newZ -= other.z;
         }
         return new Vector2D(newX, newZ);
     }
@@ -288,9 +288,9 @@ public class Vector2D {
     public Vector2D multiply(Vector2D... others) {
         double newX = x, newZ = z;
 
-        for (int i = 0; i < others.length; ++i) {
-            newX *= others[i].x;
-            newZ *= others[i].z;
+        for (Vector2D other : others) {
+            newX *= other.x;
+            newZ *= other.z;
         }
         return new Vector2D(newX, newZ);
     }

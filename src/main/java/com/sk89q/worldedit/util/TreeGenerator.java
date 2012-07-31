@@ -19,15 +19,16 @@
 
 package com.sk89q.worldedit.util;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Tree generator.
@@ -114,7 +115,7 @@ public class TreeGenerator {
         public static TreeType lookup(String name) {
             return lookup.get(name.toLowerCase());
         }
-    };
+    }
 
     private static Random rand = new Random();
 

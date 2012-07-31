@@ -58,7 +58,6 @@ public class BukkitPainting extends BukkitEntity {
                         spawn.spawn();
                     } catch (Throwable t) {
                         t.printStackTrace();
-                        continue;
                     }
                 }
                 spawnTask = -1;
