@@ -53,11 +53,7 @@ public class For extends Node {
             try {
                 ret = body.getValue();
             } catch (BreakException e) {
-                if (e.doContinue) {
-                    continue;
-                } else {
-                    break;
-                }
+                if (!e.doContinue) break;
             }
         }
 

@@ -50,7 +50,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
 
         try {
             editSession.setBlock(clicked, targetBlock);
-        } catch (MaxChangedBlocksException e) {
+        } catch (MaxChangedBlocksException ignored) {
         } finally {
             if (bag != null) {
                 bag.flushChanges();

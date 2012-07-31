@@ -57,11 +57,7 @@ public class SimpleFor extends Node {
                 counter.assign(i);
                 ret = body.getValue();
             } catch (BreakException e) {
-                if (e.doContinue) {
-                    continue;
-                } else {
-                    break;
-                }
+                if (!e.doContinue) break;
             }
         }
 

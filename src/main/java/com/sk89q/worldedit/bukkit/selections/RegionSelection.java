@@ -19,13 +19,14 @@
 
 package com.sk89q.worldedit.bukkit.selections;
 
-import static com.sk89q.worldedit.bukkit.BukkitUtil.toLocation;
-import static com.sk89q.worldedit.bukkit.BukkitUtil.toVector;
-import org.bukkit.Location;
-import org.bukkit.World;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import org.bukkit.Location;
+import org.bukkit.World;
+
+import static com.sk89q.worldedit.bukkit.BukkitUtil.toLocation;
+import static com.sk89q.worldedit.bukkit.BukkitUtil.toVector;
 
 public abstract class RegionSelection implements Selection {
 
@@ -96,11 +97,9 @@ public abstract class RegionSelection implements Selection {
     }
 
     public boolean contains(Location pt) {
-        if (!pt.getWorld().equals(world)) {
-            return false;
-        }
 
-        return region.contains(toVector(pt));
+        return pt.getWorld().equals(world) && region.contains(toVector(pt));
+
     }
 
 }

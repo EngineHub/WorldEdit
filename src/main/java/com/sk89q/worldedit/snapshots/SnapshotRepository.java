@@ -199,15 +199,12 @@ public class SnapshotRepository {
      * @return whether it is a valid snapshot
      */
     protected boolean isValidSnapshot(File f) {
-        if (!f.getName().matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+$")) {
-            return false;
-        }
 
-        return (f.isDirectory() && (new File(f, "level.dat")).exists())
-                || (f.isFile() && (f.getName().toLowerCase().endsWith(".zip")
-                || f.getName().toLowerCase().endsWith(".tar.bz2")
-                || f.getName().toLowerCase().endsWith(".tar.gz")
-                || f.getName().toLowerCase().endsWith(".tar")));
+        return f.getName().matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\}," +
+                "\\?]+$") && ((f.isDirectory() && (new File(f, "level.dat")).exists()) || (f.isFile() && (f.getName()
+                .toLowerCase().endsWith(".zip") || f.getName().toLowerCase().endsWith(".tar.bz2") || f.getName()
+                .toLowerCase().endsWith(".tar.gz") || f.getName().toLowerCase().endsWith(".tar"))));
+
     }
 
     /**

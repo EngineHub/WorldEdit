@@ -19,28 +19,14 @@
 
 package com.sk89q.worldedit.expression.parser;
 
+import com.sk89q.worldedit.expression.Expression;
+import com.sk89q.worldedit.expression.Identifiable;
+import com.sk89q.worldedit.expression.lexer.tokens.*;
+import com.sk89q.worldedit.expression.runtime.*;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import com.sk89q.worldedit.expression.Expression;
-import com.sk89q.worldedit.expression.Identifiable;
-import com.sk89q.worldedit.expression.lexer.tokens.IdentifierToken;
-import com.sk89q.worldedit.expression.lexer.tokens.KeywordToken;
-import com.sk89q.worldedit.expression.lexer.tokens.NumberToken;
-import com.sk89q.worldedit.expression.lexer.tokens.OperatorToken;
-import com.sk89q.worldedit.expression.lexer.tokens.Token;
-import com.sk89q.worldedit.expression.runtime.Break;
-import com.sk89q.worldedit.expression.runtime.Conditional;
-import com.sk89q.worldedit.expression.runtime.Constant;
-import com.sk89q.worldedit.expression.runtime.For;
-import com.sk89q.worldedit.expression.runtime.Functions;
-import com.sk89q.worldedit.expression.runtime.LValue;
-import com.sk89q.worldedit.expression.runtime.RValue;
-import com.sk89q.worldedit.expression.runtime.Return;
-import com.sk89q.worldedit.expression.runtime.Sequence;
-import com.sk89q.worldedit.expression.runtime.SimpleFor;
-import com.sk89q.worldedit.expression.runtime.Switch;
-import com.sk89q.worldedit.expression.runtime.While;
 
 /**
  * Processes a list of tokens into an executable tree.
@@ -435,10 +421,7 @@ public class Parser {
 
     private boolean hasKeyword(String keyword) {
         final Token next = peek();
-        if (!(next instanceof KeywordToken)) {
-            return false;
-        }
-        return ((KeywordToken) next).value.equals(keyword);
+        return next instanceof KeywordToken && ((KeywordToken) next).value.equals(keyword);
     }
 
     private void assertCharacter(char character) throws ParserException {

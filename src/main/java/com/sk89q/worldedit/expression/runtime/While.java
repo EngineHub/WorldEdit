@@ -52,11 +52,7 @@ public class While extends Node {
                 try {
                     ret = body.getValue();
                 } catch (BreakException e) {
-                    if (e.doContinue) {
-                        continue;
-                    } else {
-                        break;
-                    }
+                    if (!e.doContinue) break;
                 }
             } while (condition.getValue() > 0.0);
         } else {
@@ -69,11 +65,7 @@ public class While extends Node {
                 try {
                     ret = body.getValue();
                 } catch (BreakException e) {
-                    if (e.doContinue) {
-                        continue;
-                    } else {
-                        break;
-                    }
+                    if (!e.doContinue) break;
                 }
             }
         }

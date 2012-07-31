@@ -19,15 +19,11 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.runtime.Function.Dynamic;
+
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Contains all functions that can be used in expressions.
@@ -120,7 +116,7 @@ public final class Functions {
         for (Method method : Functions.class.getMethods()) {
             try {
                 addFunction(method);
-            } catch(IllegalArgumentException e) {}
+            } catch(IllegalArgumentException ignored) {}
         }
     }
 

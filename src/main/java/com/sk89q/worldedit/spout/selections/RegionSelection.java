@@ -97,11 +97,9 @@ public abstract class RegionSelection implements Selection {
     }
 
     public boolean contains(Point pt) {
-        if (!pt.getWorld().equals(world)) {
-            return false;
-        }
 
-        return region.contains(SpoutUtil.toVector(pt));
+        return pt.getWorld().equals(world) && region.contains(SpoutUtil.toVector(pt));
+
     }
 
 }

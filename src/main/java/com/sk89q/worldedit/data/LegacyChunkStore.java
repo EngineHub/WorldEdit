@@ -98,7 +98,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
                         + tag.getClass().getName());
             }
 
-            Map<String, Tag> children = (Map<String, Tag>) ((CompoundTag) tag).getValue();
+            Map<String, Tag> children = ((CompoundTag) tag).getValue();
             CompoundTag rootTag = null;
 
             // Find Level tag

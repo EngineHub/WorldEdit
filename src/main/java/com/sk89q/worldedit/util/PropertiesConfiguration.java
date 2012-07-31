@@ -64,14 +64,14 @@ public class PropertiesConfiguration extends LocalConfiguration {
         try {
             stream = new FileInputStream(path);
             properties.load(stream);
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException ignored) {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if (stream != null) {
                 try {
                     stream.close();
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -118,7 +118,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
             if (output != null) {
                 try {
                     output.close();
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -229,7 +229,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
                 try {
                     int v = Integer.parseInt(part.trim());
                     set.add(v);
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException ignored) {
                 }
             }
             return set;

@@ -97,10 +97,8 @@ public class SpoutWorld extends LocalWorld {
     @Override
     public boolean setBlockType(Vector pt, int type) {
         Material mat = VanillaMaterials.getMaterial((short) type);
-        if (mat != null && mat instanceof BlockMaterial) {
-            return world.setBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (BlockMaterial) mat, (short)0, WorldEditPlugin.getInstance());
-        }
-        return false;
+        return mat != null && mat instanceof BlockMaterial && world.setBlockMaterial(pt.getBlockX(), pt.getBlockY(),
+                pt.getBlockZ(), (BlockMaterial) mat, (short) 0, WorldEditPlugin.getInstance());
     }
 
     /**
@@ -125,10 +123,8 @@ public class SpoutWorld extends LocalWorld {
     @Override
     public boolean setTypeIdAndData(Vector pt, int type, int data) {
         Material mat = VanillaMaterials.getMaterial((short) type);
-        if (mat != null && mat instanceof BlockMaterial) {
-            return world.setBlockMaterial(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (BlockMaterial) mat, (short)data, WorldEditPlugin.getInstance());
-        }
-        return false;
+        return mat != null && mat instanceof BlockMaterial && world.setBlockMaterial(pt.getBlockX(), pt.getBlockY(),
+                pt.getBlockZ(), (BlockMaterial) mat, (short) data, WorldEditPlugin.getInstance());
     }
 
     /**
@@ -704,11 +700,9 @@ public class SpoutWorld extends LocalWorld {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof SpoutWorld)) {
-            return false;
-        }
 
-        return ((SpoutWorld) other).world.equals(world);
+        return other instanceof SpoutWorld && ((SpoutWorld) other).world.equals(world);
+
     }
 
     @Override

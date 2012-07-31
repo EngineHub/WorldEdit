@@ -19,16 +19,12 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.data.ChunkStore;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.data.ChunkStore;
 
 /**
  * Represents a cylindrical region.
@@ -304,11 +300,8 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      */
     public boolean contains(Vector pt) {
         final int blockY = pt.getBlockY();
-        if (blockY < minY || blockY > maxY) {
-            return false;
-        }
+        return !(blockY < minY || blockY > maxY) && pt.toVector2D().subtract(center).divide(radius).lengthSq() <= 1;
 
-        return pt.toVector2D().subtract(center).divide(radius).lengthSq() <= 1;
     }
 
     /**

@@ -19,13 +19,14 @@
 
 package com.sk89q.worldedit.util;
 
+import com.sk89q.util.StringUtil;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-import com.sk89q.util.StringUtil;
 
 public class FileDialogUtil {
     public static File showSaveDialog(String[] exts) {
@@ -77,11 +78,7 @@ public class FileDialogUtil {
             }
             String path = f.getPath();
             int index = path.lastIndexOf('.');
-            if (index == -1 || index == path.length() - 1) {
-                return false;
-            } else {
-                return exts.contains(path.indexOf(index + 1));
-            }
+            return !(index == -1 || index == path.length() - 1) && exts.contains(path.indexOf(index + 1));
         }
 
         @Override

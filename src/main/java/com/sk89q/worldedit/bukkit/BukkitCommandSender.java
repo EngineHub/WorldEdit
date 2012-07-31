@@ -80,11 +80,10 @@ public class BukkitCommandSender extends LocalPlayer {
 
     @Override
     public boolean hasPermission(String perm) {
-        if (!plugin.getLocalConfiguration().noOpPermissions && sender.isOp()) {
-            return true;
-        }
 
-        return plugin.getPermissionsResolver().hasPermission(null, sender.getName(), perm);
+        return !plugin.getLocalConfiguration().noOpPermissions && sender.isOp() || plugin.getPermissionsResolver()
+                .hasPermission(null, sender.getName(), perm);
+
     }
 
     @Override

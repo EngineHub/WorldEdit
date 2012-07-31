@@ -1,28 +1,14 @@
 package com.sk89q.worldedit.data;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.ByteTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.NBTUtils;
-import com.sk89q.jnbt.Tag;
+import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.ChestBlock;
-import com.sk89q.worldedit.blocks.DispenserBlock;
-import com.sk89q.worldedit.blocks.FurnaceBlock;
-import com.sk89q.worldedit.blocks.MobSpawnerBlock;
-import com.sk89q.worldedit.blocks.NoteBlock;
-import com.sk89q.worldedit.blocks.SignBlock;
-import com.sk89q.worldedit.blocks.TileEntityBlock;
+import com.sk89q.worldedit.blocks.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AnvilChunk implements Chunk {
 
@@ -63,17 +49,17 @@ public class AnvilChunk implements Chunk {
         }
         
         int sectionsize = 16*16*16;
-        for(int i = 0; i < blocks.length; i++) {
-            if (blocks[i].length != sectionsize) {
+        for (byte[] block : blocks) {
+            if (block.length != sectionsize) {
                 throw new InvalidFormatException("Chunk blocks byte array expected "
-                        + "to be " + sectionsize + " bytes; found " + blocks[i].length);
+                        + "to be " + sectionsize + " bytes; found " + block.length);
             }
         }
 
-        for(int i = 0; i < data.length; i++) {
-            if (data[i].length != (sectionsize/2)) {
+        for (byte[] aData : data) {
+            if (aData.length != (sectionsize / 2)) {
                 throw new InvalidFormatException("Chunk block data byte array "
-                        + "expected to be " + sectionsize + " bytes; found " + data[i].length);
+                        + "expected to be " + sectionsize + " bytes; found " + aData.length);
             }
         }
     }

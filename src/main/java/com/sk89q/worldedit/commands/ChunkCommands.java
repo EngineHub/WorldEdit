@@ -136,7 +136,7 @@ public class ChunkCommands {
                 if (out != null) {
                     try {
                         out.close();
-                    } catch (IOException ie) { }
+                    } catch (IOException ignored) { }
                 }
             }
         } else if (config.shellSaveType.equalsIgnoreCase("bash")) {
@@ -168,7 +168,7 @@ public class ChunkCommands {
                 if (out != null) {
                     try {
                         out.close();
-                    } catch (IOException ie) {
+                    } catch (IOException ignored) {
                     }
                 }
             }

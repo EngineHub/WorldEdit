@@ -217,7 +217,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 Class<?> next = null;
                 try {
                     next = Class.forName(getClass().getPackage().getName() + "." + nextName);
-                } catch (ClassNotFoundException e) {}
+                } catch (ClassNotFoundException ignored) {}
 
                 if (next == null || !PermissionsResolver.class.isAssignableFrom(next)) {
                     logger.warning("WEPIF: Invalid or unknown class found in enabled resolvers: "
