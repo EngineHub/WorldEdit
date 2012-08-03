@@ -36,6 +36,7 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.geo.World;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.CommonPlugin;
+import org.spout.api.protocol.Protocol;
 import org.spout.api.scheduler.TaskPriority;
 
 import java.io.*;
@@ -98,6 +99,10 @@ public class WorldEditPlugin extends CommonPlugin {
 
         // Now we can register events!
         registerEvents();
+
+        for (Protocol proto : Protocol.getProtocols()) {
+            proto.registerPacket(WorldEditCUICodec.class, new WorldEditCUIMessageHandler(this));
+        }
 
         getEngine().getScheduler().scheduleAsyncRepeatingTask(this,
                 new SessionTimer(controller, getEngine()), 6 * 1000, 6 * 1000, TaskPriority.LOWEST);
@@ -304,7 +309,7 @@ public class WorldEditPlugin extends CommonPlugin {
         }
 
         LocalSession session = controller.getSession(wrapPlayer(player));
-        RegionSelector selector = session.getRegionSelector(SpoutUtil.getLocalWorld(player.getEntity().getWorld()));
+        RegionSelector selector = session.getRegionSelector(SpoutUtil.getLocalWorld(player.getWorld()));
 
         try {
             Region region = selector.getRegion();
@@ -341,7 +346,7 @@ public class WorldEditPlugin extends CommonPlugin {
 
         LocalSession session = controller.getSession(wrapPlayer(player));
         RegionSelector sel = selection.getRegionSelector();
-        session.setRegionSelector(SpoutUtil.getLocalWorld(player.getEntity().getWorld()), sel);
+        session.setRegionSelector(SpoutUtil.getLocalWorld(player.getWorld()), sel);
         session.dispatchCUISelection(wrapPlayer(player));
     }
 

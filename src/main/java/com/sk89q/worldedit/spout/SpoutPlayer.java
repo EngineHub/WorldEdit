@@ -30,8 +30,10 @@ import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.cui.CUIEvent;
 
+import org.spout.api.Client;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.component.Controller;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.player.Player;
@@ -52,9 +54,13 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public int getItemInHand() {
-        VanillaPlayer vanillaPlayer = (VanillaPlayer) player.getEntity().getController();
-        ItemStack itemStack = vanillaPlayer.getInventory().getQuickbar().getCurrentItem();
-        return itemStack != null ? ((VanillaMaterial) itemStack.getMaterial()).getMinecraftId() : 0;
+        Controller controller = player.getController();
+        if (controller instanceof VanillaPlayer) {
+            ItemStack itemStack = ((VanillaPlayer) controller).getInventory().getQuickbar().getCurrentItem();
+            return itemStack != null ? ((VanillaMaterial) itemStack.getMaterial()).getMinecraftId() : 0;
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -64,25 +70,28 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public WorldVector getPosition() {
-        Point loc = player.getEntity().getPosition();
+        Point loc = player.getPosition();
         return new WorldVector(SpoutUtil.getLocalWorld(loc.getWorld()),
                 loc.getX(), loc.getY(), loc.getZ());
     }
 
     @Override
     public double getPitch() {
-        return player.getEntity().getPitch();
+        return player.getPitch();
     }
 
     @Override
     public double getYaw() {
-        return player.getEntity().getYaw();
+        return player.getYaw();
     }
 
     @Override
     public void giveItem(int type, int amt) {
-        VanillaPlayer vanillaPlayer = (VanillaPlayer) player.getEntity().getController();
-        vanillaPlayer.getInventory().addItem(new ItemStack(VanillaMaterials.getMaterial((short) type), amt), false);
+        Controller controller = player.getController();
+        if (controller instanceof VanillaPlayer) {
+            ((VanillaPlayer) controller).getInventory()
+                    .addItem(new ItemStack(VanillaMaterials.getMaterial((short) type), amt), false);
+        }
     }
 
     @Override
@@ -115,10 +124,9 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public void setPosition(Vector pos, float pitch, float yaw) {
-        final Entity entity = player.getEntity();
-        entity.setPosition(SpoutUtil.toPoint(entity.getWorld(), pos));
-        entity.setPitch(pitch);
-        entity.setYaw(yaw);
+        player.setPosition(SpoutUtil.toPoint(player.getWorld(), pos));
+        player.setPitch(pitch);
+        player.setYaw(yaw);
         player.getNetworkSynchronizer().setPositionDirty();
     }
 
@@ -139,24 +147,12 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public LocalWorld getWorld() {
-        return SpoutUtil.getLocalWorld(player.getEntity().getWorld());
+        return SpoutUtil.getLocalWorld(player.getWorld());
     }
 
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
-        String[] params = event.getParameters();
-
-        if (params.length > 0) {
-            player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId()
-                    + "|" + StringUtil.joinString(params, "|"));
-        } else {
-            player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75" + event.getTypeId());
-        }
-    }
-
-    @Override
-    public void dispatchCUIHandshake() {
-        player.sendRawMessage("\u00A75\u00A76\u00A74\u00A75");
+        player.getSession().send(player.getSession().getEngine() instanceof Client, new WorldEditCUIMessage(event));
     }
 
     public Player getPlayer() {

@@ -180,28 +180,6 @@ public class WorldEditListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerChat(PlayerChatEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
-        Matcher matcher = cuipattern.matcher(event.getMessage().getPlainString());
-        if (matcher.find()) {
-            String type = matcher.group(1);
-            String args = matcher.group(2);
-
-            if( type.equals("v") ) {
-                try {
-                    plugin.getSession(event.getPlayer()).setCUIVersion(Integer.parseInt(args));
-                    event.setCancelled(true);
-                } catch( NumberFormatException e ) {
-                }
-            }
-
-        }
-    }
-
-    @EventHandler
     public void onWorldLoad(WorldLoadEvent event) {
         if (event.getWorld().getGenerator() instanceof BiomeGenerator) {
             plugin.getServerInterface().getBiomes().registerBiomeTypes((BiomeGenerator) event.getWorld().getGenerator());

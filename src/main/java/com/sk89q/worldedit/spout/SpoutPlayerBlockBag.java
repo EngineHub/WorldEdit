@@ -60,7 +60,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
      */
     private void loadInventory() {
         if (items == null) {
-            items = VanillaPlayerUtil.getInventory(player.getEntity()).getContents();
+            items = VanillaPlayerUtil.getInventory(player).getContents();
         }
     }
 
@@ -207,7 +207,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
     @Override
     public void flushChanges() {
         if (items != null) {
-            InventoryBase inv = VanillaPlayerUtil.getInventory(player.getEntity());
+            InventoryBase inv = VanillaPlayerUtil.getInventory(player);
             for (int i = 0; i < items.length && i < inv.getSize(); ++i) {
                 inv.setItem(i, items[i]);
             }
