@@ -21,7 +21,6 @@
 
 package com.sk89q.worldedit.spout;
 
-import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
@@ -32,7 +31,6 @@ import com.sk89q.worldedit.cui.CUIEvent;
 
 import org.spout.api.Client;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.entity.Entity;
 import org.spout.api.entity.component.Controller;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;

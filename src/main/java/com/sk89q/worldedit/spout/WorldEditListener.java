@@ -21,7 +21,6 @@
 
 package com.sk89q.worldedit.spout;
 
-import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.WorldEdit;
@@ -32,7 +31,6 @@ import org.spout.api.chat.ChatSection;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
 import org.spout.api.event.Order;
-import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.event.player.PlayerInteractEvent;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.event.player.PlayerJoinEvent;
@@ -45,8 +43,6 @@ import org.spout.api.scheduler.TaskPriority;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Handles all events thrown in relation to a Player
@@ -58,8 +54,6 @@ public class WorldEditListener implements Listener {
     private WorldEditPlugin plugin;
 
     private boolean ignoreLeftClickAir = false;
-
-    private final static Pattern cuipattern = Pattern.compile("u00a74u00a75u00a73u00a74([^|]*)\\|?(.*)");
 
     /**
      * Construct the object;
