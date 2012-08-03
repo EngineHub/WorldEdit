@@ -43,6 +43,7 @@
       <groupId>com.sk89q</groupId>
       <artifactId>dummypermscompat</artifactId>
       <version>1.6</version>
+      <optional>true</optional>
     </dependency>
 
     <!-- Bukkit -->
@@ -50,6 +51,7 @@
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
       <version>1.2.5-R4.1-SNAPSHOT</version>
+      <optional>true</optional>
     </dependency>
 
     <!-- Archive reading library for snapshots -->
