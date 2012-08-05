@@ -39,14 +39,6 @@ public class WorldEditCUIMessageHandler extends MessageHandler<WorldEditCUIMessa
             return;
         }
 
-        String[] text = message.getMessage().split("\\|");
-        if (text.length > 1 && text[0].equalsIgnoreCase("v")) { // enough fields and right message
-            localSession.setCUISupport(true);
-            try {
-                localSession.setCUIVersion(Integer.parseInt(text[1]));
-            } catch (NumberFormatException e) {
-                plugin.getLogger().warning("Error while reading CUI init message: " + e.getMessage());
-            }
-        }
+        localSession.handleCUIInitializationMessage(message.getMessage());
     }
 }

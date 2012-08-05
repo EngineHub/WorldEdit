@@ -602,6 +602,22 @@ public class LocalSession {
         }
     }
 
+    public void handleCUIInitializationMessage(String text) {
+        if (hasCUISupport()) {
+            return;
+        }
+
+        String[] split = text.split("\\|");
+        if (split.length > 1 && split[0].equalsIgnoreCase("v")) { // enough fields and right message
+            setCUISupport(true);
+            try {
+                setCUIVersion(Integer.parseInt(split[1]));
+            } catch (NumberFormatException e) {
+                WorldEdit.logger.warning("Error while reading CUI init message: " + e.getMessage());
+            }
+        }
+    }
+
     /**
      * Gets the status of CUI support.
      *
@@ -617,7 +633,7 @@ public class LocalSession {
      * @param support
      */
     public void setCUISupport(boolean support) {
-        hasCUISupport = true;
+        hasCUISupport = support;
     }
 
     /**

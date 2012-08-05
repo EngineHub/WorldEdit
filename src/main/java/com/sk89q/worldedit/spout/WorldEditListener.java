@@ -64,11 +64,6 @@ public class WorldEditListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(order = Order.EARLIEST)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        plugin.wrapPlayer(event.getPlayer()).dispatchCUIHandshake();
-    }
-
     /**
      * Called when a player leaves a server
      *

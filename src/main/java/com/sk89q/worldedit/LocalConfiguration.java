@@ -28,7 +28,7 @@ import java.util.Set;
 
 /**
  * Represents WorldEdit's configuration.
- * 
+ *
  * @author sk89q
  */
 public abstract class LocalConfiguration {
@@ -78,7 +78,6 @@ public abstract class LocalConfiguration {
             };
 
     public boolean profile = false;
-    public boolean enableWECUI = true;
     public Set<Integer> disallowedBlocks = new HashSet<Integer>();
     public int defaultChangeLimit = -1;
     public int maxChangeLimit = -1;
@@ -113,7 +112,7 @@ public abstract class LocalConfiguration {
 
     /**
      * Get the working directory to work from.
-     * 
+     *
      * @return
      */
     public File getWorkingDirectory() {

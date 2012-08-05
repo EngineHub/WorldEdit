@@ -59,7 +59,6 @@ public class YAMLConfiguration extends LocalConfiguration {
         showFirstUseVersion = false;
 
         profile = config.getBoolean("debug", profile);
-        enableWECUI = config.getBoolean("enable-wecui-handshake", enableWECUI);
         wandItem = config.getInt("wand-item", wandItem);
         defaultChangeLimit = Math.max(-1, config.getInt(
                 "limits.max-blocks-changed.default", defaultChangeLimit));

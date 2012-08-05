@@ -61,8 +61,7 @@ butcher:
        butcher-default-radius: -1
 
 wand-item: 271
-shell-save-type: 
+shell-save-type:
 no-double-slash: false
 no-op-permissions: false
 debug: false
-enable-wecui-handshake: true

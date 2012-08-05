@@ -1,0 +1,123 @@
+diff --git a/src/main/java/com/sk89q/wepif/DinnerPermsResolver.java b/src/main/java/com/sk89q/wepif/DinnerPermsResolver.java
+index 96256af..ab414ad 100644
+--- a/src/main/java/com/sk89q/wepif/DinnerPermsResolver.java
++++ b/src/main/java/com/sk89q/wepif/DinnerPermsResolver.java
+@@ -20,15 +20,22 @@
+ package com.sk89q.wepif;
+ 
+ import com.sk89q.util.yaml.YAMLProcessor;
++import org.bukkit.Bukkit;
+ import org.bukkit.OfflinePlayer;
+ import org.bukkit.Server;
++import org.bukkit.World;
++import org.bukkit.permissions.GlobalPermissionsContext;
+ import org.bukkit.entity.Player;
+ import org.bukkit.permissions.Permissible;
+ import org.bukkit.permissions.Permission;
+ import org.bukkit.permissions.PermissionAttachmentInfo;
++import org.bukkit.permissions.PermissionsContext;
++import org.bukkit.permissions.WorldPermissionsContext;
+ 
+ import java.util.ArrayList;
+ import java.util.List;
++import java.util.Map;
++import java.util.WeakHashMap;
+ 
+ public class DinnerPermsResolver implements PermissionsResolver {
+ 
+@@ -87,7 +94,27 @@ public class DinnerPermsResolver implements PermissionsResolver {
+     }
+ 
+     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
+-        return hasPermission(player, permission); // no per-world ability to check permissions in dinnerperms
++        Permissible perms = getPermissible(player);
++        if (perms == null) {
++            return false;
++        }
++        switch (internalHasPermission(perms, permission, worldName)) {
++            case -1:
++                return false;
++            case 1:
++                return true;
++        }
++        int dotPos = permission.lastIndexOf(".");
++        while (dotPos > -1) {
++            switch (internalHasPermission(perms, permission.substring(0, dotPos + 1) + "*", worldName)) {
++                case -1:
++                    return false;
++                case 1:
++                    return true;
++            }
++            dotPos = permission.lastIndexOf(".", dotPos - 1);
++        }
++        return internalHasPermission(perms, "*", worldName) == 1;
+     }
+ 
+     public boolean inGroup(OfflinePlayer player, String group) {
+@@ -126,18 +153,29 @@ public class DinnerPermsResolver implements PermissionsResolver {
+         return perm;
+     }
+ 
+-    /**
+-     * Checks the permission from dinnerperms
+-     * @param perms Permissible to check for
+-     * @param permission The permission to check
+-     * @return -1 if the permission is explicitly denied, 1 if the permission is allowed,
+-     *         0 if the permission is denied by a default.
+-     */
+-    public int internalHasPermission(Permissible perms, String permission) {
+-        if (perms.isPermissionSet(permission)) {
+-            return perms.hasPermission(permission) ? 1 : -1;
++    public int internalHasPermission(Permissible perms, String name) {
++        name = name.toLowerCase();
++        if (perms.isPermissionSet(name)) {
++            return perms.hasPermission(name) ? 1 : 0;
++        }
++        Permission perm = Bukkit.getServer().getPluginManager().getPermission(name);
++        if (perm != null) {
++            return perm.getDefault().getValue(perms.isOp()) ? 1 : 0;
+         } else {
+-            Permission perm = server.getPluginManager().getPermission(permission);
++            return 0;
++        }
++    }
++
++    public int internalHasPermission(Permissible perms, String name, String contextName) {
++
++        name = name.toLowerCase();
++        PermissionsContext context = getPermissionsContext(contextName);
++        // More specific overrides less specific
++        if (perms.isPermissionSet(name, context) || perms.isPermissionSet(name, GlobalPermissionsContext.GLOBAL_CONTEXT)) {
++            return perms.hasPermission(name,  context) ? 1 : -1;
++        } else {
++            Permission perm = server.getPluginManager().getPermission(name);
++
+             if (perm != null) {
+                 return perm.getDefault().getValue(perms.isOp()) ? 1 : 0;
+             } else {
+@@ -146,6 +184,25 @@ public class DinnerPermsResolver implements PermissionsResolver {
+         }
+     }
+ 
++    private Map<String, PermissionsContext> contextLookup = new WeakHashMap<String, PermissionsContext>();
++    public PermissionsContext getPermissionsContext(String name) {
++        PermissionsContext context = contextLookup.get(name);
++        if (context == null) {
++            if (name == null || name.equalsIgnoreCase("global")) {
++                context =  GlobalPermissionsContext.GLOBAL_CONTEXT;
++            } else {
++                World world = server.getWorld(name);
++                if (world != null) {
++                    context = world.getPermissionsContext();
++                } else {
++                    context = new WorldPermissionsContext(name);
++                }
++            }
++            contextLookup.put(name, context);
++        }
++        return context;
++    }
++
+     public String getDetectionMessage() {
+         return "Using the Bukkit Permissions API.";
+     }

@@ -39,19 +39,11 @@ public class CUIChannelListener implements PluginMessageListener {
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         LocalSession session = plugin.getSession(player);
-        if (session.hasCUISupport() && plugin.hasPluginChannelCUI(player.getName())) { // Already initialized
+        if (session.hasCUISupport()) { // Already initialized
             return;
         }
 
-        String[] text = new String(message, UTF_8_CHARSET).split("\\|");
-        if (text.length > 1 && text[0].equalsIgnoreCase("v")) { // enough fields and right message
-            plugin.setPluginChannelCUI(player.getName(), true);
-            session.setCUISupport(true);
-            try {
-                session.setCUIVersion(Integer.parseInt(text[1]));
-            } catch (NumberFormatException e) {
-                plugin.getLogger().warning("Error while reading CUI init message: " + e.getMessage());
-            }
-        }
+        String text = new String(message, UTF_8_CHARSET);
+        session.handleCUIInitializationMessage(text);
     }
 }

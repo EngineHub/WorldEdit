@@ -71,11 +71,6 @@ public class WorldEditPlugin extends JavaPlugin {
     private BukkitConfiguration config;
 
     /**
-     * Stores players who are using plugin channels for the cui
-     */
-    private final Set<String> pluginChannelCui = new HashSet<String>();
-
-    /**
      * Called on plugin enable.
      */
     public void onEnable() {
@@ -388,17 +383,5 @@ public class WorldEditPlugin extends JavaPlugin {
         RegionSelector sel = selection.getRegionSelector();
         session.setRegionSelector(BukkitUtil.getLocalWorld(player.getWorld()), sel);
         session.dispatchCUISelection(wrapPlayer(player));
-    }
-
-    public void setPluginChannelCUI(String name, boolean value) {
-        if (value) {
-            pluginChannelCui.add(name);
-        } else {
-            pluginChannelCui.remove(name);
-        }
-    }
-
-    public boolean hasPluginChannelCUI(String name) {
-        return pluginChannelCui.contains(name);
     }
 }

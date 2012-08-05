@@ -36,7 +36,7 @@ import com.sk89q.worldedit.snapshots.SnapshotRepository;
 /**
  * Simple LocalConfiguration that loads settings using
  * <code>java.util.Properties</code>.
- * 
+ *
  * @author sk89q
  */
 public class PropertiesConfiguration extends LocalConfiguration {
@@ -46,7 +46,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
 
     /**
      * Construct the object. The configuration isn't loaded yet.
-     * 
+     *
      * @param path
      */
     public PropertiesConfiguration(File path) {
@@ -77,7 +77,6 @@ public class PropertiesConfiguration extends LocalConfiguration {
         }
 
         profile = getBool("profile", profile);
-        enableWECUI = getBool("enable-wecui-handshake", enableWECUI);
         disallowedBlocks = getIntSet("disallowed-blocks", defaultDisallowedBlocks);
         defaultChangeLimit = getInt("default-max-changed-blocks", defaultChangeLimit);
         maxChangeLimit = getInt("max-changed-blocks", maxChangeLimit);
@@ -126,7 +125,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
 
     /**
      * Get a string value.
-     * 
+     *
      * @param key
      * @param def
      * @return
@@ -146,7 +145,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
 
     /**
      * Get a boolean value.
-     * 
+     *
      * @param key
      * @param def
      * @return
@@ -164,7 +163,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
 
     /**
      * Get an integer value.
-     * 
+     *
      * @param key
      * @param def
      * @return
@@ -186,7 +185,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
 
     /**
      * Get a double value.
-     * 
+     *
      * @param key
      * @param def
      * @return
@@ -208,7 +207,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
 
     /**
      * Get a double value.
-     * 
+     *
      * @param key
      * @param def
      * @return

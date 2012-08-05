@@ -623,7 +623,9 @@ public abstract class LocalPlayer {
 
     /**
      * Send the CUI handshake.
+     * @deprecated Not used anymore; The CUI begins the handshake
      */
+    @Deprecated
     public void dispatchCUIHandshake() {
     }
 

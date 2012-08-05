@@ -23,23 +23,18 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldVector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Handles all events thrown in relation to a Player
@@ -48,7 +43,6 @@ public class WorldEditListener implements Listener {
 
     private WorldEditPlugin plugin;
     private boolean ignoreLeftClickAir = false;
-    private final static Pattern cuipattern = Pattern.compile("u00a74u00a75u00a73u00a74([^\\|]*)\\|?(.*)");
 
     /**
      * Called when a player plays an animation, such as an arm swing
@@ -65,20 +59,6 @@ public class WorldEditListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        final Player player = event.getPlayer();
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            @Override
-            public void run() {
-                if (player.isOnline()) {
-                    plugin.wrapPlayer(player).dispatchCUIHandshake();
-                }
-            }
-        }, 20 * 2);
-
-    }
-
     /**
      * Called when a player leaves a server
      *
@@ -87,7 +67,6 @@ public class WorldEditListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         plugin.getWorldEdit().markExpire(plugin.wrapPlayer(event.getPlayer()));
-        plugin.setPluginChannelCUI(event.getPlayer().getName(), false);
     }
 
     /**
@@ -185,24 +164,6 @@ public class WorldEditListener implements Listener {
             if (we.handleRightClick(player)) {
                 event.setCancelled(true);
             }
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true) // TODO: Remove this in a bit
-    public void onPlayerChat(PlayerChatEvent event) {
-        Matcher matcher = cuipattern.matcher(event.getMessage());
-        if (matcher.find()) {
-            String type = matcher.group(1);
-            String args = matcher.group(2);
-
-            if( type.equals("v") ) {
-                try {
-                    plugin.getSession(event.getPlayer()).setCUIVersion(Integer.parseInt(args));
-                    event.setCancelled(true);
-                } catch(NumberFormatException ignore) {
-                }
-            }
-
         }
     }
 }
