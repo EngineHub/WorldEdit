@@ -121,7 +121,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
             }
         } else {
             for (int i = 0; i < rawBlocks.length; ++i) {
-                blocks[i] = rawBlocks[i];
+                blocks[i] = (short) (rawBlocks[i] & 0xFF);
             }
         }
 
