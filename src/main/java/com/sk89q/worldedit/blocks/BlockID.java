@@ -151,4 +151,16 @@ public final class BlockID {
     public static final int DRAGON_EGG = 122;
     public static final int REDSTONE_LAMP_OFF = 123;
     public static final int REDSTONE_LAMP_ON = 124;
+    public static final int DOUBLE_WOODEN_STEP = 125;
+    public static final int WOODEN_STEP = 126;
+    public static final int COCOA_PLANT = 127;
+    public static final int SANDSTONE_STAIRS = 128;
+    public static final int EMERALD_ORE = 129;
+    public static final int ENDER_CHEST = 130;
+    public static final int TRIPWIRE_HOOK = 131;
+    public static final int TRIPWIRE = 132;
+    public static final int EMERALD_BLOCK = 133;
+    public static final int SPRUCE_WOOD_STAIRS = 134;
+    public static final int BIRCH_WOOD_STAIRS = 135;
+    public static final int JUNGLE_WOOD_STAIRS = 136;
 }
