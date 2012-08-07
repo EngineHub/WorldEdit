@@ -39,15 +39,14 @@ public class WorldEditCUICodec extends MessageCodec<WorldEditCUIMessage> impleme
     public ChannelBuffer encode(WorldEditCUIMessage message) {
         byte[] data = message.getMessage().getBytes(UTF_8_CHARSET);
 
-        ChannelBuffer buffer = ChannelBuffers.buffer(data.length + 2);
-        buffer.writeShort(data.length);
+        ChannelBuffer buffer = ChannelBuffers.buffer(data.length);
         buffer.writeBytes(data);
         return buffer;
     }
 
     @Override
     public WorldEditCUIMessage decode(ChannelBuffer buffer) {
-        byte[] data = new byte[buffer.readShort()];
+        byte[] data = new byte[buffer.readableBytes()];
         buffer.readBytes(data);
         String message = new String(data, UTF_8_CHARSET);
         return new WorldEditCUIMessage(message);
