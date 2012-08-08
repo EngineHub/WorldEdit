@@ -159,9 +159,21 @@ public enum BlockType {
     END_STONE(BlockID.END_STONE, "End Stone", "endstone", "enderstone", "endersand"),
     DRAGON_EGG(BlockID.DRAGON_EGG, "Dragon Egg", "dragonegg", "dragons"),
     REDSTONE_LAMP_OFF(BlockID.REDSTONE_LAMP_OFF, "Redstone lamp (off)", "redstonelamp", "redstonelampoff", "rslamp", "rslampoff", "rsglow", "rsglowoff"),
-    REDSTONE_LAMP_ON(BlockID.REDSTONE_LAMP_ON, "Redstone lamp (on)", "redstonelampon", "rslampon", "rsglowon");
+    REDSTONE_LAMP_ON(BlockID.REDSTONE_LAMP_ON, "Redstone lamp (on)", "redstonelampon", "rslampon", "rsglowon"),
+    WOODEN_DOUBLE_SLAB(BlockID.WOODEN_DOUBLE_SLAB, "Wooden Double Slab", "WoodenDoubleSlab", "woodendoubleslab", "woodenhalfstep", "Wooden Half Step"),
+    WOODEN_SLAB(BlockID.WOODEN_SLAB, "Wooden Slab". "wooden slab", "woodenslab", "wooden half step", "Wooden Half Step"),
+    COCOA_PLANT(BlockID.COCOA_PLANT, "CocoaPlant", "Cocoa Plant"),
+    SANDSTONE_STAIRS(BlockID.SANDSTONE_STAIRS, "Sandstone Stairs", "Sandstone Stiars", "sandstonestairs"),
+    EMERALD_ORE(BlockID.EMERALD_ORE, "Emerald Ore", "Green Ore", "emeraldore", "emerald ore", "green ore"),
+    ENDER_CHEST(BlockID.ENDER_CHEST, "Ender Chest", "enderchest", "ender chest", "Enderchest"),
+    TRIPWIRE_HOOK(BlockID.TRIPWIRE_HOOK, "Tripwire Hook", "Hook", "hook", "tripwirehook"),
+    TRIPWIRE(BlockID.TRIPWIRE, "tripwire", "Tripwire", "Boobywire"),
+    EMERALD_BLOCK(BlockID.EMERALD_BLOCK, "Emerald Block", "Block of Emerald" "Green Block" "emeraldblock" "emerald block"),
+    SPRUCE_STAIRS(BlockID.SPRUCE_STAIRS, "Spruce Steps", "Dark Stairs", "spruce steps", "dark stairs", "spruce stairs", "dark steps"),
+    BIRCH_STAIRS(BlockID.BIRCH_STAIRS, "Birch Steps", "Light Stairs", "birch steps", "light stairs", "birch stairs", "light steps"),
+    JUNGLE_STAIRS(BlockID.JUNGLE_STAIRS, "Jungle Steps", "Jungle Stairs", "jungle steps", "jungle stairs"),
 
-    /**
+     /**
      * Stores a map of the IDs for fast access.
      */
     private static final Map<Integer, BlockType> ids = new HashMap<Integer, BlockType>();
@@ -707,6 +719,7 @@ public enum BlockType {
         isNaturalTerrainBlock.add(BlockID.DIAMOND_ORE);
         isNaturalTerrainBlock.add(BlockID.REDSTONE_ORE);
         isNaturalTerrainBlock.add(BlockID.GLOWING_REDSTONE_ORE);
+        isNaturalTerrainBlock.add(BlockID.EMERALD_ORE);
     }
 
     /**
@@ -868,7 +881,7 @@ public enum BlockType {
         addIdentity(BlockID.DIRT); // rule 1
         addIdentity(BlockID.COBBLESTONE); // rule 1
         addIdentity(BlockID.WOOD); // rule 1
-        addIdentities(BlockID.SAPLING, 3); // rule 1
+        addIdentities(BlockID.SAPLING, 4); // rule 1
         nonDataBlockBagItems.put(BlockID.BEDROCK, doNotDestroy); // exception
         // WATER, rule 6
         // STATIONARY_WATER, rule 6
@@ -879,7 +892,7 @@ public enum BlockType {
         addIdentity(BlockID.GOLD_ORE); // rule 1
         addIdentity(BlockID.IRON_ORE); // rule 1
         nonDataBlockBagItems.put(BlockID.COAL_ORE, new BaseItem(ItemID.COAL)); // rule 5
-        addIdentities(BlockID.LOG, 3); // rule 1
+        addIdentities(BlockID.LOG, 4); // rule 1
         addIdentities(BlockID.LEAVES, 4); // rule 1 with shears, otherwise rule 3
         addIdentity(BlockID.SPONGE); // rule 1
         addIdentity(BlockID.GLASS); // rule 3
@@ -989,6 +1002,15 @@ public enum BlockType {
 
         addIdentity(BlockID.REDSTONE_LAMP_OFF);
         nonDataBlockBagItems.put(BlockID.REDSTONE_LAMP_ON, new BaseItem(BlockID.REDSTONE_LAMP_OFF));
+        
+        //1.3 blocks
+        addIdentity(BlockID.EMERALD_BLOCK); // rule 1
+        addIdentity(BlockID.SPRUCE_STAIRS); // rule 3
+        addIdentity(BlockID.JUNGLE_STAIRS); // rule 3
+        addIdentity(BlockID.BIRCH_STAIRS); // rule 3
+        nonDataBlockBagItems.put(BlockID.EMERALD_ORE, new BaseItem(ItemID.EMERALD)); // rule 5
+        addIdentities(BlockID.WOODEN_DOUBLE_SLAB, 7); // rule 3
+        addIdentities(BlockID.WOODEN_SLAB, 7); // rule 1
     }
 
     /**
