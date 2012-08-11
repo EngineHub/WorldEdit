@@ -1,9 +1,5 @@
-<!--
-  Maven build file for WorldEdit
-  Copyright (c) 2011 sk89q <http://www.sk89q.com>
-  WorldEdit is available under the GNU General Public License v3
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sk89q</groupId>
   <artifactId>worldedit</artifactId>
@@ -11,20 +7,27 @@
   <name>WorldEdit</name>
   <description>WorldEdit allows for editing the Minecraft SMP world
     en-masse, de-griefing, and fixing issues.</description>
-  <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-
+  <licenses>
+    <license>
+      <name>GNU General Public License 2.0</name>
+      <url>LICENSE.txt</url>
+      <distribution>repo</distribution>
+      <comments>License on all contributions</comments>
+    </license>
+  </licenses>
   <scm>
     <connection>scm:git:git://github.com/sk89q/worldedit.git</connection>
     <url>https://github.com/sk89q/worldedit</url>
+    <tag>master</tag>
     <developerConnection>scm:git:git@github.com:sk89q/worldedit.git</developerConnection>
   </scm>
-
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <repositories>
     <repository>
-      <id>sk89q-mvn2</id>
-      <url>http://mvn2.sk89q.com/repo</url>
+      <id>sk89q-repo</id>
+      <url>http://maven.sk89q.com/repo/</url>
     </repository>
     <repository>
       <id>bukkit-repo</id>
@@ -35,7 +38,6 @@
       <url>http://repo.spout.org/</url>
     </repository>
   </repositories>
-
   <dependencies>
     <!-- Used for Permissions support (this version has both the legacy API
       and the new Permissions API to compile against -->
@@ -45,7 +47,7 @@
       <version>1.6</version>
       <optional>true</optional>
     </dependency>
-
+    
     <!-- Bukkit -->
     <dependency>
       <groupId>org.bukkit</groupId>
@@ -53,21 +55,21 @@
       <version>1.2.5-R4.1-SNAPSHOT</version>
       <optional>true</optional>
     </dependency>
-
+    
     <!-- Archive reading library for snapshots -->
     <dependency>
       <groupId>de.schlichtherle</groupId>
       <artifactId>truezip</artifactId>
       <version>6.8.3</version>
     </dependency>
-
+    
     <!-- JavaScript library -->
     <dependency>
       <groupId>rhino</groupId>
       <artifactId>js</artifactId>
       <version>1.7R2</version>
     </dependency>
-
+    
     <!-- Time related functions, used for snapshots. This is NOT the original
       jchronic as it has been modified to have some extra timezone related methods
       (which were hacked in) -->
@@ -78,14 +80,13 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <version>1.9.0-rc1</version>
       <scope>test</scope>
     </dependency>
-
+    
     <!-- Spout -->
     <dependency>
       <groupId>org.spout</groupId>
@@ -100,7 +101,12 @@
       <optional>true</optional>
     </dependency>
   </dependencies>
-
+  <distributionManagement>
+    <site>
+      <id>sk89q-docs-upload</id>
+      <url>ftp://sk89q-maven-deploy/worldedit/</url>
+    </site>
+  </distributionManagement>
   <build>
     <sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
 
@@ -214,6 +220,35 @@
           <excludes>
             <exclude>**/TestOfflinePermissible.java</exclude>
           </excludes>
+        </configuration>
+      </plugin>
+      
+      <!-- Site generation -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <reportPlugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-project-info-reports-plugin</artifactId>
+            <version>2.5</version>
+            <reportSets>
+              <reportSet>
+                <reports>
+                  <report>license</report>
+                  <report>index</report>
+                </reports>
+              </reportSet>
+            </reportSets>
+          </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>2.8.1</version>
+            </plugin>
+          </reportPlugins>
         </configuration>
       </plugin>
     </plugins>
