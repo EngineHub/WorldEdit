@@ -86,7 +86,10 @@ public abstract class LocalPlayer {
 
             if (free == 2) {
                 if (y - 1 != origY) {
-                    setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
+                    final Vector pos = new Vector(x, y - 2, z);
+                    final int id = world.getBlockType(pos);
+                    final int data = world.getBlockData(pos);
+                    setPosition(new Vector(x + 0.5, y - 2 + BlockType.centralTopLimit(id, data), z + 0.5));
                 }
 
                 return;
@@ -108,8 +111,11 @@ public abstract class LocalPlayer {
         int z = searchPos.getBlockZ();
 
         while (y >= 0) {
-            if (!BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
-                setPosition(new Vector(x + 0.5, y + 1, z + 0.5));
+            final Vector pos = new Vector(x, y, z);
+            final int id = world.getBlockType(pos);
+            if (!BlockType.canPassThrough(id)) {
+                final int data = world.getBlockData(pos);
+                setPosition(new Vector(x + 0.5, y + BlockType.centralTopLimit(id, data), z + 0.5));
                 return;
             }
 
