@@ -160,6 +160,18 @@ public enum ItemType {
     DRAGON_EGG(BlockID.DRAGON_EGG, "Dragon Egg", "dragonegg", "dragons"),
     REDSTONE_LAMP_OFF(BlockID.REDSTONE_LAMP_OFF, "Redstone lamp (off)", "redstonelamp", "redstonelampoff", "rslamp", "rslampoff", "rsglow", "rsglowoff"),
     REDSTONE_LAMP_ON(BlockID.REDSTONE_LAMP_ON, "Redstone lamp (on)", "redstonelampon", "rslampon", "rsglowon"),
+    DOUBLE_WOODEN_STEP(BlockID.DOUBLE_WOODEN_STEP, "Double wood step", "doublewoodslab", "doublewoodstep"),
+    WOODEN_STEP(BlockID.WOODEN_STEP, "Wood step", "woodenslab", "woodslab", "woodstep", "woodhalfstep"),
+    COCOA_PLANT(BlockID.COCOA_PLANT, "Cocoa plant", "cocoplant", "cocoaplant"),
+    SANDSTONE_STAIRS(BlockID.SANDSTONE_STAIRS, "Sandstone stairs", "sandstairs", "sandstonestairs"),
+    EMERALD_ORE(BlockID.EMERALD_ORE, "Emerald ore", "emeraldore"),
+    ENDER_CHEST(BlockID.ENDER_CHEST, "Ender chest", "enderchest"),
+    TRIPWIRE_HOOK(BlockID.TRIPWIRE_HOOK, "Tripwire hook", "tripwirehook"),
+    TRIPWIRE(BlockID.TRIPWIRE, "Tripwire", "tripwire"),
+    EMERALD_BLOCK(BlockID.EMERALD_BLOCK, "Emerald block", "emeraldblock"),
+    SPRUCE_WOOD_STAIRS(BlockID.SPRUCE_WOOD_STAIRS, "Spruce wood stairs", "sprucestairs", "sprucewoodstairs"),
+    BIRCH_WOOD_STAIRS(BlockID.BIRCH_WOOD_STAIRS, "Birch wood stairs", "birchstairs", "birchwoodstairs"),
+    JUNGLE_WOOD_STAIRS(BlockID.JUNGLE_WOOD_STAIRS, "Jungle wood stairs", "junglestairs", "junglewoodstairs"),
 
     // Items
     IRON_SHOVEL(ItemID.IRON_SHOVEL, "Iron shovel", "ironshovel"),
@@ -291,6 +303,9 @@ public enum ItemType {
     GLISTERING_MELON(ItemID.GLISTERING_MELON, "Glistering Melon", "glisteringmelon", "goldmelon"),
     BOTTLE_O_ENCHANTING(ItemID.BOTTLE_O_ENCHANTING, "Bottle o' Enchanting", "expbottle", "bottleoenchanting", "experiencebottle", "exppotion", "experiencepotion"),
     FIRE_CHARGE(ItemID.FIRE_CHARGE, "Fire Charge", "firecharge", "firestarter", "firerock"),
+    BOOK_AND_QUILL(ItemID.BOOK_AND_QUILL, "Book and Quill", "bookandquill", "quill", "writingbook"),
+    WRITTEN_BOOK(ItemID.WRITTEN_BOOK, "Written Book", "writtenbook"),
+    EMERALD(ItemID.EMERALD, "Emerald", "emerald"),
     SPAWN_EGG(ItemID.SPAWN_EGG, "Spawn Egg", "spawnegg", "spawn", "mobspawnegg"),
     DISC_13(ItemID.DISC_13, "Music Disc - 13", "disc_13"),
     DISC_CAT(ItemID.DISC_CAT, "Music Disc - Cat", "disc_cat"),
@@ -500,9 +515,7 @@ public enum ItemType {
         shouldNotStack.add(ItemID.GOLD_CHEST);
         shouldNotStack.add(ItemID.GOLD_PANTS);
         shouldNotStack.add(ItemID.GOLD_BOOTS);
-        shouldNotStack.add(ItemID.SIGN);
         shouldNotStack.add(ItemID.WOODEN_DOOR_ITEM);
-        shouldNotStack.add(ItemID.BUCKET);
         shouldNotStack.add(ItemID.WATER_BUCKET);
         shouldNotStack.add(ItemID.LAVA_BUCKET);
         shouldNotStack.add(ItemID.MINECART);
