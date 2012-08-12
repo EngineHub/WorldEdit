@@ -434,7 +434,7 @@ public enum BlockType {
     static {
         centralTopLimit.put(BlockID.BED, 0.5625);
         centralTopLimit.put(BlockID.BREWING_STAND, 0.875);
-        centralTopLimit.put(BlockID.CAKE_BLOCK, 0.4375); // ?
+        centralTopLimit.put(BlockID.CAKE_BLOCK, 0.4375);
         centralTopLimit.put(BlockID.CAULDRON, 0.3125);
         centralTopLimit.put(BlockID.ENCHANTMENT_TABLE, 0.75);
         for (int data = 0; data < 16; ++data) {
