@@ -403,7 +403,6 @@ public enum BlockType {
         canPassThrough.add(BlockID.PUMPKIN_STEM);
         canPassThrough.add(BlockID.MELON_STEM);
         canPassThrough.add(BlockID.VINE);
-        canPassThrough.add(BlockID.LILY_PAD);
         canPassThrough.add(BlockID.NETHER_WART);
         canPassThrough.add(BlockID.END_PORTAL);
     }
