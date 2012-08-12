@@ -428,6 +428,63 @@ public enum BlockType {
     }
 
     /**
+     * HashSet for centralTopLimit.
+     */
+    private static final Map<Integer, Double> centralTopLimit = new HashMap<Integer, Double>();
+    static {
+        centralTopLimit.put(BlockID.BED, 0.5625);
+        centralTopLimit.put(BlockID.BREWING_STAND, 0.875);
+        centralTopLimit.put(BlockID.CAKE_BLOCK, 0.4375); // ?
+        centralTopLimit.put(BlockID.CAULDRON, 0.3125);
+        centralTopLimit.put(BlockID.ENCHANTMENT_TABLE, 0.75);
+        for (int data = 0; data < 16; ++data) {
+            if ((data & 4) != 0) {
+                centralTopLimit.put(BlockID.END_PORTAL_FRAME, 0.8125);
+            }
+        }
+        centralTopLimit.put(BlockID.FENCE, 1.5);
+        centralTopLimit.put(BlockID.FENCE_GATE, 1.5);
+        for (int data = 0; data < 8; ++data) {
+            centralTopLimit.put(-16*BlockID.STEP-data, 0.5);
+            centralTopLimit.put(-16*BlockID.WOODEN_STEP-data, 0.5);
+        }
+        centralTopLimit.put(BlockID.LILY_PAD, 0.015625);
+        centralTopLimit.put(BlockID.REDSTONE_REPEATER_ON, .125);
+        centralTopLimit.put(BlockID.REDSTONE_REPEATER_OFF, .125);
+        centralTopLimit.put(BlockID.TRAP_DOOR, 0.1875);
+        centralTopLimit.put(BlockID.SLOW_SAND, 0.875);
+    }
+
+    /**
+     * Returns the y offset a player falls to when falling onto the top of a block at xp+0.5/zp+0.5.
+     *
+     * @param id
+     * @param data
+     * @return
+     */
+    public static double centralTopLimit(int id, int data) {
+        if (centralTopLimit.containsKey(id))
+            return centralTopLimit.get(id);
+
+        if (centralTopLimit.containsKey(-16*id-data))
+            return centralTopLimit.get(-16*id-data);
+
+        return canPassThrough(id) ? 0 : 1;
+    }
+
+    /**
+     * Returns the y offset a player falls to when falling onto the top of a block at xp+0.5/zp+0.5.
+     *
+     * @return
+     */
+    public double centralTopLimit() {
+        if (centralTopLimit.containsKey(id))
+            return centralTopLimit.get(id);
+
+        return canPassThrough(id) ? 0 : 1;
+    }
+
+    /**
      * HashSet for usesData.
      */
     private static final Set<Integer> usesData = new HashSet<Integer>();
