@@ -790,6 +790,7 @@ public enum BlockType {
         isNaturalTerrainBlock.add(BlockID.DIAMOND_ORE);
         isNaturalTerrainBlock.add(BlockID.REDSTONE_ORE);
         isNaturalTerrainBlock.add(BlockID.GLOWING_REDSTONE_ORE);
+        isNaturalTerrainBlock.add(BlockID.EMERALD_ORE);
     }
 
     /**
