@@ -712,6 +712,7 @@ public enum BlockType {
         isRedstoneSource.add(BlockID.STONE_PRESSURE_PLATE);
         isRedstoneSource.add(BlockID.WOODEN_PRESSURE_PLATE);
         isRedstoneSource.add(BlockID.STONE_BUTTON);
+        isRedstoneSource.add(BlockID.TRIPWIRE_HOOK);
     }
 
     /**
