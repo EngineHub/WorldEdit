@@ -103,14 +103,14 @@ public final class BlockData {
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
-            int topHalf = data & 0x8;
-            int swung = data & 0x4;
-            int withoutFlags = data & ~(0x8 | 0x4);
+        case BlockID.COCOA_PLANT:
+            int extra = data & ~0x3;
+            int withoutFlags = data & 0x3;
             switch (withoutFlags) {
-            case 0: return 1 | topHalf | swung;
-            case 1: return 2 | topHalf | swung;
-            case 2: return 3 | topHalf | swung;
-            case 3: return 0 | topHalf | swung;
+            case 0: return 1 | extra;
+            case 1: return 2 | extra;
+            case 2: return 3 | extra;
+            case 3: return 0 | extra;
             }
             break;
 
@@ -271,14 +271,14 @@ public final class BlockData {
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
-            int topHalf = data & 0x8;
-            int swung = data & 0x4;
-            int withoutFlags = data & ~(0x8 | 0x4);
+        case BlockID.COCOA_PLANT:
+            int extra = data & ~0x3;
+            int withoutFlags = data & 0x3;
             switch (withoutFlags) {
-            case 1: return 0 | topHalf | swung;
-            case 2: return 1 | topHalf | swung;
-            case 3: return 2 | topHalf | swung;
-            case 0: return 3 | topHalf | swung;
+            case 1: return 0 | extra;
+            case 2: return 1 | extra;
+            case 3: return 2 | extra;
+            case 0: return 3 | extra;
             }
             break;
 
@@ -508,6 +508,7 @@ public final class BlockData {
 
         case BlockID.REDSTONE_REPEATER_OFF:
         case BlockID.REDSTONE_REPEATER_ON:
+        case BlockID.COCOA_PLANT:
             switch (data & 0x3) {
             case 0:
             case 2:
@@ -683,6 +684,7 @@ public final class BlockData {
         case BlockID.SIGN_POST:
         case BlockID.VINE:
         case BlockID.SNOW:
+        case BlockID.COCOA_PLANT:
             if (data > 15) return -1;
             return mod((data + increment), 16);
 
