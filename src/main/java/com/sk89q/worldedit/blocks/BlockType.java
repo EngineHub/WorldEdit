@@ -916,6 +916,15 @@ public enum BlockType {
         isTranslucent.add(BlockID.ENCHANTMENT_TABLE);
         isTranslucent.add(BlockID.BREWING_STAND);
         isTranslucent.add(BlockID.CAULDRON);
+        isTranslucent.add(BlockID.WOODEN_STEP);
+        isTranslucent.add(BlockID.COCOA_PLANT);
+        isTranslucent.add(BlockID.SANDSTONE_STAIRS);
+        isTranslucent.add(BlockID.ENDER_CHEST);
+        isTranslucent.add(BlockID.TRIPWIRE_HOOK);
+        isTranslucent.add(BlockID.TRIPWIRE);
+        isTranslucent.add(BlockID.SPRUCE_WOOD_STAIRS);
+        isTranslucent.add(BlockID.BIRCH_WOOD_STAIRS);
+        isTranslucent.add(BlockID.JUNGLE_WOOD_STAIRS);
     }
 
     /**
