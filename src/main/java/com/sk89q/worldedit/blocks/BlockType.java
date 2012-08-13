@@ -855,7 +855,7 @@ public enum BlockType {
         isTranslucent.add(BlockID.SAPLING);
         isTranslucent.add(BlockID.WATER);
         isTranslucent.add(BlockID.STATIONARY_WATER);
-        //isTranslucent.add(BlockID.LEAVES);
+        isTranslucent.add(BlockID.LEAVES);
         isTranslucent.add(BlockID.GLASS);
         isTranslucent.add(BlockID.BED);
         isTranslucent.add(BlockID.POWERED_RAIL);
@@ -865,7 +865,7 @@ public enum BlockType {
         isTranslucent.add(BlockID.LONG_GRASS);
         isTranslucent.add(BlockID.DEAD_BUSH);
         //isTranslucent.add(BlockID.PISTON_BASE);
-        //isTranslucent.add(BlockID.PISTON_EXTENSION);
+        isTranslucent.add(BlockID.PISTON_EXTENSION);
         //isTranslucent.add(BlockID.PISTON_MOVING_PIECE);
         isTranslucent.add(BlockID.YELLOW_FLOWER);
         isTranslucent.add(BlockID.RED_FLOWER);
@@ -873,15 +873,16 @@ public enum BlockType {
         isTranslucent.add(BlockID.RED_MUSHROOM);
         isTranslucent.add(BlockID.TORCH);
         isTranslucent.add(BlockID.FIRE);
-        //isTranslucent.add(BlockID.MOB_SPAWNER);
-        //isTranslucent.add(BlockID.WOODEN_STAIRS);
+        isTranslucent.add(BlockID.MOB_SPAWNER);
+        isTranslucent.add(BlockID.WOODEN_STAIRS);
+        isTranslucent.add(BlockID.CHEST);
         isTranslucent.add(BlockID.REDSTONE_WIRE);
         isTranslucent.add(BlockID.CROPS);
         isTranslucent.add(BlockID.SIGN_POST);
         isTranslucent.add(BlockID.WOODEN_DOOR);
         isTranslucent.add(BlockID.LADDER);
         isTranslucent.add(BlockID.MINECART_TRACKS);
-        //isTranslucent.add(BlockID.COBBLESTONE_STAIRS);
+        isTranslucent.add(BlockID.COBBLESTONE_STAIRS);
         isTranslucent.add(BlockID.WALL_SIGN);
         isTranslucent.add(BlockID.LEVER);
         isTranslucent.add(BlockID.STONE_PRESSURE_PLATE);
@@ -892,7 +893,7 @@ public enum BlockType {
         isTranslucent.add(BlockID.STONE_BUTTON);
         isTranslucent.add(BlockID.SNOW);
         isTranslucent.add(BlockID.ICE);
-        //isTranslucent.add(BlockID.CACTUS);
+        isTranslucent.add(BlockID.CACTUS);
         isTranslucent.add(BlockID.REED);
         isTranslucent.add(BlockID.FENCE);
         isTranslucent.add(BlockID.PORTAL);
