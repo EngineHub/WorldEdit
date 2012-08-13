@@ -646,6 +646,7 @@ public enum BlockType {
         isRedstoneBlock.add(BlockID.NOTE_BLOCK);
         isRedstoneBlock.add(BlockID.REDSTONE_REPEATER_OFF);
         isRedstoneBlock.add(BlockID.REDSTONE_REPEATER_ON);
+        isRedstoneBlock.add(BlockID.TRIPWIRE_HOOK);
     }
 
     /**
