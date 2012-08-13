@@ -1087,6 +1087,19 @@ public enum BlockType {
 
         addIdentity(BlockID.REDSTONE_LAMP_OFF);
         nonDataBlockBagItems.put(BlockID.REDSTONE_LAMP_ON, new BaseItem(BlockID.REDSTONE_LAMP_OFF));
+
+        addIdentities(BlockID.DOUBLE_WOODEN_STEP, 7); // rule 3
+        addIdentities(BlockID.WOODEN_STEP, 7); // rule 1
+        nonDataBlockBagItems.put(BlockID.COCOA_PLANT, new BaseItem(ItemID.INK_SACK, (short) (15 - ClothColor.ID.BROWN))); // rule 3
+        addIdentity(BlockID.SANDSTONE_STAIRS); // rule 1
+        nonDataBlockBagItems.put(BlockID.EMERALD_ORE, new BaseItem(ItemID.EMERALD)); // rule 5
+        addIdentity(BlockID.ENDER_CHEST); // rule 3
+        addIdentity(BlockID.TRIPWIRE_HOOK); // rule 1
+        nonDataBlockBagItems.put(BlockID.TRIPWIRE, new BaseItem(ItemID.STRING)); // rule 3
+        addIdentity(BlockID.EMERALD_BLOCK); // rule 1
+        addIdentity(BlockID.SPRUCE_WOOD_STAIRS); // rule 1
+        addIdentity(BlockID.BIRCH_WOOD_STAIRS); // rule 1
+        addIdentity(BlockID.JUNGLE_WOOD_STAIRS); // rule 1
     }
 
     /**
