@@ -31,13 +31,13 @@ import com.sk89q.worldedit.cui.CUIEvent;
 
 import org.spout.api.Client;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.Controller;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 import org.spout.vanilla.material.VanillaMaterial;
 import org.spout.vanilla.material.VanillaMaterials;
-import org.spout.vanilla.controller.living.player.VanillaPlayer;
+import org.spout.vanilla.entity.VanillaPlayerController;
 
 public class SpoutPlayer extends LocalPlayer {
     private Player player;
@@ -53,8 +53,8 @@ public class SpoutPlayer extends LocalPlayer {
     @Override
     public int getItemInHand() {
         Controller controller = player.getController();
-        if (controller instanceof VanillaPlayer) {
-            ItemStack itemStack = ((VanillaPlayer) controller).getInventory().getQuickbar().getCurrentItem();
+        if (controller instanceof VanillaPlayerController) {
+            ItemStack itemStack = ((VanillaPlayerController) controller).getInventory().getQuickbar().getCurrentItem();
             return itemStack != null ? ((VanillaMaterial) itemStack.getMaterial()).getMinecraftId() : 0;
         } else {
             return 0;
@@ -86,8 +86,8 @@ public class SpoutPlayer extends LocalPlayer {
     @Override
     public void giveItem(int type, int amt) {
         Controller controller = player.getController();
-        if (controller instanceof VanillaPlayer) {
-            ((VanillaPlayer) controller).getInventory()
+        if (controller instanceof VanillaPlayerController) {
+            ((VanillaPlayerController) controller).getInventory()
                     .addItem(new ItemStack(VanillaMaterials.getMaterial((short) type), amt), false);
         }
     }

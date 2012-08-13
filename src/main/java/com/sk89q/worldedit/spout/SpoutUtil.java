@@ -35,7 +35,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;

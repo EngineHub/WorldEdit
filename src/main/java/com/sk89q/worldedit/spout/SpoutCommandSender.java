@@ -30,7 +30,7 @@ import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandSource;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 
 public class SpoutCommandSender extends LocalPlayer {
     private CommandSource sender;

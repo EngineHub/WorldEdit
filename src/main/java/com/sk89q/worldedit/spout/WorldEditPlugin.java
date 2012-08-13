@@ -34,7 +34,7 @@ import com.sk89q.worldedit.spout.selections.Selection;
 import com.sk89q.worldedit.util.YAMLConfiguration;
 import org.spout.api.command.CommandSource;
 import org.spout.api.geo.World;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 import org.spout.api.plugin.CommonPlugin;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.scheduler.TaskPriority;

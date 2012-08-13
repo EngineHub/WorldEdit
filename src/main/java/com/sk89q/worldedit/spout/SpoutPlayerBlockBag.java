@@ -32,7 +32,7 @@ import com.sk89q.worldedit.blocks.BlockID;
 import org.spout.api.inventory.InventoryBase;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 import org.spout.vanilla.material.VanillaMaterials;
 import org.spout.vanilla.util.VanillaPlayerUtil;
 
