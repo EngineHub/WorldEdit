@@ -104,6 +104,7 @@ public final class BlockData {
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
         case BlockID.COCOA_PLANT:
+        case BlockID.TRIPWIRE_HOOK:
             int extra = data & ~0x3;
             int withoutFlags = data & 0x3;
             switch (withoutFlags) {
@@ -272,6 +273,7 @@ public final class BlockData {
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
         case BlockID.COCOA_PLANT:
+        case BlockID.TRIPWIRE_HOOK:
             int extra = data & ~0x3;
             int withoutFlags = data & 0x3;
             switch (withoutFlags) {
@@ -509,6 +511,7 @@ public final class BlockData {
         case BlockID.REDSTONE_REPEATER_OFF:
         case BlockID.REDSTONE_REPEATER_ON:
         case BlockID.COCOA_PLANT:
+        case BlockID.TRIPWIRE_HOOK:
             switch (data & 0x3) {
             case 0:
             case 2:
