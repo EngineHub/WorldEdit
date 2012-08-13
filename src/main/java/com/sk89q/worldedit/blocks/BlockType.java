@@ -405,6 +405,8 @@ public enum BlockType {
         canPassThrough.add(BlockID.VINE);
         canPassThrough.add(BlockID.NETHER_WART);
         canPassThrough.add(BlockID.END_PORTAL);
+        canPassThrough.add(BlockID.TRIPWIRE_HOOK);
+        canPassThrough.add(BlockID.TRIPWIRE);
     }
 
     /**
