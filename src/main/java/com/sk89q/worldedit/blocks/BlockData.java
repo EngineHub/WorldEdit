@@ -73,6 +73,10 @@ public final class BlockData {
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
         case BlockID.NETHER_BRICK_STAIRS:
+        case BlockID.SANDSTONE_STAIRS:
+        case BlockID.SPRUCE_WOOD_STAIRS:
+        case BlockID.BIRCH_WOOD_STAIRS:
+        case BlockID.JUNGLE_WOOD_STAIRS:
             switch (data) {
             case 0: return 2;
             case 1: return 3;
@@ -237,6 +241,10 @@ public final class BlockData {
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
         case BlockID.NETHER_BRICK_STAIRS:
+        case BlockID.SANDSTONE_STAIRS:
+        case BlockID.SPRUCE_WOOD_STAIRS:
+        case BlockID.BIRCH_WOOD_STAIRS:
+        case BlockID.JUNGLE_WOOD_STAIRS:
             switch (data) {
             case 2: return 0;
             case 3: return 1;
@@ -430,6 +438,7 @@ public final class BlockData {
             break;
 
         case BlockID.STEP:
+        case BlockID.WOODEN_STEP:
             return data ^ (flipY << 3);
 
         case BlockID.WOODEN_STAIRS:
@@ -437,6 +446,10 @@ public final class BlockData {
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
         case BlockID.NETHER_BRICK_STAIRS:
+        case BlockID.SANDSTONE_STAIRS:
+        case BlockID.SPRUCE_WOOD_STAIRS:
+        case BlockID.BIRCH_WOOD_STAIRS:
+        case BlockID.JUNGLE_WOOD_STAIRS:
             data ^= flipY << 2;
             switch (data) {
             case 0:
@@ -628,6 +641,10 @@ public final class BlockData {
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
         case BlockID.NETHER_BRICK_STAIRS:
+        case BlockID.SANDSTONE_STAIRS:
+        case BlockID.SPRUCE_WOOD_STAIRS:
+        case BlockID.BIRCH_WOOD_STAIRS:
+        case BlockID.JUNGLE_WOOD_STAIRS:
             if (data > 7) return -1;
             return mod((data + increment), 8);
 
@@ -635,6 +652,8 @@ public final class BlockData {
         case BlockID.JACKOLANTERN:
         case BlockID.NETHER_WART:
         case BlockID.CAULDRON:
+        case BlockID.WOODEN_STEP:
+        case BlockID.DOUBLE_WOODEN_STEP:
             if (data > 3) return -1;
             return mod((data + increment), 4);
 
