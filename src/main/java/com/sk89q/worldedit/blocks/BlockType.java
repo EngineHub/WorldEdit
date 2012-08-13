@@ -556,6 +556,16 @@ public enum BlockType {
         usesData.add(BlockID.BREWING_STAND);
         usesData.add(BlockID.CAULDRON);
         usesData.add(BlockID.END_PORTAL_FRAME);
+        usesData.add(BlockID.DOUBLE_WOODEN_STEP);
+        usesData.add(BlockID.WOODEN_STEP);
+        usesData.add(BlockID.COCOA_PLANT);
+        usesData.add(BlockID.SANDSTONE_STAIRS);
+        usesData.add(BlockID.ENDER_CHEST);
+        usesData.add(BlockID.TRIPWIRE_HOOK);
+        usesData.add(BlockID.TRIPWIRE);
+        usesData.add(BlockID.SPRUCE_WOOD_STAIRS);
+        usesData.add(BlockID.BIRCH_WOOD_STAIRS);
+        usesData.add(BlockID.JUNGLE_WOOD_STAIRS);
     }
 
     /**
