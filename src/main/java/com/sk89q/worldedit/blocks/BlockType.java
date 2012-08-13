@@ -1365,6 +1365,13 @@ public enum BlockType {
         dataAttachments.put(typeDataKey(BlockID.VINE, 0), PlayerDirection.UP);
         addCardinals(BlockID.VINE, 1, 2, 4, 8);
         nonDataAttachments.put(BlockID.NETHER_WART, PlayerDirection.DOWN);
+        for (int offset = 0; offset <= 4; offset += 4) {
+            addCardinals(BlockID.COCOA_PLANT, offset + 0, offset + 1, offset + 2, offset + 3);
+        }
+        for (int offset = 0; offset <= 4; offset += 4) {
+            addCardinals(BlockID.TRIPWIRE_HOOK, offset + 2, offset + 3, offset + 0, offset + 1);
+        }
+        nonDataAttachments.put(BlockID.TRIPWIRE, PlayerDirection.DOWN);
     }
 
     /**
