@@ -834,6 +834,7 @@ public enum BlockType {
         emitsLight.add(BlockID.RED_MUSHROOM_CAP);
         emitsLight.add(BlockID.END_PORTAL);
         emitsLight.add(BlockID.REDSTONE_LAMP_ON);
+        emitsLight.add(BlockID.ENDER_CHEST);
     }
 
     /**
