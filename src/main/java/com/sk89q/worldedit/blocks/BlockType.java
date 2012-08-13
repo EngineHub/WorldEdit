@@ -314,6 +314,9 @@ public enum BlockType {
         shouldPlaceLast.add(BlockID.PISTON_STICKY_BASE);
         shouldPlaceLast.add(BlockID.PISTON_EXTENSION);
         shouldPlaceLast.add(BlockID.PISTON_MOVING_PIECE);
+        shouldPlaceLast.add(BlockID.COCOA_PLANT);
+        shouldPlaceLast.add(BlockID.TRIPWIRE_HOOK);
+        shouldPlaceLast.add(BlockID.TRIPWIRE);
     }
 
     /**
