@@ -602,6 +602,7 @@ public enum BlockType {
         isContainerBlock.add(BlockID.BURNING_FURNACE);
         isContainerBlock.add(BlockID.CHEST);
         isContainerBlock.add(BlockID.BREWING_STAND);
+        //isContainerBlock.add(BlockID.ENDER_CHEST); // ender chest has no own inventory, don't add this here
     }
 
     /**
