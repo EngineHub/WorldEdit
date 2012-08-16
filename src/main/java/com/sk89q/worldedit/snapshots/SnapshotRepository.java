@@ -89,11 +89,13 @@ public class SnapshotRepository {
                     detectDate(snapshot);
                     list.add(snapshot);
                 }
-            } else if (file.isDirectory() && file.getName().equalsIgnoreCase(worldname)) {
+            } else if (file.isDirectory()) {
                 for (String name : file.list(filter)) {
-                    Snapshot snapshot = new Snapshot(this, file.getName() + "/" + name);
-                    detectDate(snapshot);
-                    list.add(snapshot);
+                    if (file.getName().equalsIgnoreCase(worldname) || name.equalsIgnoreCase(worldname)) {
+                        Snapshot snapshot = new Snapshot(this, file.getName() + "/" + name);
+                        detectDate(snapshot);
+                        list.add(snapshot);
+                    }
                 }
             }
         }
