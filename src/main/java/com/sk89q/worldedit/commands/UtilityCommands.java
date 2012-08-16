@@ -367,11 +367,16 @@ public class UtilityCommands {
             EditSession editSession) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
-    	
+
         final int radius;
-        
-        if(args.argsLength() > 0){
-        	radius =  Math.max(1, args.getInteger(0));
+
+        if (args.argsLength() > 0) {
+            if (args.getString(0).equals("all")) {
+                radius = -1;
+            }
+            else {
+                radius =  Math.max(1, args.getInteger(0));
+            }
         }
         else{
         	radius = config.butcherDefaultRadius;
@@ -395,7 +400,10 @@ public class UtilityCommands {
             }
         }
 
-        player.print("Killed " + killed + " mobs.");
+        if (radius < 0)
+            player.print("Killed " + killed + " mobs.");
+        else
+            player.print("Killed " + killed + " mobs in a radius of "+radius+".");
     }
 
     public class FlagContainer {
