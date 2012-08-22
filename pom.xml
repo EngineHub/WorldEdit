@@ -12,7 +12,13 @@
       <name>GNU General Public License 2.0</name>
       <url>LICENSE.txt</url>
       <distribution>repo</distribution>
-      <comments>License on all contributions</comments>
+      <comments>License on all old contributions</comments>
+    </license>
+    <license>
+      <name>GNU Lesser General Public License 3.0</name>
+      <url>LICENSE_LGPL.txt</url>
+      <distribution>repo</distribution>
+      <comments>License on all new contributions</comments>
     </license>
   </licenses>
   <scm>
@@ -52,6 +58,12 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
+      <version>1.2.5-R4.1-SNAPSHOT</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>craftbukkit</artifactId>
       <version>1.2.5-R4.1-SNAPSHOT</version>
       <optional>true</optional>
     </dependency>

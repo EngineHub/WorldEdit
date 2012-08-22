@@ -52,4 +52,5 @@ WorldEdit on GitHub, add your changes, and then submit a pull request. We'll
 look at it, make comments, and merge it into WorldEdit if everything
 works out.
 
-Your submissions have to be licensed under the GNU General Public License v3.
+All new submissions have to be licensed under the GNU Lesser General
+Public License v3, which is outlined inside LICENSE_LGPL.txt.
