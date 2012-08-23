@@ -27,17 +27,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.sk89q.worldedit.LocalEntity;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
-import com.sk89q.worldedit.util.TreeGenerator;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.TreeType;
+import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
-import org.bukkit.block.Furnace;
 import org.bukkit.block.CreatureSpawner;
+import org.bukkit.block.Furnace;
 import org.bukkit.block.Sign;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Animals;
@@ -56,24 +59,34 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.TreeType;
-import org.bukkit.World;
 
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.EntityType;
+import com.sk89q.worldedit.LocalEntity;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.blocks.*;
-import com.sk89q.worldedit.EntityType;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.ContainerBlock;
+import com.sk89q.worldedit.blocks.FurnaceBlock;
+import com.sk89q.worldedit.blocks.MobSpawnerBlock;
+import com.sk89q.worldedit.blocks.NoteBlock;
+import com.sk89q.worldedit.blocks.SignBlock;
+import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.TreeGenerator;
 
 public class BukkitWorld extends LocalWorld {
+    
+    private static final Logger logger = Logger.getLogger(BukkitWorld.class.getCanonicalName());
     private World world;
+    private boolean skipNmsAccess = false;
+    private boolean skipNmsSafeSet = false;
 
     /**
      * Construct the object.
@@ -211,6 +224,7 @@ public class BukkitWorld extends LocalWorld {
      * @param pt
      * @return
      */
+    @Override
     public BiomeType getBiome(Vector2D pt) {
         Biome bukkitBiome = world.getBiome(pt.getBlockX(), pt.getBlockZ());
         try {
@@ -340,6 +354,15 @@ public class BukkitWorld extends LocalWorld {
             return true;
         }
 
+        if (!skipNmsAccess) {
+            try {
+                return NmsBlock.set(world, pt, block);
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "WorldEdit: Failed to do NMS access for direct NBT data copy", t);
+                skipNmsAccess = true;
+            }
+        }
+
         return false;
     }
 
@@ -400,6 +423,7 @@ public class BukkitWorld extends LocalWorld {
             org.bukkit.block.NoteBlock bukkit = (org.bukkit.block.NoteBlock) state;
             NoteBlock we = (NoteBlock) block;
             we.setNote(bukkit.getRawNote());
+            return true;
         }
 
         return false;
@@ -902,6 +926,7 @@ public class BukkitWorld extends LocalWorld {
         world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).breakNaturally();
     }
 
+    @Override
     public LocalEntity[] getEntities(Region region) {
         List<BukkitEntity> entities = new ArrayList<BukkitEntity>();
         for (Vector2D pt : region.getChunks()) {
@@ -917,6 +942,7 @@ public class BukkitWorld extends LocalWorld {
         return entities.toArray(new BukkitEntity[entities.size()]);
     }
 
+    @Override
     public int killEntities(LocalEntity... entities) {
         int amount = 0;
         Set<UUID> toKill = new HashSet<UUID>();
@@ -930,5 +956,53 @@ public class BukkitWorld extends LocalWorld {
             }
         }
         return amount;
+    }
+
+    @Override
+    public BaseBlock getBlock(Vector pt) {
+        int type = getBlockType(pt);
+        int data = getBlockData(pt);
+
+        switch (type) {
+        case BlockID.WALL_SIGN:
+        case BlockID.SIGN_POST:
+        //case BlockID.CHEST: // Prevent data loss for now
+        //case BlockID.FURNACE:
+        //case BlockID.BURNING_FURNACE:
+        //case BlockID.DISPENSER:
+        //case BlockID.MOB_SPAWNER:
+        case BlockID.NOTE_BLOCK:
+            return super.getBlock(pt);
+        default:
+            if (!skipNmsAccess) {
+                try {
+                    NmsBlock block = NmsBlock.get(world, pt, type, data);
+                    if (block != null) {
+                        return block;
+                    }
+                } catch (Throwable t) {
+                    logger.log(Level.WARNING,
+                            "WorldEdit: Failed to do NMS access for direct NBT data copy", t);
+                    skipNmsAccess = true;
+                }
+            }
+        }
+        
+        return super.getBlock(pt);
+    }
+    
+    @Override
+    public boolean setBlock(Vector pt, com.sk89q.worldedit.foundation.Block block, boolean notifyAdjacent) {
+        if (!skipNmsSafeSet) {
+            try {
+                return NmsBlock.setSafely(this, pt, block, notifyAdjacent);
+            } catch (Throwable t) {
+                logger.log(Level.WARNING,
+                        "WorldEdit: Failed to do NMS safe block set", t);
+                skipNmsSafeSet = true;
+            }
+        }
+        
+        return super.setBlock(pt, block, notifyAdjacent);
     }
 }

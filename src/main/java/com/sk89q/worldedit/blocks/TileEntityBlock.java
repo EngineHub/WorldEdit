@@ -1,7 +1,7 @@
 // $Id$
 /*
  * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com> and contributors
+ * Copyright (C) sk89q <http://www.sk89q.com> and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,42 +19,22 @@
 
 package com.sk89q.worldedit.blocks;
 
-import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.data.*;
-
-import java.util.Map;
+import com.sk89q.worldedit.foundation.NbtValued;
 
 /**
- * A class implementing this interface has extra TileEntityBlock data to store.
+ * Indicates a block that contains extra data identified as an NBT structure. Compared
+ * to a {@link NbtValued}, tile entity blocks also contain an ID.
  *
+ * @see NbtValued
  * @author sk89q
  */
-public interface TileEntityBlock {
+public interface TileEntityBlock extends NbtValued {
 
     /**
      * Return the name of the title entity ID.
      *
-     * @return tile entity ID
+     * @return tile entity ID, non-null string
      */
-    public abstract String getTileEntityID();
-
-    /**
-     * Store additional tile entity data.
-     *
-     * @return map of values
-     * @throws DataException When invalid data is encountered
-     */
-    public abstract Map<String, Tag> toTileEntityNBT()
-            throws DataException;
-
-    /**
-     * Get additional information from the tile entity data.
-     *
-     * @param values map of data
-     * @throws DataException When invalid data is encountered
-     */
-    public abstract void fromTileEntityNBT(Map<String, Tag> values)
-            throws DataException;
-
+    String getNbtId();
 
 }

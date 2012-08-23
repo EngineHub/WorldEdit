@@ -182,12 +182,12 @@ public class AnvilChunk implements Chunk {
      * @return
      * @throws DataException
      */
-    private Map<String, Tag> getBlockTileEntity(Vector pos) throws DataException {
+    private CompoundTag getBlockTileEntity(Vector pos) throws DataException {
         if (tileEntities == null) {
             populateTileEntities();
         }
 
-        return tileEntities.get(new BlockVector(pos));
+        return new CompoundTag("", tileEntities.get(new BlockVector(pos)));
     }
 
     @Override
@@ -213,8 +213,8 @@ public class AnvilChunk implements Chunk {
         }
 
         if (block instanceof TileEntityBlock) {
-            Map<String, Tag> tileEntity = getBlockTileEntity(pos);
-            ((TileEntityBlock) block).fromTileEntityNBT(tileEntity);
+            CompoundTag tileEntity = getBlockTileEntity(pos);
+            ((TileEntityBlock) block).setNbtData(tileEntity);
         }
 
         return block;

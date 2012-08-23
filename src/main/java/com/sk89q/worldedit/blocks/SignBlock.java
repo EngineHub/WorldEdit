@@ -15,30 +15,32 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.worldedit.blocks;
 
-import com.sk89q.jnbt.*;
-import com.sk89q.worldedit.data.*;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.data.DataException;
 
 /**
- *
+ * Represents a sign block.
+ * 
  * @author sk89q
  */
 public class SignBlock extends BaseBlock implements TileEntityBlock {
-    /**
-     * Stores the sign's text.
-     */
+
     private String[] text;
 
     /**
      * Construct the sign without text.
-     *
-     * @param type
-     * @param data
+     * 
+     * @param type type ID
+     * @param data data value (orientation)
      */
     public SignBlock(int type, int data) {
         super(type, data);
@@ -47,17 +49,22 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
 
     /**
      * Construct the sign with text.
-     *
-     * @param type
-     * @param data
-     * @param text
+     * 
+     * @param type type ID
+     * @param data data value (orientation)
+     * @param text lines of text
      */
     public SignBlock(int type, int data, String[] text) {
         super(type, data);
+        if (text == null) {
+            this.text = new String[] { "", "", "", "" };
+        }
         this.text = text;
     }
 
     /**
+     * Get the text.
+     * 
      * @return the text
      */
     public String[] getText() {
@@ -65,55 +72,52 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
     }
 
     /**
+     * Set the text.
+     * 
      * @param text the text to set
      */
     public void setText(String[] text) {
+        if (text == null) {
+            throw new IllegalArgumentException("Can't set null text for a sign");
+        }
         this.text = text;
     }
+    
+    @Override
+    public boolean hasNbtData() {
+        return true;
+    }
 
-    /**
-     * Return the name of the title entity ID.
-     *
-     * @return title entity ID
-     */
-    public String getTileEntityID() {
+    @Override
+    public String getNbtId() {
         return "Sign";
     }
 
-    /**
-     * Store additional tile entity data. Returns true if the data is used.
-     *
-     * @return map of values
-     * @throws DataException
-     */
-    public Map<String, Tag> toTileEntityNBT()
-            throws DataException {
+    @Override
+    public CompoundTag getNbtData() {
         Map<String, Tag> values = new HashMap<String, Tag>();
         values.put("Text1", new StringTag("Text1", text[0]));
         values.put("Text2", new StringTag("Text2", text[1]));
         values.put("Text3", new StringTag("Text3", text[2]));
         values.put("Text4", new StringTag("Text4", text[3]));
-        return values;
+        return new CompoundTag(getNbtId(), values);
     }
 
-    /**
-     * Get additional information from the title entity data.
-     *
-     * @param values
-     * @throws DataException
-     */
-    public void fromTileEntityNBT(Map<String, Tag> values)
-            throws DataException {
-        if (values == null) {
+    @Override
+    public void setNbtData(CompoundTag rootTag) throws DataException {
+        if (rootTag == null) {
             return;
         }
+
+        Map<String, Tag> values = rootTag.getValue();
 
         Tag t;
 
         text = new String[] { "", "", "", "" };
 
         t = values.get("id");
-        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Sign")) {
+        if (!(t instanceof StringTag)
+                || !((StringTag) t).getValue().equals("Sign")) {
             throw new DataException("'Sign' tile entity expected");
         }
 

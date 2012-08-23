@@ -27,12 +27,22 @@ import com.sk89q.worldedit.data.DataException;
  * be used in other cases.
  */
 public interface NbtValued {
+    
+    /**
+     * Returns whether the block contains NBT data. {@link #getNbtData()} must not return
+     * null if this method returns true.
+     * 
+     * @return true if there is NBT data
+     */
+    public boolean hasNbtData();
 
     /**
      * Get the object's NBT data (tile entity data). The returned tag, if modified
      * in any way, should be sent to {@link #setNbtData(CompoundTag)} so that
      * the instance knows of the changes. Making changes without calling
      * {@link #setNbtData(CompoundTag)} could have unintended consequences.
+     * </p>
+     * {@link #hasNbtData()} must return true if and only if method does not return null.
      * 
      * @return compound tag, or null
      */

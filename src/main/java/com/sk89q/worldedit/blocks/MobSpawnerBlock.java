@@ -19,30 +19,29 @@
 
 package com.sk89q.worldedit.blocks;
 
-import com.sk89q.jnbt.*;
-import com.sk89q.worldedit.MobType;
-import com.sk89q.worldedit.data.*;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.NBTUtils;
+import com.sk89q.jnbt.ShortTag;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.MobType;
+import com.sk89q.worldedit.data.DataException;
 
 /**
- * Represents mob spawners.
+ * A mob spawner block.
  *
  * @author sk89q
  */
 public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
-    /**
-     * Store mob spawn type.
-     */
+    
     private String mobType;
-    /**
-     * Delay until next spawn.
-     */
     private short delay;
 
     /**
-     * Construct the mob spawner block.
-     *
+     * Construct the mob spawner block with a pig as the mob type.
      */
     public MobSpawnerBlock() {
         super(BlockID.MOB_SPAWNER);
@@ -50,9 +49,9 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
     }
 
     /**
-     * Construct the mob spawner block.
+     * Construct the mob spawner block with a given mob type.
      *
-     * @param mobType
+     * @param mobType mob type
      */
     public MobSpawnerBlock(String mobType) {
         super(BlockID.MOB_SPAWNER);
@@ -60,9 +59,9 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
     }
 
     /**
-     * Construct the mob spawner block.
+     * Construct the mob spawner block with a specified data value.
      *
-     * @param data
+     * @param data data value
      */
     public MobSpawnerBlock(int data) {
         super(BlockID.MOB_SPAWNER, data);
@@ -71,8 +70,8 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
     /**
      * Construct the mob spawner block.
      *
-     * @param data
-     * @param mobType
+     * @param data data value
+     * @param mobType mob type
      */
     public MobSpawnerBlock(int data, String mobType) {
         super(BlockID.MOB_SPAWNER, data);
@@ -82,7 +81,7 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
     /**
      * Get the mob type.
      *
-     * @return
+     * @return the mob type
      */
     public String getMobType() {
         return mobType;
@@ -91,13 +90,15 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
     /**
      * Set the mob type.
      *
-     * @param mobType
+     * @param mobType the mob type
      */
     public void setMobType(String mobType) {
         this.mobType = mobType;
     }
 
     /**
+     * Get the spawn delay.
+     * 
      * @return the delay
      */
     public short getDelay() {
@@ -105,46 +106,39 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
     }
 
     /**
+     * Set the spawn delay.
+     * 
      * @param delay the delay to set
      */
     public void setDelay(short delay) {
         this.delay = delay;
     }
+    
+    @Override
+    public boolean hasNbtData() {
+        return true;
+    }
 
-    /**
-     * Get the tile entity ID.
-     *
-     * @return
-     */
-    public String getTileEntityID() {
+    @Override
+    public String getNbtId() {
         return "MobSpawner";
     }
 
-    /**
-     * Store additional tile entity data. Returns true if the data is used.
-     *
-     * @return map of values
-     * @throws DataException
-     */
-    public Map<String, Tag> toTileEntityNBT()
-            throws DataException {
+    @Override
+    public CompoundTag getNbtData() {
         Map<String, Tag> values = new HashMap<String, Tag>();
         values.put("EntityId", new StringTag("EntityId", mobType));
         values.put("Delay", new ShortTag("Delay", delay));
-        return values;
+        return new CompoundTag(getNbtId(), values);
     }
 
-    /**
-     * Get additional information from the title entity data.
-     *
-     * @param values
-     * @throws DataException
-     */
-    public void fromTileEntityNBT(Map<String, Tag> values)
-            throws DataException {
-        if (values == null) {
+    @Override
+    public void setNbtData(CompoundTag rootTag) throws DataException {
+        if (rootTag == null) {
             return;
         }
+
+        Map<String, Tag> values = rootTag.getValue();
 
         Tag t = values.get("id");
         if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("MobSpawner")) {

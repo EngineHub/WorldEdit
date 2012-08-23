@@ -16,7 +16,6 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package com.sk89q.worldedit.foundation;
 
 import com.sk89q.jnbt.CompoundTag;
@@ -34,7 +33,7 @@ import com.sk89q.worldedit.data.DataException;
  * Implementations can and should extend this class to allow native implementations
  * of NBT data handling, primarily for performance reasons. Subclasses can only convert
  * from and to WorldEdit-native NBT structures when absolutely necessary (a.k.a. when
- * {@link #getNbtData()} and {@link #setNbtData(CompoundTag)} are called. When
+ * {@link #getNbtData()} and {@link #setNbtData(CompoundTag)} are called). When
  * overriding the NBT methods, {@link #getNbtId()} should be overridden too, otherwise
  * the default implementation will invoke {@link #getNbtData()}, a potentially costly
  * operation when it is not needed. Implementations may want to cache converted NBT data
@@ -64,7 +63,8 @@ public class Block implements TileEntityBlock {
     // Instances of this class should be _as small as possible_ because there will
     // be millions of instances of this object.
     
-    private short rawIdData;
+    private short id;
+    private short data;
     private CompoundTag nbtData;
     
     /**
@@ -114,7 +114,7 @@ public class Block implements TileEntityBlock {
      * @return ID (between 0 and {@link #MAX_ID})
      */
     public int getId() {
-        return rawIdData >> 4;
+        return id;
     }
     
     /**
@@ -123,15 +123,16 @@ public class Block implements TileEntityBlock {
      * @param id block id (between 0 and {@link #MAX_ID}).
      */
     public void setId(int id) {
-        if (id < MAX_ID) {
-            throw new IllegalArgumentException("Can't have a block ID above " + MAX_ID);
+        if (id > MAX_ID) {
+            throw new IllegalArgumentException("Can't have a block ID above "
+                    + MAX_ID + " (" + id + " given)");
         }
-        
+
         if (id < 0) {
             throw new IllegalArgumentException("Can't have a block ID below 0");
         }
         
-        rawIdData = (short) ((id << 4) | rawIdData & 0xf);
+        this.id = (short) id;
     }
     
     /**
@@ -140,7 +141,7 @@ public class Block implements TileEntityBlock {
      * @return data value (0-15)
      */
     public int getData() {
-        return rawIdData & 0xf;
+        return data;
     }
 
     /**
@@ -149,15 +150,17 @@ public class Block implements TileEntityBlock {
      * @param data block data value (between 0 and {@link #MAX_DATA}).
      */
     public void setData(int data) {
-        if (data < MAX_DATA) {
-            throw new IllegalArgumentException("Can't have a block data value above " + MAX_DATA);
+        if (data > MAX_DATA) {
+            throw new IllegalArgumentException(
+                    "Can't have a block data value above " + MAX_DATA + " ("
+                            + data + " given)");
         }
         
         if (data < 0) {
             throw new IllegalArgumentException("Can't have a block data value below 0");
         }
         
-        rawIdData = (short) ((rawIdData ^ 4) | data);
+        this.data = (short) data;
     }
     
     /**
@@ -173,20 +176,11 @@ public class Block implements TileEntityBlock {
         setData(data);
     }
     
-    /**
-     * Returns whether the block contains NBT data.
-     * 
-     * @return NBT data;
-     */
+    @Override
     public boolean hasNbtData() {
         return getNbtData() != null;
     }
     
-    /**
-     * Gets the ID of the NBT data (tile entity data).
-     * 
-     * @return ID value (may be blank), or an empty string if no NBT data is set
-     */
     @Override
     public String getNbtId() {
         CompoundTag nbtData = getNbtData();

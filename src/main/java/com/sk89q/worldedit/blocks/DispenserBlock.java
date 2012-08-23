@@ -19,12 +19,17 @@
 
 package com.sk89q.worldedit.blocks;
 
-import com.sk89q.jnbt.*;
-import com.sk89q.worldedit.data.*;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
+
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.NBTUtils;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.data.DataException;
 
 /**
  * Represents dispensers.
@@ -34,65 +39,52 @@ import java.util.ArrayList;
 public class DispenserBlock extends ContainerBlock {
 
     /**
-     * Construct the dispenser block.
+     * Construct an empty dispenser block.
      */
     public DispenserBlock() {
         super(BlockID.DISPENSER, 9);
     }
 
     /**
-     * Construct the dispenser block.
+     * Construct an empty dispenser block.
      *
-     * @param data
+     * @param data data value (orientation)
      */
     public DispenserBlock(int data) {
         super(BlockID.DISPENSER, data, 9);
     }
 
     /**
-     * Construct the dispenser block.
+     * Construct a dispenser block with the given orientation and inventory.
      *
-     * @param data
-     * @param items
+     * @param data data value (orientation)
+     * @param items array of items in the inventory
      */
     public DispenserBlock(int data, BaseItemStack[] items) {
         super(BlockID.DISPENSER, data, 9);
         this.setItems(items);
     }
 
-    /**
-     * Get the tile entity ID.
-     *
-     * @return
-     */
-    public String getTileEntityID() {
+    @Override
+    public String getNbtId() {
         return "Trap";
     }
 
-    /**
-     * Store additional tile entity data. Returns true if the data is used.
-     *
-     * @return map of values
-     * @throws DataException
-     */
-    public Map<String, Tag> toTileEntityNBT()
-            throws DataException {
+    @Override
+    public CompoundTag getNbtData() {
         Map<String, Tag> values = new HashMap<String, Tag>();
-        values.put("Items", new ListTag("Items", CompoundTag.class, serializeInventory(getItems())));
-        return values;
+        values.put("Items", new ListTag("Items", CompoundTag.class,
+                serializeInventory(getItems())));
+        return new CompoundTag(getNbtId(), values);
     }
 
-    /**
-     * Get additional information from the title entity data.
-     *
-     * @param values
-     * @throws DataException
-     */
-    public void fromTileEntityNBT(Map<String, Tag> values)
-            throws DataException {
-        if (values == null) {
+    @Override
+    public void setNbtData(CompoundTag rootTag) throws DataException {
+        if (rootTag == null) {
             return;
         }
+        
+        Map<String, Tag> values = rootTag.getValue();
 
         Tag t = values.get("id");
         if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Trap")) {

@@ -15,27 +15,30 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.worldedit.blocks;
 
-import com.sk89q.jnbt.*;
-import com.sk89q.worldedit.data.*;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
+import com.sk89q.jnbt.ByteTag;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.data.DataException;
 
 /**
- *
+ * A note block.
+ * 
  * @author sk89q
  */
 public class NoteBlock extends BaseBlock implements TileEntityBlock {
-    /**
-     * Stores the pitch.
-     */
+
     private byte note;
 
     /**
-     * Construct the note block.
+     * Construct the note block with a data value of 0.
      */
     public NoteBlock() {
         super(BlockID.NOTE_BLOCK);
@@ -43,9 +46,9 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
     }
 
     /**
-     * Construct the note block.
-     *
-     * @param data
+     * Construct the note block with a given data value.
+     * 
+     * @param data data value
      */
     public NoteBlock(int data) {
         super(BlockID.NOTE_BLOCK, data);
@@ -53,10 +56,10 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
     }
 
     /**
-     * Construct the note block.
-     *
-     * @param data
-     * @param note
+     * Construct the note block with a given data value and note.
+     * 
+     * @param data data value
+     * @param note note
      */
     public NoteBlock(int data, byte note) {
         super(BlockID.NOTE_BLOCK, data);
@@ -64,6 +67,8 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
     }
 
     /**
+     * Get the note.
+     * 
      * @return the note
      */
     public byte getNote() {
@@ -71,50 +76,44 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
     }
 
     /**
+     * Set the note.
+     * 
      * @param note the note to set
      */
     public void setNote(byte note) {
         this.note = note;
     }
+    
+    @Override
+    public boolean hasNbtData() {
+        return true;
+    }
 
-    /**
-     * Return the name of the title entity ID.
-     *
-     * @return title entity ID
-     */
-    public String getTileEntityID() {
+    @Override
+    public String getNbtId() {
         return "Music";
     }
 
-    /**
-     * Store additional tile entity data. Returns true if the data is used.
-     *
-     * @return map of values
-     * @throws DataException
-     */
-    public Map<String, Tag> toTileEntityNBT()
-            throws DataException {
+    @Override
+    public CompoundTag getNbtData() {
         Map<String, Tag> values = new HashMap<String, Tag>();
         values.put("note", new ByteTag("note", note));
-        return values;
+        return new CompoundTag(getNbtId(), values);
     }
 
-    /**
-     * Get additional information from the title entity data.
-     *
-     * @param values
-     * @throws DataException
-     */
-    public void fromTileEntityNBT(Map<String, Tag> values)
-            throws DataException {
-        if (values == null) {
+    @Override
+    public void setNbtData(CompoundTag rootTag) throws DataException {
+        if (rootTag == null) {
             return;
         }
+
+        Map<String, Tag> values = rootTag.getValue();
 
         Tag t;
 
         t = values.get("id");
-        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Music")) {
+        if (!(t instanceof StringTag)
+                || !((StringTag) t).getValue().equals("Music")) {
             throw new DataException("'Music' tile entity expected");
         }
 

@@ -20,26 +20,20 @@
 package com.sk89q.worldedit.blocks;
 
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
+import com.sk89q.worldedit.foundation.Block;
 
 /**
  * Represents a block.
  *
+ * @see Block new class to replace this one
  * @author sk89q
  */
-public class BaseBlock {
+public class BaseBlock extends Block {
+    
     /**
-     * BaseBlock type.
-     */
-    private short type = 0;
-    /**
-     * BaseBlock data.
-     */
-    private short data = 0;
-
-    /**
-     * Construct the block with its type.
+     * Construct the block with its type, with default data value 0.
      *
-     * @param type
+     * @param type type ID of block
      */
     public BaseBlock(int type) {
         this(type, 0);
@@ -48,40 +42,29 @@ public class BaseBlock {
     /**
      * Construct the block with its type and data.
      *
-     * @param type
-     * @param data
+     * @param type type ID of block
+     * @param data data value
      */
     public BaseBlock(int type, int data) {
-        this.type = (short) type;
-        this.data = (short) data;
+        super(type, data);
     }
 
     /**
+     * Get the type of block.
+     * 
      * @return the type
      */
     public int getType() {
-        return (int) type;
+        return getId();
     }
 
     /**
+     * Set the type of block.
+     * 
      * @param type the type to set
      */
     public void setType(int type) {
-        this.type = (short) type;
-    }
-
-    /**
-     * @return the data
-     */
-    public int getData() {
-        return (int) data;
-    }
-
-    /**
-     * @param data the data to set
-     */
-    public void setData(int data) {
-        this.data = (short) data;
+        setId(type);
     }
 
     /**
@@ -90,24 +73,28 @@ public class BaseBlock {
      * @return if air
      */
     public boolean isAir() {
-        return type == BlockID.AIR;
+        return getType() == BlockID.AIR;
     }
 
     /**
      * Rotate this block 90 degrees.
+     * 
+     * @return new data value
      */
     public int rotate90() {
-        int newData = BlockData.rotate90(type, data);
-        this.data = (short) newData;
-        return data;
+        int newData = BlockData.rotate90(getType(), getData());
+        setData(newData);
+        return newData;
     }
 
     /**
      * Rotate this block -90 degrees.
+     * 
+     * @return new data value
      */
     public int rotate90Reverse() {
-        int newData = BlockData.rotate90Reverse(type, data);
-        this.data = (short) newData;
+        int newData = BlockData.rotate90Reverse(getType(), getData());
+        setData((short) newData);
         return newData;
     }
 
@@ -118,56 +105,55 @@ public class BaseBlock {
      * @return new data value
      */
     public int cycleData(int increment) {
-        int newData = BlockData.cycle(this.type, this.data, increment);
-        this.data = (short) newData;
+        int newData = BlockData.cycle(getType(), getData(), increment);
+        setData((short) newData);
         return newData;
     }
 
     /**
      * Flip this block.
+     * 
+     * @return this block
      */
     public BaseBlock flip() {
-        data = (short) BlockData.flip(type, data);
+        setData((short) BlockData.flip(getType(), getData()));
         return this;
     }
 
     /**
      * Flip this block.
-     * @param direction
+     * 
+     * @param direction direction to flip in
+     * @return this block
      */
     public BaseBlock flip(FlipDirection direction) {
-        data = (short) BlockData.flip(type, data, direction);
+        setData((short) BlockData.flip(getType(), getData(), direction));
         return this;
     }
 
+    /**
+     * Checks whether the type ID and data value are equal.
+     */
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof BaseBlock)) {
             return false;
         }
 
-        return type == ((BaseBlock) o).type && data == ((BaseBlock) o).data;
-    }
-
-    public boolean equalsFuzzy(BaseBlock o) {
-        return (type == o.type && data == o.data) || data == -1 || o.data == -1;
-    }
-
-    @Override
-    public int hashCode() {
-        int ret = type << 3;
-        if (data != (byte) -1) ret |= data;
-        return ret;
-    }
-
-    @Override
-    public String toString() {
-        return "BaseBlock id: " + getType() + " with damage: " + getData();
+        return getType() == ((BaseBlock) o).getType() && getData() == ((BaseBlock) o).getData();
     }
 
     /**
-     *
-     *
+     * Checks if the type is the same, and if data is the same if only data != -1.
+     * 
+     * @param o other block
+     * @return true if equal
+     */
+    public boolean equalsFuzzy(BaseBlock o) {
+        return (getType() == o.getType() && getData() == o.getData()) || getData() == -1 || o.getData() == -1;
+    }
+
+    /**
      * @param iter
      * @return
      * @deprecated This method is silly

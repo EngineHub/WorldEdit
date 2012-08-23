@@ -62,5 +62,41 @@ public final class NBTConstants {
     private NBTConstants() {
 
     }
+    
+    /**
+     * Convert a type ID to its corresponding {@link Tag} class.
+     * 
+     * @param id type ID
+     * @return tag class
+     * @throws IllegalArgumentException thrown if the tag ID is not valid
+     */
+    public static Class<? extends Tag> getClassFromType(int id) {
+        switch (id) {
+        case TYPE_END:
+            return EndTag.class;
+        case TYPE_BYTE:
+            return ByteTag.class;
+        case TYPE_SHORT:
+            return ShortTag.class;
+        case TYPE_INT:
+            return IntTag.class;
+        case TYPE_LONG:
+            return LongTag.class;
+        case TYPE_FLOAT:
+            return FloatTag.class;
+        case TYPE_BYTE_ARRAY:
+            return ByteArrayTag.class;
+        case TYPE_STRING:
+            return StringTag.class;
+        case TYPE_LIST:
+            return ListTag.class;
+        case TYPE_COMPOUND:
+            return CompoundTag.class;
+        case TYPE_INT_ARRAY:
+            return IntArrayTag.class;
+        default:
+            throw new IllegalArgumentException("Unknown tag type ID of " + id);
+        }
+    }
 
 }

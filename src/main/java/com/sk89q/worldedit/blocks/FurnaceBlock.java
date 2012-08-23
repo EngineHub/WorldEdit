@@ -15,60 +15,58 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.worldedit.blocks;
 
-import com.sk89q.jnbt.*;
-import com.sk89q.worldedit.data.*;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.NBTUtils;
+import com.sk89q.jnbt.ShortTag;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.data.DataException;
 
 /**
- * Represents furnaces.
- *
+ * Represents a furnace block.
+ * 
  * @author sk89q
  */
 public class FurnaceBlock extends ContainerBlock {
 
-    /**
-     * Fuel time.
-     */
     private short burnTime;
-
-    /**
-     * Cook time.
-     */
     private short cookTime;
 
     /**
-     * Construct the chest block.
-     *
-     * @param type
+     * Construct an empty furnace block with the default orientation.
+     * 
+     * @param type type ID
      */
     public FurnaceBlock(int type) {
         super(type, 2);
     }
 
     /**
-     * Construct the chest block.
-     *
-     * @param type
-     * @param data
+     * Construct an empty furnace block with a given orientation.
+     * 
+     * @param type type ID
+     * @param data orientation
      */
     public FurnaceBlock(int type, int data) {
         super(type, data, 2);
     }
 
     /**
-     * Construct the chest block.
-     *
-     * @param type
-     * @param data
-     * @param items
+     * Construct an furnace block with a given orientation and inventory.
+     * 
+     * @param type type ID
+     * @param data orientation
+     * @param items inventory items
      */
     public FurnaceBlock(int type, int data, BaseItemStack[] items) {
         super(type, data, 2);
@@ -76,71 +74,67 @@ public class FurnaceBlock extends ContainerBlock {
     }
 
     /**
-     * @return the burnTime
+     * Get the burn time.
+     * 
+     * @return the burn time
      */
     public short getBurnTime() {
         return burnTime;
     }
 
     /**
-     * @param burnTime the burnTime to set
+     * Set the burn time.
+     * 
+     * @param burnTime the burn time
      */
     public void setBurnTime(short burnTime) {
         this.burnTime = burnTime;
     }
 
     /**
-     * @return the cookTime
+     * Get the cook time.
+     * 
+     * @return the cook time
      */
     public short getCookTime() {
         return cookTime;
     }
 
     /**
-     * @param cookTime the cookTime to set
+     * Set the cook time.
+     * 
+     * @param cookTime the cook time to set
      */
     public void setCookTime(short cookTime) {
         this.cookTime = cookTime;
     }
 
-    /**
-     * Get the tile entity ID.
-     *
-     * @return
-     */
-    public String getTileEntityID() {
+    @Override
+    public String getNbtId() {
         return "Furnace";
     }
 
-    /**
-     * Store additional tile entity data. Returns true if the data is used.
-     *
-     * @return map of values
-     * @throws DataException
-     */
-    public Map<String, Tag> toTileEntityNBT()
-            throws DataException {
+    @Override
+    public CompoundTag getNbtData() {
         Map<String, Tag> values = new HashMap<String, Tag>();
-        values.put("Items", new ListTag("Items", CompoundTag.class, serializeInventory(getItems())));
+        values.put("Items", new ListTag("Items", CompoundTag.class,
+                serializeInventory(getItems())));
         values.put("BurnTime", new ShortTag("BurnTime", burnTime));
         values.put("CookTime", new ShortTag("CookTime", cookTime));
-        return values;
+        return new CompoundTag(getNbtId(), values);
     }
 
-    /**
-     * Get additional information from the title entity data.
-     *
-     * @param values
-     * @throws DataException
-     */
-    public void fromTileEntityNBT(Map<String, Tag> values)
-            throws DataException {
-        if (values == null) {
+    @Override
+    public void setNbtData(CompoundTag rootTag) throws DataException {
+        if (rootTag == null) {
             return;
         }
+        
+        Map<String, Tag> values = rootTag.getValue();
 
         Tag t = values.get("id");
-        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Furnace")) {
+        if (!(t instanceof StringTag)
+                || !((StringTag) t).getValue().equals("Furnace")) {
             throw new DataException("'Furnace' tile entity expected");
         }
 
@@ -150,7 +144,8 @@ public class FurnaceBlock extends ContainerBlock {
 
         for (Tag tag : items.getValue()) {
             if (!(tag instanceof CompoundTag)) {
-                throw new DataException("CompoundTag expected as child tag of Furnace Items");
+                throw new DataException(
+                        "CompoundTag expected as child tag of Furnace Items");
             }
             compound.add((CompoundTag) tag);
         }

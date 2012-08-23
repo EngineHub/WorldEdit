@@ -19,80 +19,71 @@
 
 package com.sk89q.worldedit.blocks;
 
-import com.sk89q.jnbt.*;
-import com.sk89q.worldedit.data.*;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
+
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.NBTUtils;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.data.DataException;
 
 /**
- * Represents chests.
+ * Represents a chest block.
  *
  * @author sk89q
  */
 public class ChestBlock extends ContainerBlock {
 
     /**
-     * Construct the chest block.
+     * Construct an empty chest block with the default orientation (data value).
      */
     public ChestBlock() {
         super(BlockID.CHEST, 27);
     }
 
     /**
-     * Construct the chest block.
+     * Construct an empty chest block with a custom data value.
      *
-     * @param data
+     * @param data data indicating the position of the chest
      */
     public ChestBlock(int data) {
         super(BlockID.CHEST, data, 27);
     }
 
     /**
-     * Construct the chest block.
+     * Construct the chest block with a custom data value and a list of items.
      *
-     * @param data
-     * @param items
+     * @param data data indicating the position of the chest
+     * @param items array of items
      */
     public ChestBlock(int data, BaseItemStack[] items) {
         super(BlockID.CHEST, data, 27);
         setItems(items);
     }
 
-    /**
-     * Get the tile entity ID.
-     *
-     * @return
-     */
-    public String getTileEntityID() {
+    @Override
+    public String getNbtId() {
         return "Chest";
     }
 
-    /**
-     * Store additional tile entity data. Returns true if the data is used.
-     *
-     * @return map of values
-     * @throws DataException
-     */
-    public Map<String, Tag> toTileEntityNBT()
-            throws DataException {
+    @Override
+    public CompoundTag getNbtData() {
         Map<String, Tag> values = new HashMap<String, Tag>();
         values.put("Items", new ListTag("Items", CompoundTag.class, serializeInventory(getItems())));
-        return values;
+        return new CompoundTag(getNbtId(), values);
     }
 
-    /**
-     * Get additional information from the title entity data.
-     *
-     * @param values
-     * @throws DataException
-     */
-    public void fromTileEntityNBT(Map<String, Tag> values)
-            throws DataException {
-        if (values == null) {
+    @Override
+    public void setNbtData(CompoundTag rootTag) throws DataException {
+        if (rootTag == null) {
             return;
         }
+        
+        Map<String, Tag> values = rootTag.getValue();
 
         Tag t = values.get("id");
         if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Chest")) {
@@ -100,6 +91,7 @@ public class ChestBlock extends ContainerBlock {
         }
 
         List<CompoundTag> items = new ArrayList<CompoundTag>();
+        
         for (Tag tag : NBTUtils.getChildTag(values, "Items", ListTag.class).getValue()) {
             if (!(tag instanceof CompoundTag)) {
                 throw new DataException("CompoundTag expected as child tag of Chest's Items");

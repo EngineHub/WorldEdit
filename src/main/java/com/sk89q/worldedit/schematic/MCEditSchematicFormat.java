@@ -18,6 +18,18 @@
 
 package com.sk89q.worldedit.schematic;
 
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.zip.GZIPInputStream;
+
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.IntTag;
@@ -34,17 +46,6 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.data.DataException;
-
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
 /**
  * @author zml2008
@@ -176,7 +177,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
                     BaseBlock block = getBlockForId(blocks[index], blockData[index]);
 
                     if (block instanceof TileEntityBlock && tileEntitiesMap.containsKey(pt)) {
-                        ((TileEntityBlock) block).fromTileEntityNBT(tileEntitiesMap.get(pt));
+                        ((TileEntityBlock) block).setNbtData(new CompoundTag("", tileEntitiesMap.get(pt)));
                     }
                     clipboard.setBlock(pt, block);
                 }
@@ -239,19 +240,22 @@ public class MCEditSchematicFormat extends SchematicFormat {
 
                     // Store TileEntity data
                     if (block instanceof TileEntityBlock) {
-                        TileEntityBlock tileEntityBlock =
-                                (TileEntityBlock) block;
+                        TileEntityBlock tileEntityBlock = block;
 
                         // Get the list of key/values from the block
-                        Map<String, Tag> values = tileEntityBlock.toTileEntityNBT();
-                        if (values != null) {
-                            values.put("id", new StringTag("id",
-                                    tileEntityBlock.getTileEntityID()));
+                        CompoundTag rawTag = tileEntityBlock.getNbtData();
+                        if (rawTag != null) {
+                            Map<String, Tag> values = new HashMap<String, Tag>();
+                            for (Entry<String, Tag> entry : rawTag.getValue().entrySet()) {
+                                values.put(entry.getKey(), entry.getValue());
+                            }
+                            
+                            values.put("id", new StringTag("id", tileEntityBlock.getNbtId()));
                             values.put("x", new IntTag("x", x));
                             values.put("y", new IntTag("y", y));
                             values.put("z", new IntTag("z", z));
-                            CompoundTag tileEntityTag =
-                                    new CompoundTag("TileEntity", values);
+                            
+                            CompoundTag tileEntityTag = new CompoundTag("TileEntity", values);
                             tileEntities.add(tileEntityTag);
                         }
                     }

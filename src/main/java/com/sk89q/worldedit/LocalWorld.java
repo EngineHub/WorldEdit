@@ -21,9 +21,19 @@ package com.sk89q.worldedit;
 
 import java.util.PriorityQueue;
 import java.util.Random;
+
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.ChestBlock;
+import com.sk89q.worldedit.blocks.DispenserBlock;
+import com.sk89q.worldedit.blocks.FurnaceBlock;
+import com.sk89q.worldedit.blocks.MobSpawnerBlock;
+import com.sk89q.worldedit.blocks.NoteBlock;
+import com.sk89q.worldedit.blocks.SignBlock;
+import com.sk89q.worldedit.foundation.Block;
+import com.sk89q.worldedit.foundation.World;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 
@@ -32,7 +42,7 @@ import com.sk89q.worldedit.util.TreeGenerator;
  *
  * @author sk89q
  */
-public abstract class LocalWorld {
+public abstract class LocalWorld implements World {
     /**
      * Named flags to use as parameters to {@link LocalWorld#killMobs(Vector, double, int)}
      */
@@ -64,6 +74,7 @@ public abstract class LocalWorld {
      * @param type
      * @return
      */
+    @Deprecated
     public abstract boolean setBlockType(Vector pt, int type);
 
     /**
@@ -73,6 +84,7 @@ public abstract class LocalWorld {
      * @param type
      * @return
      */
+    @Deprecated
     public boolean setBlockTypeFast(Vector pt, int type) {
         return setBlockType(pt, type);
     }
@@ -83,6 +95,7 @@ public abstract class LocalWorld {
      * @param pt
      * @return
      */
+    @Deprecated
     public abstract int getBlockType(Vector pt);
 
     /**
@@ -91,7 +104,7 @@ public abstract class LocalWorld {
      * @param pt
      * @param data
      */
-
+    @Deprecated
     public abstract void setBlockData(Vector pt, int data);
 
     /**
@@ -100,6 +113,7 @@ public abstract class LocalWorld {
      * @param pt
      * @param data
      */
+    @Deprecated
     public abstract void setBlockDataFast(Vector pt, int data);
 
     /**
@@ -124,6 +138,7 @@ public abstract class LocalWorld {
      * @param data
      * @return
      */
+    @Deprecated
     public boolean setTypeIdAndData(Vector pt, int type, int data) {
         boolean ret = setBlockType(pt, type);
         setBlockData(pt, data);
@@ -137,6 +152,7 @@ public abstract class LocalWorld {
      * @param data
      * @return
      */
+    @Deprecated
     public boolean setTypeIdAndDataFast(Vector pt, int type, int data) {
         boolean ret = setBlockTypeFast(pt, type);
         setBlockDataFast(pt, data);
@@ -149,6 +165,7 @@ public abstract class LocalWorld {
      * @param pt
      * @return
      */
+    @Deprecated
     public abstract int getBlockData(Vector pt);
 
     /**
@@ -482,6 +499,7 @@ public abstract class LocalWorld {
     public boolean queueBlockBreakEffect(ServerInterface server, Vector position, int blockId, double priority) {
         if (taskId == -1) {
             taskId = server.schedule(0, 1, new Runnable() {
+                @Override
                 public void run() {
                     int max = Math.max(1, Math.min(30, effectQueue.size() / 3));
                     for (int i = 0; i < max; ++i) {
@@ -508,5 +526,74 @@ public abstract class LocalWorld {
 
     public int killEntities(LocalEntity... entities) {
         return 0;
+    }
+    
+    @Override
+    public boolean setBlock(Vector pt, Block block, boolean notifyAdjacent) {
+        boolean successful;
+        
+        // Default implementation will call the old deprecated methods
+        if (notifyAdjacent) {
+            successful = setTypeIdAndData(pt, block.getId(), block.getData());
+        } else {
+            successful = setTypeIdAndDataFast(pt, block.getId(), block.getData());
+        }
+        
+        if (block instanceof BaseBlock) {
+            copyToWorld(pt, (BaseBlock) block);
+        }
+        
+        return successful;
+    }
+
+    @Override
+    public BaseBlock getBlock(Vector pt) {
+        checkLoadedChunk(pt);
+
+        int type = getBlockType(pt);
+        int data = getBlockData(pt);
+
+        switch (type) {
+        case BlockID.WALL_SIGN:
+        case BlockID.SIGN_POST: {
+            SignBlock block = new SignBlock(type, data);
+            copyFromWorld(pt, block);
+            return block;
+        }
+
+        case BlockID.CHEST: {
+            ChestBlock block = new ChestBlock(data);
+            copyFromWorld(pt, block);
+            return block;
+        }
+
+        case BlockID.FURNACE:
+        case BlockID.BURNING_FURNACE: {
+            FurnaceBlock block = new FurnaceBlock(type, data);
+            copyFromWorld(pt, block);
+            return block;
+        }
+
+        case BlockID.DISPENSER: {
+            DispenserBlock block = new DispenserBlock(data);
+            copyFromWorld(pt, block);
+            return block;
+        }
+
+        case BlockID.MOB_SPAWNER: {
+            MobSpawnerBlock block = new MobSpawnerBlock(data);
+            copyFromWorld(pt, block);
+            return block;
+        }
+
+        case BlockID.NOTE_BLOCK: {
+            NoteBlock block = new NoteBlock(data);
+            copyFromWorld(pt, block);
+            return block;
+        }
+
+        default:
+            return new BaseBlock(type, data);
+        }
     }
 }

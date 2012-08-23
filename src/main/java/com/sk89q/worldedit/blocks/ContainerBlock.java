@@ -19,6 +19,11 @@
 
 package com.sk89q.worldedit.blocks;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.sk89q.jnbt.ByteTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.ListTag;
@@ -27,17 +32,13 @@ import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.data.DataException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Represents a block that stores items.
  *
  * @author sk89q
  */
 public abstract class ContainerBlock extends BaseBlock implements TileEntityBlock {
+    
     private BaseItemStack[] items;
 
     public ContainerBlock(int type, int inventorySize) {
@@ -49,7 +50,6 @@ public abstract class ContainerBlock extends BaseBlock implements TileEntityBloc
         super(type, data);
         this.items = new BaseItemStack[inventorySize];
     }
-
 
     /**
      * Get the list of items.
@@ -67,6 +67,11 @@ public abstract class ContainerBlock extends BaseBlock implements TileEntityBloc
      */
     public void setItems(BaseItemStack[] items) {
         this.items = items;
+    }
+    
+    @Override
+    public boolean hasNbtData() {
+        return true;
     }
 
     public Map<String, Tag> serializeItem(BaseItemStack item) {
