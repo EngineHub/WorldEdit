@@ -84,6 +84,8 @@ public final class NBTConstants {
             return LongTag.class;
         case TYPE_FLOAT:
             return FloatTag.class;
+        case TYPE_DOUBLE:
+            return DoubleTag.class;
         case TYPE_BYTE_ARRAY:
             return ByteArrayTag.class;
         case TYPE_STRING:
