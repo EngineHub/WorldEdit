@@ -143,6 +143,10 @@ public final class BlockData {
             }
             break;
 
+        case BlockID.LOG:
+            if (data >= 4 && data <= 11) data ^= 0xc;
+            break;
+
         case BlockID.REDSTONE_REPEATER_OFF:
         case BlockID.REDSTONE_REPEATER_ON:
             int dir = data & 0x03;
@@ -311,6 +315,10 @@ public final class BlockData {
             case 3: return 2;
             case 0: return 3;
             }
+            break;
+
+        case BlockID.LOG:
+            if (data >= 4 && data <= 11) data ^= 0xc;
             break;
 
         case BlockID.REDSTONE_REPEATER_OFF:
