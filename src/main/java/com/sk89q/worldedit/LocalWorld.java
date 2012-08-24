@@ -343,7 +343,7 @@ public abstract class LocalWorld implements World {
 
         final int amount = stack.getAmount();
         if (amount > 1) {
-            dropItem(pt, new BaseItemStack(stack.getType(), 1, stack.getDamage()), amount);
+            dropItem(pt, new BaseItemStack(stack.getType(), 1, stack.getData()), amount);
         } else {
             dropItem(pt, stack, amount);
         }

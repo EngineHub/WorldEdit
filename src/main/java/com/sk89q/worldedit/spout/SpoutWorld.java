@@ -444,9 +444,9 @@ public class SpoutWorld extends LocalWorld {
     public void dropItem(Vector pt, BaseItemStack item) {
         Material mat = VanillaMaterials.getMaterial((short) item.getType());
         if (mat.hasSubMaterials()) {
-            mat = mat.getSubMaterial(item.getDamage());
+            mat = mat.getSubMaterial(item.getData());
         }
-        ItemStack spoutItem = new ItemStack(mat, item.getDamage(), item.getAmount());
+        ItemStack spoutItem = new ItemStack(mat, item.getData(), item.getAmount());
         world.createAndSpawnEntity(SpoutUtil.toPoint(world, pt), new Item(spoutItem, new Vector3(pt.getX(), pt.getY(), pt.getZ())));
     }
 

@@ -77,7 +77,7 @@ public abstract class ContainerBlock extends BaseBlock implements TileEntityBloc
     public Map<String, Tag> serializeItem(BaseItemStack item) {
         Map<String, Tag> data = new HashMap<String, Tag>();
         data.put("id", new ShortTag("id", (short) item.getType()));
-        data.put("Damage", new ShortTag("Damage", item.getDamage()));
+        data.put("Damage", new ShortTag("Damage", item.getData()));
         data.put("Count", new ByteTag("Count", (byte) item.getAmount()));
         if (item.getEnchantments().size() > 0) {
             List<CompoundTag> enchantmentList = new ArrayList<CompoundTag>();

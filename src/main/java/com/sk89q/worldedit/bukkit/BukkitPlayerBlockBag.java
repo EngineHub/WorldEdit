@@ -73,7 +73,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
     @Override
     public void fetchItem(BaseItem item) throws BlockBagException {
         final int id = item.getType();
-        final int damage = item.getDamage();
+        final int damage = item.getData();
         int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
         assert(amount == 1);
         boolean usesDamageValue = ItemType.usesDamageValue(id);
@@ -133,7 +133,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
     @Override
     public void storeItem(BaseItem item) throws BlockBagException {
         final int id = item.getType();
-        final int damage = item.getDamage();
+        final int damage = item.getData();
         int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
         assert(amount <= 64);
         boolean usesDamageValue = ItemType.usesDamageValue(id);

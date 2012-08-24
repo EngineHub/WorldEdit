@@ -81,7 +81,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
     @Override
     public void fetchItem(BaseItem item) throws BlockBagException {
         final short id = (short)item.getType();
-        final short damage = item.getDamage();
+        final short damage = item.getData();
         int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
         assert(amount == 1);
         Material mat = VanillaMaterials.getMaterial(id);
@@ -139,7 +139,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
     @Override
     public void storeItem(BaseItem item) throws BlockBagException {
         final short id = (short) item.getType();
-        final short damage = item.getDamage();
+        final short damage = item.getData();
         Material mat = VanillaMaterials.getMaterial(id);
         if (mat.hasSubMaterials()) {
             mat = mat.getSubMaterial(damage);
