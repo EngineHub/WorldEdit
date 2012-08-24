@@ -18,10 +18,13 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import net.minecraft.server.NBTBase;
 import net.minecraft.server.NBTTagByte;
@@ -70,6 +73,8 @@ import com.sk89q.worldedit.foundation.Block;
  */
 class NmsBlock extends BaseBlock implements TileEntityBlock {
 
+    private static final Logger logger = Logger.getLogger(NmsBlock.class.getCanonicalName());
+    private static Field compoundMapField;
     private NBTTagCompound nbtData = null;
 
     /**
@@ -247,13 +252,45 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
      * @param foreign non-native NMS NBT structure
      * @return native WorldEdit NBT structure
      */
+    @SuppressWarnings("unchecked")
     private static Tag toNative(NBTBase foreign) {
         if (foreign == null) {
             return null;
         }
         if (foreign instanceof NBTTagCompound) {
             Map<String, Tag> values = new HashMap<String, Tag>();
-            for (Object obj : ((NBTTagCompound) foreign).d()) {
+            Collection<Object> foreignValues = null;
+            
+            if (compoundMapField == null) {
+                try {
+                    // Method name may change!
+                    foreignValues = ((NBTTagCompound) foreign).c();
+                } catch (Throwable t) {
+                    try {
+                        logger.warning("WorldEdit: Couldn't get NBTTagCompound.c(), " +
+                        		"so we're going to try to get at the 'map' field directly from now on");
+                        
+                        if (compoundMapField == null) {
+                            compoundMapField = NBTTagCompound.class.getDeclaredField("map");
+                            compoundMapField.setAccessible(true);
+                        }
+                    } catch (Throwable e) {
+                        // Can't do much beyond this
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+            
+            if (compoundMapField != null) {
+                try {
+                    foreignValues = ((HashMap<Object, Object>) compoundMapField.get(foreign)).values();
+                } catch (Throwable e) {
+                    // Can't do much beyond this
+                    throw new RuntimeException(e);
+                }
+            }
+            
+            for (Object obj : foreignValues) {
                 NBTBase base = (NBTBase) obj;
                 values.put(base.getName(), toNative(base));
             }
