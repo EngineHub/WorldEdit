@@ -95,7 +95,6 @@ public abstract class LocalWorld implements World {
      * @param pt
      * @return
      */
-    @Deprecated
     public abstract int getBlockType(Vector pt);
 
     /**
@@ -165,7 +164,6 @@ public abstract class LocalWorld implements World {
      * @param pt
      * @return
      */
-    @Deprecated
     public abstract int getBlockData(Vector pt);
 
     /**
