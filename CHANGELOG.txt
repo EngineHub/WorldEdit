@@ -1,4 +1,9 @@
-5.4
+5.4.1:
+- Fixed lingering 256 block ID restriction preventing block IDs up to 4095.
+- Fixed certain tile entity blocks not being set correctly.
+- Fixed schematic loading code not properly handling the AddBlocks section.
+
+5.4:
 - Added support for Minecraft 1.3.
 - Added improved, but experimental, support for custom blocks added by
     mods, and added by future Minecraft versions.
