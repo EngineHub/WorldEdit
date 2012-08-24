@@ -15,13 +15,6 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.ChestBlock;
-import com.sk89q.worldedit.blocks.DispenserBlock;
-import com.sk89q.worldedit.blocks.FurnaceBlock;
-import com.sk89q.worldedit.blocks.MobSpawnerBlock;
-import com.sk89q.worldedit.blocks.NoteBlock;
-import com.sk89q.worldedit.blocks.SignBlock;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 
 public class AnvilChunk implements Chunk {
@@ -187,7 +180,11 @@ public class AnvilChunk implements Chunk {
             populateTileEntities();
         }
 
-        return new CompoundTag("", tileEntities.get(new BlockVector(pos)));
+        Map<String, Tag> values = tileEntities.get(new BlockVector(pos));
+        if (values == null) {
+            return null;
+        }
+        return new CompoundTag("", values);
     }
 
     @Override
@@ -196,7 +193,7 @@ public class AnvilChunk implements Chunk {
         int data = getBlockData(pos);
         BaseBlock block;
 
-        if (id == BlockID.WALL_SIGN || id == BlockID.SIGN_POST) {
+        /*if (id == BlockID.WALL_SIGN || id == BlockID.SIGN_POST) {
             block = new SignBlock(id, data);
         } else if (id == BlockID.CHEST) {
             block = new ChestBlock(data);
@@ -208,13 +205,15 @@ public class AnvilChunk implements Chunk {
             block = new MobSpawnerBlock(data);
         } else if (id == BlockID.NOTE_BLOCK) {
             block = new NoteBlock(data);
-        } else {
+        } else {*/
             block = new BaseBlock(id, data);
-        }
+        //}
 
         if (block instanceof TileEntityBlock) {
             CompoundTag tileEntity = getBlockTileEntity(pos);
-            ((TileEntityBlock) block).setNbtData(tileEntity);
+            if (tileEntity != null) {
+                ((TileEntityBlock) block).setNbtData(tileEntity);
+            }
         }
 
         return block;
