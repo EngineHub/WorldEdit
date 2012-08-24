@@ -23,8 +23,8 @@
 - Fixed //chunk switching from //sel extend to //sel cuboid.
 - Removed chat-based WECUI protocol (now replaced with packet 250).
 
-Thank you for the contributions from Ammar Askar, aumgn, Jim Nordbø, snaxson,
-Socolin, and Zhuowei Zhang.
+Thank you for the contributions from Ammar Askar (ammaraskar), aumgn,
+Jim Nordbø (Silentspy), snaxson, Socolin, and Zhuowei Zhang (zhuowei).
 
 5.3:
 - Made #region mask keep the region selected when the pask was added, and
