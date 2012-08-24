@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sk89q</groupId>
   <artifactId>worldedit</artifactId>
-  <version>5.4</version>
+  <version>5.5-SNAPSHOT</version>
   <name>WorldEdit</name>
   <description>WorldEdit allows for editing the Minecraft SMP world
     en-masse, de-griefing, and fixing issues.</description>
@@ -23,7 +23,7 @@
   <scm>
     <connection>scm:git:git://github.com/sk89q/worldedit.git</connection>
     <url>https://github.com/sk89q/worldedit</url>
-    <tag>5.4</tag>
+    <tag>master</tag>
     <developerConnection>scm:git:git@github.com:sk89q/worldedit.git</developerConnection>
   </scm>
   <properties>
