@@ -115,9 +115,9 @@ public class MCEditSchematicFormat extends SchematicFormat {
         if (schematic.containsKey("AddBlocks")) {
             byte[] addBlockIds = getChildTag(schematic, "AddBlocks", ByteArrayTag.class).getValue();
             for (int i = 0, index = 0; i < addBlockIds.length && index < blocks.length; ++i) {
-                blocks[index] = (short) (addBlockIds[i] & 0xF << 8 + rawBlocks[index++]);
+                blocks[index] = (short) (((addBlockIds[i] >> 4) << 8) + (rawBlocks[index++] & 0xFF));
                 if (index < blocks.length) {
-                    blocks[index] = (short) (((addBlockIds[i] << 4) & 0xF) << 8 + rawBlocks[index++]);
+                    blocks[index] = (short) (((addBlockIds[i] & 0xF) << 8) + (rawBlocks[index++] & 0xFF));
                 }
             }
         } else {
