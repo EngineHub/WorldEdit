@@ -18,17 +18,6 @@
 
 package com.sk89q.worldedit.schematic;
 
-import com.sk89q.worldedit.CuboidClipboard;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.ChestBlock;
-import com.sk89q.worldedit.blocks.DispenserBlock;
-import com.sk89q.worldedit.blocks.FurnaceBlock;
-import com.sk89q.worldedit.blocks.MobSpawnerBlock;
-import com.sk89q.worldedit.blocks.NoteBlock;
-import com.sk89q.worldedit.blocks.SignBlock;
-import com.sk89q.worldedit.data.DataException;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +27,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.sk89q.worldedit.CuboidClipboard;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.data.DataException;
 
 /**
  * Represents a format that a schematic can be stored as
@@ -101,7 +94,7 @@ public abstract class SchematicFormat {
     public BaseBlock getBlockForId(int id, short data) {
         BaseBlock block;
         switch (id) {
-            case BlockID.WALL_SIGN:
+            /*case BlockID.WALL_SIGN:
             case BlockID.SIGN_POST:
                 block = new SignBlock(id, data);
                 break;
@@ -125,7 +118,7 @@ public abstract class SchematicFormat {
 
             case BlockID.NOTE_BLOCK:
                 block = new NoteBlock(data);
-                break;
+                break;*/
 
             default:
                 block = new BaseBlock(id, data);
