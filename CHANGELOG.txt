@@ -1,3 +1,9 @@
+5.4.2:
+- Fixed schematics not properly loading chests with the new code, meaning that
+    enchantments and other properties were not always properly loaded.
+- Fixed -1 not being a valid data value in Block, which broke //replace.
+- Fixed snapshots to support custom blocks/tile entity data.
+
 5.4.1:
 - Fixed lingering 256 block ID restriction preventing block IDs up to 4095.
 - Fixed certain tile entity blocks not being set correctly.
