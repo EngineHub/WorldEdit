@@ -19,20 +19,31 @@
 
 package com.sk89q.worldedit.commands;
 
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.ALL;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.ORIENTATION_REGION;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+
 import java.util.Set;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.HeightMap;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.patterns.*;
+import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 
@@ -75,7 +86,7 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = { "/replace" },
+        aliases = { "/replace", "/re", "/rep" },
         usage = "[from-block] <to-block>",
         desc = "Replace all blocks in the selection with another",
         flags = "f",
