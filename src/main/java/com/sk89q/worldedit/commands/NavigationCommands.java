@@ -19,12 +19,19 @@
 
 package com.sk89q.worldedit.commands;
 
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.WorldEditPermissionException;
+import com.sk89q.worldedit.WorldVector;
 
 /**
  * Navigation commands.
@@ -55,7 +62,7 @@ public class NavigationCommands {
     }
 
     @Command(
-        aliases = { "ascend" },
+        aliases = { "ascend", "asc" },
         usage = "[# of levels]",
         desc = "Go up a floor",
         min = 0,
@@ -82,7 +89,7 @@ public class NavigationCommands {
     }
 
     @Command(
-        aliases = { "descend" },
+        aliases = { "descend", "desc" },
         usage = "[# of floors]",
         desc = "Go down a floor",
         min = 0,
@@ -153,7 +160,7 @@ public class NavigationCommands {
     }
 
     @Command(
-        aliases = { "jumpto" },
+        aliases = { "jumpto", "j" },
         usage = "",
         desc = "Teleport to a location",
         min = 0,
