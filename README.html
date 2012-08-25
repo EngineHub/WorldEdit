@@ -8,74 +8,46 @@ body {
   padding: 20px;
   background: #efefef;
   color: #333;
+  line-height: 1.5;
 }
 #wrapper {
-  margin: 20px auto 20px auto;
+  margin: 1em auto 1em auto;
   width: 600px;
   background: #fff;
-  padding: 40px;
-  border: 1px solid #fff;
-  border-radius: 10px;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  box-shadow: 0 0 2px #999;
-  -webkit-box-shadow: 0 0 3px #999;
-}
-a img {
-  border: 0;
+  padding: 3em;
+  -moz-border-radius: 0.5em;
+  -webkit-border-radius: 0.5em;
+  border-radius: 0.5em;
+  border: 1px solid #ccc;
+  box-shadow: 0 0.3em 0.6em rgba(0, 0, 0, 0.1);
+  line-height: 1.4;
 }
 body, th, td, input {
-  font: 13px/17px "Lucida Grande", "Lucida Sans Unicode", Arial, Verdana, sans-serif;
+  font: 0.8em sans-serif;
 }
 a:link, a:visited {
-  color: #00688f;
-  text-decoration: underline;
+  color: #0004b2;   
+  text-decoration: none;
 }
-a:hover, a:active {
-  color: #000;
-  border: 0;
+a:hover {
+  color: #ac0000;
+  text-decoration: none;
+  border-bottom: 1px solid #999;
 }
 h1 {
-  font: 170% "Trebuchet MS", Georgia, serif;
-  font-weight: bold;
-  color: #00428d;
-  margin: 15px 0 5px 0;
+  font: 2.2em 'Trebuchet MS', Helvetica, Arial, sans-serif;
+  color: #ff6900;
+  margin: 0 0;
+  padding: 0 0 0.2em 0;
+  font-weight: normal;
 }
 h2 {
-  font: 130% "Trebuchet MS", Georgia, serif;
+  font: 1.4em 'Trebuchet MS', Helvetica, Arial, sans-serif;
+  color: #555;
+  margin: 1.6em 0 1em 0;
+  padding: 0 0 0.2em 0;
+  border-bottom: 1px solid #CCC;
   font-weight: bold;
-  color: #59006c;
-  margin: 50px 0 5px 0;
-  padding: 0 0 3px 0;
-  border-bottom: 1px solid #ccc;
-}
-h3 {
-  font: 110% "Trebuchet MS", Georgia, serif;
-  font-weight: bold;
-  color: #db0048;
-  margin: 30px 0 0 0;
-  padding: 0;
-	color: #999;
-	text-transform: uppercase;
-}
-.warning {
-  background: #fffedf;
-  padding: 8px;
-  border: 1px dashed #ccc;
-  border-radius: 4px;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  font-size: 90%;
-}
-.optional {
-  background: none repeat scroll 0 0 #FFE081;
-  border-radius: 3px 3px 3px 3px;
-  font-size: 80%;
-	font-weight: normal;
-  padding: 1px 4px;
-}
-.subtle {
-  color: #999;
 }
 </style>
 </head>
@@ -85,64 +57,27 @@ h3 {
 
 <h1>WorldEdit ${version}</h1>
 <p>Thanks for choosing WorldEdit! WorldEdit provides you with powerful in-game map editing tools and it is an indispensable tool for both creative and survival play.</p>
-<h2>First Steps</h2>
-
-<h3>For Bukkit</h3>
-<ol>
-  <li><strong>Install the plugin:</strong> Copy WorldEdit.jar into your Bukkit server's &quot;plugins&quot; directory. Create the folder if it doesn't exist.</li>
-  <li><strong>Install the bundled scripts <span class="optional">Optional</span>:</strong> Copy the &quot;craftscripts/&quot; folder into your root folder. These add additional functionality through JavaScript scripts. You also need to <a href="http://wiki.sk89q.com/wiki/WorldEdit/Installation/Bukkit#Rhino">download and install Rhino</a> to use these.</li>
-  <li><strong>Change the configuration:</strong> Run your server once (with WorldEdit) and then edit the config.yml file that is generated inside &quot;plugins/WorldEdit&quot;. Use <em>/worldedit reload</em> in the console to reload the configuration.</li>
-  <li><strong>Setup permissions:</strong> Visit the WorldEdit wiki to <a href="http://wiki.sk89q.com/wiki/WorldEdit/Permissions">learn the permissions</a>. However, if you're new to WorldEdit, you may not know what permissions to give, so  give <strong>worldedit.*</strong> to play with WorldEdit.</li>
-</ol>
-<h3>For Single Player Commands</h3>
-<ol>
-  <li><strong>Install Single Player Commands.</strong> Be sure to delete &quot;META-INF&quot; to prevent black screens from occuring.</li>
-  <li><strong>Install WorldEdit:</strong> Copy WorldEdit.jar into your &quot;.minecraft/bin&quot; folder. Do not put WorldEdit.jar into minecraft.jar.</li>
-  <li><strong>Install the bundled scripts <span class="optional">Optional</span>:</strong> Copy the &quot;craftscripts/&quot; folder into your &quot;.minecraft&quot; folder. These add additional functionality through JavaScript scripts. You also need to <a href="http://wiki.sk89q.com/wiki/WorldEdit/Installation/Single_player#Rhino">download and install Rhino</a> to use these.</li>
-  </ol>
-<p>Be sure to:</p>
+<h2>Relevant links</h2>
+<p>You can find information on how to install, configure, and use WorldEdit on our wiki.</p>
 <ul>
-  <li>Submit bug reports and suggestions to the <a href="http://redmine.sk89q.com/projects/worldedit/issues">issue tracker</a></li>
-  <li>Check out the <a href="http://wiki.sk89q.com/wiki/WorldEdit">WorldEdit wiki</a></li>
-  <li>Download the accompanying (optional) <a href="http://wiki.sk89q.com/wiki/WorldEdit/Client_addon">client-side addon</a> that lets WorldEdit draw lines onto your world (making things much easier!)</li>
+  <li><a href="http://wiki.sk89q.com/wiki/WorldEdit/Installation">Installation</a></li>
+  <li><a href="http://wiki.sk89q.com/wiki/WorldEdit/Upgrading">Upgrading</a></li>
+  <li><a href="http://wiki.sk89q.com/wiki/WorldEdit/Changelog">Changelog</a></li>
+  <li><a href="http://wiki.sk89q.com/wiki/WorldEdit#Usage">Documentation</a></li>
 </ul>
-<h2>Learning WorldEdit</h2>
-<p>The best three ways to getting to know WorldEdit are:</p>
-<ol>
-  <li>Print the <a href="http://wiki.sk89q.com/wiki/WorldEdit/Printable_reference">reference guide</a> first and foremost. It contains a listing of all WorldEdit commands and allows you to quickly look up a command.</li>
-  <li>Read the <a href="http://wiki.sk89q.com/wiki/WorldEdit/Quick_start">quick start tutorial</a>. This guides you through the basic commands.</li>
-  <li>Check out <a href="http://wiki.sk89q.com/wiki/WorldEdit">the wiki</a>. The wiki is the definitive reference for all commands. It contains verbose information about commands and provides warning information.</li>
-  </ol>
-<p>Additionally, some users have made some <a href="http://wiki.sk89q.com/wiki/WorldEdit#Video_tutorials">introductory videos</a>.</p>
-<p>Remember that <strong>WorldEdit has a history</strong>. Use <strong>//undo</strong> to undo and <strong>//redo</strong> to redo. If you have limited RAM, be sure to clear your history with <strong>/clearhistory</strong> after large operations.</p>
-<p class="warning"><strong>Warning:</strong> The history in the Bukkit version of WorldEdit is reliable, but in Single Player Commands, not all commands can be undone!</p>
-<h2>Highlighted Features</h2>
-<p>WorldEdit is largely an in-game map editor where you define areas and modify them, but it has a lot of extra tools that many are unfamiliar with. Once you've mastered the core features, be sure to check out these extras:</p>
-<h3>Snapshots</h3>
-<p>Snapshots allow you to restore a cuboid from a backup (even from a .zip). The obvious way to use this is to select a damaged region and use <strong>//restore</strong> to load the region from a backup. However, sometimes you may want to rollback your world to an older backup but hook WorldEdit's snapshots to the corrupt world (in the opposite way), allowing you to <em>reverse restore</em>. See <a href="http://wiki.sk89q.com/wiki/WorldEdit/Snapshots">snapshots</a>.</p>
-<h3>Scripting</h3>
-<p>Hate Java? Love JavaScript? WorldEdit has a scripting interface backed by JavaScript, allowing you to write scripts to generate terrain or to fix problems. WorldEdit comes bundled with a few scripts that can be found in the &quot;craftscripts/&quot; folder in the download. Check out the <a href="http://wiki.sk89q.com/wiki/WorldEdit/Scripting">scripting information page</a>.</p>
-<p>Some example scripts include:</p>
+<h2>Getting help</h2>
+<p>Need help? Check out our <a href="http://wiki.sk89q.com/wiki/WorldEdit/Support">support information page</a>.<a href="skq.me/irc/irc.esper.net/worldedit"></a></p>
+<p>There, you can learn how to:</p>
 <ul>
-  <li>draw.js turns images into cloth blocks</li>
-  <li>maze.js generates mazes</li>
-  <li>roof.js creates pyramids to cover a region</li>
-</ul>
-<h3>Brushes and Tools</h3>
-<p>WorldEdit has &quot;tools&quot; that you can &quot;bind&quot; to an item that you are holding. You can, for example, bind the <strong>/repl wood</strong> tool so that every time you right click with, say for example, a wooden sword, the block you right click  becomes wood. You can also use the <strong>/tree</strong> tool to generate trees instantly. See the <a href="http://wiki.sk89q.com/wiki/WorldEdit/Tools">tools page</a>.</p>
-<h2>Getting Help</h2>
-<p>If you need help with WorldEdit, two good places to go are:</p>
-<ul>
-  <li><a href="http://forum.sk89q.com/forums/worldedit.5/">WorldEdit forum</a></li>
-  <li>IRC: <a href="skq.me/irc/irc.esper.net/worldedit">irc.esper.net #worldedit</a></li>
+  <li>How to join IRC chat and ask questions</li>
+  <li>Where to report bugs and request features</li>
 </ul>
 <h2>Contributing</h2>
 <p>WorldEdit is entirely open source! You can download all of the plugin code to learn from it, modify it for your own self, or even contribute back!</p>
 <ul>
-  <li><a href="https://github.com/sk89q/worldedit">Download WorldEdit code from GitHub</a></li>
-  </ul>
-<p>The code is covered under the GNU General Public License v3.</p>
-<p class="subtle">Maven information: ${groupId}/${artifactId}/${version}</p>
+  <li><a href="http://wiki.sk89q.com/wiki/WorldEdit/Development">More information</a></li>
+</ul>
+<p><small>Maven information: ${groupId}/${artifactId}/${version}</small></p>
 </div>
 </body>
 </html>
