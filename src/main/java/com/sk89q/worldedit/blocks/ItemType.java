@@ -639,4 +639,66 @@ public enum ItemType {
     public static boolean usesDamageValue(int id) {
         return usesDamageValue.contains(id);
     }
+    
+    private static final Set<Integer> glitchyStack = new HashSet<Integer>();
+    static {
+        glitchyStack.add(ItemID.IRON_SHOVEL);
+        glitchyStack.add(ItemID.IRON_PICK);
+        glitchyStack.add(ItemID.IRON_AXE);
+        glitchyStack.add(ItemID.FLINT_AND_TINDER);
+        glitchyStack.add(ItemID.BOW);
+        glitchyStack.add(ItemID.IRON_SWORD);
+        glitchyStack.add(ItemID.WOOD_SWORD);
+        glitchyStack.add(ItemID.WOOD_SHOVEL);
+        glitchyStack.add(ItemID.WOOD_PICKAXE);
+        glitchyStack.add(ItemID.WOOD_AXE);
+        glitchyStack.add(ItemID.STONE_SWORD);
+        glitchyStack.add(ItemID.STONE_SHOVEL);
+        glitchyStack.add(ItemID.STONE_PICKAXE);
+        glitchyStack.add(ItemID.STONE_AXE);
+        glitchyStack.add(ItemID.DIAMOND_SWORD);
+        glitchyStack.add(ItemID.DIAMOND_SHOVEL);
+        glitchyStack.add(ItemID.DIAMOND_PICKAXE);
+        glitchyStack.add(ItemID.DIAMOND_AXE);
+        glitchyStack.add(ItemID.GOLD_SWORD);
+        glitchyStack.add(ItemID.GOLD_SHOVEL);
+        glitchyStack.add(ItemID.GOLD_PICKAXE);
+        glitchyStack.add(ItemID.GOLD_AXE);
+        glitchyStack.add(ItemID.WOOD_HOE);
+        glitchyStack.add(ItemID.STONE_HOE);
+        glitchyStack.add(ItemID.IRON_HOE);
+        glitchyStack.add(ItemID.DIAMOND_HOE);
+        glitchyStack.add(ItemID.GOLD_HOE);
+        glitchyStack.add(ItemID.LEATHER_HELMET);
+        glitchyStack.add(ItemID.LEATHER_CHEST);
+        glitchyStack.add(ItemID.LEATHER_PANTS);
+        glitchyStack.add(ItemID.LEATHER_BOOTS);
+        glitchyStack.add(ItemID.CHAINMAIL_CHEST);
+        glitchyStack.add(ItemID.CHAINMAIL_HELMET);
+        glitchyStack.add(ItemID.CHAINMAIL_BOOTS);
+        glitchyStack.add(ItemID.CHAINMAIL_PANTS);
+        glitchyStack.add(ItemID.IRON_HELMET);
+        glitchyStack.add(ItemID.IRON_CHEST);
+        glitchyStack.add(ItemID.IRON_PANTS);
+        glitchyStack.add(ItemID.IRON_BOOTS);
+        glitchyStack.add(ItemID.DIAMOND_HELMET);
+        glitchyStack.add(ItemID.DIAMOND_PANTS);
+        glitchyStack.add(ItemID.DIAMOND_CHEST);
+        glitchyStack.add(ItemID.DIAMOND_BOOTS);
+        glitchyStack.add(ItemID.GOLD_HELMET);
+        glitchyStack.add(ItemID.GOLD_CHEST);
+        glitchyStack.add(ItemID.GOLD_PANTS);
+        glitchyStack.add(ItemID.GOLD_BOOTS);
+        glitchyStack.add(ItemID.BUCKET);
+        glitchyStack.add(ItemID.WATER_BUCKET);
+        glitchyStack.add(ItemID.LAVA_BUCKET);
+        glitchyStack.add(ItemID.IRON_DOOR_ITEM);
+        glitchyStack.add(ItemID.MILK_BUCKET);
+        glitchyStack.add(ItemID.MAP);
+        glitchyStack.add(ItemID.SHEARS);
+        glitchyStack.add(ItemID.FISHING_ROD);
+    }
+    public static boolean isGlitchyStack(int id) {
+        return glitchyStack.contains(id);
+    }
 }
