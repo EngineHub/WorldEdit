@@ -68,6 +68,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
 
         // Schematic tag
         CompoundTag schematicTag = (CompoundTag) nbtStream.readTag();
+        nbtStream.close();
         if (!schematicTag.getName().equals("Schematic")) {
             throw new DataException("Tag \"Schematic\" does not exist or is not first");
         }

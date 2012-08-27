@@ -104,7 +104,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
 
             return rootTag;
         } finally {
-            stream.close();
+            nbt.close();
         }
     }
 

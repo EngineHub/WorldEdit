@@ -120,7 +120,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
 
             return rootTag;
         } finally {
-            stream.close();
+            nbt.close();
         }
     }
 

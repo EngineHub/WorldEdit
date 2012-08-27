@@ -69,11 +69,11 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
     public Map<String, Set<String>> loadGroupPermissions() {
         Map<String, Set<String>> userGroupPermissions = new HashMap<String, Set<String>>();
 
-        FileReader input = null;
+        BufferedReader buff = null;
 
         try {
-            input = new FileReader(this.groupFile);
-            BufferedReader buff = new BufferedReader(input);
+            FileReader input = new FileReader(this.groupFile);
+            buff = new BufferedReader(input);
 
             String line;
             while ((line = buff.readLine()) != null) {
@@ -101,8 +101,8 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
             e.printStackTrace();
         } finally {
             try {
-                if (input != null) {
-                    input.close();
+                if (buff != null) {
+                    buff.close();
                 }
             } catch (IOException e2) {
             }
@@ -122,11 +122,11 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
             defaultPermissionsCache = userGroupPermissions.get("default");
         }
 
-        FileReader input = null;
+        BufferedReader buff =  null;
 
         try {
-            input = new FileReader(this.userFile);
-            BufferedReader buff = new BufferedReader(input);
+            FileReader input = new FileReader(this.userFile);
+            buff = new BufferedReader(input);
 
             String line;
             while ((line = buff.readLine()) != null) {
@@ -166,8 +166,8 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
             e.printStackTrace();
         } finally {
             try {
-                if (input != null) {
-                    input.close();
+                if (buff != null) {
+                    buff.close();
                 }
             } catch (IOException e2) {
             }
