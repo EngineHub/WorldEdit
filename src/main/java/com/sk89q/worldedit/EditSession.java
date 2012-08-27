@@ -1353,27 +1353,39 @@ public class EditSession {
         return affected;
     }
 
-    /**
-     * Make faces of the region.
-     *
-     * @param region
-     * @param block
-     * @return number of blocks affected
-     * @throws MaxChangedBlocksException
-     */
+    @Deprecated
     public int makeFaces(Region region, BaseBlock block)
             throws MaxChangedBlocksException {
+        return makeFaces(region, block, 1);
+    }
+
+    /**
+     * Make faces of the region.
+     *
+     * @param region
+     * @param block
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int makeFaces(Region region, BaseBlock block, int thickness)
+            throws MaxChangedBlocksException {
         if (region instanceof CuboidRegion) {
-            return makeCuboidFaces(region, block);
+            return makeCuboidFaces(region, block, thickness);
         } else {
             int affected = 0;
-            for (Vector pt : region.faces()) {
+            for (Vector pt : region.faces(thickness)) {
                 if (setBlock(pt, block)) {
                     ++affected;
                 }
             }
             return affected;
         }
+    }
+
+    @Deprecated
+    public int makeCuboidFaces(Region region, BaseBlock block)
+            throws MaxChangedBlocksException {
+        return makeCuboidWalls(region, block, 1);
     }
 
     /**
@@ -1384,9 +1396,9 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeCuboidFaces(Region region, BaseBlock block)
+    public int makeCuboidFaces(Region region, BaseBlock block, int thickness)
             throws MaxChangedBlocksException {
-        int affected = makeCuboidWalls(region, block);
+        int affected = makeCuboidWalls(region, block, thickness);
 
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
@@ -1400,16 +1412,24 @@ public class EditSession {
 
         for (int z = minZ + 1; z < maxZ; ++z) {
             for (int x = minX + 1; x < maxX; ++x) {
-                if (setBlock(new Vector(x, minY, z), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(x, maxY, z), block)) {
-                    ++affected;
+                for (int y = 0; y < thickness; y++) {
+                    if (setBlock(new Vector(x, minY + y, z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(new Vector(x, maxY - y, z), block)) {
+                        ++affected;
+                    }
                 }
             }
         }
 
         return affected;
+    }
+
+    @Deprecated
+    public int makeFaces(Region region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        return makeFaces(region, pattern, 1);
     }
 
     /**
@@ -1420,19 +1440,25 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeFaces(Region region, Pattern pattern)
+    public int makeFaces(Region region, Pattern pattern, int thickness)
             throws MaxChangedBlocksException {
         if (region instanceof CuboidRegion) {
-            return makeCuboidFaces(region, pattern);
+            return makeCuboidFaces(region, pattern, thickness);
         } else {
             int affected = 0;
-            for (Vector pt : region.faces()) {
+            for (Vector pt : region.faces(thickness)) {
                 if (setBlock(pt, pattern)) {
                     ++affected;
                 }
             }
             return affected;
         }
+    }
+
+    @Deprecated
+    public int makeCuboidFaces(Region region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        return makeCuboidFaces(region, pattern, 1);
     }
 
     /**
@@ -1443,9 +1469,9 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeCuboidFaces(Region region, Pattern pattern)
+    public int makeCuboidFaces(Region region, Pattern pattern, int thickness)
             throws MaxChangedBlocksException {
-        int affected = makeCuboidWalls(region, pattern);
+        int affected = makeCuboidWalls(region, pattern, thickness);
 
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
@@ -1459,13 +1485,15 @@ public class EditSession {
 
         for (int z = minZ + 1; z < maxZ; ++z) {
             for (int x = minX + 1; x < maxX; ++x) {
-                Vector minV = new Vector(x, minY, z);
-                if (setBlock(minV, pattern.next(minV))) {
-                    ++affected;
-                }
-                Vector maxV = new Vector(x, maxY, z);
-                if (setBlock(maxV, pattern.next(maxV))) {
-                    ++affected;
+                for (int y = 0; y < thickness; y++) {
+                    Vector minV = new Vector(x, minY + y, z);
+                    if (setBlock(minV, pattern.next(minV))) {
+                        ++affected;
+                    }
+                    Vector maxV = new Vector(x, maxY - y, z);
+                    if (setBlock(maxV, pattern.next(maxV))) {
+                        ++affected;
+                    }
                 }
             }
         }
@@ -1473,27 +1501,40 @@ public class EditSession {
         return affected;
     }
 
+    @Deprecated
+    public int makeWalls(FlatRegion region, BaseBlock block)
+            throws MaxChangedBlocksException {
+        return makeWalls(region, block, 1);
+    }
+
     /**
      * Make walls of the region.
      *
      * @param region
      * @param block
+     * @param thickness
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeWalls(FlatRegion region, BaseBlock block)
+    public int makeWalls(FlatRegion region, BaseBlock block, int thickness)
             throws MaxChangedBlocksException {
         if (region instanceof CuboidRegion) {
-            return makeCuboidWalls(region, block);
+            return makeCuboidWalls(region, block, thickness);
         } else {
             int affected = 0;
-            for (Vector pt : region.walls()) {
+            for (Vector pt : region.walls(thickness)) {
                 if (setBlock(pt, block)) {
                     ++affected;
                 }
             }
             return affected;
         }
+    }
+
+    @Deprecated
+    public int makeCuboidWalls(Region region, BaseBlock block)
+            throws MaxChangedBlocksException {
+        return makeCuboidWalls(region, block, 1);
     }
 
     /**
@@ -1504,7 +1545,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeCuboidWalls(Region region, BaseBlock block)
+    public int makeCuboidWalls(Region region, BaseBlock block, int thickness)
             throws MaxChangedBlocksException {
         int affected = 0;
 
@@ -1520,27 +1561,37 @@ public class EditSession {
 
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
-                if (setBlock(new Vector(x, y, minZ), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(x, y, maxZ), block)) {
-                    ++affected;
+                for (int z = 0; z < thickness; z++) {
+                    if (setBlock(new Vector(x, y, minZ + z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(new Vector(x, y, maxZ - z), block)) {
+                        ++affected;
+                    }
                 }
             }
         }
 
         for (int y = minY; y <= maxY; ++y) {
             for (int z = minZ + 1; z < maxZ; ++z) {
-                if (setBlock(new Vector(minX, y, z), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(maxX, y, z), block)) {
-                    ++affected;
+                for (int x = 0; x < thickness; x++) {
+                    if (setBlock(new Vector(minX + x, y, z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(new Vector(maxX - x, y, z), block)) {
+                        ++affected;
+                    }
                 }
             }
         }
 
         return affected;
+    }
+
+    @Deprecated
+    public int makeWalls(FlatRegion region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        return makeWalls(region, pattern, 1);
     }
 
     /**
@@ -1551,19 +1602,25 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeWalls(FlatRegion region, Pattern pattern)
+    public int makeWalls(FlatRegion region, Pattern pattern, int thickness)
             throws MaxChangedBlocksException {
         if (region instanceof CuboidRegion) {
-            return makeCuboidWalls(region, pattern);
+            return makeCuboidWalls(region, pattern, thickness);
         } else {
             int affected = 0;
-            for (Vector pt : region.walls()) {
+            for (Vector pt : region.walls(thickness)) {
                 if (setBlock(pt, pattern)) {
                     ++affected;
                 }
             }
             return affected;
         }
+    }
+
+    @Deprecated
+    public int makeCuboidWalls(Region region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        return makeCuboidWalls(region, pattern, 1);
     }
 
     /**
@@ -1574,7 +1631,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeCuboidWalls(Region region, Pattern pattern)
+    public int makeCuboidWalls(Region region, Pattern pattern, int thickness)
             throws MaxChangedBlocksException {
         int affected = 0;
 
@@ -1590,26 +1647,30 @@ public class EditSession {
 
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
-                Vector minV = new Vector(x, y, minZ);
-                if (setBlock(minV, pattern.next(minV))) {
-                    ++affected;
-                }
-                Vector maxV = new Vector(x, y, maxZ);
-                if (setBlock(maxV, pattern.next(maxV))) {
-                    ++affected;
+                for (int z = 0; z < thickness; z++) {
+                    Vector minV = new Vector(x, y, minZ + z);
+                    if (setBlock(minV, pattern.next(minV))) {
+                        ++affected;
+                    }
+                    Vector maxV = new Vector(x, y, maxZ - z);
+                    if (setBlock(maxV, pattern.next(maxV))) {
+                        ++affected;
+                    }
                 }
             }
         }
 
         for (int y = minY; y <= maxY; ++y) {
             for (int z = minZ + 1; z < maxZ; ++z) {
-                Vector minV = new Vector(minX, y, z);
-                if (setBlock(minV, pattern.next(minV))) {
-                    ++affected;
-                }
-                Vector maxV = new Vector(maxX, y, z);
-                if (setBlock(maxV, pattern.next(maxV))) {
-                    ++affected;
+                for (int x = 0; x < thickness; x++) {
+                    Vector minV = new Vector(minX + x, y, z);
+                    if (setBlock(minV, pattern.next(minV))) {
+                        ++affected;
+                    }
+                    Vector maxV = new Vector(maxX - x, y, z);
+                    if (setBlock(maxV, pattern.next(maxV))) {
+                        ++affected;
+                    }
                 }
             }
         }

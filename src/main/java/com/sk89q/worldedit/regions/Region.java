@@ -143,7 +143,7 @@ public interface Region extends Iterable<BlockVector>, Cloneable {
      *
      * @return
      */
-    public Iterable<Vector> faces();
+    public Iterable<Vector> faces(int thickness);
 
     /**
      * Get the world the selection is in

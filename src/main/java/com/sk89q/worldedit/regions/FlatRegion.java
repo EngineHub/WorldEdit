@@ -45,7 +45,7 @@ public interface FlatRegion extends Region {
      *
      * @return
      */
-    public Iterable<Vector> walls();
+    public Iterable<Vector> walls(int thickness);
 
     public FlatRegion clone();
 }

@@ -164,10 +164,10 @@ public class RegionCommands {
 
     @Command(
         aliases = { "/walls" },
-        usage = "<block>",
+        usage = "<block> [thickness]",
         desc = "Build the four sides of the selection",
         min = 1,
-        max = 1
+        max = 2
     )
     @CommandPermissions("worldedit.region.walls")
     @Logging(REGION)
@@ -175,16 +175,24 @@ public class RegionCommands {
             EditSession editSession) throws WorldEditException {
 
         Region region = session.getSelection(player.getWorld());
+        int thickness = args.getInteger(1, 1);
         if (!(region instanceof FlatRegion)) {
             throw new RegionOperationException("Cannot create walls for non-flat region.");
+        }
+
+        int thickness2 = thickness * 2;
+        if (region.getWidth() < thickness2 || region.getLength() < thickness2) {
+            throw new RegionOperationException("Thickness parameter is too large.");
         }
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         int affected;
         if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.makeWalls((FlatRegion) region, ((SingleBlockPattern) pattern).getBlock());
+            affected = editSession.makeWalls((FlatRegion) region,
+                    ((SingleBlockPattern) pattern).getBlock(), thickness);
         } else {
-            affected = editSession.makeWalls((FlatRegion) region, pattern);
+            affected = editSession.makeWalls((FlatRegion) region, pattern,
+                    thickness);
         }
 
         player.print(affected + " block(s) have been changed.");
@@ -192,10 +200,10 @@ public class RegionCommands {
 
     @Command(
         aliases = { "/faces", "/outline" },
-        usage = "<block>",
+        usage = "<block> [thickness]",
         desc = "Build the walls, ceiling, and floor of a selection",
         min = 1,
-        max = 1
+        max = 2
     )
     @CommandPermissions("worldedit.region.faces")
     @Logging(REGION)
@@ -203,11 +211,22 @@ public class RegionCommands {
             EditSession editSession) throws WorldEditException {
         
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        Region region = session.getSelection(player.getWorld());
+        int thickness = args.getInteger(1, 1);
+
+        int thickness2 = thickness * 2;
+        if (region.getWidth() < thickness2 || region.getLength() < thickness2
+                || region.getHeight() < thickness2) {
+            throw new RegionOperationException("Thickness parameter is too large.");
+        }
+
         int affected;
         if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.makeFaces(session.getSelection(player.getWorld()), ((SingleBlockPattern) pattern).getBlock());
+            affected = editSession.makeFaces(region,
+                    ((SingleBlockPattern) pattern).getBlock(), thickness);
         } else {
-            affected = editSession.makeFaces(session.getSelection(player.getWorld()), pattern);
+            affected = editSession.makeFaces(region,
+                    pattern, thickness);
         }
 
         player.print(affected + " block(s) have been changed.");

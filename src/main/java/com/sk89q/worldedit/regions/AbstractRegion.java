@@ -46,11 +46,11 @@ public abstract class AbstractRegion implements Region {
     }
 
     @Override
-    public Iterable<Vector> faces() {
+    public Iterable<Vector> faces(int thickness) {
         return Collections.<Vector>emptyList();
     }
 
-    public Iterable<Vector> walls() {
+    public Iterable<Vector> walls(int thickness) {
         return Collections.<Vector>emptyList();
     }
 
