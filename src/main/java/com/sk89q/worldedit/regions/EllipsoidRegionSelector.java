@@ -70,6 +70,13 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
         }
     }
 
+    public EllipsoidRegionSelector(LocalWorld world, Vector center, Vector radius) {
+        this(world);
+
+        region.setCenter(center);
+        region.setRadius(radius);
+    }
+
     public boolean selectPrimary(Vector pos) {
         if (pos.equals(region.getCenter()) && region.getRadius().lengthSq() == 0) {
             return false;

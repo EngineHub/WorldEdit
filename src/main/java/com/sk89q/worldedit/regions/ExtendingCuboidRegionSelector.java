@@ -48,6 +48,14 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
         region.setPos2(pos2);
     }
 
+    public ExtendingCuboidRegionSelector(LocalWorld world, Vector pos1, Vector pos2) {
+        this(world);
+        pos1 = Vector.getMinimum(pos1,  pos2);
+        pos2 = Vector.getMaximum(pos1,  pos2);
+        region.setPos1(pos1);
+        region.setPos2(pos2);
+    }
+
     @Override
     public boolean selectPrimary(Vector pos) {
         if (pos.equals(pos1) && pos.equals(pos2)) {

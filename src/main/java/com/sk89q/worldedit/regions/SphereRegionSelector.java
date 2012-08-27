@@ -45,6 +45,10 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
         region.setRadius(new Vector(radiusScalar, radiusScalar, radiusScalar));
     }
 
+    public SphereRegionSelector(LocalWorld world, Vector center, int radius) {
+        super(world, center, new Vector(radius, radius, radius));
+    }
+
     @Override
     public boolean selectSecondary(Vector pos) {
         final Vector diff = pos.subtract(region.getCenter());

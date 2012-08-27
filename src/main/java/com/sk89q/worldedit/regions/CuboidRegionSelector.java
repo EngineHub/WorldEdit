@@ -71,6 +71,14 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         region.setPos2(pos2);
     }
 
+    public CuboidRegionSelector(LocalWorld world, Vector pos1, Vector pos2) {
+        this(world);
+        this.pos1 = pos1.toBlockVector();
+        this.pos2 = pos2.toBlockVector();
+        region.setPos1(pos1);
+        region.setPos2(pos2);
+    }
+
     public boolean selectPrimary(Vector pos) {
         if (pos.equals(pos1)) {
             return false;

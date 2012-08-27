@@ -79,6 +79,16 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         }
     }
 
+    public CylinderRegionSelector(LocalWorld world, Vector2D center, Vector2D radius, int minY, int maxY) {
+        this(world);
+
+        region.setCenter(center);
+        region.setRadius(radius);
+
+        region.setMinimumY(Math.min(minY, maxY));
+        region.setMaximumY(Math.max(minY, maxY));
+    }
+
     public boolean selectPrimary(Vector pos) {
         if (!region.getCenter().equals(new Vector(0, 0, 0)) && pos.equals(region.getCenter())) {
             return false;
