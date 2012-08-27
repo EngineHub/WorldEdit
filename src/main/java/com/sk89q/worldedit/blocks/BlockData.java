@@ -144,8 +144,7 @@ public final class BlockData {
             break;
 
         case BlockID.LOG:
-            if(data > 3 && data < 8) return data + 4;
-            else if(data > 7 && data < 12) return data - 4;
+            if (data >= 4 && data <= 11) data ^= 0xc;
             break;
 
         case BlockID.REDSTONE_REPEATER_OFF:
@@ -319,8 +318,7 @@ public final class BlockData {
             break;
 
         case BlockID.LOG:
-            if(data > 3 && data < 8) return data + 4;
-            else if(data > 7 && data < 12) return data - 4;
+            if (data >= 4 && data <= 11) data ^= 0xc;
             break;
 
         case BlockID.REDSTONE_REPEATER_OFF:
