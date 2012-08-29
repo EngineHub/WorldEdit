@@ -145,6 +145,22 @@ public class RegionCommands {
     }
 
     @Command(
+        aliases = { "/center", "/middle" },
+        usage = "<block>",
+        desc = "Set the center block(s)",
+        min = 1,
+        max = 1
+    )
+    public void center(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
+        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        Region region = session.getSelection(player.getWorld());
+
+        int affected = editSession.center(region, pattern);
+        player.print("Center set ("+ affected + " blocks changed)");
+    }
+
+    @Command(
         aliases = { "/naturalize" },
         usage = "",
         desc = "3 layers of dirt on top then rock below",

@@ -45,6 +45,15 @@ public interface Region extends Iterable<BlockVector>, Cloneable {
     public Vector getMaximumPoint();
 
     /**
+     * Get the center point of a region.
+     * Note: Coordinates will not be integers
+     * if the corresponding lengths are even.
+     *
+     * @return center point
+     */
+    public Vector getCenter();
+
+    /**
      * Get the number of blocks in the region.
      *
      * @return number of blocks

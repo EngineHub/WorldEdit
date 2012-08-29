@@ -175,6 +175,7 @@ public class EllipsoidRegion extends AbstractRegion {
      *
      * @return center
      */
+    @Override
     public Vector getCenter() {
         return center;
     }

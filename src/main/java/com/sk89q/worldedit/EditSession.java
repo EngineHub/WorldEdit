@@ -1352,6 +1352,27 @@ public class EditSession {
         return affected;
     }
 
+    public int center(Region region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        Vector center = region.getCenter();
+        int x2 = center.getBlockX();
+        int y2 = center.getBlockY();
+        int z2 = center.getBlockZ();
+
+        int affected = 0;
+        for (int x = (int) center.getX(); x <= x2; x++) {
+            for (int y = (int) center.getY(); y <= y2; y++) {
+                for (int z = (int) center.getZ(); z <= z2; z++) {
+                    if (setBlock(new Vector(x, y, z), pattern)) {
+                        affected++;
+                    }
+                }
+            }
+        }
+
+        return affected;
+    }
+
     /**
      * Make faces of the region (as if it was a cuboid if it's not).
      *
