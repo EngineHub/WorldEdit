@@ -642,7 +642,7 @@ public class WorldEdit {
             }
 
         default:
-            return new BlockTypeMask(getBlockIDs(player, component, true));
+            return new BlockMask(getBlocks(player, component, true, true));
         }
     }
 

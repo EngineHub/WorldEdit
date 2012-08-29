@@ -19,27 +19,27 @@
 
 package com.sk89q.worldedit.masks;
 
-import java.util.HashSet;
 import java.util.Set;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
  * A filter that matches blocks based on block types.
  *
+ * @deprecated replaced by {@link #BlockMask} 
  * @author sk89q
  */
-public class BlockTypeMask implements Mask {
-    protected Set<Integer> types;
+@Deprecated
+public class BlockTypeMask extends BlockMask {
 
     public BlockTypeMask() {
-        types = new HashSet<Integer>();
+        super();
     }
 
     public BlockTypeMask(Set<Integer> types) {
-        this.types = types;
+        super();
+        for (int type : types) {
+            add(type);
+        }
     }
 
     public BlockTypeMask(int type) {
@@ -48,14 +48,6 @@ public class BlockTypeMask implements Mask {
     }
 
     public void add(int type) {
-        types.add(type);
+        add(new BaseBlock(type));
     }
-
-    public void prepare(LocalSession session, LocalPlayer player, Vector target) {
-    }
-
-    public boolean matches(EditSession editSession, Vector pos) {
-        return types.contains(editSession.getBlockType(pos));
-    }
-
 }

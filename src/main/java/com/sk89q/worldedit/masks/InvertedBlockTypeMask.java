@@ -49,7 +49,7 @@ public class InvertedBlockTypeMask extends BlockTypeMask {
 
     @Override
     public boolean matches(EditSession editSession, Vector pos) {
-        return !types.contains(editSession.getBlockType(pos));
+        return !super.matches(editSession, pos);
     }
 
 }
