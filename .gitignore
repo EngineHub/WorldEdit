@@ -2,4 +2,4 @@
 .project
 .settings
 target
-
+dependency-reduced-pom.xml
