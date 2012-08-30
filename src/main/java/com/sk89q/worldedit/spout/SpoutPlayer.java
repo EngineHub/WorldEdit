@@ -88,7 +88,7 @@ public class SpoutPlayer extends LocalPlayer {
         Controller controller = player.getController();
         if (controller instanceof VanillaPlayerController) {
             ((VanillaPlayerController) controller).getInventory()
-                    .addItem(new ItemStack(VanillaMaterials.getMaterial((short) type), amt));
+                    .addItem(new ItemStack(VanillaMaterials.getMaterial((short) type), amt), false);
         }
     }
 

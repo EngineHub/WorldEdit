@@ -37,6 +37,8 @@ import com.sk89q.worldedit.bags.UnplaceableBlockException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.ContainerBlock;
+import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
@@ -220,19 +222,33 @@ public class EditSession {
                 }
             }
         }
-        
-        boolean result;
-        
-        if (type == 0) {
+
+        final boolean result;
+
+        if (world.usesBlockData(type)) {
             if (fastMode) {
-                result = world.setBlockTypeFast(pt, 0);
+                result = world.setTypeIdAndDataFast(pt, type, block.getData() > -1 ? block.getData() : 0);
             } else {
-                result = world.setBlockType(pt, 0);
+                result = world.setTypeIdAndData(pt, type, block.getData() > -1 ? block.getData() : 0);
             }
         } else {
-            result = world.setBlock(pt, block, fastMode);
+            if (fastMode) {
+                result = world.setBlockTypeFast(pt, type);
+            } else {
+                result = world.setBlockType(pt, type);
+            }
         }
-        
+        //System.out.println(pt + "" +result);
+
+        if (type != 0) {
+            if (block instanceof ContainerBlock) {
+                if (blockBag == null) {
+                    world.copyToWorld(pt, block);
+                }
+            } else if (block instanceof TileEntityBlock) {
+                world.copyToWorld(pt, block);
+            }
+        }
         return result;
     }
 

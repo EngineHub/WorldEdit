@@ -156,8 +156,8 @@ public class Block implements TileEntityBlock {
                             + data + " given)");
         }
         
-        if (data < -1) {
-            throw new IllegalArgumentException("Can't have a block data value below -1");
+        if (data < 0) {
+            throw new IllegalArgumentException("Can't have a block data value below 0");
         }
         
         this.data = (short) data;
@@ -174,16 +174,6 @@ public class Block implements TileEntityBlock {
     public void setIdAndData(int id, int data) {
         setId(id);
         setData(data);
-    }
-    
-    /**
-     * Returns whether the data value is -1, indicating that this block is to be
-     * used as a wildcard matching block.
-     * 
-     * @return true if the data value is -1
-     */
-    public boolean hasWildcardData() {
-        return getData() == -1;
     }
     
     @Override
