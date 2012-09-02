@@ -73,12 +73,14 @@ import com.sk89q.worldedit.commands.ToolCommands;
 import com.sk89q.worldedit.commands.ToolUtilCommands;
 import com.sk89q.worldedit.commands.UtilityCommands;
 import com.sk89q.worldedit.masks.BiomeTypeMask;
+import com.sk89q.worldedit.masks.BlockMask;
 import com.sk89q.worldedit.masks.BlockTypeMask;
 import com.sk89q.worldedit.masks.CombinedMask;
 import com.sk89q.worldedit.masks.DynamicRegionMask;
 import com.sk89q.worldedit.masks.ExistingBlockMask;
 import com.sk89q.worldedit.masks.InvertedMask;
 import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.masks.RandomMask;
 import com.sk89q.worldedit.masks.RegionMask;
 import com.sk89q.worldedit.masks.UnderOverlayMask;
 import com.sk89q.worldedit.patterns.BlockChance;
@@ -667,7 +669,7 @@ public class WorldEdit {
             } else {
                 submask = new ExistingBlockMask();
             }
-            return new UnderOverlayMask(submask, firstChar == '>'); 
+            return new UnderOverlayMask(submask, firstChar == '>');
 
         case '$':
             Set<BiomeType> biomes = new HashSet<BiomeType>();
