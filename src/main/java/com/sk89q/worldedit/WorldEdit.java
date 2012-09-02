@@ -19,6 +19,12 @@
 
 package com.sk89q.worldedit;
 
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,27 +34,67 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
 
 import javax.script.ScriptException;
 
-import com.sk89q.minecraft.util.commands.*;
-
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
+import com.sk89q.minecraft.util.commands.CommandUsageException;
+import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.minecraft.util.commands.Console;
+import com.sk89q.minecraft.util.commands.Logging;
+import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
+import com.sk89q.minecraft.util.commands.SimpleInjector;
+import com.sk89q.minecraft.util.commands.UnhandledCommandException;
+import com.sk89q.minecraft.util.commands.WrappedCommandException;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.*;
-import com.sk89q.worldedit.commands.*;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.ClothColor;
+import com.sk89q.worldedit.blocks.ItemType;
+import com.sk89q.worldedit.blocks.MobSpawnerBlock;
+import com.sk89q.worldedit.blocks.NoteBlock;
+import com.sk89q.worldedit.blocks.SignBlock;
+import com.sk89q.worldedit.commands.BiomeCommands;
+import com.sk89q.worldedit.commands.ChunkCommands;
+import com.sk89q.worldedit.commands.ClipboardCommands;
+import com.sk89q.worldedit.commands.GeneralCommands;
+import com.sk89q.worldedit.commands.GenerationCommands;
+import com.sk89q.worldedit.commands.HistoryCommands;
+import com.sk89q.worldedit.commands.InsufficientArgumentsException;
+import com.sk89q.worldedit.commands.NavigationCommands;
+import com.sk89q.worldedit.commands.RegionCommands;
+import com.sk89q.worldedit.commands.ScriptingCommands;
+import com.sk89q.worldedit.commands.SelectionCommands;
+import com.sk89q.worldedit.commands.SnapshotUtilCommands;
+import com.sk89q.worldedit.commands.ToolCommands;
+import com.sk89q.worldedit.commands.ToolUtilCommands;
+import com.sk89q.worldedit.commands.UtilityCommands;
+import com.sk89q.worldedit.masks.BiomeTypeMask;
+import com.sk89q.worldedit.masks.BlockTypeMask;
+import com.sk89q.worldedit.masks.CombinedMask;
+import com.sk89q.worldedit.masks.DynamicRegionMask;
+import com.sk89q.worldedit.masks.ExistingBlockMask;
+import com.sk89q.worldedit.masks.InvertedMask;
+import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.masks.RegionMask;
+import com.sk89q.worldedit.masks.UnderOverlayMask;
+import com.sk89q.worldedit.patterns.BlockChance;
+import com.sk89q.worldedit.patterns.ClipboardPattern;
+import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.patterns.RandomFillPattern;
+import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.RegionSelector;
-import com.sk89q.worldedit.scripting.*;
-import com.sk89q.worldedit.tools.*;
-import com.sk89q.worldedit.masks.*;
-import com.sk89q.worldedit.patterns.*;
+import com.sk89q.worldedit.scripting.CraftScriptContext;
+import com.sk89q.worldedit.scripting.CraftScriptEngine;
+import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
+import com.sk89q.worldedit.tools.BlockTool;
+import com.sk89q.worldedit.tools.DoubleActionBlockTool;
+import com.sk89q.worldedit.tools.DoubleActionTraceTool;
+import com.sk89q.worldedit.tools.Tool;
+import com.sk89q.worldedit.tools.TraceTool;
 
 /**
  * This class is the main entry point for WorldEdit. All events are routed
@@ -226,10 +272,12 @@ public class WorldEdit {
 
         synchronized (sessions) {
             if (sessions.containsKey(player.getName())) {
-                return sessions.get(player.getName());
+                session = sessions.get(player.getName());
+            } else {
+                session = new LocalSession(config);
+                // Remember the session
+                sessions.put(player.getName(), session);
             }
-
-            session = new LocalSession(config);
 
             // Set the limit on the number of blocks that an operation can
             // change at once, or don't if the player has an override or there
@@ -258,8 +306,6 @@ public class WorldEdit {
                     && !(config.useInventoryOverride
                             && player.hasPermission("worldedit.inventory.unrestricted")));
 
-            // Remember the session
-            sessions.put(player.getName(), session);
         }
 
         return session;
@@ -813,7 +859,7 @@ public class WorldEdit {
      * @return
      */
     public static int divisorMod(int a, int n) {
-        return (int) (a - n * Math.floor(Math.floor(a) / (double) n));
+        return (int) (a - n * Math.floor(Math.floor(a) / n));
     }
 
     /**
