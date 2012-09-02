@@ -32,6 +32,7 @@ import com.sk89q.worldedit.spout.selections.CuboidSelection;
 import com.sk89q.worldedit.spout.selections.Polygonal2DSelection;
 import com.sk89q.worldedit.spout.selections.Selection;
 import com.sk89q.worldedit.util.YAMLConfiguration;
+import org.spout.api.Server;
 import org.spout.api.command.CommandSource;
 import org.spout.api.geo.World;
 import org.spout.api.entity.Player;
@@ -105,14 +106,22 @@ public class WorldEditPlugin extends CommonPlugin {
         }
 
         getEngine().getScheduler().scheduleAsyncRepeatingTask(this,
-                new SessionTimer(controller, getEngine()), 6 * 1000, 6 * 1000, TaskPriority.LOWEST);
+                new SessionTimer(controller, getServer()), 6 * 1000, 6 * 1000, TaskPriority.LOWEST);
+    }
+
+    public Server getServer() {
+        if (!(getEngine() instanceof Server)) {
+            throw new IllegalStateException("WorldEdit must be running on a server for this operation!");
+        }
+
+        return (Server) getEngine();
     }
 
     /**
      * Called on plugin disable.
      */
     public void onDisable() {
-        for (Player player : getEngine().getOnlinePlayers()) {
+        for (Player player : getServer().getOnlinePlayers()) {
             LocalPlayer lPlayer = wrapPlayer(player);
             if (controller.getSession(lPlayer).hasCUISupport()) {
                 lPlayer.dispatchCUIHandshake();
