@@ -24,7 +24,7 @@ import com.sk89q.worldedit.util.YAMLConfiguration;
 import java.io.File;
 
 /**
- * @author zml2008
+ * Subclass of {@link YAMLConfiguration} with spout-specific data folder
  */
 public class SpoutConfiguration extends YAMLConfiguration {
     private final WorldEditPlugin plugin;

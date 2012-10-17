@@ -52,7 +52,7 @@
       <version>1.6</version>
       <optional>true</optional>
     </dependency>
-    
+
     <!-- Bukkit -->
     <dependency>
       <groupId>org.bukkit</groupId>
@@ -66,21 +66,21 @@
       <version>1.3.1-R2.0</version>
       <optional>true</optional>
     </dependency>
-    
+
     <!-- Archive reading library for snapshots -->
     <dependency>
       <groupId>de.schlichtherle</groupId>
       <artifactId>truezip</artifactId>
       <version>6.8.3</version>
     </dependency>
-    
+
     <!-- JavaScript library -->
     <dependency>
       <groupId>rhino</groupId>
       <artifactId>js</artifactId>
       <version>1.7R2</version>
     </dependency>
-    
+
     <!-- Time related functions, used for snapshots. This is NOT the original
       jchronic as it has been modified to have some extra timezone related methods
       (which were hacked in) -->
@@ -97,7 +97,7 @@
       <version>1.9.0-rc1</version>
       <scope>test</scope>
     </dependency>
-    
+
     <!-- Spout -->
     <dependency>
       <groupId>org.spout</groupId>
@@ -108,7 +108,7 @@
     <dependency>
       <groupId>org.spout</groupId>
       <artifactId>vanilla</artifactId>
-      <version>1.3.0-SNAPSHOT</version>
+      <version>1.3.2-SNAPSHOT</version>
       <optional>true</optional>
     </dependency>
   </dependencies>
@@ -124,7 +124,7 @@
   </distributionManagement>
   <build>
     <sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
-    
+
     <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
@@ -245,7 +245,7 @@
           </excludes>
         </configuration>
       </plugin>
-      
+
       <!-- Site generation -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

@@ -121,12 +121,6 @@ public class WorldEditPlugin extends CommonPlugin {
      * Called on plugin disable.
      */
     public void onDisable() {
-        for (Player player : getServer().getOnlinePlayers()) {
-            LocalPlayer lPlayer = wrapPlayer(player);
-            if (controller.getSession(lPlayer).hasCUISupport()) {
-                lPlayer.dispatchCUIHandshake();
-            }
-        }
         controller.clearSessions();
         config.unload();
         getEngine().getScheduler().cancelTasks(this);

@@ -18,24 +18,33 @@
 
 package com.sk89q.worldedit.spout;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.LocalEntity;
 import com.sk89q.worldedit.Location;
-import org.spout.api.entity.Controller;
+import org.spout.api.component.Component;
+import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.controller.type.ControllerType;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author zml2008
  */
 public class SpoutEntity extends LocalEntity {
-    private final ControllerType type;
+    private final byte[] datatableBytes;
+    private final List<Class<? extends Component>> components;
     private final int entityId;
 
-    public SpoutEntity(Location position, int id, Controller controller) {
+    public SpoutEntity(Location position, int id, Collection<Class<? extends Component>> components, ManagedHashMap datatable) {
         super(position);
-        type = controller.getType();
+        this.components = Lists.newArrayList(components);
+        this.datatableBytes = datatable.serialize();
         this.entityId = id;
     }
 
@@ -47,16 +56,26 @@ public class SpoutEntity extends LocalEntity {
     public boolean spawn(Location loc) {
         World world = ((SpoutWorld) loc.getWorld()).getWorld();
         Point pos = SpoutUtil.toPoint(world, loc.getPosition());
-        Controller controller = type.createController();
-        if (controller == null) {
+        Class<? extends Component> mainComponent = null;
+        if (components.size() > 0) {
+            mainComponent = components.get(0);
+        }
+        if (mainComponent == null) {
             return false;
         }
-        Entity e = world.createAndSpawnEntity(pos, controller);
+        Entity e = world.createAndSpawnEntity(pos, mainComponent, LoadOption.LOAD_ONLY); // Blocks should already be pasted by time entitieos are brought in
 
         if (e != null) {
-            e.setPitch(loc.getPitch());
-            e.setYaw(loc.getYaw());
-            // TODO: Copy datatable info
+            e.getTransform().setPitch(loc.getPitch());
+            e.getTransform().setYaw(loc.getYaw());
+            for (Class<? extends Component> clazz : Iterables.skip(components, 1)) {
+                e.add(clazz);
+            }
+            try {
+                e.getData().deserialize(datatableBytes, true);
+            } catch (IOException e1) {
+                return false;
+            }
             return true;
         }
         return false;

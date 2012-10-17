@@ -29,10 +29,12 @@ import com.sk89q.worldedit.bags.OutOfSpaceException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
-import org.spout.api.inventory.InventoryBase;
+import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
 import org.spout.api.entity.Player;
+import org.spout.vanilla.component.inventory.PlayerInventory;
+import org.spout.vanilla.component.living.Human;
 import org.spout.vanilla.material.VanillaMaterials;
 import org.spout.vanilla.util.VanillaPlayerUtil;
 
@@ -44,7 +46,17 @@ public class SpoutPlayerBlockBag extends BlockBag {
     /**
      * The player's inventory;
      */
-    private ItemStack[] items;
+    private ItemInfo items;
+
+    private static class ItemInfo {
+        ItemStack[] inventory;
+        boolean includesFullInventory;
+
+        public ItemInfo(ItemStack[] inventory, boolean full) {
+            this.inventory = inventory;
+            this.includesFullInventory = full;
+        }
+    }
 
     /**
      * Construct the object.
@@ -60,8 +72,32 @@ public class SpoutPlayerBlockBag extends BlockBag {
      */
     private void loadInventory() {
         if (items == null) {
-            items = VanillaPlayerUtil.getInventory(player).getContents();
+            items = getViewableItems(player);
         }
+    }
+
+    private ItemInfo getViewableItems(Player player) {
+        boolean includesFullInventory = true;
+        ItemStack[] items;
+        Human human = player.get(Human.class);
+        PlayerInventory inv = human.getInventory();
+        if (human.isCreative()) {
+            includesFullInventory = false;
+            items = new ItemStack[inv.getQuickbar().size()];
+        } else {
+            items = new ItemStack[inv.getQuickbar().size() + inv.getMain().size()];
+        }
+        int index = 0;
+        for (; index < inv.getQuickbar().size(); ++index) {
+            items[index] = inv.getQuickbar().get(index);
+        }
+
+        if (!human.isCreative()) {
+            for (int i = 0; i < inv.getMain().size() && index < items.length; ++i) {
+                items[index++] = inv.getMain().get(i);
+            }
+        }
+        return new ItemInfo(items, includesFullInventory);
     }
 
     /**
@@ -84,12 +120,9 @@ public class SpoutPlayerBlockBag extends BlockBag {
         final short damage = item.getData();
         int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
         assert(amount == 1);
-        Material mat = VanillaMaterials.getMaterial(id);
-        if (mat.hasSubMaterials()) {
-            mat = mat.getSubMaterial(damage);
-        }
+        Material mat = VanillaMaterials.getMaterial(id, damage);
 
-        if (id == BlockID.AIR) {
+        if (mat == VanillaMaterials.AIR) {
             throw new IllegalArgumentException("Can't fetch air block");
         }
 
@@ -97,8 +130,8 @@ public class SpoutPlayerBlockBag extends BlockBag {
 
         boolean found = false;
 
-        for (int slot = 0; slot < items.length; ++slot) {
-            ItemStack spoutItem = items[slot];
+        for (int slot = 0; slot < items.inventory.length; ++slot) {
+            ItemStack spoutItem = items.inventory[slot];
 
             if (spoutItem == null) {
                 continue;
@@ -119,7 +152,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
                 spoutItem.setAmount(currentAmount - 1);
                 found = true;
             } else {
-                items[slot] = null;
+                items.inventory[slot] = null;
                 found = true;
             }
 
@@ -140,14 +173,11 @@ public class SpoutPlayerBlockBag extends BlockBag {
     public void storeItem(BaseItem item) throws BlockBagException {
         final short id = (short) item.getType();
         final short damage = item.getData();
-        Material mat = VanillaMaterials.getMaterial(id);
-        if (mat.hasSubMaterials()) {
-            mat = mat.getSubMaterial(damage);
-        }
+        Material mat = VanillaMaterials.getMaterial(id, damage);
         int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
         assert(amount <= mat.getMaxStackSize());
 
-        if (id == BlockID.AIR) {
+        if (mat == VanillaMaterials.AIR) {
             throw new IllegalArgumentException("Can't store air block");
         }
 
@@ -155,8 +185,8 @@ public class SpoutPlayerBlockBag extends BlockBag {
 
         int freeSlot = -1;
 
-        for (int slot = 0; slot < items.length; ++slot) {
-            ItemStack spoutItem = items[slot];
+        for (int slot = 0; slot < items.inventory.length; ++slot) {
+            ItemStack spoutItem = items.inventory[slot];
 
             if (spoutItem == null) {
                 // Delay using up a free slot until we know there are no stacks
@@ -194,7 +224,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
         }
 
         if (freeSlot > -1) {
-            items[freeSlot] = new ItemStack(mat, amount);
+            items.inventory[freeSlot] = new ItemStack(mat, amount);
             return;
         }
 
@@ -207,9 +237,13 @@ public class SpoutPlayerBlockBag extends BlockBag {
     @Override
     public void flushChanges() {
         if (items != null) {
-            InventoryBase inv = VanillaPlayerUtil.getInventory(player);
-            for (int i = 0; i < items.length && i < inv.getSize(); ++i) {
-                inv.setItem(i, items[i]);
+            PlayerInventory inv = player.get(Human.class).getInventory();
+            for (int i = 0; i < inv.getQuickbar().size(); i++) {
+                inv.getQuickbar().set(i, items.inventory[i]);
+            }
+
+            for (int i = 0; i < inv.getMain().size(); ++i) {
+                inv.getMain().set(i, items.inventory[inv.getQuickbar().size() + i]);
             }
             items = null;
         }
@@ -217,7 +251,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
 
     /**
      * Adds a position to be used a source.
-     *
+     * (TODO: Figure out what this does)
      * @param pos
      */
     @Override
@@ -226,7 +260,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
 
     /**
      * Adds a position to be used a source.
-     *
+     * (TODO: Figure out what this does)
      * @param pos
      */
     @Override

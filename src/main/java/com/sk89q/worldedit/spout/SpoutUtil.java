@@ -110,6 +110,6 @@ public class SpoutUtil {
     }
 
     public static Location toLocation(Entity ent) {
-        return new Location(getLocalWorld(ent.getWorld()), toVector(ent.getPosition()), ent.getYaw(), ent.getPitch());
+        return new Location(getLocalWorld(ent.getWorld()), toVector(ent.getTransform().getPosition()), ent.getTransform().getYaw(), ent.getTransform().getPitch());
     }
 }
