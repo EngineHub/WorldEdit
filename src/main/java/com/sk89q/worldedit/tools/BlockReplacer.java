@@ -46,7 +46,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
         BlockBag bag = session.getBlockBag(player);
 
         LocalWorld world = clicked.getWorld();
-        EditSession editSession = new EditSession(world, -1, bag);
+        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1, bag);
 
         try {
             editSession.setBlock(clicked, targetBlock);
@@ -66,7 +66,8 @@ public class BlockReplacer implements DoubleActionBlockTool {
             LocalSession session, WorldVector clicked) {
 
         LocalWorld world = clicked.getWorld();
-        targetBlock = (new EditSession(world, -1)).getBlock(clicked);
+        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1);
+        targetBlock = (editSession).getBlock(clicked);
         BlockType type = BlockType.fromID(targetBlock.getType());
 
         if (type != null) {
