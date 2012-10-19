@@ -869,10 +869,11 @@ public class BukkitWorld extends LocalWorld {
     public boolean isValidBlockType(int type) {
         if (!skipNmsValidBlockCheck) {
             try {
-                return type >=0 && type < net.minecraft.server.Block.byId.length
-                        && net.minecraft.server.Block.byId[type] != null;
+                return type == 0 || (type >= 1 && type < net.minecraft.server.Block.byId.length
+                        && net.minecraft.server.Block.byId[type] != null);
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error checking NMS valid block type", e);
+                skipNmsValidBlockCheck = true;
             }
         }
         return Material.getMaterial(type) != null && Material.getMaterial(type).isBlock();
