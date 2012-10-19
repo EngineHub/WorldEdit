@@ -5,11 +5,11 @@
  * Copyright (c) the WorldEdit team and contributors
  *
  * This program is free software: you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free Software 
+ * terms of the GNU Lesser General Public License as published by the Free Software
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License along with
@@ -80,7 +80,7 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
     /**
      * Create a new instance with a given type ID, data value, and previous
      * {@link TileEntityBlock}-implementing object.
-     * 
+     *
      * @param type block type ID
      * @param data data value
      * @param tileEntityBlock tile entity block
@@ -94,7 +94,7 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
     /**
      * Create a new instance with a given type ID, data value, and raw
      * {@link NBTTagCompound} copy.
-     * 
+     *
      * @param type block type ID
      * @param data data value
      * @param nbtData raw NBT data
@@ -107,7 +107,7 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
 
     /**
      * Build a {@link NBTTagCompound} that has valid coordinates.
-     * 
+     *
      * @param pt coordinates to set
      * @return the tag compound
      */
@@ -115,14 +115,14 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
         if (nbtData == null) {
             return null;
         }
-        
+
         nbtData.set("x", new NBTTagInt("x", pt.getBlockX()));
         nbtData.set("y", new NBTTagInt("y", pt.getBlockY()));
         nbtData.set("z", new NBTTagInt("z", pt.getBlockZ()));
 
         return nbtData;
     }
-    
+
     @Override
     public boolean hasNbtData() {
         return nbtData != null;
@@ -153,10 +153,10 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
         }
         this.nbtData = (NBTTagCompound) fromNative(tag);
     }
-    
+
     /**
      * Build an instance from the given information.
-     * 
+     *
      * @param world world to get the block from
      * @param position position to get the block at
      * @param type type ID of block
@@ -166,19 +166,19 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
     public static NmsBlock get(World world, Vector position, int type, int data) {
         TileEntity te = ((CraftWorld) world).getHandle().getTileEntity(
                 position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        
+
         if (te != null) {
             NBTTagCompound tag = new NBTTagCompound();
             te.b(tag); // Load data
             return new NmsBlock(type, data, tag);
         }
-        
+
         return null;
     }
-    
+
     /**
      * Set an instance or a {@link TileEntityBlock} to the given position.
-     * 
+     *
      * @param world world to set the block in
      * @param position position to set the block at
      * @param block the block to set
@@ -186,7 +186,7 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
      */
     public static boolean set(World world, Vector position, BaseBlock block) {
         NBTTagCompound data = null;
-        
+
         if (block instanceof NmsBlock) {
             NmsBlock nmsProxyBlock = (NmsBlock) block;
             data = nmsProxyBlock.getNmsData(position);
@@ -195,7 +195,7 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
                     block.getType(), block.getData(), block);
             data = nmsProxyBlock.getNmsData(position);
         }
-        
+
         if (data != null) {
             TileEntity te = ((CraftWorld) world).getHandle().getTileEntity(
                     position.getBlockX(), position.getBlockY(), position.getBlockZ());
@@ -204,21 +204,21 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Tries to set a block 'safely', as in setting the block data to the location, and
      * then triggering physics only at the end.
-     * 
+     *
      * @param world world to set the block in
      * @param position position to set the block at
      * @param block the block to set
      * @param notifyAdjacent true to notify physics and what not
-     * @return true if set
+     * @return true if block id or data was changed
      */
-    public static boolean setSafely(BukkitWorld world, Vector position, 
+    public static boolean setSafely(BukkitWorld world, Vector position,
             Block block, boolean notifyAdjacent) {
 
         int x = position.getBlockX();
@@ -226,29 +226,29 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
         int z = position.getBlockZ();
 
         CraftWorld craftWorld = ((CraftWorld) world.getWorld());
-        
-        boolean successful = craftWorld.getHandle().setRawTypeIdAndData(
+
+        boolean changed = craftWorld.getHandle().setRawTypeIdAndData(
                 x, y, z, block.getId(), block.getData());
-        
-        if (successful) {
-            if (block instanceof BaseBlock) {
-                world.copyToWorld(position, (BaseBlock) block);
-            }
-            
+
+        if (block instanceof BaseBlock) {
+            world.copyToWorld(position, (BaseBlock) block);
+        }
+
+        if (changed) {
             if (notifyAdjacent) {
                 craftWorld.getHandle().update(x, y, z, block.getId());
             } else {
                 craftWorld.getHandle().notify(x, y, z);
             }
         }
-        
-        return successful;
+
+        return changed;
     }
 
     /**
      * Converts from a non-native NMS NBT structure to a native WorldEdit NBT
      * structure.
-     * 
+     *
      * @param foreign non-native NMS NBT structure
      * @return native WorldEdit NBT structure
      */
@@ -260,7 +260,7 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
         if (foreign instanceof NBTTagCompound) {
             Map<String, Tag> values = new HashMap<String, Tag>();
             Collection<Object> foreignValues = null;
-            
+
             if (compoundMapField == null) {
                 try {
                     // Method name may change!
@@ -269,7 +269,7 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
                     try {
                         logger.warning("WorldEdit: Couldn't get NBTTagCompound.c(), " +
                         		"so we're going to try to get at the 'map' field directly from now on");
-                        
+
                         if (compoundMapField == null) {
                             compoundMapField = NBTTagCompound.class.getDeclaredField("map");
                             compoundMapField.setAccessible(true);
@@ -280,7 +280,7 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
                     }
                 }
             }
-            
+
             if (compoundMapField != null) {
                 try {
                     foreignValues = ((HashMap<Object, Object>) compoundMapField.get(foreign)).values();
@@ -289,7 +289,7 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
                     throw new RuntimeException(e);
                 }
             }
-            
+
             for (Object obj : foreignValues) {
                 NBTBase base = (NBTBase) obj;
                 values.put(base.getName(), toNative(base));
@@ -338,7 +338,7 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
 
     /**
      * Converts a WorldEdit-native NBT structure to a NMS structure.
-     * 
+     *
      * @param foreign structure to convert
      * @return non-native structure
      */
