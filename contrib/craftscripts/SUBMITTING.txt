@@ -1,0 +1,10 @@
+Write a cool script? Send it to sk89q (somehow) or you can submit a pull
+request on https://github.com/sk89q/worldedit. He will consider your script
+for inclusion in WorldEdit releases. Please license your script with a
+permissive open source license such as GPLv2, MIT, BSD, WTFPL, etc.
+
+Note: Legally you should not release things to the public domain as not
+all countries have the concept of public domain in their copyright law.
+
+You can also post your scripts here:
+http://forum.sk89q.com/forums/craftscripts.6/
