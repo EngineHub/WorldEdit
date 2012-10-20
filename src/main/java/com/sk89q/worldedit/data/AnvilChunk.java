@@ -21,6 +21,7 @@ public class AnvilChunk implements Chunk {
 
     private CompoundTag rootTag;
     private byte[][] blocks;
+    private byte[][] blocksAdd;
     private byte[][] data;
     private int rootX;
     private int rootZ;
@@ -31,42 +32,66 @@ public class AnvilChunk implements Chunk {
 
     /**
      * Construct the chunk with a compound tag.
-     *
-     * @param tag
-     * @throws DataException
+     * 
+     * @param world the world to construct the chunk for
+     * @param tag the tag to read
+     * @throws DataException on a data error
      */
     public AnvilChunk(LocalWorld world, CompoundTag tag) throws DataException {
         rootTag = tag;
         this.world = world;
 
-        rootX = NBTUtils.getChildTag( rootTag.getValue(), "xPos", IntTag.class).getValue();
-        rootZ = NBTUtils.getChildTag( rootTag.getValue(), "zPos", IntTag.class).getValue();
+        rootX = NBTUtils.getChildTag(rootTag.getValue(), "xPos", IntTag.class).getValue();
+        rootZ = NBTUtils.getChildTag(rootTag.getValue(), "zPos", IntTag.class).getValue();
 
-        blocks = new byte[16][16*16*16];
-        data = new byte[16][16*16*8];
-        List<Tag> sections = NBTUtils.getChildTag(rootTag.getValue(), "Sections", ListTag.class).getValue();
-        for(Tag section : sections) {
-            if(!(section instanceof CompoundTag)) continue;
-            CompoundTag compoundsection = (CompoundTag) section;
-            if(!compoundsection.getValue().containsKey("Y")) continue; // Empty section.
-            int y = NBTUtils.getChildTag(compoundsection.getValue(), "Y", ByteTag.class).getValue();
-            if(y < 0 || y >= 16) continue;
-            blocks[y]  = NBTUtils.getChildTag(compoundsection.getValue(), "Blocks", ByteArrayTag.class).getValue();
-            data[y]  = NBTUtils.getChildTag(compoundsection.getValue(), "Data", ByteArrayTag.class).getValue();
-        }
+        blocks = new byte[16][16 * 16 * 16];
+        blocksAdd = new byte[16][16 * 16 * 8];
+        data = new byte[16][16 * 16 * 8];
         
-        int sectionsize = 16*16*16;
-        for(int i = 0; i < blocks.length; i++) {
-            if (blocks[i].length != sectionsize) {
-                throw new InvalidFormatException("Chunk blocks byte array expected "
-                        + "to be " + sectionsize + " bytes; found " + blocks[i].length);
+        List<Tag> sections = NBTUtils.getChildTag(rootTag.getValue(), "Sections", ListTag.class).getValue();
+        
+        for (Tag rawSectionTag : sections) {
+            if (!(rawSectionTag instanceof CompoundTag)) {
+                continue;
+            }
+            
+            CompoundTag sectionTag = (CompoundTag) rawSectionTag;
+            if (!sectionTag.getValue().containsKey("Y")) {
+                continue; // Empty section.
+            }
+            
+            int y = NBTUtils.getChildTag(sectionTag.getValue(), "Y", ByteTag.class).getValue();
+            if (y < 0 || y >= 16) {
+                continue;
+            }
+
+            blocks[y] = NBTUtils.getChildTag(sectionTag.getValue(),
+                    "Blocks", ByteArrayTag.class).getValue();
+            data[y] = NBTUtils.getChildTag(sectionTag.getValue(), "Data",
+                    ByteArrayTag.class).getValue();
+
+            // 4096 ID block support
+            if (sectionTag.getValue().containsKey("Add")) {
+                blocksAdd[y] = NBTUtils.getChildTag(sectionTag.getValue(),
+                        "Add", ByteArrayTag.class).getValue();
             }
         }
 
-        for(int i = 0; i < data.length; i++) {
-            if (data[i].length != (sectionsize/2)) {
+        int sectionsize = 16 * 16 * 16;
+        for (int i = 0; i < blocks.length; i++) {
+            if (blocks[i].length != sectionsize) {
+                throw new InvalidFormatException(
+                        "Chunk blocks byte array expected " + "to be "
+                                + sectionsize + " bytes; found "
+                                + blocks[i].length);
+            }
+        }
+
+        for (int i = 0; i < data.length; i++) {
+            if (data[i].length != (sectionsize / 2)) {
                 throw new InvalidFormatException("Chunk block data byte array "
-                        + "expected to be " + sectionsize + " bytes; found " + data[i].length);
+                        + "expected to be " + sectionsize + " bytes; found "
+                        + data[i].length);
             }
         }
     }
@@ -76,16 +101,30 @@ public class AnvilChunk implements Chunk {
         int x = pos.getBlockX() - rootX * 16;
         int y = pos.getBlockY();
         int z = pos.getBlockZ() - rootZ * 16;
-        
+
         int section = y >> 4;
-        if(section < 0 || section >= blocks.length) throw new DataException("Chunk does not contain position " + pos);
+        if (section < 0 || section >= blocks.length) {
+            throw new DataException("Chunk does not contain position " + pos);
+        }
+        
         int yindex = y & 0x0F;
-        if(yindex < 0 || yindex >= 16) throw new DataException("Chunk does not contain position " + pos);
-        
-        
+        if (yindex < 0 || yindex >= 16) {
+            throw new DataException("Chunk does not contain position " + pos);
+        }
+
         int index = x + (z * 16 + (yindex * 16 * 16));
+        
         try {
-            return blocks[section][index];
+            int addId = 0;
+            
+            // 4 bits, so we have to divide by 2 and get the right 4 bits
+            if (index % 2 == 0) {
+                addId = (blocksAdd[section][index >> 2] >> 4) << 8;
+            } else {
+                addId = (blocksAdd[section][index >> 2] & 0xF) << 8;
+            }
+            
+            return blocks[section][index] + addId;
         } catch (IndexOutOfBoundsException e) {
             throw new DataException("Chunk does not contain position " + pos);
         }
@@ -96,14 +135,19 @@ public class AnvilChunk implements Chunk {
         int x = pos.getBlockX() - rootX * 16;
         int y = pos.getBlockY();
         int z = pos.getBlockZ() - rootZ * 16;
-        
+
         int section = y >> 4;
-        if(section < 0 || section >= blocks.length) throw new DataException("Chunk does not contain position " + pos);
-        int yindex = y & 0x0F;
-        if(yindex < 0 || yindex >= 16) throw new DataException("Chunk does not contain position " + pos);
+        int yIndex = y & 0x0F;
         
+        if (section < 0 || section >= blocks.length) {
+            throw new DataException("Chunk does not contain position " + pos);
+        }
         
-        int index = x + (z * 16 + (yindex * 16 * 16));
+        if (yIndex < 0 || yIndex >= 16) {
+            throw new DataException("Chunk does not contain position " + pos);
+        }
+
+        int index = x + (z * 16 + (yIndex * 16 * 16));
         boolean shift = index % 2 == 0;
         index /= 2;
 
@@ -124,15 +168,15 @@ public class AnvilChunk implements Chunk {
      * @throws DataException
      */
     private void populateTileEntities() throws DataException {
-        List<Tag> tags = NBTUtils.getChildTag(
-                rootTag.getValue(), "TileEntities", ListTag.class)
-                .getValue();
+        List<Tag> tags = NBTUtils.getChildTag(rootTag.getValue(),
+                "TileEntities", ListTag.class).getValue();
 
         tileEntities = new HashMap<BlockVector, Map<String, Tag>>();
 
         for (Tag tag : tags) {
             if (!(tag instanceof CompoundTag)) {
-                throw new InvalidFormatException("CompoundTag expected in TileEntities");
+                throw new InvalidFormatException(
+                        "CompoundTag expected in TileEntities");
             }
 
             CompoundTag t = (CompoundTag) tag;
