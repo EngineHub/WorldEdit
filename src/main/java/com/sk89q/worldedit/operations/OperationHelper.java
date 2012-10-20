@@ -36,8 +36,22 @@ public class OperationHelper {
      * @throws WorldEditException WorldEdit exception
      */
     public static void complete(Operation op) throws WorldEditException {
+        Execution opt = new Execution();
+        opt.setPreferSingleRun(true);
+        
+        complete(op, opt);
+    }
+    
+    /**
+     * Complete a given operation synchronously until it completes.
+     * 
+     * @param op operation to execute
+     * @param opt execution hints
+     * @throws WorldEditException WorldEdit exception
+     */
+    public static void complete(Operation op, Execution opt) throws WorldEditException {
         while (op != null) {
-            op = op.resume();
+            op = op.resume(opt);
         }
     }
     
@@ -49,9 +63,12 @@ public class OperationHelper {
      * @throws MaxChangedBlocksException thrown when too many blocks have been changed
      */
     public static void completeLegacy(Operation op) throws MaxChangedBlocksException {
+        Execution opt = new Execution();
+        opt.setPreferSingleRun(true);
+        
         while (op != null) {
             try {
-                op = op.resume();
+                op = op.resume(opt);
             } catch (MaxChangedBlocksException e) {
                 throw e;
             } catch (WorldEditException e) {

@@ -18,21 +18,28 @@
 
 package com.sk89q.worldedit.operations;
 
+import com.sk89q.worldedit.WorldEditException;
+
 /**
- * This interface indicates that the operation may run in an asynchronous fashion in a
- * thread other than a main one. {@link #nextAsync()} can be called in order
- * to determine whether the next execution of {@link #resume(Execution)} should occur
- * asynchronously. There is no requirement that calling code perform the next
- * execution cycle asynchronously, however.
+ * Helper abstract implementation of {@link Operation}.
  */
-public interface AsyncOperation extends Operation {
+public abstract class AbstractOperation implements Operation {
+
+    @Override
+    public Operation resume(Execution opt) throws WorldEditException {
+        return resume();
+    }
 
     /**
-     * Indicates whether the next call to {@link #resume(Execution)} should be called.
-     * asynchronously if possible and feasible.
+     * Complete the next step. If this method returns true, then the method may be
+     * called again in the future, or possibly never. If this method returns false,
+     * then this method should not be called again.
      * 
-     * @return true to execute asynchronously the next cycle
+     * @return another operation to run that operation again, or null to stop
+     * @throws WorldEditException an error
      */
-    boolean nextAsync();
-    
+    protected Operation resume() throws WorldEditException {
+        return null;
+    }
+
 }

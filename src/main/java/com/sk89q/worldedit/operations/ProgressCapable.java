@@ -19,20 +19,16 @@
 package com.sk89q.worldedit.operations;
 
 /**
- * This interface indicates that the operation may run in an asynchronous fashion in a
- * thread other than a main one. {@link #nextAsync()} can be called in order
- * to determine whether the next execution of {@link #resume(Execution)} should occur
- * asynchronously. There is no requirement that calling code perform the next
- * execution cycle asynchronously, however.
+ * Indicates an {@link Operation} that can provide information on current progress.
  */
-public interface AsyncOperation extends Operation {
-
-    /**
-     * Indicates whether the next call to {@link #resume(Execution)} should be called.
-     * asynchronously if possible and feasible.
-     * 
-     * @return true to execute asynchronously the next cycle
-     */
-    boolean nextAsync();
+public interface ProgressCapable {
     
+    /**
+     * Return the progress of the operation as a float between 0 and 1. A negative
+     * number indicates that the progress is in an indeterminate state.
+     * 
+     * @return the progress between 0 and 1, or a negative number for indeterminate
+     */
+    float getProgress(); 
+
 }

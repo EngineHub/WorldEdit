@@ -19,20 +19,29 @@
 package com.sk89q.worldedit.operations;
 
 /**
- * This interface indicates that the operation may run in an asynchronous fashion in a
- * thread other than a main one. {@link #nextAsync()} can be called in order
- * to determine whether the next execution of {@link #resume(Execution)} should occur
- * asynchronously. There is no requirement that calling code perform the next
- * execution cycle asynchronously, however.
+ * Provides hints about the current execution cycle. Operations should utilize this
+ * information, but they may not.
  */
-public interface AsyncOperation extends Operation {
+public class Execution {
+    
+    private boolean preferSingleRun = false;
 
     /**
-     * Indicates whether the next call to {@link #resume(Execution)} should be called.
-     * asynchronously if possible and feasible.
+     * Returns whether a single run is preferred.
      * 
-     * @return true to execute asynchronously the next cycle
+     * @return true if the operation should complete as much as possible in one execution
      */
-    boolean nextAsync();
-    
+    public boolean preferSingleRun() {
+        return preferSingleRun;
+    }
+
+    /**
+     * Set whether a single run is preferred.
+     * 
+     * @param preferSingleRun true if the operation should complete ASAP
+     */
+    public void setPreferSingleRun(boolean preferSingleRun) {
+        this.preferSingleRun = preferSingleRun;
+    }
+
 }

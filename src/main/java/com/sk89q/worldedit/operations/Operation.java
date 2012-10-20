@@ -32,13 +32,14 @@ public interface Operation {
      * called again in the future, or possibly never. If this method returns false,
      * then this method should not be called again.
      * 
+     * @param opt hints about the execution
      * @return another operation to run that operation again, or null to stop
      * @throws WorldEditException an error
      */
-    Operation resume() throws WorldEditException;
+    Operation resume(Execution opt) throws WorldEditException;
     
     /**
-     * Abort the current task. After the this method is called, {@link #resume()} should
+     * Abort the current task. After the this method is called, {@link #resume(Execution)} should
      * not be called at any point in the future. This method should not be called after
      * successful completion of the operation. This method must be called if
      * the operation is interrupted before completion.

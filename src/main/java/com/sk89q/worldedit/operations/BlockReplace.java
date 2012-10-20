@@ -30,7 +30,7 @@ import com.sk89q.worldedit.regions.Region;
  * Replace all blocks within a given {@link Region} with a {@link Pattern}. A 
  * {@link Mask} can optionally be specified.
  */
-public class BlockReplace implements Operation, BlockChange {
+public class BlockReplace extends AbstractOperation implements BlockChange {
     
     private final EditSession editSession;
     private final Region region;
@@ -69,7 +69,7 @@ public class BlockReplace implements Operation, BlockChange {
     }
 
     @Override
-    public Operation resume() throws MaxChangedBlocksException {
+    protected Operation resume() throws MaxChangedBlocksException {
         if (region instanceof CuboidRegion) { // Doing this for speed
             Vector min = region.getMinimumPoint();
             Vector max = region.getMaximumPoint();
