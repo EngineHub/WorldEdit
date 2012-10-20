@@ -27,7 +27,6 @@
       <includes>
         <include>LICENSE.txt</include>
         <include>CHANGELOG.txt</include>
-        <include>NOTICE.txt</include>
         <include>contrib/craftscripts/*</include>
       </includes>
     </fileSet>
