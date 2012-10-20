@@ -1,3 +1,14 @@
+5.4.3:
+- Added block data support to BlockMask.
+- Added //center command to set blocks at the center point of a selection.
+- Correctly update session permissions on each operation.
+- Fix errors when trying to set invalid blocks.
+- Fix chests & similar not having their extended (tile entity) data being correctly copied back when the block currently in the location has the same type and data.
+- Added emerald as an alias for the emerald block.
+- Added string as an alias for the tripwire block (wire, not hook).
+
+Thanks for the contributions from aumgn
+
 5.4.2:
 - Fixed //gen not having a proper minimum parameter count of 2.
 - Added //re and //rep as aliases for //replace, and aliases /asc(end),
