@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.minecraft.server.NBTBase;
@@ -75,7 +76,20 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
 
     private static final Logger logger = Logger.getLogger(NmsBlock.class.getCanonicalName());
     private static Field compoundMapField;
+    private static final Field nmsBlock_isTileEntityField; // The field is deobfuscated but the method isn't. No idea why.
     private NBTTagCompound nbtData = null;
+
+    static {
+        Field field;
+        try {
+            field = net.minecraft.server.Block.class.getDeclaredField("isTileEntity");
+            field.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            logger.severe("Could not find NMS block tile entity field!");
+            field = null;
+        }
+        nmsBlock_isTileEntityField = field;
+    }
 
     /**
      * Create a new instance with a given type ID, data value, and previous
@@ -164,6 +178,10 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
      * @return the block, or null
      */
     public static NmsBlock get(World world, Vector position, int type, int data) {
+        if (!hasTileEntity(type)) {
+            return null;
+        }
+
         TileEntity te = ((CraftWorld) world).getHandle().getTileEntity(
                 position.getBlockX(), position.getBlockY(), position.getBlockZ());
 
@@ -186,6 +204,9 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
      */
     public static boolean set(World world, Vector position, BaseBlock block) {
         NBTTagCompound data = null;
+        if (!hasTileEntity(world.getBlockTypeIdAt(position.getBlockX(), position.getBlockY(), position.getBlockZ()))) {
+            return false;
+        }
 
         if (block instanceof NmsBlock) {
             NmsBlock nmsProxyBlock = (NmsBlock) block;
@@ -243,6 +264,26 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
         }
 
         return changed;
+    }
+
+    public static boolean hasTileEntity(int type) {
+        net.minecraft.server.Block nmsBlock = getNmsBlock(type);
+        if (nmsBlock == null) {
+            return false;
+        }
+
+        try {
+            return nmsBlock_isTileEntityField.getBoolean(nmsBlock); // Once we have the field stord, gets are fast
+        } catch (IllegalAccessException e) {
+            return false;
+        }
+    }
+
+    public static net.minecraft.server.Block getNmsBlock(int type) {
+        if (type < 0 || type >= net.minecraft.server.Block.byId.length) {
+            return null;
+        }
+        return net.minecraft.server.Block.byId[type];
     }
 
     /**
