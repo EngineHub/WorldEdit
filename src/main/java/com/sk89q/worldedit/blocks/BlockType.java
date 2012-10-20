@@ -167,8 +167,8 @@ public enum BlockType {
     EMERALD_ORE(BlockID.EMERALD_ORE, "Emerald ore", "emeraldore"),
     ENDER_CHEST(BlockID.ENDER_CHEST, "Ender chest", "enderchest"),
     TRIPWIRE_HOOK(BlockID.TRIPWIRE_HOOK, "Tripwire hook", "tripwirehook"),
-    TRIPWIRE(BlockID.TRIPWIRE, "Tripwire", "tripwire"),
-    EMERALD_BLOCK(BlockID.EMERALD_BLOCK, "Emerald block", "emeraldblock"),
+    TRIPWIRE(BlockID.TRIPWIRE, "Tripwire", "tripwire", "string"),
+    EMERALD_BLOCK(BlockID.EMERALD_BLOCK, "Emerald block", "emeraldblock", "emerald"),
     SPRUCE_WOOD_STAIRS(BlockID.SPRUCE_WOOD_STAIRS, "Spruce wood stairs", "sprucestairs", "sprucewoodstairs"),
     BIRCH_WOOD_STAIRS(BlockID.BIRCH_WOOD_STAIRS, "Birch wood stairs", "birchstairs", "birchwoodstairs"),
     JUNGLE_WOOD_STAIRS(BlockID.JUNGLE_WOOD_STAIRS, "Jungle wood stairs", "junglestairs", "junglewoodstairs");

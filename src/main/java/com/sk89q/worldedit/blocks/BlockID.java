@@ -79,6 +79,7 @@ public final class BlockID {
     public static final int FIRE = 51;
     public static final int MOB_SPAWNER = 52;
     public static final int WOODEN_STAIRS = 53;
+    public static final int OAK_WOOD_STAIRS = 53;
     public static final int CHEST = 54;
     public static final int REDSTONE_WIRE = 55;
     public static final int DIAMOND_ORE = 56;
