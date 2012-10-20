@@ -41,7 +41,10 @@ import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.operations.BlockReplace;
+import com.sk89q.worldedit.operations.OperationHelper;
 import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
@@ -1092,93 +1095,27 @@ public class EditSession {
     /**
      * Sets all the blocks inside a region to a certain block type.
      *
-     * @param region
-     * @param block
+     * @param region region to apply
+     * @param block block to change to
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks were changed
      */
-    public int setBlocks(Region region, BaseBlock block)
-            throws MaxChangedBlocksException {
-        int affected = 0;
-
-        if (region instanceof CuboidRegion) {
-            // Doing this for speed
-            Vector min = region.getMinimumPoint();
-            Vector max = region.getMaximumPoint();
-
-            int minX = min.getBlockX();
-            int minY = min.getBlockY();
-            int minZ = min.getBlockZ();
-            int maxX = max.getBlockX();
-            int maxY = max.getBlockY();
-            int maxZ = max.getBlockZ();
-
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    for (int z = minZ; z <= maxZ; ++z) {
-                        Vector pt = new Vector(x, y, z);
-
-                        if (setBlock(pt, block)) {
-                            ++affected;
-                        }
-                    }
-                }
-            }
-        } else {
-            for (Vector pt : region) {
-                if (setBlock(pt, block)) {
-                    ++affected;
-                }
-            }
-        }
-
-        return affected;
+    public int setBlocks(Region region, BaseBlock block) throws MaxChangedBlocksException {
+        return setBlocks(region, new SingleBlockPattern(block));
     }
 
     /**
      * Sets all the blocks inside a region to a certain block type.
      *
-     * @param region
-     * @param pattern
+     * @param region region to apply
+     * @param pattern pattern of blocks to set
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks were changed
      */
-    public int setBlocks(Region region, Pattern pattern)
-            throws MaxChangedBlocksException {
-        int affected = 0;
-
-        if (region instanceof CuboidRegion) {
-            // Doing this for speed
-            Vector min = region.getMinimumPoint();
-            Vector max = region.getMaximumPoint();
-
-            int minX = min.getBlockX();
-            int minY = min.getBlockY();
-            int minZ = min.getBlockZ();
-            int maxX = max.getBlockX();
-            int maxY = max.getBlockY();
-            int maxZ = max.getBlockZ();
-
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    for (int z = minZ; z <= maxZ; ++z) {
-                        Vector pt = new Vector(x, y, z);
-
-                        if (setBlock(pt, pattern.next(pt))) {
-                            ++affected;
-                        }
-                    }
-                }
-            }
-        } else {
-            for (Vector pt : region) {
-                if (setBlock(pt, pattern.next(pt))) {
-                    ++affected;
-                }
-            }
-        }
-
-        return affected;
+    public int setBlocks(Region region, Pattern pattern) throws MaxChangedBlocksException {
+        BlockReplace op = new BlockReplace(this, region, pattern);
+        OperationHelper.completeLegacy(op);
+        return op.getBlocksChanged();
     }
 
     /**
