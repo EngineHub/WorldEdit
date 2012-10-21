@@ -45,6 +45,7 @@ import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.masks.MatchAllMask;
 import com.sk89q.worldedit.operations.BlockReplace;
 import com.sk89q.worldedit.operations.OperationHelper;
+import com.sk89q.worldedit.operations.StackArea;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -1562,52 +1563,21 @@ public class EditSession {
     /**
      * Stack a cuboid region.
      *
-     * @param region
-     * @param dir
-     * @param count
-     * @param copyAir
+     * @param region region to apply it to
+     * @param dir direction to stack the region
+     * @param count the number of times to stack
+     * @param copyAir true to copy air blocks
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int stackCuboidRegion(Region region, Vector dir, int count,
             boolean copyAir) throws MaxChangedBlocksException {
-        int affected = 0;
-
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
-
-        int minX = min.getBlockX();
-        int minY = min.getBlockY();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxY = max.getBlockY();
-        int maxZ = max.getBlockZ();
-
-        int xs = region.getWidth();
-        int ys = region.getHeight();
-        int zs = region.getLength();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                for (int y = minY; y <= maxY; ++y) {
-                    BaseBlock block = getBlock(new Vector(x, y, z));
-
-                    if (!block.isAir() || copyAir) {
-                        for (int i = 1; i <= count; ++i) {
-                            Vector pos = new Vector(x + xs * dir.getBlockX()
-                                    * i, y + ys * dir.getBlockY() * i, z + zs
-                                    * dir.getBlockZ() * i);
-
-                            if (setBlock(pos, block)) {
-                                ++affected;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return affected;
+        StackArea op = new StackArea(this, region);
+        op.setCopyAir(copyAir);
+        op.setDirection(dir);
+        op.setCount(count);
+        OperationHelper.completeLegacy(op);
+        return op.getBlocksChanged();
     }
 
     /**
