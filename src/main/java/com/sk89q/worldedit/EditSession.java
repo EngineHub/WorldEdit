@@ -43,12 +43,12 @@ import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.masks.BlockMask;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.masks.MatchAllMask;
+import com.sk89q.worldedit.operations.FreezeArea;
 import com.sk89q.worldedit.operations.NaturalizeArea;
 import com.sk89q.worldedit.operations.OperationHelper;
 import com.sk89q.worldedit.operations.OverlayBlocks;
 import com.sk89q.worldedit.operations.ReplaceBlocks;
 import com.sk89q.worldedit.operations.ScatterStructures;
-import com.sk89q.worldedit.operations.FreezeArea;
 import com.sk89q.worldedit.operations.StackArea;
 import com.sk89q.worldedit.operations.ThawArea;
 import com.sk89q.worldedit.patterns.Pattern;
@@ -1992,6 +1992,7 @@ public class EditSession {
         Pattern fruit = new SingleBlockPattern(new BaseBlock(BlockID.PUMPKIN));
         FruitPatch structure = new FruitPatch(fruit);
         ScatterStructures op = new ScatterStructures(this, region, structure);
+        op.setDensity(0.98);
         OperationHelper.completeLegacy(op);
         return op.getChangeCount();
     }
