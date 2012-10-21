@@ -32,7 +32,7 @@ import com.sk89q.worldedit.util.ParamUtils;
  * Surface is considered the first block exposed to the skylight, including
  * transparent blocks.
  */
-public class ScatterStructures extends ColumnVisitor implements BlockChange {
+public class ScatterStructures extends ColumnVisitor implements ChangeCountable {
     
     private final Random random = new Random();
     
@@ -116,7 +116,7 @@ public class ScatterStructures extends ColumnVisitor implements BlockChange {
     }
 
     @Override
-    public int getBlocksChanged() {
+    public int getChangeCount() {
         return affected;
     }
 

@@ -31,7 +31,7 @@ import com.sk89q.worldedit.regions.Region;
  * <p>
  * At the moment, this operation assumes the region is a cuboid.
  */
-public class StackArea implements Operation, BlockChange {
+public class StackArea implements Operation, ChangeCountable {
     
     private final EditSession context;
     private final Region region;
@@ -151,7 +151,7 @@ public class StackArea implements Operation, BlockChange {
     }
 
     @Override
-    public int getBlocksChanged() {
+    public int getChangeCount() {
         return affected;
     }
 

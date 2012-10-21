@@ -29,7 +29,7 @@ import com.sk89q.worldedit.regions.Region;
  * Remove snow and ice from a given area. Only the topmost non-air blocks in the
  * region are checked, so a region with a "roof" will be unaffected.
  */
-public class ThawArea extends ColumnVisitor implements BlockChange {
+public class ThawArea extends ColumnVisitor implements ChangeCountable {
 
     private final BaseBlock air = new BaseBlock(0);
     private final BaseBlock water = new BaseBlock(BlockID.STATIONARY_WATER);
@@ -90,7 +90,7 @@ public class ThawArea extends ColumnVisitor implements BlockChange {
     }
 
     @Override
-    public int getBlocksChanged() {
+    public int getChangeCount() {
         return affected;
     }
 

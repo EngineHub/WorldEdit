@@ -30,7 +30,7 @@ import com.sk89q.worldedit.regions.Region;
  * Replace all blocks within a given {@link Region} with a {@link Pattern}. A 
  * {@link Mask} can optionally be specified.
  */
-public class ReplaceBlocks implements Operation, BlockChange {
+public class ReplaceBlocks implements Operation, ChangeCountable {
     
     private final EditSession editSession;
     private final Region region;
@@ -119,7 +119,7 @@ public class ReplaceBlocks implements Operation, BlockChange {
     }
 
     @Override
-    public int getBlocksChanged() {
+    public int getChangeCount() {
         return affected;
     }
 

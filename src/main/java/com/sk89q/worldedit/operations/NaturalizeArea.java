@@ -33,7 +33,7 @@ import com.sk89q.worldedit.regions.Region;
  * <p>
  * At the moment, this operation assumes the region is a cuboid.
  */
-public class NaturalizeArea extends ColumnVisitor implements BlockChange {
+public class NaturalizeArea extends ColumnVisitor implements ChangeCountable {
 
     private final BaseBlock grass = new BaseBlock(BlockID.GRASS);
     private final BaseBlock dirt = new BaseBlock(BlockID.DIRT);
@@ -109,7 +109,7 @@ public class NaturalizeArea extends ColumnVisitor implements BlockChange {
     }
 
     @Override
-    public int getBlocksChanged() {
+    public int getChangeCount() {
         return affected;
     }
 

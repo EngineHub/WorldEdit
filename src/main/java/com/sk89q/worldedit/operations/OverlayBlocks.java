@@ -28,7 +28,7 @@ import com.sk89q.worldedit.regions.Region;
  * Places blocks from a {@link Pattern} on the top available space
  * in each column of a {@link Region}.
  */
-public class OverlayBlocks extends ColumnVisitor implements BlockChange {
+public class OverlayBlocks extends ColumnVisitor implements ChangeCountable {
 
     private final EditSession context;
     private final int minY;
@@ -81,7 +81,7 @@ public class OverlayBlocks extends ColumnVisitor implements BlockChange {
     }
 
     @Override
-    public int getBlocksChanged() {
+    public int getChangeCount() {
         return affected;
     }
 

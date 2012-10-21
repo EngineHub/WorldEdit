@@ -18,17 +18,22 @@
 
 package com.sk89q.worldedit.operations;
 
+import com.sk89q.worldedit.structures.Structure;
+
 /**
- * An operation that changes blocks.
+ * An operation that can provide the number of changes, such as the number of
+ * {@link Structure}s generated or blocks placed. The meaning of this is dependent
+ * on implementations and it is expected that this information is only used as a
+ * hint to the user.
  */
-public interface BlockChange {
+public interface ChangeCountable {
     
     /**
-     * Return the number of blocks changed. The accuracy of the returned value
+     * Return the number of changes. The accuracy or usefulness of the returned value
      * is not guaranteed.
      * 
-     * @return number of blocks changed
+     * @return number of changes
      */
-    int getBlocksChanged();
+    int getChangeCount();
 
 }

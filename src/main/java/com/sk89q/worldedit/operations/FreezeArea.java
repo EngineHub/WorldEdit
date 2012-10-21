@@ -29,7 +29,7 @@ import com.sk89q.worldedit.regions.Region;
 /**
  * Freeze a given area by overlaying snow and turning water to ice.
  */
-public class FreezeArea extends ColumnVisitor implements BlockChange {
+public class FreezeArea extends ColumnVisitor implements ChangeCountable {
 
     private final BaseBlock ice = new BaseBlock(BlockID.ICE);
     private final BaseBlock snow = new BaseBlock(BlockID.SNOW);
@@ -89,7 +89,7 @@ public class FreezeArea extends ColumnVisitor implements BlockChange {
     }
 
     @Override
-    public int getBlocksChanged() {
+    public int getChangeCount() {
         return affected;
     }
 

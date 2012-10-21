@@ -1010,7 +1010,7 @@ public class EditSession {
         Pattern pattern = new SingleBlockPattern(new BaseBlock(0));
         ReplaceBlocks op = new ReplaceBlocks(this, region, pattern);
         OperationHelper.completeLegacy(op);
-        return op.getBlocksChanged();
+        return op.getChangeCount();
     }
 
     /**
@@ -1029,7 +1029,7 @@ public class EditSession {
         Pattern pattern = new SingleBlockPattern(new BaseBlock(0));
         ReplaceBlocks op = new ReplaceBlocks(this, region, pattern);
         OperationHelper.completeLegacy(op);
-        return op.getBlocksChanged();
+        return op.getChangeCount();
     }
 
     /**
@@ -1093,7 +1093,7 @@ public class EditSession {
     public int setBlocks(Region region, Pattern pattern) throws MaxChangedBlocksException {
         ReplaceBlocks op = new ReplaceBlocks(this, region, pattern);
         OperationHelper.completeLegacy(op);
-        return op.getBlocksChanged();
+        return op.getChangeCount();
     }
 
     /**
@@ -1112,7 +1112,7 @@ public class EditSession {
         Pattern pattern = new SingleBlockPattern(toBlock);
         ReplaceBlocks op = new ReplaceBlocks(this, region, pattern, mask);
         OperationHelper.completeLegacy(op);
-        return op.getBlocksChanged();
+        return op.getChangeCount();
     }
 
     /**
@@ -1130,7 +1130,7 @@ public class EditSession {
         Mask mask = fromBlockTypes != null ? new BlockMask(fromBlockTypes) : new MatchAllMask();
         ReplaceBlocks op = new ReplaceBlocks(this, region, pattern, mask);
         OperationHelper.completeLegacy(op);
-        return op.getBlocksChanged();
+        return op.getChangeCount();
     }
 
     public int center(Region region, Pattern pattern)
@@ -1403,7 +1403,7 @@ public class EditSession {
             throws MaxChangedBlocksException {
         OverlayBlocks op = new OverlayBlocks(this, region, pattern);
         OperationHelper.completeLegacy(op);
-        return op.getBlocksChanged();
+        return op.getChangeCount();
     }
 
 
@@ -1418,7 +1418,7 @@ public class EditSession {
     public int naturalizeCuboidBlocks(Region region) throws MaxChangedBlocksException {
         NaturalizeArea op = new NaturalizeArea(this, region);
         OperationHelper.completeLegacy(op);
-        return op.getBlocksChanged();
+        return op.getChangeCount();
     }
 
     /**
@@ -1438,7 +1438,7 @@ public class EditSession {
         op.setDirection(dir);
         op.setCount(count);
         OperationHelper.completeLegacy(op);
-        return op.getBlocksChanged();
+        return op.getChangeCount();
     }
 
     /**
@@ -1901,7 +1901,7 @@ public class EditSession {
                 getWorld(), pos, new Vector2D(radius, radius), 1, world.getMaxY());
         ThawArea op = new ThawArea(this, region);
         OperationHelper.completeLegacy(op);
-        return op.getBlocksChanged();
+        return op.getChangeCount();
     }
 
     /**
@@ -1918,7 +1918,7 @@ public class EditSession {
                 getWorld(), pos, new Vector2D(radius, radius), 1, world.getMaxY());
         FreezeArea op = new FreezeArea(this, region);
         OperationHelper.completeLegacy(op);
-        return op.getBlocksChanged();
+        return op.getChangeCount();
     }
 
     /**
@@ -1993,7 +1993,7 @@ public class EditSession {
         FruitPatch structure = new FruitPatch(fruit);
         ScatterStructures op = new ScatterStructures(this, region, structure);
         OperationHelper.completeLegacy(op);
-        return op.getBlocksChanged();
+        return op.getChangeCount();
     }
 
     /**
