@@ -16,108 +16,73 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.operations;
+package com.sk89q.worldedit.structures;
 
-import java.util.Iterator;
 import java.util.Random;
 
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.regions.Region;
 
 /**
- * Generate fruit patches that have leaves around them.
+ * Generates fruit patches with leaves around a central fruit.
  */
-public class GenerateFruitPatches implements Operation, BlockChange {
+public class FruitPatch implements Structure {
 
-    private static final Random random = new Random();
-    
-    private final EditSession context;
-    private final Region region;
-    private final Pattern fruit;  
-    
-    private int affected = 0;
+    private final Random random = new Random();
+    private final Pattern fruit;
     
     /**
-     * Create a patch generation operation.
+     * Create a new patch structure generator.
      * 
-     * @param context to apply changes to
-     * @param region area to apply changes to
-     * @param fruit pattern for the fruit
+     * @param fruit the fruit
      */
-    public GenerateFruitPatches(EditSession context, Region region, Pattern fruit) {
-        this.context = context;
-        this.region = region;
+    public FruitPatch(Pattern fruit) {
         this.fruit = fruit;
     }
 
     @Override
-    public Operation resume(Execution opt) throws WorldEditException {
-        Iterator<BlockVector> points = region.columnIterator();
-        int lowestY = region.getMinimumPoint().getBlockY();
-        
-        while (points.hasNext()) {
-            Vector columnPt = points.next();
+    public boolean generate(EditSession context, Vector position) throws MaxChangedBlocksException {
+        int type = context.getBlock(position.add(0, -1, 0)).getType();
 
-            // Don't want to be in the ground
-            if (!context.getBlock(columnPt).isAir()) {
-                continue;
-            }
-            
-            // The gods don't want a pumpkin patch here
-            if (random.nextDouble() < 0.98) {
-                continue;
-            }
-
-            for (int y = columnPt.getBlockY(); y >= lowestY; --y) {
-                // Check if we hit the ground
-                int t = context.getBlock(columnPt.setY(y)).getType();
-                if (t == BlockID.GRASS || t == BlockID.DIRT) {
-                    makePumpkinPatch(columnPt.setY(y + 1));
-                    ++affected;
-                    break;
-                } else if (t != BlockID.AIR) { // Trees won't grow on this!
-                    break;
-                }
-            }
+        if (type == BlockID.GRASS || type == BlockID.DIRT) {
+            generatePatch(context, position);
+            return true;
         }
-
-        return null;
+        
+        return false;
     }
 
     /**
-     * Make a pumpkin patch at the given location.
+     * Make a fruit patch at the given location.
      * 
      * @param basePos position
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    private void makePumpkinPatch(Vector basePos) throws MaxChangedBlocksException {
+    private void generatePatch(EditSession context, Vector basePos) throws MaxChangedBlocksException {
         // BaseBlock logBlock = new BaseBlock(BlockID.LOG);
         BaseBlock leavesBlock = new BaseBlock(BlockID.LEAVES);
 
         // setBlock(basePos.subtract(0, 1, 0), logBlock);
         context.setBlockIfAir(basePos, leavesBlock);
 
-        makePumpkinPatchVine(basePos, basePos.add(0, 0, 1));
-        makePumpkinPatchVine(basePos, basePos.add(0, 0, -1));
-        makePumpkinPatchVine(basePos, basePos.add(1, 0, 0));
-        makePumpkinPatchVine(basePos, basePos.add(-1, 0, 0));
+        generateVine(context, basePos, basePos.add(0, 0, 1));
+        generateVine(context, basePos, basePos.add(0, 0, -1));
+        generateVine(context, basePos, basePos.add(1, 0, 0));
+        generateVine(context, basePos, basePos.add(-1, 0, 0));
     }
 
     /**
-     * Make the vine for a pumpkin patch.
+     * Make the vine for the patch.
      * 
      * @param basePos position to start at
      * @param pos current position
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    private void makePumpkinPatchVine(Vector basePos, Vector pos) throws MaxChangedBlocksException {
+    private void generateVine(EditSession context, Vector basePos, Vector pos) throws MaxChangedBlocksException {
         if (pos.distance(basePos) > 4) return;
         if (context.getBlockType(pos) != 0) return;
 
@@ -142,7 +107,7 @@ public class GenerateFruitPatches implements Operation, BlockChange {
         case 0:
             // Possibly make the vine
             if (random.nextBoolean())
-                makePumpkinPatchVine(basePos, pos.add(1, 0, 0));
+                generateVine(context, basePos, pos.add(1, 0, 0));
 
             // Possibly make the log
             if (random.nextBoolean())
@@ -156,7 +121,7 @@ public class GenerateFruitPatches implements Operation, BlockChange {
         case 1:
             // Possibly make the vine
             if (random.nextBoolean())
-                makePumpkinPatchVine(basePos, pos.add(0, 0, 1));
+                generateVine(context, basePos, pos.add(0, 0, 1));
 
             // Possibly make the log
             if (random.nextBoolean())
@@ -170,7 +135,7 @@ public class GenerateFruitPatches implements Operation, BlockChange {
         case 2:
             // Possibly make the vine
             if (random.nextBoolean())
-                makePumpkinPatchVine(basePos, pos.add(0, 0, -1));
+                generateVine(context, basePos, pos.add(0, 0, -1));
 
             // Possibly make the log
             if (random.nextBoolean())
@@ -184,7 +149,7 @@ public class GenerateFruitPatches implements Operation, BlockChange {
         case 3:
             // Possibly make the vine
             if (random.nextBoolean())
-                makePumpkinPatchVine(basePos, pos.add(-1, 0, 0));
+                generateVine(context, basePos, pos.add(-1, 0, 0));
 
             // Possibly make the log
             if (random.nextBoolean())
@@ -195,16 +160,6 @@ public class GenerateFruitPatches implements Operation, BlockChange {
             
             break;
         }
-    }
-
-    @Override
-    public void cancel() {
-        // Nothing to clean up
-    }
-
-    @Override
-    public int getBlocksChanged() {
-        return affected;
     }
 
 }

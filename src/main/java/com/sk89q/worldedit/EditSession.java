@@ -43,11 +43,11 @@ import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.masks.BlockMask;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.masks.MatchAllMask;
-import com.sk89q.worldedit.operations.GenerateFruitPatches;
 import com.sk89q.worldedit.operations.NaturalizeArea;
 import com.sk89q.worldedit.operations.OperationHelper;
 import com.sk89q.worldedit.operations.OverlayBlocks;
 import com.sk89q.worldedit.operations.ReplaceBlocks;
+import com.sk89q.worldedit.operations.ScatterStructures;
 import com.sk89q.worldedit.operations.FreezeArea;
 import com.sk89q.worldedit.operations.StackArea;
 import com.sk89q.worldedit.operations.ThawArea;
@@ -56,6 +56,7 @@ import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.structures.FruitPatch;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
@@ -1989,7 +1990,8 @@ public class EditSession {
         CylinderRegion region = new CylinderRegion(getWorld(), pos,
                 new Vector2D(radius, radius), pos.getBlockY() - 10, pos.getBlockY());
         Pattern fruit = new SingleBlockPattern(new BaseBlock(BlockID.PUMPKIN));
-        GenerateFruitPatches op = new GenerateFruitPatches(this, region, fruit);
+        FruitPatch structure = new FruitPatch(fruit);
+        ScatterStructures op = new ScatterStructures(this, region, structure);
         OperationHelper.completeLegacy(op);
         return op.getBlocksChanged();
     }
