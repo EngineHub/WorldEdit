@@ -46,6 +46,7 @@ import com.sk89q.worldedit.masks.MatchAllMask;
 import com.sk89q.worldedit.operations.NaturalizeArea;
 import com.sk89q.worldedit.operations.OperationHelper;
 import com.sk89q.worldedit.operations.ReplaceBlocks;
+import com.sk89q.worldedit.operations.SimulateSnow;
 import com.sk89q.worldedit.operations.StackArea;
 import com.sk89q.worldedit.operations.ThawArea;
 import com.sk89q.worldedit.patterns.Pattern;
@@ -1997,59 +1998,11 @@ public class EditSession {
      */
     public int simulateSnow(Vector pos, double radius)
             throws MaxChangedBlocksException {
-        int affected = 0;
-        double radiusSq = radius * radius;
-
-        int ox = pos.getBlockX();
-        int oy = pos.getBlockY();
-        int oz = pos.getBlockZ();
-
-        BaseBlock ice = new BaseBlock(BlockID.ICE);
-        BaseBlock snow = new BaseBlock(BlockID.SNOW);
-
-        int ceilRadius = (int) Math.ceil(radius);
-        for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
-            for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
-                if ((new Vector(x, oy, z)).distanceSq(pos) > radiusSq) {
-                    continue;
-                }
-
-                for (int y = world.getMaxY(); y >= 1; --y) {
-                    Vector pt = new Vector(x, y, z);
-                    int id = getBlockType(pt);
-
-                    if (id == BlockID.AIR) {
-                        continue;
-                    }
-
-                    // Ice!
-                    if (id == BlockID.WATER || id == BlockID.STATIONARY_WATER) {
-                        if (setBlock(pt, ice)) {
-                            ++affected;
-                        }
-                        break;
-                    }
-
-                    // Snow should not cover these blocks
-                    if (BlockType.canPassThrough(id)) {
-                        break;
-                    }
-
-                    // Too high?
-                    if (y == world.getMaxY()) {
-                        break;
-                    }
-
-                    // add snow cover
-                    if (setBlock(pt.add(0, 1, 0), snow)) {
-                        ++affected;
-                    }
-                    break;
-                }
-            }
-        }
-
-        return affected;
+        CylinderRegion region = new CylinderRegion(
+                getWorld(), pos, new Vector2D(radius, radius), 1, world.getMaxY());
+        SimulateSnow op = new SimulateSnow(this, region);
+        OperationHelper.completeLegacy(op);
+        return op.getBlocksChanged();
     }
 
     /**
