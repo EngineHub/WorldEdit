@@ -993,73 +993,41 @@ public class EditSession {
     }
 
     /**
-     * Remove blocks above.
+     * Remove blocks above the position.
      *
-     * @param pos
-     * @param size
-     * @param height
+     * @param pos position to start at
+     * @param size radius of the square area
+     * @param height height to remove
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks were changed
      */
-    public int removeAbove(Vector pos, int size, int height)
-            throws MaxChangedBlocksException {
+    public int removeAbove(Vector pos, int size, int height) throws MaxChangedBlocksException {
         int maxY = Math.min(world.getMaxY(), pos.getBlockY() + height - 1);
-        --size;
-        int affected = 0;
-
-        int oX = pos.getBlockX();
-        int oY = pos.getBlockY();
-        int oZ = pos.getBlockZ();
-
-        for (int x = oX - size; x <= oX + size; ++x) {
-            for (int z = oZ - size; z <= oZ + size; ++z) {
-                for (int y = oY; y <= maxY; ++y) {
-                    Vector pt = new Vector(x, y, z);
-
-                    if (getBlockType(pt) != BlockID.AIR) {
-                        setBlock(pt, new BaseBlock(BlockID.AIR));
-                        ++affected;
-                    }
-                }
-            }
-        }
-
-        return affected;
+        --size; // Legacy
+        Region region = new CuboidRegion(pos.add(-size, 0, -size), pos.add(size, 0, size).setY(maxY));
+        Pattern pattern = new SingleBlockPattern(new BaseBlock(0));
+        ReplaceBlocks op = new ReplaceBlocks(this, region, pattern);
+        OperationHelper.completeLegacy(op);
+        return op.getBlocksChanged();
     }
 
     /**
-     * Remove blocks below.
+     * Remove blocks below the position.
      *
-     * @param pos
-     * @param size
-     * @param height
+     * @param pos position to start at
+     * @param size radius of the square area
+     * @param height height to remove
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks were changed
      */
-    public int removeBelow(Vector pos, int size, int height)
-            throws MaxChangedBlocksException {
+    public int removeBelow(Vector pos, int size, int height) throws MaxChangedBlocksException {
         int minY = Math.max(0, pos.getBlockY() - height);
-        --size;
-        int affected = 0;
-
-        int oX = pos.getBlockX();
-        int oY = pos.getBlockY();
-        int oZ = pos.getBlockZ();
-
-        for (int x = oX - size; x <= oX + size; ++x) {
-            for (int z = oZ - size; z <= oZ + size; ++z) {
-                for (int y = oY; y >= minY; --y) {
-                    Vector pt = new Vector(x, y, z);
-
-                    if (getBlockType(pt) != BlockID.AIR) {
-                        setBlock(pt, new BaseBlock(BlockID.AIR));
-                        ++affected;
-                    }
-                }
-            }
-        }
-
-        return affected;
+        --size; // Legacy
+        Region region = new CuboidRegion(pos.add(-size, 0, -size).setY(minY), pos.add(size, 0, size));
+        Pattern pattern = new SingleBlockPattern(new BaseBlock(0));
+        ReplaceBlocks op = new ReplaceBlocks(this, region, pattern);
+        OperationHelper.completeLegacy(op);
+        return op.getBlocksChanged();
     }
 
     /**
