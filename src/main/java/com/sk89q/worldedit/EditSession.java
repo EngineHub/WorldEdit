@@ -43,6 +43,7 @@ import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.masks.BlockMask;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.masks.MatchAllMask;
+import com.sk89q.worldedit.operations.GenerateFruitPatches;
 import com.sk89q.worldedit.operations.NaturalizeArea;
 import com.sk89q.worldedit.operations.OperationHelper;
 import com.sk89q.worldedit.operations.ReplaceBlocks;
@@ -2061,97 +2062,7 @@ public class EditSession {
 
         return affected;
     }
-
-    /**
-     * Makes a pumpkin patch.
-     *
-     * @param basePos
-     */
-    private void makePumpkinPatch(Vector basePos)
-            throws MaxChangedBlocksException {
-        // BaseBlock logBlock = new BaseBlock(BlockID.LOG);
-        BaseBlock leavesBlock = new BaseBlock(BlockID.LEAVES);
-
-        // setBlock(basePos.subtract(0, 1, 0), logBlock);
-        setBlockIfAir(basePos, leavesBlock);
-
-        makePumpkinPatchVine(basePos, basePos.add(0, 0, 1));
-        makePumpkinPatchVine(basePos, basePos.add(0, 0, -1));
-        makePumpkinPatchVine(basePos, basePos.add(1, 0, 0));
-        makePumpkinPatchVine(basePos, basePos.add(-1, 0, 0));
-    }
-
-    /**
-     * Make a pumpkin patch fine.
-     *
-     * @param basePos
-     * @param pos
-     */
-    private void makePumpkinPatchVine(Vector basePos, Vector pos)
-            throws MaxChangedBlocksException {
-        if (pos.distance(basePos) > 4) return;
-        if (getBlockType(pos) != 0) return;
-
-        for (int i = -1; i > -3; --i) {
-            Vector testPos = pos.add(0, i, 0);
-            if (getBlockType(testPos) == BlockID.AIR) {
-                pos = testPos;
-            } else {
-                break;
-            }
-        }
-
-        setBlockIfAir(pos, new BaseBlock(BlockID.LEAVES));
-
-        int t = prng.nextInt(4);
-        int h = prng.nextInt(3) - 1;
-
-        BaseBlock log = new BaseBlock(BlockID.LOG);
-        BaseBlock pumpkin = new BaseBlock(BlockID.PUMPKIN);
-
-        switch (t) {
-        case 0:
-            if (prng.nextBoolean()) {
-                makePumpkinPatchVine(basePos, pos.add(1, 0, 0));
-            }
-            if (prng.nextBoolean()) {
-                setBlockIfAir(pos.add(1, h, -1), log);
-            }
-            setBlockIfAir(pos.add(0, 0, -1), pumpkin);
-            break;
-
-        case 1:
-            if (prng.nextBoolean()) {
-                makePumpkinPatchVine(basePos, pos.add(0, 0, 1));
-            }
-            if (prng.nextBoolean()) {
-                setBlockIfAir(pos.add(1, h, 0), log);
-            }
-            setBlockIfAir(pos.add(1, 0, 1), pumpkin);
-            break;
-
-        case 2:
-            if (prng.nextBoolean()) {
-                makePumpkinPatchVine(basePos, pos.add(0, 0, -1));
-            }
-            if (prng.nextBoolean()) {
-                setBlockIfAir(pos.add(-1, h, 0), log);
-            }
-            setBlockIfAir(pos.add(-1, 0, 1), pumpkin);
-            break;
-
-        case 3:
-            if (prng.nextBoolean()) {
-                makePumpkinPatchVine(basePos, pos.add(-1, 0, 0));
-            }
-            if (prng.nextBoolean()) {
-                setBlockIfAir(pos.add(-1, h, -1), log);
-            }
-            setBlockIfAir(pos.add(-1, 0, -1), pumpkin);
-            break;
-        }
-    }
-
+    
     /**
      * Makes pumpkin patches.
      *
@@ -2160,38 +2071,13 @@ public class EditSession {
      * @return number of trees created
      * @throws MaxChangedBlocksException
      */
-    public int makePumpkinPatches(Vector basePos, int size)
-            throws MaxChangedBlocksException {
-        int affected = 0;
-
-        for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX()
-                + size; ++x) {
-            for (int z = basePos.getBlockZ() - size; z <= basePos.getBlockZ()
-                    + size; ++z) {
-                // Don't want to be in the ground
-                if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir()) {
-                    continue;
-                }
-                // The gods don't want a pumpkin patch here
-                if (Math.random() < 0.98) {
-                    continue;
-                }
-
-                for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; --y) {
-                    // Check if we hit the ground
-                    int t = getBlock(new Vector(x, y, z)).getType();
-                    if (t == BlockID.GRASS || t == BlockID.DIRT) {
-                        makePumpkinPatch(new Vector(x, y + 1, z));
-                        ++affected;
-                        break;
-                    } else if (t != BlockID.AIR) { // Trees won't grow on this!
-                        break;
-                    }
-                }
-            }
-        }
-
-        return affected;
+    public int makePumpkinPatches(Vector pos, int radius) throws MaxChangedBlocksException {
+        CylinderRegion region = new CylinderRegion(getWorld(), pos,
+                new Vector2D(radius, radius), pos.getBlockY() - 10, pos.getBlockY());
+        Pattern fruit = new SingleBlockPattern(new BaseBlock(BlockID.PUMPKIN));
+        GenerateFruitPatches op = new GenerateFruitPatches(this, region, fruit);
+        OperationHelper.completeLegacy(op);
+        return op.getBlocksChanged();
     }
 
     /**
