@@ -47,9 +47,11 @@ import com.sk89q.worldedit.operations.NaturalizeArea;
 import com.sk89q.worldedit.operations.OperationHelper;
 import com.sk89q.worldedit.operations.ReplaceBlocks;
 import com.sk89q.worldedit.operations.StackArea;
+import com.sk89q.worldedit.operations.ThawArea;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 
@@ -1970,62 +1972,19 @@ public class EditSession {
     }
 
     /**
-     * Thaw.
+     * Thaw a region, removing snow from the top layers.
      *
-     * @param pos
-     * @param radius
+     * @param pos center position
+     * @param radius radius
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks were changed
      */
-    public int thaw(Vector pos, double radius)
-            throws MaxChangedBlocksException {
-        int affected = 0;
-        double radiusSq = radius * radius;
-
-        int ox = pos.getBlockX();
-        int oy = pos.getBlockY();
-        int oz = pos.getBlockZ();
-
-        BaseBlock air = new BaseBlock(0);
-        BaseBlock water = new BaseBlock(BlockID.STATIONARY_WATER);
-
-        int ceilRadius = (int) Math.ceil(radius);
-        for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
-            for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
-                if ((new Vector(x, oy, z)).distanceSq(pos) > radiusSq) {
-                    continue;
-                }
-
-                for (int y = world.getMaxY(); y >= 1; --y) {
-                    Vector pt = new Vector(x, y, z);
-                    int id = getBlockType(pt);
-
-                    switch (id) {
-                    case BlockID.ICE:
-                        if (setBlock(pt, water)) {
-                            ++affected;
-                        }
-                        break;
-
-                    case BlockID.SNOW:
-                        if (setBlock(pt, air)) {
-                            ++affected;
-                        }
-                        break;
-
-                    case BlockID.AIR:
-                        continue;
-
-                    default:
-                        break;
-                    }
-
-                    break;
-                }
-            }
-        }
-
-        return affected;
+    public int thaw(Vector pos, double radius) throws MaxChangedBlocksException {
+        CylinderRegion region = new CylinderRegion(
+                getWorld(), pos, new Vector2D(radius, radius), 1, world.getMaxY());
+        ThawArea op = new ThawArea(this, region);
+        OperationHelper.completeLegacy(op);
+        return op.getBlocksChanged();
     }
 
     /**
