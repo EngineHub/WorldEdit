@@ -39,10 +39,12 @@ public interface Operation {
     Operation resume(Execution opt) throws WorldEditException;
     
     /**
-     * Abort the current task. After the this method is called, {@link #resume(Execution)} should
-     * not be called at any point in the future. This method should not be called after
-     * successful completion of the operation. This method must be called if
-     * the operation is interrupted before completion.
+     * Abort the current task. After the this method is called, 
+     * {@link #resume(Execution)} should not be called at any point in the future. This
+     * method should not be called after successful completion of the operation. This
+     * method must be called if the operation is interrupted before completion. When an
+     * operation is cancelled, it should stop where it has progressed and should
+     * generally not undo previous actions.
      */
     void cancel();
 
