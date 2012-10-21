@@ -57,6 +57,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.structures.FruitPatch;
+import com.sk89q.worldedit.structures.TreeGeneratorProxy;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
@@ -1981,10 +1982,10 @@ public class EditSession {
     /**
      * Makes pumpkin patches.
      *
-     * @param basePos
-     * @param size
+     * @param pos center position
+     * @param radius radius of area
      * @return number of trees created
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks were changed
      */
     public int makePumpkinPatches(Vector pos, int radius) throws MaxChangedBlocksException {
         CylinderRegion region = new CylinderRegion(getWorld(), pos,
@@ -1992,7 +1993,7 @@ public class EditSession {
         Pattern fruit = new SingleBlockPattern(new BaseBlock(BlockID.PUMPKIN));
         FruitPatch structure = new FruitPatch(fruit);
         ScatterStructures op = new ScatterStructures(this, region, structure);
-        op.setDensity(0.98);
+        op.setDensity(1 - 0.98);
         OperationHelper.completeLegacy(op);
         return op.getChangeCount();
     }
@@ -2000,45 +2001,22 @@ public class EditSession {
     /**
      * Makes a forest.
      *
-     * @param basePos
-     * @param size
-     * @param density
-     * @param treeGenerator
+     * @param pos center position
+     * @param radius radius of area
+     * @param density density of the forest as a number between 0 and 1
+     * @param treeGenerator the tree generator
      * @return number of trees created
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks were changed
      */
-    public int makeForest(Vector basePos, int size, double density,
+    public int makeForest(Vector pos, int radius, double density,
             TreeGenerator treeGenerator) throws MaxChangedBlocksException {
-        int affected = 0;
-
-        for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX()
-                + size; ++x) {
-            for (int z = basePos.getBlockZ() - size; z <= basePos.getBlockZ()
-                    + size; ++z) {
-                // Don't want to be in the ground
-                if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir()) {
-                    continue;
-                }
-                // The gods don't want a tree here
-                if (Math.random() >= density) {
-                    continue;
-                } // def 0.05
-
-                for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; --y) {
-                    // Check if we hit the ground
-                    int t = getBlock(new Vector(x, y, z)).getType();
-                    if (t == BlockID.GRASS || t == BlockID.DIRT) {
-                        treeGenerator.generate(this, new Vector(x, y + 1, z));
-                        ++affected;
-                        break;
-                    } else if (t != BlockID.AIR) { // Trees won't grow on this!
-                        break;
-                    }
-                }
-            }
-        }
-
-        return affected;
+        CylinderRegion region = new CylinderRegion(getWorld(), pos,
+                new Vector2D(radius, radius), pos.getBlockY() - 10, pos.getBlockY());
+        TreeGeneratorProxy structure = new TreeGeneratorProxy(treeGenerator);
+        ScatterStructures op = new ScatterStructures(this, region, structure);
+        op.setDensity(density);
+        OperationHelper.completeLegacy(op);
+        return op.getChangeCount();
     }
 
     /**
