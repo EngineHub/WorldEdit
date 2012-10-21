@@ -28,9 +28,9 @@ import com.sk89q.worldedit.WorldEditException;
 public interface Operation {
     
     /**
-     * Complete the next step. If this method returns true, then the method may be
-     * called again in the future, or possibly never. If this method returns false,
-     * then this method should not be called again.
+     * Complete the next step. If this method returns another operation, then this
+     * method is to be called for the given operation, or possibly never.
+     * If this method returns null, then the operation is complete.
      * 
      * @param opt hints about the execution
      * @return another operation to run that operation again, or null to stop
