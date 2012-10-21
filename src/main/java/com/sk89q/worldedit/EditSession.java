@@ -46,6 +46,7 @@ import com.sk89q.worldedit.masks.MatchAllMask;
 import com.sk89q.worldedit.operations.GenerateFruitPatches;
 import com.sk89q.worldedit.operations.NaturalizeArea;
 import com.sk89q.worldedit.operations.OperationHelper;
+import com.sk89q.worldedit.operations.OverlayBlocks;
 import com.sk89q.worldedit.operations.ReplaceBlocks;
 import com.sk89q.worldedit.operations.SimulateSnow;
 import com.sk89q.worldedit.operations.StackArea;
@@ -1386,36 +1387,7 @@ public class EditSession {
      */
     public int overlayCuboidBlocks(Region region, BaseBlock block)
             throws MaxChangedBlocksException {
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
-
-        int upperY = Math.min(world.getMaxY(), max.getBlockY() + 1);
-        int lowerY = Math.max(0, min.getBlockY() - 1);
-
-        int affected = 0;
-
-        int minX = min.getBlockX();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxZ = max.getBlockZ();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                for (int y = upperY; y >= lowerY; --y) {
-                    Vector above = new Vector(x, y + 1, z);
-
-                    if (y + 1 <= world.getMaxY() && !getBlock(new Vector(x, y, z)).isAir()
-                            && getBlock(above).isAir()) {
-                        if (setBlock(above, block)) {
-                            ++affected;
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-
-        return affected;
+        return overlayCuboidBlocks(region, new SingleBlockPattern(block));
     }
 
     /**
@@ -1428,37 +1400,11 @@ public class EditSession {
      */
     public int overlayCuboidBlocks(Region region, Pattern pattern)
             throws MaxChangedBlocksException {
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
-
-        int upperY = Math.min(world.getMaxY(), max.getBlockY() + 1);
-        int lowerY = Math.max(0, min.getBlockY() - 1);
-
-        int affected = 0;
-
-        int minX = min.getBlockX();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxZ = max.getBlockZ();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                for (int y = upperY; y >= lowerY; --y) {
-                    Vector above = new Vector(x, y + 1, z);
-
-                    if (y + 1 <= world.getMaxY() && !getBlock(new Vector(x, y, z)).isAir()
-                            && getBlock(above).isAir()) {
-                        if (setBlock(above, pattern.next(above))) {
-                            ++affected;
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-
-        return affected;
+        OverlayBlocks op = new OverlayBlocks(this, region, pattern);
+        OperationHelper.completeLegacy(op);
+        return op.getBlocksChanged();
     }
+
 
     /**
      * Turns the first 3 layers into dirt/grass and the bottom layers
