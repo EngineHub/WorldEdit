@@ -25,10 +25,12 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 
+/**
+ * An abstract implementation of {@link Region} with some helper methods for 
+ * implementations.
+ */
 public abstract class AbstractRegion implements Region {
-    /**
-     * Stores the world.
-     */
+    
     protected LocalWorld world;
 
     public AbstractRegion(LocalWorld world) {
@@ -40,38 +42,45 @@ public abstract class AbstractRegion implements Region {
         return getMinimumPoint().add(getMaximumPoint()).divide(2);
     }
 
-    /**
-     * Get the iterator.
-     *
-     * @return iterator of points inside the region
-     */
+    @Override
     public Iterator<BlockVector> iterator() {
         return new RegionIterator(this);
     }
 
+    @Override
+    public Iterator<BlockVector> columnIterator() {
+        return new RegionIterator(this);
+    }
+
+    @Override
     public LocalWorld getWorld() {
         return world;
     }
 
+    @Override
     public void setWorld(LocalWorld world) {
         this.world = world;
     }
 
+    @Override
     @Deprecated
     public void expand(Vector change) throws RegionOperationException {
         expand(new Vector[] { change });
     }
 
+    @Override
     @Deprecated
     public void contract(Vector change) throws RegionOperationException {
         contract(new Vector[] { change });
     }
 
+    @Override
     public void shift(Vector change) throws RegionOperationException {
         expand(change);
         contract(change);
     }
 
+    @Override
     public AbstractRegion clone() {
         try {
             return (AbstractRegion) super.clone();
@@ -79,4 +88,5 @@ public abstract class AbstractRegion implements Region {
             return null;
         }
     }
+    
 }
