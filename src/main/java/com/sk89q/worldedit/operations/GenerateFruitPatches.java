@@ -25,6 +25,7 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.patterns.Pattern;
@@ -33,7 +34,7 @@ import com.sk89q.worldedit.regions.Region;
 /**
  * Generate fruit patches that have leaves around them.
  */
-public class GenerateFruitPatches extends AbstractOperation implements BlockChange {
+public class GenerateFruitPatches implements Operation, BlockChange {
 
     private static final Random random = new Random();
     
@@ -57,7 +58,7 @@ public class GenerateFruitPatches extends AbstractOperation implements BlockChan
     }
 
     @Override
-    protected Operation resume() throws MaxChangedBlocksException {
+    public Operation resume(Execution opt) throws WorldEditException {
         Iterator<BlockVector> points = region.columnIterator();
         int lowestY = region.getMinimumPoint().getBlockY();
         

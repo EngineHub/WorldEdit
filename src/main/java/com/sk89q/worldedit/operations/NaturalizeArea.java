@@ -19,8 +19,8 @@
 package com.sk89q.worldedit.operations;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.regions.Region;
@@ -33,7 +33,7 @@ import com.sk89q.worldedit.regions.Region;
  * <p>
  * At the moment, this operation assumes the region is a cuboid.
  */
-public class NaturalizeArea extends AbstractOperation implements BlockChange {
+public class NaturalizeArea implements Operation, BlockChange {
     
     private final EditSession context;
     private final Region region;
@@ -52,7 +52,7 @@ public class NaturalizeArea extends AbstractOperation implements BlockChange {
     }
 
     @Override
-    protected Operation resume() throws MaxChangedBlocksException {
+    public Operation resume(Execution opt) throws WorldEditException {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
 

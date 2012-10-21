@@ -19,8 +19,8 @@
 package com.sk89q.worldedit.operations;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -30,7 +30,7 @@ import com.sk89q.worldedit.regions.Region;
  * Replace all blocks within a given {@link Region} with a {@link Pattern}. A 
  * {@link Mask} can optionally be specified.
  */
-public class ReplaceBlocks extends AbstractOperation implements BlockChange {
+public class ReplaceBlocks implements Operation, BlockChange {
     
     private final EditSession editSession;
     private final Region region;
@@ -69,7 +69,7 @@ public class ReplaceBlocks extends AbstractOperation implements BlockChange {
     }
 
     @Override
-    protected Operation resume() throws MaxChangedBlocksException {
+    public Operation resume(Execution opt) throws WorldEditException {
         if (region instanceof CuboidRegion) { // Doing this for speed
             Vector min = region.getMinimumPoint();
             Vector max = region.getMaximumPoint();

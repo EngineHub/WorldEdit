@@ -22,8 +22,8 @@ import java.util.Iterator;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.regions.Region;
@@ -31,7 +31,7 @@ import com.sk89q.worldedit.regions.Region;
 /**
  * Remove snow from a given area. Only skylight-exposed snow is removed.
  */
-public class ThawArea extends AbstractOperation implements BlockChange {
+public class ThawArea implements Operation, BlockChange {
     
     private final EditSession context;
     private final Region region;
@@ -50,7 +50,7 @@ public class ThawArea extends AbstractOperation implements BlockChange {
     }
 
     @Override
-    protected Operation resume() throws MaxChangedBlocksException {
+    public Operation resume(Execution opt) throws WorldEditException {
         BaseBlock air = new BaseBlock(0);
         BaseBlock water = new BaseBlock(BlockID.STATIONARY_WATER);
 

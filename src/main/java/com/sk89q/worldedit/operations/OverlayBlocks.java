@@ -22,9 +22,8 @@ import java.util.Iterator;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;
 
@@ -32,7 +31,7 @@ import com.sk89q.worldedit.regions.Region;
  * Places blocks from a {@link Pattern} on the top available space
  * in each column of a {@link Region}.
  */
-public class OverlayBlocks extends AbstractOperation implements BlockChange {
+public class OverlayBlocks implements Operation, BlockChange {
 
     private final EditSession context;
     private final Region region;
@@ -54,10 +53,9 @@ public class OverlayBlocks extends AbstractOperation implements BlockChange {
     }
 
     @Override
-    protected Operation resume() throws MaxChangedBlocksException {
+    public Operation resume(Execution opt) throws WorldEditException {
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
-        LocalWorld world = context.getWorld();
 
         Iterator<BlockVector> points = region.columnIterator();
         int maxY = Math.min(context.getWorld().getMaxY(), max.getBlockY() + 1);
