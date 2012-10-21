@@ -33,13 +33,18 @@ import com.sk89q.worldedit.regions.Region;
  * <p>
  * At the moment, this operation assumes the region is a cuboid.
  */
-public class NaturalizeArea implements Operation, BlockChange {
-    
+public class NaturalizeArea extends ColumnVisitor implements BlockChange {
+
+    private final BaseBlock grass = new BaseBlock(BlockID.GRASS);
+    private final BaseBlock dirt = new BaseBlock(BlockID.DIRT);
+    private final BaseBlock stone = new BaseBlock(BlockID.STONE);
+
     private final EditSession context;
-    private final Region region;
-    
+    private final int minY;
+    private final int maxY;
+
     private int affected = 0;
-    
+
     /**
      * Create a naturalization operation.
      * 
@@ -47,71 +52,55 @@ public class NaturalizeArea implements Operation, BlockChange {
      * @param region area to apply changes to
      */
     public NaturalizeArea(EditSession context, Region region) {
+        super(region);
+
         this.context = context;
-        this.region = region;
+        maxY = Math.min(context.getWorld().getMaxY(), region.getMaximumPoint().getBlockY() + 1);
+        minY = Math.max(0, region.getMinimumPoint().getBlockY() - 1);
     }
 
     @Override
-    public Operation resume(Execution opt) throws WorldEditException {
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
+    public void visitColumn(Execution opt, Vector columnPt) throws WorldEditException {
 
-        int upperY = Math.min(context.getWorld().getMaxY(), max.getBlockY() + 1);
-        int lowerY = Math.max(0, min.getBlockY() - 1);
+        int level = -1;
 
-        int minX = min.getBlockX();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxZ = max.getBlockZ();
+        for (int y = maxY; y >= minY; --y) {
+            Vector pt = columnPt.setY(y);
 
-        BaseBlock grass = new BaseBlock(BlockID.GRASS);
-        BaseBlock dirt = new BaseBlock(BlockID.DIRT);
-        BaseBlock stone = new BaseBlock(BlockID.STONE);
+            int blockType = context.getBlockType(pt);
 
-        for (int x = minX; x <= maxX; ++x) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                int level = -1;
+            boolean isTransformable =
+                    blockType == BlockID.GRASS
+                    || blockType == BlockID.DIRT
+                    || blockType == BlockID.STONE;
 
-                for (int y = upperY; y >= lowerY; --y) {
-                    Vector pt = new Vector(x, y, z);
-                    //Vector above = new Vector(x, y + 1, z);
-                    int blockType = context.getBlockType(pt);
+            // Still searching for the top block
+            if (level == -1) {
+                if (!isTransformable) {
+                    continue; // Not transforming this column yet
+                }
 
-                    boolean isTransformable =
-                            blockType == BlockID.GRASS
-                            || blockType == BlockID.DIRT
-                            || blockType == BlockID.STONE;
+                level = 0;
+            }
 
-                    // Still searching for the top block
-                    if (level == -1) {
-                        if (!isTransformable) {
-                            continue; // Not transforming this column yet
-                        }
-
-                        level = 0;
-                    }
-
-                    if (level >= 0) {
-                        if (isTransformable) {
-                            if (level == 0) {
-                                context.setBlock(pt, grass);
-                                affected++;
-                            } else if (level <= 2) {
-                                context.setBlock(pt, dirt);
-                                affected++;
-                            } else {
-                                context.setBlock(pt, stone);
-                                affected++;
-                            }
-                        }
-
-                        level++;
+            if (level >= 0) {
+                if (isTransformable) {
+                    if (level == 0) {
+                        context.setBlock(pt, grass);
+                        affected++;
+                    } else if (level <= 2) {
+                        context.setBlock(pt, dirt);
+                        affected++;
+                    } else {
+                        context.setBlock(pt, stone);
+                        affected++;
                     }
                 }
+
+                level++;
             }
         }
 
-        return null;
     }
 
     @Override

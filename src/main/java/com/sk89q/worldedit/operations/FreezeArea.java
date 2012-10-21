@@ -18,9 +18,6 @@
 
 package com.sk89q.worldedit.operations;
 
-import java.util.Iterator;
-
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
@@ -30,66 +27,60 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.regions.Region;
 
 /**
- * Add snow to a given area. Simulates normal Minecraft precipitation.
+ * Freeze a given area by overlaying snow and turning water to ice.
  */
-public class SimulateSnow implements Operation, BlockChange {
-    
+public class FreezeArea extends ColumnVisitor implements BlockChange {
+
+    private final BaseBlock ice = new BaseBlock(BlockID.ICE);
+    private final BaseBlock snow = new BaseBlock(BlockID.SNOW);
+
     private final EditSession context;
-    private final Region region;
+    private final int minY;
+    private final int maxY;
 
     private int affected = 0;
-    
+
     /**
      * Create a snowfall operation.
      * 
      * @param context to apply changes to
      * @param region area to apply changes to
      */
-    public SimulateSnow(EditSession context, Region region) {
+    public FreezeArea(EditSession context, Region region) {
+        super(region);
+
         this.context = context;
-        this.region = region;
+
+        maxY = region.getMaximumPoint().getBlockY();
+        minY = region.getMinimumPoint().getBlockY();
     }
 
     @Override
-    public Operation resume(Execution opt) throws WorldEditException {
-        BaseBlock ice = new BaseBlock(BlockID.ICE);
-        BaseBlock snow = new BaseBlock(BlockID.SNOW);
-
-        Iterator<BlockVector> points = region.columnIterator();
-        int maxY = region.getMaximumPoint().getBlockY();
-        int minY = region.getMinimumPoint().getBlockY();
-        
+    public void visitColumn(Execution opt, Vector columnPt) throws WorldEditException {
         outer:
-        while (points.hasNext()) {
-            Vector columnPt = points.next();
+        for (int y = maxY; y >= minY; --y) {
+            Vector pt = columnPt.setY(y);
+            int id = context.getBlockType(pt);
 
-            for (int y = maxY; y >= minY; --y) {
-                Vector pt = columnPt.setY(y);
-                int id = context.getBlockType(pt);
-
-                switch (id) {
-                case BlockID.STATIONARY_WATER:
-                    if (context.setBlock(pt, ice)) {
-                        ++affected;
-                    }
-                    break outer;
-
-                case BlockID.AIR:
-                    continue;
-
-                default:
-                    // can't set snow on top of nonsolid blocks
-                    if (!BlockType.canPassThrough(id) &&
-                            context.setBlock(pt.setY(y + 1), snow)) {
-                        ++affected;
-                    }
-                    break outer;
+            switch (id) {
+            case BlockID.STATIONARY_WATER:
+                if (context.setBlock(pt, ice)) {
+                    ++affected;
                 }
-            }
-            break;
-        }
+                break outer;
 
-        return null;
+            case BlockID.AIR:
+                continue;
+
+            default:
+                // can't set snow on top of nonsolid blocks
+                if (!BlockType.canPassThrough(id) &&
+                        context.setBlock(pt.setY(y + 1), snow)) {
+                    ++affected;
+                }
+                break outer;
+            }
+        }
     }
 
     @Override

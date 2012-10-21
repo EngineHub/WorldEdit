@@ -26,7 +26,8 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.regions.Region;
 
 /**
- * Remove snow from a given area. Only skylight-exposed snow is removed.
+ * Remove snow and ice from a given area. Only the topmost non-air blocks in the
+ * region are checked, so a region with a "roof" will be unaffected.
  */
 public class ThawArea extends ColumnVisitor implements BlockChange {
 

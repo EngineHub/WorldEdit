@@ -18,9 +18,6 @@
 
 package com.sk89q.worldedit.operations;
 
-import java.util.Iterator;
-
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
@@ -31,10 +28,12 @@ import com.sk89q.worldedit.regions.Region;
  * Places blocks from a {@link Pattern} on the top available space
  * in each column of a {@link Region}.
  */
-public class OverlayBlocks implements Operation, BlockChange {
+public class OverlayBlocks extends ColumnVisitor implements BlockChange {
 
     private final EditSession context;
-    private final Region region;
+    private final int minY;
+    private final int maxY;
+
     private final Pattern pattern;
 
     private int affected = 0;
@@ -47,37 +46,33 @@ public class OverlayBlocks implements Operation, BlockChange {
      * @param pattern pattern to set
      */
     public OverlayBlocks(EditSession context, Region region, Pattern pattern) {
+        super(region);
+
         this.context = context;
-        this.region = region;
         this.pattern = pattern;
+
+        maxY = Math.min(context.getWorld().getMaxY(), region.getMaximumPoint().getBlockY() + 1);
+        minY = Math.max(0, region.getMinimumPoint().getBlockY() - 1);
     }
 
     @Override
-    public Operation resume(Execution opt) throws WorldEditException {
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
+    public void visitColumn(Execution opt, Vector columnPt) throws WorldEditException {
 
-        Iterator<BlockVector> points = region.columnIterator();
-        int maxY = Math.min(context.getWorld().getMaxY(), max.getBlockY() + 1);
-        int minY = Math.max(0, min.getBlockY() - 1);
+        for (int y = maxY - 1; y >= minY; --y) {
+            Vector pt = columnPt.setY(y);
 
-        while (points.hasNext()) {
-            Vector columnPt = points.next();
-
-            for (int y = maxY - 1; y >= minY; --y) {
-                Vector pt = columnPt.setY(y);
-                if (!context.getBlock(pt).isAir() &&
-                        context.getBlock(pt.setY(y + 1)).isAir()) {
+            if (!context.getBlock(pt).isAir()) {
+                // if it's at the top of the map, the (non-existant) block
+                // above will always be "air", so don't attempt to check
+                if (y == maxY || context.getBlock(pt.setY(y + 1)).isAir()) {
                     if (context.setBlock(pt, pattern.next(pt))) {
                         ++affected;
                         break;
                     }
                 }
             }
-            break;
         }
 
-        return null;
     }
 
     @Override

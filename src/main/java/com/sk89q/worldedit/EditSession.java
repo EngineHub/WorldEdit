@@ -48,7 +48,7 @@ import com.sk89q.worldedit.operations.NaturalizeArea;
 import com.sk89q.worldedit.operations.OperationHelper;
 import com.sk89q.worldedit.operations.OverlayBlocks;
 import com.sk89q.worldedit.operations.ReplaceBlocks;
-import com.sk89q.worldedit.operations.SimulateSnow;
+import com.sk89q.worldedit.operations.FreezeArea;
 import com.sk89q.worldedit.operations.StackArea;
 import com.sk89q.worldedit.operations.ThawArea;
 import com.sk89q.worldedit.patterns.Pattern;
@@ -1915,7 +1915,7 @@ public class EditSession {
             throws MaxChangedBlocksException {
         CylinderRegion region = new CylinderRegion(
                 getWorld(), pos, new Vector2D(radius, radius), 1, world.getMaxY());
-        SimulateSnow op = new SimulateSnow(this, region);
+        FreezeArea op = new FreezeArea(this, region);
         OperationHelper.completeLegacy(op);
         return op.getBlocksChanged();
     }
