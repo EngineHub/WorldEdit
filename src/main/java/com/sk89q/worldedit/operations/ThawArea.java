@@ -57,7 +57,8 @@ public class ThawArea extends AbstractOperation implements BlockChange {
         Iterator<BlockVector> points = region.columnIterator();
         int maxY = region.getMaximumPoint().getBlockY();
         int minY = region.getMinimumPoint().getBlockY();
-        
+
+        outer:
         while (points.hasNext()) {
             Vector columnPt = points.next();
 
@@ -70,22 +71,20 @@ public class ThawArea extends AbstractOperation implements BlockChange {
                     if (context.setBlock(pt, water)) {
                         ++affected;
                     }
-                    break;
+                    break outer;
 
                 case BlockID.SNOW:
                     if (context.setBlock(pt, air)) {
                         ++affected;
                     }
-                    break;
+                    break outer;
 
                 case BlockID.AIR:
                     continue;
 
                 default:
-                    break;
+                    break outer;
                 }
-
-                break;
             }
         }
 

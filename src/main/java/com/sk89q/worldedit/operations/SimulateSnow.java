@@ -59,6 +59,7 @@ public class SimulateSnow extends AbstractOperation implements BlockChange {
         int maxY = region.getMaximumPoint().getBlockY();
         int minY = region.getMinimumPoint().getBlockY();
         
+        outer:
         while (points.hasNext()) {
             Vector columnPt = points.next();
 
@@ -71,7 +72,7 @@ public class SimulateSnow extends AbstractOperation implements BlockChange {
                     if (context.setBlock(pt, ice)) {
                         ++affected;
                     }
-                    break;
+                    break outer;
 
                 case BlockID.AIR:
                     continue;
@@ -82,11 +83,10 @@ public class SimulateSnow extends AbstractOperation implements BlockChange {
                             context.setBlock(pt.setY(y + 1), snow)) {
                         ++affected;
                     }
-                    break;
+                    break outer;
                 }
-
-                break;
             }
+            break;
         }
 
         return null;
