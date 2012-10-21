@@ -163,6 +163,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      *
      * @return min. point
      */
+    @Override
     public Vector getMinimumPoint() {
         return center.subtract(getRadius()).toVector(minY);
     }
@@ -172,6 +173,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      *
      * @return max. point
      */
+    @Override
     public Vector getMaximumPoint() {
         return center.add(getRadius()).toVector(maxY);
     }
@@ -180,6 +182,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      * Gets the maximum Y value
      * @return
      */
+    @Override
     public int getMaximumY() {
         return maxY;
     }
@@ -188,6 +191,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      * Gets the minimum Y value
      * @return
      */
+    @Override
     public int getMinimumY() {
         return minY;
     }
@@ -197,6 +201,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      *
      * @return number of blocks
      */
+    @Override
     public int getArea() {
         return (int) Math.floor(radius.getX() * radius.getZ() * Math.PI * getHeight());
     }
@@ -206,6 +211,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      *
      * @return width
      */
+    @Override
     public int getWidth() {
         return (int) (2 * radius.getX());
     }
@@ -215,6 +221,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      *
      * @return height
      */
+    @Override
     public int getHeight() {
         return maxY - minY + 1;
     }
@@ -224,6 +231,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      *
      * @return length
      */
+    @Override
     public int getLength() {
         return (int) (2 * radius.getZ());
     }
@@ -257,6 +265,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      * @param changes array/arguments with multiple related changes
      * @throws RegionOperationException
      */
+    @Override
     public void expand(Vector... changes) throws RegionOperationException {
         center = center.add(calculateDiff2D(changes));
         radius = radius.add(calculateChanges2D(changes));
@@ -276,6 +285,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      * @param changes array/arguments with multiple related changes
      * @throws RegionOperationException
      */
+    @Override
     public void contract(Vector... changes) throws RegionOperationException {
         center = center.subtract(calculateDiff2D(changes));
         Vector2D newRadius = radius.subtract(calculateChanges2D(changes));
@@ -303,6 +313,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     /**
      * Checks to see if a point is inside this region.
      */
+    @Override
     public boolean contains(Vector pt) {
         final int blockY = pt.getBlockY();
         if (blockY < minY || blockY > maxY) {
@@ -317,6 +328,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      *
      * @return
      */
+    @Override
     public Set<Vector2D> getChunks() {
         Set<Vector2D> chunks = new HashSet<Vector2D>();
 
@@ -385,6 +397,11 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     }
 
     @Override
+    public Iterator<BlockVector> columnIterator() {
+        return new FlatRegion3DColumnIterator(this);
+    }
+
+    @Override
     public Iterable<Vector2D> asFlatRegion() {
         return new Iterable<Vector2D>() {
             @Override
@@ -405,6 +422,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
         return center + " - " + radius + "(" + minY + ", " + maxY + ")";
     }
 
+    @Override
     public CylinderRegion clone() {
         return (CylinderRegion) super.clone();
     }
