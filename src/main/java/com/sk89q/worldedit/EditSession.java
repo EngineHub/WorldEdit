@@ -43,8 +43,9 @@ import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.masks.BlockMask;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.masks.MatchAllMask;
-import com.sk89q.worldedit.operations.ReplaceBlocks;
+import com.sk89q.worldedit.operations.NaturalizeArea;
 import com.sk89q.worldedit.operations.OperationHelper;
+import com.sk89q.worldedit.operations.ReplaceBlocks;
 import com.sk89q.worldedit.operations.StackArea;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
@@ -1491,73 +1492,14 @@ public class EditSession {
      * Turns the first 3 layers into dirt/grass and the bottom layers
      * into rock, like a natural Minecraft mountain.
      *
-     * @param region
+     * @param region regions to affect
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int naturalizeCuboidBlocks(Region region)
-            throws MaxChangedBlocksException {
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
-
-        int upperY = Math.min(world.getMaxY(), max.getBlockY() + 1);
-        int lowerY = Math.max(0, min.getBlockY() - 1);
-
-        int affected = 0;
-
-        int minX = min.getBlockX();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxZ = max.getBlockZ();
-
-        BaseBlock grass = new BaseBlock(BlockID.GRASS);
-        BaseBlock dirt = new BaseBlock(BlockID.DIRT);
-        BaseBlock stone = new BaseBlock(BlockID.STONE);
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                int level = -1;
-
-                for (int y = upperY; y >= lowerY; --y) {
-                    Vector pt = new Vector(x, y, z);
-                    //Vector above = new Vector(x, y + 1, z);
-                    int blockType = getBlockType(pt);
-
-                    boolean isTransformable =
-                            blockType == BlockID.GRASS
-                            || blockType == BlockID.DIRT
-                            || blockType == BlockID.STONE;
-
-                    // Still searching for the top block
-                    if (level == -1) {
-                        if (!isTransformable) {
-                            continue; // Not transforming this column yet
-                        }
-
-                        level = 0;
-                    }
-
-                    if (level >= 0) {
-                        if (isTransformable) {
-                            if (level == 0) {
-                                setBlock(pt, grass);
-                                affected++;
-                            } else if (level <= 2) {
-                                setBlock(pt, dirt);
-                                affected++;
-                            } else {
-                                setBlock(pt, stone);
-                                affected++;
-                            }
-                        }
-
-                        level++;
-                    }
-                }
-            }
-        }
-
-        return affected;
+    public int naturalizeCuboidBlocks(Region region) throws MaxChangedBlocksException {
+        NaturalizeArea op = new NaturalizeArea(this, region);
+        OperationHelper.completeLegacy(op);
+        return op.getBlocksChanged();
     }
 
     /**
