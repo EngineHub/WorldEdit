@@ -44,7 +44,7 @@ public class ScatterStructures extends ColumnVisitor implements ChangeCountable 
     private int minY;
     
     /**
-     * Create a thawing operation.
+     * Create a structure scattering operation.
      * 
      * @param context to apply changes to
      * @param region area to apply changes to
