@@ -30,7 +30,7 @@ import com.sk89q.worldedit.regions.Region;
  * Replace all blocks within a given {@link Region} with a {@link Pattern}. A 
  * {@link Mask} can optionally be specified.
  */
-public class BlockReplace extends AbstractOperation implements BlockChange {
+public class ReplaceBlocks extends AbstractOperation implements BlockChange {
     
     private final EditSession editSession;
     private final Region region;
@@ -46,7 +46,7 @@ public class BlockReplace extends AbstractOperation implements BlockChange {
      * @param region area to apply changes to
      * @param pattern pattern to set
      */
-    public BlockReplace(EditSession editSession, Region region, Pattern pattern) {
+    public ReplaceBlocks(EditSession editSession, Region region, Pattern pattern) {
         this.editSession = editSession;
         this.region = region;
         this.pattern = pattern;
@@ -61,7 +61,7 @@ public class BlockReplace extends AbstractOperation implements BlockChange {
      * @param pattern pattern to set
      * @param mask an optional mask to use, null is allowed
      */
-    public BlockReplace(EditSession editSession, Region region, Pattern pattern, Mask mask) {
+    public ReplaceBlocks(EditSession editSession, Region region, Pattern pattern, Mask mask) {
         this.editSession = editSession;
         this.region = region;
         this.pattern = pattern;

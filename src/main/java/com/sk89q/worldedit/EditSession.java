@@ -43,7 +43,7 @@ import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.masks.BlockMask;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.masks.MatchAllMask;
-import com.sk89q.worldedit.operations.BlockReplace;
+import com.sk89q.worldedit.operations.ReplaceBlocks;
 import com.sk89q.worldedit.operations.OperationHelper;
 import com.sk89q.worldedit.operations.StackArea;
 import com.sk89q.worldedit.patterns.Pattern;
@@ -1116,7 +1116,7 @@ public class EditSession {
      * @throws MaxChangedBlocksException thrown if too many blocks were changed
      */
     public int setBlocks(Region region, Pattern pattern) throws MaxChangedBlocksException {
-        BlockReplace op = new BlockReplace(this, region, pattern);
+        ReplaceBlocks op = new ReplaceBlocks(this, region, pattern);
         OperationHelper.completeLegacy(op);
         return op.getBlocksChanged();
     }
@@ -1135,7 +1135,7 @@ public class EditSession {
         
         Mask mask = fromBlockTypes != null ? new BlockMask(fromBlockTypes) : new MatchAllMask();
         Pattern pattern = new SingleBlockPattern(toBlock);
-        BlockReplace op = new BlockReplace(this, region, pattern, mask);
+        ReplaceBlocks op = new ReplaceBlocks(this, region, pattern, mask);
         OperationHelper.completeLegacy(op);
         return op.getBlocksChanged();
     }
@@ -1153,7 +1153,7 @@ public class EditSession {
             Pattern pattern) throws MaxChangedBlocksException {
         
         Mask mask = fromBlockTypes != null ? new BlockMask(fromBlockTypes) : new MatchAllMask();
-        BlockReplace op = new BlockReplace(this, region, pattern, mask);
+        ReplaceBlocks op = new ReplaceBlocks(this, region, pattern, mask);
         OperationHelper.completeLegacy(op);
         return op.getBlocksChanged();
     }
