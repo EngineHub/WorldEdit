@@ -277,6 +277,7 @@ public class WorldEdit {
                 session = sessions.get(player.getName());
             } else {
                 session = new LocalSession(config);
+                session.setBlockChangeLimit(config.defaultChangeLimit);
                 // Remember the session
                 sessions.put(player.getName(), session);
             }
@@ -284,22 +285,25 @@ public class WorldEdit {
             // Set the limit on the number of blocks that an operation can
             // change at once, or don't if the player has an override or there
             // is no limit. There is also a default limit
+            int currentChangeLimit = session.getBlockChangeLimit();
+            
             if (!player.hasPermission("worldedit.limit.unrestricted")
                     && config.maxChangeLimit > -1) {
 
                 // If the default limit is infinite but there is a maximum
                 // limit, make sure to not have it be overridden
                 if (config.defaultChangeLimit < 0) {
-                    session.setBlockChangeLimit(config.maxChangeLimit);
+                    if (currentChangeLimit < 0 || currentChangeLimit > config.maxChangeLimit) {
+                        session.setBlockChangeLimit(config.maxChangeLimit);
+                    }
                 } else {
                     // Bound the change limit
-                    int limit = Math.min(config.defaultChangeLimit,
+                    int maxChangeLimit = Math.min(config.defaultChangeLimit,
                             config.maxChangeLimit);
-                    session.setBlockChangeLimit(limit);
+                    if (currentChangeLimit == -1 || currentChangeLimit > maxChangeLimit) {
+                        session.setBlockChangeLimit(maxChangeLimit);
+                    }
                 }
-            } else {
-                // No change limit or override
-                session.setBlockChangeLimit(config.defaultChangeLimit);
             }
 
             // Have the session use inventory if it's enabled and the player
