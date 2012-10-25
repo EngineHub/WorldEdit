@@ -25,7 +25,7 @@ Contributing
 We happily accept contributions, especially through pull requests on GitHub. Submissions 
 must be licensed under the GNU Lesser General Public License v3.
 
-Please see [the wiki for further information about contributing](http://wiki.sk89q.com/wiki/WorldEdit/Development#Contributing).
+Please read CONTRIBUTING.md for important guidelines to follow.
 
 Links
 -----

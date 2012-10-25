@@ -12,7 +12,7 @@ time, and the little things that you can go a long way.
   the process significantly.
 * **Target Java 6 for source and compilation.** Make sure to mark methods with
   ` @Override` that override methods of parent classes, or that implement
-  methods of interface (Java 6+).
+  methods of interfaces (Java 6+).
 * **Use only spaces for indentation.** Our indents are 4-spaces long, and tabs
   are unacceptable.
 * **Wrap code to a 89 column limit.** We do this to make side by side diffs
