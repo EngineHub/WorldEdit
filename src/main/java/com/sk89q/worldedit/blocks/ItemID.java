@@ -158,6 +158,19 @@ public final class ItemID {
     public static final int BOOK_AND_QUILL = 386;
     public static final int WRITTEN_BOOK = 387;
     public static final int EMERALD = 388;
+    public static final int ITEM_FRAME = 389;
+    public static final int FLOWER_POT = 390;
+    public static final int CARROT = 391;
+    public static final int POTATO = 392;
+    public static final int BAKED_POTATO = 393;
+    public static final int POISONOUS_POTATO = 394;
+    public static final int BLANK_MAP = 395;
+    public static final int GOLDEN_CARROT = 396;
+    public static final int HEAD = 397;
+    public static final int CARROT_ON_A_STICK = 398;
+    public static final int NETHER_STAR = 399;
+    public static final int PUMPKIN_PIE = 400;
+    
     @Deprecated public static final int GOLD_RECORD = 2256; // deprecated, but leave it there
     @Deprecated public static final int GREEN_RECORD = 2257; // deprecated, but leave it there
     public static final int DISC_13 = 2256;

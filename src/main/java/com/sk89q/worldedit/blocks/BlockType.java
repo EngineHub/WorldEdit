@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.blocks;
 
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumSet;
 import java.util.Random;
 import java.util.Set;
 
@@ -171,7 +171,16 @@ public enum BlockType {
     EMERALD_BLOCK(BlockID.EMERALD_BLOCK, "Emerald block", "emeraldblock", "emerald"),
     SPRUCE_WOOD_STAIRS(BlockID.SPRUCE_WOOD_STAIRS, "Spruce wood stairs", "sprucestairs", "sprucewoodstairs"),
     BIRCH_WOOD_STAIRS(BlockID.BIRCH_WOOD_STAIRS, "Birch wood stairs", "birchstairs", "birchwoodstairs"),
-    JUNGLE_WOOD_STAIRS(BlockID.JUNGLE_WOOD_STAIRS, "Jungle wood stairs", "junglestairs", "junglewoodstairs");
+    JUNGLE_WOOD_STAIRS(BlockID.JUNGLE_WOOD_STAIRS, "Jungle wood stairs", "junglestairs", "junglewoodstairs"),
+    COMMAND_BLOCK(BlockID.COMMAND_BLOCK, "Command block", "commandblock", "cmdblock", "command", "cmd"),
+    BEACON(BlockID.BEACON, "Beacon", "beacon", "beaconblock"),
+    COBBLESTONE_WALL(BlockID.COBBLESTONE_WALL, "Cobblestone wall", "cobblestonewall", "cobblewall"),
+    FLOWER_POT(BlockID.FLOWER_POT, "Flower pot", "flowerpot", "plantpot", "pot"),
+    CARROTS(BlockID.CARROTS, "Carrots", "carrots", "carrotsplant", "carrotsblock"),
+    POTATOES(BlockID.POTATOES, "Potatoes", "patatoes", "potatoesblock"),
+    WOODEN_BUTTON(BlockID.WOODEN_BUTTON, "Wooden button", "woodbutton", "woodenbutton"),
+    HEAD(BlockID.HEAD, "Head", "head", "headmount", "mount"),
+    ANVIL(BlockID.ANVIL, "Anvil", "anvil", "blacksmith");
 
     /**
      * Stores a map of the IDs for fast access.

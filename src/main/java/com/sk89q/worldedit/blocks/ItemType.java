@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.blocks;
 
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumSet;
 import java.util.Set;
 
 import com.sk89q.util.StringUtil;
@@ -172,6 +172,15 @@ public enum ItemType {
     SPRUCE_WOOD_STAIRS(BlockID.SPRUCE_WOOD_STAIRS, "Spruce wood stairs", "sprucestairs", "sprucewoodstairs"),
     BIRCH_WOOD_STAIRS(BlockID.BIRCH_WOOD_STAIRS, "Birch wood stairs", "birchstairs", "birchwoodstairs"),
     JUNGLE_WOOD_STAIRS(BlockID.JUNGLE_WOOD_STAIRS, "Jungle wood stairs", "junglestairs", "junglewoodstairs"),
+    COMMAND_BLOCK(BlockID.COMMAND_BLOCK, "Command block", "commandblock", "cmdblock", "command", "cmd"),
+    BEACON(BlockID.BEACON, "Beacon", "beacon", "beaconblock"),
+    COBBLESTONE_WALL(BlockID.COBBLESTONE_WALL, "Cobblestone wall", "cobblestonewall", "cobblewall"),
+    FLOWER_POT_BLOCK(BlockID.FLOWER_POT, "Flower pot", "flowerpot", "plantpot", "pot", "flowerpotblock"),
+    CARROTS_BLOCK(BlockID.CARROTS, "Carrots", "carrots", "carrotsplant", "carrotsblock"),
+    POTATOES_BLOCK(BlockID.POTATOES, "Potatoes", "patatoes", "potatoesblock"),
+    WOODEN_BUTTON(BlockID.WOODEN_BUTTON, "Wooden button", "woodbutton", "woodenbutton"),
+    HEAD_BLOCK(BlockID.HEAD, "Head", "head", "headmount", "mount", "headblock", "mountblock"),
+    ANVIL(BlockID.ANVIL, "Anvil", "anvil", "blacksmith"),
 
     // Items
     IRON_SHOVEL(ItemID.IRON_SHOVEL, "Iron shovel", "ironshovel"),
@@ -307,6 +316,18 @@ public enum ItemType {
     BOOK_AND_QUILL(ItemID.BOOK_AND_QUILL, "Book and Quill", "bookandquill", "quill", "writingbook"),
     WRITTEN_BOOK(ItemID.WRITTEN_BOOK, "Written Book", "writtenbook"),
     EMERALD(ItemID.EMERALD, "Emerald", "emeraldingot", "emerald"),
+    ITEM_FRAME(ItemID.ITEM_FRAME, "Item frame", "itemframe", "frame", "itempainting"),
+    FLOWER_POT(ItemID.FLOWER_POT, "Flower pot", "flowerpot", "plantpot", "pot"),
+    CARROT(ItemID.CARROT, "Carrot", "carrot"),
+    POTATO(ItemID.POTATO, "Potato", "potato"),
+    BAKED_POTATO(ItemID.BAKED_POTATO, "Baked potato", "bakedpotato", "potatobaked"),
+    POISONOUS_POTATO(ItemID.POISONOUS_POTATO, "Poisonous potato", "poisonpotato", "poisonouspotato"),
+    BLANK_MAP(ItemID.BLANK_MAP, "Blank map", "blankmap", "emptymap"),
+    GOLDEN_CARROT(ItemID.GOLDEN_CARROT, "Golden carrot", "goldencarrot", "goldcarrot"),
+    HEAD(ItemID.HEAD, "Head",  "head", "headmount", "mount"),
+    CARROT_ON_A_STICK(ItemID.CARROT_ON_A_STICK, "Carrot on a stick", "carrotonastick", "carrotonstick", "stickcarrot", "carrotstick"),
+    NETHER_STAR(ItemID.NETHER_STAR, "Nether star", "netherstar", "starnether"),
+    PUMPKIN_PIE(ItemID.PUMPKIN_PIE, "Pumpkin pie", "pumpkinpie"),
     DISC_13(ItemID.DISC_13, "Music Disc - 13", "disc_13"),
     DISC_CAT(ItemID.DISC_CAT, "Music Disc - Cat", "disc_cat"),
     DISC_BLOCKS(ItemID.DISC_BLOCKS, "Music Disc - blocks", "disc_blocks"),
