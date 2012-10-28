@@ -2,10 +2,8 @@ Contributing
 ============
 
 Thank you for your interest in contributing to WorldEdit! We appreciate your 
-effort, however, we'd like to ask you to review the following guidelines in 
-order to streamline the process and assist us in getting your patch implemented
-quicker. Remember that our fellow contributors are doing so when they have free
-time, and the little things that you can go a long way.
+effort, but to make sure that the inclusion of your patch is a smooth process, we
+ask that you make note of the following guidelines.
 
 * **Follow the [Oracle coding conventions](http://www.oracle.com/technetwork/java/codeconv-138413.html).**
   We can't stress this enough; if your code has notable issues, it may delay
@@ -32,9 +30,6 @@ time, and the little things that you can go a long way.
 * **Write unit tests.** While this is strictly optional, we recommend it for
   complicated algorithms.
 
-Sometimes failure to abide by the guidelines may result in your pull request
-falling into a "black hole" where it sits in a state of inaction until it is
-needed to be closed a few months later.
 
 Checklist
 ---------
