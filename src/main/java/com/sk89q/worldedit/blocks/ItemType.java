@@ -648,6 +648,7 @@ public enum ItemType {
         usesDamageValue.add(ItemID.GLASS_BOTTLE);
         usesDamageValue.add(ItemID.SPAWN_EGG);
         usesDamageValue.add(ItemID.MAP);
+        usesDamageValue.add(ItemID.HEAD);
     }
 
     /**
