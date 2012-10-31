@@ -209,8 +209,8 @@ public class WorldEditPlugin extends CommonPlugin {
         LocalSession session = controller.getSession(wePlayer);
         BlockBag blockBag = session.getBlockBag(wePlayer);
 
-        EditSession editSession =
-                new EditSession(wePlayer.getWorld(), session.getBlockChangeLimit(), blockBag);
+        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory()
+                .getEditSession(wePlayer.getWorld(), session.getBlockChangeLimit(), blockBag);
         editSession.enableQueue();
 
         return editSession;
