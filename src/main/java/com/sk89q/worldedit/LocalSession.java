@@ -142,8 +142,8 @@ public class LocalSession {
         --historyPointer;
         if (historyPointer >= 0) {
             EditSession editSession = history.get(historyPointer);
-            EditSession newEditSession =
-                    new EditSession(editSession.getWorld(), -1, newBlockBag);
+            EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
+                    .getEditSession(editSession.getWorld(), -1, newBlockBag);
             newEditSession.enableQueue();
             newEditSession.setFastMode(fastMode);
             editSession.undo(newEditSession);
@@ -163,8 +163,8 @@ public class LocalSession {
     public EditSession redo(BlockBag newBlockBag) {
         if (historyPointer < history.size()) {
             EditSession editSession = history.get(historyPointer);
-            EditSession newEditSession =
-                    new EditSession(editSession.getWorld(), -1, newBlockBag);
+            EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
+                    .getEditSession(editSession.getWorld(), -1, newBlockBag);
             newEditSession.enableQueue();
             newEditSession.setFastMode(fastMode);
             editSession.redo(newEditSession);
@@ -698,8 +698,8 @@ public class LocalSession {
         BlockBag blockBag = getBlockBag(player);
 
         // Create an edit session
-        EditSession editSession =
-                new EditSession(player.isPlayer() ? player.getWorld() : null,
+        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory()
+                .getEditSession(player.isPlayer() ? player.getWorld() : null,
                         getBlockChangeLimit(), blockBag);
         editSession.setFastMode(fastMode);
         if (mask != null) {
