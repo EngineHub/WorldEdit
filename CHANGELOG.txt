@@ -1,3 +1,12 @@
+5.4.4:
+- Added official support for Minecraft 1.4.
+- Added support for 4096 ID blocks (theoretically) in snapshots.
+- Fixed issue with block IDs being returned negative in snapshots.
+- Fixed //limit being overridden each time a LocalSession is fetched.
+- Added EditSessionFactory class for developers.
+
+Thank you to ammaraskar for his contribution.
+
 5.4.3:
 - Added block data support to BlockMask.
 - Added //center command to set blocks at the center point of a selection.
