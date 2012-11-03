@@ -1,3 +1,6 @@
+5.4.5:
+- Fixed minor check issue with //center.
+
 5.4.4:
 - Added official support for Minecraft 1.4.
 - Added support for 4096 ID blocks (theoretically) in snapshots.
