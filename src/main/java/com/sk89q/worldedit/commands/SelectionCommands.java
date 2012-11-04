@@ -496,30 +496,48 @@ public class SelectionCommands {
 
     @Command(
         aliases = { "/size" },
+        flags = "c",
         usage = "",
         desc = "Get information about the selection",
         min = 0,
         max = 0
     )
     @CommandPermissions("worldedit.selection.size")
-    public void size(CommandContext args, LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void size(CommandContext args, LocalSession session, LocalPlayer player, 
+            EditSession editSession) throws WorldEditException {
 
-        Region region = session.getSelection(player.getWorld());
-        Vector size = region.getMaximumPoint()
-                .subtract(region.getMinimumPoint())
-                .add(1, 1, 1);
+        if (args.hasFlag('c')) {
+            CuboidClipboard clipboard = session.getClipboard();
+            Vector size = clipboard.getSize();
+            Vector offset = clipboard.getOffset();
 
-        player.print("Type: " + session.getRegionSelector(player.getWorld()).getTypeName());
-        
-        for (String line : session.getRegionSelector(player.getWorld()).getInformationLines()) {
-            player.print(line);
+            player.print("Size: " + size);
+            player.print("Offset: " + offset);
+            player.print("Cuboid distance: " + size.distance( new Vector(1, 1, 1)));
+            player.print("# of blocks: " 
+                         + (int) (size.getX() * size.getY() * size.getZ()));
+            
+        } else {
+            Region region = session.getSelection(player.getWorld());
+            Vector size = region.getMaximumPoint()
+                    .subtract(region.getMinimumPoint())
+                    .add(1, 1, 1);
+
+            player.print("Type: " + session.getRegionSelector(player.getWorld())
+                    .getTypeName());
+
+            for (String line : session.getRegionSelector(player.getWorld())
+                    .getInformationLines()) {
+                player.print(line);
+            }
+
+            player.print("Size: " + size);
+            player.print("Cuboid distance: " + region.getMaximumPoint()
+                    .distance(region.getMinimumPoint()));
+            player.print("# of blocks: " + region.getArea());
         }
-
-        player.print("Size: " + size);
-        player.print("Cuboid distance: " + region.getMaximumPoint().distance(region.getMinimumPoint()));
-        player.print("# of blocks: " + region.getArea());
     }
+
 
     @Command(
         aliases = { "/count" },
