@@ -22,12 +22,17 @@ package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.schematic.SchematicFormat;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The clipboard remembers the state of a cuboid region.
@@ -420,5 +425,40 @@ public class CuboidClipboard {
             this.entity = entity;
             this.relativePosition = entity.getPosition().getPosition().subtract(getOrigin());
         }
+    }
+    /**
+     * Get the block distribution inside a clipboard.
+     *
+     * @return
+     */
+    public List<Countable<Integer>> getBlockDistribution() {
+        List<Countable<Integer>> distribution = new ArrayList<Countable<Integer>>();
+        Map<Integer, Countable<Integer>> map = new HashMap<Integer, Countable<Integer>>();
+
+        int maxX = getWidth();
+        int maxY = getHeight();
+        int maxZ = getLength();
+
+        for (int x = 0; x < maxX; ++x) {
+            for (int y = 0; y < maxY; ++y) {
+                for (int z = 0; z < maxZ; ++z) {
+
+                    int id = data[x][y][z].getId();
+
+                    if (map.containsKey(id)) {
+                        map.get(id).increment();
+                    } else {
+                        Countable<Integer> c = new Countable<Integer>(id, 1);
+                        map.put(id, c);
+                        distribution.add(c);
+                    }
+                }
+            }
+        }
+
+        Collections.sort(distribution);
+        // Collections.reverse(distribution);
+
+        return distribution;
     }
 }
