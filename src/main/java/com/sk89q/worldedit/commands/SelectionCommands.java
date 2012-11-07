@@ -22,7 +22,6 @@ package com.sk89q.worldedit.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandAlias;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -505,27 +504,17 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.size")
     public void size(CommandContext args, LocalSession session, LocalPlayer player, 
             EditSession editSession) throws WorldEditException {
-<<<<<<< .merge_file_w26rWN
-
+    	
         if (args.hasFlag('c')) {
             CuboidClipboard clipboard = session.getClipboard();
             Vector size = clipboard.getSize();
             Vector offset = clipboard.getOffset();
 
-=======
-
-        if (args.hasFlag('c')) {
-            CuboidClipboard clipboard = session.getClipboard();
-            Vector size = clipboard.getSize();
-            Vector offset = clipboard.getOffset();
-
->>>>>>> .merge_file_HnTCMM
             player.print("Size: " + size);
             player.print("Offset: " + offset);
             player.print("Cuboid distance: " + size.distance( new Vector(1, 1, 1)));
             player.print("# of blocks: " 
                          + (int) (size.getX() * size.getY() * size.getZ()));
-<<<<<<< .merge_file_w26rWN
             return;
         }
         
@@ -546,28 +535,6 @@ public class SelectionCommands {
         player.print("Cuboid distance: " + region.getMaximumPoint()
                 .distance(region.getMinimumPoint()));
         player.print("# of blocks: " + region.getArea());
-=======
-            
-        } else {
-            Region region = session.getSelection(player.getWorld());
-            Vector size = region.getMaximumPoint()
-                    .subtract(region.getMinimumPoint())
-                    .add(1, 1, 1);
-
-            player.print("Type: " + session.getRegionSelector(player.getWorld())
-                    .getTypeName());
-
-            for (String line : session.getRegionSelector(player.getWorld())
-                    .getInformationLines()) {
-                player.print(line);
-            }
-
-            player.print("Size: " + size);
-            player.print("Cuboid distance: " + region.getMaximumPoint()
-                    .distance(region.getMinimumPoint()));
-            player.print("# of blocks: " + region.getArea());
-        }
->>>>>>> .merge_file_HnTCMM
     }
 
 
