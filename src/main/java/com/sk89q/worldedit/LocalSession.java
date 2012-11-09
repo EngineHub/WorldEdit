@@ -478,8 +478,6 @@ public class LocalSession {
     public void setTool(int item, Tool tool) throws InvalidToolBindException {
         if (item > 0 && item < 255) {
             throw new InvalidToolBindException(item, "Blocks can't be used");
-        } else if (item == 0) {
-            throw new InvalidToolBindException(item, "Your hand can't be used");
         } else if (item == config.wandItem) {
             throw new InvalidToolBindException(item, "Already used for the wand");
         } else if (item == config.navigationWand) {
