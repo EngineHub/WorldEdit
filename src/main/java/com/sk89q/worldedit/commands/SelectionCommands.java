@@ -22,7 +22,6 @@ package com.sk89q.worldedit.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandAlias;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -496,30 +495,48 @@ public class SelectionCommands {
 
     @Command(
         aliases = { "/size" },
+        flags = "c",
         usage = "",
         desc = "Get information about the selection",
         min = 0,
         max = 0
     )
     @CommandPermissions("worldedit.selection.size")
-    public void size(CommandContext args, LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void size(CommandContext args, LocalSession session, LocalPlayer player, 
+            EditSession editSession) throws WorldEditException {
+    	
+        if (args.hasFlag('c')) {
+            CuboidClipboard clipboard = session.getClipboard();
+            Vector size = clipboard.getSize();
+            Vector offset = clipboard.getOffset();
 
+            player.print("Size: " + size);
+            player.print("Offset: " + offset);
+            player.print("Cuboid distance: " + size.distance( new Vector(1, 1, 1)));
+            player.print("# of blocks: " 
+                         + (int) (size.getX() * size.getY() * size.getZ()));
+            return;
+        }
+        
         Region region = session.getSelection(player.getWorld());
         Vector size = region.getMaximumPoint()
                 .subtract(region.getMinimumPoint())
                 .add(1, 1, 1);
-
-        player.print("Type: " + session.getRegionSelector(player.getWorld()).getTypeName());
         
-        for (String line : session.getRegionSelector(player.getWorld()).getInformationLines()) {
+        player.print("Type: " + session.getRegionSelector(player.getWorld())
+                .getTypeName());
+        
+        for (String line : session.getRegionSelector(player.getWorld())
+                .getInformationLines()) {
             player.print(line);
         }
-
+        
         player.print("Size: " + size);
-        player.print("Cuboid distance: " + region.getMaximumPoint().distance(region.getMinimumPoint()));
+        player.print("Cuboid distance: " + region.getMaximumPoint()
+                .distance(region.getMinimumPoint()));
         player.print("# of blocks: " + region.getArea());
     }
+
 
     @Command(
         aliases = { "/count" },
@@ -544,7 +561,7 @@ public class SelectionCommands {
         desc = "Get the distribution of blocks in the selection",
         help =
             "Gets the distribution of blocks in the selection.\n" +
-            "The -c flag makes it print to the console as well.",
+            "The -c flag gets the distribution of your clipboard.",
         flags = "c",
         min = 0,
         max = 0
@@ -553,35 +570,33 @@ public class SelectionCommands {
     public void distr(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
         
-        List<Countable<Integer>> distribution =
-                editSession.getBlockDistribution(session.getSelection(player.getWorld()));
-
-        Logger logger = Logger.getLogger("Minecraft.WorldEdit");
-
-        if (distribution.size() > 0) { // *Should* always be true
-            int size = session.getSelection(player.getWorld()).getArea();
-
-            player.print("# total blocks: " + size);
-
-            if (args.hasFlag('c')) {
-                logger.info("Block distribution (req. by " + player.getName() + "):");
-                logger.info("# total blocks: " + size);
-            }
-
-            for (Countable<Integer> c : distribution) {
-                BlockType block = BlockType.fromID(c.getID());
-                String str = String.format("%-7s (%.3f%%) %s #%d",
-                        String.valueOf(c.getAmount()),
-                        c.getAmount() / (double) size * 100,
-                        block == null ? "Unknown" : block.getName(), c.getID());
-                player.print(str);
-
-                if (args.hasFlag('c')) {
-                    logger.info(str);
-                }
-            }
+        List<Countable<Integer>> distribution;
+        int size;
+        
+        if (args.hasFlag('c')) {
+            CuboidClipboard clip = session.getClipboard();
+            distribution = clip.getBlockDistribution();
+            size = clip.getHeight() * clip.getLength() * clip.getWidth();
         } else {
+            distribution = editSession
+                    .getBlockDistribution(session.getSelection(player.getWorld()));
+            size = session.getSelection(player.getWorld()).getArea();
+        }
+        
+        if (distribution.size() <= 0) {  // *Should* always be true
             player.printError("No blocks counted.");
+            return;
+        }
+        
+        player.print("# total blocks: " + size);
+
+        for (Countable<Integer> c : distribution) {
+            BlockType block = BlockType.fromID(c.getID());
+            String str = String.format("%-7s (%.3f%%) %s #%d",
+                    String.valueOf(c.getAmount()),
+                    c.getAmount() / (double) size * 100,
+                    block == null ? "Unknown" : block.getName(), c.getID());
+            player.print(str);
         }
     }
 
