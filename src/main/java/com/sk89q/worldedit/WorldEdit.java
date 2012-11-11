@@ -74,7 +74,6 @@ import com.sk89q.worldedit.commands.ToolUtilCommands;
 import com.sk89q.worldedit.commands.UtilityCommands;
 import com.sk89q.worldedit.masks.BiomeTypeMask;
 import com.sk89q.worldedit.masks.BlockMask;
-import com.sk89q.worldedit.masks.BlockTypeMask;
 import com.sk89q.worldedit.masks.CombinedMask;
 import com.sk89q.worldedit.masks.DynamicRegionMask;
 import com.sk89q.worldedit.masks.ExistingBlockMask;

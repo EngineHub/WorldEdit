@@ -22,8 +22,6 @@ package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.data.*;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.schematic.SchematicFormat;
 
 import java.io.File;

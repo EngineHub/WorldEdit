@@ -19,9 +19,7 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -47,8 +45,6 @@ import com.sk89q.worldedit.bukkit.entity.BukkitPainting;
 public class BukkitUtil {
     private BukkitUtil() {
     }
-
-    private static final Map<World, LocalWorld> wlw = new HashMap<World, LocalWorld>();
 
     public static LocalWorld getLocalWorld(World w) {
         return new BukkitWorld(w);

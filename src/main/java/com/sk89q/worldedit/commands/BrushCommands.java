@@ -32,7 +32,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.masks.BlockTypeMask;
+import com.sk89q.worldedit.masks.BlockMask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.tools.BrushTool;
@@ -233,7 +233,7 @@ public class BrushCommands {
         Pattern fill = new SingleBlockPattern(new BaseBlock(0));
         tool.setFill(fill);
         tool.setSize(radius);
-        tool.setMask(new BlockTypeMask(BlockID.FIRE));
+        tool.setMask(new BlockMask(new BaseBlock(BlockID.FIRE)));
         tool.setBrush(new SphereBrush(), "worldedit.brush.ex");
 
         player.print(String.format("Extinguisher equipped (%.0f).",
