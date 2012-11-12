@@ -271,7 +271,6 @@ public class SelectionCommands {
         max = 3
     )
     @CommandPermissions("worldedit.selection.expand")
-    @SuppressWarnings("deprecation")
     public void expand(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
@@ -348,7 +347,6 @@ public class SelectionCommands {
         max = 3
     )
     @CommandPermissions("worldedit.selection.contract")
-    @SuppressWarnings("deprecation")
     public void contract(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
