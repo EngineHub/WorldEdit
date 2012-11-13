@@ -37,7 +37,7 @@ public class QueryTool implements BlockTool {
             LocalPlayer player, LocalSession session, WorldVector clicked) {
 
         LocalWorld world = clicked.getWorld();
-        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, 0);
+        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, 0, player);
         BaseBlock block = (editSession).rawGetBlock(clicked);
         BlockType type = BlockType.fromID(block.getType());
 
