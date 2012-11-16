@@ -78,7 +78,7 @@ public class SchematicCommands {
         File f = we.getSafeOpenFile(player, dir, fileName, "schematic", "schematic");
 
         if (!f.exists()) {
-            player.printError("Schemtic " + fileName + " does not exist!");
+            player.printError("Schematic " + fileName + " does not exist!");
             return;
         }
 
