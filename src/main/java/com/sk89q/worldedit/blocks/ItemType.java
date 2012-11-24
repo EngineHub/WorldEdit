@@ -339,6 +339,7 @@ public enum ItemType {
     DISC_STRAD(ItemID.DISC_STRAD, "Music Disc - strad", "disc_strad"),
     DISC_WARD(ItemID.DISC_WARD, "Music Disc - ward", "disc_ward"),
     DISC_11(ItemID.DISC_11, "Music Disc - 11", "disc_11"),
+    DISC_WAIT(ItemID.DISC_WAIT, "Music Disc - wait", "disc_wait"),
 
     // deprecated
     @Deprecated GOLD_RECORD(ItemID.GOLD_RECORD, "Gold Record", "goldrecord", "golddisc"),
@@ -551,6 +552,7 @@ public enum ItemType {
         shouldNotStack.add(ItemID.BED_ITEM);
         shouldNotStack.add(ItemID.MAP);
         shouldNotStack.add(ItemID.SHEARS);
+        shouldNotStack.add(ItemID.HEAD);
         shouldNotStack.add(ItemID.DISC_13);
         shouldNotStack.add(ItemID.DISC_CAT);
         shouldNotStack.add(ItemID.DISC_BLOCKS);
@@ -562,6 +564,7 @@ public enum ItemType {
         shouldNotStack.add(ItemID.DISC_STRAD);
         shouldNotStack.add(ItemID.DISC_WARD);
         shouldNotStack.add(ItemID.DISC_11);
+        shouldNotStack.add(ItemID.DISC_WAIT);
     }
 
     /**
@@ -576,79 +579,31 @@ public enum ItemType {
 
     private static final Set<Integer> usesDamageValue = new HashSet<Integer>();
     static {
+        usesDamageValue.add(BlockID.WOOD);
         usesDamageValue.add(BlockID.SAPLING);
-        //usesDamageValue.add(BlockID.WATER);
-        //usesDamageValue.add(BlockID.STATIONARY_WATER);
-        //usesDamageValue.add(BlockID.LAVA);
-        //usesDamageValue.add(BlockID.STATIONARY_LAVA);
         usesDamageValue.add(BlockID.LOG);
         usesDamageValue.add(BlockID.LEAVES);
-        //usesDamageValue.add(BlockID.DISPENSER);
-        //usesDamageValue.add(BlockID.BED);
-        //usesDamageValue.add(BlockID.POWERED_RAIL);
-        //usesDamageValue.add(BlockID.DETECTOR_RAIL);
-        //usesDamageValue.add(BlockID.PISTON_STICKY_BASE);
-        //usesDamageValue.add(BlockID.LONG_GRASS);
-        //usesDamageValue.add(BlockID.PISTON_BASE);
-        //usesDamageValue.add(BlockID.PISTON_EXTENSION);
+        usesDamageValue.add(BlockID.SANDSTONE);
+        usesDamageValue.add(BlockID.LONG_GRASS);
         usesDamageValue.add(BlockID.CLOTH);
         usesDamageValue.add(BlockID.DOUBLE_STEP);
         usesDamageValue.add(BlockID.STEP);
-        //usesDamageValue.add(BlockID.TORCH);
-        //usesDamageValue.add(BlockID.FIRE);
-        //usesDamageValue.add(BlockID.WOODEN_STAIRS);
-        //usesDamageValue.add(BlockID.CHEST);
-        //usesDamageValue.add(BlockID.REDSTONE_WIRE);
-        //usesDamageValue.add(BlockID.CROPS);
-        //usesDamageValue.add(BlockID.SOIL);
-        //usesDamageValue.add(BlockID.FURNACE);
-        //usesDamageValue.add(BlockID.BURNING_FURNACE);
-        //usesDamageValue.add(BlockID.SIGN_POST);
-        //usesDamageValue.add(BlockID.WOODEN_DOOR);
-        //usesDamageValue.add(BlockID.LADDER);
-        //usesDamageValue.add(BlockID.MINECART_TRACKS);
-        //usesDamageValue.add(BlockID.COBBLESTONE_STAIRS);
-        //usesDamageValue.add(BlockID.WALL_SIGN);
-        //usesDamageValue.add(BlockID.LEVER);
-        //usesDamageValue.add(BlockID.STONE_PRESSURE_PLATE);
-        //usesDamageValue.add(BlockID.IRON_DOOR);
-        //usesDamageValue.add(BlockID.WOODEN_PRESSURE_PLATE);
-        //usesDamageValue.add(BlockID.REDSTONE_TORCH_OFF);
-        //usesDamageValue.add(BlockID.REDSTONE_TORCH_ON);
-        //usesDamageValue.add(BlockID.STONE_BUTTON);
-        //usesDamageValue.add(BlockID.SNOW);
-        //usesDamageValue.add(BlockID.CACTUS);
-        //usesDamageValue.add(BlockID.REED);
-        //usesDamageValue.add(BlockID.JUKEBOX);
-        //usesDamageValue.add(BlockID.PUMPKIN);
-        //usesDamageValue.add(BlockID.JACKOLANTERN);
-        //usesDamageValue.add(BlockID.CAKE_BLOCK);
-        //usesDamageValue.add(BlockID.REDSTONE_REPEATER_OFF);
-        //usesDamageValue.add(BlockID.REDSTONE_REPEATER_ON);
-        //usesDamageValue.add(BlockID.TRAP_DOOR);
-        //usesDamageValue.add(BlockID.SILVERFISH_BLOCK);
+        usesDamageValue.add(BlockID.SILVERFISH_BLOCK);
         usesDamageValue.add(BlockID.STONE_BRICK);
-        //usesDamageValue.add(BlockID.RED_MUSHROOM_CAP);
-        //usesDamageValue.add(BlockID.BROWN_MUSHROOM_CAP);
-        //usesDamageValue.add(BlockID.PUMPKIN_STEM);
-        //usesDamageValue.add(BlockID.MELON_STEM);
-        //usesDamageValue.add(BlockID.VINE);
-        //usesDamageValue.add(BlockID.FENCE_GATE);
-        //usesDamageValue.add(BlockID.BRICK_STAIRS);
-        //usesDamageValue.add(BlockID.STONE_BRICK_STAIRS);
-        //usesDamageValue.add(BlockID.NETHER_BRICK_STAIRS);
-        //usesDamageValue.add(BlockID.NETHER_WART);
-        //usesDamageValue.add(BlockID.ENCHANTMENT_TABLE);
-        //usesDamageValue.add(BlockID.BREWING_STAND);
-        //usesDamageValue.add(BlockID.CAULDRON);
-        //usesDamageValue.add(BlockID.END_PORTAL_FRAME);
+        usesDamageValue.add(BlockID.BROWN_MUSHROOM_CAP);
+        usesDamageValue.add(BlockID.RED_MUSHROOM_CAP);
+        usesDamageValue.add(BlockID.DOUBLE_WOODEN_STEP);
+        usesDamageValue.add(BlockID.WOODEN_STEP);
+        usesDamageValue.add(BlockID.COBBLESTONE_WALL);
+        usesDamageValue.add(BlockID.ANVIL);
+
         usesDamageValue.add(ItemID.COAL);
         usesDamageValue.add(ItemID.INK_SACK);
         usesDamageValue.add(ItemID.POTION);
-        usesDamageValue.add(ItemID.GLASS_BOTTLE);
         usesDamageValue.add(ItemID.SPAWN_EGG);
         usesDamageValue.add(ItemID.MAP);
         usesDamageValue.add(ItemID.HEAD);
+        usesDamageValue.add(ItemID.GOLD_APPLE);
     }
 
     /**
