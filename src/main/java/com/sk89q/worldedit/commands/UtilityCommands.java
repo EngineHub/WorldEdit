@@ -378,13 +378,18 @@ public class UtilityCommands {
 
         LocalConfiguration config = we.getConfiguration();
 
+        // technically the default can be larger than the max, but that's not my problem
         int radius = config.butcherDefaultRadius;
 
-        if (args.argsLength() > 0) {
-            if (args.getString(0).equals("all")) {
-                radius = -1;
-            } else {
-                radius =  Math.max(1, args.getInteger(0));
+        // there might be a better way to do this but my brain is fried right now
+        if (args.argsLength() > 0) { // user inputted radius, override the default
+            radius = args.getInteger(0);
+            if (config.butcherMaxRadius != -1) { // clamp if there is a max
+                if (radius == -1) {
+                    radius = config.butcherMaxRadius;
+                } else { // Math.min does not work if radius is -1 (actually highest possible value)
+                    radius = Math.min(radius, config.butcherMaxRadius);
+                }
             }
         }
 

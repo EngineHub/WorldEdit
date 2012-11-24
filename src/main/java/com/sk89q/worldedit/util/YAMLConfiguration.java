@@ -19,12 +19,6 @@
 
 package com.sk89q.worldedit.util;
 
-import com.sk89q.util.yaml.YAMLProcessor;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LogFormat;
-import com.sk89q.worldedit.snapshots.SnapshotRepository;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -32,6 +26,12 @@ import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sk89q.util.yaml.YAMLProcessor;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.LogFormat;
+import com.sk89q.worldedit.snapshots.SnapshotRepository;
 
 /**
  * A less simple implementation of {@link LocalConfiguration} using YAML configuration files.
@@ -71,6 +71,8 @@ public class YAMLConfiguration extends LocalConfiguration {
         maxRadius = Math.max(-1, config.getInt("limits.max-radius", maxRadius));
         maxSuperPickaxeSize = Math.max(1, config.getInt(
                 "limits.max-super-pickaxe-size", maxSuperPickaxeSize));
+        butcherDefaultRadius = Math.max(-1, config.getInt("limits.butcher-radius.default", butcherDefaultRadius));
+        butcherMaxRadius = Math.max(-1, config.getInt("limits.butcher-radius.maximum", butcherMaxRadius));
         registerHelp = true;
         logCommands = config.getBoolean("logging.log-commands", logCommands);
         superPickaxeDrop = config.getBoolean("super-pickaxe.drop-items",
@@ -88,7 +90,6 @@ public class YAMLConfiguration extends LocalConfiguration {
 
         scriptTimeout = config.getInt("scripting.timeout", scriptTimeout);
         scriptsDir = config.getString("scripting.dir", scriptsDir);
-        butcherDefaultRadius = config.getInt("butcher-default-radius", butcherDefaultRadius);
 
         saveDir = config.getString("saving.dir", saveDir);
 
