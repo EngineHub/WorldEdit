@@ -41,6 +41,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import org.spout.api.component.Component;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.cause.PluginCause;
 import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -110,7 +111,7 @@ public class SpoutWorld extends LocalWorld {
             final int x = pt.getBlockX();
             final int y = pt.getBlockY();
             final int z = pt.getBlockZ();
-            return world.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN).setBlockMaterial(x, y, z, (BlockMaterial) mat, (short) 0, WorldEditPlugin.getInstance());
+            return world.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN).setBlockMaterial(x, y, z, (BlockMaterial) mat, (short) 0, WorldEditPlugin.asCause());
         }
         return false;
     }
@@ -141,7 +142,7 @@ public class SpoutWorld extends LocalWorld {
             final int x = pt.getBlockX();
             final int y = pt.getBlockY();
             final int z = pt.getBlockZ();
-            return world.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN).setBlockMaterial(x, y, z, (BlockMaterial) mat, (short) data, WorldEditPlugin.getInstance());
+            return world.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN).setBlockMaterial(x, y, z, (BlockMaterial) mat, (short) data, WorldEditPlugin.asCause());
         }
         return false;
     }
@@ -185,7 +186,7 @@ public class SpoutWorld extends LocalWorld {
         final int x = pt.getBlockX();
         final int y = pt.getBlockY();
         final int z = pt.getBlockZ();
-        world.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN).setBlockData(x, y, z, (short) data, WorldEditPlugin.getInstance());
+        world.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN).setBlockData(x, y, z, (short) data, WorldEditPlugin.asCause());
     }
 
     /**

@@ -36,8 +36,8 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.entity.Player;
-import org.spout.vanilla.component.inventory.window.Window;
-import org.spout.vanilla.component.living.Human;
+import org.spout.vanilla.component.inventory.PlayerInventory;
+import org.spout.vanilla.component.living.neutral.Human;
 import org.spout.vanilla.material.VanillaMaterial;
 import org.spout.vanilla.material.VanillaMaterials;
 
@@ -55,7 +55,7 @@ public class SpoutPlayer extends LocalPlayer {
     @Override
     public int getItemInHand() {
         if (player.has(Human.class)) {
-            return ((VanillaMaterial) player.get(Human.class).getInventory().getQuickbar()
+            return ((VanillaMaterial) player.get(PlayerInventory.class).getQuickbar()
                     .getCurrentItem().getMaterial()).getMinecraftId();
         } else {
             return 0;
@@ -87,7 +87,7 @@ public class SpoutPlayer extends LocalPlayer {
     @Override
     public void giveItem(int type, int amt) {
         if (player.has(Human.class)) {
-            player.get(Human.class).getInventory().add(new ItemStack(VanillaMaterials.getMaterial((short) type), amt));
+            player.get(PlayerInventory.class).add(new ItemStack(VanillaMaterials.getMaterial((short) type), amt));
         }
     }
 
