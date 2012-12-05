@@ -250,7 +250,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      * @return width
      */
     public int getWidth() {
-        return max.getBlockX() - min.getBlockX();
+        return max.getBlockX() - min.getBlockX() + 1;
     }
 
     /**
@@ -259,7 +259,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      * @return height
      */
     public int getHeight() {
-        return maxY - minY;
+        return maxY - minY + 1;
     }
 
     /**
@@ -268,7 +268,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      * @return length
      */
     public int getLength() {
-        return max.getBlockZ() - min.getBlockZ();
+        return max.getBlockZ() - min.getBlockZ() + 1;
     }
 
     /**
