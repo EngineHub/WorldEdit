@@ -129,6 +129,7 @@ public class GenerationCommands {
 
         Vector pos = session.getPlacementPosition(player);
         int affected = editSession.makeCylinder(pos, block, radiusX, radiusZ, height, true);
+        player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }
 

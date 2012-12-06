@@ -234,9 +234,9 @@ public class EditSession {
                 }
             }
         }
-        
+
         boolean result;
-        
+
         if (type == 0) {
             if (fastMode) {
                 result = world.setBlockTypeFast(pt, 0);
@@ -246,7 +246,7 @@ public class EditSession {
         } else {
             result = world.setBlock(pt, block, fastMode);
         }
-        
+
         return result;
     }
 
@@ -1042,33 +1042,12 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int removeNear(Vector pos, int blockType, int size)
-            throws MaxChangedBlocksException {
-        int affected = 0;
+    public int removeNear(Vector pos, int blockType, int size) throws MaxChangedBlocksException {
         BaseBlock air = new BaseBlock(BlockID.AIR);
-
-        int minX = pos.getBlockX() - size;
-        int maxX = pos.getBlockX() + size;
-        int minY = Math.max(0, pos.getBlockY() - size);
-        int maxY = Math.min(world.getMaxY(), pos.getBlockY() + size);
-        int minZ = pos.getBlockZ() - size;
-        int maxZ = pos.getBlockZ() + size;
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int y = minY; y <= maxY; ++y) {
-                for (int z = minZ; z <= maxZ; ++z) {
-                    Vector p = new Vector(x, y, z);
-
-                    if (getBlockType(p) == blockType) {
-                        if (setBlock(p, air)) {
-                            ++affected;
-                        }
-                    }
-                }
-            }
-        }
-
-        return affected;
+        Region region = new CuboidRegion(pos.add(-size, -size, -size),pos.add(size,size,size));
+        ReplaceBlocks op = new ReplaceBlocks(this, region, new SingleBlockPattern(air), new BlockMask(new BaseBlock(blockType)));
+        OperationHelper.completeLegacy(op);
+        return op.getChangeCount();
     }
 
     /**
@@ -1108,7 +1087,7 @@ public class EditSession {
      */
     public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes,
             BaseBlock toBlock) throws MaxChangedBlocksException {
-        
+
         Mask mask = fromBlockTypes != null ? new BlockMask(fromBlockTypes) : new MatchAllMask();
         Pattern pattern = new SingleBlockPattern(toBlock);
         ReplaceBlocks op = new ReplaceBlocks(this, region, pattern, mask);
@@ -1127,7 +1106,7 @@ public class EditSession {
      */
     public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes,
             Pattern pattern) throws MaxChangedBlocksException {
-        
+
         Mask mask = fromBlockTypes != null ? new BlockMask(fromBlockTypes) : new MatchAllMask();
         ReplaceBlocks op = new ReplaceBlocks(this, region, pattern, mask);
         OperationHelper.completeLegacy(op);
@@ -1165,53 +1144,7 @@ public class EditSession {
      */
     public int makeCuboidFaces(Region region, BaseBlock block)
             throws MaxChangedBlocksException {
-        int affected = 0;
-
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
-
-        int minX = min.getBlockX();
-        int minY = min.getBlockY();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxY = max.getBlockY();
-        int maxZ = max.getBlockZ();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int y = minY; y <= maxY; ++y) {
-                if (setBlock(new Vector(x, y, minZ), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(x, y, maxZ), block)) {
-                    ++affected;
-                }
-                ++affected;
-            }
-        }
-
-        for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                if (setBlock(new Vector(minX, y, z), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(maxX, y, z), block)) {
-                    ++affected;
-                }
-            }
-        }
-
-        for (int z = minZ; z <= maxZ; ++z) {
-            for (int x = minX; x <= maxX; ++x) {
-                if (setBlock(new Vector(x, minY, z), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(x, maxY, z), block)) {
-                    ++affected;
-                }
-            }
-        }
-
-        return affected;
+        return makeCuboidFaces(region, new SingleBlockPattern(block));
     }
 
     /**
@@ -1222,8 +1155,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeCuboidFaces(Region region, Pattern pattern)
-            throws MaxChangedBlocksException {
+    public int makeCuboidFaces(Region region, Pattern pattern) throws MaxChangedBlocksException {
         int affected = 0;
 
         Vector min = region.getMinimumPoint();
@@ -1287,44 +1219,8 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeCuboidWalls(Region region, BaseBlock block)
-            throws MaxChangedBlocksException {
-        int affected = 0;
-
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
-
-        int minX = min.getBlockX();
-        int minY = min.getBlockY();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxY = max.getBlockY();
-        int maxZ = max.getBlockZ();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int y = minY; y <= maxY; ++y) {
-                if (setBlock(new Vector(x, y, minZ), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(x, y, maxZ), block)) {
-                    ++affected;
-                }
-                ++affected;
-            }
-        }
-
-        for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                if (setBlock(new Vector(minX, y, z), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(maxX, y, z), block)) {
-                    ++affected;
-                }
-            }
-        }
-
-        return affected;
+    public int makeCuboidWalls(Region region, BaseBlock block) throws MaxChangedBlocksException {
+        return makeCuboidWalls(region, new SingleBlockPattern(block));
     }
 
     /**
@@ -1455,7 +1351,7 @@ public class EditSession {
      */
     public int moveCuboidRegion(Region region, Vector dir, int distance,
             boolean copyAir, BaseBlock replace)
-            throws MaxChangedBlocksException {
+                    throws MaxChangedBlocksException {
         int affected = 0;
 
         Vector shift = dir.multiply(distance);
@@ -1669,83 +1565,30 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int makeCylinder(Vector pos, Pattern block, double radiusX, double radiusZ, int height, boolean filled) throws MaxChangedBlocksException {
-        int affected = 0;
+        if (height==0) return 0;
 
-        radiusX += 0.5;
-        radiusZ += 0.5;
+        int maxY = (int)pos.getY();
+        int minY = (int)pos.getY();
+        if (height>0) maxY+=(height-1);
+        else minY+=(height+1);
 
-        if (height == 0) {
-            return 0;
-        } else if (height < 0) {
-            height = -height;
-            pos = pos.subtract(0, height, 0);
-        }
+        CylinderRegion region = new CylinderRegion(world, pos, new Vector2D(radiusX, radiusZ),minY,maxY);
 
-        if (pos.getBlockY() < 0) {
-            pos = pos.setY(0);
-        } else if (pos.getBlockY() + height - 1 > world.getMaxY()) {
-            height = world.getMaxY() - pos.getBlockY() + 1;
-        }
-
-        final double invRadiusX = 1 / radiusX;
-        final double invRadiusZ = 1 / radiusZ;
-
-        final int ceilRadiusX = (int) Math.ceil(radiusX);
-        final int ceilRadiusZ = (int) Math.ceil(radiusZ);
-
-        double nextXn = 0;
-        forX: for (int x = 0; x <= ceilRadiusX; ++x) {
-            final double xn = nextXn;
-            nextXn = (x + 1) * invRadiusX;
-            double nextZn = 0;
-            forZ: for (int z = 0; z <= ceilRadiusZ; ++z) {
-                final double zn = nextZn;
-                nextZn = (z + 1) * invRadiusZ;
-
-                double distanceSq = lengthSq(xn, zn);
-                if (distanceSq > 1) {
-                    if (z == 0) {
-                        break forX;
-                    }
-                    break forZ;
-                }
-
-                if (!filled) {
-                    if (lengthSq(nextXn, zn) <= 1 && lengthSq(xn, nextZn) <= 1) {
-                        continue;
-                    }
-                }
-
-                for (int y = 0; y < height; ++y) {
-                    if (setBlock(pos.add(x, y, z), block)) {
-                        ++affected;
-                    }
-                    if (setBlock(pos.add(-x, y, z), block)) {
-                        ++affected;
-                    }
-                    if (setBlock(pos.add(x, y, -z), block)) {
-                        ++affected;
-                    }
-                    if (setBlock(pos.add(-x, y, -z), block)) {
-                        ++affected;
-                    }
-                }
-            }
-        }
-
-        return affected;
+        ReplaceBlocks op = new ReplaceBlocks(this, region, block);
+        OperationHelper.completeLegacy(op);
+        return op.getChangeCount();
     }
 
     /**
-    * Makes a sphere.
-    *
-    * @param pos Center of the sphere or ellipsoid
-    * @param block The block pattern to use
-    * @param radius The sphere's radius
-    * @param filled If false, only a shell will be generated.
-    * @return number of blocks changed
-    * @throws MaxChangedBlocksException
-    */
+     * Makes a sphere.
+     *
+     * @param pos Center of the sphere or ellipsoid
+     * @param block The block pattern to use
+     * @param radius The sphere's radius
+     * @param filled If false, only a shell will be generated.
+     * @return number of blocks changed
+     * @throws MaxChangedBlocksException
+     */
     public int makeSphere(Vector pos, Pattern block, double radius, boolean filled) throws MaxChangedBlocksException {
         return makeSphere(pos, block, radius, radius, radius, filled);
     }
@@ -1978,7 +1821,7 @@ public class EditSession {
 
         return affected;
     }
-    
+
     /**
      * Makes pumpkin patches.
      *
