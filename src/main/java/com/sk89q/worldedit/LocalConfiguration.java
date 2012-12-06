@@ -92,6 +92,7 @@ public abstract class LocalConfiguration {
     public boolean logCommands = false;
     public boolean registerHelp = true;
     public int wandItem = ItemID.WOOD_AXE;
+    public boolean noHandBinding = true;
     public boolean superPickaxeDrop = true;
     public boolean superPickaxeManyDrop = true;
     public boolean noDoubleSlash = false;

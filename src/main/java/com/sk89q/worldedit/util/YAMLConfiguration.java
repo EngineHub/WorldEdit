@@ -79,6 +79,7 @@ public class YAMLConfiguration extends LocalConfiguration {
                 superPickaxeDrop);
         superPickaxeManyDrop = config.getBoolean(
                 "super-pickaxe.many-drop-items", superPickaxeManyDrop);
+        noHandBinding = config.getBoolean("no-binding-to-hand", noHandBinding);
         noDoubleSlash = config.getBoolean("no-double-slash", noDoubleSlash);
         useInventory = config.getBoolean("use-inventory.enable", useInventory);
         useInventoryOverride = config.getBoolean("use-inventory.allow-override",
