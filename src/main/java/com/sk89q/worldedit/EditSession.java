@@ -1046,14 +1046,12 @@ public class EditSession {
             throws MaxChangedBlocksException {
         CuboidRegion region = new CuboidRegion(
                 pos.add(-size, -size, -size),
-                pos.add(size, size, size)
-            );
+                pos.add(size, size, size));
         BaseBlock air = new BaseBlock(BlockID.AIR);
         BlockMask blocksToReplace = new BlockMask(new BaseBlock(blockType));
         
         ReplaceBlocks op = new ReplaceBlocks(this, region, new SingleBlockPattern(air),
-                blocksToReplace
-            );
+                blocksToReplace);
         OperationHelper.completeLegacy(op);
         return op.getChangeCount();
     }
@@ -1579,11 +1577,11 @@ public class EditSession {
             int height, boolean filled) throws MaxChangedBlocksException {
         int maxY = pos.getBlockY();
         int minY = maxY;
-        if (height > 0)
+        if (height > 0) {
             maxY += (height - 1);
-        else
+        } else {
             minY += (height + 1);
-
+        }
         CylinderRegion region = new CylinderRegion(world, pos,
                 new Vector2D(radiusX, radiusZ), minY, maxY);
         ReplaceBlocks op = new ReplaceBlocks(this, region, block);
@@ -1592,15 +1590,15 @@ public class EditSession {
     }
 
     /**
-    * Makes a sphere.
-    *
-    * @param pos Center of the sphere or ellipsoid
-    * @param block The block pattern to use
-    * @param radius The sphere's radius
-    * @param filled If false, only a shell will be generated.
-    * @return number of blocks changed
-    * @throws MaxChangedBlocksException
-    */
+     * Makes a sphere.
+     *
+     * @param pos Center of the sphere or ellipsoid
+     * @param block The block pattern to use
+     * @param radius The sphere's radius
+     * @param filled If false, only a shell will be generated.
+     * @return number of blocks changed
+     * @throws MaxChangedBlocksException
+     */
     public int makeSphere(Vector pos, Pattern block, double radius, boolean filled) throws MaxChangedBlocksException {
         return makeSphere(pos, block, radius, radius, radius, filled);
     }
