@@ -194,7 +194,7 @@ public class EditSession {
         final int existing = world.getBlockType(pt);
 
         // Clear the container block so that it doesn't drop items
-        if (BlockType.isContainerBlock(existing) && blockBag == null) {
+        if (BlockType.isContainerBlock(existing)) {
             world.clearContainerBlockContents(pt);
             // Ice turns until water so this has to be done first
         } else if (existing == BlockID.ICE) {
