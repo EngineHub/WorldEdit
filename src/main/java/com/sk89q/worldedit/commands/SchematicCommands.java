@@ -18,12 +18,16 @@
 
 package com.sk89q.worldedit.commands;
 
+import java.io.File;
+import java.io.IOException;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Console;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.FilenameResolutionException;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
@@ -31,9 +35,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.data.DataException;
 import com.sk89q.worldedit.schematic.SchematicFormat;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Commands related to schematics
@@ -213,9 +214,14 @@ public class SchematicCommands {
     public void list(CommandContext args, LocalSession session, LocalPlayer player,
                         EditSession editSession) throws WorldEditException {
         File dir = we.getWorkingDirectoryFile(we.getConfiguration().saveDir);
+        File[] files = dir.listFiles();
+        if (files == null) {
+            throw new FilenameResolutionException(dir.getPath(), "Schematics directory invalid or not found.");
+        }
         StringBuilder build = new StringBuilder("Available schematics (Filename (Format)): ");
         boolean first = true;
-        for (File file : dir.listFiles()) {
+
+        for (File file : files) {
             if (!file.isFile()) {
                 continue;
             }
