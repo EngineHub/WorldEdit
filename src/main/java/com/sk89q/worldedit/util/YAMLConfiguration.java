@@ -73,7 +73,7 @@ public class YAMLConfiguration extends LocalConfiguration {
                 "limits.max-super-pickaxe-size", maxSuperPickaxeSize));
         butcherDefaultRadius = Math.max(-1, config.getInt("limits.butcher-radius.default", butcherDefaultRadius));
         butcherMaxRadius = Math.max(-1, config.getInt("limits.butcher-radius.maximum", butcherMaxRadius));
-        registerHelp = config.getBoolean("register-help");
+        registerHelp = config.getBoolean("register-help", true);
         logCommands = config.getBoolean("logging.log-commands", logCommands);
         superPickaxeDrop = config.getBoolean("super-pickaxe.drop-items",
                 superPickaxeDrop);
