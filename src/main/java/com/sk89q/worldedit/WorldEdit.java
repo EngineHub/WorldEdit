@@ -418,7 +418,7 @@ public class WorldEdit {
             // Parse the block data (optional)
             try {
                 data = (typeAndData.length > 1 && typeAndData[1].length() > 0) ? Integer.parseInt(typeAndData[1]) : (allowNoData ? -1 : 0);
-                if (data > 15 || (data < 0 && !(allAllowed && data == -1))) {
+                if ((data > 15 && !config.allowExtraDataValues) || (data < 0 && !(allAllowed && data == -1))) {
                     data = 0;
                 }
             } catch (NumberFormatException e) {
@@ -443,15 +443,12 @@ public class WorldEdit {
                                     case STONE:
                                         data = 0;
                                         break;
-
                                     case SANDSTONE:
                                         data = 1;
                                         break;
-
                                     case WOOD:
                                         data = 2;
                                         break;
-
                                     case COBBLESTONE:
                                         data = 3;
                                         break;
@@ -460,6 +457,10 @@ public class WorldEdit {
                                         break;
                                     case STONE_BRICK:
                                         data = 5;
+                                        break;
+                                    case NETHER_BRICK:
+                                        data = 6;
+                                        break;
 
                                     default:
                                         throw new InvalidItemException(arg, "Invalid step type '" + typeAndData[1] + "'");

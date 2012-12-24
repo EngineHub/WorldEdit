@@ -73,7 +73,7 @@ public class YAMLConfiguration extends LocalConfiguration {
                 "limits.max-super-pickaxe-size", maxSuperPickaxeSize));
         butcherDefaultRadius = Math.max(-1, config.getInt("limits.butcher-radius.default", butcherDefaultRadius));
         butcherMaxRadius = Math.max(-1, config.getInt("limits.butcher-radius.maximum", butcherMaxRadius));
-        registerHelp = true;
+        registerHelp = config.getBoolean("register-help");
         logCommands = config.getBoolean("logging.log-commands", logCommands);
         superPickaxeDrop = config.getBoolean("super-pickaxe.drop-items",
                 superPickaxeDrop);
@@ -96,6 +96,8 @@ public class YAMLConfiguration extends LocalConfiguration {
         disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
 
         allowedDataCycleBlocks = new HashSet<Integer>(config.getIntList("limits.allowed-data-cycle-blocks", null));
+
+        allowExtraDataValues = config.getBoolean("limits.allow-extra-data-values", false);
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(0, config.getInt("history.size", 15));
         LocalSession.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;

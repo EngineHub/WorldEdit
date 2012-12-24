@@ -328,6 +328,9 @@ public enum ItemType {
     CARROT_ON_A_STICK(ItemID.CARROT_ON_A_STICK, "Carrot on a stick", "carrotonastick", "carrotonstick", "stickcarrot", "carrotstick"),
     NETHER_STAR(ItemID.NETHER_STAR, "Nether star", "netherstar", "starnether"),
     PUMPKIN_PIE(ItemID.PUMPKIN_PIE, "Pumpkin pie", "pumpkinpie"),
+    FIREWORK_ROCKET(ItemID.FIREWORK_ROCKET, "Firework rocket", "firework", "rocket"),
+    FIREWORK_STAR(ItemID.FIREWORK_STAR, "Firework star", "fireworkstar", "fireworkcharge"),
+    ENCHANTED_BOOK(ItemID.ENCHANTED_BOOK, "Enchanted book", "enchantedbook", "spellbook", "enchantedtome", "tome"),
     DISC_13(ItemID.DISC_13, "Music Disc - 13", "disc_13"),
     DISC_CAT(ItemID.DISC_CAT, "Music Disc - Cat", "disc_cat"),
     DISC_BLOCKS(ItemID.DISC_BLOCKS, "Music Disc - blocks", "disc_blocks"),
@@ -553,6 +556,9 @@ public enum ItemType {
         shouldNotStack.add(ItemID.MAP);
         shouldNotStack.add(ItemID.SHEARS);
         shouldNotStack.add(ItemID.HEAD);
+        shouldNotStack.add(ItemID.FIREWORK_ROCKET);
+        shouldNotStack.add(ItemID.FIREWORK_STAR);
+        shouldNotStack.add(ItemID.ENCHANTED_BOOK);
         shouldNotStack.add(ItemID.DISC_13);
         shouldNotStack.add(ItemID.DISC_CAT);
         shouldNotStack.add(ItemID.DISC_BLOCKS);

@@ -434,7 +434,7 @@ public class BukkitWorld extends LocalWorld {
      * Gets the single block inventory for a potentially double chest.
      * Handles people who have an old version of Bukkit.
      * This should be replaced with {@link org.bukkit.block.Chest#getBlockInventory()}
-     * in a few months (now = March 2012)
+     * in a few months (now = March 2012) // note from future dev - lol
      *
      * @param chest The chest to get a single block inventory for
      * @return The chest's inventory

@@ -497,6 +497,7 @@ public class UtilityCommands {
         max = -1
     )
     @Console
+    @CommandPermissions("worldedit.help")
     public void help(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
