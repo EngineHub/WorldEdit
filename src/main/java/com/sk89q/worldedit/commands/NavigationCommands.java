@@ -30,7 +30,6 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.WorldEditPermissionException;
 import com.sk89q.worldedit.WorldVector;
 
 /**
@@ -144,14 +143,9 @@ public class NavigationCommands {
         min = 0,
         max = 0
     )
-    // @CommandPermissions("worldedit.navigation.thru.command") // TODO: Remove old permission
+    @CommandPermissions("worldedit.navigation.thru.command")
     public void thru(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        if (!(player.hasPermission("worldedit.navigation.thru") ||
-                player.hasPermission("worldedit.navigation.thru.command"))) {
-            throw new WorldEditPermissionException();
-        }
-
         if (player.passThroughForwardWall(6)) {
             player.print("Whoosh!");
         } else {
@@ -166,14 +160,9 @@ public class NavigationCommands {
         min = 0,
         max = 0
     )
-    // @CommandPermissions("worldedit.navigation.jumpto.command") //TODO: Remove old permission
+    @CommandPermissions("worldedit.navigation.jumpto.command")
     public void jumpTo(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-
-        if (!(player.hasPermission("worldedit.navigation.jumpto") ||
-                player.hasPermission("worldedit.navigation.jumpto.command"))) {
-            throw new WorldEditPermissionException();
-        }
 
         WorldVector pos = player.getSolidBlockTrace(300);
         if (pos != null) {
