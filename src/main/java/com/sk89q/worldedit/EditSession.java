@@ -2355,7 +2355,7 @@ public class EditSession {
                     }
 
                     // Snow should not cover these blocks
-                    if (BlockType.canPassThrough(id)) {
+                    if (BlockType.isTranslucent(id)) {
                         break;
                     }
 
