@@ -107,6 +107,7 @@ public abstract class LocalConfiguration {
     public int butcherDefaultRadius = -1;
     public int butcherMaxRadius = -1;
     public boolean allowExtraDataValues = false;
+    public boolean allowSymlinks = false;
 
     /**
      * Loads the configuration.

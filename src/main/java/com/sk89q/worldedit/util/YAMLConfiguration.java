@@ -93,6 +93,8 @@ public class YAMLConfiguration extends LocalConfiguration {
 
         saveDir = config.getString("saving.dir", saveDir);
 
+        allowSymlinks = config.getBoolean("files.allow-symbolic-links", false);
+
         disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
 
         allowedDataCycleBlocks = new HashSet<Integer>(config.getIntList("limits.allowed-data-cycle-blocks", null));

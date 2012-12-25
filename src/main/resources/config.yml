@@ -16,6 +16,7 @@
 #
 
 limits:
+    allow-extra-data-values: false
     max-blocks-changed:
         default: -1
         maximum: -1
@@ -55,6 +56,9 @@ scripting:
 
 saving:
     dir: schematics
+
+files:
+    allow-symbolic-links: false
 
 history:
     size: 15

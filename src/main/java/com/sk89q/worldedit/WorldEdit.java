@@ -825,7 +825,7 @@ public class WorldEdit {
             String filePath = f.getCanonicalPath();
             String dirPath = dir.getCanonicalPath();
 
-            if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
+            if (!filePath.substring(0, dirPath.length()).equals(dirPath) && !config.allowSymlinks) {
                 throw new FilenameResolutionException(filename,
                         "Path is outside allowable root");
             }
