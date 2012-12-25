@@ -356,7 +356,7 @@ public class UtilityCommands {
     @Command(
         aliases = { "butcher" },
         usage = "[radius]",
-        flags = "plangf",
+        flags = "plangbf",
         desc = "Kill all or nearby mobs",
         help =
             "Kills nearby mobs, based on radius, if none is given uses default in configuration.\n" +
@@ -365,6 +365,7 @@ public class UtilityCommands {
             "  -n also kills NPCs.\n" +
             "  -g also kills Golems.\n" +
             "  -a also kills animals.\n" +
+            "  -b also kills ambient mobs.\n" +
             "  -f compounds all previous flags.\n" +
             "  -l strikes lightning on each killed mob.",
         min = 0,
@@ -399,6 +400,7 @@ public class UtilityCommands {
         flags.or(KillFlags.NPCS          , args.hasFlag('n'), "worldedit.butcher.npcs");
         flags.or(KillFlags.GOLEMS        , args.hasFlag('g'), "worldedit.butcher.golems");
         flags.or(KillFlags.ANIMALS       , args.hasFlag('a'), "worldedit.butcher.animals");
+        flags.or(KillFlags.AMBIENT       , args.hasFlag('b'), "worldedit.butcher.ambient");
         flags.or(KillFlags.WITH_LIGHTNING, args.hasFlag('l'), "worldedit.butcher.lightning");
 
         int killed;

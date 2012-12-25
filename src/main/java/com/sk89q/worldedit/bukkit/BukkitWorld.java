@@ -43,11 +43,13 @@ import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.Sign;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Ambient;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Golem;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
@@ -58,6 +60,7 @@ import org.bukkit.entity.Painting;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Villager;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -618,6 +621,7 @@ public class BukkitWorld extends LocalWorld {
         boolean killAnimals = (flags & KillFlags.ANIMALS) != 0;
         boolean withLightning = (flags & KillFlags.WITH_LIGHTNING) != 0;
         boolean killGolems = (flags & KillFlags.GOLEMS) != 0;
+        boolean killAmbient = (flags & KillFlags.AMBIENT) != 0;
 
         int num = 0;
         double radiusSq = radius * radius;
@@ -634,22 +638,20 @@ public class BukkitWorld extends LocalWorld {
             }
 
             if (!killPets && ent instanceof Tameable && ((Tameable) ent).isTamed()) {
-                continue; // tamed wolf
+                continue; // tamed pet
             }
 
-            try {
-                // Temporary solution to fix Golems being butchered.
-                if (!killGolems && Class.forName("org.bukkit.entity.Golem").isAssignableFrom(ent.getClass())) {
-                    continue;
-                }
-            } catch (ClassNotFoundException e) {}
+            if (!killGolems && ent instanceof Golem) {
+                continue;
+            }
 
-            try {
-                // Temporary solution until org.bukkit.entity.NPC is widely deployed.
-                if (!killNPCs && Class.forName("org.bukkit.entity.NPC").isAssignableFrom(ent.getClass())) {
-                    continue;
-                }
-            } catch (ClassNotFoundException e) {}
+            if (!killNPCs && ent instanceof Villager) {
+                continue;
+            }
+
+            if (!killAmbient && ent instanceof Ambient) {
+                continue;
+            }
 
             if (radius < 0 || bukkitOrigin.distanceSquared(ent.getLocation()) <= radiusSq) {
                 if (withLightning) {

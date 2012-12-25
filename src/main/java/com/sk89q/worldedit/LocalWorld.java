@@ -51,7 +51,8 @@ public abstract class LocalWorld implements World {
         public static final int NPCS = 1 << 1;
         public static final int ANIMALS = 1 << 2;
         public static final int GOLEMS = 1 << 3;
-        public static final int FRIENDLY = PETS | NPCS | ANIMALS | GOLEMS;
+        public static final int AMBIENT = 1 << 4;
+        public static final int FRIENDLY = PETS | NPCS | ANIMALS | GOLEMS | AMBIENT;
         public static final int WITH_LIGHTNING = 1 << 20;
     }
 
