@@ -44,16 +44,18 @@ import org.bukkit.block.Furnace;
 import org.bukkit.block.Sign;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Animals;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Hanging;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Painting;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Tameable;
 import org.bukkit.inventory.DoubleChestInventory;
@@ -679,8 +681,16 @@ public class BukkitWorld extends LocalWorld {
                 continue;
             }
 
-            if (type == EntityType.ARROWS) {
-                if (ent instanceof Arrow) {
+            if (type == EntityType.ALL) {
+                if (ent instanceof Projectile || ent instanceof Boat || ent instanceof Item
+                        || ent instanceof FallingBlock || ent instanceof Minecart || ent instanceof Hanging
+                        || ent instanceof TNTPrimed || ent instanceof ExperienceOrb) {
+                    ent.remove();
+                    num++;
+                }
+            } else if (type == EntityType.PROJECTILES || type == EntityType.ARROWS) {
+                if (ent instanceof Projectile) {
+                    // covers: arrow, egg, enderpearl, fireball, fish, snowball, throwpotion, thrownexpbottle
                     ent.remove();
                     ++num;
                 }
@@ -706,6 +716,11 @@ public class BukkitWorld extends LocalWorld {
                 }
             } else if (type == EntityType.PAINTINGS) {
                 if (ent instanceof Painting) {
+                    ent.remove();
+                    ++num;
+                }
+            } else if (type == EntityType.ITEM_FRAMES) {
+                if (ent instanceof ItemFrame) {
                     ent.remove();
                     ++num;
                 }

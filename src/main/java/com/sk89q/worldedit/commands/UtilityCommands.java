@@ -460,8 +460,10 @@ public class UtilityCommands {
 
         EntityType type = null;
 
-        if (typeStr.matches("arrows?")) {
-            type = EntityType.ARROWS;
+        if (typeStr.matches("all")) {
+            type = EntityType.ALL;
+        } else if (typeStr.matches("projectiles?|arrows?")) {
+            type = EntityType.PROJECTILES;
         } else if (typeStr.matches("items?")
                 || typeStr.matches("drops?")) {
             type = EntityType.ITEMS;
@@ -470,6 +472,8 @@ public class UtilityCommands {
         } else if (typeStr.matches("paintings?")
                 || typeStr.matches("art")) {
             type = EntityType.PAINTINGS;
+        } else if (typeStr.matches("(item)frames?")) {
+            type = EntityType.ITEM_FRAMES;
         } else if (typeStr.matches("boats?")) {
             type = EntityType.BOATS;
         } else if (typeStr.matches("minecarts?")
@@ -480,7 +484,7 @@ public class UtilityCommands {
         } else if (typeStr.matches("xp")) {
             type = EntityType.XP_ORBS;
         } else {
-            player.printError("Acceptable types: arrows, items, paintings, boats, minecarts, tnt, xp");
+            player.printError("Acceptable types: projectiles, items, paintings, itemframes, boats, minecarts, tnt, xp, or all");
             return;
         }
 
