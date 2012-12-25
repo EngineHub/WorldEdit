@@ -23,12 +23,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTUtils;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.MobType;
 import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.data.InvalidFormatException;
 
 /**
  * A mob spawner block.
@@ -36,9 +38,19 @@ import com.sk89q.worldedit.data.DataException;
  * @author sk89q
  */
 public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
-    
+
     private String mobType;
     private short delay;
+
+    // advanced mob spawner features
+    private short spawnCount;
+    private short spawnRange;
+    private CompoundTag spawnData;
+    private ListTag spawnPotentials;
+    private short minSpawnDelay;
+    private short maxSpawnDelay;
+    private short maxNearbyEntities;
+    private short requiredPlayerRange;
 
     /**
      * Construct the mob spawner block with a pig as the mob type.
@@ -129,6 +141,15 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
         Map<String, Tag> values = new HashMap<String, Tag>();
         values.put("EntityId", new StringTag("EntityId", mobType));
         values.put("Delay", new ShortTag("Delay", delay));
+        values.put("SpawnCount", new ShortTag("SpawnCount", spawnCount));
+        values.put("SpawnRange", new ShortTag("SpawnRange", spawnRange));
+        values.put("MinSpawnDelay", new ShortTag("MinSpawnDelay", minSpawnDelay));
+        values.put("MaxSpawnDelay", new ShortTag("MaxSpawnDelay", maxSpawnDelay));
+        values.put("MaxNearbyEntities", new ShortTag("MaxNearbyEntities", maxNearbyEntities));
+        values.put("RequiredPlayerRange", new ShortTag("RequiredPlayerRange", requiredPlayerRange));
+        values.put("SpawnData", new CompoundTag("SpawnData", spawnData.getValue()));
+        values.put("SpawnPotentials", new ListTag("SpawnPotentials", CompoundTag.class, spawnPotentials.getValue()));
+
         return new CompoundTag(getNbtId(), values);
     }
 
@@ -150,5 +171,35 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
 
         this.mobType = mobTypeTag.getValue();
         this.delay = delayTag.getValue();
+
+        ShortTag spawnCountTag = null;
+        ShortTag spawnRangeTag = null;
+        ShortTag minSpawnDelayTag = null;
+        ShortTag maxSpawnDelayTag = null;
+        ShortTag maxNearbyEntitiesTag = null;
+        ShortTag requiredPlayerRangeTag = null;
+        ListTag spawnPotentialsTag = null;
+        CompoundTag spawnDataTag = null;
+        try {
+            spawnCountTag = NBTUtils.getChildTag(values, "SpawnCount", ShortTag.class);
+            spawnRangeTag = NBTUtils.getChildTag(values, "SpawnRange", ShortTag.class);
+            minSpawnDelayTag = NBTUtils.getChildTag(values, "MinSpawnDelay", ShortTag.class);
+            maxSpawnDelayTag = NBTUtils.getChildTag(values, "MaxSpawnDelay", ShortTag.class);
+            maxNearbyEntitiesTag = NBTUtils.getChildTag(values, "MaxNearbyEntities", ShortTag.class);
+            requiredPlayerRangeTag = NBTUtils.getChildTag(values, "RequiredPlayerRange", ShortTag.class);
+            spawnPotentialsTag = NBTUtils.getChildTag(values, "SpawnPotentials", ListTag.class);
+            spawnDataTag = NBTUtils.getChildTag(values, "SpawnData", CompoundTag.class);
+        } catch (InvalidFormatException e) { // leave tag as null, handle later
+        }
+
+        this.spawnCount = spawnCountTag.getValue();
+        this.spawnRange = spawnRangeTag.getValue();
+        this.minSpawnDelay = minSpawnDelayTag.getValue();
+        this.maxSpawnDelay = maxSpawnDelayTag.getValue();
+        this.maxNearbyEntities = maxNearbyEntitiesTag.getValue();
+        this.requiredPlayerRange = requiredPlayerRangeTag.getValue();
+        this.spawnPotentials = new ListTag("SpawnPotentials", CompoundTag.class, spawnPotentialsTag.getValue());
+        this.spawnData = new CompoundTag("SpawnData", spawnDataTag.getValue());
+
     }
 }
