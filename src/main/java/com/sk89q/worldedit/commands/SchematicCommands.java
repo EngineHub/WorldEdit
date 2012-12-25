@@ -20,6 +20,8 @@ package com.sk89q.worldedit.commands;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -207,7 +209,11 @@ public class SchematicCommands {
     @Command(
             aliases = {"list", "all", "ls"},
             desc = "List available schematics",
-            max = 0
+            max = 0,
+            flags = "dn",
+            help = "List all schematics in the schematics directory\n" +
+                    " -d sorts by date, oldest first\n" +
+                    " -n sorts by date, newest first\n"
     )
     @Console
     @CommandPermissions("worldedit.schematic.list")
@@ -221,14 +227,25 @@ public class SchematicCommands {
         StringBuilder build = new StringBuilder("Available schematics (Filename (Format)): ");
         boolean first = true;
 
+        final int sortType = args.hasFlag('d') ? -1 : args.hasFlag('n') ? 1 : 0;
+        // cleanup file list
+        Arrays.sort(files, new Comparator<File>(){
+            @Override
+            public int compare(File f1, File f2) {
+                if (!f1.isFile() || !f2.isFile()) return -1; // don't care, will get removed
+                // http://stackoverflow.com/questions/203030/best-way-to-list-files-in-java-sorted-by-date-modified
+                int result = sortType == 0 ? f1.getName().compareToIgnoreCase(f2.getName()) : // use name by default
+                    Long.valueOf(f1.lastModified()).compareTo(f2.lastModified()); // use date if there is a flag
+                if (sortType == 1) result = -result; // flip date for newest first instead of oldest first
+                return result;
+            }
+        });
+
         for (File file : files) {
             if (!file.isFile()) {
                 continue;
             }
-
-            if (!first) {
-                build.append(", ");
-            }
+            build.append("\n\u00a79");
             SchematicFormat format = SchematicFormat.getFormat(file);
             build.append(file.getName()).append(": ").append(format == null ? "Unknown" : format.getName());
             first = false;
