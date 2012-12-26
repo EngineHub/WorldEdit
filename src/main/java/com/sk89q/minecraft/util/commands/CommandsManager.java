@@ -450,8 +450,10 @@ public abstract class CommandsManager<T> {
         checkPermission(player, method);
 
         int argsCount = args.length - 1 - level;
+        boolean executeNested = method.isAnnotationPresent(NestedCommand.class)
+                && (argsCount > 0 || !method.getAnnotation(NestedCommand.class).executeBody());
 
-        if (method.isAnnotationPresent(NestedCommand.class) && !method.getAnnotation(NestedCommand.class).executeBody()) {
+        if (executeNested) {
             if (argsCount == 0) {
                 throw new MissingNestedCommandException("Sub-command required.",
                         getNestedUsage(args, level, method, player));
