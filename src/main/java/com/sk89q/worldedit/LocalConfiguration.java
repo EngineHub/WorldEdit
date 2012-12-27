@@ -90,6 +90,7 @@ public abstract class LocalConfiguration {
     public int maxSuperPickaxeSize = 5;
     public int maxBrushRadius = 6;
     public boolean logCommands = false;
+    public String logFile = "";
     public boolean registerHelp = true; // what is the point of this, it's not even used
     public int wandItem = ItemID.WOOD_AXE;
     public boolean superPickaxeDrop = true;

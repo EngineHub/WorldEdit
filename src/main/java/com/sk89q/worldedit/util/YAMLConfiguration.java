@@ -19,18 +19,13 @@
 
 package com.sk89q.worldedit.util;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LogFormat;
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
 
 /**
@@ -41,7 +36,6 @@ import com.sk89q.worldedit.snapshots.SnapshotRepository;
 public class YAMLConfiguration extends LocalConfiguration {
     protected final YAMLProcessor config;
     protected final Logger logger;
-    private FileHandler logFileHandler;
 
     public YAMLConfiguration(YAMLProcessor config, Logger logger) {
         this.config = config;
@@ -60,30 +54,45 @@ public class YAMLConfiguration extends LocalConfiguration {
 
         profile = config.getBoolean("debug", profile);
         wandItem = config.getInt("wand-item", wandItem);
+
         defaultChangeLimit = Math.max(-1, config.getInt(
                 "limits.max-blocks-changed.default", defaultChangeLimit));
         maxChangeLimit = Math.max(-1,
                 config.getInt("limits.max-blocks-changed.maximum", maxChangeLimit));
+
         defaultMaxPolygonalPoints = Math.max(-1,
                 config.getInt("limits.max-polygonal-points.default", defaultMaxPolygonalPoints));
         maxPolygonalPoints = Math.max(-1,
                 config.getInt("limits.max-polygonal-points.maximum", maxPolygonalPoints));
+
         maxRadius = Math.max(-1, config.getInt("limits.max-radius", maxRadius));
+        maxBrushRadius = config.getInt("limits.max-brush-radius", maxBrushRadius);
         maxSuperPickaxeSize = Math.max(1, config.getInt(
                 "limits.max-super-pickaxe-size", maxSuperPickaxeSize));
+
         butcherDefaultRadius = Math.max(-1, config.getInt("limits.butcher-radius.default", butcherDefaultRadius));
         butcherMaxRadius = Math.max(-1, config.getInt("limits.butcher-radius.maximum", butcherMaxRadius));
+
+        disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
+        allowedDataCycleBlocks = new HashSet<Integer>(config.getIntList("limits.allowed-data-cycle-blocks", null));
+
+        allowExtraDataValues = config.getBoolean("limits.allow-extra-data-values", false);
+
+
         registerHelp = config.getBoolean("register-help", true);
         logCommands = config.getBoolean("logging.log-commands", logCommands);
+        logFile = config.getString("logging.file", logFile);
+
         superPickaxeDrop = config.getBoolean("super-pickaxe.drop-items",
                 superPickaxeDrop);
         superPickaxeManyDrop = config.getBoolean(
                 "super-pickaxe.many-drop-items", superPickaxeManyDrop);
+
         noDoubleSlash = config.getBoolean("no-double-slash", noDoubleSlash);
+
         useInventory = config.getBoolean("use-inventory.enable", useInventory);
         useInventoryOverride = config.getBoolean("use-inventory.allow-override",
                 useInventoryOverride);
-        maxBrushRadius = config.getInt("limits.max-brush-radius", maxBrushRadius);
 
         navigationWand = config.getInt("navigation-wand.item", navigationWand);
         navigationWandMaxDistance = config.getInt("navigation-wand.max-distance", navigationWandMaxDistance);
@@ -94,13 +103,6 @@ public class YAMLConfiguration extends LocalConfiguration {
         saveDir = config.getString("saving.dir", saveDir);
 
         allowSymlinks = config.getBoolean("files.allow-symbolic-links", false);
-
-        disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
-
-        allowedDataCycleBlocks = new HashSet<Integer>(config.getIntList("limits.allowed-data-cycle-blocks", null));
-
-        allowExtraDataValues = config.getBoolean("limits.allow-extra-data-values", false);
-
         LocalSession.MAX_HISTORY_SIZE = Math.max(0, config.getInt("history.size", 15));
         LocalSession.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;
 
@@ -112,27 +114,8 @@ public class YAMLConfiguration extends LocalConfiguration {
         String type = config.getString("shell-save-type", "").trim();
         shellSaveType = type.equals("") ? null : type;
 
-        String logFile = config.getString("logging.file", "");
-        if (!logFile.equals("")) {
-            try {
-                logFileHandler = new FileHandler(new File(getWorkingDirectory(),
-                        logFile).getAbsolutePath(), true);
-                logFileHandler.setFormatter(new LogFormat());
-                logger.addHandler(logFileHandler);
-            } catch (IOException e) {
-                logger.log(Level.WARNING, "Could not use log file " + logFile + ": "
-                        + e.getMessage());
-            }
-        } else {
-            for (Handler handler : logger.getHandlers()) {
-                logger.removeHandler(handler);
-            }
-        }
     }
 
     public void unload() {
-        if (logFileHandler != null) {
-            logFileHandler.close();
-        }
     }
 }

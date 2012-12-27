@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
@@ -110,6 +112,7 @@ public class WorldEdit {
      * Logger for debugging.
      */
     public static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+    public final Logger commandLogger = Logger.getLogger("Minecraft.WorldEdit.CommandLogger");
 
     /**
      * Holds the current instance of this class, for static access
@@ -167,6 +170,19 @@ public class WorldEdit {
         instance = this;
         this.server = server;
         this.config = config;
+
+        if (!config.logFile.equals("")) {
+            try {
+                FileHandler logFileHandler;
+                logFileHandler = new FileHandler(new File(config.getWorkingDirectory(),
+                        config.logFile).getAbsolutePath(), true);
+                logFileHandler.setFormatter(new LogFormat());
+                commandLogger.addHandler(logFileHandler);
+            } catch (IOException e) {
+                logger.log(Level.WARNING, "Could not use command log file " + config.logFile + ": "
+                        + e.getMessage());
+            }
+        }
 
         commands = new CommandsManager<LocalPlayer>() {
             @Override
@@ -235,7 +251,7 @@ public class WorldEdit {
                             break;
                         }
                     }
-                    logger.info(msg);
+                    commandLogger.info(msg);
                 }
                 super.invokeMethod(parent, args, player, method, instance, methodArgs, level);
             }

@@ -1,5 +1,7 @@
 package com.sk89q.worldedit.commands;
 
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -7,6 +9,7 @@ import java.util.Set;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
@@ -124,6 +127,7 @@ public class BiomeCommands {
             min = 1,
             max = 1
     )
+    @Logging(REGION)
     @CommandPermissions("worldedit.biome.set")
     public void setBiome(CommandContext args, LocalSession session, LocalPlayer player,
                           EditSession editSession) throws WorldEditException {

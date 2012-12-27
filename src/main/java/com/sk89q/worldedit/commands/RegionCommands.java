@@ -151,6 +151,7 @@ public class RegionCommands {
         min = 1,
         max = 1
     )
+    @Logging(REGION)
     @CommandPermissions("worldedit.region.center")
     public void center(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
