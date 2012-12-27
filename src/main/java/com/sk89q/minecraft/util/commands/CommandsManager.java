@@ -19,19 +19,14 @@
 
 package com.sk89q.minecraft.util.commands;
 
+import com.sk89q.util.StringUtil;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.sk89q.util.StringUtil;
 
 /**
  * <p>Manager for handling commands. This allows you to easily process commands,
@@ -455,8 +450,10 @@ public abstract class CommandsManager<T> {
         checkPermission(player, method);
 
         int argsCount = args.length - 1 - level;
+        boolean executeNested = method.isAnnotationPresent(NestedCommand.class)
+                && (argsCount > 0 || !method.getAnnotation(NestedCommand.class).executeBody());
 
-        if (method.isAnnotationPresent(NestedCommand.class)) {
+        if (executeNested) {
             if (argsCount == 0) {
                 throw new MissingNestedCommandException("Sub-command required.",
                         getNestedUsage(args, level, method, player));
