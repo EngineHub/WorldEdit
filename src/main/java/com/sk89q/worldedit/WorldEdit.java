@@ -1079,7 +1079,7 @@ public class WorldEdit {
             blockBag.flushChanges();
         }
 
-        Set<Integer> missingBlocks = editSession.popMissingBlocks();
+        Map<Integer, Integer> missingBlocks = editSession.popMissingBlocks();
 
         if (missingBlocks.size() > 0) {
             StringBuilder str = new StringBuilder();
@@ -1087,12 +1087,14 @@ public class WorldEdit {
             int size = missingBlocks.size();
             int i = 0;
 
-            for (Integer id : missingBlocks) {
+            for (Integer id : missingBlocks.keySet()) {
                 BlockType type = BlockType.fromID(id);
 
                 str.append(type != null
                         ? type.getName() + " (" + id + ")"
                         : id.toString());
+
+                str.append(" [Amt: " + missingBlocks.get(id) + "]");
 
                 ++i;
 

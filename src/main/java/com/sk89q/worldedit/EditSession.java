@@ -124,7 +124,7 @@ public class EditSession {
     /**
      * List of missing blocks;
      */
-    private Set<Integer> missingBlocks = new HashSet<Integer>();
+    private Map<Integer, Integer> missingBlocks = new HashMap<Integer, Integer>();
 
     /**
      * Mask to cover operations.
@@ -208,7 +208,11 @@ public class EditSession {
                 } catch (UnplaceableBlockException e) {
                     return false;
                 } catch (BlockBagException e) {
-                    missingBlocks.add(type);
+                    if (!missingBlocks.containsKey(type)) {
+                        missingBlocks.put(type, 1);
+                    } else {
+                        missingBlocks.put(type, missingBlocks.get(type) + 1);
+                    }
                     return false;
                 }
             }
@@ -606,9 +610,9 @@ public class EditSession {
      *
      * @return
      */
-    public Set<Integer> popMissingBlocks() {
-        Set<Integer> missingBlocks = this.missingBlocks;
-        this.missingBlocks = new HashSet<Integer>();
+    public Map<Integer, Integer> popMissingBlocks() {
+        Map<Integer, Integer> missingBlocks = this.missingBlocks;
+        this.missingBlocks = new HashMap<Integer, Integer>();
         return missingBlocks;
     }
 
