@@ -291,7 +291,7 @@ public class UtilityCommands {
         double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
 
         int affected = editSession.simulateSnow(session.getPlacementPosition(player), size);
-        player.print(affected + " surfaces covered. Let it snow~");
+        player.print(affected + " surfaces covered. Let it snow!");
     }
 
     @Command(
