@@ -27,9 +27,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
+import com.sk89q.worldedit.commands.BiomeCommands;
 import com.sk89q.worldedit.commands.ChunkCommands;
 import com.sk89q.worldedit.commands.ClipboardCommands;
 import com.sk89q.worldedit.commands.GeneralCommands;
@@ -61,6 +63,7 @@ public class DocumentationPrinter {
     private static List<Class<?>> getCommandClasses(File dir) {
         List<Class<?>> classes = new ArrayList<Class<?>>();
 
+        classes.add(BiomeCommands.class);
         classes.add(ChunkCommands.class);
         classes.add(ClipboardCommands.class);
         classes.add(GeneralCommands.class);
