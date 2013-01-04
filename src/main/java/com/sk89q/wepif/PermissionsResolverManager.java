@@ -19,15 +19,6 @@
 
 package com.sk89q.wepif;
 
-import com.sk89q.util.yaml.YAMLFormat;
-import com.sk89q.util.yaml.YAMLProcessor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
-import org.bukkit.plugin.Plugin;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -36,6 +27,16 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
+
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.plugin.Plugin;
+
+import com.sk89q.util.yaml.YAMLFormat;
+import com.sk89q.util.yaml.YAMLProcessor;
 
 public class PermissionsResolverManager implements PermissionsResolver {
     private static final String CONFIG_HEADER = "#\r\n" +
@@ -90,7 +91,6 @@ public class PermissionsResolverManager implements PermissionsResolver {
     protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[] {
             PluginPermissionsResolver.class,
             PermissionsExResolver.class,
-            bPermissionsResolver.class,
             NijiPermissionsResolver.class,
             DinnerPermsResolver.class,
             FlatFilePermissionsResolver.class
@@ -136,42 +136,52 @@ public class PermissionsResolverManager implements PermissionsResolver {
         logger.info("WEPIF: " + permissionResolver.getDetectionMessage());
     }
 
+    @Override
     public void load() {
         findResolver();
     }
 
+    @Override
     public boolean hasPermission(String name, String permission) {
         return permissionResolver.hasPermission(name, permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, String name, String permission) {
         return permissionResolver.hasPermission(worldName, name, permission);
     }
 
+    @Override
     public boolean inGroup(String player, String group) {
         return permissionResolver.inGroup(player, group);
     }
 
+    @Override
     public String[] getGroups(String player) {
         return permissionResolver.getGroups(player);
     }
 
+    @Override
     public boolean hasPermission(OfflinePlayer player, String permission) {
         return permissionResolver.hasPermission(player, permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
         return permissionResolver.hasPermission(worldName, player, permission);
     }
 
+    @Override
     public boolean inGroup(OfflinePlayer player, String group) {
         return permissionResolver.inGroup(player, group);
     }
 
+    @Override
     public String[] getGroups(OfflinePlayer player) {
         return permissionResolver.getGroups(player);
     }
 
+    @Override
     public String getDetectionMessage() {
         return "Using WEPIF for permissions";
     }
@@ -272,8 +282,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
             String name = plugin.getDescription().getName();
             if (plugin instanceof PermissionsProvider) {
                 setPluginPermissionsResolver(plugin);
-            } else if ("Permissions".equals(name) || "PermissionsEx".equals(name)
-                    || "bPermissions".equals(name)) {
+            } else if ("Permissions".equals(name) || "PermissionsEx".equals(name)) {
                 load();
             }
         }
@@ -283,8 +292,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
             String name = event.getPlugin().getDescription().getName();
 
             if (event.getPlugin() instanceof PermissionsProvider
-                    || "Permissions".equals(name) || "PermissionsEx".equals(name)
-                    || "bPermissions".equals(name)) {
+                    || "Permissions".equals(name) || "PermissionsEx".equals(name)) {
                 load();
             }
         }
