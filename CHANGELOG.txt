@@ -1,3 +1,27 @@
+5.5
+- Added failsafe for when Craftbukkit packaging switches versions. Note that using
+    mismatched WorldEdit and CraftBukkit version will cause data to be lost when
+    copy/pasting or loading certain blocks with advanced data.
+- Updated cardinal directions to match newer Notchian values.
+    Using command that take a direction will now use these directions.
+- Add support for setting skull blocks. Syntax is skull:data|MobType|rotation. MobType
+    can also be a player name.
+- Removed old permissions for jumpto and thru. You must now use jumpto.command
+    or jumpto.tool respectively (or thru.).
+- Added -c flag to //size and //distr. Operates on the clipboard instead of
+    current selection.
+- Added support for rotating wooden logs.
+- Add butcher-radius.maximum and butcher-radius.default to limits section of config.
+- Added -b flag to //butcher to specify ambient mobs (currently only bats)
+- Added -d and -n flags for //schematic list command. Sorts by date by newest/oldest.
+- Added a configuration option to allow symbolic links (for backups, schematics, etc)
+- Improved accuracy of command logging, as well as logging to file correctly. The
+    worldedit.log file (by default) should now be useful.
+- Fixed //snow snowing on some blocks it shouldn't (like stairs)
+- For developers: Added a LocalPlayer argument to the constructors for EditSession in
+    the factory. Also added @NestedCommand(executeBody=true/false) so that base commands
+    can be executed if no subcommands are passed.
+
 5.4.5:
 - Fixed minor check issue with //center.
 
