@@ -434,4 +434,9 @@ class NmsBlock extends BaseBlock implements TileEntityBlock {
                     + foreign.getClass().getCanonicalName());
         }
     }
+
+    public static boolean isValidBlockType(int type) throws NoClassDefFoundError {
+        return type == 0 || (type >= 1 && type < net.minecraft.server.Block.byId.length
+                && net.minecraft.server.Block.byId[type] != null);
+    }
 }
