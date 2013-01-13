@@ -374,7 +374,7 @@ public abstract class LocalPlayer {
         }
 
         // From hey0's code
-        double rot = (getYaw() + yawOffset) % 360; //let's use real yaw now
+        double rot = (getYaw() + yawOffset - 90) % 360;
         if (rot < 0) {
             rot += 360.0;
         }
@@ -389,23 +389,23 @@ public abstract class LocalPlayer {
      */
     private static PlayerDirection getDirection(double rot) {
         if (0 <= rot && rot < 22.5) {
-            return PlayerDirection.SOUTH;
-        } else if (22.5 <= rot && rot < 67.5) {
-            return PlayerDirection.SOUTH_WEST;
-        } else if (67.5 <= rot && rot < 112.5) {
-            return PlayerDirection.WEST;
-        } else if (112.5 <= rot && rot < 157.5) {
-            return PlayerDirection.NORTH_WEST;
-        } else if (157.5 <= rot && rot < 202.5) {
             return PlayerDirection.NORTH;
-        } else if (202.5 <= rot && rot < 247.5) {
+        } else if (22.5 <= rot && rot < 67.5) {
             return PlayerDirection.NORTH_EAST;
-        } else if (247.5 <= rot && rot < 292.5) {
+        } else if (67.5 <= rot && rot < 112.5) {
             return PlayerDirection.EAST;
-        } else if (292.5 <= rot && rot < 337.5) {
+        } else if (112.5 <= rot && rot < 157.5) {
             return PlayerDirection.SOUTH_EAST;
-        } else if (337.5 <= rot && rot < 360.0) {
+        } else if (157.5 <= rot && rot < 202.5) {
             return PlayerDirection.SOUTH;
+        } else if (202.5 <= rot && rot < 247.5) {
+            return PlayerDirection.SOUTH_WEST;
+        } else if (247.5 <= rot && rot < 292.5) {
+            return PlayerDirection.WEST;
+        } else if (292.5 <= rot && rot < 337.5) {
+            return PlayerDirection.NORTH_WEST;
+        } else if (337.5 <= rot && rot < 360.0) {
+            return PlayerDirection.NORTH;
         } else {
             return null;
         }
