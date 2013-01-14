@@ -195,7 +195,7 @@ public class CuboidClipboard {
         final int height = getHeight();
 
         switch (dir) {
-        case NORTH_SOUTH:
+        case WEST_EAST:
             final int wid = (int) Math.ceil(width / 2.0f);
             for (int xs = 0; xs < wid; ++xs) {
                 for (int z = 0; z < length; ++z) {
@@ -214,7 +214,7 @@ public class CuboidClipboard {
 
             break;
 
-        case WEST_EAST:
+        case NORTH_SOUTH:
             final int len = (int) Math.ceil(length / 2.0f);
             for (int zs = 0; zs < len; ++zs) {
                 for (int x = 0; x < width; ++x) {
