@@ -49,7 +49,7 @@
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>dummypermscompat</artifactId>
-      <version>1.6</version>
+      <version>1.7</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
