@@ -91,6 +91,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
             PluginPermissionsResolver.class,
             PermissionsExResolver.class,
             bPermissionsResolver.class,
+            GroupManagerResolver.class,
             NijiPermissionsResolver.class,
             DinnerPermsResolver.class,
             FlatFilePermissionsResolver.class
