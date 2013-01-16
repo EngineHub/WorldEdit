@@ -570,7 +570,7 @@ public class WorldEdit {
                                 else skullType = 3;
                             }
                             if (skullType == 3) {
-                                return new SkullBlock(data, rot, type);
+                                return new SkullBlock(data, rot, type.replace(" ", "_")); // valid MC usernames
                             } else {
                                 return new SkullBlock(data, skullType, rot);
                             }
