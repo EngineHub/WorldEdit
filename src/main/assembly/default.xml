@@ -28,6 +28,7 @@
         <include>LICENSE.txt</include>
         <include>CHANGELOG.txt</include>
         <include>contrib/craftscripts/*</include>
+        <include>contrib/nmsblocks/*.class</include>
       </includes>
     </fileSet>
   </fileSets>
