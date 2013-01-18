@@ -63,6 +63,8 @@ public class WorldEditPlugin extends JavaPlugin {
      */
     public static final String CUI_PLUGIN_CHANNEL = "WECUI";
 
+	public static final String WORLDEDIT_PLUGIN_CHANNEL = "WorldEdit";
+
     /**
      * The server interface that all server-related API goes through.
      */
@@ -113,6 +115,9 @@ public class WorldEditPlugin extends JavaPlugin {
         api = new WorldEditAPI(this);
         getServer().getMessenger().registerIncomingPluginChannel(this, CUI_PLUGIN_CHANNEL, new CUIChannelListener(this));
         getServer().getMessenger().registerOutgoingPluginChannel(this, CUI_PLUGIN_CHANNEL);
+
+	    getServer().getMessenger().registerIncomingPluginChannel(this, WORLDEDIT_PLUGIN_CHANNEL, new WorldEditChannelListener(this));
+	    //getServer().getMessenger().registerOutgoingPluginChannel(this, WORLDEDIT_PLUGIN_CHANNEL); //No outgoing messages exist yet!
 
         // Now we can register events!
         getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);

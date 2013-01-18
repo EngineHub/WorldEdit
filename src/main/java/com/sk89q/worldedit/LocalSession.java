@@ -19,8 +19,11 @@
 
 package com.sk89q.worldedit;
 
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TimeZone;
@@ -655,6 +658,69 @@ public class LocalSession {
     public void setCUIVersion(int CUIVersion) {
         this.cuiVersion = CUIVersion;
     }
+
+	/**
+	 * Executed on an incoming WorldEdit packet (Packet250CustomPayload for default in Minecraft)
+	 */
+	int packetsLeft = 0;
+	byte packetCode = 0;
+	HashSet<?> packetCache;
+
+	class BlockLocation {
+		public final Vector pos;
+		public final int id;
+		public final int data;
+		public BlockLocation(int x, int y, int z, int id, int data) {
+			this.pos = new Vector(x, y, z);
+			this.id = id;
+			this.data = data;
+		}
+	}
+	public void worldEditPacketReceived(LocalPlayer player, DataInputStream packetStream) throws IOException {
+		if(packetsLeft <= 0) {
+			packetCode = packetStream.readByte();
+			packetsLeft = packetStream.readInt();
+			switch (packetCode) {
+				case 'S':
+					if(!player.hasPermission("worldedit.packet.multiset")) {
+						packetsLeft = 0;
+						packetCode = ' ';
+					}
+					packetCache = new HashSet<BlockLocation>();
+					break;
+				default:
+					packetsLeft = 0;
+			}
+			return;
+		}
+
+		packetsLeft--;
+
+		switch (packetCode) {
+			case 'S': //Set multiple blocks
+				int x = packetStream.readInt();
+				int y = packetStream.readShort();
+				int z = packetStream.readInt();
+				int id = packetStream.readShort();
+				int data = packetStream.readShort();
+				((HashSet<BlockLocation>)packetCache).add(new BlockLocation(x, y, z, id, data));
+				break;
+		}
+
+		if(packetsLeft <= 0) {
+			switch(packetCode) {
+				case 'S':
+					if(!player.hasPermission("worldedit.packet.multiset")) return;
+					HashSet<BlockLocation> blocks = (HashSet<BlockLocation>)packetCache;
+					LocalWorld world = player.getWorld();
+					for(BlockLocation block : blocks) {
+						world.setTypeIdAndDataFast(block.pos, block.id, block.data);
+					}
+					packetCache = null;
+					break;
+			}
+		}
+	}
 
     /**
      * Detect date from a user's input.
