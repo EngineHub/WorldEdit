@@ -41,6 +41,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.data.ChunkStore;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
@@ -562,17 +563,27 @@ public class SelectionCommands {
         aliases = { "/count" },
         usage = "<block>",
         desc = "Counts the number of a certain type of block",
+        flags = "d",
         min = 1,
         max = 1
     )
     @CommandPermissions("worldedit.analysis.count")
     public void count(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
-        Set<Integer> searchIDs = we.getBlockIDs(player,
-                args.getString(0), true);
-        player.print("Counted: " +
-                editSession.countBlocks(session.getSelection(player.getWorld()), searchIDs));
+
+        boolean useData = args.hasFlag('d');
+        if (args.getString(0).contains(":")) {
+            useData = true; //override d flag, if they specified data they want it
+        }
+        if (useData) {
+            Set<BaseBlock> searchBlocks = we.getBlocks(player, args.getString(0), true);
+            int count = editSession.countBlocks(session.getSelection(player.getWorld()), searchBlocks);
+            player.print("Counted: " + count);
+        } else {
+            Set<Integer> searchIDs = we.getBlockIDs(player, args.getString(0), true);
+            int count = editSession.countBlock(session.getSelection(player.getWorld()), searchIDs);
+            player.print("Counted: " + count);
+        }
     }
 
     @Command(
@@ -581,42 +592,65 @@ public class SelectionCommands {
         desc = "Get the distribution of blocks in the selection",
         help =
             "Gets the distribution of blocks in the selection.\n" +
-            "The -c flag gets the distribution of your clipboard.",
-        flags = "c",
+            "The -c flag gets the distribution of your clipboard.\n" +
+            "The -d flag separates blocks by data",
+        flags = "cd",
         min = 0,
         max = 0
     )
     @CommandPermissions("worldedit.analysis.distr")
     public void distr(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
-        List<Countable<Integer>> distribution;
+
         int size;
-        
+        boolean useData = args.hasFlag('d');
+        List<Countable<Integer>> distribution = null;
+        List<Countable<BaseBlock>> distributionData = null;
+
         if (args.hasFlag('c')) {
             CuboidClipboard clip = session.getClipboard();
-            distribution = clip.getBlockDistribution();
-            size = clip.getHeight() * clip.getLength() * clip.getWidth();
+            if (useData) {
+                distributionData = clip.getBlockDistributionWithData();
+            } else {
+                distribution = clip.getBlockDistribution();
+            }
+            size = clip.getHeight() * clip.getLength() * clip.getWidth(); 
         } else {
-            distribution = editSession
-                    .getBlockDistribution(session.getSelection(player.getWorld()));
+            if (useData) {
+                distributionData = editSession.getBlockDistributionWithData(session.getSelection(player.getWorld()));
+            } else {
+                distribution = editSession.getBlockDistribution(session.getSelection(player.getWorld()));
+            }
             size = session.getSelection(player.getWorld()).getArea();
         }
-        
-        if (distribution.size() <= 0) {  // *Should* always be true
+
+        if ((useData && distributionData.size() <= 0)
+                || (!useData && distribution.size() <= 0)) {  // *Should* always be false
             player.printError("No blocks counted.");
             return;
         }
-        
+
         player.print("# total blocks: " + size);
 
-        for (Countable<Integer> c : distribution) {
-            BlockType block = BlockType.fromID(c.getID());
-            String str = String.format("%-7s (%.3f%%) %s #%d",
-                    String.valueOf(c.getAmount()),
-                    c.getAmount() / (double) size * 100,
-                    block == null ? "Unknown" : block.getName(), c.getID());
-            player.print(str);
+        if (useData) {
+            for (Countable<BaseBlock> c : distributionData) {
+                String name = BlockType.fromID(c.getID().getId()).getName();
+                String str = String.format("%-7s (%.3f%%) %s #%d:%d",
+                        String.valueOf(c.getAmount()),
+                        c.getAmount() / (double) size * 100,
+                        name == null ? "Unknown" : name,
+                        c.getID().getType(), c.getID().getData());
+                player.print(str);
+            }
+        } else {
+            for (Countable<Integer> c : distribution) {
+                BlockType block = BlockType.fromID(c.getID());
+                String str = String.format("%-7s (%.3f%%) %s #%d",
+                        String.valueOf(c.getAmount()),
+                        c.getAmount() / (double) size * 100,
+                        block == null ? "Unknown" : block.getName(), c.getID());
+                player.print(str);
+            }
         }
     }
 
