@@ -272,4 +272,34 @@ public class BrushCommands {
         player.print(String.format("Gravity brush equipped (%.0f).",
                 radius));
     }
+    
+    @Command(
+            aliases = { "butcher", "kill" },
+            usage = "[radius]",
+            desc = "Butcher brush",
+            help =
+            		"Kills nearby mobs within the specified radius." ,
+            min = 0,
+            max = 1
+    )
+    @CommandPermissions("worldedit.brush.butcher")
+    public void butcherBrush(CommandContext args, LocalSession session,
+                                LocalPlayer player, EditSession editSession) throws WorldEditException {
+
+        LocalConfiguration config = we.getConfiguration();
+
+        double radius = args.argsLength() > 0 ? args.getDouble(0) : 5;
+        if (radius > config.maxBrushRadius) {
+            player.printError("Maximum allowed brush radius: "
+                    + config.maxBrushRadius);
+            return;
+        }
+
+        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        tool.setSize(radius);
+        tool.setBrush(new ButcherBrush(), "worldedit.brush.butcher");
+
+        player.print(String.format("Butcher brush equipped (%.0f).",
+                radius));
+    }
 }
