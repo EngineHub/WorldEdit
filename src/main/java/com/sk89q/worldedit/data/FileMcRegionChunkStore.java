@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Pattern;
 
 public class FileMcRegionChunkStore extends McRegionChunkStore {
     /**
@@ -44,19 +45,19 @@ public class FileMcRegionChunkStore extends McRegionChunkStore {
     @Override
     protected InputStream getInputStream(String name, String world) throws IOException,
             DataException {
-        String fileName = "region" + File.separator + name;
-        File file = new File(path, fileName.replace("mcr", "mca")); // TODO: does this need a separate class?
-        if (!file.exists()) {
-            file = new File(path, fileName);
-        }
-        if (!file.exists()) {
-            file = new File(path, "DIM-1" + File.separator + fileName.replace("mcr", "mca")); // TODO: does this need a separate class?
-        }
-        if (!file.exists()) {
-            file = new File(path, "DIM-1" + File.separator + fileName);
+        Pattern ext = Pattern.compile(".*\\.mc[ra]$"); // allow either file extension, both work the same
+        File file = null;
+        for (File f : new File(path, "region" + File.separator).listFiles()) {
+            String tempName = f.getName().replaceFirst("mcr$", "mca"); // matcher only does one at a time
+            if (ext.matcher(f.getName()).matches() && name.equalsIgnoreCase(tempName)) {
+                // get full original path now
+                file = new File(path + File.separator + "region" + File.separator + f.getName());
+                break;
+            }
         }
 
         try {
+            if (file == null) throw new FileNotFoundException();
             return new FileInputStream(file);
         } catch (FileNotFoundException e) {
             throw new MissingChunkException();
