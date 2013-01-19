@@ -27,16 +27,25 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.LocalWorld.KillFlags;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.commands.UtilityCommands.FlagContainer;
 import com.sk89q.worldedit.masks.BlockMask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.tools.BrushTool;
-import com.sk89q.worldedit.tools.brushes.*;
+import com.sk89q.worldedit.tools.brushes.ButcherBrush;
+import com.sk89q.worldedit.tools.brushes.ClipboardBrush;
+import com.sk89q.worldedit.tools.brushes.CylinderBrush;
+import com.sk89q.worldedit.tools.brushes.GravityBrush;
+import com.sk89q.worldedit.tools.brushes.HollowCylinderBrush;
+import com.sk89q.worldedit.tools.brushes.HollowSphereBrush;
+import com.sk89q.worldedit.tools.brushes.SmoothBrush;
+import com.sk89q.worldedit.tools.brushes.SphereBrush;
 
 /**
  * Brush shape commands.
@@ -270,6 +279,55 @@ public class BrushCommands {
         tool.setBrush(new GravityBrush(args.hasFlag('h')), "worldedit.brush.gravity");
 
         player.print(String.format("Gravity brush equipped (%.0f).",
+                radius));
+    }
+    
+    @Command(
+            aliases = { "butcher", "kill" },
+            usage = "[radius] [command flags]",
+            desc = "Butcher brush",
+            help = "Kills nearby mobs within the specified radius.\n" +
+                   "Any number of 'flags' that the //butcher command uses\n" +
+                   "may be specified as an argument",
+            min = 0,
+            max = 2
+    )
+    @CommandPermissions("worldedit.brush.butcher")
+    public void butcherBrush(CommandContext args, LocalSession session,
+                                LocalPlayer player, EditSession editSession) throws WorldEditException {
+
+        LocalConfiguration config = we.getConfiguration();
+
+        double radius = args.argsLength() > 0 ? args.getDouble(0) : 5;
+        double maxRadius = config.maxBrushRadius;
+        // hmmmm not horribly worried about this because -1 is still rather efficient,
+        // the problem arises when butcherMaxRadius is some really high number but not infinite
+        // - original idea taken from https://github.com/sk89q/worldedit/pull/198#issuecomment-6463108
+        if (player.hasPermission("worldedit. butcher")) {
+            maxRadius = Math.max(config.maxBrushRadius, config.butcherMaxRadius);
+        }
+        if (radius > maxRadius) {
+            player.printError("Maximum allowed brush radius: " + maxRadius);
+            return;
+        }
+
+        FlagContainer flags = new FlagContainer(player);
+        if (args.argsLength() == 2) {
+            String flagString = args.getString(1);
+            // straight from the command, using contains instead of hasflag
+            flags.or(KillFlags.FRIENDLY      , flagString.contains("f"));
+            flags.or(KillFlags.PETS          , flagString.contains("p"), "worldedit.butcher.pets");
+            flags.or(KillFlags.NPCS          , flagString.contains("n"), "worldedit.butcher.npcs");
+            flags.or(KillFlags.GOLEMS        , flagString.contains("g"), "worldedit.butcher.golems");
+            flags.or(KillFlags.ANIMALS       , flagString.contains("a"), "worldedit.butcher.animals");
+            flags.or(KillFlags.AMBIENT       , flagString.contains("b"), "worldedit.butcher.ambient");
+            flags.or(KillFlags.WITH_LIGHTNING, flagString.contains("l"), "worldedit.butcher.lightning");
+        }
+        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        tool.setSize(radius);
+        tool.setBrush(new ButcherBrush(flags.flags), "worldedit.brush.butcher");
+
+        player.print(String.format("Butcher brush equipped (%.0f).",
                 radius));
     }
 }

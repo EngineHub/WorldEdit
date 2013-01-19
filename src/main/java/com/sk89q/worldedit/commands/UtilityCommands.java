@@ -402,6 +402,7 @@ public class UtilityCommands {
         flags.or(KillFlags.ANIMALS       , args.hasFlag('a'), "worldedit.butcher.animals");
         flags.or(KillFlags.AMBIENT       , args.hasFlag('b'), "worldedit.butcher.ambient");
         flags.or(KillFlags.WITH_LIGHTNING, args.hasFlag('l'), "worldedit.butcher.lightning");
+        // If you add flags here, please add them to com.sk89q.worldedit.tools.brushes.ButcherBrush as well
 
         int killed;
         if (player.isPlayer()) {
@@ -420,7 +421,7 @@ public class UtilityCommands {
         }
     }
 
-    public class FlagContainer {
+    public static class FlagContainer {
         private final LocalPlayer player;
         public int flags = 0;
         public FlagContainer(LocalPlayer player) {
