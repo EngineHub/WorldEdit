@@ -247,12 +247,13 @@ public class CBXNmsBlock_146 extends NmsBlock {
 
         CraftWorld craftWorld = ((CraftWorld) world.getWorld());
 
-        boolean changed = craftWorld.getHandle().setRawTypeIdAndData(
-                x, y, z, block.getId(), block.getData());
+        boolean changed = craftWorld.getHandle().setRawTypeId(x, y, z, block.getId());
 
         if (block instanceof BaseBlock) {
             world.copyToWorld(position, (BaseBlock) block);
         }
+
+        changed = craftWorld.getHandle().setRawData(x, y, z, block.getData()) || changed;
 
         if (changed) {
             if (notifyAdjacent) {

@@ -122,6 +122,8 @@ public class BukkitWorld extends LocalWorld {
         this.world = world;
 
         // check if we have a class we can use for nms access
+
+        // only run once per server startup
         if (nmsBlockType != null) return;
         Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
         if (!(plugin instanceof WorldEditPlugin)) return; // hopefully never happens
@@ -132,12 +134,20 @@ public class BukkitWorld extends LocalWorld {
             return;
         }
         try {
+            // make a classloader that can handle our blocks
             NmsBlockClassLoader loader = new NmsBlockClassLoader(BukkitWorld.class.getClassLoader(), nmsBlocksDir);
             String filename;
             for (File f : nmsBlocksDir.listFiles()) {
                 if (!f.isFile()) continue;
                 filename = f.getName();
-                Class<?> testBlock = loader.loadClass("CL-NMS" + filename);
+                // load class using magic keyword
+                Class<?> testBlock = null;
+                try {
+                    testBlock = loader.loadClass("CL-NMS" + filename);
+                } catch (Throwable e) {
+                    // someone is putting things where they don't belong
+                    continue;
+                }
                 filename = filename.replaceFirst(".class$", ""); // get rid of extension
                 if (NmsBlock.class.isAssignableFrom(testBlock)) {
                     // got a NmsBlock, test it now
@@ -160,7 +170,7 @@ public class BukkitWorld extends LocalWorld {
                 }
             }
             if (nmsBlockType != null) {
-                // logger.info("Found nms block class, using: " + nmsBlockType);
+                logger.info("[WorldEdit] Using external NmsBlock for this version: " + nmsBlockType.getName());
             } else {
                 // try our default
                 try {
@@ -172,7 +182,7 @@ public class BukkitWorld extends LocalWorld {
                         nmsGetMethod = nmsBlockType.getMethod("get", World.class, Vector.class, int.class, int.class);
                         nmsSetSafeMethod = nmsBlockType.getMethod("setSafely",
                                 BukkitWorld.class, Vector.class, com.sk89q.worldedit.foundation.Block.class, boolean.class);
-                        logger.info("[WorldEdit] Using inbuilt NmsBlock for this version of WorldEdit.");
+                        logger.info("[WorldEdit] Using inbuilt NmsBlock for this version.");
                     }
                 } catch (Throwable e) {
                     // OMG DEVS WAI U NO SUPPORT <xyz> SERVER

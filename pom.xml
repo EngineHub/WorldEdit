@@ -135,6 +135,14 @@
           <include>config.yml</include>
         </includes>
       </resource>
+      <resource>
+        <targetPath>nmsblocks/</targetPath>
+        <filtering>false</filtering>
+        <directory>${basedir}/src/main/resources/nmsblocks/</directory>
+        <includes>
+          <include>*.class</include>
+        </includes>
+      </resource>
     </resources>
 
     <plugins>
