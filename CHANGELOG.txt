@@ -1,3 +1,13 @@
+5.5.1
+- Added support for multiple versions of Minecraft. A folder will be created in
+    plugins/WorldEdit/nmsblocks which contains different class files which will be
+    dynamically checked for compatibility with the current minecraft version.
+- Added -d flags to //count and //distr, which allow separating blocks by data values.
+- Added a butcher brush (//brush butcher) which works like the command in a brush. The flags
+    for the command can be passed an an argument for the brush.
+- Fixed an issue with use-inventory where container blocks will spill when being removed.
+- Added a setting to allow creative mode players to override use-inventory.
+
 5.5
 - Added failsafe for when Craftbukkit packaging switches versions. Note that using
     mismatched WorldEdit and CraftBukkit version will cause data to be lost when
