@@ -124,7 +124,7 @@ public class BukkitWorld extends LocalWorld {
         // check if we have a class we can use for nms access
 
         // only run once per server startup
-        if (nmsBlockType != null) return;
+        if (nmsBlockType != null || skipNmsAccess || skipNmsSafeSet || skipNmsValidBlockCheck) return;
         Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
         if (!(plugin instanceof WorldEditPlugin)) return; // hopefully never happens
         WorldEditPlugin wePlugin = ((WorldEditPlugin) plugin);
