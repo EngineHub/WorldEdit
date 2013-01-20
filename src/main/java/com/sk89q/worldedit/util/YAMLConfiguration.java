@@ -93,6 +93,8 @@ public class YAMLConfiguration extends LocalConfiguration {
         useInventory = config.getBoolean("use-inventory.enable", useInventory);
         useInventoryOverride = config.getBoolean("use-inventory.allow-override",
                 useInventoryOverride);
+        useInventoryCreativeOverride = config.getBoolean("use-inventory.creative-mode-overrides",
+                useInventoryCreativeOverride);
 
         navigationWand = config.getInt("navigation-wand.item", navigationWand);
         navigationWandMaxDistance = config.getInt("navigation-wand.max-distance", navigationWandMaxDistance);

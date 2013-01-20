@@ -34,6 +34,7 @@ limits:
 use-inventory:
     enable: false
     allow-override: true
+    creative-mode-overrides: false
 
 logging:
     log-commands: false

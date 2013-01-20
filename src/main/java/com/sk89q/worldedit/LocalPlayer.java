@@ -20,6 +20,7 @@
 package com.sk89q.worldedit;
 
 import java.io.File;
+
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
@@ -668,5 +669,9 @@ public abstract class LocalPlayer {
 
     public boolean isPlayer() {
         return true;
+    }
+
+    public boolean hasCreativeMode() {
+        return false;
     }
 }

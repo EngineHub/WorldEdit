@@ -98,6 +98,7 @@ public abstract class LocalConfiguration {
     public boolean noDoubleSlash = false;
     public boolean useInventory = false;
     public boolean useInventoryOverride = false;
+    public boolean useInventoryCreativeOverride = false;
     public int navigationWand = ItemID.COMPASS;
     public int navigationWandMaxDistance = 50;
     public int scriptTimeout = 3000;
