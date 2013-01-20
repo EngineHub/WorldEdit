@@ -52,6 +52,11 @@ public class WorldEditCUIMessage implements Message {
     }
 
     @Override
+    public boolean isAsync() {
+        return false;
+    }
+
+    @Override
     public int getChannelId() {
         return DEFAULT_CHANNEL;
     }

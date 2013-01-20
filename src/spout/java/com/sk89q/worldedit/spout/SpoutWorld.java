@@ -50,17 +50,18 @@ import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.math.Vector3;
-import org.spout.vanilla.component.substance.Item;
-import org.spout.vanilla.component.substance.Painting;
-import org.spout.vanilla.component.substance.XPOrb;
-import org.spout.vanilla.component.substance.object.Tnt;
-import org.spout.vanilla.component.substance.object.projectile.Arrow;
-import org.spout.vanilla.component.substance.object.vehicle.Boat;
-import org.spout.vanilla.component.substance.object.vehicle.Minecart;
-import org.spout.vanilla.material.VanillaMaterial;
-import org.spout.vanilla.material.VanillaMaterials;
-import org.spout.vanilla.world.generator.normal.object.tree.TreeObject;
-import org.spout.vanilla.world.generator.normal.object.tree.SmallTreeObject;
+import org.spout.vanilla.plugin.component.substance.Item;
+import org.spout.vanilla.plugin.component.substance.Painting;
+import org.spout.vanilla.plugin.component.substance.XPOrb;
+import org.spout.vanilla.plugin.component.substance.object.Tnt;
+import org.spout.vanilla.plugin.component.substance.object.projectile.Arrow;
+import org.spout.vanilla.plugin.component.substance.object.vehicle.Boat;
+import org.spout.vanilla.plugin.component.substance.object.vehicle.Minecart;
+import org.spout.vanilla.api.material.VanillaMaterial;
+import org.spout.vanilla.plugin.material.VanillaMaterials;
+import org.spout.vanilla.plugin.world.generator.normal.object.tree.TreeObject;
+import org.spout.vanilla.plugin.world.generator.normal.object.tree.SmallTreeObject;
+import org.spout.vanilla.plugin.world.generator.object.VanillaObjects;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -97,6 +98,24 @@ public class SpoutWorld extends LocalWorld {
         return world.getName();
     }
 
+    public Material getSpoutMaterial(int id) {
+        switch (id) {
+            case 0:
+                return BlockMaterial.AIR;
+            default:
+                return VanillaMaterials.getMaterial((short) id);
+        }
+    }
+
+    public Material getSpoutMaterial(int id, int data) {
+        switch (id) {
+            case 0:
+                return BlockMaterial.AIR;
+            default:
+                return VanillaMaterials.getMaterial((short) id, (short) data);
+        }
+    }
+
     /**
      * Set block type.
      *
@@ -106,7 +125,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean setBlockType(Vector pt, int type) {
-        Material mat = VanillaMaterials.getMaterial((short) type);
+        Material mat = getSpoutMaterial(type);
         if (mat != null && mat instanceof BlockMaterial) {
             final int x = pt.getBlockX();
             final int y = pt.getBlockY();
@@ -137,7 +156,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean setTypeIdAndData(Vector pt, int type, int data) {
-        Material mat = VanillaMaterials.getMaterial((short) type, (short) data);
+        Material mat = getSpoutMaterial(type, data);
         if (mat != null && mat instanceof BlockMaterial) {
             final int x = pt.getBlockX();
             final int y = pt.getBlockY();
@@ -454,6 +473,7 @@ public class SpoutWorld extends LocalWorld {
     @Override
     public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector pt)
             throws MaxChangedBlocksException {
+        //VanillaObjects.byName()
         TreeObject tree = new SmallTreeObject(); //TODO: properly check for tree type
         if (!tree.canPlaceObject(world, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ())) {
             return false;
@@ -722,7 +742,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean isValidBlockType(int type) {
-        return VanillaMaterials.getMaterial((short)type) instanceof BlockMaterial;
+        return getSpoutMaterial(type) instanceof BlockMaterial;
     }
 
     @Override
@@ -745,7 +765,7 @@ public class SpoutWorld extends LocalWorld {
 
     @Override
     public int getMaxY() {
-        return world.getHeight() - 1;
+        return world.getHeight() - 1; //TODO: We have infinite-height worlds now
     }
 
     @Override

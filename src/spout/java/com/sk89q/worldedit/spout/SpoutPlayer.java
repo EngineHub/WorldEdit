@@ -31,15 +31,15 @@ import com.sk89q.worldedit.cui.CUIEvent;
 
 import org.spout.api.Client;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.component.components.TransformComponent;
+import org.spout.api.component.impl.TransformComponent;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.entity.Player;
-import org.spout.vanilla.component.inventory.PlayerInventory;
-import org.spout.vanilla.component.living.neutral.Human;
-import org.spout.vanilla.material.VanillaMaterial;
-import org.spout.vanilla.material.VanillaMaterials;
+import org.spout.vanilla.api.inventory.Slot;
+import org.spout.vanilla.plugin.component.inventory.PlayerInventory;
+import org.spout.vanilla.plugin.component.living.neutral.Human;
+import org.spout.vanilla.api.material.VanillaMaterial;
+import org.spout.vanilla.plugin.material.VanillaMaterials;
 
 public class SpoutPlayer extends LocalPlayer {
     private Player player;
@@ -55,8 +55,11 @@ public class SpoutPlayer extends LocalPlayer {
     @Override
     public int getItemInHand() {
         if (player.has(Human.class)) {
-            return ((VanillaMaterial) player.get(PlayerInventory.class).getQuickbar()
-                    .getCurrentItem().getMaterial()).getMinecraftId();
+            Slot slot = player.get(PlayerInventory.class).getQuickbar().getSelectedSlot();
+            if (slot.get() == null) {
+                return 0;
+            }
+            return ((VanillaMaterial) slot.get().getMaterial()).getMinecraftId();
         } else {
             return 0;
         }
