@@ -20,7 +20,6 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event.Result;
@@ -29,8 +28,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.WorldEdit;
@@ -67,6 +69,12 @@ public class WorldEditListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         plugin.getWorldEdit().markExpire(plugin.wrapPlayer(event.getPlayer()));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onGamemode(PlayerGameModeChangeEvent event) {
+        // this will automatically refresh their sesssion, we don't have to do anything
+        WorldEdit.getInstance().getSession(plugin.wrapPlayer(event.getPlayer()));
     }
 
     /**
@@ -129,6 +137,7 @@ public class WorldEditListener implements Listener {
 
             if (!ignoreLeftClickAir) {
                 final int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    @Override
                     public void run() {
                         ignoreLeftClickAir = false;
                     }
