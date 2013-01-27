@@ -227,7 +227,6 @@ public class BukkitWorld extends LocalWorld {
 
                 return defineClass(name.replaceFirst(".class$", ""), classData, 0, classData.length);
             } catch (Throwable e) {
-                e.printStackTrace();
                 throw new ClassNotFoundException();
             }
         }
