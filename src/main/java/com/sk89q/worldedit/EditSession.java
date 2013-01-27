@@ -2508,7 +2508,6 @@ public class EditSession {
         int h = prng.nextInt(3) - 1;
 
         BaseBlock log = new BaseBlock(BlockID.LOG);
-        BaseBlock pumpkin = new BaseBlock(BlockID.PUMPKIN);
 
         switch (t) {
         case 0:
@@ -2518,7 +2517,7 @@ public class EditSession {
             if (prng.nextBoolean()) {
                 setBlockIfAir(pos.add(1, h, -1), log);
             }
-            setBlockIfAir(pos.add(0, 0, -1), pumpkin);
+            setBlockIfAir(pos.add(0, 0, -1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
             break;
 
         case 1:
@@ -2528,7 +2527,7 @@ public class EditSession {
             if (prng.nextBoolean()) {
                 setBlockIfAir(pos.add(1, h, 0), log);
             }
-            setBlockIfAir(pos.add(1, 0, 1), pumpkin);
+            setBlockIfAir(pos.add(1, 0, 1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
             break;
 
         case 2:
@@ -2538,7 +2537,7 @@ public class EditSession {
             if (prng.nextBoolean()) {
                 setBlockIfAir(pos.add(-1, h, 0), log);
             }
-            setBlockIfAir(pos.add(-1, 0, 1), pumpkin);
+            setBlockIfAir(pos.add(-1, 0, 1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
             break;
 
         case 3:
@@ -2548,7 +2547,7 @@ public class EditSession {
             if (prng.nextBoolean()) {
                 setBlockIfAir(pos.add(-1, h, -1), log);
             }
-            setBlockIfAir(pos.add(-1, 0, -1), pumpkin);
+            setBlockIfAir(pos.add(-1, 0, -1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
             break;
         }
     }
