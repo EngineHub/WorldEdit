@@ -91,6 +91,7 @@ public final class BlockData {
 
         case BlockID.LEVER:
         case BlockID.STONE_BUTTON:
+        case BlockID.WOODEN_BUTTON:
             int thrown = data & 0x8;
             int withoutThrown = data & ~0x8;
             switch (withoutThrown) {
@@ -265,6 +266,7 @@ public final class BlockData {
 
         case BlockID.LEVER:
         case BlockID.STONE_BUTTON:
+        case BlockID.WOODEN_BUTTON:
             int thrown = data & 0x8;
             int withoutThrown = data & ~0x8;
             switch (withoutThrown) {
@@ -417,6 +419,7 @@ public final class BlockData {
 
         case BlockID.LEVER:
         case BlockID.STONE_BUTTON:
+        case BlockID.WOODEN_BUTTON:
             switch (data & ~0x8) {
             case 1: return data + flipX;
             case 2: return data - flipX;
