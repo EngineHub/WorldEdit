@@ -34,7 +34,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.block.BlockFace;
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 import org.spout.api.math.Vector3;
 import org.spout.api.entity.Player;
 
@@ -91,9 +91,9 @@ public class SpoutUtil {
     public static Point center(Point loc) {
         return new Point(
                 loc.getWorld(),
-                MathHelper.floor(loc.getX()) + 0.5F,
-                MathHelper.floor(loc.getY()) + 0.5F,
-                MathHelper.floor(loc.getZ()) + 0.5F
+                GenericMath.floor(loc.getX()) + 0.5F,
+                GenericMath.floor(loc.getY()) + 0.5F,
+                GenericMath.floor(loc.getZ()) + 0.5F
         );
     }
 
@@ -110,6 +110,7 @@ public class SpoutUtil {
     }
 
     public static Location toLocation(Entity ent) {
-        return new Location(getLocalWorld(ent.getWorld()), toVector(ent.getTransform().getPosition()), ent.getTransform().getYaw(), ent.getTransform().getPitch());
+        return new Location(getLocalWorld(ent.getWorld()), toVector(ent.getScene().getPosition()),
+                ent.getScene().getRotation().getYaw(), ent.getScene().getRotation().getPitch());
     }
 }

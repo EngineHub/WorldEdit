@@ -23,8 +23,6 @@ package com.sk89q.worldedit.spout;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
@@ -41,7 +39,6 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import org.spout.api.component.Component;
 import org.spout.api.entity.Entity;
-import org.spout.api.event.cause.PluginCause;
 import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -49,19 +46,17 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
-import org.spout.api.math.Vector3;
-import org.spout.vanilla.plugin.component.substance.Item;
 import org.spout.vanilla.plugin.component.substance.Painting;
 import org.spout.vanilla.plugin.component.substance.XPOrb;
+import org.spout.vanilla.plugin.component.substance.object.Item;
 import org.spout.vanilla.plugin.component.substance.object.Tnt;
 import org.spout.vanilla.plugin.component.substance.object.projectile.Arrow;
 import org.spout.vanilla.plugin.component.substance.object.vehicle.Boat;
-import org.spout.vanilla.plugin.component.substance.object.vehicle.Minecart;
 import org.spout.vanilla.api.material.VanillaMaterial;
+import org.spout.vanilla.plugin.component.substance.object.vehicle.minecart.Minecart;
 import org.spout.vanilla.plugin.material.VanillaMaterials;
 import org.spout.vanilla.plugin.world.generator.normal.object.tree.TreeObject;
 import org.spout.vanilla.plugin.world.generator.normal.object.tree.SmallTreeObject;
-import org.spout.vanilla.plugin.world.generator.object.VanillaObjects;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -561,7 +556,7 @@ public class SpoutWorld extends LocalWorld {
 
         for (Entity ent : world.getAll()) {
             if (radius != -1
-                    && origin.distanceSq(SpoutUtil.toVector(ent.getTransform().getPosition())) > radiusSq) {
+                    && origin.distanceSq(SpoutUtil.toVector(ent.getScene().getPosition())) > radiusSq) {
                 continue;
             }
 
@@ -805,7 +800,7 @@ public class SpoutWorld extends LocalWorld {
                 continue;
             }
             for (Entity ent : chunk.getEntities()) {
-                if (region.contains(SpoutUtil.toVector(ent.getTransform().getPosition()))) {
+                if (region.contains(SpoutUtil.toVector(ent.getScene().getPosition()))) {
                     Collection<Class<? extends Component>> revisedComponents = Collections2.transform(ent.values(), new Function<Component, Class<? extends Component>>() {
                         @Override
                         public Class<? extends Component> apply(@Nullable Component component) {

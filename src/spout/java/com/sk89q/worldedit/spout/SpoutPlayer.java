@@ -31,10 +31,12 @@ import com.sk89q.worldedit.cui.CUIEvent;
 
 import org.spout.api.Client;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.component.impl.TransformComponent;
+import org.spout.api.component.impl.SceneComponent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.entity.Player;
+import org.spout.api.math.QuaternionMath;
+import org.spout.api.math.Vector3;
 import org.spout.vanilla.api.inventory.Slot;
 import org.spout.vanilla.plugin.component.inventory.PlayerInventory;
 import org.spout.vanilla.plugin.component.living.neutral.Human;
@@ -72,19 +74,19 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public WorldVector getPosition() {
-        Point loc = player.getTransform().getPosition();
+        Point loc = player.getScene().getPosition();
         return new WorldVector(SpoutUtil.getLocalWorld(loc.getWorld()),
                 loc.getX(), loc.getY(), loc.getZ());
     }
 
     @Override
     public double getPitch() {
-        return player.getTransform().getPitch();
+        return player.getScene().getRotation().getYaw();
     }
 
     @Override
     public double getYaw() {
-        return player.getTransform().getYaw();
+        return player.getScene().getRotation().getYaw();
     }
 
     @Override
@@ -124,10 +126,9 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public void setPosition(Vector pos, float pitch, float yaw) {
-        TransformComponent component = player.getTransform();
+        SceneComponent component = player.getScene();
         player.teleport(SpoutUtil.toPoint(player.getWorld(), pos));
-        component.setPitch(pitch);
-        component.setYaw(yaw);
+        component.setRotation(QuaternionMath.rotation(pitch, yaw, component.getRotation().getRoll()));
     }
 
     @Override
