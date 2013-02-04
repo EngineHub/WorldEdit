@@ -44,8 +44,10 @@ import com.sk89q.worldedit.tools.brushes.CylinderBrush;
 import com.sk89q.worldedit.tools.brushes.GravityBrush;
 import com.sk89q.worldedit.tools.brushes.HollowCylinderBrush;
 import com.sk89q.worldedit.tools.brushes.HollowSphereBrush;
+import com.sk89q.worldedit.tools.brushes.OverlayBrush;
 import com.sk89q.worldedit.tools.brushes.SmoothBrush;
 import com.sk89q.worldedit.tools.brushes.SphereBrush;
+import java.util.Set;
 
 /**
  * Brush shape commands.
@@ -218,6 +220,46 @@ public class BrushCommands {
                 radius, iterations));
     }
 
+    @Command(
+        aliases = { "overlay", "o"},
+        usage = "<groundblocks> <pattern> [radius] ",
+        desc = "Overlay blocks",
+        flags = "r",
+        help = "Overlays blocks\n" + 
+            "Use the -r flag if you want to replace existing blocks",
+        min = 2,
+        max = 3
+    )
+    
+    @CommandPermissions("worldedit.brush.overlay")
+    public void overlayBrush(CommandContext args, LocalSession session,
+            LocalPlayer player, EditSession editSession) throws WorldEditException{
+        LocalConfiguration config = we.getConfiguration();
+        
+        Set<BaseBlock> groundBlocks = we.getBlocks(player, args.getString(0));
+        Pattern blockPattern = we.getBlockPattern(player, args.getString(1));
+        int radius = args.argsLength() > 2 ? args.getInteger(2) : 5;
+        
+        if(radius > config.maxBrushRadius){
+            player.printError("Maximum allowed brush radius: " + config.maxBrushRadius);
+            return;
+        }
+        
+        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        tool.setSize(radius);
+        tool.setFill(blockPattern);
+        
+        tool.setBrush(
+                new OverlayBrush(
+                    groundBlocks,
+                    args.hasFlag('r')
+                ),
+                "worldedit.brush.overlay");
+        
+        player.print(String.format("Overlay brush equipped ( %d )", radius));
+    }
+    
+    
     @Command(
         aliases = { "ex", "extinguish" },
         usage = "[radius]",
