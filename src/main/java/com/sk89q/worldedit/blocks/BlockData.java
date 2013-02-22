@@ -642,7 +642,17 @@ public final class BlockData {
 
         int store;
         switch (type) {
+
+        // special case here, going to use "forward" for type and "backward" for orientation
         case BlockID.LOG:
+            if (increment == -1) {
+                store = data & 0x3; // copy bottom (type) bits
+                return mod((data & ~0x3) + 4, 16) | store; // switch orientation with top bits and reapply bottom bits;
+            } else {
+                store = data & ~0x3; // copy top (orientation) bits
+                return mod((data & 0x3) + 1, 4) | store;  // switch type with bottom bits and reapply top bits
+            }
+
         case BlockID.LONG_GRASS:
         case BlockID.STONE_BRICK:
         case BlockID.SILVERFISH_BLOCK:
