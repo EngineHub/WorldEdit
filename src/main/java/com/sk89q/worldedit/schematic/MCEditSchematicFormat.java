@@ -109,21 +109,27 @@ public class MCEditSchematicFormat extends SchematicFormat {
         }
 
         // Get blocks
-        byte[] rawBlocks = getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
+        byte[] blockId = getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
         byte[] blockData = getChildTag(schematic, "Data", ByteArrayTag.class).getValue();
-        short[] blocks = new short[rawBlocks.length];
+        byte[] addId = new byte[0];
+        short[] blocks = new short[blockId.length]; // Have to later combine IDs
 
+        // We support 4096 block IDs using the same method as vanilla Minecraft, where
+        // the highest 4 bits are stored in a separate byte array.
         if (schematic.containsKey("AddBlocks")) {
-            byte[] addBlockIds = getChildTag(schematic, "AddBlocks", ByteArrayTag.class).getValue();
-            for (int i = 0, index = 0; i < addBlockIds.length && index < blocks.length; ++i) {
-                blocks[index] = (short) (((addBlockIds[i] >> 4) << 8) + (rawBlocks[index++] & 0xFF));
-                if (index < blocks.length) {
-                    blocks[index] = (short) (((addBlockIds[i] & 0xF) << 8) + (rawBlocks[index++] & 0xFF));
+            addId = getChildTag(schematic, "AddBlocks", ByteArrayTag.class).getValue();
+        }
+
+        // Combine the AddBlocks data with the first 8-bit block ID
+        for (int index = 0; index < blockId.length; index++) {
+            if ((index >> 1) >= addId.length) { // No corresponding AddBlocks index
+                blocks[index] = (short) (blockId[index] & 0xFF);
+            } else {
+                if ((index & 1) == 0) {
+                    blocks[index] = (short) (((addId[index >> 1] & 0x0F) << 8) + (blockId[index] & 0xFF));
+                } else {
+                    blocks[index] = (short) (((addId[index >> 1] & 0xF0) << 4) + (blockId[index] & 0xFF));
                 }
-            }
-        } else {
-            for (int i = 0; i < rawBlocks.length; ++i) {
-                blocks[i] = (short) (rawBlocks[i] & 0xFF);
             }
         }
 
@@ -227,10 +233,13 @@ public class MCEditSchematicFormat extends SchematicFormat {
                 for (int z = 0; z < length; ++z) {
                     int index = y * width * length + z * width + x;
                     BaseBlock block = clipboard.getPoint(new BlockVector(x, y, z));
+
+                    // Save 4096 IDs in an AddBlocks section
                     if (block.getType() > 255) {
-                        if (addBlocks == null) {
-                            addBlocks = new byte[blocks.length >> 1];
+                        if (addBlocks == null) { // Lazily create section
+                            addBlocks = new byte[(blocks.length >> 1) + 1];
                         }
+
                         addBlocks[index >> 1] = (byte) (((index & 1) == 0) ?
                                 addBlocks[index >> 1] & 0xF0 | (block.getType() >> 8) & 0xF
                                 : addBlocks[index >> 1] & 0xF | ((block.getType() >> 8) & 0xF) << 4);

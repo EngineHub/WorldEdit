@@ -127,7 +127,7 @@ public class AnvilChunk implements Chunk {
                 addId = (blocksAdd[section][index >> 1] & 0xF0) << 4;
             }
             
-            return blocks[section][index] & 0xFF + addId;
+            return (blocks[section][index] & 0xFF) + addId;
         } catch (IndexOutOfBoundsException e) {
             throw new DataException("Chunk does not contain position " + pos);
         }
