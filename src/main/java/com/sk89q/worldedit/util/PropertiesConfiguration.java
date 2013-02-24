@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -80,11 +81,14 @@ public class PropertiesConfiguration extends LocalConfiguration {
         disallowedBlocks = getIntSet("disallowed-blocks", defaultDisallowedBlocks);
         defaultChangeLimit = getInt("default-max-changed-blocks", defaultChangeLimit);
         maxChangeLimit = getInt("max-changed-blocks", maxChangeLimit);
+        defaultMaxPolygonalPoints = getInt("default-max-polygon-points", defaultMaxPolygonalPoints);
+        maxPolygonalPoints = getInt("max-polygon-points", maxPolygonalPoints);
         shellSaveType = getString("shell-save-type", shellSaveType);
         maxRadius = getInt("max-radius", maxRadius);
         maxSuperPickaxeSize = getInt("max-super-pickaxe-size", maxSuperPickaxeSize);
         maxBrushRadius = getInt("max-brush-radius", maxBrushRadius);
         logCommands = getBool("log-commands", logCommands);
+        logFile = getString("log-file", logFile);
         registerHelp = getBool("register-help", registerHelp);
         wandItem = getInt("wand-item", wandItem);
         superPickaxeDrop = getBool("super-pickaxe-drop-items", superPickaxeDrop);
@@ -92,10 +96,16 @@ public class PropertiesConfiguration extends LocalConfiguration {
         noDoubleSlash = getBool("no-double-slash", noDoubleSlash);
         useInventory = getBool("use-inventory", useInventory);
         useInventoryOverride = getBool("use-inventory-override", useInventoryOverride);
+        useInventoryCreativeOverride = getBool("use-inventory-creative-override", useInventoryCreativeOverride);
         navigationWand = getInt("nav-wand-item", navigationWand);
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);
         scriptTimeout = getInt("scripting-timeout", scriptTimeout);
+        saveDir = getString("schematic-save-dir", saveDir);
+        scriptsDir = getString("craftscript-dir", scriptsDir);
         butcherDefaultRadius = getInt("butcher-default-radius", butcherDefaultRadius);
+        butcherMaxRadius = getInt("butcher-max-radius", butcherMaxRadius);
+        allowExtraDataValues = getBool("allow-extra-data-values", allowExtraDataValues);
+        allowSymlinks = getBool("allow-symbolic-links", allowSymlinks);
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 

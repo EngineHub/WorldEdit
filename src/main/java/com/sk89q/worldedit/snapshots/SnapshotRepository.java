@@ -18,13 +18,14 @@
  */
 package com.sk89q.worldedit.snapshots;
 
-import com.sk89q.worldedit.data.MissingWorldException;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+
+import com.sk89q.worldedit.data.MissingWorldException;
 
 /**
  *
@@ -73,6 +74,7 @@ public class SnapshotRepository {
      */
     public List<Snapshot> getSnapshots(boolean newestFirst, String worldname) throws MissingWorldException {
         FilenameFilter filter = new FilenameFilter() {
+            @Override
             public boolean accept(File dir, String name) {
                 File f = new File(dir, name);
                 return isValidSnapshot(f);
@@ -80,6 +82,9 @@ public class SnapshotRepository {
         };
 
         File[] snapshotFiles = dir.listFiles();
+        if (snapshotFiles == null) {
+            throw new MissingWorldException(worldname);
+        }
         List<Snapshot> list = new ArrayList<Snapshot>(snapshotFiles.length);
 
         for (File file : snapshotFiles) {
