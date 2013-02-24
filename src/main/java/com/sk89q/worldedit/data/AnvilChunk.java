@@ -117,11 +117,14 @@ public class AnvilChunk implements Chunk {
         try {
             int addId = 0;
             
-            // 4 bits, so we have to divide by 2 and get the right 4 bits
+            // The block ID is the combination of the Blocks byte array with the
+            // Add byte array. 'Blocks' stores the lowest 8 bits of a block's ID, and
+            // 'Add' stores the highest 4 bits of the ID. The first block is stored
+            // in the lowest nibble in the Add byte array.
             if (index % 2 == 0) {
-                addId = (blocksAdd[section][index / 2] & 0xF0) << 4;
+                addId = (blocksAdd[section][index >> 1] & 0x0F) << 8;
             } else {
-                addId = (blocksAdd[section][index / 2] & 0x0F) << 8;
+                addId = (blocksAdd[section][index >> 1] & 0xF0) << 4;
             }
             
             return blocks[section][index] & 0xFF + addId;
