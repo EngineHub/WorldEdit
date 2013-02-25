@@ -1,7 +1,8 @@
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.util.PropertiesConfiguration;
 import java.io.File;
+
+import com.sk89q.worldedit.util.PropertiesConfiguration;
 
 public class ForgeConfiguration extends PropertiesConfiguration {
 

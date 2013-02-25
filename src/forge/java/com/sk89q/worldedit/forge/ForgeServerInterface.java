@@ -1,22 +1,22 @@
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.worldedit.BiomeTypes;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.ServerInterface;
-import cpw.mods.fml.server.FMLServerHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.entity.EntityList;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.worldedit.BiomeTypes;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.ServerInterface;
+
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public class ForgeServerInterface extends ServerInterface {
     private WorldEditMod mod;
@@ -25,7 +25,7 @@ public class ForgeServerInterface extends ServerInterface {
 
     public ForgeServerInterface() {
         this.mod = WorldEditMod.inst;
-        this.server = FMLServerHandler.instance().getServer();
+        this.server = FMLCommonHandler.instance().getMinecraftServerInstance();
         this.biomes = new ForgeBiomeTypes();
     }
 
@@ -59,7 +59,8 @@ public class ForgeServerInterface extends ServerInterface {
 
     @Override
     public void onCommandRegistration(List<Command> commands) {
-        ServerCommandManager mcMan = (ServerCommandManager) FMLServerHandler.instance().getServer().getCommandManager();
+        if (server == null) return;
+        ServerCommandManager mcMan = (ServerCommandManager) server.getCommandManager();
         for (Command cmd : commands) {
             for (int i = 0; i < cmd.aliases().length; i++) {
                 final String name = cmd.aliases()[i];

@@ -1,9 +1,10 @@
 package com.sk89q.worldedit.forge.selections;
 
+import net.minecraft.world.World;
+
 import com.sk89q.worldedit.Location;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.RegionSelector;
-import net.minecraft.world.World;
 
 public abstract interface Selection {
     public abstract Location getMinimumPoint();

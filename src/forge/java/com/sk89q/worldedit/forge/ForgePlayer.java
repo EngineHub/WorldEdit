@@ -1,19 +1,16 @@
 package com.sk89q.worldedit.forge;
 
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.Packet250CustomPayload;
+
 import com.sk89q.util.StringUtil;
-import com.sk89q.wepif.PermissionsResolverManager;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.cui.CUIEvent;
-
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.NetServerHandler;
-import net.minecraft.network.packet.Packet250CustomPayload;
 
 public class ForgePlayer extends LocalPlayer {
     private EntityPlayerMP player;

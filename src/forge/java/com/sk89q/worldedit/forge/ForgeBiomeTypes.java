@@ -1,16 +1,17 @@
 package com.sk89q.worldedit.forge;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import net.minecraft.world.biome.BiomeGenBase;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.UnknownBiomeTypeException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import net.minecraft.world.biome.BiomeGenBase;
 
 public class ForgeBiomeTypes implements BiomeTypes {
     private static BiMap biomes = HashBiMap.create();

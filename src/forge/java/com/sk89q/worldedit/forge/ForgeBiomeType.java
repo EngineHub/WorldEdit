@@ -1,7 +1,8 @@
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.BiomeType;
 import net.minecraft.world.biome.BiomeGenBase;
+
+import com.sk89q.worldedit.BiomeType;
 
 public class ForgeBiomeType implements BiomeType {
     private BiomeGenBase biome;

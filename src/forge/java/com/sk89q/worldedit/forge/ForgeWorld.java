@@ -1,29 +1,7 @@
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.BiomeType;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EntityType;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.TileEntityBlock;
-import com.sk89q.worldedit.blocks.SignBlock;
-import com.sk89q.worldedit.blocks.NoteBlock;
-import com.sk89q.worldedit.blocks.SkullBlock;
-import com.sk89q.worldedit.blocks.DispenserBlock;
-import com.sk89q.worldedit.blocks.MobSpawnerBlock;
-import com.sk89q.worldedit.blocks.ChestBlock;
-import com.sk89q.worldedit.blocks.ContainerBlock;
-import com.sk89q.worldedit.blocks.FurnaceBlock;
-import com.sk89q.worldedit.foundation.Block;
-import com.sk89q.worldedit.regions.Region;
-import java.lang.reflect.Field;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.EntityLiving;
@@ -44,21 +22,32 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.tileentity.TileEntityNote;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
-import net.minecraft.util.LongHashMap;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.gen.ChunkProviderServer;
+
+import com.sk89q.worldedit.BiomeType;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.EntityType;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.MobSpawnerBlock;
+import com.sk89q.worldedit.blocks.NoteBlock;
+import com.sk89q.worldedit.blocks.SignBlock;
+import com.sk89q.worldedit.blocks.SkullBlock;
+import com.sk89q.worldedit.blocks.TileEntityBlock;
+import com.sk89q.worldedit.foundation.Block;
+import com.sk89q.worldedit.regions.Region;
 
 public class ForgeWorld extends LocalWorld {
+    // TODO fix world leaks (see net.minecraftforge.common.getIDs()Z;)
     private World world;
 
     public ForgeWorld(World world) {
@@ -382,9 +371,31 @@ public class ForgeWorld extends LocalWorld {
             }
             EntityLiving ent = (EntityLiving) obj;
 
-            if (((ent instanceof EntityPlayer)) || ((!killAnimals) && ((ent instanceof EntityAnimal))) || ((!killPets) && ((ent instanceof EntityTameable)) && (((EntityTameable) ent).isTamed())) || ((!killGolems) && ((ent instanceof EntityGolem))) || ((!killNPCs) && ((ent instanceof EntityVillager))) || ((!killAmbient) && ((ent instanceof EntityAmbientCreature)))) {
+            if (ent instanceof EntityPlayer) {
                 continue;
             }
+
+            if (!killAnimals && ent instanceof EntityAnimal) {
+                continue;
+            }
+
+            if (!killPets && ent instanceof EntityTameable && ((EntityTameable) ent).isTamed()) {
+                continue; // tamed pet
+            }
+
+            if (!killGolems && ent instanceof EntityGolem) {
+                continue;
+            }
+
+            if (!killNPCs && ent instanceof EntityVillager) {
+                continue;
+            }
+
+            if (!killAmbient && ent instanceof EntityAmbientCreature) {
+                continue;
+            }
+
+
             if ((radius < 0.0D) || (origin.distanceSq(new Vector(ent.posX, ent.posY, ent.posZ)) <= radiusSq)) {
                 ent.isDead = true;
                 num++;

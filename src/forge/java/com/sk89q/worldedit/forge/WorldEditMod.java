@@ -1,23 +1,5 @@
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.util.yaml.YAMLProcessor;
-import com.sk89q.wepif.PermissionsResolverManager;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.ServerInterface;
-import com.sk89q.worldedit.WorldEdit;
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.Init;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.Mod.PostInit;
-import cpw.mods.fml.common.Mod.PreInit;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -29,9 +11,25 @@ import java.util.zip.ZipEntry;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.EventBus;
+
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.WorldEdit;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.ServerStarting;
+import cpw.mods.fml.common.Mod.ServerStopping;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = "WorldEdit", name = "WorldEdit", version = "5.5.2-forge-alpha1")
 public class WorldEditMod {
@@ -46,7 +44,6 @@ public class WorldEditMod {
     private ForgeConfiguration config;
     private File workingDir;
 
-    @SideOnly(Side.SERVER)
     @Mod.PreInit
     public void preInit(FMLPreInitializationEvent event) {
         logger = Logger.getLogger(((Mod) getClass().getAnnotation(Mod.class)).modid());
@@ -66,21 +63,26 @@ public class WorldEditMod {
         // PermissionsResolverManager.initialize(this, this.workingDir);
     }
 
-    @SideOnly(Side.SERVER)
     @Mod.Init
     public void init(FMLInitializationEvent event) {
-        this.server = new ForgeServerInterface();
-        this.controller = new WorldEdit(this.server, this.config);
-
-        NetworkRegistry.instance().registerChannel(new WECUIPacketHandler(), "WECUI");
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
+            NetworkRegistry.instance().registerChannel(new WECUIPacketHandler(), "WECUI");
+        } /* else {
+            WE CUI stuff here?
+        } */
 
         MinecraftForge.EVENT_BUS.register(new WorldEditForgeListener());
     }
 
-    @SideOnly(Side.SERVER)
     @Mod.PostInit
     public void postInit(FMLPostInitializationEvent event) {
         logger.info("WorldEdit " + WorldEdit.getVersion() + " Loaded");
+    }
+
+    @ServerStarting
+    public void serverStarting(FMLServerStartingEvent event) {
+        this.server = new ForgeServerInterface();
+        this.controller = new WorldEdit(this.server, this.config);
     }
 
     public ForgeConfiguration getConfig() {

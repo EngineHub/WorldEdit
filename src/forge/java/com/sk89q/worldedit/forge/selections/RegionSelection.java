@@ -1,12 +1,12 @@
 package com.sk89q.worldedit.forge.selections;
 
-import com.sk89q.worldedit.LocalWorld;
+import net.minecraft.world.World;
+
 import com.sk89q.worldedit.Location;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.forge.WorldEditMod;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
-import net.minecraft.world.World;
 
 public abstract class RegionSelection implements Selection {
     private World world;

@@ -1,17 +1,15 @@
 package com.sk89q.worldedit.forge;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.TileEntityBlock;
-
-import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.TileEntityBlock;
 
 public class TileEntityBaseBlock extends BaseBlock implements TileEntityBlock {
     private TileEntity tile;

@@ -1,12 +1,15 @@
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.LocalSession;
-import cpw.mods.fml.common.network.IPacketHandler;
-import cpw.mods.fml.common.network.Player;
 import java.nio.charset.Charset;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
+
+import com.sk89q.worldedit.LocalSession;
+
+import cpw.mods.fml.common.network.IPacketHandler;
+import cpw.mods.fml.common.network.Player;
 
 public class WECUIPacketHandler implements IPacketHandler {
     public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");

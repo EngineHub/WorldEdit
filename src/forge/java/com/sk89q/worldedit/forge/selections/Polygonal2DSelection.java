@@ -1,13 +1,15 @@
 package com.sk89q.worldedit.forge.selections;
 
+import java.util.Collections;
+import java.util.List;
+
+import net.minecraft.world.World;
+
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.forge.WorldEditMod;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegionSelector;
 import com.sk89q.worldedit.regions.RegionSelector;
-import java.util.Collections;
-import java.util.List;
-import net.minecraft.world.World;
 
 public class Polygonal2DSelection extends RegionSelection {
     protected Polygonal2DRegion poly2d;

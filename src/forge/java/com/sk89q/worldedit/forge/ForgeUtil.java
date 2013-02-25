@@ -1,19 +1,19 @@
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.blocks.BaseItemStack;
-
-import cpw.mods.fml.server.FMLServerHandler;
-
 import java.util.Map;
-import java.util.Map.Entry;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 
+import com.sk89q.worldedit.blocks.BaseItemStack;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+
 public class ForgeUtil {
 
     public static boolean hasPermission(EntityPlayerMP player, String perm) {
-        return FMLServerHandler.instance().getServer().getConfigurationManager().getOps().contains(player.username);
+        // TODO fix WEPIF
+        return FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().areCommandsAllowed(player.username);
     }
 
     public static ItemStack toForgeItemStack(BaseItemStack item) {
