@@ -559,6 +559,8 @@ public enum ItemType {
         shouldNotStack.add(ItemID.FIREWORK_ROCKET);
         shouldNotStack.add(ItemID.FIREWORK_STAR);
         shouldNotStack.add(ItemID.ENCHANTED_BOOK);
+        shouldNotStack.add(ItemID.TNT_MINECART);
+        shouldNotStack.add(ItemID.HOPPER_MINECART);
         shouldNotStack.add(ItemID.DISC_13);
         shouldNotStack.add(ItemID.DISC_CAT);
         shouldNotStack.add(ItemID.DISC_BLOCKS);
@@ -602,6 +604,7 @@ public enum ItemType {
         usesDamageValue.add(BlockID.WOODEN_STEP);
         usesDamageValue.add(BlockID.COBBLESTONE_WALL);
         usesDamageValue.add(BlockID.ANVIL);
+        usesDamageValue.add(BlockID.QUARTZ_BLOCK);
 
         usesDamageValue.add(ItemID.COAL);
         usesDamageValue.add(ItemID.INK_SACK);

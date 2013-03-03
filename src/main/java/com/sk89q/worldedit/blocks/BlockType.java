@@ -180,7 +180,20 @@ public enum BlockType {
     POTATOES(BlockID.POTATOES, "Potatoes", "patatoes", "potatoesblock"),
     WOODEN_BUTTON(BlockID.WOODEN_BUTTON, "Wooden button", "woodbutton", "woodenbutton"),
     HEAD(BlockID.HEAD, "Head", "head", "headmount", "mount"),
-    ANVIL(BlockID.ANVIL, "Anvil", "anvil", "blacksmith");
+    ANVIL(BlockID.ANVIL, "Anvil", "anvil", "blacksmith"),
+    TRAPPED_CHEST(BlockID.TRAPPED_CHEST, "Trapped Chest", "trappedchest", "redstonechest"),
+    PRESSURE_PLATE_LIGHT(BlockID.PRESSURE_PLATE_LIGHT, "Weighted Pressure Plate (Light)", "lightpressureplate"),
+    PRESSURE_PLATE_HEAVY(BlockID.PRESSURE_PLATE_HEAVY, "Weighted Pressure Plate (Heavy)", "heavypressureplate"),
+    COMPARATOR_OFF(BlockID.COMPARATOR_OFF, "Redstone Comparator (inactive)", "redstonecomparator", "comparator"),
+    COMPARATOR_ON(BlockID.COMPARATOR_ON, "Redstone Comparator (active)", "redstonecomparatoron", "comparatoron"),
+    DAYLIGHT_SENSOR(BlockID.DAYLIGHT_SENSOR, "Daylight Sesnor", "daylightsensor", "lightsensor"),
+    REDSTONE_BLOCK(BlockID.REDSTONE_BLOCK, "Block of Redstone", "redstoneblock", "blockofredstone"),
+    QUARTZ_ORE(BlockID.QUARTZ_ORE, "Nether Quartz Ore", "quartzore", "netherquartzore"),
+    HOPPER(BlockID.HOPPER, "Hopper", "hopper"),
+    QUARTZ_BLOCK(BlockID.QUARTZ_BLOCK, "Block of Quartz", "quartzblock"),
+    QUARTZ_STAIRS(BlockID.QUARTZ_STAIRS, "Quartz Stairs", "quartzstairs"),
+    ACTIVATOR_RAIL(BlockID.ACTIVATOR_RAIL, "Activator Rail", "activatorrail", "tntrail", "activatortrack"),
+    DROPPER(BlockID.DROPPER, "Dropper", "dropper");
 
     /**
      * Stores a map of the IDs for fast access.
@@ -331,6 +344,11 @@ public enum BlockType {
         shouldPlaceLast.add(BlockID.POTATOES);
         shouldPlaceLast.add(BlockID.WOODEN_BUTTON);
         shouldPlaceLast.add(BlockID.HEAD);
+        shouldPlaceLast.add(BlockID.PRESSURE_PLATE_LIGHT);
+        shouldPlaceLast.add(BlockID.PRESSURE_PLATE_HEAVY);
+        shouldPlaceLast.add(BlockID.COMPARATOR_OFF);
+        shouldPlaceLast.add(BlockID.COMPARATOR_ON);
+        shouldPlaceLast.add(BlockID.ACTIVATOR_RAIL);
     }
 
     /**
@@ -429,6 +447,11 @@ public enum BlockType {
         canPassThrough.add(BlockID.POTATOES);
         canPassThrough.add(BlockID.WOODEN_BUTTON);
         canPassThrough.add(BlockID.HEAD);
+        canPassThrough.add(BlockID.PRESSURE_PLATE_LIGHT);
+        canPassThrough.add(BlockID.PRESSURE_PLATE_HEAVY);
+        canPassThrough.add(BlockID.COMPARATOR_OFF);
+        canPassThrough.add(BlockID.COMPARATOR_ON);
+        canPassThrough.add(BlockID.ACTIVATOR_RAIL);
     }
 
     /**
@@ -598,6 +621,12 @@ public enum BlockType {
         usesData.add(BlockID.WOODEN_BUTTON);
         usesData.add(BlockID.HEAD);
         usesData.add(BlockID.ANVIL);
+        usesData.add(BlockID.PRESSURE_PLATE_LIGHT);
+        usesData.add(BlockID.PRESSURE_PLATE_HEAVY);
+        usesData.add(BlockID.QUARTZ_BLOCK);
+        usesData.add(BlockID.QUARTZ_STAIRS);
+        usesData.add(BlockID.ACTIVATOR_RAIL);
+        usesData.add(BlockID.DROPPER);
     }
 
     /**
@@ -629,6 +658,9 @@ public enum BlockType {
         isContainerBlock.add(BlockID.BURNING_FURNACE);
         isContainerBlock.add(BlockID.CHEST);
         isContainerBlock.add(BlockID.BREWING_STAND);
+        isContainerBlock.add(BlockID.TRAPPED_CHEST);
+        isContainerBlock.add(BlockID.HOPPER);
+        isContainerBlock.add(BlockID.DROPPER);
         //isContainerBlock.add(BlockID.ENDER_CHEST); // ender chest has no own inventory, don't add this here
     }
 
@@ -677,6 +709,16 @@ public enum BlockType {
         isRedstoneBlock.add(BlockID.TRIPWIRE_HOOK);
         isRedstoneBlock.add(BlockID.COMMAND_BLOCK);
         isRedstoneBlock.add(BlockID.WOODEN_BUTTON);
+        isRedstoneBlock.add(BlockID.TRAPPED_CHEST);
+        isRedstoneBlock.add(BlockID.PRESSURE_PLATE_LIGHT);
+        isRedstoneBlock.add(BlockID.PRESSURE_PLATE_HEAVY);
+        isRedstoneBlock.add(BlockID.COMPARATOR_OFF);
+        isRedstoneBlock.add(BlockID.COMPARATOR_ON);
+        isRedstoneBlock.add(BlockID.DAYLIGHT_SENSOR);
+        isRedstoneBlock.add(BlockID.REDSTONE_BLOCK);
+        isRedstoneBlock.add(BlockID.HOPPER);
+        isRedstoneBlock.add(BlockID.ACTIVATOR_RAIL);
+        isRedstoneBlock.add(BlockID.DROPPER);
     }
 
     /**
@@ -708,6 +750,8 @@ public enum BlockType {
         canTransferRedstone.add(BlockID.REDSTONE_WIRE);
         canTransferRedstone.add(BlockID.REDSTONE_REPEATER_OFF);
         canTransferRedstone.add(BlockID.REDSTONE_REPEATER_ON);
+        canTransferRedstone.add(BlockID.COMPARATOR_OFF);
+        canTransferRedstone.add(BlockID.COMPARATOR_ON);
     }
 
     /**
@@ -745,6 +789,10 @@ public enum BlockType {
         isRedstoneSource.add(BlockID.STONE_BUTTON);
         isRedstoneSource.add(BlockID.TRIPWIRE_HOOK);
         isRedstoneSource.add(BlockID.WOODEN_BUTTON);
+        isRedstoneSource.add(BlockID.PRESSURE_PLATE_LIGHT);
+        isRedstoneSource.add(BlockID.PRESSURE_PLATE_HEAVY);
+        isRedstoneSource.add(BlockID.DAYLIGHT_SENSOR);
+        isRedstoneSource.add(BlockID.REDSTONE_BLOCK);
     }
 
     /**
@@ -774,6 +822,7 @@ public enum BlockType {
         isRailBlock.add(BlockID.POWERED_RAIL);
         isRailBlock.add(BlockID.DETECTOR_RAIL);
         isRailBlock.add(BlockID.MINECART_TRACKS);
+        isRailBlock.add(BlockID.ACTIVATOR_RAIL);
     }
 
     /**
@@ -814,6 +863,7 @@ public enum BlockType {
         isNaturalTerrainBlock.add(BlockID.NETHERSTONE);
         isNaturalTerrainBlock.add(BlockID.SLOW_SAND);
         isNaturalTerrainBlock.add(BlockID.LIGHTSTONE);
+        isNaturalTerrainBlock.add(BlockID.QUARTZ_ORE);
 
         // ores
         isNaturalTerrainBlock.add(BlockID.COAL_ORE);
@@ -869,6 +919,8 @@ public enum BlockType {
         emitsLight.add(BlockID.END_PORTAL);
         emitsLight.add(BlockID.REDSTONE_LAMP_ON);
         emitsLight.add(BlockID.ENDER_CHEST);
+        emitsLight.add(BlockID.BEACON);
+        emitsLight.add(BlockID.REDSTONE_BLOCK);
     }
 
     /**
@@ -967,6 +1019,15 @@ public enum BlockType {
         isTranslucent.add(BlockID.WOODEN_BUTTON);
         isTranslucent.add(BlockID.HEAD);
         isTranslucent.add(BlockID.ANVIL);
+        isTranslucent.add(BlockID.TRAPPED_CHEST);
+        isTranslucent.add(BlockID.PRESSURE_PLATE_LIGHT);
+        isTranslucent.add(BlockID.PRESSURE_PLATE_HEAVY);
+        isTranslucent.add(BlockID.COMPARATOR_OFF);
+        isTranslucent.add(BlockID.COMPARATOR_ON);
+        isTranslucent.add(BlockID.DAYLIGHT_SENSOR);
+        isTranslucent.add(BlockID.HOPPER);
+        isTranslucent.add(BlockID.QUARTZ_STAIRS);
+        isTranslucent.add(BlockID.ACTIVATOR_RAIL);
     }
 
     /**
@@ -992,7 +1053,7 @@ public enum BlockType {
          * 1. block yields itself => addIdentity
          * 2. block is part of a 2-block object => drop an appropriate item for one of the 2 blocks
          * 3. block can be placed by right-clicking an obtainable item on the ground => use that item
-         * 4. block yields more than one item => addIdentity
+         * 4. block yields more than one item => addIdentities
          * 5. block yields exactly one item => use that item
          * 6. block is a liquid => drop nothing
          * 7. block is created from thin air by the game other than by the map generator => drop nothing
@@ -1137,6 +1198,31 @@ public enum BlockType {
         addIdentity(BlockID.SPRUCE_WOOD_STAIRS); // rule 1
         addIdentity(BlockID.BIRCH_WOOD_STAIRS); // rule 1
         addIdentity(BlockID.JUNGLE_WOOD_STAIRS); // rule 1
+        addIdentity(BlockID.COMMAND_BLOCK); // rule 1
+        addIdentities(BlockID.COBBLESTONE_WALL, 1); // rule 4
+        nonDataBlockBagItems.put(BlockID.FLOWER_POT, new BaseItemStack(ItemID.FLOWER_POT)); // rule 3
+        nonDataBlockBagItems.put(BlockID.CARROTS, new BaseItemStack(ItemID.CARROT)); // rule 3
+        nonDataBlockBagItems.put(BlockID.POTATOES, new BaseItemStack(ItemID.POTATO)); // rule 3
+        addIdentity(BlockID.WOODEN_BUTTON); // rule 1
+        nonDataBlockBagItems.put(BlockID.HEAD, doNotDestroy); // exception, can't handle TE data
+        addIdentities(BlockID.ANVIL, 2); // rule 4
+        addIdentity(BlockID.TRAPPED_CHEST); // rule 1
+        addIdentity(BlockID.PRESSURE_PLATE_LIGHT); // rule 1
+        addIdentity(BlockID.PRESSURE_PLATE_HEAVY); // rule 1
+        nonDataBlockBagItems.put(BlockID.COMPARATOR_OFF, new BaseItemStack(ItemID.COMPARATOR)); // rule 3
+        nonDataBlockBagItems.put(BlockID.COMPARATOR_ON, new BaseItemStack(ItemID.COMPARATOR)); // rule 3
+        addIdentity(BlockID.DAYLIGHT_SENSOR); // rule 1
+        addIdentity(BlockID.REDSTONE_BLOCK); // rule 1
+        nonDataBlockBagItems.put(BlockID.QUARTZ_ORE, new BaseItemStack(ItemID.NETHER_QUARTZ)); // rule 3
+        addIdentity(BlockID.HOPPER); // rule 1
+        addIdentities(BlockID.QUARTZ_BLOCK, 1); // rule 4
+        for (int i = 2; i <= 4; i++) {
+            dataBlockBagItems.put(typeDataKey(BlockID.QUARTZ_BLOCK, i), new BaseItem(BlockID.QUARTZ_BLOCK, (short) 2)); // rule 4, quartz pillars
+        }
+        addIdentity(BlockID.QUARTZ_STAIRS); // rule 1
+        addIdentity(BlockID.ACTIVATOR_RAIL); // rule 1
+        addIdentity(BlockID.DROPPER); // rule 1
+
     }
 
     /**
@@ -1240,9 +1326,6 @@ public enum BlockType {
         case BlockID.DOUBLE_STEP:
             return new BaseItemStack(BlockID.STEP, 2, data);
 
-        case BlockID.WOODEN_STAIRS:
-            return new BaseItemStack(BlockID.WOOD);
-
         case BlockID.REDSTONE_WIRE:
             return new BaseItemStack(ItemID.REDSTONE_DUST);
 
@@ -1264,9 +1347,6 @@ public enum BlockType {
 
         case BlockID.WOODEN_DOOR:
             return new BaseItemStack(ItemID.WOODEN_DOOR_ITEM);
-
-        case BlockID.COBBLESTONE_STAIRS:
-            return new BaseItemStack(BlockID.COBBLESTONE);
 
         case BlockID.WALL_SIGN:
             return new BaseItemStack(ItemID.SIGN);
@@ -1323,20 +1403,11 @@ public enum BlockType {
         case BlockID.MELON_STEM:
             return new BaseItemStack(ItemID.MELON_SEEDS);
 
-        case BlockID.BRICK_STAIRS:
-            return new BaseItemStack(BlockID.BRICK);
-
-        case BlockID.STONE_BRICK_STAIRS:
-            return new BaseItemStack(BlockID.STONE_BRICK);
-
         case BlockID.MYCELIUM:
             return new BaseItemStack(BlockID.DIRT);
 
         case BlockID.LILY_PAD:
             return new BaseItemStack(BlockID.LILY_PAD);
-
-        case BlockID.NETHER_BRICK_STAIRS:
-            return new BaseItemStack(BlockID.NETHER_BRICK);
 
         case BlockID.NETHER_WART:
             return new BaseItemStack(ItemID.NETHER_WART_SEED, random.nextInt(3) + 1);
@@ -1346,6 +1417,51 @@ public enum BlockType {
 
         case BlockID.CAULDRON:
             return new BaseItemStack(ItemID.CAULDRON);
+
+        case BlockID.REDSTONE_LAMP_ON:
+            return new BaseItemStack(BlockID.REDSTONE_LAMP_OFF);
+
+        case BlockID.DOUBLE_WOODEN_STEP:
+            return new BaseItemStack(BlockID.WOODEN_STEP, 2, data);
+
+        case BlockID.COCOA_PLANT:
+            return new BaseItemStack(ItemID.INK_SACK, (data >= 2 ? 3 : 1), (short) 3);
+
+        case BlockID.EMERALD_ORE:
+            return new BaseItemStack(ItemID.EMERALD);
+
+        case BlockID.TRIPWIRE:
+            return new BaseItemStack(ItemID.STRING);
+
+        case BlockID.FLOWER_POT:
+            return new BaseItemStack(ItemID.FLOWER_POT);
+
+        case BlockID.CARROTS:
+            return new BaseItemStack(ItemID.CARROT, random.nextInt(3) + 1);
+
+        case BlockID.POTATOES:
+            return new BaseItemStack(ItemID.POTATO, random.nextInt(3) + 1);
+
+        case BlockID.COMPARATOR_OFF:
+        case BlockID.COMPARATOR_ON:
+            return new BaseItemStack(ItemID.COMPARATOR);
+
+        case BlockID.QUARTZ_ORE:
+            return new BaseItemStack(ItemID.NETHER_QUARTZ);
+
+        case BlockID.QUARTZ_BLOCK:
+            return new BaseItemStack(BlockID.QUARTZ_BLOCK, (data >= 2 ? 2 : data));
+
+        case BlockID.WOODEN_STAIRS:
+        case BlockID.COBBLESTONE_STAIRS:
+        case BlockID.BRICK_STAIRS:
+        case BlockID.STONE_BRICK_STAIRS:
+        case BlockID.NETHER_BRICK_STAIRS:
+        case BlockID.SPRUCE_WOOD_STAIRS:
+        case BlockID.BIRCH_WOOD_STAIRS:
+        case BlockID.JUNGLE_WOOD_STAIRS:
+        case BlockID.QUARTZ_STAIRS:
+            return new BaseItemStack(id); // strip data from stairs
 
         case BlockID.BEDROCK:
         case BlockID.WATER:
@@ -1366,6 +1482,7 @@ public enum BlockType {
         case BlockID.VINE:
         case BlockID.END_PORTAL:
         case BlockID.END_PORTAL_FRAME:
+        case BlockID.HEAD:
             return null;
         }
 
@@ -1415,6 +1532,7 @@ public enum BlockType {
         // redstone torches: see torches
         for (int offset = 0; offset <= 8; offset += 8) {
             addCardinals(BlockID.STONE_BUTTON, offset + 4, offset + 1, offset + 3, offset + 2);
+            addCardinals(BlockID.WOODEN_BUTTON, offset + 4, offset + 1, offset + 3, offset + 2);
         }
         nonDataAttachments.put(BlockID.CACTUS, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.REED, PlayerDirection.DOWN);
@@ -1437,6 +1555,15 @@ public enum BlockType {
             addCardinals(BlockID.TRIPWIRE_HOOK, offset + 2, offset + 3, offset + 0, offset + 1);
         }
         nonDataAttachments.put(BlockID.TRIPWIRE, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.FLOWER_POT, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.CARROTS, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.POTATOES, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.ANVIL, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.PRESSURE_PLATE_LIGHT, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.PRESSURE_PLATE_HEAVY, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.COMPARATOR_OFF, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.COMPARATOR_ON, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.ACTIVATOR_RAIL, PlayerDirection.DOWN);
     }
 
     /**
