@@ -53,22 +53,11 @@ public @interface Expose {
     String[] aliases();
 
     /**
-     * Explains to the user the parameters of the command.
-     *
-     * <p>Example text for usage could be
-     * <code>[-h harps] [name] [message]</code>. The value of this attribute is not
-     * parsed, but merely only displayed.</p>
-     *
-     * @return usage instructions for a command
-     */
-    String usage() default "";
-
-    /**
      * A short description for the command.
      *
      * <p>An example would be "Stacks blocks in an area repeatedly in one direction.</p>
      */
-    String description();
+    String desc();
 
     /**
      * A long help text for the command.

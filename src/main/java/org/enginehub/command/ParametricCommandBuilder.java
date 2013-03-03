@@ -175,7 +175,7 @@ public class ParametricCommandBuilder implements Set<ParameterResolverFactory> {
 
         ParametricCommand command = new ParametricCommand(object, method, expose.aliases());
         command.setName(expose.name());
-        command.setDescription(expose.description());
+        command.setDescription(expose.desc());
         command.setHelp(expose.help());
         // @TODO: Build the usage string dynamically
 
