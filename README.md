@@ -27,9 +27,12 @@ must be licensed under the GNU Lesser General Public License v3.
 
 Please read CONTRIBUTING.md for important guidelines to follow.
 
+We recommend following our [mailing list](https://groups.google.com/d/forum/sk-dev-discuss), especially if you have some big ideas that you want to implement.
+
 Links
 -----
 
+* [Mailing list](https://groups.google.com/d/forum/sk-dev-discuss)
 * [IRC channel](http://skq.me/irc/irc.esper.net/sk89q/) (#sk89q on irc.esper.net)
 * [Issue tracker](http://redmine.sk89q.com)
 * [Continuous integration](http://build.sk89q.com) [![Build Status](https://secure.travis-ci.org/sk89q/worldedit.png)](http://travis-ci.org/sk89q/worldedit)

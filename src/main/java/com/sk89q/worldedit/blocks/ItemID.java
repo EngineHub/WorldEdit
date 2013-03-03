@@ -170,6 +170,9 @@ public final class ItemID {
     public static final int CARROT_ON_A_STICK = 398;
     public static final int NETHER_STAR = 399;
     public static final int PUMPKIN_PIE = 400;
+    public static final int FIREWORK_ROCKET = 401;
+    public static final int FIREWORK_STAR = 402;
+    public static final int ENCHANTED_BOOK = 403;
     
     @Deprecated public static final int GOLD_RECORD = 2256; // deprecated, but leave it there
     @Deprecated public static final int GREEN_RECORD = 2257; // deprecated, but leave it there
@@ -184,4 +187,5 @@ public final class ItemID {
     public static final int DISC_STRAD = 2264;
     public static final int DISC_WARD = 2265;
     public static final int DISC_11 = 2266;
+    public static final int DISC_WAIT = 2267;
 }

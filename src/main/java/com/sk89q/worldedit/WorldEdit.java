@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
@@ -57,6 +59,7 @@ import com.sk89q.worldedit.blocks.ItemType;
 import com.sk89q.worldedit.blocks.MobSpawnerBlock;
 import com.sk89q.worldedit.blocks.NoteBlock;
 import com.sk89q.worldedit.blocks.SignBlock;
+import com.sk89q.worldedit.blocks.SkullBlock;
 import com.sk89q.worldedit.commands.BiomeCommands;
 import com.sk89q.worldedit.commands.ChunkCommands;
 import com.sk89q.worldedit.commands.ClipboardCommands;
@@ -74,7 +77,6 @@ import com.sk89q.worldedit.commands.ToolUtilCommands;
 import com.sk89q.worldedit.commands.UtilityCommands;
 import com.sk89q.worldedit.masks.BiomeTypeMask;
 import com.sk89q.worldedit.masks.BlockMask;
-import com.sk89q.worldedit.masks.BlockTypeMask;
 import com.sk89q.worldedit.masks.CombinedMask;
 import com.sk89q.worldedit.masks.DynamicRegionMask;
 import com.sk89q.worldedit.masks.ExistingBlockMask;
@@ -111,7 +113,13 @@ public class WorldEdit {
      * Logger for debugging.
      */
     public static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+    public final Logger commandLogger = Logger.getLogger("Minecraft.WorldEdit.CommandLogger");
 
+    /**
+     * Holds the current instance of this class, for static access
+     */
+    private static WorldEdit instance;
+    
     /**
      * Holds WorldEdit's version.
      */
@@ -131,6 +139,11 @@ public class WorldEdit {
      * List of commands.
      */
     private final CommandsManager<LocalPlayer> commands;
+    
+    /**
+     * Holds the factory responsible for the creation of edit sessions
+     */
+    private EditSessionFactory editSessionFactory = new EditSessionFactory();
 
     /**
      * Stores a list of WorldEdit sessions, keyed by players' names. Sessions
@@ -155,8 +168,22 @@ public class WorldEdit {
      * @param config
      */
     public WorldEdit(ServerInterface server, final LocalConfiguration config) {
+        instance = this;
         this.server = server;
         this.config = config;
+
+        if (!config.logFile.equals("")) {
+            try {
+                FileHandler logFileHandler;
+                logFileHandler = new FileHandler(new File(config.getWorkingDirectory(),
+                        config.logFile).getAbsolutePath(), true);
+                logFileHandler.setFormatter(new LogFormat());
+                commandLogger.addHandler(logFileHandler);
+            } catch (IOException e) {
+                logger.log(Level.WARNING, "Could not use command log file " + config.logFile + ": "
+                        + e.getMessage());
+            }
+        }
 
         commands = new CommandsManager<LocalPlayer>() {
             @Override
@@ -225,7 +252,7 @@ public class WorldEdit {
                             break;
                         }
                     }
-                    logger.info(msg);
+                    commandLogger.info(msg);
                 }
                 super.invokeMethod(parent, args, player, method, instance, methodArgs, level);
             }
@@ -251,6 +278,15 @@ public class WorldEdit {
 
     private void reg(Class<?> clazz) {
         server.onCommandRegistration(commands.registerAndReturn(clazz), commands);
+    }
+
+    /**
+     * Gets the current instance of this class
+     * 
+     * @return
+     */
+    public static WorldEdit getInstance() {
+        return instance;
     }
 
     /**
@@ -309,7 +345,8 @@ public class WorldEdit {
             // Have the session use inventory if it's enabled and the player
             // doesn't have an override
             session.setUseInventory(config.useInventory
-                    && !(config.useInventoryOverride
+                    && !((config.useInventoryOverride ||
+                            (config.useInventoryCreativeOverride && player.hasCreativeMode()))
                             && player.hasPermission("worldedit.inventory.unrestricted")));
 
         }
@@ -399,7 +436,7 @@ public class WorldEdit {
             // Parse the block data (optional)
             try {
                 data = (typeAndData.length > 1 && typeAndData[1].length() > 0) ? Integer.parseInt(typeAndData[1]) : (allowNoData ? -1 : 0);
-                if (data > 15 || (data < 0 && !(allAllowed && data == -1))) {
+                if ((data > 15 && !config.allowExtraDataValues) || (data < 0 && !(allAllowed && data == -1))) {
                     data = 0;
                 }
             } catch (NumberFormatException e) {
@@ -424,15 +461,12 @@ public class WorldEdit {
                                     case STONE:
                                         data = 0;
                                         break;
-
                                     case SANDSTONE:
                                         data = 1;
                                         break;
-
                                     case WOOD:
                                         data = 2;
                                         break;
-
                                     case COBBLESTONE:
                                         data = 3;
                                         break;
@@ -441,6 +475,10 @@ public class WorldEdit {
                                         break;
                                     case STONE_BRICK:
                                         data = 5;
+                                        break;
+                                    case NETHER_BRICK:
+                                        data = 6;
+                                        break;
 
                                     default:
                                         throw new InvalidItemException(arg, "Invalid step type '" + typeAndData[1] + "'");
@@ -502,6 +540,43 @@ public class WorldEdit {
                             }
                         } else {
                             return new NoteBlock(data, (byte) 0);
+                        }
+
+                    case HEAD:
+                        // allow setting type/player/rotation
+                        if (blockAndExtraData.length > 1) {
+                            // and thus, the format shall be "|type|rotation" or "|type" or "|rotation"
+                            byte rot = 0;
+                            String type = "";
+                            try {
+                                rot = Byte.parseByte(blockAndExtraData[1]);
+                            } catch (NumberFormatException e) {
+                                type = blockAndExtraData[1];
+                                if (blockAndExtraData.length > 2) {
+                                    try {
+                                        rot = Byte.parseByte(blockAndExtraData[2]);
+                                    } catch (NumberFormatException e2) {
+                                        throw new InvalidItemException(arg, "Second part of skull metadata should be a number.");
+                                    }
+                                }
+                            }
+                            byte skullType = 0;
+                            // type is either the mob type or the player name
+                            // sorry for the four minecraft accounts named "skeleton", "wither", "zombie", or "creeper"
+                            if (!type.isEmpty()) {
+                                if (type.equalsIgnoreCase("skeleton")) skullType = 0;
+                                else if (type.equalsIgnoreCase("wither")) skullType = 1;
+                                else if (type.equalsIgnoreCase("zombie")) skullType = 2;
+                                else if (type.equalsIgnoreCase("creeper")) skullType = 4;
+                                else skullType = 3;
+                            }
+                            if (skullType == 3) {
+                                return new SkullBlock(data, rot, type.replace(" ", "_")); // valid MC usernames
+                            } else {
+                                return new SkullBlock(data, skullType, rot);
+                            }
+                        } else {
+                            return new SkullBlock(data);
                         }
 
                     default:
@@ -596,7 +671,7 @@ public class WorldEdit {
             double chance;
 
             // Parse special percentage syntax
-            if (s.matches("[0-9]+(?:\\.(?:[0-9]+)?)?%.*")) {
+            if (s.matches("[0-9]+(\\.[0-9]*)?%.*")) {
                 String[] p = s.split("%");
                 chance = Double.parseDouble(p[0]);
                 block = getBlock(player, p[1]);
@@ -805,7 +880,7 @@ public class WorldEdit {
             String filePath = f.getCanonicalPath();
             String dirPath = dir.getCanonicalPath();
 
-            if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
+            if (!filePath.substring(0, dirPath.length()).equals(dirPath) && !config.allowSymlinks) {
                 throw new FilenameResolutionException(filename,
                         "Path is outside allowable root");
             }
@@ -1043,7 +1118,7 @@ public class WorldEdit {
             blockBag.flushChanges();
         }
 
-        Set<Integer> missingBlocks = editSession.popMissingBlocks();
+        Map<Integer, Integer> missingBlocks = editSession.popMissingBlocks();
 
         if (missingBlocks.size() > 0) {
             StringBuilder str = new StringBuilder();
@@ -1051,12 +1126,14 @@ public class WorldEdit {
             int size = missingBlocks.size();
             int i = 0;
 
-            for (Integer id : missingBlocks) {
+            for (Integer id : missingBlocks.keySet()) {
                 BlockType type = BlockType.fromID(id);
 
                 str.append(type != null
                         ? type.getName() + " (" + id + ")"
                         : id.toString());
+
+                str.append(" [Amt: " + missingBlocks.get(id) + "]");
 
                 ++i;
 
@@ -1143,8 +1220,7 @@ public class WorldEdit {
                 return false;
             }
 
-            if (!player.hasPermission("worldedit.navigation.jumpto.tool")
-                    && !player.hasPermission("worldedit.navigation.jumpto")) { // TODO: Remove old permission
+            if (!player.hasPermission("worldedit.navigation.jumpto.tool") ){
                 return false;
             }
 
@@ -1182,8 +1258,7 @@ public class WorldEdit {
                 return false;
             }
 
-            if (!player.hasPermission("worldedit.navigation.thru.tool")
-                    && !player.hasPermission("worldedit.navigation.thru")) { // TODO: Remove old permission
+            if (!player.hasPermission("worldedit.navigation.thru.tool")) {
                 return false;
             }
 
@@ -1527,6 +1602,28 @@ public class WorldEdit {
      */
     public ServerInterface getServer() {
         return server;
+    }
+
+    /**
+     * Get the edit session factory
+     * 
+     * @return
+     */
+    public EditSessionFactory getEditSessionFactory() {
+        return this.editSessionFactory;
+    }
+
+    /**
+     * Set the edit session factory
+     * 
+     * @param factory
+     */
+    public void setEditSessionFactory(EditSessionFactory factory) {
+        if (factory == null) {
+            throw new IllegalArgumentException("New EditSessionFactory may not be null");
+        }
+        logger.info("Accepted EditSessionFactory of type " + factory.getClass().getName() + " from " + factory.getClass().getPackage().getName());
+        this.editSessionFactory = factory;
     }
 
     /**

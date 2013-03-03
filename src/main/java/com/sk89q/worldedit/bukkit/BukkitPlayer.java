@@ -19,11 +19,17 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
 import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.cui.CUIEvent;
 
@@ -138,5 +144,10 @@ public class BukkitPlayer extends LocalPlayer {
 
     public Player getPlayer() {
         return player;
+    }
+
+    @Override
+    public boolean hasCreativeMode() {
+        return player.getGameMode() == GameMode.CREATIVE;
     }
 }

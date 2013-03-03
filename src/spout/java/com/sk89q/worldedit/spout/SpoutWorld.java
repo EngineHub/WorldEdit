@@ -23,8 +23,6 @@ package com.sk89q.worldedit.spout;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
@@ -48,18 +46,17 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
-import org.spout.api.math.Vector3;
-import org.spout.vanilla.component.substance.Item;
-import org.spout.vanilla.component.substance.Painting;
-import org.spout.vanilla.component.substance.XPOrb;
-import org.spout.vanilla.component.substance.object.Tnt;
-import org.spout.vanilla.component.substance.object.projectile.Arrow;
-import org.spout.vanilla.component.substance.object.vehicle.Boat;
-import org.spout.vanilla.component.substance.object.vehicle.Minecart;
-import org.spout.vanilla.material.VanillaMaterial;
-import org.spout.vanilla.material.VanillaMaterials;
-import org.spout.vanilla.world.generator.normal.object.tree.TreeObject;
-import org.spout.vanilla.world.generator.normal.object.tree.SmallTreeObject;
+import org.spout.vanilla.plugin.component.substance.Painting;
+import org.spout.vanilla.plugin.component.substance.XPOrb;
+import org.spout.vanilla.plugin.component.substance.object.Item;
+import org.spout.vanilla.plugin.component.substance.object.Tnt;
+import org.spout.vanilla.plugin.component.substance.object.projectile.Arrow;
+import org.spout.vanilla.plugin.component.substance.object.vehicle.Boat;
+import org.spout.vanilla.api.material.VanillaMaterial;
+import org.spout.vanilla.plugin.component.substance.object.vehicle.minecart.Minecart;
+import org.spout.vanilla.plugin.material.VanillaMaterials;
+import org.spout.vanilla.plugin.world.generator.normal.object.tree.TreeObject;
+import org.spout.vanilla.plugin.world.generator.normal.object.tree.SmallTreeObject;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -96,6 +93,24 @@ public class SpoutWorld extends LocalWorld {
         return world.getName();
     }
 
+    public Material getSpoutMaterial(int id) {
+        switch (id) {
+            case 0:
+                return BlockMaterial.AIR;
+            default:
+                return VanillaMaterials.getMaterial((short) id);
+        }
+    }
+
+    public Material getSpoutMaterial(int id, int data) {
+        switch (id) {
+            case 0:
+                return BlockMaterial.AIR;
+            default:
+                return VanillaMaterials.getMaterial((short) id, (short) data);
+        }
+    }
+
     /**
      * Set block type.
      *
@@ -105,12 +120,12 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean setBlockType(Vector pt, int type) {
-        Material mat = VanillaMaterials.getMaterial((short) type);
+        Material mat = getSpoutMaterial(type);
         if (mat != null && mat instanceof BlockMaterial) {
             final int x = pt.getBlockX();
             final int y = pt.getBlockY();
             final int z = pt.getBlockZ();
-            return world.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN).setBlockMaterial(x, y, z, (BlockMaterial) mat, (short) 0, WorldEditPlugin.getInstance());
+            return world.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN).setBlockMaterial(x, y, z, (BlockMaterial) mat, (short) 0, WorldEditPlugin.asCause());
         }
         return false;
     }
@@ -136,12 +151,12 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean setTypeIdAndData(Vector pt, int type, int data) {
-        Material mat = VanillaMaterials.getMaterial((short) type, (short) data);
+        Material mat = getSpoutMaterial(type, data);
         if (mat != null && mat instanceof BlockMaterial) {
             final int x = pt.getBlockX();
             final int y = pt.getBlockY();
             final int z = pt.getBlockZ();
-            return world.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN).setBlockMaterial(x, y, z, (BlockMaterial) mat, (short) data, WorldEditPlugin.getInstance());
+            return world.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN).setBlockMaterial(x, y, z, (BlockMaterial) mat, (short) data, WorldEditPlugin.asCause());
         }
         return false;
     }
@@ -185,7 +200,7 @@ public class SpoutWorld extends LocalWorld {
         final int x = pt.getBlockX();
         final int y = pt.getBlockY();
         final int z = pt.getBlockZ();
-        world.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN).setBlockData(x, y, z, (short) data, WorldEditPlugin.getInstance());
+        world.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN).setBlockData(x, y, z, (short) data, WorldEditPlugin.asCause());
     }
 
     /**
@@ -453,6 +468,7 @@ public class SpoutWorld extends LocalWorld {
     @Override
     public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector pt)
             throws MaxChangedBlocksException {
+        //VanillaObjects.byName()
         TreeObject tree = new SmallTreeObject(); //TODO: properly check for tree type
         if (!tree.canPlaceObject(world, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ())) {
             return false;
@@ -540,7 +556,7 @@ public class SpoutWorld extends LocalWorld {
 
         for (Entity ent : world.getAll()) {
             if (radius != -1
-                    && origin.distanceSq(SpoutUtil.toVector(ent.getTransform().getPosition())) > radiusSq) {
+                    && origin.distanceSq(SpoutUtil.toVector(ent.getScene().getPosition())) > radiusSq) {
                 continue;
             }
 
@@ -721,7 +737,7 @@ public class SpoutWorld extends LocalWorld {
      */
     @Override
     public boolean isValidBlockType(int type) {
-        return VanillaMaterials.getMaterial((short)type) instanceof BlockMaterial;
+        return getSpoutMaterial(type) instanceof BlockMaterial;
     }
 
     @Override
@@ -744,7 +760,7 @@ public class SpoutWorld extends LocalWorld {
 
     @Override
     public int getMaxY() {
-        return world.getHeight() - 1;
+        return world.getHeight() - 1; //TODO: We have infinite-height worlds now
     }
 
     @Override
@@ -784,7 +800,7 @@ public class SpoutWorld extends LocalWorld {
                 continue;
             }
             for (Entity ent : chunk.getEntities()) {
-                if (region.contains(SpoutUtil.toVector(ent.getTransform().getPosition()))) {
+                if (region.contains(SpoutUtil.toVector(ent.getScene().getPosition()))) {
                     Collection<Class<? extends Component>> revisedComponents = Collections2.transform(ent.values(), new Function<Component, Class<? extends Component>>() {
                         @Override
                         public Class<? extends Component> apply(@Nullable Component component) {

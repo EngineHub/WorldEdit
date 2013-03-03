@@ -30,11 +30,30 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Logging {
     public enum LogMode {
-        POSITION, // Player position
-        REGION, // Region selection
-        ORIENTATION_REGION, // player orientation and Region selection 
-        PLACEMENT, // Either the player position or pos1, depending on the placeAtPos1 flag
-        ALL // Log all information available
+        /**
+         * Player position
+         */
+        POSITION,
+
+        /**
+         * Region selection
+         */
+        REGION,
+
+        /**
+         * Player orientation and region selection
+         */
+        ORIENTATION_REGION,
+
+        /**
+         * Either the player position or pos1, depending on the placeAtPos1 flag
+         */
+        PLACEMENT,
+
+        /**
+         * Log all information available
+         */
+        ALL
     }
 
     /**

@@ -110,6 +110,7 @@ public class WorldEditCommands {
         min = 0,
         max = -1
     )
+    @CommandPermissions("worldedit.help")
     @Console
     public void help(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {

@@ -136,14 +136,15 @@ public class LocalSession {
      * Performs an undo.
      *
      * @param newBlockBag
+     * @param player
      * @return whether anything was undone
      */
-    public EditSession undo(BlockBag newBlockBag) {
+    public EditSession undo(BlockBag newBlockBag, LocalPlayer player) {
         --historyPointer;
         if (historyPointer >= 0) {
             EditSession editSession = history.get(historyPointer);
-            EditSession newEditSession =
-                    new EditSession(editSession.getWorld(), -1, newBlockBag);
+            EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
+                    .getEditSession(editSession.getWorld(), -1, newBlockBag, player);
             newEditSession.enableQueue();
             newEditSession.setFastMode(fastMode);
             editSession.undo(newEditSession);
@@ -158,13 +159,14 @@ public class LocalSession {
      * Performs a redo
      *
      * @param newBlockBag
+     * @param player
      * @return whether anything was redone
      */
-    public EditSession redo(BlockBag newBlockBag) {
+    public EditSession redo(BlockBag newBlockBag, LocalPlayer player) {
         if (historyPointer < history.size()) {
             EditSession editSession = history.get(historyPointer);
-            EditSession newEditSession =
-                    new EditSession(editSession.getWorld(), -1, newBlockBag);
+            EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
+                    .getEditSession(editSession.getWorld(), -1, newBlockBag, player);
             newEditSession.enableQueue();
             newEditSession.setFastMode(fastMode);
             editSession.redo(newEditSession);
@@ -698,9 +700,9 @@ public class LocalSession {
         BlockBag blockBag = getBlockBag(player);
 
         // Create an edit session
-        EditSession editSession =
-                new EditSession(player.isPlayer() ? player.getWorld() : null,
-                        getBlockChangeLimit(), blockBag);
+        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory()
+                .getEditSession(player.isPlayer() ? player.getWorld() : null,
+                        getBlockChangeLimit(), blockBag, player);
         editSession.setFastMode(fastMode);
         if (mask != null) {
             mask.prepare(this, player, null);

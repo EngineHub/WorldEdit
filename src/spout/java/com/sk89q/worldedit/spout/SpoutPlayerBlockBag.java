@@ -33,10 +33,9 @@ import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
 import org.spout.api.entity.Player;
-import org.spout.vanilla.component.inventory.PlayerInventory;
-import org.spout.vanilla.component.living.Human;
-import org.spout.vanilla.material.VanillaMaterials;
-import org.spout.vanilla.util.VanillaPlayerUtil;
+import org.spout.vanilla.plugin.component.inventory.PlayerInventory;
+import org.spout.vanilla.plugin.component.living.neutral.Human;
+import org.spout.vanilla.plugin.material.VanillaMaterials;
 
 public class SpoutPlayerBlockBag extends BlockBag {
     /**
@@ -80,7 +79,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
         boolean includesFullInventory = true;
         ItemStack[] items;
         Human human = player.get(Human.class);
-        PlayerInventory inv = human.getInventory();
+        PlayerInventory inv = player.get(PlayerInventory.class);
         if (human.isCreative()) {
             includesFullInventory = false;
             items = new ItemStack[inv.getQuickbar().size()];
@@ -237,7 +236,7 @@ public class SpoutPlayerBlockBag extends BlockBag {
     @Override
     public void flushChanges() {
         if (items != null) {
-            PlayerInventory inv = player.get(Human.class).getInventory();
+            PlayerInventory inv = player.get(PlayerInventory.class);
             for (int i = 0; i < inv.getQuickbar().size(); i++) {
                 inv.getQuickbar().set(i, items.inventory[i]);
             }

@@ -19,17 +19,33 @@
 
 package com.sk89q.worldedit.commands;
 
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandAlias;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.*;
+import com.sk89q.minecraft.util.commands.Logging;
+import com.sk89q.worldedit.Countable;
+import com.sk89q.worldedit.CuboidClipboard;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.data.ChunkStore;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
+import com.sk89q.worldedit.regions.CylinderRegionSelector;
 import com.sk89q.worldedit.regions.EllipsoidRegionSelector;
 import com.sk89q.worldedit.regions.ExtendingCuboidRegionSelector;
 import com.sk89q.worldedit.regions.Polygonal2DRegionSelector;
@@ -37,8 +53,6 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.SphereRegionSelector;
-import com.sk89q.worldedit.blocks.*;
-import com.sk89q.worldedit.regions.CylinderRegionSelector;
 
 /**
  * Selection commands.
@@ -59,6 +73,7 @@ public class SelectionCommands {
         min = 0,
         max = 1
     )
+    @Logging(POSITION)
     @CommandPermissions("worldedit.selection.pos")
     public void pos1(CommandContext args, LocalSession session,  LocalPlayer player,
                      EditSession editSession) throws WorldEditException {
@@ -93,6 +108,7 @@ public class SelectionCommands {
         min = 0,
         max = 1
     )
+    @Logging(POSITION)
     @CommandPermissions("worldedit.selection.pos")
     public void pos2(CommandContext args, LocalSession session, LocalPlayer player,
                      EditSession editSession) throws WorldEditException {
@@ -187,6 +203,7 @@ public class SelectionCommands {
         min = 0,
         max = 0
     )
+    @Logging(POSITION)
     @CommandPermissions("worldedit.selection.chunk")
     public void chunk(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
@@ -271,8 +288,8 @@ public class SelectionCommands {
         min = 1,
         max = 3
     )
+    @Logging(REGION)
     @CommandPermissions("worldedit.selection.expand")
-    @SuppressWarnings("deprecation")
     public void expand(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
@@ -348,8 +365,8 @@ public class SelectionCommands {
         min = 1,
         max = 3
     )
+    @Logging(REGION)
     @CommandPermissions("worldedit.selection.contract")
-    @SuppressWarnings("deprecation")
     public void contract(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
@@ -404,6 +421,7 @@ public class SelectionCommands {
         min = 1,
         max = 2
     )
+    @Logging(REGION)
     @CommandPermissions("worldedit.selection.shift")
     public void shift(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
@@ -442,6 +460,7 @@ public class SelectionCommands {
         min = 1,
         max = 1
     )
+    @Logging(REGION)
     @CommandPermissions("worldedit.selection.outset")
     public void outset(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
@@ -465,6 +484,7 @@ public class SelectionCommands {
         min = 1,
         max = 1
     )
+    @Logging(REGION)
     @CommandPermissions("worldedit.selection.inset")
     public void inset(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
@@ -496,46 +516,74 @@ public class SelectionCommands {
 
     @Command(
         aliases = { "/size" },
+        flags = "c",
         usage = "",
         desc = "Get information about the selection",
         min = 0,
         max = 0
     )
     @CommandPermissions("worldedit.selection.size")
-    public void size(CommandContext args, LocalSession session, LocalPlayer player, EditSession editSession)
-            throws WorldEditException {
+    public void size(CommandContext args, LocalSession session, LocalPlayer player, 
+            EditSession editSession) throws WorldEditException {
+    	
+        if (args.hasFlag('c')) {
+            CuboidClipboard clipboard = session.getClipboard();
+            Vector size = clipboard.getSize();
+            Vector offset = clipboard.getOffset();
 
+            player.print("Size: " + size);
+            player.print("Offset: " + offset);
+            player.print("Cuboid distance: " + size.distance( new Vector(1, 1, 1)));
+            player.print("# of blocks: " 
+                         + (int) (size.getX() * size.getY() * size.getZ()));
+            return;
+        }
+        
         Region region = session.getSelection(player.getWorld());
         Vector size = region.getMaximumPoint()
                 .subtract(region.getMinimumPoint())
                 .add(1, 1, 1);
-
-        player.print("Type: " + session.getRegionSelector(player.getWorld()).getTypeName());
         
-        for (String line : session.getRegionSelector(player.getWorld()).getInformationLines()) {
+        player.print("Type: " + session.getRegionSelector(player.getWorld())
+                .getTypeName());
+        
+        for (String line : session.getRegionSelector(player.getWorld())
+                .getInformationLines()) {
             player.print(line);
         }
-
+        
         player.print("Size: " + size);
-        player.print("Cuboid distance: " + region.getMaximumPoint().distance(region.getMinimumPoint()));
+        player.print("Cuboid distance: " + region.getMaximumPoint()
+                .distance(region.getMinimumPoint()));
         player.print("# of blocks: " + region.getArea());
     }
+
 
     @Command(
         aliases = { "/count" },
         usage = "<block>",
         desc = "Counts the number of a certain type of block",
+        flags = "d",
         min = 1,
         max = 1
     )
     @CommandPermissions("worldedit.analysis.count")
     public void count(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
-        Set<Integer> searchIDs = we.getBlockIDs(player,
-                args.getString(0), true);
-        player.print("Counted: " +
-                editSession.countBlocks(session.getSelection(player.getWorld()), searchIDs));
+
+        boolean useData = args.hasFlag('d');
+        if (args.getString(0).contains(":")) {
+            useData = true; //override d flag, if they specified data they want it
+        }
+        if (useData) {
+            Set<BaseBlock> searchBlocks = we.getBlocks(player, args.getString(0), true);
+            int count = editSession.countBlocks(session.getSelection(player.getWorld()), searchBlocks);
+            player.print("Counted: " + count);
+        } else {
+            Set<Integer> searchIDs = we.getBlockIDs(player, args.getString(0), true);
+            int count = editSession.countBlock(session.getSelection(player.getWorld()), searchIDs);
+            player.print("Counted: " + count);
+        }
     }
 
     @Command(
@@ -544,30 +592,57 @@ public class SelectionCommands {
         desc = "Get the distribution of blocks in the selection",
         help =
             "Gets the distribution of blocks in the selection.\n" +
-            "The -c flag makes it print to the console as well.",
-        flags = "c",
+            "The -c flag gets the distribution of your clipboard.\n" +
+            "The -d flag separates blocks by data",
+        flags = "cd",
         min = 0,
         max = 0
     )
     @CommandPermissions("worldedit.analysis.distr")
     public void distr(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
-        List<Countable<Integer>> distribution =
-                editSession.getBlockDistribution(session.getSelection(player.getWorld()));
 
-        Logger logger = Logger.getLogger("Minecraft.WorldEdit");
+        int size;
+        boolean useData = args.hasFlag('d');
+        List<Countable<Integer>> distribution = null;
+        List<Countable<BaseBlock>> distributionData = null;
 
-        if (distribution.size() > 0) { // *Should* always be true
-            int size = session.getSelection(player.getWorld()).getArea();
-
-            player.print("# total blocks: " + size);
-
-            if (args.hasFlag('c')) {
-                logger.info("Block distribution (req. by " + player.getName() + "):");
-                logger.info("# total blocks: " + size);
+        if (args.hasFlag('c')) {
+            CuboidClipboard clip = session.getClipboard();
+            if (useData) {
+                distributionData = clip.getBlockDistributionWithData();
+            } else {
+                distribution = clip.getBlockDistribution();
             }
+            size = clip.getHeight() * clip.getLength() * clip.getWidth(); 
+        } else {
+            if (useData) {
+                distributionData = editSession.getBlockDistributionWithData(session.getSelection(player.getWorld()));
+            } else {
+                distribution = editSession.getBlockDistribution(session.getSelection(player.getWorld()));
+            }
+            size = session.getSelection(player.getWorld()).getArea();
+        }
 
+        if ((useData && distributionData.size() <= 0)
+                || (!useData && distribution.size() <= 0)) {  // *Should* always be false
+            player.printError("No blocks counted.");
+            return;
+        }
+
+        player.print("# total blocks: " + size);
+
+        if (useData) {
+            for (Countable<BaseBlock> c : distributionData) {
+                String name = BlockType.fromID(c.getID().getId()).getName();
+                String str = String.format("%-7s (%.3f%%) %s #%d:%d",
+                        String.valueOf(c.getAmount()),
+                        c.getAmount() / (double) size * 100,
+                        name == null ? "Unknown" : name,
+                        c.getID().getType(), c.getID().getData());
+                player.print(str);
+            }
+        } else {
             for (Countable<Integer> c : distribution) {
                 BlockType block = BlockType.fromID(c.getID());
                 String str = String.format("%-7s (%.3f%%) %s #%d",
@@ -575,13 +650,7 @@ public class SelectionCommands {
                         c.getAmount() / (double) size * 100,
                         block == null ? "Unknown" : block.getName(), c.getID());
                 player.print(str);
-
-                if (args.hasFlag('c')) {
-                    logger.info(str);
-                }
             }
-        } else {
-            player.printError("No blocks counted.");
         }
     }
 

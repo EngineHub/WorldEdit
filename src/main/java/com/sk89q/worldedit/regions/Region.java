@@ -94,30 +94,10 @@ public interface Region extends Iterable<BlockVector>, Cloneable {
     /**
      * Expand the region.
      *
-     * @deprecated will be seamlessly replaced by {@link #expand(Vector...)}
-     * @param change the change in size
-     * @throws RegionOperationException when the operation cannot take place
-     */
-    @Deprecated
-    public void expand(Vector change) throws RegionOperationException;
-
-    /**
-     * Expand the region.
-     *
      * @param changes array/arguments with multiple related changes
      * @throws RegionOperationException when the operation cannot take place
      */
     public void expand(Vector... changes) throws RegionOperationException;
-
-    /**
-     * Contract the region.
-     *
-     * @deprecated will be seamlessly replaced by {@link #contract(Vector...)}
-     * @param change the change in size
-     * @throws RegionOperationException when the operation cannot take place
-     */
-    @Deprecated
-    public void contract(Vector change) throws RegionOperationException;
 
     /**
      * Contract the region.

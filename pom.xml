@@ -1,10 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sk89q</groupId>
   <artifactId>worldedit</artifactId>
-  <version>5.4.4-SNAPSHOT</version>
+  <version>5.5.2-SNAPSHOT</version>
   <name>WorldEdit</name>
   <description>WorldEdit allows for editing the Minecraft SMP world
     en-masse, de-griefing, and fixing issues.</description>
@@ -51,7 +49,7 @@
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>dummypermscompat</artifactId>
-      <version>1.6</version>
+      <version>1.7</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
@@ -85,14 +83,14 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.3.1-R2.0</version>
+      <version>1.4.6-R0.1</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.3.1-R2.0</version>
+      <version>1.4.7-R0.1</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
@@ -135,6 +133,14 @@
         <directory>${basedir}/src/main/resources/</directory>
         <includes>
           <include>config.yml</include>
+        </includes>
+      </resource>
+      <resource>
+        <targetPath>nmsblocks/</targetPath>
+        <filtering>false</filtering>
+        <directory>${basedir}/src/main/resources/nmsblocks/</directory>
+        <includes>
+          <include>*.class</include>
         </includes>
       </resource>
     </resources>
@@ -273,7 +279,7 @@
         <dependency>
           <groupId>org.spout</groupId>
           <artifactId>vanilla</artifactId>
-          <version>1.3.2-SNAPSHOT</version>
+          <version>1.4.7-SNAPSHOT</version>
           <optional>true</optional>
         </dependency>
       </dependencies>

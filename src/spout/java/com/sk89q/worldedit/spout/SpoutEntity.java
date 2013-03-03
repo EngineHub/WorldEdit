@@ -28,6 +28,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.math.QuaternionMath;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -66,8 +67,7 @@ public class SpoutEntity extends LocalEntity {
         Entity e = world.createAndSpawnEntity(pos, mainComponent, LoadOption.LOAD_ONLY); // Blocks should already be pasted by time entitieos are brought in
 
         if (e != null) {
-            e.getTransform().setPitch(loc.getPitch());
-            e.getTransform().setYaw(loc.getYaw());
+            e.getScene().setRotation(QuaternionMath.rotation(loc.getPitch(), loc.getYaw(), 0));
             for (Class<? extends Component> clazz : Iterables.skip(components, 1)) {
                 e.add(clazz);
             }

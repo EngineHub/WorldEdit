@@ -34,9 +34,12 @@ import com.sk89q.worldedit.spout.selections.Selection;
 import com.sk89q.worldedit.util.YAMLConfiguration;
 import org.spout.api.Server;
 import org.spout.api.command.CommandSource;
+import org.spout.api.event.Cause;
+import org.spout.api.event.cause.PluginCause;
 import org.spout.api.geo.World;
 import org.spout.api.entity.Player;
 import org.spout.api.plugin.CommonPlugin;
+import org.spout.api.plugin.Plugin;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.scheduler.TaskPriority;
 
@@ -65,8 +68,10 @@ public class WorldEditPlugin extends CommonPlugin {
     private YAMLConfiguration config;
 
     private static WorldEditPlugin instance;
+    private static PluginCause instanceCause;
     {
         instance = this;
+        instanceCause = new PluginCause(this);
     }
 
     /**
@@ -105,7 +110,7 @@ public class WorldEditPlugin extends CommonPlugin {
             proto.registerPacket(WorldEditCUICodec.class, new WorldEditCUIMessageHandler(this));
         }
 
-        getEngine().getScheduler().scheduleAsyncRepeatingTask(this,
+        getEngine().getScheduler().scheduleSyncRepeatingTask(this,
                 new SessionTimer(controller, getServer()), 6 * 1000, 6 * 1000, TaskPriority.LOWEST);
     }
 
@@ -209,8 +214,8 @@ public class WorldEditPlugin extends CommonPlugin {
         LocalSession session = controller.getSession(wePlayer);
         BlockBag blockBag = session.getBlockBag(wePlayer);
 
-        EditSession editSession =
-                new EditSession(wePlayer.getWorld(), session.getBlockChangeLimit(), blockBag);
+        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory()
+                .getEditSession(wePlayer.getWorld(), session.getBlockChangeLimit(), blockBag, wePlayer);
         editSession.enableQueue();
 
         return editSession;
@@ -355,5 +360,9 @@ public class WorldEditPlugin extends CommonPlugin {
 
     static WorldEditPlugin getInstance() {
         return instance;
+    }
+
+    static Cause<Plugin> asCause() {
+        return instanceCause;
     }
 }

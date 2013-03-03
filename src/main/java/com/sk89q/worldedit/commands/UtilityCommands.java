@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.commands;
 
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
+
 import java.util.Comparator;
 import java.util.Set;
 import java.util.SortedSet;
@@ -30,11 +32,19 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.minecraft.util.commands.Console;
 import com.sk89q.minecraft.util.commands.Logging;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.EntityType;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.LocalWorld.KillFlags;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.patterns.*;
+import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 
@@ -346,7 +356,7 @@ public class UtilityCommands {
     @Command(
         aliases = { "butcher" },
         usage = "[radius]",
-        flags = "plangf",
+        flags = "plangbf",
         desc = "Kill all or nearby mobs",
         help =
             "Kills nearby mobs, based on radius, if none is given uses default in configuration.\n" +
@@ -355,6 +365,7 @@ public class UtilityCommands {
             "  -n also kills NPCs.\n" +
             "  -g also kills Golems.\n" +
             "  -a also kills animals.\n" +
+            "  -b also kills ambient mobs.\n" +
             "  -f compounds all previous flags.\n" +
             "  -l strikes lightning on each killed mob.",
         min = 0,
@@ -368,18 +379,19 @@ public class UtilityCommands {
 
         LocalConfiguration config = we.getConfiguration();
 
-        final int radius;
+        // technically the default can be larger than the max, but that's not my problem
+        int radius = config.butcherDefaultRadius;
 
-        if (args.argsLength() > 0) {
-            if (args.getString(0).equals("all")) {
-                radius = -1;
+        // there might be a better way to do this but my brain is fried right now
+        if (args.argsLength() > 0) { // user inputted radius, override the default
+            radius = args.getInteger(0);
+            if (config.butcherMaxRadius != -1) { // clamp if there is a max
+                if (radius == -1) {
+                    radius = config.butcherMaxRadius;
+                } else { // Math.min does not work if radius is -1 (actually highest possible value)
+                    radius = Math.min(radius, config.butcherMaxRadius);
+                }
             }
-            else {
-                radius =  Math.max(1, args.getInteger(0));
-            }
-        }
-        else{
-        	radius = config.butcherDefaultRadius;
         }
 
         FlagContainer flags = new FlagContainer(player);
@@ -388,7 +400,9 @@ public class UtilityCommands {
         flags.or(KillFlags.NPCS          , args.hasFlag('n'), "worldedit.butcher.npcs");
         flags.or(KillFlags.GOLEMS        , args.hasFlag('g'), "worldedit.butcher.golems");
         flags.or(KillFlags.ANIMALS       , args.hasFlag('a'), "worldedit.butcher.animals");
+        flags.or(KillFlags.AMBIENT       , args.hasFlag('b'), "worldedit.butcher.ambient");
         flags.or(KillFlags.WITH_LIGHTNING, args.hasFlag('l'), "worldedit.butcher.lightning");
+        // If you add flags here, please add them to com.sk89q.worldedit.tools.brushes.ButcherBrush as well
 
         int killed;
         if (player.isPlayer()) {
@@ -400,13 +414,14 @@ public class UtilityCommands {
             }
         }
 
-        if (radius < 0)
+        if (radius < 0) {
             player.print("Killed " + killed + " mobs.");
-        else
-            player.print("Killed " + killed + " mobs in a radius of "+radius+".");
+        } else {
+            player.print("Killed " + killed + " mobs in a radius of " + radius + ".");
+        }
     }
 
-    public class FlagContainer {
+    public static class FlagContainer {
         private final LocalPlayer player;
         public int flags = 0;
         public FlagContainer(LocalPlayer player) {
@@ -448,8 +463,10 @@ public class UtilityCommands {
 
         EntityType type = null;
 
-        if (typeStr.matches("arrows?")) {
-            type = EntityType.ARROWS;
+        if (typeStr.matches("all")) {
+            type = EntityType.ALL;
+        } else if (typeStr.matches("projectiles?|arrows?")) {
+            type = EntityType.PROJECTILES;
         } else if (typeStr.matches("items?")
                 || typeStr.matches("drops?")) {
             type = EntityType.ITEMS;
@@ -458,6 +475,8 @@ public class UtilityCommands {
         } else if (typeStr.matches("paintings?")
                 || typeStr.matches("art")) {
             type = EntityType.PAINTINGS;
+        } else if (typeStr.matches("(item)frames?")) {
+            type = EntityType.ITEM_FRAMES;
         } else if (typeStr.matches("boats?")) {
             type = EntityType.BOATS;
         } else if (typeStr.matches("minecarts?")
@@ -468,7 +487,7 @@ public class UtilityCommands {
         } else if (typeStr.matches("xp")) {
             type = EntityType.XP_ORBS;
         } else {
-            player.printError("Acceptable types: arrows, items, paintings, boats, minecarts, tnt, xp");
+            player.printError("Acceptable types: projectiles, items, paintings, itemframes, boats, minecarts, tnt, xp, or all");
             return;
         }
 
@@ -485,6 +504,7 @@ public class UtilityCommands {
         max = -1
     )
     @Console
+    @CommandPermissions("worldedit.help")
     public void help(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
@@ -496,6 +516,7 @@ public class UtilityCommands {
 
         if (args.argsLength() == 0) {
             SortedSet<String> commands = new TreeSet<String>(new Comparator<String>() {
+                @Override
                 public int compare(String o1, String o2) {
                     final int ret = o1.replaceAll("/", "").compareToIgnoreCase(o2.replaceAll("/", ""));
                     if (ret == 0) {

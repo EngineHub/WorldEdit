@@ -19,6 +19,11 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -30,35 +35,45 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.SkullType;
 import org.bukkit.TreeType;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.Sign;
+import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Ambient;
 import org.bukkit.entity.Animals;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Golem;
+import org.bukkit.entity.Hanging;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Painting;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Villager;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BlockVector2D;
@@ -77,17 +92,27 @@ import com.sk89q.worldedit.blocks.FurnaceBlock;
 import com.sk89q.worldedit.blocks.MobSpawnerBlock;
 import com.sk89q.worldedit.blocks.NoteBlock;
 import com.sk89q.worldedit.blocks.SignBlock;
+import com.sk89q.worldedit.blocks.SkullBlock;
 import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 public class BukkitWorld extends LocalWorld {
 
-    private static final Logger logger = Logger.getLogger(BukkitWorld.class.getCanonicalName());
+    private static final Logger logger = WorldEdit.logger;
     private World world;
     private boolean skipNmsAccess = false;
     private boolean skipNmsSafeSet = false;
     private boolean skipNmsValidBlockCheck = false;
+
+    /*
+     * holder for the nmsblock class that we should use
+     */
+    private static Class<? extends NmsBlock> nmsBlockType;
+    private static Method nmsSetMethod;
+    private static Method nmsValidBlockMethod;
+    private static Method nmsGetMethod;
+    private static Method nmsSetSafeMethod;
 
     /**
      * Construct the object.
@@ -95,6 +120,116 @@ public class BukkitWorld extends LocalWorld {
      */
     public BukkitWorld(World world) {
         this.world = world;
+
+        // check if we have a class we can use for nms access
+
+        // only run once per server startup
+        if (nmsBlockType != null || skipNmsAccess || skipNmsSafeSet || skipNmsValidBlockCheck) return;
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
+        if (!(plugin instanceof WorldEditPlugin)) return; // hopefully never happens
+        WorldEditPlugin wePlugin = ((WorldEditPlugin) plugin);
+        File nmsBlocksDir = new File(wePlugin.getDataFolder() + File.separator + "nmsblocks" + File.separator);
+        if (nmsBlocksDir.listFiles() == null) { // no files to use
+            skipNmsAccess = true; skipNmsSafeSet = true; skipNmsValidBlockCheck = true;
+            return;
+        }
+        try {
+            // make a classloader that can handle our blocks
+            NmsBlockClassLoader loader = new NmsBlockClassLoader(BukkitWorld.class.getClassLoader(), nmsBlocksDir);
+            String filename;
+            for (File f : nmsBlocksDir.listFiles()) {
+                if (!f.isFile()) continue;
+                filename = f.getName();
+                // load class using magic keyword
+                Class<?> testBlock = null;
+                try {
+                    testBlock = loader.loadClass("CL-NMS" + filename);
+                } catch (Throwable e) {
+                    // someone is putting things where they don't belong
+                    continue;
+                }
+                filename = filename.replaceFirst(".class$", ""); // get rid of extension
+                if (NmsBlock.class.isAssignableFrom(testBlock)) {
+                    // got a NmsBlock, test it now
+                    Class<? extends NmsBlock> nmsClass = (Class<? extends NmsBlock>) testBlock;
+                    boolean canUse = false;
+                    try {
+                        canUse = (Boolean) nmsClass.getMethod("verify", null).invoke(null, null);
+                    } catch (Throwable e) {
+                        continue;
+                    }
+                    if (!canUse) continue; // not for this server
+                    nmsBlockType = nmsClass;
+                    nmsSetMethod = nmsBlockType.getMethod("set", World.class, Vector.class, BaseBlock.class);
+                    nmsValidBlockMethod = nmsBlockType.getMethod("isValidBlockType", int.class);
+                    nmsGetMethod = nmsBlockType.getMethod("get", World.class, Vector.class, int.class, int.class);
+                    nmsSetSafeMethod = nmsBlockType.getMethod("setSafely",
+                            BukkitWorld.class, Vector.class, com.sk89q.worldedit.foundation.Block.class, boolean.class);
+                    // phew
+                    break;
+                }
+            }
+            if (nmsBlockType != null) {
+                logger.info("[WorldEdit] Using external NmsBlock for this version: " + nmsBlockType.getName());
+            } else {
+                // try our default
+                try {
+                    nmsBlockType = (Class<? extends NmsBlock>) Class.forName("com.sk89q.worldedit.bukkit.DefaultNmsBlock");
+                    boolean canUse = (Boolean) nmsBlockType.getMethod("verify", null).invoke(null, null);
+                    if (canUse) {
+                        nmsSetMethod = nmsBlockType.getMethod("set", World.class, Vector.class, BaseBlock.class);
+                        nmsValidBlockMethod = nmsBlockType.getMethod("isValidBlockType", int.class);
+                        nmsGetMethod = nmsBlockType.getMethod("get", World.class, Vector.class, int.class, int.class);
+                        nmsSetSafeMethod = nmsBlockType.getMethod("setSafely",
+                                BukkitWorld.class, Vector.class, com.sk89q.worldedit.foundation.Block.class, boolean.class);
+                        logger.info("[WorldEdit] Using inbuilt NmsBlock for this version.");
+                    }
+                } catch (Throwable e) {
+                    // OMG DEVS WAI U NO SUPPORT <xyz> SERVER
+                    skipNmsAccess = true; skipNmsSafeSet = true; skipNmsValidBlockCheck = true;
+                    logger.warning("[WorldEdit] No compatible nms block class found.");
+                }
+            }
+        } catch (Throwable e) {
+            logger.warning("[WorldEdit] Unable to load NmsBlock classes, make sure they are installed correctly.");
+            e.printStackTrace();
+            skipNmsAccess = true; skipNmsSafeSet = true; skipNmsValidBlockCheck = true;
+        }
+    }
+
+    private class NmsBlockClassLoader extends ClassLoader {
+        public File searchDir;
+        public NmsBlockClassLoader(ClassLoader parent, File searchDir) {
+            super(parent);
+            this.searchDir = searchDir;
+        }
+
+        @Override
+        public Class<?> loadClass(String name) throws ClassNotFoundException {
+            if (!name.startsWith("CL-NMS")) {
+                return super.loadClass(name);
+            } else {
+                name = name.replace("CL-NMS", ""); // hacky lol
+            }
+            try {
+                URL url = new File(searchDir, name).toURI().toURL();
+                InputStream input = url.openConnection().getInputStream();
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+                int data = input.read();
+                while (data != -1) {
+                    buffer.write(data);
+                    data = input.read();
+                }
+                input.close();
+
+                byte[] classData = buffer.toByteArray();
+
+                return defineClass(name.replaceFirst(".class$", ""), classData, 0, classData.length);
+            } catch (Throwable e) {
+                throw new ClassNotFoundException();
+            }
+        }
     }
 
     /**
@@ -355,9 +490,98 @@ public class BukkitWorld extends LocalWorld {
             return true;
         }
 
+        if (block instanceof SkullBlock) {
+            // Skull block
+            Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            if (bukkitBlock == null) return false;
+            BlockState state = bukkitBlock.getState();
+            if (!(state instanceof org.bukkit.block.Skull)) return false;
+            Skull bukkit = (Skull) state;
+            SkullBlock we = (SkullBlock) block;
+            // this is dumb
+            SkullType skullType = SkullType.SKELETON;
+            switch (we.getSkullType()) {
+            case 0:
+                skullType = SkullType.SKELETON;
+                break;
+            case 1:
+                skullType = SkullType.WITHER;
+                break;
+            case 2:
+                skullType = SkullType.ZOMBIE;
+                break;
+            case 3:
+                skullType = SkullType.PLAYER;
+                break;
+            case 4:
+                skullType = SkullType.CREEPER;
+                break;
+            }
+            bukkit.setSkullType(skullType);
+            BlockFace rotation;
+            switch (we.getRot()) {
+            // soooo dumb
+            case 0:
+                rotation = BlockFace.NORTH;
+                break;
+            case 1:
+                rotation = BlockFace.NORTH_NORTH_EAST;
+                break;
+            case 2:
+                rotation = BlockFace.NORTH_EAST;
+                break;
+            case 3:
+                rotation = BlockFace.EAST_NORTH_EAST;
+                break;
+            case 4:
+                rotation = BlockFace.EAST;
+                break;
+            case 5:
+                rotation = BlockFace.EAST_SOUTH_EAST;
+                break;
+            case 6:
+                rotation = BlockFace.SOUTH_EAST;
+                break;
+            case 7:
+                rotation = BlockFace.SOUTH_SOUTH_EAST;
+                break;
+            case 8:
+                rotation = BlockFace.SOUTH;
+                break;
+            case 9:
+                rotation = BlockFace.SOUTH_SOUTH_WEST;
+                break;
+            case 10:
+                rotation = BlockFace.SOUTH_WEST;
+                break;
+            case 11:
+                rotation = BlockFace.WEST_SOUTH_WEST;
+                break;
+            case 12:
+                rotation = BlockFace.WEST;
+                break;
+            case 13:
+                rotation = BlockFace.WEST_NORTH_WEST;
+                break;
+            case 14:
+                rotation = BlockFace.NORTH_WEST;
+                break;
+            case 15:
+                rotation = BlockFace.NORTH_NORTH_WEST;
+                break;
+            default:
+                rotation = BlockFace.NORTH;
+                break;
+            }
+            bukkit.setRotation(rotation);
+            if (we.getOwner() != null && !we.getOwner().isEmpty()) bukkit.setOwner(we.getOwner());
+            bukkit.update(true);
+            return true;
+        }
+
         if (!skipNmsAccess) {
             try {
-                return NmsBlock.set(world, pt, block);
+                return (Boolean) nmsSetMethod.invoke(null, world, pt, block);
             } catch (Throwable t) {
                 logger.log(Level.WARNING, "WorldEdit: Failed to do NMS access for direct NBT data copy", t);
                 skipNmsAccess = true;
@@ -427,6 +651,91 @@ public class BukkitWorld extends LocalWorld {
             return true;
         }
 
+        if (block instanceof SkullBlock) {
+            // Skull block
+            Block bukkitBlock = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            if (bukkitBlock == null) return false;
+            BlockState state = bukkitBlock.getState();
+            if (!(state instanceof org.bukkit.block.Skull)) return false;
+            Skull bukkit = (Skull) state;
+            SkullBlock we = (SkullBlock) block;
+            byte skullType = 0;
+            switch (bukkit.getSkullType()) {
+            // this is dumb but whoever wrote the class is stupid
+            case SKELETON:
+                skullType = 0;
+                break;
+            case WITHER:
+                skullType = 1;
+                break;
+            case ZOMBIE:
+                skullType = 2;
+                break;
+            case PLAYER:
+                skullType = 3;
+                break;
+            case CREEPER:
+                skullType = 4;
+                break;
+            }
+            we.setSkullType(skullType);
+            byte rot = 0;
+            switch (bukkit.getRotation()) {
+            // this is even more dumb, hurray for copy/paste
+            case NORTH:
+                rot = (byte) 0;
+                break;
+            case NORTH_NORTH_EAST:
+                rot = (byte) 1;
+                break;
+            case NORTH_EAST:
+                rot = (byte) 2;
+                break;
+            case EAST_NORTH_EAST:
+                rot = (byte) 3;
+                break;
+            case EAST:
+                rot = (byte) 4;
+                break;
+            case EAST_SOUTH_EAST:
+                rot = (byte) 5;
+                break;
+            case SOUTH_EAST:
+                rot = (byte) 6;
+                break;
+            case SOUTH_SOUTH_EAST:
+                rot = (byte) 7;
+                break;
+            case SOUTH:
+                rot = (byte) 8;
+                break;
+            case SOUTH_SOUTH_WEST:
+                rot = (byte) 9;
+                break;
+            case SOUTH_WEST:
+                rot = (byte) 10;
+                break;
+            case WEST_SOUTH_WEST:
+                rot = (byte) 11;
+                break;
+            case WEST:
+                rot = (byte) 12;
+                break;
+            case WEST_NORTH_WEST:
+                rot = (byte) 13;
+                break;
+            case NORTH_WEST:
+                rot = (byte) 14;
+                break;
+            case NORTH_NORTH_WEST:
+                rot = (byte) 15;
+                break;
+            }
+            we.setRot(rot);
+            we.setOwner(bukkit.hasOwner() ? bukkit.getOwner() : "");
+            return true;
+        }
+
         return false;
     }
 
@@ -434,7 +743,7 @@ public class BukkitWorld extends LocalWorld {
      * Gets the single block inventory for a potentially double chest.
      * Handles people who have an old version of Bukkit.
      * This should be replaced with {@link org.bukkit.block.Chest#getBlockInventory()}
-     * in a few months (now = March 2012)
+     * in a few months (now = March 2012) // note from future dev - lol
      *
      * @param chest The chest to get a single block inventory for
      * @return The chest's inventory
@@ -616,6 +925,7 @@ public class BukkitWorld extends LocalWorld {
         boolean killAnimals = (flags & KillFlags.ANIMALS) != 0;
         boolean withLightning = (flags & KillFlags.WITH_LIGHTNING) != 0;
         boolean killGolems = (flags & KillFlags.GOLEMS) != 0;
+        boolean killAmbient = (flags & KillFlags.AMBIENT) != 0;
 
         int num = 0;
         double radiusSq = radius * radius;
@@ -632,22 +942,20 @@ public class BukkitWorld extends LocalWorld {
             }
 
             if (!killPets && ent instanceof Tameable && ((Tameable) ent).isTamed()) {
-                continue; // tamed wolf
+                continue; // tamed pet
             }
 
-            try {
-                // Temporary solution to fix Golems being butchered.
-                if (!killGolems && Class.forName("org.bukkit.entity.Golem").isAssignableFrom(ent.getClass())) {
-                    continue;
-                }
-            } catch (ClassNotFoundException e) {}
+            if (!killGolems && ent instanceof Golem) {
+                continue;
+            }
 
-            try {
-                // Temporary solution until org.bukkit.entity.NPC is widely deployed.
-                if (!killNPCs && Class.forName("org.bukkit.entity.NPC").isAssignableFrom(ent.getClass())) {
-                    continue;
-                }
-            } catch (ClassNotFoundException e) {}
+            if (!killNPCs && ent instanceof Villager) {
+                continue;
+            }
+
+            if (!killAmbient && ent instanceof Ambient) {
+                continue;
+            }
 
             if (radius < 0 || bukkitOrigin.distanceSquared(ent.getLocation()) <= radiusSq) {
                 if (withLightning) {
@@ -679,8 +987,16 @@ public class BukkitWorld extends LocalWorld {
                 continue;
             }
 
-            if (type == EntityType.ARROWS) {
-                if (ent instanceof Arrow) {
+            if (type == EntityType.ALL) {
+                if (ent instanceof Projectile || ent instanceof Boat || ent instanceof Item
+                        || ent instanceof FallingBlock || ent instanceof Minecart || ent instanceof Hanging
+                        || ent instanceof TNTPrimed || ent instanceof ExperienceOrb) {
+                    ent.remove();
+                    num++;
+                }
+            } else if (type == EntityType.PROJECTILES || type == EntityType.ARROWS) {
+                if (ent instanceof Projectile) {
+                    // covers: arrow, egg, enderpearl, fireball, fish, snowball, throwpotion, thrownexpbottle
                     ent.remove();
                     ++num;
                 }
@@ -706,6 +1022,11 @@ public class BukkitWorld extends LocalWorld {
                 }
             } else if (type == EntityType.PAINTINGS) {
                 if (ent instanceof Painting) {
+                    ent.remove();
+                    ++num;
+                }
+            } else if (type == EntityType.ITEM_FRAMES) {
+                if (ent instanceof ItemFrame) {
                     ent.remove();
                     ++num;
                 }
@@ -869,10 +1190,8 @@ public class BukkitWorld extends LocalWorld {
     public boolean isValidBlockType(int type) {
         if (!skipNmsValidBlockCheck) {
             try {
-                return type == 0 || (type >= 1 && type < net.minecraft.server.Block.byId.length
-                        && net.minecraft.server.Block.byId[type] != null);
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error checking NMS valid block type", e);
+                return (Boolean) nmsValidBlockMethod.invoke(null, type);
+            } catch (Throwable e) {
                 skipNmsValidBlockCheck = true;
             }
         }
@@ -982,11 +1301,13 @@ public class BukkitWorld extends LocalWorld {
         //case BlockID.DISPENSER:
         //case BlockID.MOB_SPAWNER:
         case BlockID.NOTE_BLOCK:
+        case BlockID.HEAD:
             return super.getBlock(pt);
         default:
             if (!skipNmsAccess) {
                 try {
-                    NmsBlock block = NmsBlock.get(world, pt, type, data);
+                    NmsBlock block = null;
+                    block = (NmsBlock) nmsGetMethod.invoke(null, getWorld(), pt, type, data);
                     if (block != null) {
                         return block;
                     }
@@ -1005,10 +1326,9 @@ public class BukkitWorld extends LocalWorld {
     public boolean setBlock(Vector pt, com.sk89q.worldedit.foundation.Block block, boolean notifyAdjacent) {
         if (!skipNmsSafeSet) {
             try {
-                return NmsBlock.setSafely(this, pt, block, notifyAdjacent);
+                return (Boolean) nmsSetSafeMethod.invoke(null, this, pt, block, notifyAdjacent);
             } catch (Throwable t) {
-                logger.log(Level.WARNING,
-                        "WorldEdit: Failed to do NMS safe block set", t);
+                logger.log(Level.WARNING, "WorldEdit: Failed to do NMS safe block set", t);
                 skipNmsSafeSet = true;
             }
         }

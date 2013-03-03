@@ -24,11 +24,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class WorldEditCUIMessage implements  Message {
+public class WorldEditCUIMessage implements Message {
     private final String message;
 
-    public WorldEditCUIMessage(String mesage) {
-        this.message = mesage;
+    public WorldEditCUIMessage(String message) {
+        this.message = message;
     }
 
     public WorldEditCUIMessage(CUIEvent event) {
@@ -49,5 +49,15 @@ public class WorldEditCUIMessage implements  Message {
         return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
                 .append("message", message)
                 .toString();
+    }
+
+    @Override
+    public boolean isAsync() {
+        return false;
+    }
+
+    @Override
+    public int getChannelId() {
+        return DEFAULT_CHANNEL;
     }
 }

@@ -91,6 +91,7 @@ public final class BlockData {
 
         case BlockID.LEVER:
         case BlockID.STONE_BUTTON:
+        case BlockID.WOODEN_BUTTON:
             int thrown = data & 0x8;
             int withoutThrown = data & ~0x8;
             switch (withoutThrown) {
@@ -141,6 +142,10 @@ public final class BlockData {
             case 2: return 3;
             case 3: return 0;
             }
+            break;
+
+        case BlockID.LOG:
+            if (data >= 4 && data <= 11) data ^= 0xc;
             break;
 
         case BlockID.REDSTONE_REPEATER_OFF:
@@ -261,6 +266,7 @@ public final class BlockData {
 
         case BlockID.LEVER:
         case BlockID.STONE_BUTTON:
+        case BlockID.WOODEN_BUTTON:
             int thrown = data & 0x8;
             int withoutThrown = data & ~0x8;
             switch (withoutThrown) {
@@ -311,6 +317,10 @@ public final class BlockData {
             case 3: return 2;
             case 0: return 3;
             }
+            break;
+
+        case BlockID.LOG:
+            if (data >= 4 && data <= 11) data ^= 0xc;
             break;
 
         case BlockID.REDSTONE_REPEATER_OFF:
@@ -409,6 +419,7 @@ public final class BlockData {
 
         case BlockID.LEVER:
         case BlockID.STONE_BUTTON:
+        case BlockID.WOODEN_BUTTON:
             switch (data & ~0x8) {
             case 1: return data + flipX;
             case 2: return data - flipX;
@@ -486,6 +497,7 @@ public final class BlockData {
                 return (16 - data) & 0xf;
             case WEST_EAST:
                 return (8 - data) & 0xf;
+            default:
             }
             break;
 
@@ -630,7 +642,17 @@ public final class BlockData {
 
         int store;
         switch (type) {
+
+        // special case here, going to use "forward" for type and "backward" for orientation
         case BlockID.LOG:
+            if (increment == -1) {
+                store = data & 0x3; // copy bottom (type) bits
+                return mod((data & ~0x3) + 4, 16) | store; // switch orientation with top bits and reapply bottom bits;
+            } else {
+                store = data & ~0x3; // copy top (orientation) bits
+                return mod((data & 0x3) + 1, 4) | store;  // switch type with bottom bits and reapply top bits
+            }
+
         case BlockID.LONG_GRASS:
         case BlockID.STONE_BRICK:
         case BlockID.SILVERFISH_BLOCK:

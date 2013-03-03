@@ -49,12 +49,12 @@ import com.sk89q.worldedit.regions.RegionOperationException;
 
 /**
  * Region related commands.
- * 
+ *
  * @author sk89q
  */
 public class RegionCommands {
     private final WorldEdit we;
-    
+
     public RegionCommands(WorldEdit we) {
         this.we = we;
     }
@@ -97,7 +97,7 @@ public class RegionCommands {
     @Logging(REGION)
     public void replace(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
+
         Set<BaseBlock> from;
         Pattern to;
         if (args.argsLength() == 1) {
@@ -151,6 +151,8 @@ public class RegionCommands {
         min = 1,
         max = 1
     )
+    @Logging(REGION)
+    @CommandPermissions("worldedit.region.center")
     public void center(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
@@ -211,7 +213,7 @@ public class RegionCommands {
     @Logging(REGION)
     public void faces(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
+
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         int affected;
         if (pattern instanceof SingleBlockPattern) {
@@ -238,7 +240,7 @@ public class RegionCommands {
     @Logging(REGION)
     public void smooth(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
+
         int iterations = 1;
         if (args.argsLength() > 0) {
             iterations = args.getInteger(0);
@@ -356,7 +358,7 @@ public class RegionCommands {
     @Logging(REGION)
     public void regenerateChunk(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
+
         Region region = session.getSelection(player.getWorld());
         Mask mask = session.getMask();
         session.setMask(null);

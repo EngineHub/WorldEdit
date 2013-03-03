@@ -32,7 +32,7 @@ import org.spout.api.geo.World;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.scheduler.TaskPriority;
-import org.spout.vanilla.material.VanillaMaterial;
+import org.spout.vanilla.api.material.VanillaMaterial;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public class SpoutServerInterface extends ServerInterface {
 
     @Override
     public int schedule(long delay, long period, Runnable task) {
-        return game.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay * 50, period * 50, TaskPriority.NORMAL);
+        return game.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay * 50, period * 50, TaskPriority.NORMAL).getTaskId();
     }
 
     @Override

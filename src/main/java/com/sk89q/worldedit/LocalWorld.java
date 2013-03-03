@@ -32,6 +32,7 @@ import com.sk89q.worldedit.blocks.FurnaceBlock;
 import com.sk89q.worldedit.blocks.MobSpawnerBlock;
 import com.sk89q.worldedit.blocks.NoteBlock;
 import com.sk89q.worldedit.blocks.SignBlock;
+import com.sk89q.worldedit.blocks.SkullBlock;
 import com.sk89q.worldedit.foundation.Block;
 import com.sk89q.worldedit.foundation.World;
 import com.sk89q.worldedit.regions.Region;
@@ -51,7 +52,8 @@ public abstract class LocalWorld implements World {
         public static final int NPCS = 1 << 1;
         public static final int ANIMALS = 1 << 2;
         public static final int GOLEMS = 1 << 3;
-        public static final int FRIENDLY = PETS | NPCS | ANIMALS | GOLEMS;
+        public static final int AMBIENT = 1 << 4;
+        public static final int FRIENDLY = PETS | NPCS | ANIMALS | GOLEMS | AMBIENT;
         public static final int WITH_LIGHTNING = 1 << 20;
     }
 
@@ -586,6 +588,12 @@ public abstract class LocalWorld implements World {
 
         case BlockID.NOTE_BLOCK: {
             NoteBlock block = new NoteBlock(data);
+            copyFromWorld(pt, block);
+            return block;
+        }
+
+        case BlockID.HEAD: {
+            SkullBlock block = new SkullBlock(data);
             copyFromWorld(pt, block);
             return block;
         }

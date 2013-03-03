@@ -63,18 +63,6 @@ public abstract class AbstractRegion implements Region {
     }
 
     @Override
-    @Deprecated
-    public void expand(Vector change) throws RegionOperationException {
-        expand(new Vector[] { change });
-    }
-
-    @Override
-    @Deprecated
-    public void contract(Vector change) throws RegionOperationException {
-        contract(new Vector[] { change });
-    }
-
-    @Override
     public void shift(Vector change) throws RegionOperationException {
         expand(change);
         contract(change);

@@ -56,7 +56,7 @@ public class HistoryCommands {
         for (int i = 0; i < times; ++i) {
             EditSession undone;
             if (args.argsLength() < 2) {
-                undone = session.undo(session.getBlockBag(player));
+                undone = session.undo(session.getBlockBag(player), player);
             } else {
                 player.checkPermission("worldedit.history.undo.other");
                 LocalSession sess = we.getSession(args.getString(1));
@@ -64,7 +64,7 @@ public class HistoryCommands {
                     player.printError("Unable to find session for " + args.getString(1));
                     break;
                 }
-                undone = sess.undo(session.getBlockBag(player));
+                undone = sess.undo(session.getBlockBag(player), player);
             }
 
             if (undone != null) {
@@ -98,7 +98,7 @@ public class HistoryCommands {
         for (int i = 0; i < times; ++i) {
             EditSession redone;
             if (args.argsLength() < 2) {
-                redone = session.redo(session.getBlockBag(player));
+                redone = session.redo(session.getBlockBag(player), player);
             } else {
                 player.checkPermission("worldedit.history.redo.other");
                 LocalSession sess = we.getSession(args.getString(1));
@@ -106,7 +106,7 @@ public class HistoryCommands {
                     player.printError("Unable to find session for " + args.getString(1));
                     break;
                 }
-                redone = sess.redo(session.getBlockBag(player));
+                redone = sess.redo(session.getBlockBag(player), player);
             }
 
             if (redone != null) {

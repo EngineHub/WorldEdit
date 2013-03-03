@@ -144,7 +144,7 @@ public class WorldEditListener implements Listener {
                     public void run() {
                         ignoreLeftClickAir = false;
                     }
-                }, 100, TaskPriority.NORMAL);
+                }, 100, TaskPriority.NORMAL).getTaskId();
 
                 if (taskId != -1) {
                     ignoreLeftClickAir = true;

@@ -24,19 +24,35 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Handler;
 import java.util.zip.ZipEntry;
 
-import com.sk89q.util.yaml.YAMLProcessor;
-import com.sk89q.wepif.PermissionsResolverManager;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.sk89q.worldedit.*;
+
+import com.sk89q.util.yaml.YAMLProcessor;
+import com.sk89q.wepif.PermissionsResolverManager;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditOperation;
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.bukkit.selections.*;
-import com.sk89q.worldedit.regions.*;
+import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
+import com.sk89q.worldedit.bukkit.selections.Polygonal2DSelection;
+import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Polygonal2DRegion;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionSelector;
 
 /**
  * Plugin for Bukkit.
@@ -71,6 +87,7 @@ public class WorldEditPlugin extends JavaPlugin {
     /**
      * Called on plugin enable.
      */
+    @Override
     public void onEnable() {
         final String pluginYmlVersion = getDescription().getVersion();
         final String manifestVersion = WorldEdit.getVersion();
@@ -81,6 +98,9 @@ public class WorldEditPlugin extends JavaPlugin {
 
         // Make the data folders that WorldEdit uses
         getDataFolder().mkdirs();
+        File targetDir = new File(getDataFolder() + File.separator + "nmsblocks");
+        targetDir.mkdir();
+        copyNmsBlockClasses(targetDir);
 
         // Create the default configuration file
         createDefaultConfiguration("config.yml");
@@ -96,10 +116,10 @@ public class WorldEditPlugin extends JavaPlugin {
         // Setup interfaces
         server = new BukkitServerInterface(this, getServer());
         controller = new WorldEdit(server, config);
+        WorldEdit.getInstance().logger.setParent(Bukkit.getLogger());
         api = new WorldEditAPI(this);
         getServer().getMessenger().registerIncomingPluginChannel(this, CUI_PLUGIN_CHANNEL, new CUIChannelListener(this));
         getServer().getMessenger().registerOutgoingPluginChannel(this, CUI_PLUGIN_CHANNEL);
-
         // Now we can register events!
         getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
 
@@ -107,9 +127,36 @@ public class WorldEditPlugin extends JavaPlugin {
                 new SessionTimer(controller, getServer()), 120, 120);
     }
 
+    private void copyNmsBlockClasses(File target) {
+        try {
+            JarFile jar = new JarFile(getFile());
+            Enumeration entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry jarEntry = (JarEntry) entries.nextElement();
+                if (!jarEntry.getName().startsWith("nmsblocks") || jarEntry.isDirectory()) continue;
+
+                File file = new File(target + File.separator + jarEntry.getName().replace("nmsblocks", ""));
+                if (file.exists()) continue;
+
+                InputStream is = jar.getInputStream(jarEntry);
+                FileOutputStream fos = new FileOutputStream(file);
+
+                fos = new FileOutputStream(file);
+                byte[] buf = new byte[8192];
+                int length = 0;
+                while ((length = is.read(buf)) > 0) {
+                    fos.write(buf, 0, length);
+                }
+                fos.close();
+                is.close();
+            }
+        } catch (Throwable e) {}
+    }
+
     /**
      * Called on plugin disable.
      */
+    @Override
     public void onDisable() {
         for (Player player : getServer().getOnlinePlayers()) {
             LocalPlayer lPlayer = wrapPlayer(player);
@@ -118,6 +165,9 @@ public class WorldEditPlugin extends JavaPlugin {
             }
         }
         controller.clearSessions();
+        for (Handler h : controller.commandLogger.getHandlers()) {
+            h.close();
+        }
         config.unload();
         server.unregisterCommands();
         this.getServer().getScheduler().cancelTasks(this);
@@ -220,8 +270,8 @@ public class WorldEditPlugin extends JavaPlugin {
         LocalSession session = controller.getSession(wePlayer);
         BlockBag blockBag = session.getBlockBag(wePlayer);
 
-        EditSession editSession =
-                new EditSession(wePlayer.getWorld(), session.getBlockChangeLimit(), blockBag);
+        EditSession editSession = controller.getEditSessionFactory()
+                .getEditSession(wePlayer.getWorld(), session.getBlockChangeLimit(), blockBag, wePlayer);
         editSession.enableQueue();
 
         return editSession;

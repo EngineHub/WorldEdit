@@ -31,15 +31,17 @@ import com.sk89q.worldedit.cui.CUIEvent;
 
 import org.spout.api.Client;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.component.components.TransformComponent;
+import org.spout.api.component.impl.SceneComponent;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.entity.Player;
-import org.spout.vanilla.component.inventory.window.Window;
-import org.spout.vanilla.component.living.Human;
-import org.spout.vanilla.material.VanillaMaterial;
-import org.spout.vanilla.material.VanillaMaterials;
+import org.spout.api.math.QuaternionMath;
+import org.spout.api.math.Vector3;
+import org.spout.vanilla.api.inventory.Slot;
+import org.spout.vanilla.plugin.component.inventory.PlayerInventory;
+import org.spout.vanilla.plugin.component.living.neutral.Human;
+import org.spout.vanilla.api.material.VanillaMaterial;
+import org.spout.vanilla.plugin.material.VanillaMaterials;
 
 public class SpoutPlayer extends LocalPlayer {
     private Player player;
@@ -55,8 +57,11 @@ public class SpoutPlayer extends LocalPlayer {
     @Override
     public int getItemInHand() {
         if (player.has(Human.class)) {
-            return ((VanillaMaterial) player.get(Human.class).getInventory().getQuickbar()
-                    .getCurrentItem().getMaterial()).getMinecraftId();
+            Slot slot = player.get(PlayerInventory.class).getQuickbar().getSelectedSlot();
+            if (slot.get() == null) {
+                return 0;
+            }
+            return ((VanillaMaterial) slot.get().getMaterial()).getMinecraftId();
         } else {
             return 0;
         }
@@ -69,25 +74,25 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public WorldVector getPosition() {
-        Point loc = player.getTransform().getPosition();
+        Point loc = player.getScene().getPosition();
         return new WorldVector(SpoutUtil.getLocalWorld(loc.getWorld()),
                 loc.getX(), loc.getY(), loc.getZ());
     }
 
     @Override
     public double getPitch() {
-        return player.getTransform().getPitch();
+        return player.getScene().getRotation().getYaw();
     }
 
     @Override
     public double getYaw() {
-        return player.getTransform().getYaw();
+        return player.getScene().getRotation().getYaw();
     }
 
     @Override
     public void giveItem(int type, int amt) {
         if (player.has(Human.class)) {
-            player.get(Human.class).getInventory().add(new ItemStack(VanillaMaterials.getMaterial((short) type), amt));
+            player.get(PlayerInventory.class).add(new ItemStack(VanillaMaterials.getMaterial((short) type), amt));
         }
     }
 
@@ -121,10 +126,9 @@ public class SpoutPlayer extends LocalPlayer {
 
     @Override
     public void setPosition(Vector pos, float pitch, float yaw) {
-        TransformComponent component = player.getTransform();
+        SceneComponent component = player.getScene();
         player.teleport(SpoutUtil.toPoint(player.getWorld(), pos));
-        component.setPitch(pitch);
-        component.setYaw(yaw);
+        component.setRotation(QuaternionMath.rotation(pitch, yaw, component.getRotation().getRoll()));
     }
 
     @Override
