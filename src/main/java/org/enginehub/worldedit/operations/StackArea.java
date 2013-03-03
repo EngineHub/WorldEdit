@@ -16,8 +16,10 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.operations;
+package org.enginehub.worldedit.operations;
 
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.Implied;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
@@ -36,20 +38,39 @@ public class StackArea implements Operation, ChangeCountable {
     private final EditSession context;
     private final Region region;
     
-    private boolean copyAir;
+    private boolean copyAir = true;
     private int count = 1;
     private Vector dir;
     private int affected = 0;
-    
+
     /**
      * Create a stacking operation.
-     * 
+     *
      * @param context to apply changes to
      * @param region area to apply changes to
      */
     public StackArea(EditSession context, Region region) {
         this.context = context;
         this.region = region;
+    }
+
+    /**
+     * Create a stacking operation.
+     *
+     * @param context to apply changes to
+     * @param region area to apply changes to
+     * @param airIgnore true to not copy air
+     */
+    @Command(name = "Stack Area",
+             aliases = "stack", desc = "Copies a selection repeatedly in a direction",
+             help = "Makes copies of an area end to end in a given direction. " +
+                    "For example, a part of a bridge may need to repeat itself for some " +
+                    "length and this function allows one portion to be repeated.")
+    public StackArea(EditSession context, Region region,
+                     boolean airIgnore, @Implied Vector direction) {
+        this.context = context;
+        this.region = region;
+        setCopyAir(!airIgnore); // Reversed!
     }
 
     /**

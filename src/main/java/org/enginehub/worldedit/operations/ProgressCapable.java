@@ -16,24 +16,19 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.operations;
-
-import com.sk89q.worldedit.structures.Structure;
+package org.enginehub.worldedit.operations;
 
 /**
- * An operation that can provide the number of changes, such as the number of
- * {@link Structure}s generated or blocks placed. The meaning of this is dependent
- * on implementations and it is expected that this information is only used as a
- * hint to the user.
+ * Indicates an {@link Operation} that can provide information on current progress.
  */
-public interface ChangeCountable {
+public interface ProgressCapable {
     
     /**
-     * Return the number of changes. The accuracy or usefulness of the returned value
-     * is not guaranteed.
+     * Return the progress of the operation as a float between 0 and 1. A negative
+     * number indicates that the progress is in an indeterminate state.
      * 
-     * @return number of changes
+     * @return the progress between 0 and 1, or a negative number for indeterminate
      */
-    int getChangeCount();
+    float getProgress(); 
 
 }

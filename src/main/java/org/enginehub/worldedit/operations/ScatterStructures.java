@@ -16,7 +16,7 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.operations;
+package org.enginehub.worldedit.operations;
 
 import java.util.Random;
 

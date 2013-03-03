@@ -16,39 +16,39 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.operations;
+package org.enginehub.worldedit.operations;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.regions.Region;
 
 /**
- * Freeze a given area by overlaying snow and turning water to ice.
+ * Remove snow and ice from a given area. Only the topmost non-air blocks in the
+ * region are checked, so a region with a "roof" will be unaffected.
  */
-public class FreezeArea extends ColumnVisitor implements ChangeCountable {
+public class ThawArea extends ColumnVisitor implements ChangeCountable {
 
-    private final BaseBlock ice = new BaseBlock(BlockID.ICE);
-    private final BaseBlock snow = new BaseBlock(BlockID.SNOW);
-
+    private final BaseBlock air = new BaseBlock(0);
+    private final BaseBlock water = new BaseBlock(BlockID.STATIONARY_WATER);
+    
     private final EditSession context;
     private final int minY;
     private final int maxY;
 
     private int affected = 0;
-
+    
     /**
-     * Create a snowfall operation.
+     * Create a thawing operation.
      * 
      * @param context to apply changes to
      * @param region area to apply changes to
      */
-    public FreezeArea(EditSession context, Region region) {
+    public ThawArea(EditSession context, Region region) {
         super(region);
-
+        
         this.context = context;
 
         maxY = region.getMaximumPoint().getBlockY();
@@ -63,8 +63,14 @@ public class FreezeArea extends ColumnVisitor implements ChangeCountable {
             int id = context.getBlockType(pt);
 
             switch (id) {
-            case BlockID.STATIONARY_WATER:
-                if (context.setBlock(pt, ice)) {
+            case BlockID.ICE:
+                if (context.setBlock(pt, water)) {
+                    ++affected;
+                }
+                break outer;
+
+            case BlockID.SNOW:
+                if (context.setBlock(pt, air)) {
                     ++affected;
                 }
                 break outer;
@@ -73,11 +79,6 @@ public class FreezeArea extends ColumnVisitor implements ChangeCountable {
                 continue;
 
             default:
-                // can't set snow on top of nonsolid blocks
-                if (!BlockType.canPassThrough(id) &&
-                        context.setBlock(pt.setY(y + 1), snow)) {
-                    ++affected;
-                }
                 break outer;
             }
         }
