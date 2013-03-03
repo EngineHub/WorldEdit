@@ -103,10 +103,10 @@ public class CommandManager implements CommandGroup, SuggestionProvider, Command
     }
 
     @Override
-    public List<Proposal> getProposals(CommandContext context) {
+    public Set<Proposal> getProposals(CommandContext context) {
         // Suggest all the commands!
         if (context.isCompletelyEmpty()) {
-            List<Proposal> proposals = new ArrayList<Proposal>();
+            Set<Proposal> proposals = new HashSet<Proposal>();
 
             for (Command command : this) {
                 if (!isVisible(command, context)) {
@@ -120,7 +120,7 @@ public class CommandManager implements CommandGroup, SuggestionProvider, Command
 
         // Suggest a command completion
         } else if (!context.isHanging()) {
-            List<Proposal> proposals = new ArrayList<Proposal>();
+            Set<Proposal> proposals = new HashSet<Proposal>();
             String test = context.getCommand().toLowerCase();
 
             loopCommand:
@@ -160,7 +160,7 @@ public class CommandManager implements CommandGroup, SuggestionProvider, Command
             } // Well, if there was a command to begin with...!
         }
 
-        return Collections.emptyList(); // No suggestions from us
+        return Collections.emptySet(); // No suggestions from us
     }
 
     @Override
