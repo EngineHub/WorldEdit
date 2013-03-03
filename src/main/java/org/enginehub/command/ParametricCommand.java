@@ -112,4 +112,11 @@ public final class ParametricCommand implements Command, SuggestionProvider {
         this.usage = usage;
     }
 
+    public ParameterResolver<?>[] getResolvers() {
+        return resolvers;
+    }
+
+    void setResolvers(ParameterResolver<?>[] resolvers) {
+        this.resolvers = resolvers;
+    }
 }
