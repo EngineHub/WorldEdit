@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit.tools.brushes;
 
-import com.sk89q.worldedit.EditSession;
+import org.enginehub.worldedit.EditSession;
+import org.enginehub.worldedit.MaxChangedBlocksException;
+
 import com.sk89q.worldedit.HeightMap;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.filtering.GaussianKernel;

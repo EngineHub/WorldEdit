@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit;
 
+import org.enginehub.worldedit.WorldEditException;
+
 /**
  * Raised when a region is not fully defined.
  *

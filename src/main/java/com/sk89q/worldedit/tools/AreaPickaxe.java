@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.tools;
 
+import org.enginehub.worldedit.EditSession;
+import org.enginehub.worldedit.MaxChangedBlocksException;
+
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;

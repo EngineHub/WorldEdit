@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit;
 
+import org.enginehub.worldedit.WorldEditException;
+
 public class FilenameException extends WorldEditException {
     private static final long serialVersionUID = 6072601657326106265L;
 

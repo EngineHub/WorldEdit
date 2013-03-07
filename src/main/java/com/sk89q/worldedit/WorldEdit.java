@@ -39,6 +39,10 @@ import java.util.regex.Matcher;
 
 import javax.script.ScriptException;
 
+import org.enginehub.worldedit.EditSession;
+import org.enginehub.worldedit.MaxChangedBlocksException;
+import org.enginehub.worldedit.WorldEditException;
+
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissionsException;
 import com.sk89q.minecraft.util.commands.CommandUsageException;

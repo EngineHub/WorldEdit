@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit;
 
+import org.enginehub.worldedit.EditSession;
+
 /**
  * Represents a WorldEdit operation.
  *

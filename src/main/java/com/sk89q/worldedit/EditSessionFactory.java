@@ -1,5 +1,7 @@
 package com.sk89q.worldedit;
 
+import org.enginehub.worldedit.EditSession;
+
 import com.sk89q.worldedit.bags.BlockBag;
 
 public class EditSessionFactory {

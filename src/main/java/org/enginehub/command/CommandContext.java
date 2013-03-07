@@ -18,7 +18,16 @@
 
 package org.enginehub.command;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Parses user input and extracts the command, arguments, and flags.
@@ -95,6 +104,8 @@ public class CommandContext implements List<String>, Iterable<String> {
     private final String[] originalArgs;
     private final Set<Character> booleanFlags = new HashSet<Character>();
     private final Map<Character, String> valueFlags = new HashMap<Character, String>();
+    private final Map<Object, Object> data = new HashMap<Object, Object>();
+
     private final boolean isHanging;
 
     /**
@@ -386,6 +397,7 @@ public class CommandContext implements List<String>, Iterable<String> {
      * converts it to a integer (if possible, otherwise an exception is thrown).</p>
      *
      * @param index the index
+     * @param def the default integer returned if the argument is not specified
      * @return the integer
      * @throws NumberFormatException if the given argument was not actually a number
      */
@@ -419,6 +431,7 @@ public class CommandContext implements List<String>, Iterable<String> {
      * converts it to a double (if possible, otherwise an exception is thrown).</p>
      *
      * @param index the index
+     * @param def the default double returned if the argument is not specified
      * @return the integer
      * @throws NumberFormatException if the given argument was not actually a number
      */
@@ -642,6 +655,44 @@ public class CommandContext implements List<String>, Iterable<String> {
         }
 
         return Double.parseDouble(value);
+    }
+
+    /**
+     * Get metadata that has been stored on this object.
+     *
+     * @param key the key
+     * @return the object indexed by the given key, or null
+     */
+    public Object getObject(Object key) {
+        return data.get(key);
+    }
+
+    /**
+     * Get metadata that has been stored on this object.
+     * 
+     * <p>This works for class keys where the value is an instance of the given
+     * class.</p>
+     *
+     * @param key the key
+     * @return the object indexed by the given key, or null
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getSafeObject(Class<T> key) {
+        return (T) data.get(key);
+    }
+
+    /**
+     * Store a peice of metadata on this context.
+     *
+     * <p>Objects can be later retrieved with {@link #getObject(Object)}. This can be
+     * used to store extra objects that may be needed by commands, like a reference
+     * to the user sending the command.</p>
+     *
+     * @param key the key object
+     * @param value the value
+     */
+    public void putObject(Object key, Object value) {
+        data.put(key, value);
     }
 
     /**

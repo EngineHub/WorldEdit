@@ -35,10 +35,12 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.enginehub.worldedit.EditSession;
+import org.enginehub.worldedit.bukkit.BukkitConfiguration;
+import org.enginehub.worldedit.bukkit.LoadedWorld;
 
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.wepif.PermissionsResolverManager;
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
@@ -396,7 +398,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
         try {
             Region region = selector.getRegion();
-            World world = ((BukkitWorld) session.getSelectionWorld()).getWorld();
+            World world = ((LoadedWorld) session.getSelectionWorld()).getWorld();
 
             if (region instanceof CuboidRegion) {
                 return new CuboidSelection(world, selector, (CuboidRegion) region);

@@ -1,5 +1,5 @@
 name: WorldEdit
-main: com.sk89q.worldedit.bukkit.WorldEditPlugin
+main: org.enginehub.worldedit.bukkit.WorldEditPlugin
 version: ${project.version}
 softdepend: [Spout] #hack to fix trove errors
 

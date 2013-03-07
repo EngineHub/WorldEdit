@@ -29,10 +29,8 @@ import com.sk89q.worldedit.snapshots.SnapshotRepository;
 
 /**
  * Represents WorldEdit's configuration.
- *
- * @author sk89q
  */
-public abstract class LocalConfiguration {
+public class LocalConfiguration {
     protected static final int[] defaultDisallowedBlocks = new int[] {
                 // dangerous stuff (physics/drops items)
                 BlockID.SAPLING,
@@ -113,13 +111,17 @@ public abstract class LocalConfiguration {
 
     /**
      * Loads the configuration.
+     * 
+     * <p>Implementations should override this method.</p>
      */
-    public abstract void load();
+    public void load() {
+        
+    }
 
     /**
      * Get the working directory to work from.
      *
-     * @return
+     * @return the working directory
      */
     public File getWorkingDirectory() {
         return new File(".");

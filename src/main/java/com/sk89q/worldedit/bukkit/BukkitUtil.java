@@ -30,6 +30,7 @@ import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
+import org.enginehub.worldedit.bukkit.LoadedWorld;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockWorldVector;
@@ -47,7 +48,7 @@ public class BukkitUtil {
     }
 
     public static LocalWorld getLocalWorld(World w) {
-        return new BukkitWorld(w);
+        return new LoadedWorld(w);
     }
 
     public static BlockVector toVector(Block block) {
@@ -110,7 +111,7 @@ public class BukkitUtil {
     }
 
     public static World toWorld(WorldVector pt) {
-        return ((BukkitWorld) pt.getWorld()).getWorld();
+        return ((LoadedWorld) pt.getWorld()).getWorld();
     }
 
     /**
@@ -136,7 +137,7 @@ public class BukkitUtil {
     }
 
     public static World toWorld(final LocalWorld world) {
-        return ((BukkitWorld) world).getWorld();
+        return ((LoadedWorld) world).getWorld();
     }
 
     public static BukkitEntity toLocalEntity(Entity e) {

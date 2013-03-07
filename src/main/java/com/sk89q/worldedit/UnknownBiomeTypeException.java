@@ -1,5 +1,7 @@
 package com.sk89q.worldedit;
 
+import org.enginehub.worldedit.WorldEditException;
+
 public class UnknownBiomeTypeException extends WorldEditException {
     private static final long serialVersionUID = -6239229394330814896L;
 

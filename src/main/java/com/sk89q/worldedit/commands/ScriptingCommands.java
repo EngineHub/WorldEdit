@@ -20,6 +20,10 @@
 package com.sk89q.worldedit.commands;
 
 import java.io.File;
+
+import org.enginehub.worldedit.EditSession;
+import org.enginehub.worldedit.WorldEditException;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;

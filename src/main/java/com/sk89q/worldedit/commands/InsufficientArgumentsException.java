@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.commands;
 
-import com.sk89q.worldedit.WorldEditException;
+import org.enginehub.worldedit.WorldEditException;
 
 /**
  *

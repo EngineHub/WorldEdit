@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.tools;
 
+import org.enginehub.worldedit.EditSession;
+
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.*;
 

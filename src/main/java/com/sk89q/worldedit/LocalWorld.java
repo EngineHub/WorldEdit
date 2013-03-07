@@ -22,6 +22,9 @@ package com.sk89q.worldedit;
 import java.util.PriorityQueue;
 import java.util.Random;
 
+import org.enginehub.worldedit.EditSession;
+import org.enginehub.worldedit.MaxChangedBlocksException;
+
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;

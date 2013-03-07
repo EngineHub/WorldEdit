@@ -24,8 +24,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import org.enginehub.worldedit.EditSession;
+
 import com.sk89q.worldedit.DisallowedItemException;
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.FilenameException;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;

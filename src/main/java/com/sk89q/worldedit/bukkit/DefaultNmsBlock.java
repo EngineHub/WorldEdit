@@ -42,6 +42,7 @@ import net.minecraft.server.v1_4_R1.TileEntity;
 
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_4_R1.CraftWorld;
+import org.enginehub.worldedit.bukkit.LoadedWorld;
 
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.ByteTag;
@@ -242,7 +243,7 @@ public class DefaultNmsBlock extends NmsBlock {
      * @param notifyAdjacent true to notify physics and what not
      * @return true if block id or data was changed
      */
-    public static boolean setSafely(BukkitWorld world, Vector position,
+    public static boolean setSafely(LoadedWorld world, Vector position,
             Block block, boolean notifyAdjacent) {
 
         int x = position.getBlockX();

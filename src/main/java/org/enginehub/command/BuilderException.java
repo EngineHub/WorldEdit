@@ -18,11 +18,16 @@
 
 package org.enginehub.command;
 
+import org.enginehub.command.parametric.ParametricBuilder;
+
+
 /**
  * Thrown when there is a problem that occurs when building a command
- * (with something such as {@link ParametricCommandBuilder}).
+ * (with something such as {@link ParametricBuilder}).
  */
 public class BuilderException extends Exception {
+
+    private static final long serialVersionUID = -2625235572720147425L;
 
     public BuilderException() {
     }

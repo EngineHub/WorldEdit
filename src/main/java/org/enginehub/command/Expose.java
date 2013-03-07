@@ -41,7 +41,7 @@ public @interface Expose {
      *
      * @return friendly name
      */
-    String name() default "";
+    String name();
 
     /**
      * The name of the command and additional aliases.
@@ -62,8 +62,21 @@ public @interface Expose {
     /**
      * A long help text for the command.
      *
-     * <p>This may be a paragraph long.</p>
+     * <p>This may be a paragraph long. Bold can be done by surrounding text with two
+     * asterisks (*) on both sides, while italics can be accomplised with slashes, and
+     * underline can be accomplished with underscores. New lines are supported, and
+     * can be added with \n.</p>
      */
     String help() default "";
+
+    /**
+     * The group used for the translation of the messages.
+     */
+    String group() default "";
+
+    /**
+     * The key used for the translation of the messages.
+     */
+    String key() default "";
 
 }

@@ -19,33 +19,23 @@
 
 package com.sk89q.worldedit;
 
-import java.io.File;
-
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.cui.CUIEvent;
 import com.sk89q.worldedit.util.TargetBlock;
+import org.enginehub.auth.Principal;
+import org.enginehub.common.Actor;
+import org.enginehub.common.WorldObject;
+
+import java.io.File;
 
 /**
  *
  * @author sk89q
  */
-public abstract class LocalPlayer {
-    /**
-     * Server.
-     */
-    protected ServerInterface server;
-
-    /**
-     * Construct the object.
-     *
-     * @param server
-     */
-    protected LocalPlayer(ServerInterface server) {
-        this.server = server;
-    }
+public abstract class LocalPlayer<T> implements Actor<T>, WorldObject<T> {
 
     /**
      * Returns true if the player is holding a pick axe.

@@ -19,8 +19,9 @@
 
 package com.sk89q.worldedit.tools.brushes;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
+import org.enginehub.worldedit.EditSession;
+import org.enginehub.worldedit.MaxChangedBlocksException;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.patterns.Pattern;
 

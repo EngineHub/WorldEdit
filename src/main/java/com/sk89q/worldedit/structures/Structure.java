@@ -18,9 +18,10 @@
 
 package com.sk89q.worldedit.structures;
 
-import com.sk89q.worldedit.EditSession;
+import org.enginehub.worldedit.EditSession;
+import org.enginehub.worldedit.WorldEditException;
+
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
 
 /**
  * A structure can be generated from a given point. Example structures are trees,

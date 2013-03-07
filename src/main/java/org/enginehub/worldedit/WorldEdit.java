@@ -18,18 +18,50 @@
 
 package org.enginehub.worldedit;
 
+import org.enginehub.command.CommandManager;
+import org.enginehub.command.parametric.ParametricBuilder;
+import org.enginehub.session.FactoryBasedSessionMap;
+import org.enginehub.session.SessionFactory;
+import org.enginehub.session.SessionMap;
+import org.enginehub.worldedit.operation.ReplaceBlocks;
+
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+
 /**
  * An instance of WorldEdit.
  */
-public final class WorldEdit {
+public final class WorldEdit implements SessionFactory<LocalPlayer<?>, LocalSession> {
 
     private static WorldEdit instance;
 
+    private LocalConfiguration config = new LocalConfiguration(); // @TODO: Better configuration
+    
+    private final OperationRegistry operations;
+    private final CommandManager commands;
+    private final ParametricBuilder builder;
+    private final EditSessionFactory editSessionFactory;
+    private final FactoryBasedSessionMap<LocalPlayer<?>, LocalSession> sessions;
+
     private WorldEdit() {
+        commands = new CommandManager();
+        editSessionFactory = new EditSessionFactory();
+        builder = new ParametricBuilder();
+        builder.add(editSessionFactory);
+        operations = new OperationRegistry(commands, builder);
+        sessions = new FactoryBasedSessionMap<LocalPlayer<?>, LocalSession>(this,
+                LocalPlayer.class, LocalSession.class);
+        builder.add(sessions);
+
+        // @TODO: Better way to register operations
+        operations.add(ReplaceBlocks.class);
     }
 
     /**
      * Get the singleton for WorldEdit.
+     *
+     * <p>The returned object can be stored for later usage.</p>
      *
      * @return singleton
      */
@@ -41,7 +73,64 @@ public final class WorldEdit {
         return instance;
     }
 
+    /**
+     * Get the operations registry that is used to register operations with WorldEdit.
+     *
+     * @return the operations registry
+     */
+    public OperationRegistry getOperations() {
+        return operations;
+    }
 
+    /**
+     * Get the commands manager.
+     *
+     * @return the commands manager
+     */
+    public CommandManager getCommands() {
+        return commands;
+    }
+    
+    /**
+     * Get the object responsible for constructing new {@link EditSession}s.
+     * 
+     * @return the factory
+     */
+    public EditSessionFactory getEditSessionFactory() {
+        return editSessionFactory;
+    }
 
+    /**
+     * Get the configuration.
+     * 
+     * @return the configuration
+     */
+    public LocalConfiguration getConfiguration() {
+        return config;
+    }
+
+    /**
+     * Set the configuration.
+     * 
+     * @param config the configuration
+     */
+    @Deprecated
+    public void setConfiguration(LocalConfiguration config) {
+        this.config = config;
+    }
+
+    /**
+     * Get the session map.
+     * 
+     * @return the sessions
+     */
+    public SessionMap<LocalPlayer<?>, LocalSession> getSessions() {
+        return sessions;
+    }
+
+    @Override
+    public LocalSession createSession(LocalPlayer<?> key) {
+        return new LocalSession(config);
+    }
 
 }

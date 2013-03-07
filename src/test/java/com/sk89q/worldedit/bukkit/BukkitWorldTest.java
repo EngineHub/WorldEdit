@@ -19,6 +19,8 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.util.TreeGenerator;
+
+import org.enginehub.worldedit.bukkit.LoadedWorld;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,7 +31,7 @@ public class BukkitWorldTest {
     @Test
     public void testTreeTypeMapping() {
         for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
-            Assert.assertFalse("No mapping for: " + type, BukkitWorld.toBukkitTreeType(type) == null);
+            Assert.assertFalse("No mapping for: " + type, LoadedWorld.toBukkitTreeType(type) == null);
         }
     }
 }

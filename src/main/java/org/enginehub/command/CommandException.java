@@ -26,6 +26,8 @@ package org.enginehub.command;
  */
 public class CommandException extends Exception {
 
+    private static final long serialVersionUID = -1305187256508870606L;
+
     public CommandException() {
     }
 

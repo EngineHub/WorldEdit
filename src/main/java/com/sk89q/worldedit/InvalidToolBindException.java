@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit;
 
+import org.enginehub.worldedit.WorldEditException;
+
 public class InvalidToolBindException extends WorldEditException {
     private static final long serialVersionUID = -1865311004052447699L;
 

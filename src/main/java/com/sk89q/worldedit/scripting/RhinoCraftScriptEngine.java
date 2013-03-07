@@ -21,6 +21,8 @@ package com.sk89q.worldedit.scripting;
 
 import java.util.Map;
 import javax.script.ScriptException;
+
+import org.enginehub.worldedit.WorldEditException;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.JavaScriptException;
@@ -29,7 +31,6 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
-import com.sk89q.worldedit.WorldEditException;
 
 public class RhinoCraftScriptEngine implements CraftScriptEngine {
     private int timeLimit;

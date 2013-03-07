@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit;
 
+import org.enginehub.worldedit.WorldEditException;
+
 /**
  * Thrown when no item exist by the ID.
  *
