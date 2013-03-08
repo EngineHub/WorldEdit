@@ -270,9 +270,9 @@ public class CuboidClipboard {
         }
     }
 
-    public void paste(EditSession editSession, Vector newOrigin, boolean noAir)
+    public int paste(EditSession editSession, Vector newOrigin, boolean noAir)
             throws MaxChangedBlocksException {
-        paste(editSession, newOrigin, noAir, false);
+        return paste(editSession, newOrigin, noAir, false);
     }
 
     /**
@@ -281,14 +281,18 @@ public class CuboidClipboard {
      * @param editSession
      * @param newOrigin Position to paste it from
      * @param noAir True to not paste air
+     * @return result Number of blocks changed
      * @throws MaxChangedBlocksException
      */
-    public void paste(EditSession editSession, Vector newOrigin, boolean noAir, boolean entities)
+    public int paste(EditSession editSession, Vector newOrigin, boolean noAir, boolean entities)
             throws MaxChangedBlocksException {
-        place(editSession, newOrigin.add(offset), noAir);
+        int result = place(editSession, newOrigin.add(offset), noAir);
+
         if (entities) {
             pasteEntities(newOrigin.add(offset));
         }
+
+        return result;
     }
 
     /**
@@ -297,9 +301,12 @@ public class CuboidClipboard {
      * @param editSession
      * @param pos
      * @param noAir
+     * @return result Number of blocks changed
      * @throws MaxChangedBlocksException
      */
-    public void place(EditSession editSession, Vector pos, boolean noAir) throws MaxChangedBlocksException {
+    public int place(EditSession editSession, Vector pos, boolean noAir) throws MaxChangedBlocksException {
+        int result = 0;
+
         for (int x = 0; x < size.getBlockX(); ++x) {
             for (int y = 0; y < size.getBlockY(); ++y) {
                 for (int z = 0; z < size.getBlockZ(); ++z) {
@@ -307,10 +314,14 @@ public class CuboidClipboard {
                         continue;
                     }
 
-                    editSession.setBlock(new Vector(x, y, z).add(pos), data[x][y][z]);
+                    if(editSession.setBlock(new Vector(x, y, z).add(pos), data[x][y][z])) {
+                        result++;
+                    }
                 }
             }
         }
+
+        return result;
     }
 
     public LocalEntity[] pasteEntities(Vector pos) {

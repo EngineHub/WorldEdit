@@ -146,15 +146,15 @@ public class ClipboardCommands {
 
         if (atOrigin) {
             Vector pos = session.getClipboard().getOrigin();
-            session.getClipboard().place(editSession, pos, pasteNoAir);
+            int result = session.getClipboard().place(editSession, pos, pasteNoAir);
             session.getClipboard().pasteEntities(pos);
             player.findFreePosition();
-            player.print("Pasted to copy origin. Undo with //undo");
+            player.print("Pasted to copy origin. " + result + " block(s) changed. Undo with //undo");
         } else {
             Vector pos = session.getPlacementPosition(player);
-            session.getClipboard().paste(editSession, pos, pasteNoAir, true);
+            int result = session.getClipboard().paste(editSession, pos, pasteNoAir, true);
             player.findFreePosition();
-            player.print("Pasted relative to you. Undo with //undo");
+            player.print("Pasted relative to you. " + result + " block(s) changed. Undo with //undo");
         }
     }
 
