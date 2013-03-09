@@ -31,14 +31,13 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.bukkit.BukkitPlayerBlockBag;
-import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.cui.CUIEvent;
 import com.sk89q.worldedit.foundation.World;
 
 /**
  * An {@link org.enginehub.common.Actor} wrapper for Bukkit players.
  */
-public class PlayerActor extends LocalPlayer<Player> {
+public class PlayerActor extends LocalPlayer {
 
     private final Player player;
 
@@ -85,7 +84,7 @@ public class PlayerActor extends LocalPlayer<Player> {
     @Override
     public WorldVector getPosition() {
         Location loc = player.getLocation();
-        return new WorldVector(BukkitUtil.getLocalWorld(loc.getWorld()),
+        return new WorldVector(BukkitUtils.getLocalWorld(loc.getWorld()),
                 loc.getX(), loc.getY(), loc.getZ());
     }
 
@@ -150,7 +149,7 @@ public class PlayerActor extends LocalPlayer<Player> {
 
     @Override
     public LocalWorld getWorld() {
-        return BukkitUtil.getLocalWorld(player.getWorld());
+        return BukkitUtils.getLocalWorld(player.getWorld());
     }
 
     @Override
