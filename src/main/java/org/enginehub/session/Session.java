@@ -29,7 +29,7 @@ public interface Session {
      * 
      * @return the absolute expiration time in milliseconds
      */
-    public abstract long getExpirationTime();
+    long getExpirationTime();
 
     /**
      * Set the expiration time of the session in milliseconds, which is the absolute
@@ -40,13 +40,13 @@ public interface Session {
      * 
      * @param expirationTime the absolute expiration time in milliseconds
      */
-    public abstract void setExpirationTime(long expirationTime);
+    void setExpirationTime(long expirationTime);
 
     /**
      * Called when the session expires.
      * 
      * <p>Depending on how sessions are managed, this may be called in any thread.</p>
      */
-    public abstract void onExpire();
+    void onExpire();
 
 }
