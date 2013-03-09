@@ -324,6 +324,7 @@ public class CommandContext implements List<String>, Iterable<String> {
      * @throws IndexOutOfBoundsException if the index is beyond the maximum
      * @see #getCommand() to get the command
      */
+    @Override
     public String get(int index) {
         return parsedArgs.get(index);
     }
