@@ -18,6 +18,8 @@
 
 package com.sk89q.worldedit.foundation;
 
+import org.enginehub.common.WorldObject;
+
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
@@ -44,7 +46,7 @@ import com.sk89q.worldedit.data.DataException;
  * As-is, the definition of this class is complete, but may need changes in MC 1.4
  * because data values may be eradicated.
  */
-public class Block implements TileEntityBlock {
+public class Block implements TileEntityBlock, WorldObject {
     
     /**
      * Indicates the highest possible block ID (inclusive) that can be used. This value
