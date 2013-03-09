@@ -20,8 +20,8 @@ package com.sk89q.worldedit.bukkit.entity;
 
 import com.sk89q.worldedit.LocalEntity;
 import com.sk89q.worldedit.Location;
-import com.sk89q.worldedit.bukkit.BukkitUtil;
 import org.bukkit.entity.EntityType;
+import org.enginehub.worldedit.bukkit.BukkitUtils;
 
 import java.util.UUID;
 
@@ -44,7 +44,7 @@ public class BukkitEntity extends LocalEntity {
 
     @Override
     public boolean spawn(Location weLoc) {
-        org.bukkit.Location loc = BukkitUtil.toLocation(weLoc);
+        org.bukkit.Location loc = BukkitUtils.toLocation(weLoc);
         return loc.getWorld().spawn(loc, type.getEntityClass()) != null;
     }
 }

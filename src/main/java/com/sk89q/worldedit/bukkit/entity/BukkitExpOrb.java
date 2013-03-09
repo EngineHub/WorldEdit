@@ -19,9 +19,9 @@
 package com.sk89q.worldedit.bukkit.entity;
 
 import com.sk89q.worldedit.Location;
-import com.sk89q.worldedit.bukkit.BukkitUtil;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
+import org.enginehub.worldedit.bukkit.BukkitUtils;
 
 import java.util.UUID;
 
@@ -38,7 +38,7 @@ public class BukkitExpOrb extends BukkitEntity {
 
     @Override
     public boolean spawn(Location weLoc) {
-        org.bukkit.Location loc = BukkitUtil.toLocation(weLoc);
+        org.bukkit.Location loc = BukkitUtils.toLocation(weLoc);
         ExperienceOrb orb = loc.getWorld().spawn(loc, ExperienceOrb.class);
         if (orb != null) {
             orb.setExperience(amount);

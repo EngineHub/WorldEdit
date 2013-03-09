@@ -19,12 +19,12 @@
 package com.sk89q.worldedit.bukkit.entity;
 
 import com.sk89q.worldedit.Location;
-import com.sk89q.worldedit.bukkit.BukkitUtil;
 import org.bukkit.Art;
 import org.bukkit.Bukkit;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Painting;
+import org.enginehub.worldedit.bukkit.BukkitUtils;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -92,7 +92,7 @@ public class BukkitPainting extends BukkitEntity {
     }
 
     public boolean spawnRaw(Location weLoc) {
-        org.bukkit.Location loc = BukkitUtil.toLocation(weLoc);
+        org.bukkit.Location loc = BukkitUtils.toLocation(weLoc);
         Painting paint = loc.getWorld().spawn(loc, Painting.class);
         if (paint != null) {
             paint.setFacingDirection(facingDirection, true);

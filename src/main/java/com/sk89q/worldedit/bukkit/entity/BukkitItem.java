@@ -19,9 +19,9 @@
 package com.sk89q.worldedit.bukkit.entity;
 
 import com.sk89q.worldedit.Location;
-import com.sk89q.worldedit.bukkit.BukkitUtil;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+import org.enginehub.worldedit.bukkit.BukkitUtils;
 
 import java.util.UUID;
 
@@ -37,7 +37,7 @@ public class BukkitItem extends BukkitEntity {
 
     @Override
     public boolean spawn(Location weLoc) {
-        org.bukkit.Location loc = BukkitUtil.toLocation(weLoc);
+        org.bukkit.Location loc = BukkitUtils.toLocation(weLoc);
         return loc.getWorld().dropItem(loc, stack) != null;
     }
 }

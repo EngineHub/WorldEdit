@@ -37,6 +37,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.enginehub.worldedit.EditSession;
 import org.enginehub.worldedit.bukkit.BukkitConfiguration;
+import org.enginehub.worldedit.bukkit.BukkitUtils;
 import org.enginehub.worldedit.bukkit.LoadedWorld;
 
 import com.sk89q.util.yaml.YAMLProcessor;
@@ -394,7 +395,7 @@ public class WorldEditPlugin extends JavaPlugin {
         }
 
         LocalSession session = controller.getSession(wrapPlayer(player));
-        RegionSelector selector = session.getRegionSelector(BukkitUtil.getLocalWorld(player.getWorld()));
+        RegionSelector selector = session.getRegionSelector(BukkitUtils.getLocalWorld(player.getWorld()));
 
         try {
             Region region = selector.getRegion();
@@ -431,7 +432,7 @@ public class WorldEditPlugin extends JavaPlugin {
 
         LocalSession session = controller.getSession(wrapPlayer(player));
         RegionSelector sel = selection.getRegionSelector();
-        session.setRegionSelector(BukkitUtil.getLocalWorld(player.getWorld()), sel);
+        session.setRegionSelector(BukkitUtils.getLocalWorld(player.getWorld()), sel);
         session.dispatchCUISelection(wrapPlayer(player));
     }
 }

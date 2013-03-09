@@ -35,6 +35,7 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
+import org.enginehub.worldedit.bukkit.BukkitUtils;
 
 import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalWorld;
@@ -86,7 +87,7 @@ public class BukkitServerInterface extends ServerInterface {
         List<LocalWorld> ret = new ArrayList<LocalWorld>(worlds.size());
 
         for (World world : worlds) {
-            ret.add(BukkitUtil.getLocalWorld(world));
+            ret.add(BukkitUtils.getLocalWorld(world));
         }
 
         return ret;
