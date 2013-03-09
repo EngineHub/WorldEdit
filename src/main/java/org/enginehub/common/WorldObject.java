@@ -29,9 +29,7 @@ package org.enginehub.common;
  *     <li>Entities</li>
  *     <li>Blocks</li>
  * </ul>
- * 
- * @param <T> the underlying object
  */
-public interface WorldObject<T> extends Actor<T> {
+public interface WorldObject {
 
 }
