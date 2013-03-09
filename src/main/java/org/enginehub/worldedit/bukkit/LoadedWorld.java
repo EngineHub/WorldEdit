@@ -94,9 +94,7 @@ import com.sk89q.worldedit.blocks.NoteBlock;
 import com.sk89q.worldedit.blocks.SignBlock;
 import com.sk89q.worldedit.blocks.SkullBlock;
 import com.sk89q.worldedit.bukkit.BukkitBiomeType;
-import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.bukkit.EditSessionBlockChangeDelegate;
-import com.sk89q.worldedit.bukkit.NmsBlock;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
 import com.sk89q.worldedit.regions.Region;
@@ -116,7 +114,7 @@ public class LoadedWorld extends LocalWorld {
     /*
      * holder for the nmsblock class that we should use
      */
-    private static Class<? extends NmsBlock> nmsBlockType;
+    private static Class<? extends BukkitBlock> nmsBlockType;
     private static Method nmsSetMethod;
     private static Method nmsValidBlockMethod;
     private static Method nmsGetMethod;
@@ -157,9 +155,9 @@ public class LoadedWorld extends LocalWorld {
                     continue;
                 }
                 filename = filename.replaceFirst(".class$", ""); // get rid of extension
-                if (NmsBlock.class.isAssignableFrom(testBlock)) {
+                if (BukkitBlock.class.isAssignableFrom(testBlock)) {
                     // got a NmsBlock, test it now
-                    Class<? extends NmsBlock> nmsClass = (Class<? extends NmsBlock>) testBlock;
+                    Class<? extends BukkitBlock> nmsClass = (Class<? extends BukkitBlock>) testBlock;
                     boolean canUse = false;
                     try {
                         canUse = (Boolean) nmsClass.getMethod("verify", null).invoke(null, null);
@@ -182,7 +180,7 @@ public class LoadedWorld extends LocalWorld {
             } else {
                 // try our default
                 try {
-                    nmsBlockType = (Class<? extends NmsBlock>) Class.forName("com.sk89q.worldedit.bukkit.DefaultNmsBlock");
+                    nmsBlockType = (Class<? extends BukkitBlock>) Class.forName("com.sk89q.worldedit.bukkit.DefaultNmsBlock");
                     boolean canUse = (Boolean) nmsBlockType.getMethod("verify", null).invoke(null, null);
                     if (canUse) {
                         nmsSetMethod = nmsBlockType.getMethod("set", World.class, Vector.class, BaseBlock.class);
@@ -901,7 +899,7 @@ public class LoadedWorld extends LocalWorld {
     @Override
     public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector pt) {
         TreeType bukkitType = toBukkitTreeType(type);
-        return type != null && world.generateTree(BukkitUtil.toLocation(world, pt), bukkitType,
+        return type != null && world.generateTree(BukkitUtils.toLocation(world, pt), bukkitType,
                 new EditSessionBlockChangeDelegate(editSession));
     }
 
@@ -915,7 +913,7 @@ public class LoadedWorld extends LocalWorld {
     public void dropItem(Vector pt, BaseItemStack item) {
         ItemStack bukkitItem = new ItemStack(item.getType(), item.getAmount(),
                 item.getData());
-        world.dropItemNaturally(BukkitUtil.toLocation(world, pt), bukkitItem);
+        world.dropItemNaturally(BukkitUtils.toLocation(world, pt), bukkitItem);
     }
 
     /**
@@ -938,7 +936,7 @@ public class LoadedWorld extends LocalWorld {
         int num = 0;
         double radiusSq = radius * radius;
 
-        Location bukkitOrigin = BukkitUtil.toLocation(world, origin);
+        Location bukkitOrigin = BukkitUtils.toLocation(world, origin);
 
         for (LivingEntity ent : world.getLivingEntities()) {
             if (ent instanceof HumanEntity) {
@@ -991,7 +989,7 @@ public class LoadedWorld extends LocalWorld {
 
         for (Entity ent : world.getEntities()) {
             if (radius != -1
-                    && origin.distanceSq(BukkitUtil.toVector(ent.getLocation())) > radiusSq) {
+                    && origin.distanceSq(BukkitUtils.toVector(ent.getLocation())) > radiusSq) {
                 continue;
             }
 
@@ -1253,7 +1251,7 @@ public class LoadedWorld extends LocalWorld {
             return false;
         }
 
-        world.playEffect(BukkitUtil.toLocation(world, position), effect, data);
+        world.playEffect(BukkitUtils.toLocation(world, position), effect, data);
 
         return true;
     }
@@ -1270,8 +1268,8 @@ public class LoadedWorld extends LocalWorld {
             if (world.isChunkLoaded(pt.getBlockX(), pt.getBlockZ())) {
                 Entity[] ents = world.getChunkAt(pt.getBlockX(), pt.getBlockZ()).getEntities();
                 for (Entity ent : ents) {
-                    if (region.contains(BukkitUtil.toVector(ent.getLocation()))) {
-                        entities.add(BukkitUtil.toLocalEntity(ent));
+                    if (region.contains(BukkitUtils.toVector(ent.getLocation()))) {
+                        entities.add(BukkitUtils.toLocalEntity(ent));
                     }
                 }
             }
@@ -1314,8 +1312,8 @@ public class LoadedWorld extends LocalWorld {
         default:
             if (!skipNmsAccess) {
                 try {
-                    NmsBlock block = null;
-                    block = (NmsBlock) nmsGetMethod.invoke(null, getWorld(), pt, type, data);
+                    BukkitBlock block = null;
+                    block = (BukkitBlock) nmsGetMethod.invoke(null, getWorld(), pt, type, data);
                     if (block != null) {
                         return block;
                     }
