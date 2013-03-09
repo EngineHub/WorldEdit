@@ -18,54 +18,101 @@
 
 package org.enginehub.auth;
 
-import com.sk89q.worldedit.LocalWorld;
 import org.enginehub.common.Actor;
+
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.foundation.World;
 
 /**
  * Provides context for an authorization request.
  *
  * <p>This class can be subclassed so that more context can be stored with a request,
- * such as, for example, the affected region in Worldedit. {@link PermissionProvider}s
+ * such as, for example, the affected region in WorldEdit. {@link PermissionProvider}s
  * may choose, or may choose not to, use this extra information.</p>
  */
 public class PermissionRequest {
 
-    private Actor subject;
+    private Actor<?> subject;
     private String permission;
-    private LocalWorld world;
+    private World world;
 
-    public PermissionRequest(Actor subject, String permission, LocalWorld world) {
+    /**
+     * Create a new request with the given subject, permission, and world.
+     * 
+     * @param subject the subject
+     * @param permission the permission
+     * @param world the world
+     */
+    public PermissionRequest(Actor<?> subject, String permission, LocalWorld world) {
         this.subject = subject;
         this.permission = permission;
         this.world = world;
     }
 
-    public PermissionRequest(Actor subject, String permission) {
+    /**
+     * Create a new request with the given subject and permission, and a null world.
+     * 
+     * @param subject the subject
+     * @param permission the permission
+     */
+    public PermissionRequest(Actor<?> subject, String permission) {
         this.subject = subject;
         this.permission = permission;
     }
 
-    public Actor getSubject() {
+    /**
+     * Get the subject of the request.
+     * 
+     * <p>The subject is the entity for which the request is for.</p>
+     * 
+     * @return the subject
+     */
+    public Actor<?> getSubject() {
         return subject;
     }
 
-    public void setSubject(Actor subject) {
+    /**
+     * Set the subject of the request.
+     * 
+     * @param subject the subject
+     */
+    public void setSubject(Actor<?> subject) {
         this.subject = subject;
     }
 
+    /**
+     * Get the permission string to check.
+     * 
+     * @return the permission string
+     */
     public String getPermission() {
         return permission;
     }
 
+    /**
+     * Set the permission string.
+     * 
+     * @param permission
+     */
     public void setPermission(String permission) {
         this.permission = permission;
     }
 
-    public LocalWorld getWorld() {
+    /**
+     * Get the world for the permission request.
+     * 
+     * @return the world, or null
+     */
+    public World getWorld() {
         return world;
     }
 
-    public void setWorld(LocalWorld world) {
+    /**
+     * Set the world for the permission request.
+     * 
+     * @param world the world, or null
+     */
+    public void setWorld(World world) {
         this.world = world;
     }
 

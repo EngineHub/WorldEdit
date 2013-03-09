@@ -18,8 +18,9 @@
 
 package org.enginehub.auth;
 
-import com.sk89q.worldedit.foundation.World;
 import org.enginehub.common.Actor;
+
+import com.sk89q.worldedit.foundation.World;
 
 /**
  * Providers the checking of permissions.
@@ -33,7 +34,7 @@ public interface PermissionProvider {
      * @param request the permissions request
      * @return true if permission is granted
      */
-    boolean hasPermission(Actor subject, PermissionRequest request);
+    boolean hasPermission(Actor<?> subject, PermissionRequest request);
 
     /**
      * Convenience method to check whether an actor has been granted a
@@ -43,7 +44,7 @@ public interface PermissionProvider {
      * @param permission the permission
      * @return true if permission is granted
      */
-    boolean hasPermission(Actor subject, String permission);
+    boolean hasPermission(Actor<?> subject, String permission);
 
     /**
      * Convenience method to check whether an actor has been granted a
@@ -54,6 +55,6 @@ public interface PermissionProvider {
      * @param targetWorld the target world that the permission request applies to
      * @return true if permission is granted
      */
-    boolean hasPermission(Actor subject, String permission, World targetWorld);
+    boolean hasPermission(Actor<?> subject, String permission, World targetWorld);
 
 }
