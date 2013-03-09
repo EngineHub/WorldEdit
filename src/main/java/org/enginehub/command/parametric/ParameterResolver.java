@@ -19,6 +19,7 @@
 package org.enginehub.command.parametric;
 
 import org.enginehub.command.CommandContext;
+import org.enginehub.command.CommandException;
 
 /**
  * The resolver for a given method parameter.
@@ -33,7 +34,8 @@ public interface ParameterResolver<T> {
      *
      * @param context the context containing the command's arguments
      * @return the object, possibly null if allowed
+     * @throws CommandException 
      */
-    T resolve(CommandContext context);
+    T resolve(CommandContext context) throws CommandException;
 
 }
