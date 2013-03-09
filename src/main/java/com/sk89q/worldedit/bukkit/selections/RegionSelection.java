@@ -19,8 +19,9 @@
 
 package com.sk89q.worldedit.bukkit.selections;
 
-import static com.sk89q.worldedit.bukkit.BukkitUtil.toLocation;
-import static com.sk89q.worldedit.bukkit.BukkitUtil.toVector;
+import static org.enginehub.worldedit.bukkit.BukkitUtils.toLocation;
+import static org.enginehub.worldedit.bukkit.BukkitUtils.toVector;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import com.sk89q.worldedit.Vector;
