@@ -20,29 +20,37 @@ package org.enginehub.worldedit;
 
 import org.enginehub.command.CommandManager;
 import org.enginehub.command.parametric.ParametricBuilder;
+import org.enginehub.event.EventSystem;
+import org.enginehub.event.Handler;
 import org.enginehub.session.FactoryBasedSessionMap;
 import org.enginehub.session.SessionFactory;
 import org.enginehub.session.SessionMap;
+import org.enginehub.util.Owner;
+import org.enginehub.worldedit.command.SelectionParametricResolver;
+import org.enginehub.worldedit.event.WandUseEvent;
 import org.enginehub.worldedit.operation.ReplaceBlocks;
 
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.regions.RegionSelector;
 
 /**
  * An instance of WorldEdit.
  */
-public final class WorldEdit implements SessionFactory<LocalPlayer<?>, LocalSession> {
+public final class WorldEdit implements 
+    SessionFactory<LocalPlayer, LocalSession>, Owner {
 
     private static WorldEdit instance;
 
-    private LocalConfiguration config = new LocalConfiguration(); // @TODO: Better configuration
+    private LocalConfiguration config = new LocalConfiguration();
+    // @TODO: Better configuration
     
     private final OperationRegistry operations;
     private final CommandManager commands;
     private final ParametricBuilder builder;
     private final EditSessionFactory editSessionFactory;
-    private final FactoryBasedSessionMap<LocalPlayer<?>, LocalSession> sessions;
+    private final FactoryBasedSessionMap<LocalPlayer, LocalSession> sessions;
 
     private WorldEdit() {
         commands = new CommandManager();
@@ -50,12 +58,15 @@ public final class WorldEdit implements SessionFactory<LocalPlayer<?>, LocalSess
         builder = new ParametricBuilder();
         builder.add(editSessionFactory);
         operations = new OperationRegistry(commands, builder);
-        sessions = new FactoryBasedSessionMap<LocalPlayer<?>, LocalSession>(this,
+        sessions = new FactoryBasedSessionMap<LocalPlayer, LocalSession>(this,
                 LocalPlayer.class, LocalSession.class);
         builder.add(sessions);
+        builder.add(new SelectionParametricResolver(this));
 
         // @TODO: Better way to register operations
         operations.add(ReplaceBlocks.class);
+        
+        EventSystem.getInstance().register(this);
     }
 
     /**
@@ -124,13 +135,47 @@ public final class WorldEdit implements SessionFactory<LocalPlayer<?>, LocalSess
      * 
      * @return the sessions
      */
-    public SessionMap<LocalPlayer<?>, LocalSession> getSessions() {
+    public SessionMap<LocalPlayer, LocalSession> getSessions() {
         return sessions;
     }
 
     @Override
-    public LocalSession createSession(LocalPlayer<?> key) {
+    public LocalSession createSession(LocalPlayer key) {
         return new LocalSession(config);
+    }
+    
+    @Handler
+    public void onWandUse(WandUseEvent event) {
+        LocalPlayer actor = event.getActor();
+
+        if (!actor.hasPermission("worldedit.selection.pos")) {
+            return;
+        }
+        
+        LocalSession session = sessions.get(event.getActor());
+
+        if (session.isToolControlEnabled()) {
+            RegionSelector selector = session.getRegionSelector(actor.getWorld());
+            
+            // Do selection
+            switch (event.getFunction()) {
+            case PRIMARY:
+                if (selector.selectPrimary(event.getPosition())) {
+                    selector.explainPrimarySelection(
+                            actor, session, event.getPosition());
+                }
+                break;
+                
+            case SECONDARY:
+                if (selector.selectSecondary(event.getPosition())) {
+                    selector.explainSecondarySelection(
+                            actor, session, event.getPosition());
+                }
+                break;
+            }
+
+            event.setCancelled(true);
+        }
     }
 
 }
