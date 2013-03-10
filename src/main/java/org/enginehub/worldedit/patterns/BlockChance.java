@@ -17,51 +17,47 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.patterns;
+package org.enginehub.worldedit.patterns;
 
-import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
- * Always returns the same block type.
+ * Gives a block a chance.
  *
  * @author sk89q
  */
-public class SingleBlockPattern implements Pattern {
+public class BlockChance {
     /**
-     * Block type.
+     * Block.
      */
     private BaseBlock block;
+    /**
+     * Chance. Can be any positive value.
+     */
+    private double chance;
 
     /**
      * Construct the object.
      *
      * @param block
+     * @param chance
      */
-    public SingleBlockPattern(BaseBlock block) {
+    public BlockChance(BaseBlock block, double chance) {
         this.block = block;
+        this.chance = chance;
     }
 
     /**
-     * Get next block.
-     *
-     * @param pos
-     * @return
-     */
-    public BaseBlock next(Vector pos) {
-        return block;
-    }
-
-    public BaseBlock next(int x, int y, int z) {
-        return block;
-    }
-
-    /**
-     * Get the block.
-     *
-     * @return
+     * @return the block
      */
     public BaseBlock getBlock() {
         return block;
+    }
+
+    /**
+     * @return the chance
+     */
+    public double getChance() {
+        return chance;
     }
 }

@@ -17,33 +17,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.patterns;
+package org.enginehub.worldedit.patterns;
 
-import java.util.Random;
-import java.util.List;
 import java.util.ArrayList;
-import com.sk89q.worldedit.*;
+import java.util.List;
+import java.util.Random;
+
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
  * Pattern proportionally fills.
- *
- * @author sk89q
  */
 public class RandomFillPattern implements Pattern {
-    /**
-     * Random number generator.
-     */
+    
     private static final Random random = new Random();
-    /**
-     * Blocks and their proportions.
-     */
     private List<BlockChance> blocks;
 
     /**
      * Construct the object.
      *
-     * @param blocks
+     * @param blocks the list of block chances
      */
     public RandomFillPattern(List<BlockChance> blocks) {
         double max = 0;
@@ -65,12 +59,7 @@ public class RandomFillPattern implements Pattern {
         this.blocks = finalBlocks;
     }
 
-    /**
-     * Get next block.
-     *
-     * @param pos
-     * @return
-     */
+    @Override
     public BaseBlock next(Vector pos) {
         double r = random.nextDouble();
 
@@ -80,10 +69,8 @@ public class RandomFillPattern implements Pattern {
             }
         }
 
+        // This is never called
         throw new RuntimeException("ProportionalFillPattern");
     }
-
-    public BaseBlock next(int x, int y, int z) {
-        return next(null);
-    }
+    
 }

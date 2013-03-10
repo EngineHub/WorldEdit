@@ -17,33 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.patterns;
+package org.enginehub.worldedit.patterns;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.foundation.Block;
 
 /**
- * Used to get the block to set. This can be used to implement a pattern
- * for when setting a region with blocks.
- *
- * @author sk89q
+ * A factory for the next block type to use when placing the block.
  */
 public interface Pattern {
+    
     /**
      * Get a block for a position. This return value of this method does
      * not have to be consistent for the same position.
-     *
-     * @param pos
-     * @return
+     * 
+     * @param position the position of the block
+     * @return the block
      */
-    public BaseBlock next(Vector pos);
-
-    /**
-     * Get a block for a position. This return value of this method does
-     * not have to be consistent for the same position.
-     *
-     * @param pos
-     * @return
-     */
-    public BaseBlock next(int x, int y, int z);
+    public Block next(Vector position);
+    
 }
