@@ -21,6 +21,8 @@ package com.sk89q.worldedit.commands;
 
 import org.enginehub.worldedit.EditSession;
 import org.enginehub.worldedit.WorldEditException;
+import org.enginehub.worldedit.patterns.Pattern;
+import org.enginehub.worldedit.patterns.SingleBlockPattern;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -36,8 +38,6 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.commands.UtilityCommands.FlagContainer;
 import com.sk89q.worldedit.masks.BlockMask;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.tools.BrushTool;
 import com.sk89q.worldedit.tools.brushes.ButcherBrush;
 import com.sk89q.worldedit.tools.brushes.ClipboardBrush;

@@ -28,6 +28,8 @@ import java.util.TreeSet;
 
 import org.enginehub.worldedit.EditSession;
 import org.enginehub.worldedit.WorldEditException;
+import org.enginehub.worldedit.patterns.Pattern;
+import org.enginehub.worldedit.patterns.SingleBlockPattern;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -44,8 +46,6 @@ import com.sk89q.worldedit.LocalWorld.KillFlags;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 

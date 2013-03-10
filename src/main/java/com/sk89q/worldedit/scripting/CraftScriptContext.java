@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.enginehub.worldedit.EditSession;
+import org.enginehub.worldedit.MatchNotFoundException;
+import org.enginehub.worldedit.patterns.Pattern;
 
 import com.sk89q.worldedit.DisallowedItemException;
 import com.sk89q.worldedit.FilenameException;
@@ -33,11 +35,9 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.ServerInterface;
-import com.sk89q.worldedit.UnknownItemException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.commands.InsufficientArgumentsException;
-import com.sk89q.worldedit.patterns.Pattern;
 
 /**
  * The context given to scripts.
@@ -154,11 +154,11 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param arg
      * @param allAllowed true to ignore blacklists
      * @return
-     * @throws UnknownItemException
+     * @throws MatchNotFoundException
      * @throws DisallowedItemException
      */
     public BaseBlock getBlock(String arg, boolean allAllowed)
-            throws UnknownItemException, DisallowedItemException {
+            throws MatchNotFoundException, DisallowedItemException {
         return controller.getBlock(player, arg, allAllowed);
     }
 
@@ -167,11 +167,11 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      *
      * @param id
      * @return
-     * @throws UnknownItemException
+     * @throws MatchNotFoundException
      * @throws DisallowedItemException
      */
     public BaseBlock getBlock(String id)
-            throws UnknownItemException, DisallowedItemException {
+            throws MatchNotFoundException, DisallowedItemException {
         return controller.getBlock(player, id, false);
     }
 
@@ -180,11 +180,11 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      *
      * @param list
      * @return pattern
-     * @throws UnknownItemException 
+     * @throws MatchNotFoundException 
      * @throws DisallowedItemException 
      */
     public Pattern getBlockPattern(String list)
-            throws UnknownItemException, DisallowedItemException {
+            throws MatchNotFoundException, DisallowedItemException {
         return controller.getBlockPattern(player, list);
     }
 
@@ -194,11 +194,11 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param list
      * @param allBlocksAllowed
      * @return set
-     * @throws UnknownItemException 
+     * @throws MatchNotFoundException 
      * @throws DisallowedItemException 
      */
     public Set<Integer> getBlockIDs(String list, boolean allBlocksAllowed)
-            throws UnknownItemException, DisallowedItemException {
+            throws MatchNotFoundException, DisallowedItemException {
         return controller.getBlockIDs(player, list, allBlocksAllowed);
     }
 

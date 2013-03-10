@@ -21,6 +21,7 @@ package com.sk89q.worldedit.commands;
 
 import org.enginehub.worldedit.EditSession;
 import org.enginehub.worldedit.WorldEditException;
+import org.enginehub.worldedit.patterns.Pattern;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -28,7 +29,6 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.patterns.Pattern;
 
 /**
  * Tool commands.

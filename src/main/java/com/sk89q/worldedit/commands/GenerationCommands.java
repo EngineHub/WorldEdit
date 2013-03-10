@@ -25,6 +25,7 @@ import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
 
 import org.enginehub.worldedit.EditSession;
 import org.enginehub.worldedit.WorldEditException;
+import org.enginehub.worldedit.patterns.Pattern;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -35,7 +36,6 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.expression.ExpressionException;
-import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 

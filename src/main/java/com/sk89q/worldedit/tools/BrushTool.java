@@ -21,6 +21,8 @@ package com.sk89q.worldedit.tools;
 
 import org.enginehub.worldedit.EditSession;
 import org.enginehub.worldedit.MaxChangedBlocksException;
+import org.enginehub.worldedit.patterns.Pattern;
+import org.enginehub.worldedit.patterns.SingleBlockPattern;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
@@ -28,8 +30,6 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.masks.CombinedMask;
 import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.tools.brushes.Brush;
 import com.sk89q.worldedit.tools.brushes.SphereBrush;
 

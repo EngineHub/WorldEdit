@@ -20,9 +20,9 @@ package org.enginehub.worldedit.operation;
 
 import org.enginehub.worldedit.EditSession;
 import org.enginehub.worldedit.WorldEditException;
+import org.enginehub.worldedit.patterns.Pattern;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;
 
 /**

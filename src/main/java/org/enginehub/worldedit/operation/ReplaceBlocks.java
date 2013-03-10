@@ -20,12 +20,12 @@ package org.enginehub.worldedit.operation;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import org.enginehub.command.Expose;
 import org.enginehub.worldedit.EditSession;
 import org.enginehub.worldedit.WorldEditException;
+import org.enginehub.worldedit.patterns.Pattern;
 
 /**
  * Replace all blocks within a given {@link Region} with a {@link Pattern}. A 

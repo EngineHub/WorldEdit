@@ -21,9 +21,9 @@ package com.sk89q.worldedit.tools.brushes;
 
 import org.enginehub.worldedit.EditSession;
 import org.enginehub.worldedit.MaxChangedBlocksException;
+import org.enginehub.worldedit.patterns.Pattern;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.patterns.Pattern;
 
 public class CylinderBrush implements Brush {
     private int height;

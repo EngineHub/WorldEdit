@@ -41,7 +41,13 @@ import javax.script.ScriptException;
 
 import org.enginehub.worldedit.EditSession;
 import org.enginehub.worldedit.MaxChangedBlocksException;
+import org.enginehub.worldedit.MatchNotFoundException;
 import org.enginehub.worldedit.WorldEditException;
+import org.enginehub.worldedit.patterns.BlockChance;
+import org.enginehub.worldedit.patterns.ClipboardPattern;
+import org.enginehub.worldedit.patterns.Pattern;
+import org.enginehub.worldedit.patterns.RandomFillPattern;
+import org.enginehub.worldedit.patterns.SingleBlockPattern;
 
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissionsException;
@@ -89,11 +95,6 @@ import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.masks.RandomMask;
 import com.sk89q.worldedit.masks.RegionMask;
 import com.sk89q.worldedit.masks.UnderOverlayMask;
-import com.sk89q.worldedit.patterns.BlockChance;
-import com.sk89q.worldedit.patterns.ClipboardPattern;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.RandomFillPattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.scripting.CraftScriptContext;
 import com.sk89q.worldedit.scripting.CraftScriptEngine;
@@ -372,7 +373,7 @@ public class WorldEdit {
     }
 
     public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed)
-            throws UnknownItemException, DisallowedItemException {
+            throws MatchNotFoundException, DisallowedItemException {
         return getBlock(player, arg, allAllowed, false);
     }
 
@@ -383,12 +384,12 @@ public class WorldEdit {
      * @param arg
      * @param allAllowed true to ignore blacklists
      * @return
-     * @throws UnknownItemException
+     * @throws MatchNotFoundException
      * @throws DisallowedItemException
      */
     public BaseBlock getBlock(LocalPlayer player, String arg,
                               boolean allAllowed, boolean allowNoData)
-            throws UnknownItemException, DisallowedItemException {
+            throws MatchNotFoundException, DisallowedItemException {
         BlockType blockType;
         arg = arg.replace("_", " ");
         arg = arg.replace(";", "|");
@@ -423,7 +424,7 @@ public class WorldEdit {
                 blockType = BlockType.CLOTH;
                 data = col.getID();
             } else {
-                throw new UnknownItemException(arg);
+                throw new MatchNotFoundException(arg);
             }
         }
 
@@ -433,7 +434,7 @@ public class WorldEdit {
         }
 
         if (!player.getWorld().isValidBlockType(blockId)) {
-            throw new UnknownItemException(arg);
+            throw new MatchNotFoundException(arg);
         }
 
         if (data == -1) { // Block data not yet detected
@@ -600,16 +601,16 @@ public class WorldEdit {
      * @param player
      * @param id
      * @return
-     * @throws UnknownItemException
+     * @throws MatchNotFoundException
      * @throws DisallowedItemException
      */
     public BaseBlock getBlock(LocalPlayer player, String id)
-            throws UnknownItemException, DisallowedItemException {
+            throws MatchNotFoundException, DisallowedItemException {
         return getBlock(player, id, false);
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed, boolean allowNoData)
-            throws DisallowedItemException, UnknownItemException {
+            throws DisallowedItemException, MatchNotFoundException {
         String[] items = list.split(",");
         Set<BaseBlock> blocks = new HashSet<BaseBlock>();
         for (String id : items) {
@@ -619,12 +620,12 @@ public class WorldEdit {
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed)
-            throws DisallowedItemException, UnknownItemException {
+            throws DisallowedItemException, MatchNotFoundException {
         return getBlocks(player, list, allAllowed, false);
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list)
-            throws DisallowedItemException, UnknownItemException {
+            throws DisallowedItemException, MatchNotFoundException {
         return getBlocks(player, list, false);
     }
 
@@ -635,11 +636,11 @@ public class WorldEdit {
      * @param player
      * @param patternString
      * @return pattern
-     * @throws UnknownItemException
+     * @throws MatchNotFoundException
      * @throws DisallowedItemException
      */
     public Pattern getBlockPattern(LocalPlayer player, String patternString)
-            throws UnknownItemException, DisallowedItemException {
+            throws MatchNotFoundException, DisallowedItemException {
 
         String[] items = patternString.split(",");
 
@@ -653,12 +654,12 @@ public class WorldEdit {
                     clipboard = session.getClipboard();
                 } catch (EmptyClipboardException e) {
                     player.printError("Copy a selection first with //copy.");
-                    throw new UnknownItemException("#clipboard");
+                    throw new MatchNotFoundException("#clipboard");
                 }
 
                 return new ClipboardPattern(clipboard);
             } else {
-                throw new UnknownItemException(patternString);
+                throw new MatchNotFoundException(patternString);
             }
         }
 
@@ -741,7 +742,7 @@ public class WorldEdit {
                     || component.equalsIgnoreCase("#sel")) {
                 return new RegionMask(session.getSelection(player.getWorld()));
             } else {
-                throw new UnknownItemException(component);
+                throw new MatchNotFoundException(component);
             }
 
         case '>':
@@ -784,12 +785,12 @@ public class WorldEdit {
      * @param list
      * @param allBlocksAllowed
      * @return set
-     * @throws UnknownItemException
+     * @throws MatchNotFoundException
      * @throws DisallowedItemException
      */
     public Set<Integer> getBlockIDs(LocalPlayer player,
             String list, boolean allBlocksAllowed)
-            throws UnknownItemException, DisallowedItemException {
+            throws MatchNotFoundException, DisallowedItemException {
 
         String[] items = list.split(",");
         Set<Integer> blocks = new HashSet<Integer>();
@@ -1437,8 +1438,8 @@ public class WorldEdit {
             }
         } catch (IncompleteRegionException e) {
             player.printError("Make a region selection first.");
-        } catch (UnknownItemException e) {
-            player.printError("Block name '" + e.getID() + "' was not recognized.");
+        } catch (MatchNotFoundException e) {
+            player.printError("Block name '" + e.getId() + "' was not recognized.");
         } catch (InvalidItemException e) {
             player.printError(e.getMessage());
         } catch (DisallowedItemException e) {
