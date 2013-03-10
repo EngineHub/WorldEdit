@@ -25,8 +25,9 @@ public class EventManager implements EventDispatcher {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void dispatch(Event event) {
+    public Event dispatch(Event event) {
         event.getExecutors().execute(event);
+        return event;
     }
 
 }

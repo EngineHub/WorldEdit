@@ -33,7 +33,8 @@ public interface EventDispatcher {
      * wrapping this call in an exception try/catch block.</p>
      * 
      * @param event the event to handle
+     * @return the same event (for convenience)
      */
-    void dispatch(Event event);
+    Event dispatch(Event event);
 
 }
