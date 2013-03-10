@@ -66,7 +66,7 @@ public class SkullBlock extends BaseBlock implements TileEntityBlock {
      * @param rot rotation (if on floor)
      */
     public SkullBlock(int data, byte type, byte rot) {
-        super(BlockID.HEAD, 1);
+        super(BlockID.HEAD, data);
         if (type < (byte) 0 || type > (byte) 4) {
             this.skullType = (byte) 0;
         } else {
@@ -84,7 +84,7 @@ public class SkullBlock extends BaseBlock implements TileEntityBlock {
      * @param owner name of player
      */
     public SkullBlock(int data, byte rot, String owner) {
-        super(BlockID.HEAD, 1);
+        super(BlockID.HEAD, data);
         this.rot = rot;
         this.setOwner(owner);
         if (owner == null || owner.isEmpty()) this.skullType = (byte) 0;
