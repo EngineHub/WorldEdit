@@ -26,7 +26,7 @@ import java.util.Set;
 import org.enginehub.command.Command;
 import org.enginehub.command.CommandContext;
 import org.enginehub.command.CommandException;
-import org.enginehub.command.Proposal;
+import org.enginehub.command.Suggestion;
 import org.enginehub.command.SuggestionProvider;
 
 /**
@@ -66,8 +66,8 @@ public abstract class ParametricCommand implements Command, SuggestionProvider {
     protected abstract void execute(List<Object> arguments) throws CommandException;
 
     @Override
-    public Set<Proposal> getProposals(CommandContext context) {
-        return new HashSet<Proposal>(); // @TODO: Actually generate proposals
+    public Set<Suggestion> getProposals(CommandContext context) {
+        return new HashSet<Suggestion>(); // @TODO: Actually generate proposals
     }
 
     @Override

@@ -18,10 +18,17 @@
 
 package org.enginehub.command;
 
-import java.util.*;
-
 import static org.enginehub.command.CommandUtils.*;
-import static org.enginehub.command.Proposal.*;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
+import org.enginehub.util.Proposal;
 
 /**
  * Stores a list of commands and executes the appropriate one when a command needs to
@@ -103,24 +110,24 @@ public class CommandManager implements CommandGroup, SuggestionProvider, Command
     }
 
     @Override
-    public Set<Proposal> getProposals(CommandContext context) {
+    public Set<Suggestion> getProposals(CommandContext context) {
         // Suggest all the commands!
         if (context.isCompletelyEmpty()) {
-            Set<Proposal> proposals = new HashSet<Proposal>();
+            Set<Suggestion> proposals = new HashSet<Suggestion>();
 
             for (Command command : this) {
                 if (!isVisible(command, context)) {
                     continue; // Don't suggest invisible commands!
                 }
 
-                proposals.add(new Proposal(command.getAliases()[0]));
+                proposals.add(new Suggestion(command.getAliases()[0]));
             }
 
             return proposals;
 
         // Suggest a command completion
         } else if (!context.isHanging()) {
-            Set<Proposal> proposals = new HashSet<Proposal>();
+            Set<Suggestion> proposals = new HashSet<Suggestion>();
             String test = context.getCommand().toLowerCase();
 
             loopCommand:
@@ -137,12 +144,13 @@ public class CommandManager implements CommandGroup, SuggestionProvider, Command
 
                     // More likely "starts with" test
                     } else if (lowerAlias.startsWith(test)) {
-                        proposals.add(new Proposal(alias.substring(test.length())));
+                        proposals.add(new Suggestion(alias.substring(test.length())));
                         continue loopCommand;
 
                     // Less likely "contains" test
                     } else if (test.length() >= 2 && lowerAlias.contains(test)) {
-                        proposals.add(new Proposal(alias).replaceWord().priority(Priority.CRAZY_IDEA));
+                        proposals.add(new Suggestion(alias).replaceWord()
+                                .confidence(Proposal.LOW_CONFIDENCE));
                         continue loopCommand;
                     }
                 }

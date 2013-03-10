@@ -31,6 +31,6 @@ public interface SuggestionProvider {
      * @param context the context
      * @return a list of proposals
      */
-    Set<Proposal> getProposals(CommandContext context);
+    Set<Suggestion> getProposals(CommandContext context);
 
 }

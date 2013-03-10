@@ -18,42 +18,24 @@
 
 package org.enginehub.command;
 
+import org.enginehub.util.Proposal;
+
 /**
  * A proposal provided by a {@link SuggestionProvider}.
  */
-public class Proposal {
-
-    public enum Priority {
-        /**
-         * The suggestion is very likely. The UI may bold or highlight entries with
-         * this priority.
-         */
-        VERY_LIKELY,
-
-        /**
-         * The suggestion is a normal priority which may not need to be bolded or
-         * otherwise made to appear special. This it the default priority.
-         */
-        SOMEWHAT_LIKELY,
-
-        /**
-         * Possibly not what the user is looking for, but suggest it anyway. The UI
-         * may choose to ignore these possibilities if it appears to be too cluttered.
-         */
-        CRAZY_IDEA
-    }
-
+public class Suggestion implements Proposal<String> {
+    
     private String proposal;
     private boolean hint;
     private boolean replaceWord = false;
-    private Priority priority = Priority.SOMEWHAT_LIKELY;
+    private int confidence = DEFAULT;
 
     /**
      * Create a new non-hint proposal.
      *
      * @param proposal the proposal string, which would be appended to the existing text
      */
-    public Proposal(String proposal) {
+    public Suggestion(String proposal) {
         if (proposal == null) {
             throw new IllegalArgumentException("Null not allowed");
         }
@@ -67,7 +49,7 @@ public class Proposal {
      * @param proposal the proposal string, which would be appended to the existing text
      * @param hint true to indicate a hint
      */
-    public Proposal(String proposal, boolean hint) {
+    public Suggestion(String proposal, boolean hint) {
         if (proposal == null) {
             throw new IllegalArgumentException("Null not allowed");
         }
@@ -75,11 +57,7 @@ public class Proposal {
         this.hint = hint;
     }
 
-    /**
-     * Get the proposal string.
-     *
-     * @return the proposal
-     */
+    @Override
     public String getProposal() {
         return proposal;
     }
@@ -139,39 +117,33 @@ public class Proposal {
      *
      * @return the same object (for convenience)
      */
-    public Proposal replaceWord() {
+    public Suggestion replaceWord() {
         setReplaceWord(true);
         return this;
     }
 
-    /**
-     * Get the priority of the suggestion. The priority determines the likelihood that
-     * the proposal is what the user is looking for and may indicate to the UI to
-     * display the proposal in a special format.
-     *
-     * @return the priority
-     */
-    public Priority getPriority() {
-        return priority;
+    @Override
+    public int getConfidence() {
+        return confidence;
     }
 
     /**
-     * Set the priority.
+     * Set the confidence.
      *
-     * @param priority the priority
+     * @param confidence the confidence
      */
-    public void setPriority(Priority priority) {
-        this.priority = priority;
+    public void setConfidence(int confidence) {
+        this.confidence = confidence;
     }
 
     /**
-     * Set the priority.
+     * Set the confidence.
      *
-     * @param priority the priority
+     * @param confidence the confidence
      * @return the same object (for convenience)
      */
-    public Proposal priority(Priority priority) {
-        setPriority(priority);
+    public Suggestion confidence(int confidence) {
+        setConfidence(confidence);
         return this;
     }
 
