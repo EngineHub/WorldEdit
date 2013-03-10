@@ -18,6 +18,7 @@
 package org.enginehub.i18n;
 
 import java.io.Closeable;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -40,7 +41,7 @@ import java.util.WeakHashMap;
  * <p>Instances of this class are fundamentally not thread-safe. Do not ever use it
  * from multiple threads.</p>
  */
-public class Localizer implements Closeable {
+public class LocalizerSystem implements Closeable {
 
     /**
      * Stores the locale for the current context.
@@ -56,7 +57,6 @@ public class Localizer implements Closeable {
             = new WeakHashMap<String, ResourceBundle>();
 
     private Locale lastLocale;
-    private final Locale locale;
 
     /**
      * Create an instance where the current thread's locale is set to the given locale,
@@ -64,8 +64,7 @@ public class Localizer implements Closeable {
      * use this function within a try {} finally {} block.
      * @param locale the locale to use
      */
-    public Localizer(Locale locale) {
-        this.locale = locale;
+    public LocalizerSystem(Locale locale) {
         if (locale != null) {
             this.lastLocale = localLocale.get();
             localLocale.set(locale);
@@ -96,29 +95,37 @@ public class Localizer implements Closeable {
     public synchronized static void register(String group, ResourceBundle bundle) {
         bundles.put(group, bundle);
     }
+    
+    /**
+     * Get the current local for the current thread.
+     * 
+     * @return the locale
+     */
+    public static Locale getThreadLocale() {
+        return localLocale.get();
+    }
 
     /**
      * Get the translated form of a message.
      *
      * @param group the group
-     * @param key the key of the message
      * @param message the message used if a translation is not found
      * @param objects the list of objects to format the string with
      * @return the translated string
      */
-    private synchronized static String _(String group, String key,
-                                         String message, Object ... objects) {
+    public synchronized static String _(String group, String message, Object ... objects) {
         ResourceBundle bundle = bundles.get(group);
 
         if (bundle != null) {
             try {
-                message = bundle.getString(key);
+                message = bundle.getString(message);
             } catch (MissingResourceException e) {
                 // Looks like the key is untranslated
             }
         }
-
-        return String.format(message, objects);
+        
+        MessageFormat formatter = new MessageFormat(message, getThreadLocale());
+        return formatter.format(objects);
     }
 
 }
