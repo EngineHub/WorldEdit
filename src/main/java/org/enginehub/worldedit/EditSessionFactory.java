@@ -41,7 +41,7 @@ public class EditSessionFactory extends StaticParameterResolver<EditSession> {
      * @param world the world the edit session is applicable to
      * @return a new edit session
      */
-    public EditSession create(LocalWorld world) {
+    public EditSession newEditSession(LocalWorld world) {
         return new EditSession(world, -1);
     }
 
@@ -52,7 +52,7 @@ public class EditSessionFactory extends StaticParameterResolver<EditSession> {
 
     @Override
     public EditSession resolve(CommandContext context) {
-        return create(context.getSafeObject(LocalWorld.class));
+        return newEditSession(context.getSafeObject(LocalWorld.class));
     }
 
 }

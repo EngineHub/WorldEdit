@@ -40,6 +40,8 @@ import org.enginehub.worldedit.operation.ReplaceBlocks;
 import org.enginehub.worldedit.operation.ScatterStructures;
 import org.enginehub.worldedit.operation.StackArea;
 import org.enginehub.worldedit.operation.ThawArea;
+import org.enginehub.worldedit.patterns.Pattern;
+import org.enginehub.worldedit.patterns.SingleBlockPattern;
 
 import com.sk89q.worldedit.ArbitraryShape;
 import com.sk89q.worldedit.BlockVector;
@@ -63,8 +65,6 @@ import com.sk89q.worldedit.foundation.Block;
 import com.sk89q.worldedit.masks.BlockMask;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.masks.MatchAllMask;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
