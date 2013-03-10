@@ -18,13 +18,15 @@
 
 package org.enginehub.worldedit;
 
+
 /**
  * Thrown for any WorldEdit-related error.
  */
 public abstract class WorldEditException extends Exception {
     
     private static final long serialVersionUID = 3201997990797993987L;
-
+    private String localizedMessage;
+    
     public WorldEditException() {
         super();
     }
@@ -39,6 +41,16 @@ public abstract class WorldEditException extends Exception {
 
     public WorldEditException(Throwable cause) {
         super(cause);
+    }
+    
+    public WorldEditException localize(String message) {
+        localizedMessage = message;
+        return this;
+    }
+
+    @Override
+    public String getLocalizedMessage() {
+        return localizedMessage != null ? localizedMessage : getMessage();
     }
     
 }
