@@ -398,11 +398,11 @@ public final class BlockData {
 
         switch (direction) {
         case NORTH_SOUTH:
-            flipX = 1;
+            flipZ = 1;
             break;
 
         case WEST_EAST:
-            flipZ = 1;
+            flipX = 1;
             break;
 
         case UP_DOWN:
