@@ -187,7 +187,6 @@ public class BukkitWorld extends LocalWorld {
                 } catch (Throwable e) {
                     // OMG DEVS WAI U NO SUPPORT <xyz> SERVER
                     skipNmsAccess = true; skipNmsSafeSet = true; skipNmsValidBlockCheck = true;
-                    logger.warning("[WorldEdit] No compatible nms block class found.");
                 }
             }
         } catch (Throwable e) {
