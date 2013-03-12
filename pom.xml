@@ -38,10 +38,6 @@
       <id>bukkit-repo</id>
       <url>http://repo.bukkit.org/content/groups/public</url>
     </repository>
-    <repository>
-      <id>spout-repo</id>
-      <url>http://repo.spout.org/</url>
-    </repository>
   </repositories>
   <dependencies>
     <!-- Used for Permissions support (this version has both the legacy API
@@ -269,6 +265,12 @@
   <profiles>
     <profile>
       <id>spout</id>
+      <repositories>
+        <repository>
+          <id>spout-repo</id>
+          <url>http://nexus.spout.org/content/groups/public/</url>
+        </repository>
+      </repositories>
       <dependencies>
         <dependency>
           <groupId>org.spout</groupId>
