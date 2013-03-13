@@ -79,14 +79,14 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.4.6-R0.1</version>
+      <version>1.5-R0.1-SNAPSHOT</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.4.7-R0.1</version>
+      <version>1.5-R0.1-SNAPSHOT</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>

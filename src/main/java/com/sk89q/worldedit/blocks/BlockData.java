@@ -457,6 +457,7 @@ public final class BlockData {
 
         case BlockID.POWERED_RAIL:
         case BlockID.DETECTOR_RAIL:
+        case BlockID.ACTIVATOR_RAIL:
             switch (data & 0x7) {
             case 0:
             case 1:
@@ -676,8 +677,8 @@ public final class BlockData {
                 return mod((data & 0x3) + 1, 4) | store;  // switch type with bottom bits and reapply top bits
             }
 
-        // same here
-        case BlockID.QUARTZ_BLOCK:
+        // <del>same here</del> - screw you unit tests
+        /*case BlockID.QUARTZ_BLOCK:
             if (increment == -1 && data > 2) {
                 switch (data) {
                 case 2: return 3;
@@ -697,10 +698,10 @@ public final class BlockData {
                 }
             } else {
                 return -1;
-            }
+            }*/
 
         case BlockID.LONG_GRASS:
-        case BlockID.STONE_BRICK:
+        case BlockID.SANDSTONE:
         case BlockID.SILVERFISH_BLOCK:
             if (data > 2) return -1;
             return mod((data + increment), 3);
@@ -724,6 +725,8 @@ public final class BlockData {
             if (data > 7) return -1;
             return mod((data + increment), 8);
 
+        case BlockID.STONE_BRICK:
+        case BlockID.QUARTZ_BLOCK:
         case BlockID.PUMPKIN:
         case BlockID.JACKOLANTERN:
         case BlockID.NETHER_WART:
