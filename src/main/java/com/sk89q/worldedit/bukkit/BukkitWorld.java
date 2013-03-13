@@ -101,9 +101,9 @@ public class BukkitWorld extends LocalWorld {
 
     private static final Logger logger = WorldEdit.logger;
     private World world;
-    private boolean skipNmsAccess = false;
-    private boolean skipNmsSafeSet = false;
-    private boolean skipNmsValidBlockCheck = false;
+    private static boolean skipNmsAccess = false;
+    private static boolean skipNmsSafeSet = false;
+    private static boolean skipNmsValidBlockCheck = false;
 
     /*
      * holder for the nmsblock class that we should use
