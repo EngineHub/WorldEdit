@@ -1,3 +1,9 @@
+5.5.2
+- Update to MineCraft 1.5.
+- Fixed //flip going the wrong direction in certain cases.
+- Fixed 4096 block id support in schematics and snapshots.
+- Fixed max-blocks-changed not being used.
+
 5.5.1
 - Added support for multiple versions of Minecraft. A folder will be created in
     plugins/WorldEdit/nmsblocks which contains different class files which will be

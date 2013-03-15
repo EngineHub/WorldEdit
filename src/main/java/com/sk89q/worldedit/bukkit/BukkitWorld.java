@@ -65,6 +65,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
+import org.bukkit.entity.MinecartTNT;
 import org.bukkit.entity.Painting;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
@@ -1031,7 +1032,7 @@ public class BukkitWorld extends LocalWorld {
                     ++num;
                 }
             } else if (type == EntityType.TNT) {
-                if (ent instanceof TNTPrimed) {
+                if (ent instanceof TNTPrimed || ent instanceof MinecartTNT) {
                     ent.remove();
                     ++num;
                 }
