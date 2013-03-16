@@ -1,11 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sk89q</groupId>
   <artifactId>worldedit</artifactId>
-  <version>5.5.2-SNAPSHOT</version>
+  <version>5.5.3-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  
+  <!-- Project information -->
   <name>WorldEdit</name>
-  <description>WorldEdit allows for editing the Minecraft SMP world
-    en-masse, de-griefing, and fixing issues.</description>
+  <inceptionYear>2010</inceptionYear>
+  <url>http://wiki.sk89q.com/wiki/WorldEdit</url>
+  <description>A voxel map editor for Minecraft with tools for adventure map designers,
+    server administrators, and anyone who enjoys building massive structures.</description>
+    
   <licenses>
     <license>
       <name>GNU General Public License 2.0</name>
@@ -20,81 +28,31 @@
       <comments>License on all new contributions</comments>
     </license>
   </licenses>
+  
+  <issueManagement>
+    <system>YouTrack</system>
+    <url>http://youtrack.sk89q.com</url>
+  </issueManagement>
+  
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>http://build.sk89q.com</url>
+  </ciManagement>
+  
   <scm>
     <connection>scm:git:git://github.com/sk89q/worldedit.git</connection>
+    <developerConnection>scm:git:git@github.com:sk89q/worldedit.git</developerConnection>
     <url>https://github.com/sk89q/worldedit</url>
     <tag>master</tag>
-    <developerConnection>scm:git:git@github.com:sk89q/worldedit.git</developerConnection>
   </scm>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  <repositories>
-    <repository>
-      <id>sk89q-repo</id>
-      <url>http://maven.sk89q.com/repo/</url>
-    </repository>
-    <repository>
-      <id>bukkit-repo</id>
-      <url>http://repo.bukkit.org/content/groups/public</url>
-    </repository>
-    <repository>
-      <id>spout-repo</id>
-      <url>http://repo.spout.org/</url>
-    </repository>
-  </repositories>
-  <dependencies>
-    <!-- Used for Permissions support (this version has both the legacy API
-      and the new Permissions API to compile against -->
-    <dependency>
-      <groupId>com.sk89q</groupId>
-      <artifactId>dummypermscompat</artifactId>
-      <version>1.7</version>
-      <scope>compile</scope>
-      <optional>true</optional>
-    </dependency>
-
-    <dependency>
-      <groupId>de.schlichtherle</groupId>
-      <artifactId>truezip</artifactId>
-      <version>6.8.3</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>rhino</groupId>
-      <artifactId>js</artifactId>
-      <version>1.7R2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sk89q</groupId>
-      <artifactId>jchronic</artifactId> <!-- not original library -->
-      <version>0.2.4a</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>1.9.0-rc1</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>1.4.6-R0.1</version>
-      <scope>compile</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>craftbukkit</artifactId>
-      <version>1.4.7-R0.1</version>
-      <scope>compile</scope>
-      <optional>true</optional>
-    </dependency>
-  </dependencies>
+  
+  <mailingLists>
+    <mailingList>
+      <name>Developer Discussion</name>
+      <archive>https://groups.google.com/d/forum/sk-dev-discuss</archive>
+    </mailingList>
+  </mailingLists>
+  
   <distributionManagement>
     <site>
       <id>sk89q-docs-upload</id>
@@ -105,11 +63,97 @@
       <url>http://maven.sk89q.com/artifactory/libs-release-local</url>
     </repository>
   </distributionManagement>
+  
+  <properties> <!-- Fix encoding warnings -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
+  <repositories>
+    <repository>
+      <id>sk89q-repo</id>
+      <url>http://maven.sk89q.com/repo/</url>
+    </repository>
+    <repository>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/content/groups/public</url>
+    </repository>
+  </repositories>
+  
+  <dependencies>
+    <dependency> <!-- Used for snapshots -->
+      <groupId>de.schlichtherle</groupId>
+      <artifactId>truezip</artifactId>
+      <version>6.8.3</version>
+      <scope>compile</scope>
+      <type>jar</type>
+    </dependency>
+    
+    <dependency> <!-- Used for CraftScripts -->
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.7R2</version>
+      <scope>compile</scope>
+      <type>jar</type>
+    </dependency>
+    
+    <dependency> <!-- Time format detection -->
+      <groupId>com.sk89q</groupId>
+      <artifactId>jchronic</artifactId> <!-- not original library -->
+      <version>0.2.4a</version>
+      <scope>compile</scope>
+      <type>jar</type>
+    </dependency>
+    
+    <!-- Used for Permissions support (this version has both the legacy API
+      and the new Permissions API to compile against -->
+    <dependency>
+      <groupId>com.sk89q</groupId>
+      <artifactId>dummypermscompat</artifactId>
+      <version>1.7</version>
+      <scope>compile</scope>
+      <type>jar</type>
+      <optional>true</optional> <!-- Don't export -->
+    </dependency>
+
+    <dependency> <!-- Bukkit implementation -->
+      <groupId>org.bukkit</groupId>
+      <artifactId>bukkit</artifactId>
+      <version>1.5-R0.1-SNAPSHOT</version>
+      <scope>compile</scope>
+      <type>jar</type>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency> <!-- NMS blocks -->
+      <groupId>org.bukkit</groupId>
+      <artifactId>craftbukkit</artifactId>
+      <version>1.5-R0.1-SNAPSHOT</version>
+      <scope>compile</scope>
+      <type>jar</type>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency> <!-- Unit tests -->
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.9.0-rc1</version>
+      <scope>test</scope>
+      <type>jar</type>
+    </dependency>
+    
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  
   <build>
     <defaultGoal>install</defaultGoal>
     <sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
 
-    <extensions>
+    <extensions> <!-- Used for uploading the docs -->
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
          <artifactId>wagon-ftp</artifactId>
@@ -135,7 +179,7 @@
           <include>config.yml</include>
         </includes>
       </resource>
-      <resource>
+      <resource> <!-- NMS support in Bukkit -->
         <targetPath>nmsblocks/</targetPath>
         <filtering>false</filtering>
         <directory>${basedir}/src/main/resources/nmsblocks/</directory>
@@ -243,19 +287,20 @@
         <version>3.1</version>
         <configuration>
           <reportPlugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-project-info-reports-plugin</artifactId>
-            <version>2.5</version>
-            <reportSets>
-              <reportSet>
-                <reports>
-                  <report>license</report>
-                  <report>index</report>
-                </reports>
-              </reportSet>
-            </reportSets>
-          </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-project-info-reports-plugin</artifactId>
+              <version>2.5</version>
+              <reportSets>
+                <reportSet>
+                  <reports>
+                    <report>license</report>
+                    <report>index</report>
+                  </reports>
+                </reportSet>
+              </reportSets>
+            </plugin>
+            
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-javadoc-plugin</artifactId>
@@ -266,23 +311,71 @@
       </plugin>
     </plugins>
   </build>
+  
   <profiles>
+    <!-- Attach javadocs and source .jars -->
+    <profile>
+      <id>attach-docs</id>
+      
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>2.2.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.8.1</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <!-- Build Spout, disabled by default because it always breaks -->
     <profile>
       <id>spout</id>
+      
+      <repositories>
+        <repository> <!-- WARNING: This breaks all the time -->
+          <id>spout-repo</id>
+          <url>http://nexus.spout.org/content/groups/public/</url>
+        </repository>
+      </repositories>
+      
       <dependencies>
         <dependency>
           <groupId>org.spout</groupId>
           <artifactId>spoutapi</artifactId>
-          <version>dev-SNAPSHOT</version>
+          <version>dev-SNAPSHOT</version> <!-- WARNING: This breaks all the time -->
           <optional>true</optional>
         </dependency>
         <dependency>
           <groupId>org.spout</groupId>
           <artifactId>vanilla</artifactId>
-          <version>1.4.7-SNAPSHOT</version>
+          <version>1.4.7-SNAPSHOT</version> <!-- WARNING: This breaks all the time -->
           <optional>true</optional>
         </dependency>
       </dependencies>
+      
       <build>
         <plugins>
           <plugin>

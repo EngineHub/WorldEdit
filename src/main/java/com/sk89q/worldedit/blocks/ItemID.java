@@ -173,7 +173,12 @@ public final class ItemID {
     public static final int FIREWORK_ROCKET = 401;
     public static final int FIREWORK_STAR = 402;
     public static final int ENCHANTED_BOOK = 403;
-    
+    public static final int COMPARATOR = 404;
+    public static final int NETHER_BRICK = 405;
+    public static final int NETHER_QUARTZ = 406;
+    public static final int TNT_MINECART = 407;
+    public static final int HOPPER_MINECART = 408;
+
     @Deprecated public static final int GOLD_RECORD = 2256; // deprecated, but leave it there
     @Deprecated public static final int GREEN_RECORD = 2257; // deprecated, but leave it there
     public static final int DISC_13 = 2256;

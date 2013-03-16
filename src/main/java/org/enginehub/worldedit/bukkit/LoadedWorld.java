@@ -65,6 +65,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
+import org.bukkit.entity.MinecartTNT;
 import org.bukkit.entity.Painting;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
@@ -107,9 +108,9 @@ public class LoadedWorld extends LocalWorld {
 
     private static final Logger logger = WorldEdit.logger;
     private World world;
-    private boolean skipNmsAccess = false;
-    private boolean skipNmsSafeSet = false;
-    private boolean skipNmsValidBlockCheck = false;
+    private static boolean skipNmsAccess = false;
+    private static boolean skipNmsSafeSet = false;
+    private static boolean skipNmsValidBlockCheck = false;
 
     /*
      * holder for the nmsblock class that we should use
@@ -1037,7 +1038,7 @@ public class LoadedWorld extends LocalWorld {
                     ++num;
                 }
             } else if (type == EntityType.TNT) {
-                if (ent instanceof TNTPrimed) {
+                if (ent instanceof TNTPrimed || ent instanceof MinecartTNT) {
                     ent.remove();
                     ++num;
                 }

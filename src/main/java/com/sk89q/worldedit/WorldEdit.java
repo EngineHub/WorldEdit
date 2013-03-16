@@ -339,8 +339,7 @@ public class WorldEdit {
                     }
                 } else {
                     // Bound the change limit
-                    int maxChangeLimit = Math.min(config.defaultChangeLimit,
-                            config.maxChangeLimit);
+                    int maxChangeLimit = config.maxChangeLimit;
                     if (currentChangeLimit == -1 || currentChangeLimit > maxChangeLimit) {
                         session.setBlockChangeLimit(maxChangeLimit);
                     }

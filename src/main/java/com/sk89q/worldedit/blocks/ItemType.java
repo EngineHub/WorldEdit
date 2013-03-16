@@ -181,6 +181,19 @@ public enum ItemType {
     WOODEN_BUTTON(BlockID.WOODEN_BUTTON, "Wooden button", "woodbutton", "woodenbutton"),
     HEAD_BLOCK(BlockID.HEAD, "Head", "head", "headmount", "mount", "headblock", "mountblock"),
     ANVIL(BlockID.ANVIL, "Anvil", "anvil", "blacksmith"),
+    TRAPPED_CHEST(BlockID.TRAPPED_CHEST, "Trapped Chest", "trappedchest", "redstonechest"),
+    PRESSURE_PLATE_LIGHT(BlockID.PRESSURE_PLATE_LIGHT, "Weighted Pressure Plate (Light)", "lightpressureplate"),
+    PRESSURE_PLATE_HEAVY(BlockID.PRESSURE_PLATE_HEAVY, "Weighted Pressure Plate (Heavy)", "heavypressureplate"),
+    COMPARATOR_OFF(BlockID.COMPARATOR_OFF, "Redstone Comparator (inactive)", "redstonecomparator", "comparator"),
+    COMPARATOR_ON(BlockID.COMPARATOR_ON, "Redstone Comparator (active)", "redstonecomparatoron", "comparatoron"),
+    DAYLIGHT_SENSOR(BlockID.DAYLIGHT_SENSOR, "Daylight Sesnor", "daylightsensor", "lightsensor"),
+    REDSTONE_BLOCK(BlockID.REDSTONE_BLOCK, "Block of Redstone", "redstoneblock", "blockofredstone"),
+    QUARTZ_ORE(BlockID.QUARTZ_ORE, "Nether Quartz Ore", "quartzore", "netherquartzore"),
+    HOPPER(BlockID.HOPPER, "Hopper", "hopper"),
+    QUARTZ_BLOCK(BlockID.QUARTZ_BLOCK, "Block of Quartz", "quartzblock"),
+    QUARTZ_STAIRS(BlockID.QUARTZ_STAIRS, "Quartz Stairs", "quartzstairs"),
+    ACTIVATOR_RAIL(BlockID.ACTIVATOR_RAIL, "Activator Rail", "activatorrail", "tntrail", "activatortrack"),
+    DROPPER(BlockID.DROPPER, "Dropper", "dropper"),
 
     // Items
     IRON_SHOVEL(ItemID.IRON_SHOVEL, "Iron shovel", "ironshovel"),
@@ -269,8 +282,8 @@ public enum ItemType {
     PAPER(ItemID.PAPER, "Paper", "paper"),
     BOOK(ItemID.BOOK, "Book", "book"),
     SLIME_BALL(ItemID.SLIME_BALL, "Slime ball", "slimeball", "slime"),
-    STORAGE_MINECART(ItemID.STORAGE_MINECART, "Storage minecart", "storageminecart", "storagecart"),
-    POWERED_MINECART(ItemID.POWERED_MINECART, "Powered minecart", "poweredminecart", "poweredcart"),
+    STORAGE_MINECART(ItemID.STORAGE_MINECART, "Minecart with Chest", "storageminecart", "storagecart", "minecartwithchest", "minecartchest", "chestminecart"),
+    POWERED_MINECART(ItemID.POWERED_MINECART, "Minecart with Furnace", "poweredminecart", "poweredcart", "minecartwithfurnace", "minecartfurnace", "furnaceminecart"),
     EGG(ItemID.EGG, "Egg", "egg"),
     COMPASS(ItemID.COMPASS, "Compass", "compass"),
     FISHING_ROD(ItemID.FISHING_ROD, "Fishing rod", "fishingrod", "fishingpole"),
@@ -331,6 +344,11 @@ public enum ItemType {
     FIREWORK_ROCKET(ItemID.FIREWORK_ROCKET, "Firework rocket", "firework", "rocket"),
     FIREWORK_STAR(ItemID.FIREWORK_STAR, "Firework star", "fireworkstar", "fireworkcharge"),
     ENCHANTED_BOOK(ItemID.ENCHANTED_BOOK, "Enchanted book", "enchantedbook", "spellbook", "enchantedtome", "tome"),
+    COMPARATOR(ItemID.COMPARATOR, "Comparator", "comparator", "capacitor"),
+    NETHER_BRICK_ITEM(ItemID.NETHER_BRICK, "Nether Brick (item)", "netherbrickitem"),
+    NETHER_QUARTZ(ItemID.NETHER_QUARTZ, "Nether Quartz", "netherquartz", "quartz"),
+    TNT_MINECART(ItemID.TNT_MINECART, "Minecart with TNT", "minecraftwithtnt", "tntminecart", "minecarttnt"),
+    HOPPER_MINECART(ItemID.HOPPER_MINECART, "Minecart with Hopper", "minecraftwithhopper", "hopperminecart", "minecarthopper"),
     DISC_13(ItemID.DISC_13, "Music Disc - 13", "disc_13"),
     DISC_CAT(ItemID.DISC_CAT, "Music Disc - Cat", "disc_cat"),
     DISC_BLOCKS(ItemID.DISC_BLOCKS, "Music Disc - blocks", "disc_blocks"),
@@ -559,6 +577,8 @@ public enum ItemType {
         shouldNotStack.add(ItemID.FIREWORK_ROCKET);
         shouldNotStack.add(ItemID.FIREWORK_STAR);
         shouldNotStack.add(ItemID.ENCHANTED_BOOK);
+        shouldNotStack.add(ItemID.TNT_MINECART);
+        shouldNotStack.add(ItemID.HOPPER_MINECART);
         shouldNotStack.add(ItemID.DISC_13);
         shouldNotStack.add(ItemID.DISC_CAT);
         shouldNotStack.add(ItemID.DISC_BLOCKS);
@@ -602,6 +622,7 @@ public enum ItemType {
         usesDamageValue.add(BlockID.WOODEN_STEP);
         usesDamageValue.add(BlockID.COBBLESTONE_WALL);
         usesDamageValue.add(BlockID.ANVIL);
+        usesDamageValue.add(BlockID.QUARTZ_BLOCK);
 
         usesDamageValue.add(ItemID.COAL);
         usesDamageValue.add(ItemID.INK_SACK);

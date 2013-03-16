@@ -173,4 +173,18 @@ public final class BlockID {
     public static final int WOODEN_BUTTON = 143;
     public static final int HEAD = 144;
     public static final int ANVIL = 145;
+    public static final int TRAPPED_CHEST = 146;
+    public static final int PRESSURE_PLATE_LIGHT = 147;
+    public static final int PRESSURE_PLATE_HEAVY = 148;
+    public static final int COMPARATOR_OFF = 149;
+    public static final int COMPARATOR_ON = 150;
+    public static final int DAYLIGHT_SENSOR = 151;
+    public static final int REDSTONE_BLOCK = 152;
+    public static final int QUARTZ_ORE = 153;
+    public static final int HOPPER = 154;
+    public static final int QUARTZ_BLOCK = 155;
+    public static final int QUARTZ_STAIRS = 156;
+    public static final int ACTIVATOR_RAIL = 157;
+    public static final int DROPPER = 158;
+    
 }
