@@ -150,7 +150,7 @@ public class BaseBlock extends Block {
      * @return true if equal
      */
     public boolean equalsFuzzy(BaseBlock o) {
-        return (getType() == o.getType() && getData() == o.getData()) || getData() == -1 || o.getData() == -1;
+        return (getType() == o.getType()) && (getData() == o.getData() || getData() == -1 || o.getData() == -1);
     }
 
     /**
