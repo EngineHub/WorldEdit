@@ -253,11 +253,13 @@ public class DefaultNmsBlock extends NmsBlock {
 //        TileEntity te = craftWorld.getHandle().getTileEntity(x, y, z);
 //        craftWorld.getHandle().tileEntityList.remove(te);
 
-        boolean changed = craftWorld.getHandle().setTypeIdAndData(x, y, z, block.getId(), block.getData(), 0);
+        boolean changed = craftWorld.getHandle().setTypeIdAndData(x, y, z, block.getId(), 0, 0);
 
         if (block instanceof BaseBlock) {
             world.copyToWorld(position, (BaseBlock) block);
         }
+
+        changed = craftWorld.getHandle().setData(x, y, z, block.getData(), 0);
 
         if (changed) {
             if (notifyAdjacent) {
