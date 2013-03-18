@@ -259,14 +259,10 @@ public class DefaultNmsBlock extends NmsBlock {
             world.copyToWorld(position, (BaseBlock) block);
         }
 
-        changed = craftWorld.getHandle().setData(x, y, z, block.getData(), 0);
-
-        if (changed) {
-            if (notifyAdjacent) {
-                craftWorld.getHandle().update(x, y, z, block.getId());
-            } else {
-                craftWorld.getHandle().notify(x, y, z);
-            }
+        changed = craftWorld.getHandle().setData(x, y, z, block.getData(), 0) || changed;
+        if (changed && notifyAdjacent) {
+            craftWorld.getHandle().notify(x, y, z);
+            craftWorld.getHandle().update(x, y, z, block.getId());
         }
 
         return changed;
