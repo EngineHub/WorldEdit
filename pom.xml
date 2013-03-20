@@ -125,7 +125,7 @@
     <dependency> <!-- NMS blocks -->
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.5-R0.1-SNAPSHOT</version>
+      <version>1.5.1-R0.1-SNAPSHOT</version>
       <scope>compile</scope>
       <type>jar</type>
       <optional>true</optional>
@@ -138,13 +138,7 @@
       <scope>test</scope>
       <type>jar</type>
     </dependency>
-    
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
-      <scope>provided</scope>
-    </dependency>
+
   </dependencies>
   
   <build>
