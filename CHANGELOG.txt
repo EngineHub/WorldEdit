@@ -1,3 +1,13 @@
+5.5.5
+- Updated for Minecraft 1.5.1.
+
+5.5.4
+- Fixed a bug caused by MC 1.5 where block updates were not being sent.
+
+5.5.3
+- Fixed the error caused by Bukkit's change of the TNT minecart API.
+- Added names for new items.
+
 5.5.2
 - Update to MineCraft 1.5.
 - Fixed //flip going the wrong direction in certain cases.

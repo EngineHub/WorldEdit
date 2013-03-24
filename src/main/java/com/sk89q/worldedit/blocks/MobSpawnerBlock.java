@@ -147,8 +147,8 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
         values.put("MaxSpawnDelay", new ShortTag("MaxSpawnDelay", maxSpawnDelay));
         values.put("MaxNearbyEntities", new ShortTag("MaxNearbyEntities", maxNearbyEntities));
         values.put("RequiredPlayerRange", new ShortTag("RequiredPlayerRange", requiredPlayerRange));
-        values.put("SpawnData", new CompoundTag("SpawnData", spawnData.getValue()));
-        values.put("SpawnPotentials", new ListTag("SpawnPotentials", CompoundTag.class, spawnPotentials.getValue()));
+        values.put("SpawnData", new CompoundTag("SpawnData", spawnData == null ? null : spawnData.getValue()));
+        values.put("SpawnPotentials", new ListTag("SpawnPotentials", CompoundTag.class, spawnPotentials == null ? null : spawnPotentials.getValue()));
 
         return new CompoundTag(getNbtId(), values);
     }
@@ -192,14 +192,14 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
         } catch (InvalidFormatException e) { // leave tag as null, handle later
         }
 
-        this.spawnCount = spawnCountTag.getValue();
-        this.spawnRange = spawnRangeTag.getValue();
-        this.minSpawnDelay = minSpawnDelayTag.getValue();
-        this.maxSpawnDelay = maxSpawnDelayTag.getValue();
-        this.maxNearbyEntities = maxNearbyEntitiesTag.getValue();
-        this.requiredPlayerRange = requiredPlayerRangeTag.getValue();
-        this.spawnPotentials = new ListTag("SpawnPotentials", CompoundTag.class, spawnPotentialsTag.getValue());
-        this.spawnData = new CompoundTag("SpawnData", spawnDataTag.getValue());
+        this.spawnCount = spawnCountTag == null ? null : spawnCountTag.getValue();
+        this.spawnRange = spawnRangeTag == null ? null : spawnRangeTag.getValue();
+        this.minSpawnDelay = minSpawnDelayTag == null ? null : minSpawnDelayTag.getValue();
+        this.maxSpawnDelay = maxSpawnDelayTag == null ? null : maxSpawnDelayTag.getValue();
+        this.maxNearbyEntities = maxNearbyEntitiesTag == null ? null : maxNearbyEntitiesTag.getValue();
+        this.requiredPlayerRange = requiredPlayerRangeTag == null ? null : requiredPlayerRangeTag.getValue();
+        this.spawnPotentials = new ListTag("SpawnPotentials", CompoundTag.class, spawnPotentialsTag == null ? null : spawnPotentialsTag.getValue());
+        this.spawnData = new CompoundTag("SpawnData", spawnDataTag == null ? null : spawnDataTag.getValue());
 
     }
 }

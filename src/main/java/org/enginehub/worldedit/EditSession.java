@@ -254,7 +254,7 @@ public class EditSession implements WorldObjectContainer {
                 result = world.setBlockType(pt, 0);
             }
         } else {
-            result = world.setBlock(pt, block, fastMode);
+            result = world.setBlock(pt, block, !fastMode);
         }
         
         return result;

@@ -126,15 +126,24 @@ public final class BlockData {
         case BlockID.CHEST:
         case BlockID.FURNACE:
         case BlockID.BURNING_FURNACE:
-        case BlockID.DISPENSER:
         case BlockID.ENDER_CHEST:
         case BlockID.TRAPPED_CHEST:
-        case BlockID.DROPPER:
             switch (data) {
             case 2: return 5;
             case 3: return 4;
             case 4: return 2;
             case 5: return 3;
+            }
+            break;
+
+        case BlockID.DISPENSER:
+        case BlockID.DROPPER:
+            int dispPower = data & 0x8;
+            switch (data & ~0x8) {
+            case 2: return 5 | dispPower;
+            case 3: return 4 | dispPower;
+            case 4: return 2 | dispPower;
+            case 5: return 3 | dispPower;
             }
             break;
 
@@ -309,10 +318,8 @@ public final class BlockData {
         case BlockID.CHEST:
         case BlockID.FURNACE:
         case BlockID.BURNING_FURNACE:
-        case BlockID.DISPENSER:
         case BlockID.ENDER_CHEST:
         case BlockID.TRAPPED_CHEST:
-        case BlockID.DROPPER:
             switch (data) {
             case 5: return 2;
             case 4: return 3;
@@ -321,6 +328,16 @@ public final class BlockData {
             }
             break;
 
+        case BlockID.DISPENSER:
+        case BlockID.DROPPER:
+            int dispPower = data & 0x8;
+            switch (data & ~0x8) {
+            case 5: return 2 | dispPower;
+            case 4: return 3 | dispPower;
+            case 2: return 4 | dispPower;
+            case 3: return 5 | dispPower;
+            }
+            break;
         case BlockID.PUMPKIN:
         case BlockID.JACKOLANTERN:
             switch (data) {
@@ -526,10 +543,8 @@ public final class BlockData {
         case BlockID.CHEST:
         case BlockID.FURNACE:
         case BlockID.BURNING_FURNACE:
-        case BlockID.DISPENSER:
         case BlockID.ENDER_CHEST:
         case BlockID.TRAPPED_CHEST:
-        case BlockID.DROPPER:
             switch (data) {
             case 2:
             case 3:
@@ -537,6 +552,22 @@ public final class BlockData {
             case 4:
             case 5:
                 return data ^ flipX;
+            }
+            break;
+
+        case BlockID.DROPPER:
+        case BlockID.DISPENSER:
+            int dispPower = data & 0x8;
+            switch (data & ~0x8) {
+            case 2:
+            case 3:
+                return (data ^ flipZ) | dispPower;
+            case 4:
+            case 5:
+                return (data ^ flipX) | dispPower;
+            case 0:
+            case 1:
+                return (data ^ flipY) | dispPower;
             }
             break;
 
@@ -768,15 +799,20 @@ public final class BlockData {
 
         case BlockID.FURNACE:
         case BlockID.BURNING_FURNACE:
-        case BlockID.DISPENSER:
         case BlockID.WALL_SIGN:
         case BlockID.LADDER:
         case BlockID.CHEST:
         case BlockID.ENDER_CHEST:
         case BlockID.TRAPPED_CHEST:
-        case BlockID.DROPPER:
             if (data < 2 || data > 5) return -1;
             return mod((data - 2 + increment), 4) + 2;
+
+        case BlockID.DISPENSER:
+        case BlockID.DROPPER:
+            store = data & 0x8;
+            data &= ~0x8;
+            if (data > 5) return -1;
+            return mod((data + increment), 6) | store;
 
         case BlockID.REDSTONE_REPEATER_OFF:
         case BlockID.REDSTONE_REPEATER_ON:
