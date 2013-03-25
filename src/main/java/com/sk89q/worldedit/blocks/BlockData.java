@@ -128,6 +128,7 @@ public final class BlockData {
         case BlockID.BURNING_FURNACE:
         case BlockID.ENDER_CHEST:
         case BlockID.TRAPPED_CHEST:
+        case BlockID.HOPPER:
             switch (data) {
             case 2: return 5;
             case 3: return 4;
@@ -320,6 +321,7 @@ public final class BlockData {
         case BlockID.BURNING_FURNACE:
         case BlockID.ENDER_CHEST:
         case BlockID.TRAPPED_CHEST:
+        case BlockID.HOPPER:
             switch (data) {
             case 5: return 2;
             case 4: return 3;
@@ -545,6 +547,7 @@ public final class BlockData {
         case BlockID.BURNING_FURNACE:
         case BlockID.ENDER_CHEST:
         case BlockID.TRAPPED_CHEST:
+        case BlockID.HOPPER:
             switch (data) {
             case 2:
             case 3:
@@ -804,6 +807,7 @@ public final class BlockData {
         case BlockID.CHEST:
         case BlockID.ENDER_CHEST:
         case BlockID.TRAPPED_CHEST:
+        case BlockID.HOPPER:
             if (data < 2 || data > 5) return -1;
             return mod((data - 2 + increment), 4) + 2;
 
