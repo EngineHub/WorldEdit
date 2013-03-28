@@ -22,4 +22,7 @@ public class InvertedMask implements Mask {
         return !mask.matches(editSession, pos);
     }
 
+    public Mask getInvertedMask() {
+        return mask;
+    }
 }

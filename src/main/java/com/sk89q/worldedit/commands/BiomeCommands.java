@@ -19,6 +19,9 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.masks.BiomeTypeMask;
+import com.sk89q.worldedit.masks.InvertedMask;
+import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
 
@@ -138,10 +141,24 @@ public class BiomeCommands {
             return;
         }
 
+        Mask mask = editSession.getMask();
+        BiomeTypeMask biomeMask = null;
+        boolean inverted = false;
+        if (mask instanceof BiomeTypeMask) {
+            biomeMask = (BiomeTypeMask) mask;
+        } else if (mask instanceof InvertedMask && ((InvertedMask) mask).getInvertedMask() instanceof BiomeTypeMask) {
+            inverted = true;
+            biomeMask = (BiomeTypeMask) ((InvertedMask) mask).getInvertedMask();
+        }
+
         if (args.hasFlag('p')) {
             Vector2D pos = player.getPosition().toVector2D();
-            player.getWorld().setBiome(pos, target);
-            player.print("Biome changed to " + target.getName() + " at your current location.");
+            if (biomeMask != null && (biomeMask.matches2D(editSession, pos) ^ inverted)) {
+                player.getWorld().setBiome(pos, target);
+                player.print("Biome changed to " + target.getName() + " at your current location.");
+            } else {
+                player.print("Your global mask doesn't match this biome. Type //gmask to disable it.");
+            }
         } else {
             int affected = 0;
             LocalWorld world = player.getWorld();
@@ -149,16 +166,20 @@ public class BiomeCommands {
 
             if (region instanceof FlatRegion) {
                 for (Vector2D pt : ((FlatRegion) region).asFlatRegion()) {
-                    world.setBiome(pt, target);
-                    ++affected;
+                    if (biomeMask != null && (biomeMask.matches2D(editSession, pt) ^ inverted)) {
+                        world.setBiome(pt, target);
+                        ++affected;
+                    }
                 }
             } else {
                 HashSet<Long> alreadyVisited = new HashSet<Long>();
                 for (Vector pt : region) {
                     if (!alreadyVisited.contains((long)pt.getBlockX() << 32 | pt.getBlockZ())) {
                         alreadyVisited.add(((long)pt.getBlockX() << 32 | pt.getBlockZ()));
-                        world.setBiome(pt.toVector2D(), target);
-                        ++affected;
+                        if (biomeMask != null && (biomeMask.matches(editSession, pt) ^ inverted)) {
+                            world.setBiome(pt.toVector2D(), target);
+                            ++affected;
+                        }
                     }
                 }
             }
