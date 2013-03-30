@@ -50,7 +50,7 @@ import com.sk89q.worldedit.foundation.Block;
 /**
  * Remapping tools are broken atm.
  */
-public class MCPCPlusXNmsBlock_151 extends NmsBlock {
+public class MCPCPlusXNmsBlock_151dv extends NmsBlock {
 
     private static final Logger logger = WorldEdit.logger;
     private static Field compoundMapField;
@@ -86,7 +86,7 @@ public class MCPCPlusXNmsBlock_151 extends NmsBlock {
      * @param data data value
      * @param tileEntityBlock tile entity block
      */
-    public MCPCPlusXNmsBlock_151(int type, int data, TileEntityBlock tileEntityBlock) {
+    public MCPCPlusXNmsBlock_151dv(int type, int data, TileEntityBlock tileEntityBlock) {
         super(type, data);
 
         nbtData = (NBTTagCompound) fromNative(tileEntityBlock.getNbtData());
@@ -100,7 +100,7 @@ public class MCPCPlusXNmsBlock_151 extends NmsBlock {
      * @param data data value
      * @param nbtData raw NBT data
      */
-    public MCPCPlusXNmsBlock_151(int type, int data, NBTTagCompound nbtData) {
+    public MCPCPlusXNmsBlock_151dv(int type, int data, NBTTagCompound nbtData) {
         super(type, data);
 
         this.nbtData = nbtData;
@@ -164,7 +164,7 @@ public class MCPCPlusXNmsBlock_151 extends NmsBlock {
      * @param data data value of block
      * @return the block, or null
      */
-    public static MCPCPlusXNmsBlock_151 get(World world, Vector position, int type, int data) {
+    public static MCPCPlusXNmsBlock_151dv get(World world, Vector position, int type, int data) {
         if (!hasTileEntity(type)) {
             return null;
         }
@@ -175,7 +175,7 @@ public class MCPCPlusXNmsBlock_151 extends NmsBlock {
         if (te != null) {
             NBTTagCompound tag = new NBTTagCompound();
             te.func_70310_b(tag); // Load data
-            return new MCPCPlusXNmsBlock_151(type, data, tag);
+            return new MCPCPlusXNmsBlock_151dv(type, data, tag);
         }
 
         return null;
@@ -195,11 +195,11 @@ public class MCPCPlusXNmsBlock_151 extends NmsBlock {
             return false;
         }
 
-        if (block instanceof MCPCPlusXNmsBlock_151) {
-            MCPCPlusXNmsBlock_151 nmsProxyBlock = (MCPCPlusXNmsBlock_151) block;
+        if (block instanceof MCPCPlusXNmsBlock_151dv) {
+            MCPCPlusXNmsBlock_151dv nmsProxyBlock = (MCPCPlusXNmsBlock_151dv) block;
             data = nmsProxyBlock.getNmsData(position);
         } else if (block instanceof TileEntityBlock) {
-            MCPCPlusXNmsBlock_151 nmsProxyBlock = new MCPCPlusXNmsBlock_151(
+            MCPCPlusXNmsBlock_151dv nmsProxyBlock = new MCPCPlusXNmsBlock_151dv(
                     block.getId(), block.getData(), block);
             data = nmsProxyBlock.getNmsData(position);
         }
@@ -237,7 +237,7 @@ public class MCPCPlusXNmsBlock_151 extends NmsBlock {
 //        TileEntity te = craftWorld.getHandle().getTileEntity(x, y, z);
 //        craftWorld.getHandle().tileEntityList.remove(te);
 
-        boolean changed = craftWorld.getHandle().func_72832_d(x, y, z, block.getId(), 0, 0);
+        boolean changed = craftWorld.getHandle().func_72832_d(x, y, z, block.getId(), block.getData(), 0);
 
         if (block instanceof BaseBlock) {
             world.copyToWorld(position, (BaseBlock) block);
