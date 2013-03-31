@@ -88,7 +88,7 @@ public class GenerationCommands {
 
         Vector pos = session.getPlacementPosition(player);
         int affected = editSession.makeCylinder(pos, block, radiusX, radiusZ, height, false);
-        player.print(affected + " block(s) have been created.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been created.");
     }
 
     @Command(
@@ -129,7 +129,7 @@ public class GenerationCommands {
 
         Vector pos = session.getPlacementPosition(player);
         int affected = editSession.makeCylinder(pos, block, radiusX, radiusZ, height, true);
-        player.print(affected + " block(s) have been created.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been created.");
     }
 
     @Command(
@@ -181,7 +181,7 @@ public class GenerationCommands {
 
         int affected = editSession.makeSphere(pos, block, radiusX, radiusY, radiusZ, false);
         player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been created.");
     }
 
     @Command(
@@ -233,7 +233,7 @@ public class GenerationCommands {
 
         int affected = editSession.makeSphere(pos, block, radiusX, radiusY, radiusZ, true);
         player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been created.");
     }
 
     @Command(
@@ -262,7 +262,7 @@ public class GenerationCommands {
 
         int affected = editSession.makeForest(session.getPlacementPosition(player),
                 size, density, new TreeGenerator(type));
-        player.print(affected + " trees created.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " tree" : " trees") + " created.");
     }
 
     @Command(
@@ -280,7 +280,7 @@ public class GenerationCommands {
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 10;
 
         int affected = editSession.makePumpkinPatches(session.getPlacementPosition(player), size);
-        player.print(affected + " pumpkin patches created.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " pumpkin patch" : " pumpkin patches") + " created.");
     }
 
     @Command(
@@ -302,7 +302,7 @@ public class GenerationCommands {
         int affected = editSession.makePyramid(pos, block, size, true);
 
         player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been created.");
     }
 
     @Command(
@@ -324,7 +324,7 @@ public class GenerationCommands {
         int affected = editSession.makePyramid(pos, block, size, false);
 
         player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been created.");
     }
 
     @Command(
@@ -388,7 +388,7 @@ public class GenerationCommands {
         try {
             final int affected = editSession.makeShape(region, zero, unit, pattern, expression, hollow);
             player.findFreePosition();
-            player.print(affected + " block(s) have been created.");
+            player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been created.");
         } catch (ExpressionException e) {
             player.printError(e.getMessage());
         }
