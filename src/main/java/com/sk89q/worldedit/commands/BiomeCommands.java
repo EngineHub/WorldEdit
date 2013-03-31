@@ -184,7 +184,8 @@ public class BiomeCommands {
                 }
             }
 
-            player.print("Biome changed to " + target.getName() + ". " + (affected == 0 ? "No" : affected) + (affected == 1 ? " column has" : " columns have") + " been affected.");
+            player.print("Biome changed to " + target.getName() + ". " + (affected == 0 ? "No" : affected) +
+                    (affected == 1 ? " column has" : " columns have") + " been affected.");
         }
     }
 }
