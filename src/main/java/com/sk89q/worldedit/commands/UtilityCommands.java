@@ -291,7 +291,7 @@ public class UtilityCommands {
         double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
 
         int affected = editSession.simulateSnow(session.getPlacementPosition(player), size);
-        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " surface" : " surfaces") + " covered." + (affected < 0 ? " Let it snow~" : ""));
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " surface" : " surfaces") + " covered." (affected == 0 ? "" : " Let it snow~"));
     }
 
     @Command(
@@ -327,7 +327,7 @@ public class UtilityCommands {
         double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
 
         int affected = editSession.green(session.getPlacementPosition(player), size);
-        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " surface" : " surfaces") + "  greened.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " surface" : " surfaces") + " greened.");
     }
 
     @Command(
@@ -415,9 +415,9 @@ public class UtilityCommands {
         }
 
         if (radius < 0) {
-            player.print("Killed " + (killed == 0 ? "no" : killed) + (killed == 1 ? " mob" : " mobs."));
+            player.print("Killed " + (killed == 0 ? "no" : killed) + (killed == 1 ? " mob." : " mobs."));
         } else {
-            player.print("Killed " + (killed == 0 ? "no" : killed) + (killed == 1 ? " mob" : " mobs") + "  in a radius of " + radius + (radius == 1 ? " block." : " blocks."));
+            player.print("Killed " + (killed == 0 ? "no" : killed) + (killed == 1 ? " mob" : " mobs") + " in a radius of " + radius + (radius == 1 ? " block." : " blocks."));
         }
     }
 
