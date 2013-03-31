@@ -262,7 +262,7 @@ public class GenerationCommands {
 
         int affected = editSession.makeForest(session.getPlacementPosition(player),
                 size, density, new TreeGenerator(type));
-        player.print(affected + " trees created.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " tree" : " trees") + " created.");
     }
 
     @Command(
