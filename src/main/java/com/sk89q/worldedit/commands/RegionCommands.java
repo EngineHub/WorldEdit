@@ -82,7 +82,7 @@ public class RegionCommands {
             affected = editSession.setBlocks(session.getSelection(player.getWorld()), pattern);
         }
 
-        player.print(affected + " block(s) have been changed.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been changed.");
     }
 
     @Command(
@@ -116,7 +116,7 @@ public class RegionCommands {
             affected = editSession.replaceBlocks(session.getSelection(player.getWorld()), from, to);
         }
 
-        player.print(affected + (affected == 1 ? " block" : " blocks") + " have been replaced.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been replaced.");
     }
 
     @Command(
@@ -141,7 +141,7 @@ public class RegionCommands {
         } else {
             affected = editSession.overlayCuboidBlocks(region, pat);
         }
-        player.print(affected + (affected == 1 ? " block" : " blocks") + "  have been overlain.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been overlain.");
     }
 
     @Command(
@@ -159,7 +159,7 @@ public class RegionCommands {
         Region region = session.getSelection(player.getWorld());
 
         int affected = editSession.center(region, pattern);
-        player.print("Center set ("+ affected + (affected == 1 ? " block" : " blocks") + " changed)");
+        player.print("Center set (" + (affected == 0 ? "no" : affected) + (affected == 1 ? " block" : " blocks") + " changed)");
     }
 
     @Command(
@@ -176,7 +176,7 @@ public class RegionCommands {
 
         Region region = session.getSelection(player.getWorld());
         int affected = editSession.naturalizeCuboidBlocks(region);
-        player.print(affected + (affected == 1 ? " block" : " blocks") + " have been naturalized.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been naturalized.");
     }
 
     @Command(
@@ -199,7 +199,7 @@ public class RegionCommands {
             affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), pattern);
         }
 
-        player.print(affected + (affected == 1 ? " block" : " blocks") + " have been changed.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been changed.");
     }
 
     @Command(
@@ -222,7 +222,7 @@ public class RegionCommands {
             affected = editSession.makeCuboidFaces(session.getSelection(player.getWorld()), pattern);
         }
 
-        player.print(affected + (affected == 1 ? " block" : " blocks") + " have been changed.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been changed.");
     }
 
     @Command(
@@ -249,7 +249,7 @@ public class RegionCommands {
         HeightMap heightMap = new HeightMap(editSession, session.getSelection(player.getWorld()), args.hasFlag('n'));
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         int affected = heightMap.applyFilter(filter, iterations);
-        player.print("Terrain's height map smoothed. " + affected + (affected == 1 ? " block" : " blocks") + " changed.");
+        player.print("Terrain's height map smoothed. " + (affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been changed.");
 
     }
 
@@ -297,7 +297,7 @@ public class RegionCommands {
             }
         }
 
-        player.print(affected + (affected == 1 ? " block" : " blocks") + " moved.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " moved.");
     }
 
     @Command(
@@ -340,7 +340,7 @@ public class RegionCommands {
             }
         }
 
-        player.print(affected + (affected == 1 ? " block" : " blocks") + " changed. Undo with //undo");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " changed. Undo with //undo");
     }
 
     @Command(
@@ -413,7 +413,7 @@ public class RegionCommands {
         try {
             final int affected = editSession.deformRegion(region, zero, unit, expression);
             player.findFreePosition();
-            player.print(affected + (affected == 1 ? " block" : " blocks") + " have been deformed.");
+            player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been deformed.");
         } catch (ExpressionException e) {
             player.printError(e.getMessage());
         }
@@ -440,6 +440,6 @@ public class RegionCommands {
 
         final int affected = editSession.hollowOutRegion(session.getSelection(player.getWorld()), thickness, pattern);
 
-        player.print(affected + (affected == 1 ? " block" : " blocks") + " have been changed.");
+        player.print((affected == 0 ? "No" : affected) + (affected == 1 ? " block has" : " blocks have") + " been changed.");
     }
 }
