@@ -773,6 +773,8 @@ public final class BlockData {
         case BlockID.STEP:
         case BlockID.DOUBLE_STEP:
         case BlockID.CAKE_BLOCK:
+        case BlockID.PISTON_BASE:
+        case BlockID.PISTON_STICKY_BASE:
             if (data > 5) return -1;
             return mod((data + increment), 6);
 
