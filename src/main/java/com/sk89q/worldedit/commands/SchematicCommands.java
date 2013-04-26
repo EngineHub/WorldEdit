@@ -199,12 +199,13 @@ public class SchematicCommands {
         if (!f.exists()) {
             player.printError("Schematic " + fileName + " does not exist!");
             return;
-        } else if (!f.delete()) {
+        }
+
+        if (!f.delete()) {
             player.printError("Schematic " + fileName + " cannot be deleted!");
             return;
-        } else {
-            player.print(fileName + " has been deleted.");
         }
+        player.print(fileName + " has been deleted.");
     }
 
     @Command(
