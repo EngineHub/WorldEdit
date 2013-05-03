@@ -180,6 +180,47 @@ public class SchematicCommands {
     }
 
     @Command(
+            aliases = { "delete", "d" },
+            usage = "[format] <filename>",
+            desc = "Delete a schematic from the schematic list",
+            help = "Delete a schematic from the schematic list\n" +
+                    "Format is a format from \"//schematic formats\"\n" +
+                    "If the format is not provided, WorldEdit will\n" +
+                    "attempt to automatically detect the format of the schematic",
+            flags = "f",
+            min = 1,
+            max = 2
+    )
+    @CommandPermissions({"worldedit.clipboard.delete", "worldedit.schematic.delete"}) // TODO: Remove 'clipboard' perm
+    public void delete(CommandContext args, LocalSession session, LocalPlayer player,
+                     EditSession editSession) throws WorldEditException {
+
+        LocalConfiguration config = we.getConfiguration();
+        String fileName;
+        String formatName;
+
+        if (args.argsLength() == 1) {
+            formatName = null;
+            fileName = args.getString(0);
+        } else {
+            formatName = args.getString(0);
+            fileName = args.getString(1);
+        }
+        File dir = we.getWorkingDirectoryFile(config.saveDir);
+        File f = we.getSafeOpenFile(player, dir, fileName, "schematic", "schematic");
+
+        if (!f.exists()) {
+            player.printError("Schematic " + fileName + " does not exist!");
+            return;
+        } else if (!f.delete()) {
+            player.printError("Schematic " + fileName + " cannot be deleted!");
+            return;
+        } else {
+            player.print(fileName + " has been deleted.");
+        }
+    }
+
+    @Command(
             aliases = {"formats", "listformats", "f"},
             desc = "List available schematic formats",
             max = 0
