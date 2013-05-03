@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sk89q</groupId>
   <artifactId>worldedit</artifactId>
-  <version>5.5.6-SNAPSHOT</version>
+  <version>5.5.6</version>
   <packaging>jar</packaging>
   
   <!-- Project information -->
@@ -41,7 +41,7 @@
     <connection>scm:git:git://github.com/sk89q/worldedit.git</connection>
     <developerConnection>scm:git:git@github.com:sk89q/worldedit.git</developerConnection>
     <url>https://github.com/sk89q/worldedit</url>
-    <tag>master</tag>
+    <tag>5.5.6</tag>
   </scm>
   
   <mailingLists>
@@ -120,7 +120,7 @@
     <dependency> <!-- Bukkit implementation -->
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.5-R0.1-SNAPSHOT</version>
+      <version>1.5.1-R0.2</version>
       <scope>compile</scope>
       <type>jar</type>
       <optional>true</optional>
