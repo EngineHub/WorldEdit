@@ -1,3 +1,12 @@
+5.5.6
+- Updated for Minecraft 1.5.2.
+- Pistons can now be rotated with cycler tool.
+- Hoppers no longer lose orientation.
+- Using //setbiome now respects global biome masks.
+- Fixed an issue with certain blocks that had multiple
+  possible TileEntities. (mods only)
+- Added console support for /remove command. (removes from ALL worlds).
+
 5.5.5
 - Updated for Minecraft 1.5.1.
 
