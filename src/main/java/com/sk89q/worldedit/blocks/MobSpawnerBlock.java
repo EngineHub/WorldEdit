@@ -147,8 +147,12 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
         values.put("MaxSpawnDelay", new ShortTag("MaxSpawnDelay", maxSpawnDelay));
         values.put("MaxNearbyEntities", new ShortTag("MaxNearbyEntities", maxNearbyEntities));
         values.put("RequiredPlayerRange", new ShortTag("RequiredPlayerRange", requiredPlayerRange));
-        values.put("SpawnData", new CompoundTag("SpawnData", spawnData == null ? null : spawnData.getValue()));
-        values.put("SpawnPotentials", new ListTag("SpawnPotentials", CompoundTag.class, spawnPotentials == null ? null : spawnPotentials.getValue()));
+        if (spawnData != null) {
+            values.put("SpawnData", new CompoundTag("SpawnData", spawnData.getValue()));
+        }
+        if (spawnPotentials != null) {
+            values.put("SpawnPotentials", new ListTag("SpawnPotentials", CompoundTag.class, spawnPotentials.getValue()));
+        }
 
         return new CompoundTag(getNbtId(), values);
     }
@@ -182,24 +186,53 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
         CompoundTag spawnDataTag = null;
         try {
             spawnCountTag = NBTUtils.getChildTag(values, "SpawnCount", ShortTag.class);
+        } catch (InvalidFormatException e) {};
+        try {
             spawnRangeTag = NBTUtils.getChildTag(values, "SpawnRange", ShortTag.class);
+        } catch (InvalidFormatException e) {};
+        try {
             minSpawnDelayTag = NBTUtils.getChildTag(values, "MinSpawnDelay", ShortTag.class);
+        } catch (InvalidFormatException e) {};
+        try {
             maxSpawnDelayTag = NBTUtils.getChildTag(values, "MaxSpawnDelay", ShortTag.class);
+        } catch (InvalidFormatException e) {};
+        try {
             maxNearbyEntitiesTag = NBTUtils.getChildTag(values, "MaxNearbyEntities", ShortTag.class);
+        } catch (InvalidFormatException e) {};
+        try {
             requiredPlayerRangeTag = NBTUtils.getChildTag(values, "RequiredPlayerRange", ShortTag.class);
+        } catch (InvalidFormatException e) {};
+        try {
             spawnPotentialsTag = NBTUtils.getChildTag(values, "SpawnPotentials", ListTag.class);
+        } catch (InvalidFormatException e) {};
+        try {
             spawnDataTag = NBTUtils.getChildTag(values, "SpawnData", CompoundTag.class);
-        } catch (InvalidFormatException e) { // leave tag as null, handle later
-        }
+        } catch (InvalidFormatException e) {};
 
-        this.spawnCount = spawnCountTag == null ? null : spawnCountTag.getValue();
-        this.spawnRange = spawnRangeTag == null ? null : spawnRangeTag.getValue();
-        this.minSpawnDelay = minSpawnDelayTag == null ? null : minSpawnDelayTag.getValue();
-        this.maxSpawnDelay = maxSpawnDelayTag == null ? null : maxSpawnDelayTag.getValue();
-        this.maxNearbyEntities = maxNearbyEntitiesTag == null ? null : maxNearbyEntitiesTag.getValue();
-        this.requiredPlayerRange = requiredPlayerRangeTag == null ? null : requiredPlayerRangeTag.getValue();
-        this.spawnPotentials = new ListTag("SpawnPotentials", CompoundTag.class, spawnPotentialsTag == null ? null : spawnPotentialsTag.getValue());
-        this.spawnData = new CompoundTag("SpawnData", spawnDataTag == null ? null : spawnDataTag.getValue());
+        if (spawnCountTag != null) {
+            this.spawnCount = spawnCountTag.getValue();
+        }
+        if (spawnRangeTag != null) {
+            this.spawnRange =spawnRangeTag.getValue();
+        }
+        if (minSpawnDelayTag != null) {
+            this.minSpawnDelay = minSpawnDelayTag.getValue();
+        }
+        if (maxSpawnDelayTag != null) {
+            this.maxSpawnDelay = maxSpawnDelayTag.getValue();
+        }
+        if (maxNearbyEntitiesTag != null) {
+            this.maxNearbyEntities = maxNearbyEntitiesTag.getValue();
+        }
+        if (requiredPlayerRangeTag != null) {
+            this.requiredPlayerRange = requiredPlayerRangeTag.getValue();
+        }
+        if (spawnPotentialsTag != null) {
+            this.spawnPotentials = new ListTag("SpawnPotentials", CompoundTag.class, spawnPotentialsTag.getValue());
+        }
+        if (spawnDataTag != null) {
+            this.spawnData = new CompoundTag("SpawnData", spawnDataTag.getValue());
+        }
 
     }
 }
