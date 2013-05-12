@@ -75,6 +75,10 @@
       <id>bukkit-repo</id>
       <url>http://repo.bukkit.org/content/groups/public</url>
     </repository>
+    <repository>
+      <id>vi-repo</id>
+      <url>http://repo.visualillusionsent.net</url>
+    </repository>
   </repositories>
   
   <dependencies>
@@ -130,7 +134,13 @@
       <type>jar</type>
       <optional>true</optional>
     </dependency>
-    
+    <!-- CanaryMod implementation -->
+    <dependency>
+      <groupId>net.canarymod</groupId>
+      <artifactId>CanaryLib</artifactId>
+      <version>0.8-SNAPSHOT</version>
+    </dependency>
+   
     <dependency> <!-- Unit tests -->
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
