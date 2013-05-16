@@ -80,7 +80,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
     }
 
     public boolean selectPrimary(Vector pos) {
-        if (pos.equals(pos1)) {
+        if (pos1 != null && (pos.compareTo(pos1) == 0)) {
             return false;
         }
 
@@ -90,7 +90,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
     }
 
     public boolean selectSecondary(Vector pos) {
-        if (pos.equals(pos2)) {
+        if (pos2 != null && (pos.compareTo(pos2)) == 0) {
             return false;
         }
 
