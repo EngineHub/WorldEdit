@@ -58,7 +58,7 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
 
     @Override
     public boolean selectPrimary(Vector pos) {
-        if (pos.equals(pos1) && pos.equals(pos2)) {
+        if (pos1 != null && pos2 != null && pos.compareTo(pos1) == 0 && pos.compareTo(pos2) == 0) {
             return false;
         }
 

@@ -90,7 +90,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
     }
 
     public boolean selectPrimary(Vector pos) {
-        if (!region.getCenter().equals(new Vector(0, 0, 0)) && pos.equals(region.getCenter())) {
+        if (!region.getCenter().equals(new Vector(0, 0, 0)) && pos.compareTo(region.getCenter()) == 0) {
             return false;
         }
 
@@ -103,7 +103,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
 
     public boolean selectSecondary(Vector pos) {
         Vector center = region.getCenter();
-        if (center.equals(new Vector(0, 0, 0))) {
+        if ((center.compareTo(new Vector(0, 0, 0))) == 0) {
             return true;
         }
 
