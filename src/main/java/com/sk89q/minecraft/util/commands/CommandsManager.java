@@ -135,7 +135,7 @@ public abstract class CommandsManager<T> {
      * @param parent
      * @return Commands Registered
      */
-    private List<Command> registerMethods(Class<?> cls, Method parent) {
+    public List<Command> registerMethods(Class<?> cls, Method parent) {
         try {
             if (getInjector() == null) {
                 return registerMethods(cls, parent, null);
