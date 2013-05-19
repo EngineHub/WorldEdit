@@ -101,11 +101,28 @@ public final class BlockData {
             case 2: return 4 | thrown;
             case 3: return 2 | thrown;
             case 4: return 1 | thrown;
+            case 5: return 6 | thrown;
+            case 6: return 5 | thrown;
+            case 7: return 0 | thrown;
+            case 0: return 7 | thrown;
             }
             break;
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
+            if ((data & 0x8) == 8) {
+                return data;
+            }
+            int doorExtra = data & ~0x3;
+            int doorWithoutFlags = data & 0x3;
+            switch (doorWithoutFlags) {
+            case 0: return 1 | doorExtra;
+            case 1: return 2 | doorExtra;
+            case 2: return 3 | doorExtra;
+            case 3: return 0 | doorExtra;
+            }
+            break;
+
         case BlockID.COCOA_PLANT:
         case BlockID.TRIPWIRE_HOOK:
             int extra = data & ~0x3;
@@ -212,6 +229,20 @@ public final class BlockData {
 
         case BlockID.ANVIL:
             return data ^ 0x1;
+
+        case BlockID.BED:
+            if ((data & 7) < 4) {
+                return data & ~3 | (data+1) & 3;
+            }
+            break;
+
+        case BlockID.HEAD:
+            switch (data) {
+            case 2: return 5;
+            case 3: return 4;
+            case 4: return 2;
+            case 5: return 3;
+            }
         }
 
         return data;
@@ -294,11 +325,28 @@ public final class BlockData {
             case 4: return 2 | thrown;
             case 2: return 3 | thrown;
             case 1: return 4 | thrown;
+            case 5: return 6 | thrown;
+            case 6: return 5 | thrown;
+            case 7: return 0 | thrown;
+            case 0: return 7 | thrown;
             }
             break;
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
+            if ((data & 0x8) == 8) {
+                return data;
+            }
+            int doorExtra = data & ~0x3;
+            int doorWithoutFlags = data & 0x3;
+            switch (doorWithoutFlags) {
+            case 1: return 0 | doorExtra;
+            case 2: return 1 | doorExtra;
+            case 3: return 2 | doorExtra;
+            case 0: return 3 | doorExtra;
+            }
+            break;
+
         case BlockID.COCOA_PLANT:
         case BlockID.TRIPWIRE_HOOK:
             int extra = data & ~0x3;
@@ -404,6 +452,19 @@ public final class BlockData {
         case BlockID.ANVIL:
             return data ^ 0x1;
 
+        case  BlockID.BED:
+            if ((data & 7) < 4) {
+                return data & ~3 | (data-1) & 3;
+            }
+            break;
+
+        case BlockID.HEAD:
+            switch (data) {
+            case 2: return 4;
+            case 3: return 5;
+            case 4: return 3;
+            case 5: return 2;
+            }
         }
 
         return data;
@@ -522,6 +583,9 @@ public final class BlockData {
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
             data ^= flipY << 3;
+            if ((data & 0x8) == 8) {
+                return data;
+            }
             switch (data & 0x3) {
             case 0: return data + flipX + flipZ * 3;
             case 1: return data - flipX + flipZ;
@@ -678,6 +742,29 @@ public final class BlockData {
             }
             break;
 
+        case BlockID.BED:
+            if ((data & 7) < 4) {
+                if (direction == FlipDirection.WEST_EAST && data % 2 != 0) {
+                    return data ^ 2;
+                } else if (direction == FlipDirection.NORTH_SOUTH && data % 2 == 0) {
+                    return data ^ 2; 
+                }
+            }
+            break;
+
+        case BlockID.HEAD:
+            if (direction == FlipDirection.NORTH_SOUTH) {
+                switch (data) {
+                case 2: return 3;
+                case 3: return 2;
+                }
+            } else if (direction == FlipDirection.WEST_EAST) {
+                switch (data) {
+                case 4: return 5;
+                case 5: return 4;
+                }
+            }
+            break;
         }
 
         return data;
