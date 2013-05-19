@@ -212,6 +212,9 @@ public final class BlockData {
 
         case BlockID.ANVIL:
             return data ^ 0x1;
+
+        case BlockID.BED:
+            return data & ~3 | (data+1) & 3;
         }
 
         return data;
@@ -404,6 +407,8 @@ public final class BlockData {
         case BlockID.ANVIL:
             return data ^ 0x1;
 
+        case  BlockID.BED:
+            return data & ~3 | (data-1) & 3;
         }
 
         return data;
@@ -678,6 +683,22 @@ public final class BlockData {
             }
             break;
 
+        case BlockID.BED:
+            if (direction == FlipDirection.WEST_EAST) {
+                switch (data) {
+                case 1: return 3;
+                case 3: return 1;
+                case 9: return 11;
+                case 11: return 9;
+                }
+            } else if (direction == FlipDirection.NORTH_SOUTH) {
+                switch (data) {
+                case 0: return 2;
+                case 2: return 0;
+                case 8: return 10;
+                case 10: return 8;
+                }
+            }
         }
 
         return data;
