@@ -79,11 +79,7 @@ public class BlockDataTest {
         // Test monotony and continuity
         for (int type = 0; type < 256; ++type) {
             // Cloth isn't monotonous, and thus excluded.
-            if (type == BlockID.CLOTH
-                    || type == BlockID.STAINED_CLAY
-                    || type == BlockID.CARPET) {
-                continue;
-            }
+            if (type == BlockID.CLOTH) continue;
 
             for (int data = 0; data < 16; ++data) {
                 final String message = type + "/" + data;
