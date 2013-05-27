@@ -328,7 +328,7 @@ public class SelectionCommands {
                 } catch (NumberFormatException e) {
                     if (args.getString(1).contains(",")) {
                         String[] split = args.getString(1).split(",");
-                        for (String s : split){
+                        for (String s : split) {
                             dirs.add(we.getDirection(player, s.toLowerCase()));
                         }
                     } else dirs.add(we.getDirection(player,
@@ -341,7 +341,7 @@ public class SelectionCommands {
                 reverseChange = args.getInteger(1);
                 if (args.getString(2).contains(",")) {
                     String[] split = args.getString(2).split(",");
-                    for (String s : split){
+                    for (String s : split) {
                         dirs.add(we.getDirection(player, s.toLowerCase()));
                     }
                 } else dirs.add(we.getDirection(player,
@@ -410,7 +410,7 @@ public class SelectionCommands {
                 reverseChange = args.getInteger(1);
                 if (args.getString(2).contains(",")) {
                     String[] split = args.getString(2).split(",");
-                    for (String s : split){
+                    for (String s : split) {
                         dirs.add(we.getDirection(player, s.toLowerCase()));
                     }
                 } else dirs.add(we.getDirection(player,
