@@ -1,6 +1,9 @@
 package net.playblack.cm;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.canarymod.Canary;
 import net.canarymod.api.MobSpawnerEntry;
 import net.canarymod.api.entity.Arrow;
@@ -15,6 +18,7 @@ import net.canarymod.api.entity.living.EntityLiving;
 import net.canarymod.api.entity.living.Golem;
 import net.canarymod.api.entity.living.animal.EntityAnimal;
 import net.canarymod.api.entity.living.animal.Tameable;
+import net.canarymod.api.entity.living.humanoid.Player;
 import net.canarymod.api.entity.living.humanoid.Villager;
 import net.canarymod.api.entity.throwable.Snowball;
 import net.canarymod.api.entity.vehicle.Boat;
@@ -24,17 +28,18 @@ import net.canarymod.api.inventory.Inventory;
 import net.canarymod.api.inventory.Item;
 import net.canarymod.api.world.World;
 import net.canarymod.api.world.blocks.Anvil;
+import net.canarymod.api.world.blocks.BlockType;
 import net.canarymod.api.world.blocks.ComplexBlock;
 import net.canarymod.api.world.blocks.Furnace;
 import net.canarymod.api.world.blocks.MobSpawner;
 import net.canarymod.api.world.blocks.NoteBlock;
 import net.canarymod.api.world.blocks.Sign;
 import net.canarymod.api.world.position.Vector3D;
-import net.minecraft.server.v1_5_R2.EntityPlayer;
 
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EntityType;
+import com.sk89q.worldedit.LocalEntity;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
@@ -44,6 +49,7 @@ import com.sk89q.worldedit.blocks.ContainerBlock;
 import com.sk89q.worldedit.blocks.FurnaceBlock;
 import com.sk89q.worldedit.blocks.MobSpawnerBlock;
 import com.sk89q.worldedit.blocks.SignBlock;
+import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
 import com.sk89q.worldedit.regions.Region;
 
 public class CanaryWorld extends LocalWorld {
@@ -350,7 +356,7 @@ public class CanaryWorld extends LocalWorld {
         Vector3D p = new Vector3D(origin.getBlockX(), origin.getBlockY(), origin.getBlockZ());
 
         for (EntityLiving ent : world.getEntityLivingList()) {
-            if (ent instanceof EntityPlayer) {
+            if (ent instanceof Player) {
                 continue;
             }
 
@@ -385,6 +391,34 @@ public class CanaryWorld extends LocalWorld {
         }
 
         return num;
+    }
+
+    @Override
+    public LocalEntity[] getEntities(Region region) {
+        List<CanaryEntity> entities = new ArrayList<CanaryEntity>();
+        for(Entity e : world.getEntityTracker().getTrackedEntities()) {
+            if(region.contains(CanaryUtil.toVector(e.getPosition()))) {
+                entities.add(new CanaryEntity(e));
+            }
+        }
+        return entities.toArray(new BukkitEntity[entities.size()]);
+    }
+
+    @Override
+    public boolean isValidBlockType(int type) {
+        return BlockType.fromId(type) != null;
+    }
+
+    @Override
+    public void checkLoadedChunk(Vector pt) {
+        if (!world.isChunkLoaded(pt.getBlockX(), pt.getBlockZ())) {
+            world.loadChunk(pt.getBlockX(), pt.getBlockZ());
+        }
+    }
+
+    @Override
+    public int getMaxY() {
+        return world.getHeight();
     }
 
     @Override
@@ -459,5 +493,8 @@ public class CanaryWorld extends LocalWorld {
         }
 
         return contents;
+    }
+    public World getHandle() {
+        return world;
     }
 }

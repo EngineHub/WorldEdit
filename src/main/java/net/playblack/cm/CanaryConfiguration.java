@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import net.canarymod.config.Configuration;
 import net.canarymod.logger.Logman;
 import net.visualillusionsent.utils.PropertiesFile;
+import net.visualillusionsent.utils.UtilityException;
 
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -57,8 +58,18 @@ public class CanaryConfiguration extends LocalConfiguration {
         saveDir = properties.getString("save-dir", saveDir);
 
         // Get disallowed blocks
-        disallowedBlocks = new HashSet<Integer>(toIntegerList(properties.getIntArray("disallowed-blocks")));
-        allowedDataCycleBlocks = new HashSet<Integer>(toIntegerList(properties.getIntArray("allowed-data-cycle-blocks")));
+        try {
+            disallowedBlocks = new HashSet<Integer>(toIntegerList(properties.getIntArray("disallowed-blocks")));
+        }
+        catch(UtilityException e) {
+            //Derp
+        }
+        try {
+            allowedDataCycleBlocks = new HashSet<Integer>(toIntegerList(properties.getIntArray("allowed-data-cycle-blocks")));
+        }
+        catch(UtilityException e) {
+            //Derp
+        }
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(0, properties.getInt("history-size", 15));
         LocalSession.EXPIRATION_GRACE = properties.getInt("history-expiration", 10) * 60 * 1000;

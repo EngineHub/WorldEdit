@@ -19,7 +19,7 @@ public class CanaryPlayer extends LocalPlayer {
     Player player;
     World world;
 
-    protected CanaryPlayer(ServerInterface server, Player player) {
+    public CanaryPlayer(ServerInterface server, Player player) {
         super(server);
         this.player = player;
         this.world = player.getWorld();

@@ -5,10 +5,10 @@ import net.canarymod.api.world.blocks.Block;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.command.PlayerCommandHook;
 import net.canarymod.hook.player.BlockDestroyHook;
-import net.canarymod.hook.player.BlockLeftClickHook;
 import net.canarymod.hook.player.BlockRightClickHook;
 import net.canarymod.hook.player.DisconnectionHook;
 import net.canarymod.hook.player.ItemUseHook;
+import net.canarymod.hook.player.PlayerLeftClickHook;
 import net.canarymod.plugin.PluginListener;
 
 import com.sk89q.worldedit.LocalPlayer;
@@ -27,7 +27,7 @@ public class WorldEditListener implements PluginListener {
     }
 
     @HookHandler
-    public void onLeftClick(BlockLeftClickHook hook) {
+    public void onLeftClick(PlayerLeftClickHook hook) {
         WorldEdit.getController().handleArmSwing(wrapPlayer(hook.getPlayer()));
     }
 
