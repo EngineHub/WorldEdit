@@ -133,7 +133,7 @@ public class McRegionReader {
 
         // The chunk hasn't been generated
         if (offset == 0) {
-            return null;
+            throw new DataException("The chunk at " + x + "," + z + " is not generated");
         }
 
         int sectorNumber = offset >> 8;
