@@ -177,7 +177,7 @@ public enum BlockType {
     COBBLESTONE_WALL(BlockID.COBBLESTONE_WALL, "Cobblestone wall", "cobblestonewall", "cobblewall"),
     FLOWER_POT(BlockID.FLOWER_POT, "Flower pot", "flowerpot", "plantpot", "pot"),
     CARROTS(BlockID.CARROTS, "Carrots", "carrots", "carrotsplant", "carrotsblock"),
-    POTATOES(BlockID.POTATOES, "Potatoes", "patatoes", "potatoesblock"),
+    POTATOES(BlockID.POTATOES, "Potatoes", "potatoes", "potatoesblock"),
     WOODEN_BUTTON(BlockID.WOODEN_BUTTON, "Wooden button", "woodbutton", "woodenbutton"),
     HEAD(BlockID.HEAD, "Head", "head", "skull"),
     ANVIL(BlockID.ANVIL, "Anvil", "anvil", "blacksmith"),
