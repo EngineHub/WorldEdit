@@ -193,15 +193,19 @@ public class SelectionCommands {
 
     @Command(
         aliases = { "/chunk" },
-        usage = "",
-        flags = "s",
+        usage = "[x,z coordinates]",
+        flags = "sc",
         desc = "Set the selection to your current chunk.",
         help =
             "Set the selection to the chunk you are currently in.\n" +
             "With the -s flag, your current selection is expanded\n" +
-            "to encompass all chunks that are part of it.",
+            "to encompass all chunks that are part of it.\n\n" +
+            "Specifying coordinates will use those instead of your\n"+
+            "current position. Use -c to specify chunk coordinates,\n" +
+            "otherwise full coordinates will be implied.\n" +
+            "(for example, the coordinates 5,5 are the same as -c 0,0)",
         min = 0,
-        max = 0
+        max = 1
     )
     @Logging(POSITION)
     @CommandPermissions("worldedit.selection.chunk")
@@ -224,7 +228,21 @@ public class SelectionCommands {
                     + min2D.getBlockX() + ", " + min2D.getBlockZ() + ") - ("
                     + max2D.getBlockX() + ", " + max2D.getBlockZ() + ")");
         } else {
-            final Vector2D min2D = ChunkStore.toChunk(player.getBlockIn());
+            final Vector2D min2D;
+            if (args.argsLength() == 1) {
+                // coords specified
+                String[] coords = args.getString(0).split(",");
+                if (coords.length != 2) {
+                    throw new InsufficientArgumentsException("Invalid coordinates specified.");
+                }
+                int x = Integer.parseInt(coords[0]);
+                int z = Integer.parseInt(coords[1]);
+                Vector2D pos = new Vector2D(x, z);
+                min2D = (args.hasFlag('c')) ? pos : ChunkStore.toChunk(pos.toVector());
+            } else {
+                // use player loc
+                min2D = ChunkStore.toChunk(player.getBlockIn());
+            }
 
             min = new Vector(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
             max = min.add(15, world.getMaxY(), 15);
@@ -234,10 +252,11 @@ public class SelectionCommands {
         }
 
         final CuboidRegionSelector selector;
-        if (session.getRegionSelector(world) instanceof ExtendingCuboidRegionSelector)
+        if (session.getRegionSelector(world) instanceof ExtendingCuboidRegionSelector) {
             selector = new ExtendingCuboidRegionSelector(world);
-        else
+        } else {
             selector = new CuboidRegionSelector(world);
+        }
         selector.selectPrimary(min);
         selector.selectSecondary(max);
         session.setRegionSelector(world, selector);
