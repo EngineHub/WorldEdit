@@ -59,7 +59,7 @@ public class ForgeWorld extends LocalWorld {
     }
 
     public boolean setBlockType(Vector pt, int type) {
-        return this.world.setBlockWithNotify(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type);
+        return this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type, 0, 3);
     }
 
     public boolean setBlockTypeFast(Vector pt, int type) {
@@ -67,11 +67,11 @@ public class ForgeWorld extends LocalWorld {
     }
 
     public boolean setTypeIdAndData(Vector pt, int type, int data) {
-        return this.world.setBlockAndMetadataWithNotify(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type, data);
+        return this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type, data, 3);
     }
 
     public boolean setTypeIdAndDataFast(Vector pt, int type, int data) {
-        return this.world.setBlockAndMetadata(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type, data);
+        return this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type, data, 3);
     }
 
     public int getBlockType(Vector pt) {
@@ -79,11 +79,11 @@ public class ForgeWorld extends LocalWorld {
     }
 
     public void setBlockData(Vector pt, int data) {
-        this.world.setBlockMetadataWithNotify(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), data);
+        this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), data, 0, 3);
     }
 
     public void setBlockDataFast(Vector pt, int data) {
-        this.world.setBlockMetadata(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), data);
+        this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), data, 0, 3);
     }
 
     public int getBlockData(Vector pt) {
@@ -194,7 +194,7 @@ public class ForgeWorld extends LocalWorld {
                 copyToWorld(pt, (BaseBlock) block);
             }
         }
-        this.world.setBlockMetadata(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), block.getData());
+        this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), block.getId(), block.getData(), 3);
         return successful;
     }
 
@@ -230,7 +230,7 @@ public class ForgeWorld extends LocalWorld {
         if (block instanceof MobSpawnerBlock) {
             // Mob spawners
             TileEntityMobSpawner spawner = new TileEntityMobSpawner();
-            spawner.setMobID(((MobSpawnerBlock) block).getMobType());
+            spawner.func_98049_a().setMobID(((MobSpawnerBlock) block).getMobType());
             world.setBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), spawner);
             return true;
         }
