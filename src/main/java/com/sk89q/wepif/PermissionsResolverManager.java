@@ -273,8 +273,8 @@ public class PermissionsResolverManager implements PermissionsResolver {
             String name = plugin.getDescription().getName();
             if (plugin instanceof PermissionsProvider) {
                 setPluginPermissionsResolver(plugin);
-            } else if ("Permissions".equals(name) || "PermissionsEx".equals(name)
-                    || "bPermissions".equals(name)) {
+            } else if ("permissions".equalsIgnoreCase(name) || "permissionsex".equalsIgnoreCase(name)
+                    || "bpermissions".equalsIgnoreCase(name) || "groupmanager".equalsIgnoreCase(name)) {
                 load();
             }
         }
@@ -284,8 +284,8 @@ public class PermissionsResolverManager implements PermissionsResolver {
             String name = event.getPlugin().getDescription().getName();
 
             if (event.getPlugin() instanceof PermissionsProvider
-                    || "Permissions".equals(name) || "PermissionsEx".equals(name)
-                    || "bPermissions".equals(name)) {
+                    || "permissions".equalsIgnoreCase(name) || "permissionsex".equalsIgnoreCase(name)
+                    || "bpermissions".equalsIgnoreCase(name) || "groupmanager".equalsIgnoreCase(name)) {
                 load();
             }
         }
