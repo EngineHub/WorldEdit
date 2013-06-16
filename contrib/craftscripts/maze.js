@@ -61,29 +61,31 @@ var noWallLeft = new Array(w * l);
 var noWallAbove = new Array(w * l);
 var current = 0;
 
-stack.push(id(0, 0))
+stack.push(id(0, 0));
 
 while (stack.length > 0) {
     var cell = stack.pop();
-    var x = $x(cell), y = $y(cell);
+    var x = $x(cell),
+        y = $y(cell);
     visited[cell] = true;
-    
-    var neighbors = []
-    
+
+    var neighbors = [];
+
     if (x > 0) neighbors.push(id(x - 1, y));
     if (x < w - 1) neighbors.push(id(x + 1, y));
     if (y > 0) neighbors.push(id(x, y - 1));
     if (y < l - 1) neighbors.push(id(x, y + 1));
-    
+
     shuffle(neighbors);
-    
+
     while (neighbors.length > 0) {
         var neighbor = neighbors.pop();
-        var nx = $x(neighbor), ny = $y(neighbor);
-        
+        var nx = $x(neighbor),
+            ny = $y(neighbor);
+
         if (visited[neighbor] != true) {
             stack.push(cell);
-            
+
             if (y == ny) {
                 if (nx < x) {
                     noWallLeft[cell] = true;
@@ -97,33 +99,44 @@ while (stack.length > 0) {
                     noWallAbove[neighbor] = true;
                 }
             }
-            
+
             stack.push(neighbor);
             break;
         }
     }
 }
 
+/*for (var y = -1; y < l; y++) {
+    var line = "";
+    for (var x = 0; x <= w; x++) {
+        var cell = id(x, y)
+        var a = y >= 0 ? (noWallLeft[cell] ? "_" : "|") : "_";
+        var b = x < w ? (noWallAbove[id(x, y + 1)] ? "  " : "_") : "";
+        line += a + b;
+    }
+    context.print(line);
+}*/
+
 var origin = player.getBlockIn();
 
 for (var y = 0; y <= l; y++) {
     for (var x = 0; x <= w; x++) {
-        var cell = id(x, y)
+        var cell = id(x, y);
         if (!noWallLeft[cell] && y < l) {
-            for (i = 0; i < s; i++ ) {
-                for (z = 0; z < h; z++ ) {
+            for (i = 0; i < s; i++) {
+                for (z = 0; z < h; z++) {
                     sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) + i), block);
                 }
             }
         }
         if (!noWallAbove[cell] && x < w) {
-            for (i = 0; i < s; i++ ) {
-                for (z = 0; z < h; z++ ) {
+            for (i = 0; i < s; i++) {
+                for (z = 0; z < h; z++) {
                     sess.setBlock(origin.add(x * (s + 1) + i, z, y * (s + 1) - 1), block);
                 }
             }
         }
-        for (z = 0; z < h; z++ ) {
+        for (z = 0; z < h; z++) {
             sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) - 1), block);
         }
     }
