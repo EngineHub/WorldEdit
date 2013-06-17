@@ -121,6 +121,23 @@ while (stack.length > 0) {
 
 var origin = player.getBlockIn();
 
+length = l * (s + 1) - 1;
+width = w * (s + 1) - 1;
+
+for (y = -1; y <= length; y++) {
+    for (x = -1; x <= width; x++) {
+        for (z = 0; z < h; z++) {
+            sess.setBlock(origin.add(x, z, y), BaseBlock(0));
+        }
+        if (f == "yes") {
+            sess.setBlock(origin.add(x, -1, y), block);
+        }
+        if (c == "yes") {
+            sess.setBlock(origin.add(x, h, y), block);
+        }
+    }
+}
+
 for (var y = 0; y <= l; y++) {
     for (var x = 0; x <= w; x++) {
         var cell = id(x, y);
@@ -140,20 +157,6 @@ for (var y = 0; y <= l; y++) {
         }
         for (z = 0; z < h; z++) {
             sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) - 1), block);
-        }
-    }
-}
-
-l = l * (s + 1) - 1;
-w = w * (s + 1) - 1;
-
-for (y = -1; y <= l; y++) {
-    for (x = -1; x <= w; x++) {
-        if (f == "yes") {
-            sess.setBlock(origin.add(x, -1, y), block);
-        }
-        if (c == "yes") {
-            sess.setBlock(origin.add(x, h, y), block);
         }
     }
 }
