@@ -20,7 +20,7 @@
 importPackage(Packages.com.sk89q.worldedit);
 importPackage(Packages.com.sk89q.worldedit.blocks);
 
-context.checkArgs(1, -1, "<block> [width] [length] [height] [size]");
+context.checkArgs(1, -1, "<block> [width] [length] [height] [size] [floor?] [ceiling?]");
 
 var sess = context.remember();
 
@@ -30,6 +30,8 @@ var w = argv.length > 2 ? parseInt(argv[2]) : 5;
 var l = argv.length > 3 ? parseInt(argv[3]) : 5;
 var h = argv.length > 4 ? parseInt(argv[4]) : 2;
 var s = argv.length > 5 ? parseInt(argv[5]) : 1;
+var f = argv.length > 6 ? String(argv[6]) : "no";
+var c = argv.length > 7 ? String(argv[7]) : "no";
 
 function id(x, y) {
     return y * (w + 1) + x;
@@ -138,6 +140,20 @@ for (var y = 0; y <= l; y++) {
         }
         for (z = 0; z < h; z++) {
             sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) - 1), block);
+        }
+    }
+}
+
+l = l * (s + 1) - 1;
+w = w * (s + 1) - 1;
+
+for (y = -1; y <= l; y++) {
+    for (x = -1; x <= w; x++) {
+        if (f == "yes") {
+            sess.setBlock(origin.add(x, -1, y), block);
+        }
+        if (c == "yes") {
+            sess.setBlock(origin.add(x, h, y), block);
         }
     }
 }
