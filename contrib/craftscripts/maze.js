@@ -20,7 +20,7 @@
 importPackage(Packages.com.sk89q.worldedit);
 importPackage(Packages.com.sk89q.worldedit.blocks);
 
-context.checkArgs(1, -1, "<block> [width] [length] [height] [size] [floor?] [ceiling?] [empty?] [entry/exit?]");
+context.checkArgs(1, -1, "<block> [width] [length] [height] [size] [floor?] [ceiling?] [empty?] [entry/exit?] [vertical?]");
 
 var sess = context.remember();
 
@@ -34,6 +34,7 @@ var f = argv.length > 6 ? String(argv[6]) : "no";
 var c = argv.length > 7 ? String(argv[7]) : "no";
 var e = argv.length > 8 ? String(argv[8]) : "no";
 var ee = argv.length > 9 ? String(argv[9]) : "no";
+var v = argv.length > 10 ? String(argv[10]) : "no";
 
 function id(x, y) {
     return y * (w + 1) + x;
@@ -113,7 +114,7 @@ while (stack.length > 0) {
 /*for (var y = -1; y < l; y++) {
     var line = "";
     for (var x = 0; x <= w; x++) {
-        var cell = id(x, y)
+        var cell = id(x, y);
         var a = y >= 0 ? (noWallLeft[cell] ? "_" : "|") : "_";
         var b = x < w ? (noWallAbove[id(x, y + 1)] ? "  " : "_") : "";
         line += a + b;
@@ -128,16 +129,28 @@ width = w * (s + 1) - 1;
 
 for (y = -1; y <= length; y++) {
     for (x = -1; x <= width; x++) {
-        if (e == "yes") {
-            for (z = 0; z < h; z++) {
-                sess.setBlock(origin.add(x, z, y), BaseBlock(0));
+        if (f == "yes") {
+            if (v != "yes") {
+                sess.setBlock(origin.add(x, -1, y), block);
+            } else {
+                sess.setBlock(origin.add(x, y, +1), block);
             }
         }
-        if (f == "yes") {
-            sess.setBlock(origin.add(x, -1, y), block);
-        }
         if (c == "yes") {
-            sess.setBlock(origin.add(x, h, y), block);
+            if (v != "yes") {
+                sess.setBlock(origin.add(x, h, y), block);
+            } else {
+                sess.setBlock(origin.add(x, y, -h), block);
+            }
+        }
+        if (e == "yes") {
+            for (z = 0; z < h; z++) {
+                if (v != "yes") {
+                    sess.setBlock(origin.add(x, z, y), BaseBlock(0));
+                } else {
+                    sess.setBlock(origin.add(x, y, -z), BaseBlock(0));
+                }
+            }
         }
     }
 }
@@ -146,23 +159,35 @@ for (var y = 0; y <= l; y++) {
     for (var x = 0; x <= w; x++) {
         var cell = id(x, y);
         if (!noWallLeft[cell] && y < l) {
-            for (i = 0; i < s; i++) {
-                for (z = 0; z < h; z++) {
-                    sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) + i), block);
+            if ((cell != id(0, 0) || ee != "yes") && (cell != id(l, w - 1) || ee != "yes")) {
+                for (i = 0; i < s; i++) {
+                    for (z = 0; z < h; z++) {
+                        if (v != "yes") {
+                            sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) + i), block);
+                        } else {
+                            sess.setBlock(origin.add(x * (s + 1) - 1, y * (s + 1) + i, -z), block);
+                        }
+                    }
                 }
             }
         }
         if (!noWallAbove[cell] && x < w) {
-            if ((y != 0 || x != 0 || ee != "yes") && (y != l || x != w - 1 || ee != "yes")) {
-                for (i = 0; i < s; i++) {
-                    for (z = 0; z < h; z++) {
+            for (i = 0; i < s; i++) {
+                for (z = 0; z < h; z++) {
+                    if (v != "yes") {
                         sess.setBlock(origin.add(x * (s + 1) + i, z, y * (s + 1) - 1), block);
+                    } else {
+                        sess.setBlock(origin.add(x * (s + 1) + i, y * (s + 1) - 1, -z), block);
                     }
                 }
             }
         }
         for (z = 0; z < h; z++) {
-            sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) - 1), block);
+            if (v != "yes") {
+                sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) - 1), block);
+            } else {
+                sess.setBlock(origin.add(x * (s + 1) - 1, y * (s + 1) - 1, -z), block);
+            }
         }
     }
 }
