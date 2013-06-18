@@ -20,7 +20,7 @@
 importPackage(Packages.com.sk89q.worldedit);
 importPackage(Packages.com.sk89q.worldedit.blocks);
 
-context.checkArgs(1, -1, "<block> [width] [length] [height] [size] [floor?] [ceiling?]");
+context.checkArgs(1, -1, "<block> [width] [length] [height] [size] [floor?] [ceiling?] [empty?] [entry/exit?]");
 
 var sess = context.remember();
 
@@ -32,6 +32,8 @@ var h = argv.length > 4 ? parseInt(argv[4]) : 2;
 var s = argv.length > 5 ? parseInt(argv[5]) : 1;
 var f = argv.length > 6 ? String(argv[6]) : "no";
 var c = argv.length > 7 ? String(argv[7]) : "no";
+var e = argv.length > 8 ? String(argv[8]) : "no";
+var ee = argv.length > 9 ? String(argv[9]) : "no";
 
 function id(x, y) {
     return y * (w + 1) + x;
@@ -126,8 +128,10 @@ width = w * (s + 1) - 1;
 
 for (y = -1; y <= length; y++) {
     for (x = -1; x <= width; x++) {
-        for (z = 0; z < h; z++) {
-            sess.setBlock(origin.add(x, z, y), BaseBlock(0));
+        if (e == "yes") {
+            for (z = 0; z < h; z++) {
+                sess.setBlock(origin.add(x, z, y), BaseBlock(0));
+            }
         }
         if (f == "yes") {
             sess.setBlock(origin.add(x, -1, y), block);
@@ -149,9 +153,11 @@ for (var y = 0; y <= l; y++) {
             }
         }
         if (!noWallAbove[cell] && x < w) {
-            for (i = 0; i < s; i++) {
-                for (z = 0; z < h; z++) {
-                    sess.setBlock(origin.add(x * (s + 1) + i, z, y * (s + 1) - 1), block);
+            if ((y != 0 || x != 0 || ee != "yes") && (y != l || x != w - 1 || ee != "yes")) {
+                for (i = 0; i < s; i++) {
+                    for (z = 0; z < h; z++) {
+                        sess.setBlock(origin.add(x * (s + 1) + i, z, y * (s + 1) - 1), block);
+                    }
                 }
             }
         }
