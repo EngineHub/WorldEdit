@@ -159,7 +159,7 @@ for (var y = 0; y <= l; y++) {
     for (var x = 0; x <= w; x++) {
         var cell = id(x, y);
         if (!noWallLeft[cell] && y < l) {
-            if ((y != 0 || x != 0 || ee != "yes") && (y != l - 1 || x != w || ee != "yes")) {
+            if ((cell != id(0, 0) || ee != "yes") && (cell != id(w, l - 1) || ee != "yes")) {
                 for (i = 0; i < s; i++) {
                     for (z = 0; z < h; z++) {
                         if (v != "yes") {
