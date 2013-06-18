@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.commands;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,6 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.minecraft.util.commands.NestedCommand;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
@@ -52,15 +51,6 @@ public class SnapshotUtilCommands {
 
     public SnapshotUtilCommands(WorldEdit we) {
         this.we = we;
-    }
-
-    @Command(
-            aliases = { "snapshot", "snap" },
-            desc = "Snapshot commands"
-    )
-    @NestedCommand(SnapshotCommands.class)
-    public void snapshot(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
     }
 
     @Command(

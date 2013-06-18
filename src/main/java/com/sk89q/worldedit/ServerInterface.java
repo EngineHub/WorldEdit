@@ -19,11 +19,12 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-
 import java.util.Collections;
 import java.util.List;
+
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.rebar.command.Dispatcher;
 
 /**
  *
@@ -82,5 +83,8 @@ public abstract class ServerInterface {
 
     public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
         onCommandRegistration(commands);
+    }
+    
+    public void registerCommands(Dispatcher dispatcher) {
     }
 }

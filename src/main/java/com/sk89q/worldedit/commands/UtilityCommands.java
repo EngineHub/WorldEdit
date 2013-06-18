@@ -19,9 +19,11 @@
 
 package com.sk89q.worldedit.commands;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -29,9 +31,11 @@ import java.util.TreeSet;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.minecraft.util.commands.Console;
 import com.sk89q.minecraft.util.commands.Logging;
+import com.sk89q.rebar.command.CommandMapping;
+import com.sk89q.rebar.command.Description;
+import com.sk89q.rebar.command.Dispatcher;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EntityType;
 import com.sk89q.worldedit.LocalConfiguration;
@@ -520,7 +524,7 @@ public class UtilityCommands {
     }
 
     public static void help(CommandContext args, WorldEdit we, LocalSession session, LocalPlayer player, EditSession editSession) {
-        final CommandsManager<LocalPlayer> commandsManager = we.getCommandsManager();
+        Dispatcher dispatcher = we.getDispatcher();
 
         if (args.argsLength() == 0) {
             SortedSet<String> commands = new TreeSet<String>(new Comparator<String>() {
@@ -533,7 +537,7 @@ public class UtilityCommands {
                     return ret;
                 }
             });
-            commands.addAll(commandsManager.getCommands().keySet());
+            commands.addAll(dispatcher.getPrimaryAliases());
 
             StringBuilder sb = new StringBuilder();
             boolean first = true;
@@ -552,14 +556,58 @@ public class UtilityCommands {
             return;
         }
 
-        String command = args.getJoinedStrings(0).replaceAll("/", "");
-
-        String helpMessage = commandsManager.getHelpMessages().get(command);
-        if (helpMessage == null) {
+        String command = args.getJoinedStrings(0);
+        
+        List<CommandMapping> mappings = new ArrayList<CommandMapping>();
+        
+        String testCommand = command.replaceAll("/", "");
+        for (int i = 0; i < 3; i++) {
+            CommandMapping mapping = dispatcher.get(testCommand);
+            if (mapping != null) {
+                mappings.add(mapping);
+            }
+            testCommand = "/" + testCommand;
+        }
+        
+        if (mappings.size() == 0) {
             player.printError("Unknown command '" + command + "'.");
             return;
         }
 
-        player.print(helpMessage);
+        StringBuilder builder = new StringBuilder("\n");
+        int index = 0;
+        for (CommandMapping mapping : mappings) {
+            if (index != 0) {
+                builder.append("\n");
+            }
+            
+            if (mappings.size() > 1) {
+                builder.append("#").append(index + 1).append(". \n");
+            }
+            
+            Description desc = mapping.getDescription();
+            
+            builder.append("Aliases: ");
+            boolean first = true;
+            for (String alias : mapping.getAllAliases()) {
+                if (!first) {
+                    builder.append(", ");
+                }
+                builder.append("/").append(alias);
+                first = false;
+            }
+            builder.append("\n");
+            
+            builder.append("Usage: ").append(desc.getUsage()).append("\n");
+            
+            if (desc.getHelp() != null) {
+                builder.append("Help: ").append(desc.getHelp()).append("\n");
+            } else if (desc.getDescription() != null) {
+                builder.append("Description: ").append(desc.getDescription()).append("\n");
+            }
+            index++;
+        }
+        
+        player.print(builder.toString());
     }
 }

@@ -22,8 +22,12 @@ package com.sk89q.worldedit.commands;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.NestedCommand;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 
@@ -68,24 +72,6 @@ public class ToolUtilCommands {
             player.print("Super pick axe enabled.");
         }
 
-    }
-
-    @Command(
-        aliases = { "superpickaxe", "pickaxe", "sp" },
-        desc = "Select super pickaxe mode"
-    )
-    @NestedCommand(SuperPickaxeCommands.class)
-    public void pickaxe(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-    }
-
-    @Command(
-        aliases = {"tool"},
-        desc = "Select a tool to bind"
-    )
-    @NestedCommand(ToolCommands.class)
-    public void tool(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
     }
 
     @Command(
