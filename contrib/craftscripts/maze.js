@@ -20,21 +20,28 @@
 importPackage(Packages.com.sk89q.worldedit);
 importPackage(Packages.com.sk89q.worldedit.blocks);
 
-context.checkArgs(1, -1, "<block> [width] [length] [height] [size] [floor?] [ceiling?] [empty?] [entry/exit?] [vertical?]");
+context.checkArgs(1, -1, "<block> [width] [length] [height] [size] [entry/exit?] [floor?] [ceiling?] [empty?] [air-only?] [vertical?]");
 
 var sess = context.remember();
 
 // This may throw an exception that is caught by the script processor
 var block = context.getBlock(argv[1]);
+
 var w = argv.length > 2 ? parseInt(argv[2]) : 5;
 var l = argv.length > 3 ? parseInt(argv[3]) : 5;
 var h = argv.length > 4 ? parseInt(argv[4]) : 2;
 var s = argv.length > 5 ? parseInt(argv[5]) : 1;
-var f = argv.length > 6 ? String(argv[6]) : "no";
-var c = argv.length > 7 ? String(argv[7]) : "no";
-var e = argv.length > 8 ? String(argv[8]) : "no";
-var ee = argv.length > 9 ? String(argv[9]) : "no";
-var v = argv.length > 10 ? String(argv[10]) : "no";
+
+var ee = argv.length > 6 ? String(argv[6]) : "no";
+
+var f = argv.length > 7 ? String(argv[7]) : "no";
+var c = argv.length > 8 ? String(argv[8]) : "no";
+
+var e = argv.length > 9 ? String(argv[9]) : "no";
+var ao = argv.length > 10 ? String(argv[10]) : "no";
+if (ao == "yes") e = "yes";
+
+var v = argv.length > 11 ? String(argv[11]) : "no";
 
 function id(x, y) {
     return y * (w + 1) + x;
@@ -124,31 +131,24 @@ while (stack.length > 0) {
 
 var origin = player.getBlockIn();
 
-length = l * (s + 1) - 1;
-width = w * (s + 1) - 1;
+if (ao != "yes") {
+    length = l * (s + 1) - 1;
+    width = w * (s + 1) - 1;
 
-for (y = -1; y <= length; y++) {
-    for (x = -1; x <= width; x++) {
-        if (f == "yes") {
-            if (v != "yes") {
-                sess.setBlock(origin.add(x, -1, y), block);
-            } else {
-                sess.setBlock(origin.add(x, y, +1), block);
-            }
-        }
-        if (c == "yes") {
-            if (v != "yes") {
-                sess.setBlock(origin.add(x, h, y), block);
-            } else {
-                sess.setBlock(origin.add(x, y, -h), block);
-            }
-        }
-        if (e == "yes") {
-            for (z = 0; z < h; z++) {
+    for (y = -1; y <= length; y++) {
+        for (x = -1; x <= width; x++) {
+            if (f == "yes") {
                 if (v != "yes") {
-                    sess.setBlock(origin.add(x, z, y), BaseBlock(0));
+                    sess.setBlock(origin.add(x, -1, y), block);
                 } else {
-                    sess.setBlock(origin.add(x, y, -z), BaseBlock(0));
+                    sess.setBlock(origin.add(x, y, +1), block);
+                }
+            }
+            if (c == "yes") {
+                if (v != "yes") {
+                    sess.setBlock(origin.add(x, h, y), block);
+                } else {
+                    sess.setBlock(origin.add(x, y, -h), block);
                 }
             }
         }
@@ -160,33 +160,86 @@ for (var y = 0; y <= l; y++) {
         var cell = id(x, y);
         if (!noWallLeft[cell] && y < l) {
             if (cell != id(0, 0) && cell != id(w, l - 1) || ee != "yes") {
+                if (ao != "yes") {
+                    for (i = 0; i < s; i++) {
+                        for (z = 0; z < h; z++) {
+                            if (v != "yes") {
+                                sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) + i), block);
+                            } else {
+                                sess.setBlock(origin.add(x * (s + 1) - 1, y * (s + 1) + i, -z), block);
+                            }
+                        }
+                    }
+                }
+            } else if (e == "yes") {
                 for (i = 0; i < s; i++) {
                     for (z = 0; z < h; z++) {
                         if (v != "yes") {
-                            sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) + i), block);
+                            sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) + i), BaseBlock(0));
                         } else {
-                            sess.setBlock(origin.add(x * (s + 1) - 1, y * (s + 1) + i, -z), block);
+                            sess.setBlock(origin.add(x * (s + 1) - 1, y * (s + 1) + i, -z), BaseBlock(0));
                         }
+                    }
+                }
+            }
+        } else if (y < l && e == "yes") {
+            for (i = 0; i < s; i++) {
+                for (z = 0; z < h; z++) {
+                    if (v != "yes") {
+                        sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) + i), BaseBlock(0));
+                    } else {
+                        sess.setBlock(origin.add(x * (s + 1) - 1, y * (s + 1) + i, -z), BaseBlock(0));
                     }
                 }
             }
         }
         if (!noWallAbove[cell] && x < w) {
+            if (ao != "yes") {
+                for (i = 0; i < s; i++) {
+                    for (z = 0; z < h; z++) {
+                        if (v != "yes") {
+                            sess.setBlock(origin.add(x * (s + 1) + i, z, y * (s + 1) - 1), block);
+                        } else {
+                            sess.setBlock(origin.add(x * (s + 1) + i, y * (s + 1) - 1, -z), block);
+                        }
+                    }
+                }
+            }
+        } else if (x < w && e == "yes") {
             for (i = 0; i < s; i++) {
                 for (z = 0; z < h; z++) {
                     if (v != "yes") {
-                        sess.setBlock(origin.add(x * (s + 1) + i, z, y * (s + 1) - 1), block);
+                        sess.setBlock(origin.add(x * (s + 1) + i, z, y * (s + 1) - 1), BaseBlock(0));
                     } else {
-                        sess.setBlock(origin.add(x * (s + 1) + i, y * (s + 1) - 1, -z), block);
+                        sess.setBlock(origin.add(x * (s + 1) + i, y * (s + 1) - 1, -z), BaseBlock(0));
                     }
                 }
             }
         }
-        for (z = 0; z < h; z++) {
-            if (v != "yes") {
-                sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) - 1), block);
-            } else {
-                sess.setBlock(origin.add(x * (s + 1) - 1, y * (s + 1) - 1, -z), block);
+        if (ao != "yes") {
+            for (z = 0; z < h; z++) {
+                if (v != "yes") {
+                    sess.setBlock(origin.add(x * (s + 1) - 1, z, y * (s + 1) - 1), block);
+                } else {
+                    sess.setBlock(origin.add(x * (s + 1) - 1, y * (s + 1) - 1, -z), block);
+                }
+            }
+        }
+        if (y < l && x < w && e == "yes") {
+            for (z = 0; z < h; z++) {
+                if (v != "yes") {
+                    for (yi = 0; yi < s; yi++) {
+                        for (xi = 0; xi < s; xi++) {
+                            sess.setBlock(origin.add(x * (s + 1) + xi, z, y * (s + 1) + yi), BaseBlock(0));
+                        }
+                    }
+                } else {
+                    for (yi = 0; yi < s; yi++) {
+                        for (xi = 0; xi < s; xi++) {
+                            sess.setBlock(origin.add(x * (s + 1) + xi, y * (s + 1) + yi, -z), BaseBlock(0));
+                        }
+                    }
+                }
             }
         }
     }
