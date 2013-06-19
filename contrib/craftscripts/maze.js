@@ -20,7 +20,7 @@
 importPackage(Packages.com.sk89q.worldedit);
 importPackage(Packages.com.sk89q.worldedit.blocks);
 
-context.checkArgs(1, -1, "§f<block> [width] [length] [height] [size] [flags]\nFlags: §fifceav\n§fi adds an entry and an exit\n§ff adds a floor\n§fc adds a ceiling\n§fe places air blocks\n§fa places air blocks only\n§fv creates a vertical maze");
+context.checkArgs(1, -1, "/maze.js <block> [width] [length] [height] [size] ifceav\n\n- i : adds an entry and an exit\n- f : adds a floor\n- c : adds a ceiling\n- e : places air blocks\n- a : places air blocks only\n- v : creates a vertical maze");
 
 var sess = context.remember();
 
