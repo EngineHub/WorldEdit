@@ -20,28 +20,26 @@
 importPackage(Packages.com.sk89q.worldedit);
 importPackage(Packages.com.sk89q.worldedit.blocks);
 
-context.checkArgs(1, -1, "<block> [width] [length] [height] [size] [entry/exit?] [floor?] [ceiling?] [empty?] [air-only?] [vertical?]");
+context.checkArgs(1, -1, "§f<block> [width] [length] [height] [size] [flags]\nFlags: §fifceav\n§fi adds an entry and an exit\n§ff adds a floor\n§fc adds a ceiling\n§fe places air blocks\n§fa places air blocks only\n§fv creates a vertical");
 
 var sess = context.remember();
 
 // This may throw an exception that is caught by the script processor
 var block = context.getBlock(argv[1]);
-
 var w = argv.length > 2 ? parseInt(argv[2]) : 5;
 var l = argv.length > 3 ? parseInt(argv[3]) : 5;
 var h = argv.length > 4 ? parseInt(argv[4]) : 2;
 var s = argv.length > 5 ? parseInt(argv[5]) : 1;
-
-var ee = argv.length > 6 ? String(argv[6]) : "no";
-
-var f = argv.length > 7 ? String(argv[7]) : "no";
-var c = argv.length > 8 ? String(argv[8]) : "no";
-
-var e = argv.length > 9 ? String(argv[9]) : "no";
-var ao = argv.length > 10 ? String(argv[10]) : "no";
-if (ao == "yes") e = "yes";
-
-var v = argv.length > 11 ? String(argv[11]) : "no";
+var flags = String(argv[6]);
+if (flags != "undefined") {
+    if (flags.search("i") != -1) var ee = "yes";
+    if (flags.search("f") != -1) var f = "yes";
+    if (flags.search("c") != -1) var c = "yes";
+    if (flags.search("e") != -1) var e = "yes";
+    if (flags.search("a") != -1) var ao = "yes";
+    if (ao == "yes") e = "yes";
+    if (flags.search("v") != -1) var v = "yes";
+}
 
 function id(x, y) {
     return y * (w + 1) + x;
