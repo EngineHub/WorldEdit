@@ -225,15 +225,11 @@ for (var y = 0; y <= l; y++) {
         }
         if (y < l && x < w && e == "yes") {
             for (z = 0; z < h; z++) {
-                if (v != "yes") {
-                    for (yi = 0; yi < s; yi++) {
-                        for (xi = 0; xi < s; xi++) {
+                for (yi = 0; yi < s; yi++) {
+                    for (xi = 0; xi < s; xi++) {
+                        if (v != "yes") {
                             sess.setBlock(origin.add(x * (s + 1) + xi, z, y * (s + 1) + yi), BaseBlock(0));
-                        }
-                    }
-                } else {
-                    for (yi = 0; yi < s; yi++) {
-                        for (xi = 0; xi < s; xi++) {
+                        } else {
                             sess.setBlock(origin.add(x * (s + 1) + xi, y * (s + 1) + yi, -z), BaseBlock(0));
                         }
                     }
