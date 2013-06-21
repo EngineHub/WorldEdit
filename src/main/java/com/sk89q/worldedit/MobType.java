@@ -23,6 +23,7 @@ package com.sk89q.worldedit;
  * Represents the possible types of mobs.
  */
 public enum MobType {
+    BAT("Bat"),
     BLAZE("Blaze"),
     CAVE_SPIDER("CaveSpider"),
     CHICKEN("Chicken"),
@@ -33,6 +34,7 @@ public enum MobType {
     GHAST("Ghast"),
     GIANT("Giant"),
     VILLAGER_GOLEM("VillagerGolem"),
+    HORSE("EntityHorse"),
     MAGMA_CUBE("LavaSlime"),
     MOOSHROOM("MushroomCow"),
     OCELOT("Ozelot"),
@@ -46,6 +48,8 @@ public enum MobType {
     SPIDER("Spider"),
     SQUID("Squid"),
     VILLAGER("Villager"),
+    WITCH("Witch"),
+    WITHER("WitherBoss"),
     WOLF("Wolf"),
     ZOMBIE("Zombie");
 
