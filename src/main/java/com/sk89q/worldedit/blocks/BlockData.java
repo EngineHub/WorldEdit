@@ -212,6 +212,12 @@ public final class BlockData {
 
         case BlockID.ANVIL:
             return data ^ 0x1;
+
+        case BlockID.HAY_BLOCK:
+            if (data == 4) return 8;
+            else if (data == 8) return 4;
+            else return 0; // sanitize extraneous data values since hay blocks are weird
+
         }
 
         return data;
@@ -403,6 +409,11 @@ public final class BlockData {
 
         case BlockID.ANVIL:
             return data ^ 0x1;
+
+        case BlockID.HAY_BLOCK:
+            if (data == 4) return 8;
+            else if (data == 8) return 4;
+            else return 0;
 
         }
 
@@ -767,6 +778,7 @@ public final class BlockData {
         case BlockID.CAULDRON:
         case BlockID.WOODEN_STEP:
         case BlockID.DOUBLE_WOODEN_STEP:
+        case BlockID.HAY_BLOCK:
             if (data > 3) return -1;
             return mod((data + increment), 4);
 
@@ -841,6 +853,8 @@ public final class BlockData {
             return mod(((data & 0x3) + increment), 3) | store;
 
         case BlockID.CLOTH:
+        case BlockID.STAINED_CLAY:
+        case BlockID.CARPET:
             if (increment == 1) {
                 data = nextClothColor(data);
             } else if (increment == -1) {

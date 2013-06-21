@@ -178,6 +178,11 @@ public final class ItemID {
     public static final int NETHER_QUARTZ = 406;
     public static final int TNT_MINECART = 407;
     public static final int HOPPER_MINECART = 408;
+    public static final int HORSE_ARMOR_IRON = 417;
+    public static final int HORSE_ARMOR_GOLD = 418;
+    public static final int HORSE_ARMOR_DIAMOND = 419;
+    public static final int LEAD = 420;
+    public static final int NAME_TAG = 421;
 
     @Deprecated public static final int GOLD_RECORD = 2256; // deprecated, but leave it there
     @Deprecated public static final int GREEN_RECORD = 2257; // deprecated, but leave it there

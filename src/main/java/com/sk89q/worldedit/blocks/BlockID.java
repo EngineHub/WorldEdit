@@ -186,5 +186,10 @@ public final class BlockID {
     public static final int QUARTZ_STAIRS = 156;
     public static final int ACTIVATOR_RAIL = 157;
     public static final int DROPPER = 158;
-    
+    public static final int STAINED_CLAY = 159;
+    public static final int HAY_BLOCK = 170;
+    public static final int CARPET = 171;
+    public static final int HARDENED_CLAY = 172;
+    public static final int COAL_BLOCK = 173;
+
 }
