@@ -194,6 +194,11 @@ public enum ItemType {
     QUARTZ_STAIRS(BlockID.QUARTZ_STAIRS, "Quartz Stairs", "quartzstairs"),
     ACTIVATOR_RAIL(BlockID.ACTIVATOR_RAIL, "Activator Rail", "activatorrail", "tntrail", "activatortrack"),
     DROPPER(BlockID.DROPPER, "Dropper", "dropper"),
+    STAINED_CLAY(BlockID.STAINED_CLAY, "Stained clay", "stainedclay"),
+    HAY_BLOCK(BlockID.HAY_BLOCK, "Hay Block", "hayblock", "haybale", "wheatbale"),
+    CARPET(BlockID.CARPET, "Carpet", "carpet"),
+    HARDENED_CLAY(BlockID.HARDENED_CLAY, "Hardened Clay", "hardenedclay", "hardclay"),
+    COAL_BLOCK(BlockID.COAL_BLOCK, "Block of Coal", "coalblock", "blockofcoal"),
 
     // Items
     IRON_SHOVEL(ItemID.IRON_SHOVEL, "Iron shovel", "ironshovel"),
@@ -337,7 +342,7 @@ public enum ItemType {
     POISONOUS_POTATO(ItemID.POISONOUS_POTATO, "Poisonous potato", "poisonpotato", "poisonouspotato"),
     BLANK_MAP(ItemID.BLANK_MAP, "Blank map", "blankmap", "emptymap"),
     GOLDEN_CARROT(ItemID.GOLDEN_CARROT, "Golden carrot", "goldencarrot", "goldcarrot"),
-    HEAD(ItemID.HEAD, "Head",  "head", "headmount", "mount"),
+    HEAD(ItemID.HEAD, "Head", "skull", "head", "headmount", "mount"),
     CARROT_ON_A_STICK(ItemID.CARROT_ON_A_STICK, "Carrot on a stick", "carrotonastick", "carrotonstick", "stickcarrot", "carrotstick"),
     NETHER_STAR(ItemID.NETHER_STAR, "Nether star", "netherstar", "starnether"),
     PUMPKIN_PIE(ItemID.PUMPKIN_PIE, "Pumpkin pie", "pumpkinpie"),
@@ -349,6 +354,11 @@ public enum ItemType {
     NETHER_QUARTZ(ItemID.NETHER_QUARTZ, "Nether Quartz", "netherquartz", "quartz"),
     TNT_MINECART(ItemID.TNT_MINECART, "Minecart with TNT", "minecraftwithtnt", "tntminecart", "minecarttnt"),
     HOPPER_MINECART(ItemID.HOPPER_MINECART, "Minecart with Hopper", "minecraftwithhopper", "hopperminecart", "minecarthopper"),
+    HORSE_ARMOR_IRON(ItemID.HORSE_ARMOR_IRON, "Iron Horse Armor", "ironhorsearmor", "ironbarding"),
+    HORSE_ARMOR_GOLD(ItemID.HORSE_ARMOR_GOLD, "Gold Horse Armor", "goldhorsearmor", "goldbarding"),
+    HORSE_ARMOR_DIAMOND(ItemID.HORSE_ARMOR_DIAMOND, "Diamond Horse Armor", "diamondhorsearmor", "diamondbarding"),
+    LEAD(ItemID.LEAD, "Lead", "lead", "leash"),
+    NAME_TAG(ItemID.NAME_TAG, "Name Tag", "nametag"),
     DISC_13(ItemID.DISC_13, "Music Disc - 13", "disc_13"),
     DISC_CAT(ItemID.DISC_CAT, "Music Disc - Cat", "disc_cat"),
     DISC_BLOCKS(ItemID.DISC_BLOCKS, "Music Disc - blocks", "disc_blocks"),
@@ -579,6 +589,9 @@ public enum ItemType {
         shouldNotStack.add(ItemID.ENCHANTED_BOOK);
         shouldNotStack.add(ItemID.TNT_MINECART);
         shouldNotStack.add(ItemID.HOPPER_MINECART);
+        shouldNotStack.add(ItemID.HORSE_ARMOR_IRON);
+        shouldNotStack.add(ItemID.HORSE_ARMOR_GOLD);
+        shouldNotStack.add(ItemID.HORSE_ARMOR_DIAMOND);
         shouldNotStack.add(ItemID.DISC_13);
         shouldNotStack.add(ItemID.DISC_CAT);
         shouldNotStack.add(ItemID.DISC_BLOCKS);
@@ -623,6 +636,8 @@ public enum ItemType {
         usesDamageValue.add(BlockID.COBBLESTONE_WALL);
         usesDamageValue.add(BlockID.ANVIL);
         usesDamageValue.add(BlockID.QUARTZ_BLOCK);
+        usesDamageValue.add(BlockID.STAINED_CLAY);
+        usesDamageValue.add(BlockID.CARPET);
 
         usesDamageValue.add(ItemID.COAL);
         usesDamageValue.add(ItemID.INK_SACK);
