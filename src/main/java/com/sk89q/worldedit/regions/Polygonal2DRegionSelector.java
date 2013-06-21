@@ -44,6 +44,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
     private BlockVector pos1;
     private Polygonal2DRegion region;
 
+    @Deprecated
     public Polygonal2DRegionSelector(LocalWorld world) {
         this(world, 50);
     }
@@ -53,6 +54,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
         region = new Polygonal2DRegion(world);
     }
 
+    @Deprecated
     public Polygonal2DRegionSelector(RegionSelector oldSelector) {
         this(oldSelector, 50);
     }
