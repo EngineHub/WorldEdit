@@ -21,6 +21,7 @@ package com.sk89q.worldedit.regions;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
@@ -32,8 +33,6 @@ import com.sk89q.worldedit.cui.SelectionPointEvent;
 
 /**
  * Selector for cuboids.
- *
- * @author sk89q
  */
 public class CuboidRegionSelector implements RegionSelector, CUIRegion {
     protected BlockVector pos1;
@@ -79,6 +78,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         region.setPos2(pos2);
     }
 
+    @Override
     public boolean selectPrimary(Vector pos) {
         if (pos1 != null && (pos.compareTo(pos1) == 0)) {
             return false;
@@ -89,6 +89,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         return true;
     }
 
+    @Override
     public boolean selectSecondary(Vector pos) {
         if (pos2 != null && (pos.compareTo(pos2)) == 0) {
             return false;
@@ -99,6 +100,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         return true;
     }
 
+    @Override
     public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector pos) {
         if (pos1 != null && pos2 != null) {
             player.print("First position set to " + pos1 + " (" + region.getArea() + ").");
@@ -109,6 +111,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos, getArea()));
     }
 
+    @Override
     public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
         if (pos1 != null && pos2 != null) {
             player.print("Second position set to " + pos2 + " (" + region.getArea() + ").");
@@ -119,6 +122,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos, getArea()));
     }
 
+    @Override
     public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
         if (pos1 != null) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos1, getArea()));
@@ -129,6 +133,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         }
     }
 
+    @Override
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
         if (pos1 == null) {
             throw new IncompleteRegionException();
@@ -137,10 +142,12 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         return pos1;
     }
 
+    @Override
     public boolean isDefined() {
         return pos1 != null && pos2 != null;
     }
 
+    @Override
     public CuboidRegion getRegion() throws IncompleteRegionException {
         if (pos1 == null || pos2 == null) {
             throw new IncompleteRegionException();
@@ -149,24 +156,29 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         return region;
     }
 
+    @Override
     public CuboidRegion getIncompleteRegion() {
         return region;
     }
 
+    @Override
     public void learnChanges() {
         pos1 = region.getPos1().toBlockVector();
         pos2 = region.getPos2().toBlockVector();
     }
 
+    @Override
     public void clear() {
         pos1 = null;
         pos2 = null;
     }
 
+    @Override
     public String getTypeName() {
         return "cuboid";
     }
 
+    @Override
     public List<String> getInformationLines() {
         final List<String> lines = new ArrayList<String>();
 
@@ -181,6 +193,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         return lines;
     }
 
+    @Override
     public int getArea() {
         if (pos1 == null) {
             return -1;
@@ -193,6 +206,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         return region.getArea();
     }
 
+    @Override
     public void describeCUI(LocalSession session, LocalPlayer player) {
         if (pos1 != null) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos1, getArea()));
@@ -203,18 +217,22 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         }
     }
 
+    @Override
     public void describeLegacyCUI(LocalSession session, LocalPlayer player) {
         describeCUI(session, player);
     }
 
+    @Override
     public int getProtocolVersion() {
         return 0;
     }
 
+    @Override
     public String getTypeID() {
         return "cuboid";
     }
 
+    @Override
     public String getLegacyTypeID() {
         return "cuboid";
     }

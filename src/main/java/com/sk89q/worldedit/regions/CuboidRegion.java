@@ -19,45 +19,41 @@
 
 package com.sk89q.worldedit.regions;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.data.ChunkStore;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.HashSet;
 
 /**
- *
- * @author sk89q
+ * An axis-aligned bounding box.
  */
 public class CuboidRegion extends AbstractRegion implements FlatRegion {
-    /**
-     * Store the first point.
-     */
+
     private Vector pos1;
-    /**
-     * Store the second point.
-     */
     private Vector pos2;
+    
     /**
-     * Construct a new instance of this cuboid region.
+     * Create a new AABB.
      *
-     * @param pos1
-     * @param pos2
+     * @param pos1 the first point
+     * @param pos2 the second point
      */
     public CuboidRegion(Vector pos1, Vector pos2) {
         this(null, pos1, pos2);
     }
 
     /**
-     * Construct a new instance of this cuboid region.
+     * Construct a AABB.
      *
-     * @param world
-     * @param pos1
-     * @param pos2
+     * @param world the world
+     * @param pos1 the first point
+     * @param pos2 the second point
      */
     public CuboidRegion(LocalWorld world, Vector pos1, Vector pos2) {
         super(world);
@@ -66,40 +62,39 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
     }
 
     /**
-     * Get the lower point of the cuboid.
+     * Construct an instance from an existing instance.
      *
-     * @return min point
+     * @param region the existing region
      */
+    public CuboidRegion(CuboidRegion region) {
+        this(region.getWorld(), region.getPos1(), region.getPos2());
+    }
+
+    @Override
     public Vector getMinimumPoint() {
         return new Vector(Math.min(pos1.getX(), pos2.getX()),
                          Math.min(pos1.getY(), pos2.getY()),
                          Math.min(pos1.getZ(), pos2.getZ()));
     }
 
-    /**
-     * Get the upper point of the cuboid.
-     *
-     * @return max point
-     */
+    @Override
     public Vector getMaximumPoint() {
         return new Vector(Math.max(pos1.getX(), pos2.getX()),
                          Math.max(pos1.getY(), pos2.getY()),
                          Math.max(pos1.getZ(), pos2.getZ()));
     }
 
+    @Override
     public int getMinimumY() {
         return Math.min(pos1.getBlockY(), pos2.getBlockY());
     }
 
+    @Override
     public int getMaximumY() {
         return Math.max(pos1.getBlockY(), pos2.getBlockY());
     }
 
-    /**
-     * Get the number of blocks in the region.
-     *
-     * @return number of blocks
-     */
+    @Override
     public int getArea() {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -109,11 +104,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
                      (max.getZ() - min.getZ() + 1));
     }
 
-    /**
-     * Get X-size.
-     *
-     * @return width
-     */
+    @Override
     public int getWidth() {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -121,11 +112,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         return (int) (max.getX() - min.getX() + 1);
     }
 
-    /**
-     * Get Y-size.
-     *
-     * @return height
-     */
+    @Override
     public int getHeight() {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -133,11 +120,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         return (int) (max.getY() - min.getY() + 1);
     }
 
-    /**
-     * Get Z-size.
-     *
-     * @return length
-     */
+    @Override
     public int getLength() {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -145,11 +128,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         return (int) (max.getZ() - min.getZ() + 1);
     }
 
-    /**
-     * Expands the cuboid in a direction.
-     *
-     * @param change
-     */
+    @Override
     public void expand(Vector... changes) {
         for (Vector change : changes) {
             if (change.getX() > 0) {
@@ -198,11 +177,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         recalculate();
     }
 
-    /**
-     * Contracts the cuboid in a direction.
-     *
-     * @param change
-     */
+    @Override
     public void contract(Vector... changes) {
         for (Vector change : changes) {
             if (change.getX() < 0) {
@@ -300,11 +275,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         this.pos2 = pos2;
     }
 
-    /**
-     * Get a list of chunks that this region is within.
-     *
-     * @return
-     */
+    @Override
     public Set<Vector2D> getChunks() {
         Set<Vector2D> chunks = new HashSet<Vector2D>();
 
@@ -321,6 +292,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         return chunks;
     }
 
+    @Override
     public Set<Vector> getChunkCubes() {
         Set<Vector> chunks = new HashSet<Vector>();
 
@@ -339,11 +311,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         return chunks;
     }
 
-    /**
-     * Returns true based on whether the region contains the point,
-     *
-     * @param pt
-     */
+    @Override
     public boolean contains(Vector pt) {
         double x = pt.getX();
         double y = pt.getY();
@@ -357,11 +325,6 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
                 && z >= min.getBlockZ() && z <= max.getBlockZ();
     }
 
-    /**
-     * Get the iterator.
-     *
-     * @return iterator of points inside the region
-     */
     @Override
     public Iterator<BlockVector> iterator() {
         return new Iterator<BlockVector>() {
@@ -371,10 +334,12 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
             private int nextY = min.getBlockY();
             private int nextZ = min.getBlockZ();
 
+            @Override
             public boolean hasNext() {
                 return (nextX != Integer.MIN_VALUE);
             }
 
+            @Override
             public BlockVector next() {
                 if (!hasNext()) throw new java.util.NoSuchElementException();
                 BlockVector answer = new BlockVector(nextX, nextY, nextZ);
@@ -390,6 +355,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
                 return answer;
             }
 
+            @Override
             public void remove() {
                 throw new UnsupportedOperationException();
             }
@@ -407,10 +373,12 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
                     private int nextX = min.getBlockX();
                     private int nextZ = min.getBlockZ();
 
+                    @Override
                     public boolean hasNext() {
                         return (nextX != Integer.MIN_VALUE);
                     }
 
+                    @Override
                     public Vector2D next() {
                         if (!hasNext()) throw new java.util.NoSuchElementException();
                         Vector2D answer = new Vector2D(nextX, nextZ);
@@ -443,6 +411,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         return getMinimumPoint() + " - " + getMaximumPoint();
     }
 
+    @Override
     public CuboidRegion clone() {
         return (CuboidRegion) super.clone();
     }

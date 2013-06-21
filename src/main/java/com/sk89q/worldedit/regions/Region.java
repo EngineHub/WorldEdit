@@ -19,63 +19,72 @@
 
 package com.sk89q.worldedit.regions;
 
+import java.util.Set;
+
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
-import java.util.Set;
 
 /**
- *
- * @author sk89q
+ * Represents a 3-dimensional region that has a given area of 0 or greater.
  */
 public interface Region extends Iterable<BlockVector>, Cloneable {
+    
     /**
-     * Get the lower point of a region.
+     * Get the lower point of a region. The minimum point as the smallest X, Y, and Z
+     * coordinates of the region when the region is represented as a bounding box
+     * aligned with the world that perfect contains this region with no space between
+     * the boundaries of the bounding box and the farthest out points of the region.
      *
-     * @return min. point
+     * @return minimum point
      */
     public Vector getMinimumPoint();
 
     /**
-     * Get the upper point of a region.
+     * Get the upper point of a region. The minimum point as the smallest X, Y, and Z
+     * coordinates of the region when the region is represented as a bounding box
+     * aligned with the world that perfect contains this region with no space between
+     * the boundaries of the bounding box and the farthest out points of the region.
      *
-     * @return max. point
+     * @return maximum point
      */
     public Vector getMaximumPoint();
 
     /**
-     * Get the center point of a region.
-     * Note: Coordinates will not be integers
-     * if the corresponding lengths are even.
+     * Get the center point of a region. Coordinates may not consist of only integers.
      *
      * @return center point
      */
     public Vector getCenter();
 
     /**
-     * Get the number of blocks in the region.
+     * Get the number of blocks contained fully by the region. This number must
+     * coincide with {@link #contains(Vector)}.
      *
      * @return number of blocks
      */
     public int getArea();
 
     /**
-     * Get X-size.
+     * Get the width of the region (X-axis), as measured from the lowest and highest
+     * boundaries of the region.
      *
      * @return width
      */
     public int getWidth();
 
     /**
-     * Get Y-size.
+     * Get the width of the region (Y-axis), as measured from the lowest and highest
+     * boundaries of the region.
      *
      * @return height
      */
     public int getHeight();
 
     /**
-     * Get Z-size.
+     * Get the width of the region (Z-axis), as measured from the lowest and highest
+     * boundaries of the region.
      *
      * @return length
      */
@@ -100,46 +109,51 @@ public interface Region extends Iterable<BlockVector>, Cloneable {
     /**
      * Shift the region.
      *
-     * @param change
+     * @param change the change
      * @throws RegionOperationException
      */
-    public void shift(Vector multiply) throws RegionOperationException;
+    public void shift(Vector change) throws RegionOperationException;
 
     /**
-     * Returns true based on whether the region contains the point,
+     * Returns true based on whether the region contains the point.
      *
-     * @param pt
-     * @return
+     * @param position position to check
+     * @return true if the region contains the position
      */
-    public boolean contains(Vector pt);
+    public boolean contains(Vector position);
 
     /**
-     * Get a list of chunks.
+     * Get a list of chunks that intersect with this region, partially or fully.
      *
-     * @return
+     * @return set of 2-dimension vectors specifying the chunks
      */
     public Set<Vector2D> getChunks();
 
     /**
-     * Return a list of 16*16*16 chunks in a region
+     * Return a list of 16*16*16 chunks in a region.
      *
-     * @return The chunk cubes this region overlaps with
+     * @return the chunk cubes this region overlaps with
      */
     public Set<Vector> getChunkCubes();
 
     /**
-     * Get the world the selection is in
+     * Get the world the selection is in.
      *
-     * @return
+     * @return the world
      */
     public LocalWorld getWorld();
 
     /**
      * Sets the world the selection is in
      *
-     * @return
+     * @param world world to set
      */
     public void setWorld(LocalWorld world);
 
+    /**
+     * Make a copy of the region.
+     * 
+     * @return a new region
+     */
     public Region clone();
 }
