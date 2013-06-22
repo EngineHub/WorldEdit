@@ -130,6 +130,7 @@ public class BukkitWorld extends LocalWorld {
      * Construct the object.
      * @param world
      */
+    @SuppressWarnings("unchecked")
     public BukkitWorld(World world) {
         this.world = world;
 
@@ -170,7 +171,7 @@ public class BukkitWorld extends LocalWorld {
                     Class<? extends NmsBlock> nmsClass = (Class<? extends NmsBlock>) testBlock;
                     boolean canUse = false;
                     try {
-                        canUse = (Boolean) nmsClass.getMethod("verify", null).invoke(null, null);
+                        canUse = (Boolean) nmsClass.getMethod("verify").invoke(null);
                     } catch (Throwable e) {
                         continue;
                     }
@@ -191,7 +192,7 @@ public class BukkitWorld extends LocalWorld {
                 // try our default
                 try {
                     nmsBlockType = (Class<? extends NmsBlock>) Class.forName("com.sk89q.worldedit.bukkit.DefaultNmsBlock");
-                    boolean canUse = (Boolean) nmsBlockType.getMethod("verify", null).invoke(null, null);
+                    boolean canUse = (Boolean) nmsBlockType.getMethod("verify").invoke(null);
                     if (canUse) {
                         nmsSetMethod = nmsBlockType.getMethod("set", World.class, Vector.class, BaseBlock.class);
                         nmsValidBlockMethod = nmsBlockType.getMethod("isValidBlockType", int.class);

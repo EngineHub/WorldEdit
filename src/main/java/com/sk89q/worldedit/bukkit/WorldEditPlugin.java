@@ -116,20 +116,21 @@ public class WorldEditPlugin extends JavaPlugin {
         // Setup interfaces
         server = new BukkitServerInterface(this, getServer());
         controller = new WorldEdit(server, config);
-        WorldEdit.getInstance().logger.setParent(Bukkit.getLogger());
+        WorldEdit.logger.setParent(Bukkit.getLogger());
         api = new WorldEditAPI(this);
         getServer().getMessenger().registerIncomingPluginChannel(this, CUI_PLUGIN_CHANNEL, new CUIChannelListener(this));
         getServer().getMessenger().registerOutgoingPluginChannel(this, CUI_PLUGIN_CHANNEL);
         // Now we can register events!
         getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
 
-        getServer().getScheduler().scheduleAsyncRepeatingTask(this,
+        getServer().getScheduler().runTaskTimerAsynchronously(this,
                 new SessionTimer(controller, getServer()), 120, 120);
     }
 
     private void copyNmsBlockClasses(File target) {
         try {
             JarFile jar = new JarFile(getFile());
+            @SuppressWarnings("rawtypes")
             Enumeration entries = jar.entries();
             while (entries.hasMoreElements()) {
                 JarEntry jarEntry = (JarEntry) entries.nextElement();
@@ -158,12 +159,6 @@ public class WorldEditPlugin extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        for (Player player : getServer().getOnlinePlayers()) {
-            LocalPlayer lPlayer = wrapPlayer(player);
-            if (controller.getSession(lPlayer).hasCUISupport()) {
-                lPlayer.dispatchCUIHandshake();
-            }
-        }
         controller.clearSessions();
         for (Handler h : controller.commandLogger.getHandlers()) {
             h.close();
