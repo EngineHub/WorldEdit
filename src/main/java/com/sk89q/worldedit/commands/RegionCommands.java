@@ -39,6 +39,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.annotation.Direction;
 import com.sk89q.worldedit.annotation.Selection;
+import com.sk89q.worldedit.annotation.Unmanaged;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.expression.ExpressionException;
@@ -46,16 +47,20 @@ import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.masks.ExistingBlockMask;
 import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.operation.RejectedOperationException;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.transform.ReplaceBlocks;
 
 /**
  * Commands that deal with a {@link Region} provided by the user's current
  * selection.
  */
 public class RegionCommands {
+    
+    private final WorldEdit worldEdit;
 
     /**
      * Construct a new instance.
@@ -63,6 +68,7 @@ public class RegionCommands {
      * @param worldEdit an instance of WorldEdit
      */
     public RegionCommands(WorldEdit worldEdit) {
+        this.worldEdit = worldEdit;
     }
 
     /*
@@ -72,12 +78,11 @@ public class RegionCommands {
              desc = "Set all the blocks inside the selection to a block")
     @CommandPermissions("worldedit.region.set")
     @Logging(REGION)
-    public void setBlocks(LocalPlayer player, EditSession editSession,
+    public void setBlocks(LocalPlayer player, @Unmanaged EditSession editSession,
             @Selection Region region, Pattern replaceWith)
-            throws MaxChangedBlocksException {
-        
-        int affected = editSession.setBlocks(region, replaceWith);
-        player.print(affected + " block(s) have been changed.");
+            throws WorldEditException, RejectedOperationException {
+        ReplaceBlocks op = new ReplaceBlocks(editSession, region, replaceWith);
+        worldEdit.execute(player, op, editSession);
     }
 
     /*

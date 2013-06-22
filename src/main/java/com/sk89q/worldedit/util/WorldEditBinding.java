@@ -18,11 +18,13 @@
 
 package com.sk89q.worldedit.util;
 
+import java.lang.annotation.Annotation;
+
+import com.sk89q.rebar.command.parametric.ArgumentStack;
 import com.sk89q.rebar.command.parametric.BindingBehavior;
 import com.sk89q.rebar.command.parametric.BindingHelper;
 import com.sk89q.rebar.command.parametric.BindingMatch;
 import com.sk89q.rebar.command.parametric.ParameterException;
-import com.sk89q.rebar.command.parametric.ArgumentStack;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
@@ -33,6 +35,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.annotation.Direction;
 import com.sk89q.worldedit.annotation.Selection;
+import com.sk89q.worldedit.annotation.Unmanaged;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;
@@ -76,17 +79,32 @@ public class WorldEditBinding extends BindingHelper {
      * Gets an {@link EditSession} from a {@link ArgumentStack}.
      * 
      * @param context the context
+     * @param modifiers a list of modifiers
      * @return an edit session
      * @throws ParameterException on other error
      */
     @BindingMatch(type = EditSession.class,
-                  behavior = BindingBehavior.PROVIDES)
-    public EditSession getEditSession(ArgumentStack context) throws ParameterException {
+                  behavior = BindingBehavior.PROVIDES,
+                  provideModifiers = true)
+    public EditSession getEditSession(ArgumentStack context, Annotation[] modifiers) 
+            throws ParameterException {
         LocalPlayer sender = getLocalPlayer(context);
         LocalSession session = worldEdit.getSession(sender);
         EditSession editSession = session.createEditSession(sender);
         editSession.enableQueue();
-        context.getContext().getLocals().put(EditSession.class, editSession);
+        
+        boolean managed = true;
+        for (Annotation modifier : modifiers) {
+            if (modifier instanceof Unmanaged) {
+                managed = false;
+                break;
+            }
+        }
+        
+        if (managed) {
+            context.getContext().getLocals().put(EditSession.class, editSession);
+        }
+        
         session.tellVersion(sender); 
         return editSession;
     }

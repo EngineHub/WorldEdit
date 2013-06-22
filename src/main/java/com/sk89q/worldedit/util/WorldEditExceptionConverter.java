@@ -42,6 +42,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.ItemType;
 import com.sk89q.worldedit.commands.InsufficientArgumentsException;
 import com.sk89q.worldedit.expression.ExpressionException;
+import com.sk89q.worldedit.operation.RejectedOperationException;
 import com.sk89q.worldedit.regions.RegionOperationException;
 
 /**
@@ -56,6 +57,12 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     
     public WorldEditExceptionConverter(LocalConfiguration config) {
         this.config = config;
+    }
+
+    @ExceptionMatch
+    public void convert(RejectedOperationException e) throws CommandException {
+        throw new CommandException("Sorry, there are currently waiting operations " +
+        		"and yours cannot be queued at the moment."); // TODO: List operations
     }
 
     @ExceptionMatch

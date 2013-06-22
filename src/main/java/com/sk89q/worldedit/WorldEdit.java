@@ -31,10 +31,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.script.ScriptException;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.minecraft.util.commands.CommandPermissionsException;
@@ -42,6 +47,7 @@ import com.sk89q.minecraft.util.commands.WrappedCommandException;
 import com.sk89q.rebar.command.Dispatcher;
 import com.sk89q.rebar.command.InvalidUsageException;
 import com.sk89q.rebar.command.fluent.CommandGraph;
+import com.sk89q.rebar.command.parametric.ExceptionConverter;
 import com.sk89q.rebar.command.parametric.LegacyCommandsHandler;
 import com.sk89q.rebar.command.parametric.ParametricBuilder;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
@@ -82,6 +88,12 @@ import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.masks.RandomMask;
 import com.sk89q.worldedit.masks.RegionMask;
 import com.sk89q.worldedit.masks.UnderOverlayMask;
+import com.sk89q.worldedit.operation.ChangeCountable;
+import com.sk89q.worldedit.operation.EditSessionFlusher;
+import com.sk89q.worldedit.operation.ImmediateExecutor;
+import com.sk89q.worldedit.operation.Operation;
+import com.sk89q.worldedit.operation.OperationExecutor;
+import com.sk89q.worldedit.operation.RejectedOperationException;
 import com.sk89q.worldedit.patterns.BlockChance;
 import com.sk89q.worldedit.patterns.ClipboardPattern;
 import com.sk89q.worldedit.patterns.Pattern;
@@ -119,7 +131,9 @@ public class WorldEdit {
     private final ServerInterface server;
     private final LocalConfiguration config;
     private final Dispatcher dispatcher;
+    private final OperationExecutor executor;
     private final CommandLoggingHandler commandLogger;
+    private final WorldEditExceptionConverter exceptionConverter;
     private final HashMap<String, LocalSession> sessions = new HashMap<String, LocalSession>();
     private EditSessionFactory editSessionFactory = new EditSessionFactory();
 
@@ -140,19 +154,34 @@ public class WorldEdit {
 
     /**
      * Construct an instance of the class.
+     * 
+     * <p>This constructor will use an {@link ImmediateExecutor} as the
+     * {@link OperationExecutor}.</p>
      *
      * @param server the server interface
      * @param config the configuration
      */
-    public WorldEdit(ServerInterface server, final LocalConfiguration config) {
+    public WorldEdit(ServerInterface server, LocalConfiguration config) {
+        this(server, config, new ImmediateExecutor());
+    }
+
+    /**
+     * Construct an instance of the class.
+     *
+     * @param server the server interface
+     * @param config the configuration
+     * @param executor an operation executor
+     */
+    public WorldEdit(ServerInterface server, LocalConfiguration config, OperationExecutor executor) {
         WorldEdit.instance = this;
         this.server = server;
         this.config = config;
+        this.executor = executor;
 
         ParametricBuilder builder = new ParametricBuilder();
         builder.addBinding(new WorldEditBinding(this));
         builder.attach(new CommandPermissionsHandler());
-        builder.attach(new WorldEditExceptionConverter(config));
+        builder.attach(exceptionConverter = new WorldEditExceptionConverter(config));
         builder.attach(new LegacyCommandsHandler());
         builder.attach(commandLogger = new CommandLoggingHandler(this, config));
         
@@ -201,6 +230,27 @@ public class WorldEdit {
                 .getDispatcher();
         
         server.registerCommands(dispatcher);
+    }
+    
+    /**
+     * Get the operation executor.
+     * 
+     * @return the executor
+     */
+    public OperationExecutor getExecutor() {
+        return executor;
+    }
+    
+    /**
+     * Get the exception converter.
+     * 
+     * <p>This is used to convert arbitrary exceptions to {@link CommandException}s
+     * when a matching exception is found.</p>
+     * 
+     * @return the converter
+     */
+    public ExceptionConverter getExceptionConverter() {
+        return exceptionConverter;
     }
 
     /**
@@ -1449,6 +1499,60 @@ public class WorldEdit {
                 session.remember(editSession);
             }
         }
+    }
+
+    /**
+     * Add an {@link Operation} to the current {@link OperationExecutor} received
+     * from {@link #getExecutor()} and add callbacks to the returned {@link Future}
+     * to inform the given player about the return status of the operation.
+     * 
+     * @param player the player
+     * @param operation the operation
+     * @param editSession the edit session
+     * @throws RejectedOperationException if the operation was rejected
+     * @see OperationExecutor#offer(Operation)
+     */
+    public void execute(
+            final LocalPlayer player, Operation operation, EditSession editSession) 
+            throws RejectedOperationException {
+        
+        // Add to queue
+        ListenableFuture<Operation> future = getExecutor().offer(operation);
+        
+        // Better flush that edit session
+        Futures.addCallback(future, new EditSessionFlusher(this, editSession, player));
+        
+        // Add an error/success callback
+        Futures.addCallback(future, new FutureCallback<Operation>() {
+            @Override
+            public void onSuccess(Operation operation) {
+                if (operation instanceof ChangeCountable) {
+                    int affected = ((ChangeCountable) operation).getChangeCount();
+                    player.print(operation.getClass().getSimpleName() + ": " +
+                            affected + " blocks were changed.");
+                } else {
+                    player.print(operation.getClass().getSimpleName() + ": completed.");
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable thrown) {
+                try {
+                    getExceptionConverter().convert(thrown);
+                } catch (WrappedCommandException e) {
+                    thrown = e;
+                } catch (CommandException e) {
+                    player.printError(e.getMessage());
+                }
+
+                player.printError("An error occurred (see console for a full error message):\n"
+                        + thrown.getMessage());
+
+                logger.log(Level.SEVERE,
+                        "An error occurred while executing an operation: "
+                                + thrown.getMessage(), thrown);
+            }
+        });
     }
 
     /**

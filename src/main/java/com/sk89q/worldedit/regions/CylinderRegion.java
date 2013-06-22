@@ -33,7 +33,7 @@ import com.sk89q.worldedit.data.ChunkStore;
 /**
  * Represents a cylindrical region.
  */
-public class CylinderRegion extends AbstractRegion implements FlatRegion {
+public class CylinderRegion extends AbstractFlatRegion implements FlatRegion {
     
     private Vector2D center;
     private Vector2D radius;
@@ -321,18 +321,19 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     }
 
     @Override
+    public Iterator<BlockVector> columnIterator() {
+        return new FlatRegion3DIterator(
+                new CylinderRegion(getWorld(), getCenter(), getRadius(), maxY, maxY));
+    }
+
+    @Override
     public Iterator<BlockVector> iterator() {
         return new FlatRegion3DIterator(this);
     }
 
     @Override
-    public Iterable<Vector2D> asFlatRegion() {
-        return new Iterable<Vector2D>() {
-            @Override
-            public Iterator<Vector2D> iterator() {
-                return new FlatRegionIterator(CylinderRegion.this);
-            }
-        };
+    public Iterator<Vector2D> flatIterator() {
+        return new FlatRegionIterator(CylinderRegion.this);
     }
 
     /**

@@ -48,6 +48,7 @@ import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Polygonal2DSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldedit.operation.CallbackExecutor;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -95,16 +96,24 @@ public class WorldEditPlugin extends JavaPlugin {
 
         // Setup interfaces
         server = new BukkitServerInterface(this, getServer());
-        controller = new WorldEdit(server, config);
+        
+        CallbackExecutor executor = new CallbackExecutor();
+        executor.setInterval(2);
+        controller = new WorldEdit(server, config, executor);
         WorldEdit.getInstance().logger.setParent(Bukkit.getLogger());
         api = new WorldEditAPI(this);
+        
         getServer().getMessenger().registerIncomingPluginChannel(this, CUI_PLUGIN_CHANNEL, new CUIChannelListener(this));
         getServer().getMessenger().registerOutgoingPluginChannel(this, CUI_PLUGIN_CHANNEL);
+        
         // Now we can register events!
         getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
 
         getServer().getScheduler().scheduleAsyncRepeatingTask(this,
                 new SessionTimer(controller, getServer()), 120, 120);
+        
+        // This executes operations
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, executor, 0, 1);
     }
 
     private void copyNmsBlockClasses(File target) {

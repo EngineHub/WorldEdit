@@ -36,7 +36,7 @@ import com.sk89q.worldedit.data.ChunkStore;
 /**
  * Represents a 2D polygonal region.
  */
-public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
+public class Polygonal2DRegion extends AbstractFlatRegion implements FlatRegion {
     
     private List<BlockVector2D> points;
     private Vector2D min;
@@ -445,18 +445,19 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
     }
 
     @Override
+    public Iterator<BlockVector> columnIterator() {
+        return new FlatRegion3DIterator(
+                new Polygonal2DRegion(getWorld(), getPoints(), maxY, maxY));
+    }
+
+    @Override
     public Iterator<BlockVector> iterator() {
         return new FlatRegion3DIterator(this);
     }
 
     @Override
-    public Iterable<Vector2D> asFlatRegion() {
-        return new Iterable<Vector2D>() {
-            @Override
-            public Iterator<Vector2D> iterator() {
-                return new FlatRegionIterator(Polygonal2DRegion.this);
-            }
-        };
+    public Iterator<Vector2D> flatIterator() {
+        return new FlatRegionIterator(Polygonal2DRegion. this);
     }
 
     /**
