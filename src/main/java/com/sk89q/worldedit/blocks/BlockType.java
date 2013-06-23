@@ -492,20 +492,35 @@ public enum BlockType {
         centralTopLimit.put(BlockID.ENCHANTMENT_TABLE, 0.75);
         for (int data = 0; data < 16; ++data) {
             if ((data & 4) != 0) {
-                centralTopLimit.put(BlockID.END_PORTAL_FRAME, 0.8125);
+                centralTopLimit.put(-16*BlockID.END_PORTAL_FRAME-data, 1.0);
             }
+            else {
+                centralTopLimit.put(-16*BlockID.END_PORTAL_FRAME-data, 0.8125);
+            }
+            centralTopLimit.put(-16*BlockID.HEAD-data, 0.75);
         }
+        // Default value to be used if no data value is given
+        centralTopLimit.put(BlockID.HEAD, 0.75);
+        // Heads on the floor are lower
+        centralTopLimit.put(-16*BlockID.HEAD-1, 0.5);
+        centralTopLimit.put(-16*BlockID.HEAD-9, 0.5);
         centralTopLimit.put(BlockID.FENCE, 1.5);
         centralTopLimit.put(BlockID.FENCE_GATE, 1.5);
         for (int data = 0; data < 8; ++data) {
             centralTopLimit.put(-16*BlockID.STEP-data, 0.5);
             centralTopLimit.put(-16*BlockID.WOODEN_STEP-data, 0.5);
+            centralTopLimit.put(-16*BlockID.SNOW-data, 0.125*data);
+            centralTopLimit.put(-16*BlockID.SNOW-(data+8), 0.125*data);
         }
         centralTopLimit.put(BlockID.LILY_PAD, 0.015625);
         centralTopLimit.put(BlockID.REDSTONE_REPEATER_ON, .125);
         centralTopLimit.put(BlockID.REDSTONE_REPEATER_OFF, .125);
         centralTopLimit.put(BlockID.TRAP_DOOR, 0.1875);
         centralTopLimit.put(BlockID.SLOW_SAND, 0.875);
+        centralTopLimit.put(BlockID.FLOWER_POT, 0.375);
+        centralTopLimit.put(BlockID.COMPARATOR_OFF, .125);
+        centralTopLimit.put(BlockID.COMPARATOR_ON, .125);
+        centralTopLimit.put(BlockID.DAYLIGHT_SENSOR, 0.375);
     }
 
     /**
@@ -516,11 +531,11 @@ public enum BlockType {
      * @return
      */
     public static double centralTopLimit(int id, int data) {
-        if (centralTopLimit.containsKey(id))
-            return centralTopLimit.get(id);
-
         if (centralTopLimit.containsKey(-16*id-data))
             return centralTopLimit.get(-16*id-data);
+
+        if (centralTopLimit.containsKey(id))
+            return centralTopLimit.get(id);
 
         return canPassThrough(id) ? 0 : 1;
     }
