@@ -35,6 +35,8 @@ import com.sk89q.rebar.command.fluent.CommandGraph;
 import com.sk89q.rebar.command.parametric.ExceptionConverter;
 import com.sk89q.rebar.command.parametric.LegacyCommandsHandler;
 import com.sk89q.rebar.command.parametric.ParametricBuilder;
+import com.sk89q.rebar.formatting.MessageBuilder;
+import com.sk89q.rebar.formatting.Style;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -47,6 +49,7 @@ import com.sk89q.worldedit.commands.GeneralCommands;
 import com.sk89q.worldedit.commands.GenerationCommands;
 import com.sk89q.worldedit.commands.HistoryCommands;
 import com.sk89q.worldedit.commands.NavigationCommands;
+import com.sk89q.worldedit.commands.OperationCommands;
 import com.sk89q.worldedit.commands.RegionCommands;
 import com.sk89q.worldedit.commands.SchematicCommands;
 import com.sk89q.worldedit.commands.ScriptingCommands;
@@ -160,6 +163,7 @@ public class WorldEdit {
                     .build(new GenerationCommands(this))
                     .build(new HistoryCommands(this))
                     .build(new NavigationCommands(this))
+                    .build(new OperationCommands(this))
                     .build(new RegionCommands(this))
                     .build(new ScriptingCommands(this))
                     .build(new SelectionCommands(this))
@@ -346,6 +350,15 @@ public class WorldEdit {
         ListenableFuture<Operation> future = queued.getFuture();
         Futures.addCallback(future, new EditSessionFlusher(this, editSession, player));
         Futures.addCallback(future, new OperationResponse(this, player));
+    }
+
+    /**
+     * Return a new message builder for WorldEdit messages.
+     * 
+     * @return a message builder
+     */
+    public MessageBuilder createMessage() {
+        return new MessageBuilder(Style.PURPLE);
     }
 
     /**

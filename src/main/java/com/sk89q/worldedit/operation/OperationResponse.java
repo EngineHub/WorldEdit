@@ -62,6 +62,10 @@ public class OperationResponse implements FutureCallback<Operation> {
 
     @Override
     public void onFailure(Throwable thrown) {
+        if (thrown instanceof InterruptedException) {
+            return; // Cancelled or so
+        }
+        
         try {
             worldEdit.getExceptionConverter().convert(thrown);
         } catch (WrappedCommandException e) {

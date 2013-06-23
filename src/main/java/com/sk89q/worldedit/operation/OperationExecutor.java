@@ -48,10 +48,10 @@ public interface OperationExecutor extends Runnable {
     /**
      * Cancel all running operations.
      *
-     * @return the number of operations that were cancelled
+     * @return a list of the operations that were cancelled
      * @see com.sk89q.worldedit.operation.QueuedOperation#cancel()
      */
-    int cancelAll();
+    List<QueuedOperation> cancelAll();
 
     /**
      * Get a list of operations that are queued or running.

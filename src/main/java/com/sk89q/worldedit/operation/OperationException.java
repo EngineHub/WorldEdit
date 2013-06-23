@@ -19,10 +19,25 @@
 package com.sk89q.worldedit.operation;
 
 /**
- * Thrown if an operation is rejected, if perhaps, for example, there is no space left.
+ * Operation-related errors.
  */
-public class RejectedOperationException extends OperationException {
+public class OperationException extends Exception {
+    
+    private static final long serialVersionUID = 2173041240726663700L;
 
-    private static final long serialVersionUID = -1501002050937900395L;
+    public OperationException() {
+    }
+
+    public OperationException(String message) {
+        super(message);
+    }
+
+    public OperationException(Throwable cause) {
+        super(cause);
+    }
+
+    public OperationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

@@ -18,11 +18,11 @@
 
 package com.sk89q.worldedit.operation;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
-
 import java.util.Collections;
 import java.util.List;
+
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 
 /**
  * An executor that completes operations immediately when they is offered.
@@ -76,8 +76,8 @@ public class ImmediateExecutor implements OperationExecutor {
     }
 
     @Override
-    public int cancelAll() {
-        return 0;
+    public List<QueuedOperation> cancelAll() {
+        return Collections.emptyList();
     }
 
     @Override

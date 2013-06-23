@@ -18,7 +18,7 @@
 
 package com.sk89q.worldedit.operation;
 
-import com.google.common.util.concurrent.SettableFuture;
+import static com.sk89q.worldedit.operation.OperationState.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.sk89q.worldedit.operation.OperationState.*;
+import com.google.common.util.concurrent.SettableFuture;
 
 /**
  * Executes operations through interfacing code calling {@link #resume()} repeatedly,
@@ -129,14 +129,18 @@ public class CallbackExecutor implements OperationExecutor {
                 // Continue with returned operation
                 entry.setOperation(newOperation);
             } else {
-                current = null;
+                synchronized (this) {
+                    current = null;
+                }
                 
                 // We're done
                 entry.setStateIf(COMPLETED, RUNNING);
                 entry.getFuture().set(entry.getOperation());
             }
         } catch (Throwable t) {
-            current = null;
+            synchronized (this) {
+                current = null;
+            }
             
             // Error out
             entry.setStateIf(FAILED, RUNNING);
@@ -168,6 +172,8 @@ public class CallbackExecutor implements OperationExecutor {
                         "Operation threw an exception when cancelled", t);
             }
 
+            target.getFuture().setException(new InterruptedException());
+
             return true;
         } else {
             return false;
@@ -175,21 +181,38 @@ public class CallbackExecutor implements OperationExecutor {
     }
 
     @Override
-    public synchronized int cancelAll() {
-        int count = 0;
-        for (QueuedOperationEntry entry : queue) {
-            count += entry.cancel() ? 1 : 0;
+    public synchronized List<QueuedOperation> cancelAll() {
+        List<QueuedOperation> list = new ArrayList<QueuedOperation>();
+        QueuedOperation current = this.current;
+        
+        if (current != null) {
+            if (current.cancel()) {
+                list.add(current);
+            }
         }
-        return count;
+        
+        for (QueuedOperationEntry entry : queue) {
+            if (entry.cancel()) {
+                list.add(entry);
+            }
+        }
+        
+        return list;
     }
 
     @Override
     public synchronized List<QueuedOperation> getQueue() {
-        List<QueuedOperation> ret = new ArrayList<QueuedOperation>();
-        for (QueuedOperationEntry entry : queue) {
-            ret.add(entry);
+        List<QueuedOperation> list = new ArrayList<QueuedOperation>();
+        
+        if (current != null) {
+            list.add(current);
         }
-        return ret;
+        
+        for (QueuedOperationEntry entry : queue) {
+            list.add(entry);
+        }
+        
+        return list;
     }
 
     @Override
