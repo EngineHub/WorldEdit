@@ -19,6 +19,7 @@
 package com.sk89q.worldedit;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -533,6 +534,18 @@ public class EditSession {
         return countBlocks(region, passOn);
     }
 
+    private static boolean containsFuzzy(Collection<BaseBlock> collection, Object o) {
+        // allow -1 data in the searchBlocks to match any type
+        for (BaseBlock b : collection) {
+            if (o instanceof BaseBlock) {
+                if (b.equalsFuzzy((BaseBlock) o)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Count the number of blocks of a list of types in a region.
      *
@@ -542,22 +555,6 @@ public class EditSession {
      */
     public int countBlocks(Region region, Set<BaseBlock> searchBlocks) {
         int count = 0;
-
-        // allow -1 data in the searchBlocks to match any type
-        Set<BaseBlock> newSet = new HashSet<BaseBlock>() {
-            @Override
-            public boolean contains(Object o) {
-                for (BaseBlock b : this.toArray(new BaseBlock[this.size()])) {
-                    if (o instanceof BaseBlock) {
-                        if (b.equalsFuzzy((BaseBlock) o)) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-        };
-        newSet.addAll(searchBlocks);
 
         if (region instanceof CuboidRegion) {
             // Doing this for speed
@@ -577,7 +574,7 @@ public class EditSession {
                         Vector pt = new Vector(x, y, z);
 
                         BaseBlock compare = new BaseBlock(getBlockType(pt), getBlockData(pt));
-                        if (newSet.contains(compare)) {
+                        if (containsFuzzy(searchBlocks, compare)) {
                             ++count;
                         }
                     }
@@ -586,7 +583,7 @@ public class EditSession {
         } else {
             for (Vector pt : region) {
                 BaseBlock compare = new BaseBlock(getBlockType(pt), getBlockData(pt));
-                if (newSet.contains(compare)) {
+                if (containsFuzzy(searchBlocks, compare)) {
                     ++count;
                 }
             }
