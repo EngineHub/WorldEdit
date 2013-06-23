@@ -19,14 +19,16 @@
 
 package com.sk89q.worldedit;
 
+import java.io.File;
+
+import com.sk89q.rebar.formatting.ColorCodeBuilder;
+import com.sk89q.rebar.formatting.MessageBuilder;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.cui.CUIEvent;
 import com.sk89q.worldedit.util.TargetBlock;
-
-import java.io.File;
 
 /**
  *
@@ -550,6 +552,18 @@ public abstract class LocalPlayer {
     public abstract void printError(String msg);
 
     /**
+     * Print a message constructed with {@link MessageBuilder}.
+     * 
+     * @param builder the builder
+     */
+    public void print(MessageBuilder builder) {
+        ColorCodeBuilder colorCodes = new ColorCodeBuilder();
+        for (String line : colorCodes.build(builder)) {
+            printRaw(line);
+        }
+    }
+
+    /**
      * Move the player.
      *
      * @param pos
@@ -801,4 +815,5 @@ public abstract class LocalPlayer {
     public boolean hasCreativeMode() {
         return false;
     }
+    
 }
