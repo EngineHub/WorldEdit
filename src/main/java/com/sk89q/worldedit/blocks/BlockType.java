@@ -28,6 +28,7 @@ import java.util.Set;
 
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.PlayerDirection;
+import com.sk89q.worldedit.foundation.Block;
 
 /**
  * Block types.
@@ -453,14 +454,38 @@ public enum BlockType {
         canPassThrough.add(BlockID.ACTIVATOR_RAIL);
     }
 
+
     /**
      * Checks whether a block can be passed through.
      *
      * @param id
      * @return
+     * @deprecated Use {@link #canPassThrough(int,int)} instead
      */
+    @Deprecated
     public static boolean canPassThrough(int id) {
         return canPassThrough.contains(id);
+    }
+
+    /**
+     * Checks whether a block can be passed through.
+     *
+     * @param id
+     * @param data
+     * @return
+     */
+    public static boolean canPassThrough(int id, int data) {
+        return canPassThrough.contains(-16*id-data) || canPassThrough.contains(id);
+    }
+
+    /**
+     * Checks whether a block can be passed through.
+     *
+     * @param block
+     * @return
+     */
+    public static boolean canPassThrough(Block block) {
+        return canPassThrough(block.getId(), block.getData());
     }
 
     /**
@@ -531,6 +556,16 @@ public enum BlockType {
             return centralTopLimit.get(id);
 
         return canPassThrough(id) ? 0 : 1;
+    }
+
+    /**
+     * Returns the y offset a player falls to when falling onto the top of a block at xp+0.5/zp+0.5.
+     *
+     * @param block
+     * @return
+     */
+    public static double centralTopLimit(Block block) {
+        return centralTopLimit(block.getId(), block.getData());
     }
 
     /**
@@ -899,6 +934,26 @@ public enum BlockType {
      */
     public static boolean isNaturalTerrainBlock(int id) {
         return isNaturalTerrainBlock.contains(id);
+    }
+
+    /**
+     * Checks if the block type is naturally occuring
+     *
+     * @param block
+     * @return
+     */
+    public static boolean isNaturalTerrainBlock(int id, int data) {
+        return isNaturalTerrainBlock.contains(-16*id-data) || isNaturalTerrainBlock.contains(id);
+    }
+
+    /**
+     * Checks if the block type is naturally occuring
+     *
+     * @param block
+     * @return
+     */
+    public static boolean isNaturalTerrainBlock(Block block) {
+        return isNaturalTerrainBlock(block.getId(), block.getData());
     }
 
     /**
