@@ -19,23 +19,16 @@
 
 package com.sk89q.worldedit.scripting;
 
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.commands.InsufficientArgumentsException;
+import com.sk89q.worldedit.patterns.Pattern;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import com.sk89q.worldedit.DisallowedItemException;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.FilenameException;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.ServerInterface;
-import com.sk89q.worldedit.UnknownItemException;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.commands.InsufficientArgumentsException;
-import com.sk89q.worldedit.patterns.Pattern;
 
 /**
  * The context given to scripts.
@@ -215,8 +208,8 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      */
     @Deprecated
     public File getSafeFile(String folder, String filename) throws FilenameException {
-        File dir = controller.getWorkingDirectoryFile(folder);
-        return controller.getSafeOpenFile(player, dir, filename, null, (String[]) null);
+        File dir = controller.getApplicationData().getDirectory(folder, true);
+        return controller.getApplicationData().getSafeOpenFile(player, dir, filename, null, (String[]) null);
     }
 
     /**
@@ -238,8 +231,8 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     public File getSafeOpenFile(String folder, String filename,
             String defaultExt, String... exts)
             throws FilenameException {
-        File dir = controller.getWorkingDirectoryFile(folder);
-        return controller.getSafeOpenFile(player, dir, filename, defaultExt, exts);
+        File dir = controller.getApplicationData().getDirectory(folder, true);
+        return controller.getApplicationData().getSafeOpenFile(player, dir, filename, defaultExt, exts);
     }
 
     /**
@@ -261,7 +254,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     public File getSafeSaveFile(String folder, String filename,
             String defaultExt, String... exts)
             throws FilenameException {
-        File dir = controller.getWorkingDirectoryFile(folder);
-        return controller.getSafeSaveFile(player, dir, filename, defaultExt, exts);
+        File dir = controller.getApplicationData().getDirectory(folder, true);
+        return controller.getApplicationData().getSafeSaveFile(player, dir, filename, defaultExt, exts);
     }
 }

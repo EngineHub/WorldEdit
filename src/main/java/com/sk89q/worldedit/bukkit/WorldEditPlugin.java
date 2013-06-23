@@ -153,7 +153,7 @@ public class WorldEditPlugin extends JavaPlugin {
                 lPlayer.dispatchCUIHandshake();
             }
         }
-        controller.clearSessions();
+        controller.getSessions().clear();
         controller.getCommandLogger().close();
         config.unload();
         server.unregisterCommands();

@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents WorldEdit's configuration.
@@ -123,5 +123,29 @@ public abstract class LocalConfiguration {
      */
     public File getWorkingDirectory() {
         return new File(".");
+    }
+
+    public int getMaximumPolygonalPoints(LocalPlayer player) {
+        if (player.hasPermission("worldedit.limit.unrestricted") || maxPolygonalPoints < 0) {
+            return defaultMaxPolygonalPoints;
+        } else {
+            if (defaultMaxPolygonalPoints < 0) {
+                return maxPolygonalPoints;
+            }
+            return Math.min(defaultMaxPolygonalPoints,
+                    maxPolygonalPoints);
+        }
+    }
+
+    /**
+     * Checks to see if the specified radius is within bounds.
+     *
+     * @param radius the radius
+     * @throws MaxRadiusException if the raidus is too large
+     */
+    public void checkMaxRadius(double radius) throws MaxRadiusException {
+        if (maxRadius > 0 && radius > maxRadius) {
+            throw new MaxRadiusException();
+        }
     }
 }

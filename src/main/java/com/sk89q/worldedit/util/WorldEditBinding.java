@@ -71,7 +71,7 @@ public class WorldEditBinding extends BindingHelper {
     public Object getSelection(ArgumentStack context, Selection selection)
             throws IncompleteRegionException, ParameterException {
         LocalPlayer sender = getLocalPlayer(context);
-        LocalSession session = worldEdit.getSession(sender);
+        LocalSession session = worldEdit.getSessions().get(sender);
         return session.getSelection(sender.getWorld());
     }
 
@@ -89,7 +89,7 @@ public class WorldEditBinding extends BindingHelper {
     public EditSession getEditSession(ArgumentStack context, Annotation[] modifiers) 
             throws ParameterException {
         LocalPlayer sender = getLocalPlayer(context);
-        LocalSession session = worldEdit.getSession(sender);
+        LocalSession session = worldEdit.getSessions().get(sender);
         EditSession editSession = session.createEditSession(sender);
         editSession.enableQueue();
         
@@ -120,7 +120,7 @@ public class WorldEditBinding extends BindingHelper {
                   behavior = BindingBehavior.PROVIDES)
     public LocalSession getLocalSession(ArgumentStack context) throws ParameterException {
         LocalPlayer sender = getLocalPlayer(context);
-        return worldEdit.getSession(sender);
+        return worldEdit.getSessions().get(sender);
     }
 
     /**
@@ -153,7 +153,7 @@ public class WorldEditBinding extends BindingHelper {
                   consumedCount = 1)
     public Pattern getPattern(ArgumentStack context) 
             throws ParameterException, WorldEditException {
-        return worldEdit.getBlockPattern(getLocalPlayer(context), context.next());
+        return worldEdit.getFilters().matchPattern(getLocalPlayer(context), context.next());
     }
 
     /**
@@ -169,8 +169,7 @@ public class WorldEditBinding extends BindingHelper {
                   consumedCount = 1)
     public Mask getMask(ArgumentStack context) 
             throws ParameterException, WorldEditException {
-        return worldEdit.getBlockMask(getLocalPlayer(context), 
-                getLocalSession(context), context.next());
+        return worldEdit.getFilters().matchMask(getLocalPlayer(context), context.next());
     }
 
     /**
@@ -189,7 +188,7 @@ public class WorldEditBinding extends BindingHelper {
     public Vector getDirection(ArgumentStack context, Direction direction) 
             throws ParameterException, UnknownDirectionException {
         LocalPlayer sender = getLocalPlayer(context);
-        return worldEdit.getDirection(sender, context.next());
+        return sender.matchDirection(context.next(), false);
     }
 
 }

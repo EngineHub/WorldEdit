@@ -19,14 +19,14 @@
 
 package com.sk89q.worldedit;
 
-import java.io.File;
-
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.cui.CUIEvent;
 import com.sk89q.worldedit.util.TargetBlock;
+
+import java.io.File;
 
 /**
  *
@@ -626,6 +626,133 @@ public abstract class LocalPlayer {
      * @param event
      */
     public void dispatchCUIEvent(CUIEvent event) {
+    }
+
+    /**
+     * Parse a string for a direction, using the player's information if needed.
+     *
+     * @param input the string to parse
+     * @param allowDiagonal true to allow diagonal directions
+     * @return a unit vector pointing in the direction
+     * @throws UnknownDirectionException
+     */
+    public Vector matchDirection(String input, boolean allowDiagonal)
+            throws UnknownDirectionException {
+
+        input = input.toLowerCase();
+
+        PlayerDirection direction = matchDirection(input);
+
+        if (allowDiagonal) {
+            return direction.vector();
+        }
+
+        switch (direction) {
+            case WEST:
+            case EAST:
+            case SOUTH:
+            case NORTH:
+            case UP:
+            case DOWN:
+                return direction.vector();
+
+            default:
+                throw new UnknownDirectionException(direction.name());
+        }
+    }
+
+    private PlayerDirection matchDirection(String dirStr) throws UnknownDirectionException {
+        final PlayerDirection dir;
+
+        switch (dirStr.charAt(0)) {
+            case 'w':
+                dir = PlayerDirection.WEST;
+                break;
+
+            case 'e':
+                dir = PlayerDirection.EAST;
+                break;
+
+            case 's':
+                if (dirStr.indexOf('w') > 0) {
+                    return PlayerDirection.SOUTH_WEST;
+                }
+
+                if (dirStr.indexOf('e') > 0) {
+                    return PlayerDirection.SOUTH_EAST;
+                }
+                dir = PlayerDirection.SOUTH;
+                break;
+
+            case 'n':
+                if (dirStr.indexOf('w') > 0) {
+                    return PlayerDirection.NORTH_WEST;
+                }
+
+                if (dirStr.indexOf('e') > 0) {
+                    return PlayerDirection.NORTH_EAST;
+                }
+                dir = PlayerDirection.NORTH;
+                break;
+
+            case 'u':
+                dir = PlayerDirection.UP;
+                break;
+
+            case 'd':
+                dir = PlayerDirection.DOWN;
+                break;
+
+            case 'm': // me
+            case 'f': // forward
+                dir = getCardinalDirection(0);
+                break;
+
+            case 'b': // back
+                dir = getCardinalDirection(180);
+                break;
+
+            case 'l': // left
+                dir = getCardinalDirection(-90);
+                break;
+
+            case 'r': // right
+                dir = getCardinalDirection(90);
+                break;
+
+            default:
+                throw new UnknownDirectionException(dirStr);
+        }
+        return dir;
+    }
+
+    /**
+     * Get the flip direction for a player's direction.
+     *
+     * @param input the input
+     * @return a flip direction
+     * @throws UnknownDirectionException
+     */
+    public CuboidClipboard.FlipDirection matchFlipDirection(String input)
+            throws UnknownDirectionException {
+
+        final PlayerDirection dir = matchDirection(input);
+        switch (dir) {
+            case WEST:
+            case EAST:
+                return CuboidClipboard.FlipDirection.WEST_EAST;
+
+            case NORTH:
+            case SOUTH:
+                return CuboidClipboard.FlipDirection.NORTH_SOUTH;
+
+            case UP:
+            case DOWN:
+                return CuboidClipboard.FlipDirection.UP_DOWN;
+
+            default:
+                throw new UnknownDirectionException(dir.name());
+        }
     }
 
     /**

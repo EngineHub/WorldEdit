@@ -45,7 +45,7 @@ public class SessionTimer implements Runnable {
     }
 
     public void run() {
-        worldEdit.flushExpiredSessions(checker);
+        worldEdit.getSessions().flush(checker);
     }
 
 }

@@ -702,7 +702,7 @@ public class SelectionCommands {
             selector = new ExtendingCuboidRegionSelector(oldSelector);
             player.print("Cuboid: left click for a starting point, right click to extend");
         } else if (typeName.equalsIgnoreCase("poly")) {
-            int maxPoints = we.getMaximumPolygonalPoints(player);
+            int maxPoints = we.getConfiguration().getMaximumPolygonalPoints(player);
             selector = new Polygonal2DRegionSelector(oldSelector, maxPoints);
             player.print("2D polygon selector: Left/right click to add a point.");
             if (maxPoints > -1) {

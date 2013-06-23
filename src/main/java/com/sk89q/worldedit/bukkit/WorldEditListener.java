@@ -68,7 +68,7 @@ public class WorldEditListener implements Listener {
      */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        plugin.getWorldEdit().markExpire(plugin.wrapPlayer(event.getPlayer()));
+        plugin.getWorldEdit().getSessions().setExpiration(plugin.wrapPlayer(event.getPlayer()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

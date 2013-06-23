@@ -19,38 +19,22 @@
 
 package com.sk89q.worldedit.commands;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Console;
-import com.sk89q.minecraft.util.commands.Logging;
+import com.sk89q.minecraft.util.commands.*;
 import com.sk89q.rebar.command.CommandMapping;
 import com.sk89q.rebar.command.Description;
 import com.sk89q.rebar.command.Dispatcher;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EntityType;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.LocalWorld.KillFlags;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+
+import java.util.*;
+
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
 
 /**
  * Utility commands.
@@ -78,7 +62,7 @@ public class UtilityCommands {
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         double radius = Math.max(1, args.getDouble(1));
-        we.checkMaxRadius(radius);
+        we.getConfiguration().checkMaxRadius(radius);
         int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : 1;
 
         Vector pos = session.getPlacementPosition(player);
@@ -107,7 +91,7 @@ public class UtilityCommands {
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         double radius = Math.max(1, args.getDouble(1));
-        we.checkMaxRadius(radius);
+        we.getConfiguration().checkMaxRadius(radius);
         int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : 1;
 
         Vector pos = session.getPlacementPosition(player);
@@ -135,7 +119,7 @@ public class UtilityCommands {
             EditSession editSession) throws WorldEditException {
 
         double radius = Math.max(0, args.getDouble(0));
-        we.checkMaxRadius(radius);
+        we.getConfiguration().checkMaxRadius(radius);
         int affected = editSession.drainArea(
                 session.getPlacementPosition(player), radius);
         player.print(affected + " block(s) have been changed.");
@@ -154,7 +138,7 @@ public class UtilityCommands {
             EditSession editSession) throws WorldEditException {
 
         double radius = Math.max(0, args.getDouble(0));
-        we.checkMaxRadius(radius);
+        we.getConfiguration().checkMaxRadius(radius);
         int affected = editSession.fixLiquid(
                 session.getPlacementPosition(player), radius, 10, 11);
         player.print(affected + " block(s) have been changed.");
@@ -173,7 +157,7 @@ public class UtilityCommands {
             EditSession editSession) throws WorldEditException {
 
         double radius = Math.max(0, args.getDouble(0));
-        we.checkMaxRadius(radius);
+        we.getConfiguration().checkMaxRadius(radius);
         int affected = editSession.fixLiquid(
                 session.getPlacementPosition(player), radius, 8, 9);
         player.print(affected + " block(s) have been changed.");
@@ -192,7 +176,7 @@ public class UtilityCommands {
             EditSession editSession) throws WorldEditException {
         
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
-        we.checkMaxRadius(size);
+        we.getConfiguration().checkMaxRadius(size);
         LocalWorld world = player.getWorld();
         int height = args.argsLength() > 1 ? Math.min((world.getMaxY() + 1), args.getInteger(1) + 2) : (world.getMaxY() + 1);
 
@@ -214,7 +198,7 @@ public class UtilityCommands {
             EditSession editSession) throws WorldEditException {
 
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
-        we.checkMaxRadius(size);
+        we.getConfiguration().checkMaxRadius(size);
         LocalWorld world = player.getWorld();
         int height = args.argsLength() > 1 ? Math.min((world.getMaxY() + 1), args.getInteger(1) + 2) : (world.getMaxY() + 1);
 
@@ -236,7 +220,7 @@ public class UtilityCommands {
 
         BaseBlock block = we.getBlock(player, args.getString(0), true);
         int size = Math.max(1, args.getInteger(1, 50));
-        we.checkMaxRadius(size);
+        we.getConfiguration().checkMaxRadius(size);
 
         int affected = editSession.removeNear(session.getPlacementPosition(player), block.getType(), size);
         player.print(affected + " block(s) have been removed.");
@@ -351,7 +335,7 @@ public class UtilityCommands {
         int defaultRadius = config.maxRadius != -1 ? Math.min(40, config.maxRadius) : 40;
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0))
                 : defaultRadius;
-        we.checkMaxRadius(size);
+        we.getConfiguration().checkMaxRadius(size);
 
         int affected = editSession.removeNear(session.getPlacementPosition(player), 51, size);
         player.print(affected + " block(s) have been removed.");

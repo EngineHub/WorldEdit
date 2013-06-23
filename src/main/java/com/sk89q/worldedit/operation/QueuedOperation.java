@@ -18,70 +18,39 @@
 
 package com.sk89q.worldedit.operation;
 
-import com.google.common.util.concurrent.SettableFuture;
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
- * Used by {@link OperationExecutor} to queue an operation.
+ * Stores the state of an operation that has been added to an {@link OperationExecutor}.
  */
-class QueuedOperation implements Comparable<QueuedOperation> {
-
-    private Operation operation;
-    private final int priority;
-    private final SettableFuture<Operation> future;
-    
-    /**
-     * Create a new entry.
-     * 
-     * @param operation the operation
-     * @param priority the priority, where 0 is nominal and higher is more priority
-     * @param future the future
-     */
-    public QueuedOperation(Operation operation, int priority, 
-            SettableFuture<Operation> future) {
-        this.operation = operation;
-        this.priority = priority;
-        this.future = future;
-    }
-
-    /**
-     * Set the operation.
-     * 
-     * @param operation the operation
-     */
-    public void setOperation(Operation operation) {
-        this.operation = operation;
-    }
-
-    /**
-     * Get the operation.
-     * 
-     * @return the operation
-     */
-    public Operation getOperation() {
-        return operation;
-    }
-    
-    /**
-     * Get the priority of the operation.
-     * 
-     * @return the priority, where 0 is nominal, and higher values are higher priority
-     */
-    public int getPriority() {
-        return priority;
-    }
+public interface QueuedOperation {
 
     /**
      * Get the future.
-     * 
+     *
      * @return the future
      */
-    public SettableFuture<Operation> getFuture() {
-        return future;
-    }
+    public ListenableFuture<Operation> getFuture();
 
-    @Override
-    public int compareTo(QueuedOperation o) {
-        return (priority == o.priority ? 0 : (priority > o.priority ? -1 : 1));
-    }
+    /**
+     * Get the state of this operation.
+     *
+     * @return the operation
+     */
+    OperationState getState();
+
+    /**
+     * Cancel the operation referenced by this object.
+     *
+     * <p>This method may be called several times or after the operation has completed
+     * or has been cancelled to no effect.</p>
+     *
+     * <p>A call to this method is merely a strong suggestion to interrupt the
+     * operation, but the operation may still complete to the end if it does not
+     * have proper interruption checks.</p>
+     *
+     * @return true if the operation was in a cancellable state
+     */
+    boolean cancel();
 
 }

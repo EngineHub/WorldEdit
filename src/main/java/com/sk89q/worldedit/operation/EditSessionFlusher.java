@@ -49,7 +49,7 @@ public class EditSessionFlusher implements FutureCallback<Operation> {
     }
 
     private void flush() {
-        LocalSession session = worldEdit.getSession(player);
+        LocalSession session = worldEdit.getSessions().get(player);
         session.remember(editSession);
         editSession.flushQueue();
         worldEdit.flushBlockBag(player, editSession);

@@ -19,13 +19,15 @@
 
 package com.sk89q.worldedit.commands;
 
-import java.io.File;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
+
+import java.io.File;
+
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.ALL;
 
 /**
  * Scripting commands.
@@ -61,10 +63,10 @@ public class ScriptingCommands {
 
         session.setLastScript(name);
 
-        File dir = we.getWorkingDirectoryFile(we.getConfiguration().scriptsDir);
-        File f = we.getSafeOpenFile(player, dir, name, "js", "js");
+        File dir = we.getApplicationData().getDirectory(we.getConfiguration().scriptsDir, true);
+        File f = we.getApplicationData().getSafeOpenFile(player, dir, name, "js", "js");
 
-        we.runScript(player, f, scriptArgs);
+        we.getScripting().execute(player, f, scriptArgs);
     }
 
     @Command(
@@ -93,9 +95,9 @@ public class ScriptingCommands {
 
         String[] scriptArgs = args.getSlice(0);
 
-        File dir = we.getWorkingDirectoryFile(we.getConfiguration().scriptsDir);
-        File f = we.getSafeOpenFile(player, dir, lastScript, "js", "js");
+        File dir = we.getApplicationData().getDirectory(we.getConfiguration().scriptsDir, true);
+        File f = we.getApplicationData().getSafeOpenFile(player, dir, lastScript, "js", "js");
 
-        we.runScript(player, f, scriptArgs);
+        we.getScripting().execute(player, f, scriptArgs);
     }
 }
