@@ -159,7 +159,6 @@ public class Vector2D {
      * Adds two points.
      *
      * @param x
-     * @param y
      * @param z
      * @return New point
      */
@@ -171,7 +170,6 @@ public class Vector2D {
      * Adds two points.
      *
      * @param x
-     * @param y
      * @param z
      * @return New point
      */
@@ -209,7 +207,6 @@ public class Vector2D {
      * Subtract two points.
      *
      * @param x
-     * @param y
      * @param z
      * @return New point
      */
@@ -221,7 +218,6 @@ public class Vector2D {
      * Subtract two points.
      *
      * @param x
-     * @param y
      * @param z
      * @return New point
      */
@@ -259,7 +255,6 @@ public class Vector2D {
      * Component-wise multiplication
      *
      * @param x
-     * @param y
      * @param z
      * @return New point
      */
@@ -271,7 +266,6 @@ public class Vector2D {
      * Component-wise multiplication
      *
      * @param x
-     * @param y
      * @param z
      * @return New point
      */
@@ -339,7 +333,6 @@ public class Vector2D {
      * Component-wise division
      *
      * @param x
-     * @param y
      * @param z
      * @return New point
      */
@@ -351,7 +344,6 @@ public class Vector2D {
      * Component-wise division
      *
      * @param x
-     * @param y
      * @param z
      * @return New point
      */
