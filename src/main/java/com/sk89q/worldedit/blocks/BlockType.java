@@ -431,7 +431,8 @@ public enum BlockType {
         canPassThrough.add(BlockID.REDSTONE_TORCH_OFF);
         canPassThrough.add(BlockID.REDSTONE_TORCH_ON);
         canPassThrough.add(BlockID.STONE_BUTTON);
-        canPassThrough.add(BlockID.SNOW);
+        canPassThrough.add(-16*BlockID.SNOW-0);
+        canPassThrough.add(-16*BlockID.SNOW-8);
         canPassThrough.add(BlockID.REED);
         canPassThrough.add(BlockID.PORTAL);
         canPassThrough.add(BlockID.REDSTONE_REPEATER_OFF);
