@@ -28,6 +28,7 @@ public class OwnedOperation implements Operation {
 
     private final LocalPlayer owner;
     private final long creationTime = System.currentTimeMillis();
+    private final Operation originalOperation;
     private Operation operation;
 
     /**
@@ -39,6 +40,7 @@ public class OwnedOperation implements Operation {
     public OwnedOperation(LocalPlayer owner, Operation operation) {
         this.owner = owner;
         this.operation = operation;
+        this.originalOperation = operation;
     }
 
     @Override
@@ -53,6 +55,33 @@ public class OwnedOperation implements Operation {
     @Override
     public void cancel() {
         operation.cancel();
+    }
+
+    /**
+     * Get the operation that this object was created with.
+     * 
+     * @return the operation
+     */
+    public Operation getOperation() {
+        return originalOperation;
+    }
+
+    /**
+     * Get the owner of this operation.
+     * 
+     * @return the owner
+     */
+    public LocalPlayer getOwner() {
+        return owner;
+    }
+
+    /**
+     * Get the time when this operation was created.
+     * 
+     * @return the time in milliseconds
+     */
+    public long getCreationTime() {
+        return creationTime;
     }
 
 }

@@ -66,6 +66,7 @@ import com.sk89q.worldedit.operation.ImmediateExecutor;
 import com.sk89q.worldedit.operation.Operation;
 import com.sk89q.worldedit.operation.OperationExecutor;
 import com.sk89q.worldedit.operation.OperationResponse;
+import com.sk89q.worldedit.operation.OwnedOperation;
 import com.sk89q.worldedit.operation.QueuedOperation;
 import com.sk89q.worldedit.operation.RejectedOperationException;
 import com.sk89q.worldedit.patterns.Pattern;
@@ -340,7 +341,8 @@ public class WorldEdit {
     public void execute(
             final LocalPlayer player, Operation operation, EditSession editSession)
             throws RejectedOperationException {
-        QueuedOperation queued = getExecutor().offer(operation);
+        OwnedOperation owned = new OwnedOperation(player, operation);
+        QueuedOperation queued = getExecutor().offer(owned);
         ListenableFuture<Operation> future = queued.getFuture();
         Futures.addCallback(future, new EditSessionFlusher(this, editSession, player));
         Futures.addCallback(future, new OperationResponse(this, player));
