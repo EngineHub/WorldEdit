@@ -18,8 +18,7 @@
 
 package com.sk89q.worldedit.operation;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
+import java.util.List;
 
 /**
  * Executes {@link Operation}s that is given to it.
@@ -32,11 +31,10 @@ public interface OperationExecutor extends Runnable {
      * Add an operation to the queue.
      * 
      * @param operation the operation
-     * @return a future
+     * @return an object representing the operation's queued state
      * @throws RejectedOperationException thrown if there is no room
      */
-    ListenableFuture<Operation> offer(Operation operation)
-            throws RejectedOperationException;
+    QueuedOperation offer(Operation operation) throws RejectedOperationException;
 
     /**
      * Execute a step in the current operation.
@@ -46,5 +44,20 @@ public interface OperationExecutor extends Runnable {
      * @return true if an operation was executed
      */
     boolean resume();
+
+    /**
+     * Cancel all running operations.
+     *
+     * @return the number of operations that were cancelled
+     * @see com.sk89q.worldedit.operation.QueuedOperation#cancel()
+     */
+    int cancelAll();
+
+    /**
+     * Get a list of operations that are queued or running.
+     *
+     * @return a list of queued operations
+     */
+    List<QueuedOperation> getQueue();
 
 }

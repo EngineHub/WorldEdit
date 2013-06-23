@@ -18,11 +18,16 @@
 
 package com.sk89q.worldedit.operation;
 
+import com.google.common.util.concurrent.SettableFuture;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
+import static com.sk89q.worldedit.operation.OperationState.*;
 
 /**
  * Executes operations through interfacing code calling {@link #resume()} repeatedly,
@@ -30,9 +35,12 @@ import com.google.common.util.concurrent.SettableFuture;
  */
 public class CallbackExecutor implements OperationExecutor {
 
-    private final Queue<QueuedOperation> queue = new PriorityQueue<QueuedOperation>();
+    private static final Logger logger =
+            Logger.getLogger(CallbackExecutor.class.getCanonicalName());
+
+    private final Queue<QueuedOperationEntry> queue = new PriorityQueue<QueuedOperationEntry>();
     private int queueSize = Integer.MAX_VALUE;
-    private QueuedOperation current;
+    private QueuedOperationEntry current;
     private int interval = 1;
     private int cycle = 0;
 
@@ -73,25 +81,27 @@ public class CallbackExecutor implements OperationExecutor {
     }
 
     @Override
-    public ListenableFuture<Operation> offer(Operation operation) 
+    public QueuedOperation offer(Operation operation)
             throws RejectedOperationException {
         SettableFuture<Operation> future = SettableFuture.create();
-        QueuedOperation entry = new QueuedOperation(operation, 0, future);
+        QueuedOperationEntry entry = new CallbackQueuedOperation(operation, 0, future);
         synchronized (this) {
             if (queue.size() >= queueSize) {
                 throw new RejectedOperationException();
             }
             queue.add(entry);
         }
-        return future;
+        return entry;
     }
     
     @Override
     public boolean resume() {
-        QueuedOperation entry = current;
+        QueuedOperationEntry entry;
         
         // No operation, get one from the queue
         synchronized (this) {
+            entry = current;
+
             if (cycle++ != 0) {
                 if (cycle >= interval) {
                     cycle = 0;
@@ -107,6 +117,8 @@ public class CallbackExecutor implements OperationExecutor {
         if (entry == null) {
             return false; // Nothing to do
         }
+
+        entry.setStateIf(RUNNING, QUEUED);
         
         try {
             SettableExecutionHint hint = new SettableExecutionHint();
@@ -120,21 +132,81 @@ public class CallbackExecutor implements OperationExecutor {
                 current = null;
                 
                 // We're done
+                entry.setStateIf(COMPLETED, RUNNING);
                 entry.getFuture().set(entry.getOperation());
             }
         } catch (Throwable t) {
             current = null;
             
             // Error out
+            entry.setStateIf(FAILED, RUNNING);
             entry.getFuture().setException(t);
         }
         
         return true;
     }
 
+    /**
+     * Cancel an operation and call its
+     * {@link com.sk89q.worldedit.operation.Operation#cancel()}} method.
+     *
+     * @param target the operation to cancel
+     * @return whether the operation was cancelled
+     */
+    private synchronized boolean performCancel(CallbackQueuedOperation target) {
+        queue.remove(target);
+
+        if (target.setStateIf(CANCELLED, QUEUED, RUNNING)) {
+            if (target == current) {
+                current = null;
+            }
+
+            try {
+                target.cancel();
+            } catch (Throwable t) {
+                logger.log(Level.WARNING,
+                        "Operation threw an exception when cancelled", t);
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public synchronized int cancelAll() {
+        int count = 0;
+        for (QueuedOperationEntry entry : queue) {
+            count += entry.cancel() ? 1 : 0;
+        }
+        return count;
+    }
+
+    @Override
+    public synchronized List<QueuedOperation> getQueue() {
+        List<QueuedOperation> ret = new ArrayList<QueuedOperation>();
+        for (QueuedOperationEntry entry : queue) {
+            ret.add(entry);
+        }
+        return ret;
+    }
+
     @Override
     public void run() {
         resume();
+    }
+
+    private class CallbackQueuedOperation extends QueuedOperationEntry {
+        private CallbackQueuedOperation(Operation operation, int priority,
+                                    SettableFuture<Operation> future) {
+            super(operation, priority, future);
+        }
+
+        @Override
+        public boolean cancel() {
+            return performCancel(this);
+        }
     }
 
 }

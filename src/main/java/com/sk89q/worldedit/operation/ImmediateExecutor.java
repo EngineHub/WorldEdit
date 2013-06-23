@@ -21,6 +21,9 @@ package com.sk89q.worldedit.operation;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * An executor that completes operations immediately when they is offered.
  */
@@ -31,9 +34,10 @@ public class ImmediateExecutor implements OperationExecutor {
     }
 
     @Override
-    public ListenableFuture<Operation> offer(Operation operation)
+    public QueuedOperation offer(Operation operation)
             throws RejectedOperationException {
-        SettableFuture<Operation> future = SettableFuture.create();
+        final SettableFuture<Operation> future = SettableFuture.create();
+        Throwable thrown = null;
         
         try {
             SettableExecutionHint hint = new SettableExecutionHint();
@@ -43,14 +47,42 @@ public class ImmediateExecutor implements OperationExecutor {
             future.set(operation);
         } catch (Throwable t) {
             future.setException(t);
+            thrown = t;
         }
+
+        final boolean successful = thrown == null;
         
-        return future;
+        return new QueuedOperation() {
+            @Override
+            public ListenableFuture<Operation> getFuture() {
+                return future;
+            }
+
+            @Override
+            public OperationState getState() {
+                return successful ? OperationState.COMPLETED : OperationState.FAILED;
+            }
+
+            @Override
+            public boolean cancel() {
+                return false;
+            }
+        };
     }
 
     @Override
     public boolean resume() {
         return false;
+    }
+
+    @Override
+    public int cancelAll() {
+        return 0;
+    }
+
+    @Override
+    public List<QueuedOperation> getQueue() {
+        return Collections.emptyList();
     }
 
 }

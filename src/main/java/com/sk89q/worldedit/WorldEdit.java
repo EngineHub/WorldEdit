@@ -88,12 +88,7 @@ import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.masks.RandomMask;
 import com.sk89q.worldedit.masks.RegionMask;
 import com.sk89q.worldedit.masks.UnderOverlayMask;
-import com.sk89q.worldedit.operation.ChangeCountable;
-import com.sk89q.worldedit.operation.EditSessionFlusher;
-import com.sk89q.worldedit.operation.ImmediateExecutor;
-import com.sk89q.worldedit.operation.Operation;
-import com.sk89q.worldedit.operation.OperationExecutor;
-import com.sk89q.worldedit.operation.RejectedOperationException;
+import com.sk89q.worldedit.operation.*;
 import com.sk89q.worldedit.patterns.BlockChance;
 import com.sk89q.worldedit.patterns.ClipboardPattern;
 import com.sk89q.worldedit.patterns.Pattern;
@@ -1513,46 +1508,12 @@ public class WorldEdit {
      * @see OperationExecutor#offer(Operation)
      */
     public void execute(
-            final LocalPlayer player, Operation operation, EditSession editSession) 
+            final LocalPlayer player, Operation operation, EditSession editSession)
             throws RejectedOperationException {
-        
-        // Add to queue
-        ListenableFuture<Operation> future = getExecutor().offer(operation);
-        
-        // Better flush that edit session
+        QueuedOperation queued = getExecutor().offer(operation);
+        ListenableFuture<Operation> future = queued.getFuture();
         Futures.addCallback(future, new EditSessionFlusher(this, editSession, player));
-        
-        // Add an error/success callback
-        Futures.addCallback(future, new FutureCallback<Operation>() {
-            @Override
-            public void onSuccess(Operation operation) {
-                if (operation instanceof ChangeCountable) {
-                    int affected = ((ChangeCountable) operation).getChangeCount();
-                    player.print(operation.getClass().getSimpleName() + ": " +
-                            affected + " blocks were changed.");
-                } else {
-                    player.print(operation.getClass().getSimpleName() + ": completed.");
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable thrown) {
-                try {
-                    getExceptionConverter().convert(thrown);
-                } catch (WrappedCommandException e) {
-                    thrown = e;
-                } catch (CommandException e) {
-                    player.printError(e.getMessage());
-                }
-
-                player.printError("An error occurred (see console for a full error message):\n"
-                        + thrown.getMessage());
-
-                logger.log(Level.SEVERE,
-                        "An error occurred while executing an operation: "
-                                + thrown.getMessage(), thrown);
-            }
-        });
+        Futures.addCallback(future, new OperationResponse(this, player));
     }
 
     /**
