@@ -22,6 +22,7 @@ package com.sk89q.worldedit;
 import java.io.File;
 
 import com.sk89q.worldedit.bags.BlockBag;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
@@ -79,7 +80,7 @@ public abstract class LocalPlayer {
         byte free = 0;
 
         while (y <= world.getMaxY() + 2) {
-            if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
                 ++free;
             } else {
                 free = 0;
@@ -114,8 +115,8 @@ public abstract class LocalPlayer {
         while (y >= 0) {
             final Vector pos = new Vector(x, y, z);
             final int id = world.getBlockType(pos);
-            if (!BlockType.canPassThrough(id)) {
-                final int data = world.getBlockData(pos);
+            final int data = world.getBlockData(pos);
+            if (!BlockType.canPassThrough(id, data)) {
                 setPosition(new Vector(x + 0.5, y + BlockType.centralTopLimit(id, data), z + 0.5));
                 return;
             }
@@ -150,7 +151,7 @@ public abstract class LocalPlayer {
         byte spots = 0;
 
         while (y <= world.getMaxY() + 2) {
-            if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
                 ++free;
             } else {
                 free = 0;
@@ -192,7 +193,7 @@ public abstract class LocalPlayer {
         byte free = 0;
 
         while (y >= 1) {
-            if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
                 ++free;
             } else {
                 free = 0;
@@ -245,7 +246,7 @@ public abstract class LocalPlayer {
 
         while (y <= world.getMaxY()) {
             // Found a ceiling!
-            if (!BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
+            if (!BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
                 world.setBlockType(new Vector(x, platformY, z), BlockID.GLASS);
                 setPosition(new Vector(x + 0.5, platformY + 1, z + 0.5));
@@ -274,7 +275,7 @@ public abstract class LocalPlayer {
         LocalWorld world = getPosition().getWorld();
 
         while (y <= world.getMaxY() + 2) {
-            if (!BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
+            if (!BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
                 break; // Hit something
             } else if (y > maxY + 1) {
                 break;
@@ -488,7 +489,7 @@ public abstract class LocalPlayer {
         boolean inFree = false;
 
         while ((block = hitBlox.getNextBlock()) != null) {
-            boolean free = BlockType.canPassThrough(world.getBlockType(block));
+            boolean free = BlockType.canPassThrough(world.getBlock(block));
 
             if (firstBlock) {
                 firstBlock = false;
