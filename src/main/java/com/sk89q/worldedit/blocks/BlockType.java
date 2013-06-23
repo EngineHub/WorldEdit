@@ -452,7 +452,6 @@ public enum BlockType {
         canPassThrough.add(BlockID.CARROTS);
         canPassThrough.add(BlockID.POTATOES);
         canPassThrough.add(BlockID.WOODEN_BUTTON);
-        canPassThrough.add(BlockID.HEAD);
         canPassThrough.add(BlockID.PRESSURE_PLATE_LIGHT);
         canPassThrough.add(BlockID.PRESSURE_PLATE_HEAVY);
         canPassThrough.add(BlockID.COMPARATOR_OFF);
