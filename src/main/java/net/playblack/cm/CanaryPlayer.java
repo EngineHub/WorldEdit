@@ -67,28 +67,28 @@ public class CanaryPlayer extends LocalPlayer {
     @Override
     public void printRaw(String msg) {
         for(String str : msg.split("\n")) {
-            player.sendMessage(str);
+            player.message(str);
         }
     }
 
     @Override
     public void printDebug(String msg) {
         for(String str : msg.split("\n")) {
-            player.sendMessage(Colors.LIGHT_GRAY + str);
+            player.message(Colors.LIGHT_GRAY + str);
         }
     }
 
     @Override
     public void print(String msg) {
         for(String str : msg.split("\n")) {
-            player.sendMessage(str);
+            player.message(str);
         }
     }
 
     @Override
     public void printError(String msg) {
         for(String str : msg.split("\n")) {
-            player.sendMessage(Colors.LIGHT_RED + str);
+            player.message(Colors.LIGHT_RED + str);
         }
     }
 

@@ -1,3 +1,4 @@
 main-class=net.playblack.cm.WorldEdit
 author=sk89q - CanaryMod implementation: damagefilter
 version=5.5.6-SNAPSHOT
+name=WorldEdit
