@@ -33,7 +33,7 @@ public class RandomMask implements Mask {
     /**
      * Create a new instance with the given ratio.
      * 
-     * @param ratio a number between 0 and 1, inclusive, where 1 is always tree
+     * @param ratio a number between 0 and 1, inclusive, where 1 is always true
      */
     public RandomMask(double ratio) {
         this.ratio = ratio;
@@ -42,7 +42,7 @@ public class RandomMask implements Mask {
     /**
      * Get the ratio.
      * 
-     * @return a number between 0 and 1, inclusive, where 1 is always tree
+     * @return a number between 0 and 1, inclusive, where 1 is always true
      */
     public double getRatio() {
         return ratio;
