@@ -91,9 +91,6 @@ public class WorldEditPlugin extends JavaPlugin {
         config = new BukkitConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml"), true), this);
         PermissionsResolverManager.initialize(this);
 
-        // Load the configuration
-        config.load();
-
         // Setup interfaces
         server = new BukkitServerInterface(this, getServer());
         
@@ -102,6 +99,9 @@ public class WorldEditPlugin extends JavaPlugin {
         controller = new WorldEdit(server, config, executor);
         WorldEdit.getInstance().logger.setParent(Bukkit.getLogger());
         api = new WorldEditAPI(this);
+
+        // Load the configuration
+        config.load();
         
         getServer().getMessenger().registerIncomingPluginChannel(this, CUI_PLUGIN_CHANNEL, new CUIChannelListener(this));
         getServer().getMessenger().registerOutgoingPluginChannel(this, CUI_PLUGIN_CHANNEL);
@@ -155,6 +155,7 @@ public class WorldEditPlugin extends JavaPlugin {
         }
         controller.getSessions().clear();
         controller.getCommandLogger().close();
+        controller.unload();
         config.unload();
         server.unregisterCommands();
         this.getServer().getScheduler().cancelTasks(this);

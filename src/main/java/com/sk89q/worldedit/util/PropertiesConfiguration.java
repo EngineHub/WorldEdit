@@ -105,6 +105,9 @@ public class PropertiesConfiguration extends LocalConfiguration {
         butcherMaxRadius = getInt("butcher-max-radius", butcherMaxRadius);
         allowExtraDataValues = getBool("allow-extra-data-values", allowExtraDataValues);
         allowSymlinks = getBool("allow-symbolic-links", allowSymlinks);
+        blocksPerBatch = getInt("blocks-per-batch", blocksPerBatch);
+        batchInterval = getInt("batch-interval", batchInterval);
+        operationQueueMaxSize = getInt("operation-queue-max-size", operationQueueMaxSize);
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 
@@ -130,6 +133,8 @@ public class PropertiesConfiguration extends LocalConfiguration {
                 }
             }
         }
+        
+        super.load();
     }
 
     /**

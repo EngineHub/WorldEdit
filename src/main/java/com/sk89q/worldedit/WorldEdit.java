@@ -35,8 +35,11 @@ import com.sk89q.rebar.command.fluent.CommandGraph;
 import com.sk89q.rebar.command.parametric.ExceptionConverter;
 import com.sk89q.rebar.command.parametric.LegacyCommandsHandler;
 import com.sk89q.rebar.command.parametric.ParametricBuilder;
+import com.sk89q.rebar.event.EventHandler;
+import com.sk89q.rebar.event.EventSystem;
 import com.sk89q.rebar.formatting.MessageBuilder;
 import com.sk89q.rebar.formatting.Style;
+import com.sk89q.rebar.util.Owner;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -61,11 +64,14 @@ import com.sk89q.worldedit.commands.ToolCommands;
 import com.sk89q.worldedit.commands.ToolUtilCommands;
 import com.sk89q.worldedit.commands.UtilityCommands;
 import com.sk89q.worldedit.commands.WorldEditCommands;
+import com.sk89q.worldedit.event.ConfigurationLoadEvent;
 import com.sk89q.worldedit.factory.FilterFactory;
 import com.sk89q.worldedit.factory.MaterialFactory;
 import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.operation.CallbackExecutor;
 import com.sk89q.worldedit.operation.EditSessionFlusher;
 import com.sk89q.worldedit.operation.ImmediateExecutor;
+import com.sk89q.worldedit.operation.ImmutableHint;
 import com.sk89q.worldedit.operation.Operation;
 import com.sk89q.worldedit.operation.OperationExecutor;
 import com.sk89q.worldedit.operation.OperationResponse;
@@ -92,7 +98,7 @@ import com.sk89q.worldedit.util.WorldEditExceptionConverter;
  *
  * <p>Implementations should create one instance of WorldEdit.</p>
  */
-public class WorldEdit {
+public class WorldEdit implements Owner {
     
     public static final Logger logger = Logger.getLogger(
             WorldEdit.class.getCanonicalName());
@@ -199,6 +205,8 @@ public class WorldEdit {
                 .getDispatcher();
 
         server.registerCommands(dispatcher);
+        
+        EventSystem.getInstance().registerListener(this, this);
     }
 
     /**
@@ -364,6 +372,13 @@ public class WorldEdit {
         return new MessageBuilder(Style.PURPLE);
     }
 
+    /**
+     * Call to unload WorldEdit.
+     */
+    public void unload() {
+        EventSystem.getInstance().removeListener(this, this);
+    }
+    
     /**
      * Handle a disconnect of a player.
      *
@@ -615,6 +630,24 @@ public class WorldEdit {
             split[0] = split[0].substring(1);
         }
         return split;
+    }
+
+    /**
+     * Called on configuration load.
+     * 
+     * @param event the event
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onConfigurationLoad(ConfigurationLoadEvent event) {
+        LocalConfiguration config = event.getConfiguration();
+        if (this.config == config) {
+            if (executor instanceof CallbackExecutor) {
+                CallbackExecutor callbackExecutor = (CallbackExecutor) executor;
+                callbackExecutor.setHint(new ImmutableHint(config.blocksPerBatch, false));
+                callbackExecutor.setInterval(config.batchInterval);
+                callbackExecutor.setQueueSize(config.operationQueueMaxSize);
+            }
+        }
     }
 
     /**

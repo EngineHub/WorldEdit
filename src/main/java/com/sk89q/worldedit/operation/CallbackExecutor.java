@@ -38,7 +38,9 @@ public class CallbackExecutor implements OperationExecutor {
     private static final Logger logger =
             Logger.getLogger(CallbackExecutor.class.getCanonicalName());
 
-    private final Queue<QueuedOperationEntry> queue = new PriorityQueue<QueuedOperationEntry>();
+    private final Queue<QueuedOperationEntry> queue = 
+            new PriorityQueue<QueuedOperationEntry>();
+    private ExecutionHint hint = new ImmutableHint(10000, false);
     private int queueSize = Integer.MAX_VALUE;
     private QueuedOperationEntry current;
     private int interval = 1;
@@ -60,6 +62,24 @@ public class CallbackExecutor implements OperationExecutor {
      */
     public void setQueueSize(int queueSize) {
         this.queueSize = queueSize;
+    }
+
+    /**
+     * Get the execution hint.
+     * 
+     * @return the execution hint
+     */
+    public ExecutionHint getHint() {
+        return hint;
+    }
+
+    /**
+     * Set the execution hint.
+     * 
+     * @param hint the execution hint
+     */
+    public void setHint(ExecutionHint hint) {
+        this.hint = hint;
     }
 
     /**
@@ -121,9 +141,6 @@ public class CallbackExecutor implements OperationExecutor {
         entry.setStateIf(RUNNING, QUEUED);
         
         try {
-            SettableExecutionHint hint = new SettableExecutionHint();
-            hint.setBlockCount(10000);
-            
             Operation newOperation = entry.getOperation().resume(hint);
             if (newOperation != null) {
                 // Continue with returned operation

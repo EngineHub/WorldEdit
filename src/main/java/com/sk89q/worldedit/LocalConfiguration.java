@@ -23,8 +23,10 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.sk89q.rebar.event.EventSystem;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.ItemID;
+import com.sk89q.worldedit.event.ConfigurationLoadEvent;
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
 
 /**
@@ -48,11 +50,8 @@ public abstract class LocalConfiguration {
             BlockID.REDSTONE_REPEATER_ON, BlockID.STONE_BUTTON, BlockID.CACTUS,
             BlockID.REED,
             // Ores and bedrock
-            BlockID.BEDROCK,
-            BlockID.GOLD_ORE,
-            BlockID.IRON_ORE,
-            BlockID.COAL_ORE,
-            BlockID.DIAMOND_ORE,
+            BlockID.BEDROCK, BlockID.GOLD_ORE, BlockID.IRON_ORE,
+            BlockID.COAL_ORE, BlockID.DIAMOND_ORE,
             // @TODO rethink what should be disallowed by default
             // Gold and iron can be legitimately obtained, but were set to disallowed by
             // default. Diamond and coal can't be legitimately obtained. Sponges,
@@ -95,11 +94,16 @@ public abstract class LocalConfiguration {
     public int butcherMaxRadius = -1;
     public boolean allowExtraDataValues = false;
     public boolean allowSymlinks = false;
-
+    public int blocksPerBatch = 10000;
+    public int batchInterval = 1;
+    public int operationQueueMaxSize = 4;
+    
     /**
      * Load the configuration.
      */
-    public abstract void load();
+    public void load() {
+        EventSystem.getInstance().dispatch(new ConfigurationLoadEvent(this));
+    }
 
     /**
      * Get the working directory where WorldEdit's data files can be stored.

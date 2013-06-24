@@ -104,6 +104,10 @@ public class YAMLConfiguration extends LocalConfiguration {
 
         saveDir = config.getString("saving.dir", saveDir);
 
+        blocksPerBatch = config.getInt("scheduler.blocks-per-batch", blocksPerBatch);
+        batchInterval = config.getInt("scheduler.batch-interval", batchInterval);
+        operationQueueMaxSize = config.getInt("scheduler.queue-max-size", operationQueueMaxSize);
+
         allowSymlinks = config.getBoolean("files.allow-symbolic-links", false);
         LocalSession.MAX_HISTORY_SIZE = Math.max(0, config.getInt("history.size", 15));
         LocalSession.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;
@@ -116,6 +120,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         String type = config.getString("shell-save-type", "").trim();
         shellSaveType = type.equals("") ? null : type;
 
+        super.load();
     }
 
     public void unload() {

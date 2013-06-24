@@ -19,39 +19,26 @@
 package com.sk89q.worldedit.operation;
 
 /**
- * A settable implementation of {@link ExecutionHint}.
+ * An immutable implementation of {@link ExecutionHint}.
  */
-public class SettableExecutionHint implements ExecutionHint {
+public class ImmutableHint implements ExecutionHint {
 
-    private boolean preferSingleRun = false;
-    private int blockCount = Integer.MAX_VALUE;
+    private final boolean preferSingleRun;
+    private final int blockCount;
+
+    public ImmutableHint(int blockCount, boolean preferSingleRun) {
+        this.blockCount = blockCount;
+        this.preferSingleRun = preferSingleRun;
+    }
 
     @Override
     public boolean preferSingleRun() {
         return preferSingleRun;
     }
 
-    /**
-     * Set whether a single run is preferred.
-     * 
-     * @param preferSingleRun true if the operation should complete ASAP
-     */
-    public void setPreferSingleRun(boolean preferSingleRun) {
-        this.preferSingleRun = preferSingleRun;
-    }
-
     @Override
     public int getBlockCount() {
         return blockCount;
-    }
-
-    /**
-     * Set the recommended number of blocks to change.
-     * 
-     * @param blockCount the count
-     */
-    public void setBlockCount(int blockCount) {
-        this.blockCount = blockCount;
     }
 
 }

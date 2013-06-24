@@ -36,9 +36,7 @@ public class OperationHelper {
      * @throws WorldEditException WorldEdit exception
      */
     public static void complete(Operation op) throws WorldEditException {
-        SettableExecutionHint opt = new SettableExecutionHint();
-        opt.setPreferSingleRun(true);
-        
+        ImmutableHint opt = new ImmutableHint(Integer.MAX_VALUE, true);
         complete(op, opt);
     }
     
@@ -63,8 +61,7 @@ public class OperationHelper {
      * @throws MaxChangedBlocksException thrown when too many blocks have been changed
      */
     public static void completeLegacy(Operation op) throws MaxChangedBlocksException {
-        SettableExecutionHint opt = new SettableExecutionHint();
-        opt.setPreferSingleRun(true);
+        ImmutableHint opt = new ImmutableHint(Integer.MAX_VALUE, true);
         
         while (op != null) {
             try {

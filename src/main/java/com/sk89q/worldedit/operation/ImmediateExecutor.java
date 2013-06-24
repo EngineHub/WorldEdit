@@ -29,6 +29,8 @@ import com.google.common.util.concurrent.SettableFuture;
  */
 public class ImmediateExecutor implements OperationExecutor {
 
+    private static final ExecutionHint hint = new ImmutableHint(Integer.MAX_VALUE, true);
+
     @Override
     public void run() { 
     }
@@ -40,9 +42,6 @@ public class ImmediateExecutor implements OperationExecutor {
         Throwable thrown = null;
         
         try {
-            SettableExecutionHint hint = new SettableExecutionHint();
-            hint.setPreferSingleRun(true);
-
             OperationHelper.complete(operation, hint);
             future.set(operation);
         } catch (Throwable t) {
