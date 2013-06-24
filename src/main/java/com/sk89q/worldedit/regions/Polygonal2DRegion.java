@@ -460,6 +460,11 @@ public class Polygonal2DRegion extends AbstractFlatRegion implements FlatRegion 
         return new FlatRegionIterator(Polygonal2DRegion. this);
     }
 
+    @Override
+    public FlatRegion toFlatRegion() {
+        return this;
+    }
+
     /**
      * Returns string representation in the format
      * "(x1, z1) - ... - (xN, zN) * (minY - maxY)"

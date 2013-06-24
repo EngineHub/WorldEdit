@@ -429,6 +429,11 @@ public class CuboidRegion extends AbstractFlatRegion implements FlatRegion {
         };
     }
 
+    @Override
+    public FlatRegion toFlatRegion() {
+        return this;
+    }
+
     /**
      * Returns string representation in the format
      * "(minX, minY, minZ) - (maxX, maxY, maxZ)".

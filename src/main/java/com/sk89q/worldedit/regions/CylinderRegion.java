@@ -336,6 +336,11 @@ public class CylinderRegion extends AbstractFlatRegion implements FlatRegion {
         return new FlatRegionIterator(CylinderRegion.this);
     }
 
+    @Override
+    public FlatRegion toFlatRegion() {
+        return this;
+    }
+
     /**
      * Returns string representation in the format
      * "(centerX, centerZ) - (radiusX, radiusZ) - (minY, maxY)"

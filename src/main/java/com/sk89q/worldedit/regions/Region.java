@@ -149,6 +149,16 @@ public interface Region extends Iterable<BlockVector>, Cloneable {
      * @param world world to set
      */
     public void setWorld(LocalWorld world);
+    
+    /**
+     * Convert this to a {@link FlatRegion}.
+     * 
+     * <p>For odd shapes that do not properly fit a flat region shape, return a
+     * bounding box for the entire region.</p>
+     * 
+     * @return a flat region
+     */
+    public FlatRegion toFlatRegion();
 
     /**
      * Make a copy of the region.

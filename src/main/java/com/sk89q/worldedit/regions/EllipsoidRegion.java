@@ -202,6 +202,11 @@ public class EllipsoidRegion extends AbstractRegion {
     }
 
     @Override
+    public FlatRegion toFlatRegion() {
+        return new CuboidRegion(getMinimumPoint(), getMaximumPoint());
+    }
+
+    @Override
     public String toString() {
         return center + " - " + getRadius();
     }
