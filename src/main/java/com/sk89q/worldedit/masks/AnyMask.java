@@ -36,5 +36,10 @@ public class AnyMask implements Mask {
     public boolean matches(EditSession editSession, Vector pos) {
         return true;
     }
+    
+    @Override
+    public String toString() {
+        return "(all blocks)";
+    }
 
 }
