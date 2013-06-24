@@ -34,6 +34,7 @@ import com.sk89q.worldedit.regions.FlatRegion;
 public abstract class ColumnVisitor implements Operation {
 
     private final FlatRegion region;
+    private final Iterator<BlockVector> it;
     
     /**
      * Create a column visitor.
@@ -42,6 +43,7 @@ public abstract class ColumnVisitor implements Operation {
      */
     public ColumnVisitor(FlatRegion region) {
         this.region = region;
+        this.it = region.columnIterator();
     }
 
     /**
@@ -54,14 +56,16 @@ public abstract class ColumnVisitor implements Operation {
     }
 
     @Override
-    public Operation resume(ExecutionHint opt) throws WorldEditException {
-        Iterator<BlockVector> points = region.columnIterator();
+    public final Operation resume(ExecutionHint opt) throws WorldEditException {
+        int limit = opt.getBlockCount();
         
-        while (points.hasNext()) {
-            visitColumn(opt, points.next());
+        int i = 0;
+        while (it.hasNext() && i < limit) {
+            visitColumn(opt, it.next());
+            i++;
         }
 
-        return null;
+        return it.hasNext() ? this : null;
     }
 
     @Override
