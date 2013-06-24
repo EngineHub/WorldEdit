@@ -506,6 +506,9 @@ public enum BlockType {
         centralTopLimit.put(BlockID.BED, 0.5625);
         centralTopLimit.put(BlockID.BREWING_STAND, 0.875);
         centralTopLimit.put(BlockID.CAKE_BLOCK, 0.4375);
+        for (int data = 6; data < 16; ++data) {
+            centralTopLimit.put(-16*BlockID.CAKE_BLOCK-data, 0.0);
+        }
         centralTopLimit.put(BlockID.CAULDRON, 0.3125);
         centralTopLimit.put(BlockID.COCOA_PLANT, 0.750);
         centralTopLimit.put(BlockID.ENCHANTMENT_TABLE, 0.75);
