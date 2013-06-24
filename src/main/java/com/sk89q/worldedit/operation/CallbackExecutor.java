@@ -183,7 +183,7 @@ public class CallbackExecutor implements OperationExecutor {
             }
 
             try {
-                target.cancel();
+                target.getOperation().cancel();
             } catch (Throwable t) {
                 logger.log(Level.WARNING,
                         "Operation threw an exception when cancelled", t);
