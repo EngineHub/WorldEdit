@@ -65,10 +65,11 @@ public class OverlayBlocks extends ColumnVisitor implements ChangeCountable {
             Vector pt = columnPt.setY(y);
 
             if (!context.getBlock(pt).isAir()) {
-                // if it's at the top of the map, the (non-existant) block
+                // If it's at the top of the map, the (non-existent) block
                 // above will always be "air", so don't attempt to check
-                if (y == maxY || context.getBlock(pt.setY(y + 1)).isAir()) {
-                    if (context.setBlock(pt, pattern.next(pt))) {
+                Vector above = pt.add(0, 1, 0);
+                if (y == context.getWorld().getMaxY() || context.getBlock(above).isAir()) {
+                    if (context.setBlock(above, pattern.next(above))) {
                         ++affected;
                         break;
                     }
