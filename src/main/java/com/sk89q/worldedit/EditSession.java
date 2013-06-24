@@ -1,21 +1,21 @@
 // $Id$
 /*
- * WorldEditLibrary
- * Copyright (C) 2010 sk89q <http://www.sk89q.com> and contributors
+ * This file is a part of WorldEdit.
+ * Copyright (c) sk89q <http://www.sk89q.com>
+ * Copyright (c) the WorldEdit team and contributors
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software 
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.sk89q.worldedit;
 
 import java.util.ArrayList;
@@ -47,100 +47,37 @@ import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.ArbitraryShape;
+import com.sk89q.worldedit.util.ChangeList;
 import com.sk89q.worldedit.util.Countable;
-import com.sk89q.worldedit.util.DoubleArrayList;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
- * This class can wrap all block editing operations into one "edit session" that
- * stores the state of the blocks before modification. This allows for easy undo
- * or redo. In addition to that, this class can use a "queue mode" that will
- * know how to handle some special types of items such as signs and torches. For
- * example, torches must be placed only after there is already a block below it,
- * otherwise the torch will be placed as an item.
- *
- * @author sk89q
+ * Edit sessions maintain a log of changes for undo and enforce other WorldEdit
+ * constructs transparently.
  */
 public class EditSession {
 
-    /**
-     * Random number generator.
-     */
-    private static Random prng = new Random();
+    private static final Random prng = new Random();
+    
+    protected final LocalWorld world;
+    private final ChangeList original = new ChangeList(true);
+    private final ChangeList current = new ChangeList(false);
+    private final ChangeList queueAfter = new ChangeList(false);
+    private final ChangeList queueLast = new ChangeList(false);
+    private final ChangeList queueFinal = new ChangeList(false);
 
-    /**
-     * World.
-     */
-    protected LocalWorld world;
-
-    /**
-     * Stores the original blocks before modification.
-     */
-    private DoubleArrayList<BlockVector, BaseBlock> original =
-            new DoubleArrayList<BlockVector, BaseBlock>(true);
-
-    /**
-     * Stores the current blocks.
-     */
-    private DoubleArrayList<BlockVector, BaseBlock> current =
-            new DoubleArrayList<BlockVector, BaseBlock>(false);
-
-    /**
-     * Blocks that should be placed before last.
-     */
-    private DoubleArrayList<BlockVector, BaseBlock> queueAfter =
-            new DoubleArrayList<BlockVector, BaseBlock>(false);
-
-    /**
-     * Blocks that should be placed last.
-     */
-    private DoubleArrayList<BlockVector, BaseBlock> queueLast =
-            new DoubleArrayList<BlockVector, BaseBlock>(false);
-
-    /**
-     * Blocks that should be placed after all other blocks.
-     */
-    private DoubleArrayList<BlockVector, BaseBlock> queueFinal =
-            new DoubleArrayList<BlockVector, BaseBlock>(false);
-
-    /**
-     * The maximum number of blocks to change at a time. If this number is
-     * exceeded, a MaxChangedBlocksException exception will be raised. -1
-     * indicates no limit.
-     */
     private int maxBlocks = -1;
-
-    /**
-     * Indicates whether some types of blocks should be queued for best
-     * reproduction.
-     */
     private boolean queued = false;
-
-    /**
-     * Use the fast mode, which may leave chunks not flagged "dirty".
-     */
     private boolean fastMode = false;
-
-    /**
-     * Block bag to use for getting blocks.
-     */
     private BlockBag blockBag;
-
-    /**
-     * List of missing blocks;
-     */
     private Map<Integer, Integer> missingBlocks = new HashMap<Integer, Integer>();
-
-    /**
-     * Mask to cover operations.
-     */
     private Mask mask;
 
     /**
      * Construct the object with a maximum number of blocks.
      *
-     * @param world
-     * @param maxBlocks
+     * @param world the world
+     * @param maxBlocks the maximum number of blocks
      */
     public EditSession(LocalWorld world, int maxBlocks) {
         if (maxBlocks < -1) {
@@ -154,10 +91,9 @@ public class EditSession {
     /**
      * Construct the object with a maximum number of blocks and a block bag.
      *
-     * @param world
-     * @param maxBlocks
-     * @param blockBag
-     * @blockBag
+     * @param world the world
+     * @param maxBlocks the maximum number of blocks
+     * @param blockBag a block bag
      */
     public EditSession(LocalWorld world, int maxBlocks, BlockBag blockBag) {
         if (maxBlocks < -1) {
@@ -172,9 +108,9 @@ public class EditSession {
     /**
      * Sets a block without changing history.
      *
-     * @param pt
-     * @param block
-     * @return Whether the block changed
+     * @param pt the position to set the block at
+     * @param block the block to set
+     * @return true if the block was changed
      */
     public boolean rawSetBlock(Vector pt, BaseBlock block) {
         final int y = pt.getBlockY();
@@ -2833,7 +2769,7 @@ public class EditSession {
 
         Vector zero2 = zero.add(0.5, 0.5, 0.5);
 
-        final DoubleArrayList<BlockVector, BaseBlock> queue = new DoubleArrayList<BlockVector, BaseBlock>(false);
+        final ChangeList queue = new ChangeList(false);
 
         for (BlockVector position : region) {
             // offset, scale
