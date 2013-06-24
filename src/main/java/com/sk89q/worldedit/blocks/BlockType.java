@@ -518,13 +518,10 @@ public enum BlockType {
             }
             centralTopLimit.put(-16*BlockID.HEAD-data, 0.75);
         }
-        // Default value to be used if no data value is given
-        centralTopLimit.put(BlockID.HEAD, 0.75);
         // Heads on the floor are lower
         centralTopLimit.put(-16*BlockID.HEAD-1, 0.5);
         centralTopLimit.put(-16*BlockID.HEAD-9, 0.5);
         centralTopLimit.put(BlockID.FENCE, 1.5);
-        centralTopLimit.put(BlockID.FENCE_GATE, 1.5);
         for (int data = 0; data < 8; ++data) {
             centralTopLimit.put(-16*BlockID.STEP-data, 0.5);
             centralTopLimit.put(-16*BlockID.WOODEN_STEP-data, 0.5);
@@ -534,12 +531,27 @@ public enum BlockType {
         centralTopLimit.put(BlockID.LILY_PAD, 0.015625);
         centralTopLimit.put(BlockID.REDSTONE_REPEATER_ON, .125);
         centralTopLimit.put(BlockID.REDSTONE_REPEATER_OFF, .125);
-        centralTopLimit.put(BlockID.TRAP_DOOR, 0.1875);
+        for (int data = 0; data < 4; ++data) {
+            centralTopLimit.put(-16*BlockID.TRAP_DOOR-(data+ 0), 0.1875); // closed lower trap doors
+            centralTopLimit.put(-16*BlockID.TRAP_DOOR-(data+ 4), 0.0); // opened lower trap doors
+            centralTopLimit.put(-16*BlockID.TRAP_DOOR-(data+ 8), 1.0); // closed upper trap doors
+            centralTopLimit.put(-16*BlockID.TRAP_DOOR-(data+12), 0.0); // opened upper trap doors
+
+            centralTopLimit.put(-16*BlockID.FENCE_GATE-(data+ 0), 1.5);
+            centralTopLimit.put(-16*BlockID.FENCE_GATE-(data+ 4), 0.0);
+            centralTopLimit.put(-16*BlockID.FENCE_GATE-(data+ 8), 1.5);
+            centralTopLimit.put(-16*BlockID.FENCE_GATE-(data+12), 0.0);
+        }
         centralTopLimit.put(BlockID.SLOW_SAND, 0.875);
         centralTopLimit.put(BlockID.FLOWER_POT, 0.375);
         centralTopLimit.put(BlockID.COMPARATOR_OFF, .125);
         centralTopLimit.put(BlockID.COMPARATOR_ON, .125);
         centralTopLimit.put(BlockID.DAYLIGHT_SENSOR, 0.375);
+
+        // Some default values to be used if no data value is given
+        centralTopLimit.put(BlockID.HEAD, 0.75);
+        centralTopLimit.put(BlockID.TRAP_DOOR, 1.0);
+        centralTopLimit.put(BlockID.FENCE_GATE, 1.5);
     }
 
     /**
