@@ -19,63 +19,48 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.ItemID;
-import com.sk89q.worldedit.snapshots.SnapshotRepository;
-
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.ItemID;
+import com.sk89q.worldedit.snapshots.SnapshotRepository;
+
 /**
- * Represents WorldEdit's configuration.
- *
- * @author sk89q
+ * Represents the configuration for WorldEdit.
+ * 
+ * <p>Implementations need to extend this class and provide routines for loading
+ * the configuration.</p>
  */
 public abstract class LocalConfiguration {
+    
     protected static final int[] defaultDisallowedBlocks = new int[] {
-                // dangerous stuff (physics/drops items)
-                BlockID.SAPLING,
-                BlockID.BED,
-                BlockID.POWERED_RAIL,
-                BlockID.DETECTOR_RAIL,
-                BlockID.LONG_GRASS,
-                BlockID.DEAD_BUSH,
-                BlockID.PISTON_EXTENSION,
-                BlockID.PISTON_MOVING_PIECE,
-                BlockID.YELLOW_FLOWER,
-                BlockID.RED_FLOWER,
-                BlockID.BROWN_MUSHROOM,
-                BlockID.RED_MUSHROOM,
-                BlockID.TNT,
-                BlockID.TORCH,
-                BlockID.FIRE,
-                BlockID.REDSTONE_WIRE,
-                BlockID.CROPS,
-                BlockID.MINECART_TRACKS,
-                BlockID.LEVER,
-                BlockID.REDSTONE_TORCH_OFF,
-                BlockID.REDSTONE_TORCH_ON,
-                BlockID.REDSTONE_REPEATER_OFF,
-                BlockID.REDSTONE_REPEATER_ON,
-                BlockID.STONE_BUTTON,
-                BlockID.CACTUS,
-                BlockID.REED,
-                // ores and stuff
-                BlockID.BEDROCK,
-                BlockID.GOLD_ORE,
-                BlockID.IRON_ORE,
-                BlockID.COAL_ORE,
-                BlockID.DIAMOND_ORE,
-
-                // @TODO rethink what should be disallowed by default
-                // Gold and iron can be legitimately obtained, but were set to disallowed by
-                // default. Diamond and coal can't be legitimately obtained. Sponges,
-                // portals, snow, and locked chests also can't, but are allowed. None of
-                // these blocks poses any immediate threat. Most of the blocks (in the first
-                // section) are disallowed because people will accidentally set a huge area
-                // of them, triggering physics and a million item drops, lagging the server.
-                // Doors also have this effect, but are not disallowed.
+            // dangerous stuff (physics/drops items)
+            BlockID.SAPLING, BlockID.BED, BlockID.POWERED_RAIL,
+            BlockID.DETECTOR_RAIL, BlockID.LONG_GRASS, BlockID.DEAD_BUSH,
+            BlockID.PISTON_EXTENSION, BlockID.PISTON_MOVING_PIECE,
+            BlockID.YELLOW_FLOWER, BlockID.RED_FLOWER, BlockID.BROWN_MUSHROOM,
+            BlockID.RED_MUSHROOM, BlockID.TNT, BlockID.TORCH, BlockID.FIRE,
+            BlockID.REDSTONE_WIRE, BlockID.CROPS, BlockID.MINECART_TRACKS,
+            BlockID.LEVER, BlockID.REDSTONE_TORCH_OFF,
+            BlockID.REDSTONE_TORCH_ON, BlockID.REDSTONE_REPEATER_OFF,
+            BlockID.REDSTONE_REPEATER_ON, BlockID.STONE_BUTTON, BlockID.CACTUS,
+            BlockID.REED,
+            // Ores and bedrock
+            BlockID.BEDROCK,
+            BlockID.GOLD_ORE,
+            BlockID.IRON_ORE,
+            BlockID.COAL_ORE,
+            BlockID.DIAMOND_ORE,
+            // @TODO rethink what should be disallowed by default
+            // Gold and iron can be legitimately obtained, but were set to disallowed by
+            // default. Diamond and coal can't be legitimately obtained. Sponges,
+            // portals, snow, and locked chests also can't, but are allowed. None of
+            // these blocks poses any immediate threat. Most of the blocks (in the first
+            // section) are disallowed because people will accidentally set a huge area
+            // of them, triggering physics and a million item drops, lagging the server.
+            // Doors also have this effect, but are not disallowed.
             };
 
     public boolean profile = false;
@@ -112,19 +97,25 @@ public abstract class LocalConfiguration {
     public boolean allowSymlinks = false;
 
     /**
-     * Loads the configuration.
+     * Load the configuration.
      */
     public abstract void load();
 
     /**
-     * Get the working directory to work from.
-     *
-     * @return
+     * Get the working directory where WorldEdit's data files can be stored.
+     * 
+     * @return the working directory
      */
     public File getWorkingDirectory() {
         return new File(".");
     }
 
+    /**
+     * Get the maximum number of points for a polygon for a player.
+     * 
+     * @param player the player
+     * @return the number of points
+     */
     public int getMaximumPolygonalPoints(LocalPlayer player) {
         if (player.hasPermission("worldedit.limit.unrestricted") || maxPolygonalPoints < 0) {
             return defaultMaxPolygonalPoints;
@@ -141,7 +132,7 @@ public abstract class LocalConfiguration {
      * Checks to see if the specified radius is within bounds.
      *
      * @param radius the radius
-     * @throws MaxRadiusException if the raidus is too large
+     * @throws MaxRadiusException if the radius is too large
      */
     public void checkMaxRadius(double radius) throws MaxRadiusException {
         if (maxRadius > 0 && radius > maxRadius) {
