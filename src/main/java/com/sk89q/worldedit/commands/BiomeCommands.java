@@ -153,7 +153,7 @@ public class BiomeCommands {
 
         if (args.hasFlag('p')) {
             Vector2D pos = player.getPosition().toVector2D();
-            if (biomeMask == null || (biomeMask.matches2D(editSession, pos) ^ inverted)) {
+            if (biomeMask == null || (biomeMask.matches(editSession, pos) ^ inverted)) {
                 player.getWorld().setBiome(pos, target);
                 player.print("Biome changed to " + target.getName() + " at your current location.");
             } else {
@@ -166,7 +166,7 @@ public class BiomeCommands {
 
             if (region instanceof FlatRegion) {
                 for (Vector2D pt : ((FlatRegion) region).asFlatRegion()) {
-                    if (biomeMask == null || (biomeMask.matches2D(editSession, pt) ^ inverted)) {
+                    if (biomeMask == null || (biomeMask.matches(editSession, pt) ^ inverted)) {
                         world.setBiome(pt, target);
                         ++affected;
                     }
