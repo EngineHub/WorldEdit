@@ -120,5 +120,11 @@ public class ScatterStructures extends ColumnVisitor implements ChangeCountable 
     public int getChangeCount() {
         return affected;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("ScatterStructures(region=%s, structure=%s)", 
+                getRegion(), structure);
+    }
 
 }

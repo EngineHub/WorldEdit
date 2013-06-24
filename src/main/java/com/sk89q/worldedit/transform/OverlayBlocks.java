@@ -61,7 +61,6 @@ public class OverlayBlocks extends ColumnVisitor implements ChangeCountable {
 
     @Override
     public void visitColumn(ExecutionHint opt, Vector columnPt) throws WorldEditException {
-
         for (int y = maxY - 1; y >= minY; --y) {
             Vector pt = columnPt.setY(y);
 
@@ -87,6 +86,11 @@ public class OverlayBlocks extends ColumnVisitor implements ChangeCountable {
     @Override
     public int getChangeCount() {
         return affected;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("OverlayBlocks(region=%s, pattern=%s)", getRegion(), pattern);
     }
 
 }

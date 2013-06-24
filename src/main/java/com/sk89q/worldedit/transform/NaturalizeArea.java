@@ -115,5 +115,10 @@ public class NaturalizeArea extends ColumnVisitor implements ChangeCountable {
     public int getChangeCount() {
         return affected;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("NaturalizeArea(region=%s)", getRegion());
+    }
 
 }

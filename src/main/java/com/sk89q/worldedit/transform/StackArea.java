@@ -172,5 +172,10 @@ public class StackArea implements Operation, ChangeCountable {
     public int getChangeCount() {
         return affected;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("StackArea(region=%s)", region);
+    }
 
 }

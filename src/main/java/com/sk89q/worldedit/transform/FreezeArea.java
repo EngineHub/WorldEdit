@@ -95,5 +95,10 @@ public class FreezeArea extends ColumnVisitor implements ChangeCountable {
     public int getChangeCount() {
         return affected;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("FreezeArea(region=%s)", getRegion());
+    }
 
 }

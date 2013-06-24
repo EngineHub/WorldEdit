@@ -144,5 +144,11 @@ public class ReplaceBlocks implements Operation, ChangeCountable {
     public int getChangeCount() {
         return affected;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("ReplaceBlocks(region=%s, mask=%s, pattern=%s)", 
+                region, mask, pattern);
+    }
 
 }

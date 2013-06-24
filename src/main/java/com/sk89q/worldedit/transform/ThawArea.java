@@ -96,5 +96,10 @@ public class ThawArea extends ColumnVisitor implements ChangeCountable {
     public int getChangeCount() {
         return affected;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("ThawArea(region=%s)", getRegion());
+    }
 
 }
