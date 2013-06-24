@@ -141,11 +141,11 @@ public abstract class LocalPlayer {
      * @return true if a spot was found
      */
     public boolean ascendLevel() {
-        Vector pos = getBlockIn();
-        int x = pos.getBlockX();
+        final WorldVector pos = getBlockIn();
+        final int x = pos.getBlockX();
         int y = Math.max(0, pos.getBlockY());
-        int z = pos.getBlockZ();
-        LocalWorld world = getPosition().getWorld();
+        final int z = pos.getBlockZ();
+        final LocalWorld world = pos.getWorld();
 
         byte free = 0;
         byte spots = 0;
@@ -160,14 +160,16 @@ public abstract class LocalPlayer {
             if (free == 2) {
                 ++spots;
                 if (spots == 2) {
-                    int type = world.getBlockType(new Vector(x, y - 2, z));
+                    final Vector platform = new Vector(x, y - 2, z);
+                    final BaseBlock block = world.getBlock(platform);
+                    final int type = block.getId();
 
                     // Don't get put in lava!
                     if (type == BlockID.LAVA || type == BlockID.STATIONARY_LAVA) {
                         return false;
                     }
 
-                    setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
+                    setPosition(platform.add(0.5, BlockType.centralTopLimit(block), 0.5));
                     return true;
                 }
             }
@@ -184,11 +186,11 @@ public abstract class LocalPlayer {
      * @return true if a spot was found
      */
     public boolean descendLevel() {
-        Vector pos = getBlockIn();
-        int x = pos.getBlockX();
+        final WorldVector pos = getBlockIn();
+        final int x = pos.getBlockX();
         int y = Math.max(0, pos.getBlockY() - 1);
-        int z = pos.getBlockZ();
-        LocalWorld world = getPosition().getWorld();
+        final int z = pos.getBlockZ();
+        final LocalWorld world = pos.getWorld();
 
         byte free = 0;
 
@@ -204,12 +206,14 @@ public abstract class LocalPlayer {
                 // lightly and also check to see if there's something to
                 // stand upon
                 while (y >= 0) {
-                    int type = world.getBlockType(new Vector(x, y, z));
+                    final Vector platform = new Vector(x, y, z);
+                    final BaseBlock block = world.getBlock(platform);
+                    final int type = block.getId();
 
                     // Don't want to end up in lava
                     if (type != BlockID.AIR && type != BlockID.LAVA && type != BlockID.STATIONARY_LAVA) {
                         // Found a block!
-                        setPosition(new Vector(x + 0.5, y + 1, z + 0.5));
+                        setPosition(platform.add(0.5, BlockType.centralTopLimit(block), 0.5));
                         return true;
                     }
 
