@@ -73,7 +73,7 @@ public class ReplaceBlocks implements Operation, ChangeCountable {
      * @param pattern pattern to set
      * @param mask an optional mask to use, null is allowed
      */
-    public ReplaceBlocks(EditSession editSession, Region region, Mask mask, Pattern pattern) {
+    public ReplaceBlocks(EditSession editSession, Region region, Pattern pattern, Mask mask) {
         this.editSession = editSession;
         this.region = region;
         this.pattern = pattern;
@@ -116,8 +116,6 @@ public class ReplaceBlocks implements Operation, ChangeCountable {
                 }
                 i++;
             }
-
-            editSession.flushQueue();
         }
         
         started = true;

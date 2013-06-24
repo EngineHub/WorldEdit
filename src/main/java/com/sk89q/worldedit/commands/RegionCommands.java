@@ -50,8 +50,11 @@ import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.operation.RejectedOperationException;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.transform.NaturalizeArea;
+import com.sk89q.worldedit.transform.OverlayBlocks;
 import com.sk89q.worldedit.transform.ReplaceBlocks;
 import com.sk89q.worldedit.util.HeightMap;
 
@@ -81,7 +84,8 @@ public class RegionCommands {
     @Logging(REGION)
     public void setBlocks(LocalPlayer player, @Unmanaged EditSession editSession,
             @Selection Region region, Pattern replaceWith, @Unmanaged CommandContext context)
-            throws WorldEditException, RejectedOperationException {
+            throws RejectedOperationException {
+        
         ReplaceBlocks op = new ReplaceBlocks(editSession, region, replaceWith);
         worldEdit.execute(player, op, editSession, "/" + context.getCommand());
     }
@@ -95,16 +99,17 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.replace")
     @Logging(REGION)
     public void replaceBlocks(LocalPlayer player, EditSession editSession,
-            @Selection Region region, @Nullable Mask mask, Pattern replaceWith)
-            throws MaxChangedBlocksException {
+            @Selection Region region, @Nullable Mask mask, Pattern replaceWith,
+            @Unmanaged CommandContext context)
+            throws RejectedOperationException {
         
         // No mask? Replace non-air blocks
         if (mask == null) {
             mask = new ExistingBlockMask();
         }
         
-        int affected = editSession.replaceBlocks(region, mask, replaceWith);
-        player.print(affected + " block(s) have been replaced.");
+        ReplaceBlocks op = new ReplaceBlocks(editSession, region, replaceWith, mask);
+        worldEdit.execute(player, op, editSession, "/" + context.getCommand());
     }
 
     /*
@@ -115,11 +120,11 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.overlay")
     @Logging(REGION)
     public void overlayBlocks(LocalPlayer player, EditSession editSession,
-            @Selection Region region, Pattern overlayWith)
-            throws MaxChangedBlocksException {
+            @Selection Region region, Pattern overlayWith, @Unmanaged CommandContext context)
+            throws RejectedOperationException {
         
-        int affected = editSession.overlayCuboidBlocks(region, overlayWith);
-        player.print(affected + " block(s) have been changed.");
+        OverlayBlocks op = new OverlayBlocks(editSession, region.toFlatRegion(), overlayWith);
+        worldEdit.execute(player, op, editSession, "/" + context.getCommand());
     }
 
     /*
@@ -130,11 +135,13 @@ public class RegionCommands {
     @Logging(REGION)
     @CommandPermissions("worldedit.region.center")
     public void setCenterBlock(LocalPlayer player, EditSession editSession,
-            @Selection Region region, Pattern pattern)
-            throws MaxChangedBlocksException {
+            @Selection Region region, Pattern pattern, @Unmanaged CommandContext context)
+            throws RejectedOperationException {
         
-        int affected = editSession.center(region, pattern);
-        player.print("Center set ("+ affected + " blocks changed)");
+        Vector centerVec = region.getCenter();
+        CuboidRegion center = new CuboidRegion(centerVec, centerVec);
+        ReplaceBlocks op = new ReplaceBlocks(editSession, center, pattern);
+        worldEdit.execute(player, op, editSession, "/" + context.getCommand());
     }
 
     /*
@@ -145,10 +152,11 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.naturalize")
     @Logging(REGION)
     public void makeNatural(LocalPlayer player, EditSession editSession,
-            @Selection Region region) throws MaxChangedBlocksException {
-        
-        int affected = editSession.naturalizeCuboidBlocks(region);
-        player.print(affected + " block(s) have been naturalized.");
+            @Selection Region region, @Unmanaged CommandContext context)
+            throws RejectedOperationException {
+
+        NaturalizeArea op = new NaturalizeArea(editSession, region.toFlatRegion());
+        worldEdit.execute(player, op, editSession, "/" + context.getCommand());
     }
 
     /*
