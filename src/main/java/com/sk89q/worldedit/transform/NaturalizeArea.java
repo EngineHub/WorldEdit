@@ -64,7 +64,6 @@ public class NaturalizeArea extends ColumnVisitor implements ChangeCountable {
 
     @Override
     public void visitColumn(ExecutionHint opt, Vector columnPt) throws WorldEditException {
-
         int level = -1;
 
         for (int y = maxY; y >= minY; --y) {
