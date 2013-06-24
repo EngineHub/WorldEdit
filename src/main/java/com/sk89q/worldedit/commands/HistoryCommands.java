@@ -22,7 +22,12 @@ package com.sk89q.worldedit.commands;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.*;
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 
 /**
  * History little commands.
@@ -45,7 +50,7 @@ public class HistoryCommands {
     )
     @CommandPermissions("worldedit.history.undo")
     public void undo(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+            EditSession editSession) throws WorldEditException, CommandPermissionsException {
         
         int times = Math.max(1, args.getInteger(0, 1));
         for (int i = 0; i < times; ++i) {
@@ -80,7 +85,7 @@ public class HistoryCommands {
     )
     @CommandPermissions("worldedit.history.redo")
     public void redo(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+            EditSession editSession) throws WorldEditException, CommandPermissionsException {
         
         int times = Math.max(1, args.getInteger(0, 1));
 

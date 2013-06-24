@@ -46,6 +46,9 @@ import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.ArbitraryShape;
+import com.sk89q.worldedit.util.Countable;
+import com.sk89q.worldedit.util.DoubleArrayList;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 /**

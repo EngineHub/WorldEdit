@@ -22,6 +22,7 @@ import com.sk89q.minecraft.util.commands.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.data.DataException;
 import com.sk89q.worldedit.schematic.SchematicFormat;
+import com.sk89q.worldedit.util.FilenameResolutionException;
 
 import java.io.File;
 import java.io.IOException;

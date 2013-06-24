@@ -1,7 +1,7 @@
 // $Id$
 /*
  * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com> and contributors
+ * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com> and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.util;
 
-/**
- * @author zml2008
- */
-public class WorldEditPermissionException extends WorldEditException {
-    private static final long serialVersionUID = 1L;
+public class FileSelectionAbortedException extends FilenameException {
+    private static final long serialVersionUID = 7377072269988014886L;
 
-    public WorldEditPermissionException() {
-        super("You don't have permission to do this.");
+    public FileSelectionAbortedException() {
+        super("");
+    }
+
+    public FileSelectionAbortedException(String msg) {
+        super("", msg);
     }
 }

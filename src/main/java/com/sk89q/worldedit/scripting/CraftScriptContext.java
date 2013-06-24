@@ -23,6 +23,7 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.commands.InsufficientArgumentsException;
 import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.util.FilenameException;
 
 import java.io.File;
 import java.util.ArrayList;

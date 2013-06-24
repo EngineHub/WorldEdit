@@ -22,7 +22,6 @@ import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LogFormat;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 

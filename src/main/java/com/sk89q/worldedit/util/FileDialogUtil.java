@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
-import com.sk89q.util.StringUtil;
 
 public class FileDialogUtil {
     public static File showSaveDialog(String[] exts) {

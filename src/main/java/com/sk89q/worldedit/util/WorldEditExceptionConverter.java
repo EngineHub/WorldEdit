@@ -26,12 +26,9 @@ import com.sk89q.rebar.command.parametric.ExceptionConverterHelper;
 import com.sk89q.rebar.command.parametric.ExceptionMatch;
 import com.sk89q.worldedit.DisallowedItemException;
 import com.sk89q.worldedit.EmptyClipboardException;
-import com.sk89q.worldedit.FileSelectionAbortedException;
-import com.sk89q.worldedit.FilenameResolutionException;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.InvalidFilenameException;
 import com.sk89q.worldedit.InvalidItemException;
-import com.sk89q.worldedit.InvalidToolBindException;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.MaxRadiusException;
@@ -44,6 +41,7 @@ import com.sk89q.worldedit.commands.InsufficientArgumentsException;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.operation.RejectedOperationException;
 import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.tools.InvalidToolBindException;
 
 /**
  * converts WorldEdit exceptions and converts them into {@link CommandException}s.

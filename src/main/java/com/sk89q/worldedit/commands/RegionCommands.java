@@ -32,7 +32,6 @@ import com.sk89q.rebar.command.binding.Text;
 import com.sk89q.rebar.command.binding.Unmanaged;
 import com.sk89q.rebar.command.parametric.Optional;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.HeightMap;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
@@ -54,6 +53,7 @@ import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.transform.ReplaceBlocks;
+import com.sk89q.worldedit.util.HeightMap;
 
 /**
  * Commands that deal with a {@link Region} provided by the user's current

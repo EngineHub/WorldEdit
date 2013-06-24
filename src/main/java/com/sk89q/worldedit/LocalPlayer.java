@@ -21,13 +21,14 @@ package com.sk89q.worldedit;
 
 import java.io.File;
 
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
 import com.sk89q.rebar.formatting.ColorCodeBuilder;
 import com.sk89q.rebar.formatting.MessageBuilder;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
-import com.sk89q.worldedit.cui.CUIEvent;
+import com.sk89q.worldedit.client.bridge.CUIEvent;
 import com.sk89q.worldedit.util.TargetBlock;
 
 /**
@@ -802,9 +803,9 @@ public abstract class LocalPlayer {
         return getName().hashCode();
     }
 
-    public void checkPermission(String permission) throws WorldEditPermissionException {
+    public void checkPermission(String permission) throws CommandPermissionsException {
         if (!hasPermission(permission)) {
-            throw new WorldEditPermissionException();
+            throw new CommandPermissionsException();
         }
     }
 

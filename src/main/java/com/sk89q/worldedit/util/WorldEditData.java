@@ -21,9 +21,6 @@ package com.sk89q.worldedit.util;
 import java.io.File;
 import java.io.IOException;
 
-import com.sk89q.worldedit.FileSelectionAbortedException;
-import com.sk89q.worldedit.FilenameException;
-import com.sk89q.worldedit.FilenameResolutionException;
 import com.sk89q.worldedit.InvalidFilenameException;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.WorldEdit;

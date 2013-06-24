@@ -28,8 +28,8 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.cui.CUIRegion;
-import com.sk89q.worldedit.cui.SelectionPointEvent;
+import com.sk89q.worldedit.client.bridge.CUIRegion;
+import com.sk89q.worldedit.client.bridge.SelectionPointEvent;
 
 /**
  * Selector for cuboids.

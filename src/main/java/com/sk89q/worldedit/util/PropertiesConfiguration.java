@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.snapshots.SnapshotRepository;

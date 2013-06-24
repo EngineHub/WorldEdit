@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.util;
+package com.sk89q.worldedit.util;
 
 public class ArrayUtil {
 

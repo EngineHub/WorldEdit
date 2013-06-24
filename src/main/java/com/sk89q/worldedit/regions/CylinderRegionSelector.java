@@ -30,11 +30,11 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.cui.CUIRegion;
-import com.sk89q.worldedit.cui.SelectionCylinderEvent;
-import com.sk89q.worldedit.cui.SelectionMinMaxEvent;
-import com.sk89q.worldedit.cui.SelectionPointEvent;
-import com.sk89q.worldedit.cui.SelectionShapeEvent;
+import com.sk89q.worldedit.client.bridge.CUIRegion;
+import com.sk89q.worldedit.client.bridge.SelectionCylinderEvent;
+import com.sk89q.worldedit.client.bridge.SelectionMinMaxEvent;
+import com.sk89q.worldedit.client.bridge.SelectionPointEvent;
+import com.sk89q.worldedit.client.bridge.SelectionShapeEvent;
 
 /**
  * Selector for polygonal regions.
