@@ -23,8 +23,8 @@ import com.google.common.util.concurrent.SettableFuture;
 /**
  * Used by {@link OperationExecutor} to queue an operation.
  */
-abstract class QueuedOperationEntry implements
-        QueuedOperation, Comparable<QueuedOperationEntry> {
+abstract class QueuedOperationEntry extends AbstractQueuedOperation implements
+        Comparable<QueuedOperationEntry> {
 
     private OperationState state = OperationState.QUEUED;
     private Operation operation;
@@ -59,6 +59,7 @@ abstract class QueuedOperationEntry implements
      * 
      * @return the operation
      */
+    @Override
     public Operation getOperation() {
         return operation;
     }

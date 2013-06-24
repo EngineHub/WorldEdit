@@ -20,6 +20,7 @@ package com.sk89q.worldedit.util;
 
 import java.lang.annotation.Annotation;
 
+import com.sk89q.rebar.command.binding.Unmanaged;
 import com.sk89q.rebar.command.parametric.ArgumentStack;
 import com.sk89q.rebar.command.parametric.BindingBehavior;
 import com.sk89q.rebar.command.parametric.BindingHelper;
@@ -35,7 +36,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.annotation.Direction;
 import com.sk89q.worldedit.annotation.Selection;
-import com.sk89q.worldedit.annotation.Unmanaged;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;

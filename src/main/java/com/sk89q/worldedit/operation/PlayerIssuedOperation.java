@@ -19,53 +19,36 @@
 package com.sk89q.worldedit.operation;
 
 import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.WorldEditException;
 
 /**
- * Wraps another operation and allows for tracking the owner of an operation.
+ * Holds metadata for tracking the owner of an operation.
  */
-public class OwnedOperation implements Operation {
+public class PlayerIssuedOperation {
 
+    private final String label;
     private final LocalPlayer owner;
     private final long creationTime = System.currentTimeMillis();
-    private final Operation originalOperation;
-    private Operation operation;
 
     /**
      * Create a new operation with the given owner and operation.
      *
+     * @param label the label describing this operation
      * @param owner the owner
-     * @param operation the operation
      */
-    public OwnedOperation(LocalPlayer owner, Operation operation) {
+    public PlayerIssuedOperation(String label, LocalPlayer owner) {
+        this.label = label;
         this.owner = owner;
-        this.operation = operation;
-        this.originalOperation = operation;
-    }
-
-    @Override
-    public Operation resume(ExecutionHint opt) throws WorldEditException {
-        operation = operation.resume(opt);
-        if (operation == null) {
-            return null;
-        }
-        return this;
-    }
-
-    @Override
-    public void cancel() {
-        operation.cancel();
     }
 
     /**
-     * Get the operation that this object was created with.
+     * Get the label describing this operation.
      * 
-     * @return the operation
+     * @return the label
      */
-    public Operation getOperation() {
-        return originalOperation;
+    public String getLabel() {
+        return label;
     }
-
+    
     /**
      * Get the owner of this operation.
      * 

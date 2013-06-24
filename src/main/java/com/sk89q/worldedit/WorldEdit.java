@@ -69,7 +69,7 @@ import com.sk89q.worldedit.operation.ImmediateExecutor;
 import com.sk89q.worldedit.operation.Operation;
 import com.sk89q.worldedit.operation.OperationExecutor;
 import com.sk89q.worldedit.operation.OperationResponse;
-import com.sk89q.worldedit.operation.OwnedOperation;
+import com.sk89q.worldedit.operation.PlayerIssuedOperation;
 import com.sk89q.worldedit.operation.QueuedOperation;
 import com.sk89q.worldedit.operation.RejectedOperationException;
 import com.sk89q.worldedit.patterns.Pattern;
@@ -339,17 +339,20 @@ public class WorldEdit {
      * @param player the player
      * @param operation the operation
      * @param editSession the edit session
+     * @param label a label describing the operation
      * @throws RejectedOperationException if the operation was rejected
      * @see OperationExecutor#offer(Operation)
      */
-    public void execute(
-            final LocalPlayer player, Operation operation, EditSession editSession)
-            throws RejectedOperationException {
-        OwnedOperation owned = new OwnedOperation(player, operation);
-        QueuedOperation queued = getExecutor().offer(owned);
+    public void execute(final LocalPlayer player, Operation operation,
+            EditSession editSession, String label) throws RejectedOperationException {
+        QueuedOperation queued = getExecutor().offer(operation);
+        OperationResponse response = new OperationResponse(this, player, queued);
+        response.schedule();
+        PlayerIssuedOperation metadata = new PlayerIssuedOperation(label, player);
+        queued.setMetadata(metadata);
         ListenableFuture<Operation> future = queued.getFuture();
         Futures.addCallback(future, new EditSessionFlusher(this, editSession, player));
-        Futures.addCallback(future, new OperationResponse(this, player));
+        Futures.addCallback(future, response);
     }
 
     /**

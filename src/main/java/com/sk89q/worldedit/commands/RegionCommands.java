@@ -23,11 +23,13 @@ import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import javax.annotation.Nullable;
 
 import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.rebar.command.binding.Range;
 import com.sk89q.rebar.command.binding.Switch;
 import com.sk89q.rebar.command.binding.Text;
+import com.sk89q.rebar.command.binding.Unmanaged;
 import com.sk89q.rebar.command.parametric.Optional;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.HeightMap;
@@ -39,7 +41,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.annotation.Direction;
 import com.sk89q.worldedit.annotation.Selection;
-import com.sk89q.worldedit.annotation.Unmanaged;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.expression.ExpressionException;
@@ -79,10 +80,10 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.set")
     @Logging(REGION)
     public void setBlocks(LocalPlayer player, @Unmanaged EditSession editSession,
-            @Selection Region region, Pattern replaceWith)
+            @Selection Region region, Pattern replaceWith, @Unmanaged CommandContext context)
             throws WorldEditException, RejectedOperationException {
         ReplaceBlocks op = new ReplaceBlocks(editSession, region, replaceWith);
-        worldEdit.execute(player, op, editSession);
+        worldEdit.execute(player, op, editSession, "/" + context.getCommand());
     }
 
     /*

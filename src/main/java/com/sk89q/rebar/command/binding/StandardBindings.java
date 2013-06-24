@@ -18,11 +18,13 @@
 
 package com.sk89q.rebar.command.binding;
 
+import java.lang.annotation.Annotation;
+
 import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.rebar.command.parametric.ArgumentStack;
 import com.sk89q.rebar.command.parametric.BindingBehavior;
 import com.sk89q.rebar.command.parametric.BindingHelper;
 import com.sk89q.rebar.command.parametric.BindingMatch;
-import com.sk89q.rebar.command.parametric.ArgumentStack;
 
 /**
  * Standard bindings that should be available to most configurations.
@@ -33,12 +35,23 @@ public final class StandardBindings extends BindingHelper {
      * Gets a {@link CommandContext} from a {@link ArgumentStack}.
      * 
      * @param context the context
+     * @param modifiers a list of modifiers
      * @return a selection
      */
     @BindingMatch(type = CommandContext.class,
-                  behavior = BindingBehavior.PROVIDES)
-    public CommandContext getCommandContext(ArgumentStack context) {
-        context.markConsumed(); // Consume entire stack
+                  behavior = BindingBehavior.PROVIDES,
+                  provideModifiers = true)
+    public CommandContext getCommandContext(ArgumentStack context, Annotation[] modifiers) {
+        boolean managed = true;
+        for (Annotation modifier : modifiers) {
+            if (modifier instanceof Unmanaged) {
+                managed = false;
+                break;
+            }
+        }
+        if (managed) {
+            context.markConsumed(); // Consume entire stack
+        }
         return context.getContext();
     }
     

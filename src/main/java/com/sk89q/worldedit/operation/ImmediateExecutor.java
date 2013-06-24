@@ -52,7 +52,7 @@ public class ImmediateExecutor implements OperationExecutor {
 
         final boolean successful = thrown == null;
         
-        return new QueuedOperation() {
+        return new AbstractQueuedOperation() {
             @Override
             public ListenableFuture<Operation> getFuture() {
                 return future;
@@ -66,6 +66,11 @@ public class ImmediateExecutor implements OperationExecutor {
             @Override
             public boolean cancel() {
                 return false;
+            }
+
+            @Override
+            public Operation getOperation() {
+                return null;
             }
         };
     }

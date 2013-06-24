@@ -14,23 +14,33 @@
  *
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
-package com.sk89q.worldedit.annotation;
+package com.sk89q.rebar.util;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import com.sk89q.worldedit.EditSession;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Annotates a {@link EditSession} parameter to indicate that the edit session
- * should not be managed.
+ * An abstract implementation of {@link Describable}.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
-public @interface Unmanaged {
+public abstract class AbstractDescribable implements Describable {
+    
+    private final Map<Class<?>, Object> metadata = new HashMap<Class<?>, Object>();
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getMetadata(Class<T> metadataClass) {
+        Object m = metadata.get(metadataClass);
+        if (m != null) {
+            return (T) m;
+        }
+        return null;
+    }
+
+    @Override
+    public void setMetadata(Object m) {
+        metadata.put(m.getClass(), m);
+    }
 
 }

@@ -38,17 +38,29 @@ public class OperationListFragment extends StyledFragment {
         int i = 0;
         for (QueuedOperation queued : operations) {
             StyledFragment name = new StyledFragment(Style.YELLOW);
-            name.append(queued.getClass().getSimpleName());
-            
+            StyledFragment owner = new StyledFragment();
             StyledFragment status = new StyledFragment(Style.CYAN);
             status.append(queued.getState().name());
+            
+            // Get the object that may contain extra information
+            PlayerIssuedOperation info = queued.getMetadata(PlayerIssuedOperation.class);
+            if (info != null) {
+                name.append(info.getLabel());
+
+                owner.append(", owner=");
+                owner.createFragment(Style.GREEN).append(info.getOwner().getName());
+            } else {
+                name.append(queued.getOperation().toString());
+            }
             
             if (i > 0 || beginNewLine) {
                 newLine();
             }
             
-            append("#").append(i + 1).append(" ");
-            append(name).append(" ");
+            append("#").append(i + 1).append(". ");
+            append(name);
+            append(owner);
+            append(", status=");
             append(status);
 
             i++;

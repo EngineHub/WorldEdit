@@ -19,18 +19,28 @@
 package com.sk89q.worldedit.operation;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.sk89q.rebar.util.Describable;
 
 /**
  * Stores the state of an operation that has been added to an {@link OperationExecutor}.
  */
-public interface QueuedOperation {
+public interface QueuedOperation extends Describable {
+    
+    /**
+     * Get the current operation that is queued.
+     * 
+     * <p>This may not be the same as the original operation.</p>
+     * 
+     * @return the operation, or null if there is no more operation to execute
+     */
+    Operation getOperation();
 
     /**
      * Get the future.
      *
      * @return the future
      */
-    public ListenableFuture<Operation> getFuture();
+    ListenableFuture<Operation> getFuture();
 
     /**
      * Get the state of this operation.
