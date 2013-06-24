@@ -249,15 +249,18 @@ class ParametricCallable implements CommandCallable {
 
             throw new InvalidUsageException("For parameter '" + name + "': "
                     + e.getMessage(), getDescription());
+        } catch (CommandException e) {
+            throw e;
         } catch (InvocationTargetException e) {
             for (ExceptionConverter converter : builder.getExceptionConverters()) {
                 converter.convert(e.getCause());
             }
+            if (e.getCause() instanceof CommandException) {
+                throw (CommandException) e.getCause();
+            }
             throw new WrappedCommandException(e);
         } catch (IllegalArgumentException e) {
             throw new WrappedCommandException(e);
-        } catch (CommandException e) {
-            throw e;
         } catch (Throwable e) {
             throw new WrappedCommandException(e);
         }
