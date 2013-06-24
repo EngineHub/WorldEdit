@@ -44,6 +44,15 @@ public abstract class ColumnVisitor implements Operation {
         this.region = region;
     }
 
+    /**
+     * Get the region.
+     * 
+     * @return the region
+     */
+    public FlatRegion getRegion() {
+        return region;
+    }
+
     @Override
     public Operation resume(ExecutionHint opt) throws WorldEditException {
         Iterator<BlockVector> points = region.columnIterator();
