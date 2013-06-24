@@ -69,7 +69,7 @@ import com.sk89q.worldedit.factory.FilterFactory;
 import com.sk89q.worldedit.factory.MaterialFactory;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.operation.CallbackExecutor;
-import com.sk89q.worldedit.operation.EditSessionFlusher;
+import com.sk89q.worldedit.operation.ManagedOperation;
 import com.sk89q.worldedit.operation.ImmediateExecutor;
 import com.sk89q.worldedit.operation.ImmutableHint;
 import com.sk89q.worldedit.operation.Operation;
@@ -353,13 +353,14 @@ public class WorldEdit implements Owner {
      */
     public void execute(final LocalPlayer player, Operation operation,
             EditSession editSession, String label) throws RejectedOperationException {
-        QueuedOperation queued = getExecutor().offer(operation);
+        ManagedOperation wrapped = new ManagedOperation(
+                this, editSession, player, operation);
+        QueuedOperation queued = getExecutor().offer(wrapped);
         OperationResponse response = new OperationResponse(this, player, queued);
         response.schedule();
         PlayerIssuedOperation metadata = new PlayerIssuedOperation(label, player);
         queued.setMetadata(metadata);
         ListenableFuture<Operation> future = queued.getFuture();
-        Futures.addCallback(future, new EditSessionFlusher(this, editSession, player));
         Futures.addCallback(future, response);
     }
 

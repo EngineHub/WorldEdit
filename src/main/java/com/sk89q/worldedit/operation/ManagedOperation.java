@@ -18,7 +18,6 @@
 
 package com.sk89q.worldedit.operation;
 
-import com.google.common.util.concurrent.FutureCallback;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
@@ -28,7 +27,7 @@ import com.sk89q.worldedit.WorldEdit;
  * Handles flushing {@link EditSession}s, storing changes to history, and 
  * other important things for an {@link Operation}.
  */
-public class EditSessionFlusher implements FutureCallback<Operation> {
+public class ManagedOperation extends OperationWrapper {
     
     private final EditSession editSession;
     private final WorldEdit worldEdit;
@@ -40,19 +39,29 @@ public class EditSessionFlusher implements FutureCallback<Operation> {
      * @param worldEdit WorldEdit instance
      * @param editSession the edit session
      * @param player the player
+     * @param operation the operation to wrap
      */
-    public EditSessionFlusher(
-            WorldEdit worldEdit, EditSession editSession, LocalPlayer player) {
+    public ManagedOperation(WorldEdit worldEdit, EditSession editSession,
+            LocalPlayer player, Operation operation) {
+        super(operation);
         this.editSession = editSession;
         this.worldEdit = worldEdit;
         this.player = player;
     }
 
+    /**
+     * Flush changes after the operation is completed.
+     */
     private void flush() {
         LocalSession session = worldEdit.getSessions().get(player);
         session.remember(editSession);
         editSession.flushQueue();
         worldEdit.flushBlockBag(player, editSession);
+    }
+
+    @Override
+    protected void onResume(Operation current, Operation next, boolean success) {
+        editSession.flushQueue();
     }
 
     @Override
