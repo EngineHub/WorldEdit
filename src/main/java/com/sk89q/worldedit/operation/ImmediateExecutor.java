@@ -36,7 +36,7 @@ public class ImmediateExecutor implements OperationExecutor {
     }
 
     @Override
-    public QueuedOperation offer(Operation operation)
+    public QueuedOperation submit(Operation operation)
             throws RejectedOperationException {
         final SettableFuture<Operation> future = SettableFuture.create();
         Throwable thrown = null;

@@ -101,7 +101,7 @@ public class CallbackExecutor implements OperationExecutor {
     }
 
     @Override
-    public QueuedOperation offer(Operation operation)
+    public QueuedOperation submit(Operation operation)
             throws RejectedOperationException {
         SettableFuture<Operation> future = SettableFuture.create();
         QueuedOperationEntry entry = new CallbackQueuedOperation(operation, 0, future);

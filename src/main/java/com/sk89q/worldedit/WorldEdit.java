@@ -349,13 +349,13 @@ public class WorldEdit implements Owner {
      * @param editSession the edit session
      * @param label a label describing the operation
      * @throws RejectedOperationException if the operation was rejected
-     * @see OperationExecutor#offer(Operation)
+     * @see OperationExecutor#submit(Operation)
      */
     public void execute(final LocalPlayer player, Operation operation,
             EditSession editSession, String label) throws RejectedOperationException {
         ManagedOperation wrapped = new ManagedOperation(
                 this, editSession, player, operation);
-        QueuedOperation queued = getExecutor().offer(wrapped);
+        QueuedOperation queued = getExecutor().submit(wrapped);
         OperationResponse response = new OperationResponse(this, player, queued);
         response.schedule();
         PlayerIssuedOperation metadata = new PlayerIssuedOperation(label, player);

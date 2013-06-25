@@ -34,7 +34,7 @@ public interface OperationExecutor extends Runnable {
      * @return an object representing the operation's queued state
      * @throws RejectedOperationException thrown if there is no room
      */
-    QueuedOperation offer(Operation operation) throws RejectedOperationException;
+    QueuedOperation submit(Operation operation) throws RejectedOperationException;
 
     /**
      * Execute a step in the current operation.
