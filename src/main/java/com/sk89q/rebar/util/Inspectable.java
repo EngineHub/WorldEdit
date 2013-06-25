@@ -16,19 +16,26 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.operation;
+package com.sk89q.rebar.util;
 
 /**
- * Indicates an {@link Operation} that can provide information on current progress.
+ * Indicates an object that can provide information on current progress.
  */
-public interface ProgressCapable {
+public interface Inspectable {
     
     /**
-     * Return the progress of the operation as a float between 0 and 1. A negative
+     * Return the progress of the object as a float between 0 and 1. A negative
      * number indicates that the progress is in an indeterminate state.
      * 
      * @return the progress between 0 and 1, or a negative number for indeterminate
      */
     float getProgress(); 
+    
+    /**
+     * Get a status string describing the current status of the operation.
+     * 
+     * @return a status string, or null if unavailable
+     */
+    String getStatus();
 
 }
