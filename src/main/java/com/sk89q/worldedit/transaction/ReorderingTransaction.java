@@ -82,7 +82,6 @@ public class ReorderingTransaction extends AbstractTransaction {
      */
     protected void flushChunk(BlockVector2D chunk) {
     }
-        
     
     @Override
     public final boolean setBlock(Vector location, BaseBlock block) {
