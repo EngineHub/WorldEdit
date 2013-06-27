@@ -27,6 +27,8 @@ import com.sk89q.worldedit.WorldEditException;
 public abstract class OperationWrapper implements Operation {
     
     private Operation operation;
+    private Throwable thrown;
+    private boolean completed = false;
 
     /**
      * Create a new wrapper for the given operation.
@@ -40,24 +42,41 @@ public abstract class OperationWrapper implements Operation {
     @Override
     public final Operation resume(ExecutionHint opt) throws WorldEditException {
         Operation operation = this.operation;
-        try {
-            this.operation = operation.resume(opt);
-            onResume(operation, this.operation, true);
-        } catch (Throwable t) {
-            onResume(operation, this.operation, false);
-            onFailure(t);
-            if (t instanceof WorldEditException) {
-                throw (WorldEditException) t;
-            } else {
-                throw new RuntimeException("Error in wrapped exception", t);
+        
+        if (!completed) { // Run the wrapped operation
+            try {
+                this.operation = operation.resume(opt);
+                onResume(operation, this.operation, true);
+                if (this.operation == null) {
+                    onSuccess(operation);
+                } else {
+                    return this;
+                }
+            } catch (Throwable t) {
+                onResume(operation, this.operation, false);
+                onFailure(t);
+                thrown = t;
             }
-        }
-
-        if (this.operation == null) {
-            onSuccess(operation);
-            return null;
-        } else {
+            
+            completed = true;
+            this.operation = nextOperation(thrown == null);
             return this;
+        } else {
+            this.operation = operation.resume(opt);
+            
+            if (this.operation == null) {
+                if (thrown != null) {
+                    if (thrown instanceof WorldEditException) {
+                        throw (WorldEditException) thrown;
+                    } else {
+                        throw new RuntimeException("Error in wrapped operation", thrown);
+                    }
+                } else {
+                    return null;
+                }
+            } else {
+                return this;
+            }
         }
     }
 
@@ -95,5 +114,27 @@ public abstract class OperationWrapper implements Operation {
      * @param operation the last operation
      */
     protected abstract void onSuccess(Operation operation);
+    
+    /**
+     * Return the next operation to run.
+     * 
+     * <p>This method is called after the wrapped operation has completed (either on 
+     * success or on failure), after either {@link #onFailure(Throwable)} or
+     * {@link #onSuccess(Operation)} has been called, to get a new operation to continue
+     * with. When the returned operation completes, this method will be called again to
+     * get a new operation, and this will continue until this method returns null.
+     * Operations returned by this method will not trigger calls to
+     * {@link #onResume(Operation, Operation, boolean)} or the other callbacks. If the
+     * original operation fails, then after the operations returned by this method
+     * completes, the original exception will be re-thrown. This means that operations
+     * run by this method are guaranteed to be run, as long as one of them does not
+     * throw an exception before the later operations can complete. Any exceptions thrown
+     * by operations returned by this method will mask exceptions thrown
+     * by the wrapped exception.</p>
+     * 
+     * @param success true if the wrapped successful had completed without failure
+     * @return an operation, or null to complete
+     */
+    protected abstract Operation nextOperation(boolean success);
 
 }

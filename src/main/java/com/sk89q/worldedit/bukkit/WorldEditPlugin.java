@@ -277,8 +277,6 @@ public class WorldEditPlugin extends JavaPlugin {
 
         session.remember(editSession);
         editSession.flushQueue();
-
-        controller.flushBlockBag(wePlayer, editSession);
     }
 
     /**

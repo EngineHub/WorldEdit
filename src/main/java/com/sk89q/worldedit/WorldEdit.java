@@ -18,7 +18,6 @@
 
 package com.sk89q.worldedit;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
@@ -41,9 +40,7 @@ import com.sk89q.rebar.formatting.MessageBuilder;
 import com.sk89q.rebar.formatting.Style;
 import com.sk89q.rebar.util.Owner;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
-import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.commands.BiomeCommands;
 import com.sk89q.worldedit.commands.BrushCommands;
 import com.sk89q.worldedit.commands.ChunkCommands;
@@ -69,9 +66,9 @@ import com.sk89q.worldedit.factory.FilterFactory;
 import com.sk89q.worldedit.factory.MaterialFactory;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.operation.CallbackExecutor;
-import com.sk89q.worldedit.operation.ManagedOperation;
 import com.sk89q.worldedit.operation.ImmediateExecutor;
 import com.sk89q.worldedit.operation.ImmutableHint;
+import com.sk89q.worldedit.operation.ManagedOperation;
 import com.sk89q.worldedit.operation.Operation;
 import com.sk89q.worldedit.operation.OperationExecutor;
 import com.sk89q.worldedit.operation.OperationResponse;
@@ -590,7 +587,7 @@ public class WorldEdit implements Owner {
 
                 if (config.profile) {
                     long time = System.currentTimeMillis() - start;
-                    int changed = editSession.getBlockChangeCount();
+                    int changed = editSession.getChangeCount();
                     if (time > 0) {
                         double throughput = changed / (time / 1000.0);
                         player.printDebug((time / 1000.0) + "s elapsed (history: "
@@ -600,8 +597,6 @@ public class WorldEdit implements Owner {
                         player.printDebug((time / 1000.0) + "s elapsed.");
                     }
                 }
-
-                flushBlockBag(player, editSession);
             }
         }
 
@@ -648,47 +643,6 @@ public class WorldEdit implements Owner {
                 callbackExecutor.setInterval(config.batchInterval);
                 callbackExecutor.setQueueSize(config.operationQueueMaxSize);
             }
-        }
-    }
-
-    /**
-     * Flush a block bag's changes to a player.
-     *
-     * @param player the player
-     * @param editSession the edit session
-     */
-    public void flushBlockBag(LocalPlayer player, EditSession editSession) {
-        BlockBag blockBag = editSession.getBlockBag();
-
-        if (blockBag != null) {
-            blockBag.flushChanges();
-        }
-
-        Map<Integer, Integer> missingBlocks = editSession.popMissingBlocks();
-
-        if (missingBlocks.size() > 0) {
-            StringBuilder str = new StringBuilder();
-            str.append("Missing these blocks: ");
-            int size = missingBlocks.size();
-            int i = 0;
-
-            for (Integer id : missingBlocks.keySet()) {
-                BlockType type = BlockType.fromID(id);
-
-                str.append(type != null
-                        ? type.getName() + " (" + id + ")"
-                        : id.toString());
-
-                str.append(" [Amt: " + missingBlocks.get(id) + "]");
-
-                ++i;
-
-                if (i != size) {
-                    str.append(", ");
-                }
-            }
-
-            player.printError(str.toString());
         }
     }
 

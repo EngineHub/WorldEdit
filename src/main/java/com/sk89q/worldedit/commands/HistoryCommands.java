@@ -1,20 +1,19 @@
 // $Id$
 /*
- * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com> and contributors
+ * This file is a part of WorldEdit.
+ * Copyright (c) sk89q <http://www.sk89q.com>
+ * Copyright (c) the WorldEdit team and contributors
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software 
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 package com.sk89q.worldedit.commands;
@@ -28,17 +27,18 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.changelog.ApplyChangeLog;
+import com.sk89q.worldedit.operation.RejectedOperationException;
 
 /**
  * History little commands.
- * 
- * @author sk89q
  */
 public class HistoryCommands {
-    private final WorldEdit we;
     
-    public HistoryCommands(WorldEdit we) {
-        this.we = we;
+    private final WorldEdit worldEdit;
+    
+    public HistoryCommands(WorldEdit worldEdit) {
+        this.worldEdit = worldEdit;
     }
 
     @Command(
@@ -49,28 +49,35 @@ public class HistoryCommands {
         max = 2
     )
     @CommandPermissions("worldedit.history.undo")
-    public void undo(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException, CommandPermissionsException {
+    public void undo(CommandContext args, LocalSession session,
+            LocalPlayer player, EditSession editSession)
+            throws WorldEditException, CommandPermissionsException,
+            RejectedOperationException {
         
+        boolean found = false;
         int times = Math.max(1, args.getInteger(0, 1));
-        for (int i = 0; i < times; ++i) {
-            EditSession undone;
+        for (int i =0 ; i < times; ++i) {
+            ApplyChangeLog undone;
             if (args.argsLength() < 2) {
-                undone = session.undo(session.getBlockBag(player), player);
+                undone = session.createUndo(session.getBlockBag(player), player);
             } else {
                 player.checkPermission("worldedit.history.undo.other");
-                LocalSession sess = we.getSession(args.getString(1));
+                LocalSession sess = worldEdit.getSessions().getIfExists(args.getString(1));
                 if (sess == null) {
                     player.printError("Unable to find session for " + args.getString(1));
                     break;
                 }
-                undone = sess.undo(session.getBlockBag(player), player);
+                undone = sess.createUndo(session.getBlockBag(player), player);
             }
             if (undone != null) {
-                player.print("Undo successful.");
-                we.flushBlockBag(player, undone);
+                found = true;
+                worldEdit.execute(player, undone, (EditSession) undone.getExtent(), "/" + args.getCommand());
             } else {
-                player.printError("Nothing left to undo.");
+                if (found) {
+                    player.printError("There are no more undo's to queue.");
+                } else {
+                    player.printError("Nothing left to undo.");
+                }
                 break;
             }
         }
@@ -84,29 +91,36 @@ public class HistoryCommands {
         max = 2
     )
     @CommandPermissions("worldedit.history.redo")
-    public void redo(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException, CommandPermissionsException {
-        
-        int times = Math.max(1, args.getInteger(0, 1));
+    public void redo(CommandContext args, LocalSession session,
+            LocalPlayer player, EditSession editSession)
+            throws WorldEditException, CommandPermissionsException,
+            RejectedOperationException {
 
+        boolean found = false;
+        int times = Math.max(1, args.getInteger(0, 1));
         for (int i = 0; i < times; ++i) {
-            EditSession redone;
+            ApplyChangeLog redone;
             if (args.argsLength() < 2) {
-                redone = session.redo(session.getBlockBag(player), player);
+                redone = session.createRedo(session.getBlockBag(player), player);
             } else {
                 player.checkPermission("worldedit.history.redo.other");
-                LocalSession sess = we.getSession(args.getString(1));
+                LocalSession sess = worldEdit.getSessions().getIfExists(args.getString(1));
                 if (sess == null) {
                     player.printError("Unable to find session for " + args.getString(1));
                     break;
                 }
-                redone = sess.redo(session.getBlockBag(player), player);
-            }
+                redone = sess.createRedo(session.getBlockBag(player), player);
+            }   
             if (redone != null) {
-                player.print("Redo successful.");
-                we.flushBlockBag(player, redone);
+                found = true;
+                worldEdit.execute(player, redone, (EditSession) redone.getExtent(), "/" + args.getCommand());
             } else {
-                player.printError("Nothing left to redo.");
+                if (found) {
+                    player.printError("There are no more redo's to queue.");
+                } else {
+                    player.printError("Nothing left to redo.");
+                }
+                break;
             }
         }
     }
@@ -125,4 +139,5 @@ public class HistoryCommands {
         session.clearHistory();
         player.print("History cleared.");
     }
+    
 }

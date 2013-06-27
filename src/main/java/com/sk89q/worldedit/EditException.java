@@ -19,18 +19,28 @@
 package com.sk89q.worldedit;
 
 /**
- * Thrown when a block count limit has been reached.
+ * Thrown on a runtime error caused by restrictions set on block placement or
+ * other factors.
+ * 
+ * @see MaxChangedBlocksException
  */
-public class MaxChangedBlocksException extends EditException {
-    private static final long serialVersionUID = -2621044030640945259L;
+public class EditException extends RuntimeException {
 
-    int maxBlocks;
-
-    public MaxChangedBlocksException(int maxBlocks) {
-        this.maxBlocks = maxBlocks;
+    private static final long serialVersionUID = -2132361734795604725L;
+    
+    public EditException() {
     }
 
-    public int getBlockLimit() {
-        return maxBlocks;
+    public EditException(String message) {
+        super(message);
     }
+
+    public EditException(Throwable cause) {
+        super(cause);
+    }
+
+    public EditException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

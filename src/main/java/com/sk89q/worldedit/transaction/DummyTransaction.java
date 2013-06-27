@@ -16,26 +16,38 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.foundation;
+package com.sk89q.worldedit.transaction;
 
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.transaction.Transaction;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.foundation.Extent;
+import com.sk89q.worldedit.operation.Operation;
 
 /**
- * Represents a world instance that can be modified. The world instance could be
- * loaded in-game or loaded in a stand-alone editor.
- * 
- * <p>This class is meant to replace {@link LocalWorld} eventually, once this class has been
- * fleshed out with the required methods and it has been decided that it is time to
- * start breaking some API compatibility.</p>
+ * A transaction that just passes calls to the underlying {@link Extent}.
  */
-public interface World extends Extent {
+public class DummyTransaction extends AbstractTransaction {
     
+    private final Extent extent;
+
     /**
-     * Create a new world changing transaction.
+     * Create a new instance with the given extent.
      * 
-     * @return a new transaction
+     * @param extent the extent
      */
-    Transaction createTransaction();
+    public DummyTransaction(Extent extent) {
+        this.extent = extent;
+    }
+
+    @Override
+    public Operation getFlushOperation() {
+        return null;
+    }
+
+    @Override
+    public boolean setBlock(Vector location, BaseBlock block) {
+        return extent.setBlock(location, block);
+    }
+    
 
 }

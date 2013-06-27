@@ -16,21 +16,34 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.transaction;
 
 /**
- * Thrown when a block count limit has been reached.
+ * An abstract implementation of {@link Transaction}.
  */
-public class MaxChangedBlocksException extends EditException {
-    private static final long serialVersionUID = -2621044030640945259L;
-
-    int maxBlocks;
-
-    public MaxChangedBlocksException(int maxBlocks) {
-        this.maxBlocks = maxBlocks;
+public abstract class AbstractTransaction implements Transaction {
+    
+    private boolean applyPhysics = true;
+    private boolean calculateLighting = true;
+    
+    @Override
+    public boolean getApplyPhysics() {
+        return applyPhysics;
+    }
+    
+    @Override
+    public void setApplyPhysics(boolean applyPhysics) {
+        this.applyPhysics = applyPhysics;
+    }
+    
+    @Override
+    public boolean getCalculateLighting() {
+        return calculateLighting;
+    }
+    
+    @Override
+    public void setCalculateLighting(boolean calculateLighting) {
+        this.calculateLighting = calculateLighting;
     }
 
-    public int getBlockLimit() {
-        return maxBlocks;
-    }
 }

@@ -16,21 +16,23 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.changelog;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
- * Thrown when a block count limit has been reached.
+ * A collection of {@link ReversibleChange}s, which can be used as an undo or redo log.
  */
-public class MaxChangedBlocksException extends EditException {
-    private static final long serialVersionUID = -2621044030640945259L;
+public interface ChangeLog extends Collection<ReversibleChange> {
+    
+    /**
+     * Get an iterator over the block changes that returns values in reverse.
+     * 
+     * <p>This can be utilized to perform an "undo" operation.</p>
+     * 
+     * @return a reverse iterator
+     */
+    Iterator<ReversibleChange> descendingIterator();
 
-    int maxBlocks;
-
-    public MaxChangedBlocksException(int maxBlocks) {
-        this.maxBlocks = maxBlocks;
-    }
-
-    public int getBlockLimit() {
-        return maxBlocks;
-    }
 }

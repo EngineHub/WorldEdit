@@ -32,6 +32,7 @@ public class ManagedOperation extends OperationWrapper {
     private final EditSession editSession;
     private final WorldEdit worldEdit;
     private final LocalPlayer player;
+    private boolean hasFlushed = false;
     
     /**
      * Create a new managed operation.
@@ -55,13 +56,10 @@ public class ManagedOperation extends OperationWrapper {
     private void flush() {
         LocalSession session = worldEdit.getSessions().get(player);
         session.remember(editSession);
-        editSession.flushQueue();
-        worldEdit.flushBlockBag(player, editSession);
     }
 
     @Override
     protected void onResume(Operation current, Operation next, boolean success) {
-        editSession.flushQueue();
     }
 
     @Override
@@ -72,6 +70,16 @@ public class ManagedOperation extends OperationWrapper {
     @Override
     public void onSuccess(Operation operation) {
         flush();
+    }
+
+    @Override
+    protected Operation nextOperation(boolean success) {
+        if (hasFlushed) {
+            return null;
+        }
+        
+        hasFlushed = true;
+        return editSession.getFlushOperation();
     }
 
 }
