@@ -24,6 +24,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.foundation.Extent;
 import com.sk89q.worldedit.operation.ChangeCountable;
 import com.sk89q.worldedit.operation.ExecutionHint;
+import com.sk89q.worldedit.operation.ExecutionWatch;
 import com.sk89q.worldedit.operation.Operation;
 
 /**
@@ -72,11 +73,10 @@ public class ApplyChangeLog implements Operation, ChangeCountable {
     }
 
     @Override
-    public Operation resume(ExecutionHint opt) throws WorldEditException {
-        int limit = opt.getBlockCount();
+    public Operation resume(ExecutionHint opt) throws WorldEditException, InterruptedException {
+        ExecutionWatch watch = opt.createWatch();
         
-        int i = 0;
-        while (it.hasNext() && i < limit) {
+        while (it.hasNext() && watch.shouldContinue()) {
             ReversibleChange change = it.next();
             if (revert) {
                 change.revert(extent);
@@ -84,7 +84,6 @@ public class ApplyChangeLog implements Operation, ChangeCountable {
                 change.apply(extent);
             }
             affected++;
-            i++;
         }
 
         return it.hasNext() ? this : null;

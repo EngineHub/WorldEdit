@@ -639,7 +639,7 @@ public class WorldEdit implements Owner {
         if (this.config == config) {
             if (executor instanceof CallbackExecutor) {
                 CallbackExecutor callbackExecutor = (CallbackExecutor) executor;
-                callbackExecutor.setHint(new ImmutableHint(config.blocksPerBatch, false));
+                callbackExecutor.setHint(new ImmutableHint(config.timePerBatch, false));
                 callbackExecutor.setInterval(config.batchInterval);
                 callbackExecutor.setQueueSize(config.operationQueueMaxSize);
             }

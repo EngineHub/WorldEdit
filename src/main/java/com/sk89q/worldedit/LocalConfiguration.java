@@ -94,7 +94,7 @@ public abstract class LocalConfiguration {
     public int butcherMaxRadius = -1;
     public boolean allowExtraDataValues = false;
     public boolean allowSymlinks = false;
-    public int blocksPerBatch = 10000;
+    public long timePerBatch = 5000;
     public int batchInterval = 1;
     public int operationQueueMaxSize = 4;
     

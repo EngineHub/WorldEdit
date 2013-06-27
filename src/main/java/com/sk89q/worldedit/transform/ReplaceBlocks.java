@@ -27,6 +27,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.operation.ChangeCountable;
 import com.sk89q.worldedit.operation.ExecutionHint;
+import com.sk89q.worldedit.operation.ExecutionWatch;
 import com.sk89q.worldedit.operation.Operation;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -82,7 +83,7 @@ public class ReplaceBlocks implements Operation, ChangeCountable {
     }
 
     @Override
-    public Operation resume(ExecutionHint opt) throws WorldEditException {
+    public Operation resume(ExecutionHint opt) throws WorldEditException, InterruptedException {
         if (!started && opt.preferSingleRun() && region instanceof CuboidRegion) { // Doing this for speed
             Vector min = region.getMinimumPoint();
             Vector max = region.getMaximumPoint();
@@ -106,15 +107,13 @@ public class ReplaceBlocks implements Operation, ChangeCountable {
                 }
             }
         } else {
-            int limit = opt.getBlockCount();
+            ExecutionWatch watch = opt.createWatch();
             
-            int i = 0;
-            while (it.hasNext() && i < limit) {
+            while (it.hasNext() && watch.shouldContinue()) {
                 Vector pt = it.next();
                 if (matches(pt) && editSession.setBlock(pt, pattern.next(pt))) {
                     ++affected;
                 }
-                i++;
             }
         }
         

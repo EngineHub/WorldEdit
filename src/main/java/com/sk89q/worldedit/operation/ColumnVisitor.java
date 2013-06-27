@@ -56,13 +56,11 @@ public abstract class ColumnVisitor implements Operation {
     }
 
     @Override
-    public final Operation resume(ExecutionHint opt) throws WorldEditException {
-        int limit = opt.getBlockCount();
+    public final Operation resume(ExecutionHint opt) throws WorldEditException, InterruptedException {
+        ExecutionWatch watch = opt.createWatch();
         
-        int i = 0;
-        while (it.hasNext() && i < limit) {
+        while (it.hasNext() && watch.shouldContinue()) {
             visitColumn(opt, it.next());
-            i++;
         }
 
         return it.hasNext() ? this : null;

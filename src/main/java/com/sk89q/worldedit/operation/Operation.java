@@ -35,8 +35,9 @@ public interface Operation {
      * @param opt hints about the execution
      * @return another operation to run that operation again, or null to stop
      * @throws WorldEditException an error
+     * @throws InterruptedException on interruption
      */
-    Operation resume(ExecutionHint opt) throws WorldEditException;
+    Operation resume(ExecutionHint opt) throws WorldEditException, InterruptedException;
     
     /**
      * Abort the current task. After the this method is called, 

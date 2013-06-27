@@ -19,30 +19,37 @@
 package com.sk89q.worldedit.operation;
 
 /**
- * Provides hints about the current execution cycle. Operations should utilize this
- * information, but they may choose to not.
+ * Utility class to interrupt a running {@link Operation}.
  */
-public interface ExecutionHint {
-
-    /**
-     * Returns whether a single run is preferred.
-     * 
-     * @return true if the operation should complete as much as possible in one execution
-     */
-    boolean preferSingleRun();
-
-    /**
-     * Get the number of milliseconds that the operation should run for.
-     * 
-     * @return the run time
-     */
-    long getRunTime();
+public class ExecutionWatch {
+    
+    private final long expireTime;
+    private boolean hasRun = false;
     
     /**
-     * Create a utility class to help track when an operation should return.
+     * Create a new instance.
      * 
-     * @return a watch
+     * @param delay the delay in milliseconds
      */
-    ExecutionWatch createWatch();
+    public ExecutionWatch(long delay) {
+        expireTime = System.currentTimeMillis() + delay;
+    }
+    
+    /**
+     * Returns whether the execution should continue.
+     * 
+     * @return true to continue
+     * @throws InterruptedException on interruption
+     */
+    public boolean shouldContinue() throws InterruptedException {
+        if (Thread.interrupted()) {
+            throw new InterruptedException();
+        }
+        if (!hasRun) { // Run at least once
+            hasRun = true;
+            return true;
+        }
+        return System.currentTimeMillis() < expireTime;
+    }
 
 }

@@ -104,7 +104,7 @@ public class YAMLConfiguration extends LocalConfiguration {
 
         saveDir = config.getString("saving.dir", saveDir);
 
-        blocksPerBatch = config.getInt("scheduler.blocks-per-batch", blocksPerBatch);
+        timePerBatch = config.getInt("scheduler.time-per-batch", (int) timePerBatch);
         batchInterval = config.getInt("scheduler.batch-interval", batchInterval);
         operationQueueMaxSize = config.getInt("scheduler.queue-max-size", operationQueueMaxSize);
 

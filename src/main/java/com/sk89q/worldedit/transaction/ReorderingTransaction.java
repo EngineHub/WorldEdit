@@ -38,6 +38,7 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.foundation.Extent;
 import com.sk89q.worldedit.foundation.MutableExtent;
 import com.sk89q.worldedit.operation.ExecutionHint;
+import com.sk89q.worldedit.operation.ExecutionWatch;
 import com.sk89q.worldedit.operation.Operation;
 import com.sk89q.worldedit.util.ChangeList;
 
@@ -153,12 +154,12 @@ public class ReorderingTransaction extends AbstractTransaction {
          * 
          * @param opt the execution hint
          * @return true if this pass has completed
+         * @throws InterruptedException on interruption
          */
-        private boolean runPass2(ExecutionHint opt) {
-            int limit = opt.getBlockCount();
+        private boolean runPass2(ExecutionHint opt) throws InterruptedException {
+            ExecutionWatch watch = opt.createWatch();
             
-            int i = 0;
-            while (pass2Iterator.hasNext() && i < limit) {
+            while (pass2Iterator.hasNext() && watch.shouldContinue()) {
                 Entry<BlockVector, BaseBlock> entry = pass2Iterator.next();
                 BlockVector pt = entry.getKey();
                 setBlockOnExtent(pt, entry.getValue());
@@ -167,8 +168,6 @@ public class ReorderingTransaction extends AbstractTransaction {
                 if (!getApplyPhysics()) {
                     dirtyChunks.add(new BlockVector2D(pt.getBlockX() >> 4, pt.getBlockZ() >> 4));
                 }
-                
-                i++;
             }
             
             return !pass2Iterator.hasNext();
@@ -181,12 +180,12 @@ public class ReorderingTransaction extends AbstractTransaction {
          * 
          * @param opt the execution hint
          * @return true if this pass has completed
+         * @throws InterruptedException on interruption
          */
-        private boolean runPass3Sync(ExecutionHint opt) {
-            int limit = opt.getBlockCount();
+        private boolean runPass3Sync(ExecutionHint opt) throws InterruptedException {
+            ExecutionWatch watch = opt.createWatch();
             
-            int i = 0;
-            while (!blocks.isEmpty() && i < limit) {
+            while (!blocks.isEmpty() && watch.shouldContinue()) {
                 BlockVector current = blocks.iterator().next();
                 
                 if (!blocks.contains(current)) {
@@ -253,18 +252,17 @@ public class ReorderingTransaction extends AbstractTransaction {
          * 
          * @param opt the execution hint
          * @return true if this pass has completed
+         * @throws InterruptedException on interruption
          */
-        private boolean runChunkFlush(ExecutionHint opt) {
+        private boolean runChunkFlush(ExecutionHint opt) throws InterruptedException {
             if (dirtyChunksIterator == null) {
                 dirtyChunksIterator = dirtyChunks.iterator();
             }
 
-            int limit = opt.getBlockCount();
+            ExecutionWatch watch = opt.createWatch();
             
-            int i = 0;
-            while (dirtyChunksIterator.hasNext() && i < limit) {
+            while (dirtyChunksIterator.hasNext() && watch.shouldContinue()) {
                 flushChunk(dirtyChunksIterator.next());
-                i++;
             }
             
             return !dirtyChunksIterator.hasNext();
@@ -286,7 +284,7 @@ public class ReorderingTransaction extends AbstractTransaction {
         }
         
         @Override
-        public Operation resume(ExecutionHint opt) {
+        public Operation resume(ExecutionHint opt) throws InterruptedException {
             if (thread == null) {
                 thread = new Thread(this, FlushOperation.class.getCanonicalName());
                 thread.start();

@@ -34,8 +34,10 @@ public class OperationHelper {
      * 
      * @param op operation to execute
      * @throws WorldEditException WorldEdit exception
+     * @throws InterruptedException on interruption
      */
-    public static void complete(Operation op) throws WorldEditException {
+    public static void complete(Operation op) throws WorldEditException,
+            InterruptedException {
         ImmutableHint opt = new ImmutableHint(Integer.MAX_VALUE, true);
         complete(op, opt);
     }
@@ -46,8 +48,10 @@ public class OperationHelper {
      * @param op operation to execute
      * @param opt execution hints
      * @throws WorldEditException WorldEdit exception
+     * @throws InterruptedException on interruption
      */
-    public static void complete(Operation op, ExecutionHint opt) throws WorldEditException {
+    public static void complete(Operation op, ExecutionHint opt) 
+            throws WorldEditException, InterruptedException {
         while (op != null) {
             op = op.resume(opt);
         }
@@ -70,6 +74,7 @@ public class OperationHelper {
                 throw e;
             } catch (WorldEditException e) {
                 throw new RuntimeException(e);
+            } catch (InterruptedException e) {
             }
         }
     }

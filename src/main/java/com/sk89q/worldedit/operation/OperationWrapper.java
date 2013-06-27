@@ -40,7 +40,8 @@ public abstract class OperationWrapper implements Operation {
     }
 
     @Override
-    public final Operation resume(ExecutionHint opt) throws WorldEditException {
+    public final Operation resume(ExecutionHint opt) throws WorldEditException,
+            InterruptedException {
         Operation operation = this.operation;
         
         if (!completed) { // Run the wrapped operation

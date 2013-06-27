@@ -24,10 +24,10 @@ package com.sk89q.worldedit.operation;
 public class ImmutableHint implements ExecutionHint {
 
     private final boolean preferSingleRun;
-    private final int blockCount;
+    private final long runTime;
 
-    public ImmutableHint(int blockCount, boolean preferSingleRun) {
-        this.blockCount = blockCount;
+    public ImmutableHint(long runTime, boolean preferSingleRun) {
+        this.runTime = runTime;
         this.preferSingleRun = preferSingleRun;
     }
 
@@ -37,8 +37,13 @@ public class ImmutableHint implements ExecutionHint {
     }
 
     @Override
-    public int getBlockCount() {
-        return blockCount;
+    public long getRunTime() {
+        return runTime;
+    }
+
+    @Override
+    public ExecutionWatch createWatch() {
+        return new ExecutionWatch(getRunTime());
     }
 
 }
