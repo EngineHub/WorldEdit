@@ -19,15 +19,10 @@
 
 package com.sk89q.worldedit.blocks;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.util.StringUtil;
+
+import java.util.*;
 
 /**
  * Block types.
@@ -349,6 +344,8 @@ public enum BlockType {
         shouldPlaceLast.add(BlockID.COMPARATOR_OFF);
         shouldPlaceLast.add(BlockID.COMPARATOR_ON);
         shouldPlaceLast.add(BlockID.ACTIVATOR_RAIL);
+        shouldPlaceLast.add(BlockID.SAND);
+        shouldPlaceLast.add(BlockID.GRAVEL);
     }
 
     /**
