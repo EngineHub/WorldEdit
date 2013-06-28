@@ -1372,7 +1372,7 @@ public class BukkitWorld extends LocalWorld {
         return new ReorderingTransaction(this) {
             @Override
             protected boolean setBlockOnExtent(Vector location, BaseBlock block) {
-                return BukkitWorld.this.setBlock(location, block, getApplyPhysics());
+                return BukkitWorld.this.setBlock(location, block, false);
             }
 
             @Override
