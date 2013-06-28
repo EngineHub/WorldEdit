@@ -49,6 +49,7 @@ import com.sk89q.worldedit.util.ChangeList;
 public class ReorderingTransaction extends AbstractTransaction {
 
     private final Extent extent;
+    private final ChangeList pass1 = new ChangeList(false);
     private final ChangeList pass2 = new ChangeList(false);
     private final ChangeList pass3 = new ChangeList(false);
 
@@ -83,26 +84,35 @@ public class ReorderingTransaction extends AbstractTransaction {
      */
     protected void flushChunk(BlockVector2D chunk) {
     }
-    
+
     @Override
     public final boolean setBlock(Vector location, BaseBlock block) {
-        // Place torches, etc. last
+        int existingType = extent.getBlockType(location);
+        
+        if (existingType == BlockID.AIR || !BlockType.canPassThrough(block.getType())) {
+            return setBlockOnExtent(location, block);
+        }
+
+        // Destroy blocks that will drop items
+        if (BlockType.shouldPlaceLast(existingType) || 
+                BlockType.shouldPlaceFinal(existingType)) {
+            setBlockOnExtent(location, new BaseBlock(BlockID.AIR));
+        }
+
+        // Place torches, etc. in pass #2
         if (BlockType.shouldPlaceLast(block.getType())) {
             pass2.put(location.toBlockVector(), block);
             return !isExtentBlockEqual(location, block);
 
-        // Place signs, reed, etc even later
+        // Place signs, reed, etc. in pass #3
         } else if (BlockType.shouldPlaceFinal(block.getType())) {
             pass3.put(location.toBlockVector(), block);
             return !isExtentBlockEqual(location, block);
 
-        // Destroy torches, etc. first
-        } else if (BlockType.shouldPlaceLast(extent.getBlockType(location))) {
-            setBlockOnExtent(location, new BaseBlock(BlockID.AIR));
-            return setBlockOnExtent(location, block);
-
+        // Place everything else in pass #1
         } else {
-            return setBlockOnExtent(location, block);
+            pass1.put(location.toBlockVector(), block);
+            return !isExtentBlockEqual(location, block);
         }
     }
 
@@ -130,6 +140,7 @@ public class ReorderingTransaction extends AbstractTransaction {
     private class FlushOperation implements Operation, Runnable {
         
         private Thread thread;
+        private final Iterator<Entry<BlockVector, BaseBlock>> pass1Iterator = pass1.iterator();
         private final Iterator<Entry<BlockVector, BaseBlock>> pass2Iterator = pass2.iterator();
         private final Set<BlockVector2D> dirtyChunks = new HashSet<BlockVector2D>();
         private final Set<BlockVector> blocks = new HashSet<BlockVector>();
@@ -144,9 +155,23 @@ public class ReorderingTransaction extends AbstractTransaction {
          * 
          * @param opt the execution hint
          * @return true if this pass has completed
+         * @throws InterruptedException on interruption
          */
-        private boolean runPass1(ExecutionHint opt) {
-            return true; // Pass 1 removed
+        private boolean runPass1(ExecutionHint opt) throws InterruptedException {
+            ExecutionWatch watch = opt.createWatch();
+            
+            while (pass1Iterator.hasNext() && watch.shouldContinue()) {
+                Entry<BlockVector, BaseBlock> entry = pass1Iterator.next();
+                BlockVector pt = entry.getKey();
+                setBlockOnExtent(pt, entry.getValue());
+
+                // TODO: use ChunkStore.toChunk(pt) after optimizing it.
+                if (!getApplyPhysics()) {
+                    dirtyChunks.add(new BlockVector2D(pt.getBlockX() >> 4, pt.getBlockZ() >> 4));
+                }
+            }
+            
+            return !pass1Iterator.hasNext();
         }
 
         /**
