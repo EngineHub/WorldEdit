@@ -63,7 +63,7 @@ This is **GOOD:**
 
 This is **EXTREMELY BAD:**
 
-    if(var.func( param1, param2 ))
+    if(Var.Func( Param1, Playerparam2 ))
     {
         // do things
     }
