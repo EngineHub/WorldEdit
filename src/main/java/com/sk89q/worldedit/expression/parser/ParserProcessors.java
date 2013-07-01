@@ -261,7 +261,6 @@ public final class ParserProcessors {
             switch (partsFound) {
             case 0:
                 if (character == '?') {
-                    System.out.println("question mark found");
                     partsFound = 1;
                 } else {
                     lhs.addLast(identifiable);
@@ -270,7 +269,6 @@ public final class ParserProcessors {
 
             case 1:
                 if (conditionalsFound == 0 && character == ':') {
-                    System.out.println("matching colon found");
                     partsFound = 2;
                 } else {
                     mhs.addLast(identifiable);

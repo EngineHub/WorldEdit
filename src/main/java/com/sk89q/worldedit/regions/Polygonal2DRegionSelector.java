@@ -84,10 +84,8 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
             final List<BlockVector2D> points = new ArrayList<BlockVector2D>(nPoints);
             for (int i = 0; i < nPoints; ++i) {
                 double angle = i * (2.0 * Math.PI) / nPoints;
-                System.out.println(angle);
                 final Vector2D pos = new Vector2D(Math.cos(angle), Math.sin(angle));
                 final BlockVector2D blockVector2D = pos.multiply(radius).add(center).toBlockVector2D();
-                System.out.println(blockVector2D);
                 points.add(blockVector2D);
             }
 
