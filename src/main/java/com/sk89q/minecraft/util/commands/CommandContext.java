@@ -65,6 +65,7 @@ public class CommandContext {
         for (int i = 1; i < args.length; ++i) {
             String arg = args[i];
             if (arg.length() == 0) {
+                build.append(' ');
                 continue;
             }
 
