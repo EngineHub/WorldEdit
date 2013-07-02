@@ -79,6 +79,10 @@ public class CommandContext {
                 int endIndex;
                 for (endIndex = i; endIndex < args.length; ++endIndex) {
                     final String arg2 = args[endIndex];
+                    if (arg2.length() == 0) {
+                        continue;
+                    }
+                    
                     if (arg2.charAt(arg2.length() - 1) == quotedChar && arg2.length() > 1) {
                         if (endIndex != i) build.append(' ');
                         build.append(arg2.substring(endIndex == i ? 1 : 0, arg2.length() - 1));
