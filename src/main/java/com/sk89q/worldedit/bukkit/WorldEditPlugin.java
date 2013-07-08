@@ -109,7 +109,7 @@ public class WorldEditPlugin extends JavaPlugin {
         // Now we can register events!
         getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
 
-        getServer().getScheduler().scheduleAsyncRepeatingTask(this,
+        getServer().getScheduler().runTaskTimerAsynchronously(this,
                 new SessionTimer(controller, getServer()), 120, 120);
         
         // This executes operations
@@ -119,6 +119,7 @@ public class WorldEditPlugin extends JavaPlugin {
     private void copyNmsBlockClasses(File target) {
         try {
             JarFile jar = new JarFile(getFile());
+            @SuppressWarnings("rawtypes")
             Enumeration entries = jar.entries();
             while (entries.hasMoreElements()) {
                 JarEntry jarEntry = (JarEntry) entries.nextElement();
@@ -147,12 +148,6 @@ public class WorldEditPlugin extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        for (Player player : getServer().getOnlinePlayers()) {
-            LocalPlayer lPlayer = wrapPlayer(player);
-            if (controller.getSession(lPlayer).hasCUISupport()) {
-                lPlayer.dispatchCUIHandshake();
-            }
-        }
         controller.getSessions().clear();
         controller.getCommandLogger().close();
         controller.unload();

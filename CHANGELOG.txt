@@ -1,3 +1,10 @@
+5.5.7
+- Update for Minecraft 1.6.1
+- Fixed a bug with GroupManager detection.
+- Added a coordinate argument for //chunk
+- Allowed cylinder selector to be changed to a rough polygon.
+- Fix a typo
+
 5.5.6
 - Updated for Minecraft 1.5.2.
 - Pistons can now be rotated with cycler tool.

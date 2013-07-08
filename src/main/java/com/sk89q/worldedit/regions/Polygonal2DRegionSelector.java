@@ -30,6 +30,7 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.client.bridge.CUIRegion;
 import com.sk89q.worldedit.client.bridge.SelectionMinMaxEvent;
 import com.sk89q.worldedit.client.bridge.SelectionPoint2DEvent;
@@ -44,6 +45,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
     private BlockVector pos1;
     private Polygonal2DRegion region;
 
+    @Deprecated
     public Polygonal2DRegionSelector(LocalWorld world) {
         this(world, 50);
     }
@@ -53,6 +55,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
         region = new Polygonal2DRegion(world);
     }
 
+    @Deprecated
     public Polygonal2DRegionSelector(RegionSelector oldSelector) {
         this(oldSelector, 50);
     }
@@ -64,6 +67,33 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
 
             pos1 = polygonal2DRegionSelector.pos1;
             region = new Polygonal2DRegion(polygonal2DRegionSelector.region);
+        } else if (oldSelector instanceof CylinderRegionSelector) {
+            final CylinderRegionSelector cylinderRegionSelector = (CylinderRegionSelector) oldSelector;
+
+            final CylinderRegion oldRegion = cylinderRegionSelector.region;
+
+            final Vector2D radius = oldRegion.getRadius();
+            final Vector2D center = oldRegion.getCenter().toVector2D();
+            int nPoints = (int) Math.ceil(Math.PI*radius.length());
+
+            // These strange semantics for maxPoints are copied from the selectSecondary method.
+            if (maxPoints > -1 && nPoints >= maxPoints) {
+                nPoints = maxPoints - 1;
+            }
+
+            final List<BlockVector2D> points = new ArrayList<BlockVector2D>(nPoints);
+            for (int i = 0; i < nPoints; ++i) {
+                double angle = i * (2.0 * Math.PI) / nPoints;
+                final Vector2D pos = new Vector2D(Math.cos(angle), Math.sin(angle));
+                final BlockVector2D blockVector2D = pos.multiply(radius).add(center).toBlockVector2D();
+                points.add(blockVector2D);
+            }
+
+            final int minY = oldRegion.getMinimumY();
+
+            pos1 = points.get(0).toVector(minY).toBlockVector();
+            region = new Polygonal2DRegion(oldRegion.getWorld(), points, minY, oldRegion.getMaximumY());
+
         } else {
             final Region oldRegion;
             try {

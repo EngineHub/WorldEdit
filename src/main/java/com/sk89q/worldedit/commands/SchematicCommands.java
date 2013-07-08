@@ -214,7 +214,6 @@ public class SchematicCommands {
             throw new FilenameResolutionException(dir.getPath(), "Schematics directory invalid or not found.");
         }
         StringBuilder build = new StringBuilder("Available schematics (Filename (Format)): ");
-        boolean first = true;
 
         final int sortType = args.hasFlag('d') ? -1 : args.hasFlag('n') ? 1 : 0;
         // cleanup file list
@@ -237,7 +236,6 @@ public class SchematicCommands {
             build.append("\n\u00a79");
             SchematicFormat format = SchematicFormat.getFormat(file);
             build.append(file.getName()).append(": ").append(format == null ? "Unknown" : format.getName());
-            first = false;
         }
         player.print(build.toString());
     }
