@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Handler;
 import java.util.zip.ZipEntry;
 
 import org.bukkit.Bukkit;
@@ -61,32 +60,13 @@ import com.sk89q.worldedit.regions.RegionSelector;
  */
 public class WorldEditPlugin extends JavaPlugin {
 
-    /**
-     * The name of the CUI's plugin channel registration
-     */
     public static final String CUI_PLUGIN_CHANNEL = "WECUI";
-
-    /**
-     * The server interface that all server-related API goes through.
-     */
+    
     private BukkitServerInterface server;
-    /**
-     * Main WorldEdit instance.
-     */
     private WorldEdit controller;
-    /**
-     * Deprecated API.
-     */
     private WorldEditAPI api;
-
-    /**
-     * Holds the configuration for WorldEdit.
-     */
     private BukkitConfiguration config;
 
-    /**
-     * Called on plugin enable.
-     */
     @Override
     public void onEnable() {
         final String pluginYmlVersion = getDescription().getVersion();
@@ -160,9 +140,7 @@ public class WorldEditPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         controller.clearSessions();
-        for (Handler h : controller.commandLogger.getHandlers()) {
-            h.close();
-        }
+        controller.getCommandLogger().close();
         config.unload();
         server.unregisterCommands();
         this.getServer().getScheduler().cancelTasks(this);

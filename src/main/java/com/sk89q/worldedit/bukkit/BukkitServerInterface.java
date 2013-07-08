@@ -23,20 +23,22 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sk89q.bukkit.util.CommandInfo;
-import com.sk89q.bukkit.util.CommandRegistration;
-import com.sk89q.minecraft.util.commands.Command;
-
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.worldedit.LocalPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
+import com.sk89q.bukkit.util.CommandInfo;
+import com.sk89q.bukkit.util.CommandRegistration;
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.rebar.command.CommandMapping;
+import com.sk89q.rebar.command.Description;
+import com.sk89q.rebar.command.Dispatcher;
 import com.sk89q.worldedit.BiomeTypes;
+import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 
@@ -103,6 +105,23 @@ public class BukkitServerInterface extends ServerInterface {
             }
 
             toRegister.add(new CommandInfo(command.usage(), command.desc(), command.aliases(), manager, permissions));
+        }
+
+        dynamicCommands.register(toRegister);
+    }
+
+    @Override
+    public void registerCommands(Dispatcher dispatcher) {
+        List<CommandInfo> toRegister = new ArrayList<CommandInfo>();
+        for (CommandMapping command : dispatcher.getCommands()) {
+            Description description = command.getDescription();
+            List<String> permissions = description.getPermissions();
+            String[] permissionsArray = new String[permissions.size()];
+            permissions.toArray(permissionsArray);
+
+            toRegister.add(new CommandInfo(
+                    description.getUsage(), description.getDescription(), 
+                    command.getAllAliases(), dispatcher, permissionsArray));
         }
 
         dynamicCommands.register(toRegister);

@@ -1,6 +1,6 @@
 package com.sk89q.worldedit.commands;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 
 import java.util.HashSet;
 import java.util.List;

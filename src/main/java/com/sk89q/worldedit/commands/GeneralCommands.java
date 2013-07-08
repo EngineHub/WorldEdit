@@ -23,7 +23,6 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Console;
-import com.sk89q.minecraft.util.commands.NestedCommand;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
@@ -221,14 +220,5 @@ public class GeneralCommands {
             player.printError("No items found.");
         }
     }
-
-    @Command(
-        aliases = { "we", "worldedit" },
-        desc = "WorldEdit commands"
-    )
-    @NestedCommand(WorldEditCommands.class)
-    @Console
-    public void we(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-    }
+    
 }
