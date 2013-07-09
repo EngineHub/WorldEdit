@@ -1004,59 +1004,80 @@ public class BukkitWorld extends LocalWorld {
                 continue;
             }
 
-            if (type == EntityType.ALL) {
+            switch (type) {
+            case ALL:
                 if (ent instanceof Projectile || ent instanceof Boat || ent instanceof Item
                         || ent instanceof FallingBlock || ent instanceof Minecart || ent instanceof Hanging
                         || ent instanceof TNTPrimed || ent instanceof ExperienceOrb) {
                     ent.remove();
                     num++;
                 }
-            } else if (type == EntityType.PROJECTILES || type == EntityType.ARROWS) {
+                break;
+
+            case PROJECTILES:
+            case ARROWS:
                 if (ent instanceof Projectile) {
                     // covers: arrow, egg, enderpearl, fireball, fish, snowball, throwpotion, thrownexpbottle
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.BOATS) {
+                break;
+
+            case BOATS:
                 if (ent instanceof Boat) {
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.ITEMS) {
+                break;
+
+            case ITEMS:
                 if (ent instanceof Item) {
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.FALLING_BLOCKS) {
+                break;
+
+            case FALLING_BLOCKS:
                 if (ent instanceof FallingBlock) {
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.MINECARTS) {
+                break;
+
+            case MINECARTS:
                 if (ent instanceof Minecart) {
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.PAINTINGS) {
+                break;
+
+            case PAINTINGS:
                 if (ent instanceof Painting) {
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.ITEM_FRAMES) {
+                break;
+
+            case ITEM_FRAMES:
                 if (ent instanceof ItemFrame) {
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.TNT) {
+                break;
+
+            case TNT:
                 if (ent instanceof TNTPrimed || ent.getType() == tntMinecartType) {
                     ent.remove();
                     ++num;
                 }
-            } else if (type == EntityType.XP_ORBS) {
+                break;
+
+            case XP_ORBS:
                 if (ent instanceof ExperienceOrb) {
                     ent.remove();
                     ++num;
                 }
+                break;
             }
         }
 
