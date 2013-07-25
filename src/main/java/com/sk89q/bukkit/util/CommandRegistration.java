@@ -75,7 +75,7 @@ public class CommandRegistration {
                 commandMap = fallbackCommands;
             } else {
                 Bukkit.getServer().getLogger().severe(plugin.getDescription().getName() +
-                        ": Could not retrieve server CommandMap, using fallback instead! Please report to http://redmine.sk89q.com");
+                        ": Could not retrieve server CommandMap, using fallback instead!");
                 fallbackCommands = commandMap = new SimpleCommandMap(Bukkit.getServer());
                 Bukkit.getServer().getPluginManager().registerEvents(new FallbackRegistrationListener(fallbackCommands), plugin);
             }
