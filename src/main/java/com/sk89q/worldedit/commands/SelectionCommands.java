@@ -680,6 +680,7 @@ public class SelectionCommands {
         min = 0,
         max = 1
     )
+    @CommandPermissions("worldedit.selection.select")
     public void select(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
