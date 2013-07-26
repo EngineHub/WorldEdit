@@ -87,6 +87,32 @@ public class RegionCommands {
     }
 
     @Command(
+            aliases = { "/line" },
+            usage = "<block>",
+            desc = "Draw a line segment between selection corners.",
+            min = 1,
+            max = 1
+    )
+    @CommandPermissions("worldedit.region.line")
+    @Logging(REGION)
+    public void line(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
+
+        Region region = session.getSelection(session.getSelectionWorld());
+        if (!(region instanceof CuboidRegion)) {
+            player.printError("Invalid region type");
+            return;
+        }
+
+        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        Vector pos1 = ((CuboidRegion) region).getPos1();
+        Vector pos2 = ((CuboidRegion) region).getPos2();
+        int blocksChanged = editSession.drawLine(pattern, pos1, pos2);
+
+        player.print(blocksChanged + " block(s) have been changed.");
+    }
+
+    @Command(
         aliases = { "/replace", "/re", "/rep" },
         usage = "[from-block] <to-block>",
         desc = "Replace all blocks in the selection with another",
