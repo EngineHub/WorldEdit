@@ -44,6 +44,7 @@ import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 
@@ -83,6 +84,32 @@ public class RegionCommands {
         }
 
         player.print(affected + " block(s) have been changed.");
+    }
+
+    @Command(
+            aliases = { "/line" },
+            usage = "<block>",
+            desc = "Draw a line segment between selection corners.",
+            min = 1,
+            max = 1
+    )
+    @CommandPermissions("worldedit.region.line")
+    @Logging(REGION)
+    public void line(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
+
+        Region region = session.getSelection(session.getSelectionWorld());
+        if (!(region instanceof CuboidRegion)) {
+            player.printError("Invalid region type");
+            return;
+        }
+
+        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        Vector pos1 = ((CuboidRegion) region).getPos1();
+        Vector pos2 = ((CuboidRegion) region).getPos2();
+        int blocksChanged = editSession.drawLine(pattern, pos1, pos2);
+
+        player.print(blocksChanged + " block(s) have been changed.");
     }
 
     @Command(

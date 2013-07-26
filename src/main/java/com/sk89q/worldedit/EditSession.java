@@ -2969,6 +2969,73 @@ public class EditSession {
         return affected;
     }
 
+    /**
+     * Draws a line (out of blocks) between two vectors.
+     *
+     * @param pattern The block pattern used to draw the line
+     * @param pos1 One of the points that define the line.
+     * @param pos2 The other point that defines the line.
+     *
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int drawLine(Pattern pattern, Vector pos1, Vector pos2)
+        throws MaxChangedBlocksException {
+
+        int affected = 0;
+        boolean notdrawn = true;
+
+        int x1 = pos1.getBlockX(), y1 = pos1.getBlockY(), z1 = pos1.getBlockZ();
+        int x2 = pos2.getBlockX(), y2 = pos2.getBlockY(), z2 = pos2.getBlockZ();
+        int tipx = x1, tipy = y1, tipz = z1;
+        int dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1), dz = Math.abs(z2 - z1);
+
+        if (dx + dy + dz == 0) {
+            return setBlock(new Vector(tipx, tipy, tipz), pattern) ? 1 : 0;
+        }
+
+        if (Math.max(Math.max(dx, dy), dz) == dx && notdrawn) {
+            for (int domstep = 0; domstep <= dx; domstep++) {
+                tipx = x1 + domstep * (x2 - x1 > 0 ? 1 : -1);
+                tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dx) * (y2 - y1 > 0 ? 1 : -1));
+                tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dx) * (z2 - z1 > 0 ? 1 : -1));
+
+                if (setBlock(new Vector(tipx, tipy, tipz), pattern)) {
+                    affected++;
+                }
+            }
+            notdrawn = false;
+        }
+
+        if (Math.max(Math.max(dx, dy), dz) == dy && notdrawn) {
+            for (int domstep = 0; domstep <= dy; domstep++) {
+                tipy = y1 + domstep * (y2 - y1 > 0 ? 1 : -1);
+                tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dy) * (x2 - x1 > 0 ? 1 : -1));
+                tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dy) * (z2 - z1 > 0 ? 1 : -1));
+
+                if (setBlock(new Vector(tipx, tipy, tipz), pattern)) {
+                    affected++;
+                }
+            }
+            notdrawn = false;
+        }
+
+        if (Math.max(Math.max(dx, dy), dz) == dz && notdrawn) {
+            for (int domstep = 0; domstep <= dz; domstep++) {
+                tipz = z1 + domstep * (z2 - z1 > 0 ? 1 : -1);
+                tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2-y1>0 ? 1 : -1));
+                tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2-x1>0 ? 1 : -1));
+
+                if (setBlock(new Vector(tipx, tipy, tipz), pattern)) {
+                    affected++;
+                }
+            }
+            notdrawn = false;
+        }
+
+        return affected;
+    }
+
     private void recurseHollow(Region region, BlockVector origin, Set<BlockVector> outside) {
         final LinkedList<BlockVector> queue = new LinkedList<BlockVector>();
         queue.addLast(origin);
