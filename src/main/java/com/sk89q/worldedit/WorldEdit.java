@@ -344,10 +344,9 @@ public class WorldEdit {
             // Have the session use inventory if it's enabled and the player
             // doesn't have an override
             session.setUseInventory(config.useInventory
-                    && !((config.useInventoryOverride ||
-                            (config.useInventoryCreativeOverride && player.hasCreativeMode()))
-                            && player.hasPermission("worldedit.inventory.unrestricted")));
-
+                    && !(config.useInventoryOverride
+                            && (player.hasPermission("worldedit.inventory.unrestricted")
+                                || (config.useInventoryCreativeOverride && player.hasCreativeMode()))));
         }
 
         return session;
