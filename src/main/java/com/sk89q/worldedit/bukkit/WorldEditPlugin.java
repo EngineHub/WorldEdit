@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Handler;
 import java.util.zip.ZipEntry;
 
 import org.bukkit.Bukkit;
@@ -49,6 +48,7 @@ import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Polygonal2DSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldedit.operation.CallbackExecutor;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -61,32 +61,13 @@ import com.sk89q.worldedit.regions.RegionSelector;
  */
 public class WorldEditPlugin extends JavaPlugin {
 
-    /**
-     * The name of the CUI's plugin channel registration
-     */
     public static final String CUI_PLUGIN_CHANNEL = "WECUI";
-
-    /**
-     * The server interface that all server-related API goes through.
-     */
+    
     private BukkitServerInterface server;
-    /**
-     * Main WorldEdit instance.
-     */
     private WorldEdit controller;
-    /**
-     * Deprecated API.
-     */
     private WorldEditAPI api;
-
-    /**
-     * Holds the configuration for WorldEdit.
-     */
     private BukkitConfiguration config;
 
-    /**
-     * Called on plugin enable.
-     */
     @Override
     public void onEnable() {
         final String pluginYmlVersion = getDescription().getVersion();
@@ -110,21 +91,29 @@ public class WorldEditPlugin extends JavaPlugin {
         config = new BukkitConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml"), true), this);
         PermissionsResolverManager.initialize(this);
 
-        // Load the configuration
-        config.load();
-
         // Setup interfaces
         server = new BukkitServerInterface(this, getServer());
-        controller = new WorldEdit(server, config);
-        WorldEdit.logger.setParent(Bukkit.getLogger());
+        
+        CallbackExecutor executor = new CallbackExecutor();
+        executor.setInterval(2);
+        controller = new WorldEdit(server, config, executor);
+        WorldEdit.getInstance().logger.setParent(Bukkit.getLogger());
         api = new WorldEditAPI(this);
+
+        // Load the configuration
+        config.load();
+        
         getServer().getMessenger().registerIncomingPluginChannel(this, CUI_PLUGIN_CHANNEL, new CUIChannelListener(this));
         getServer().getMessenger().registerOutgoingPluginChannel(this, CUI_PLUGIN_CHANNEL);
+        
         // Now we can register events!
         getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
 
         getServer().getScheduler().runTaskTimerAsynchronously(this,
                 new SessionTimer(controller, getServer()), 120, 120);
+        
+        // This executes operations
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, executor, 0, 1);
     }
 
     private void copyNmsBlockClasses(File target) {
@@ -159,10 +148,9 @@ public class WorldEditPlugin extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        controller.clearSessions();
-        for (Handler h : controller.commandLogger.getHandlers()) {
-            h.close();
-        }
+        controller.getSessions().clear();
+        controller.getCommandLogger().close();
+        controller.unload();
         config.unload();
         server.unregisterCommands();
         this.getServer().getScheduler().cancelTasks(this);
@@ -284,8 +272,6 @@ public class WorldEditPlugin extends JavaPlugin {
 
         session.remember(editSession);
         editSession.flushQueue();
-
-        controller.flushBlockBag(wePlayer, editSession);
     }
 
     /**

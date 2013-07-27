@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.regions;
 
 import java.util.List;
+
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
@@ -28,14 +29,13 @@ import com.sk89q.worldedit.Vector;
 
 /**
  * Region selection factory.
- *
- * @author sk89q
  */
 public interface RegionSelector {
+    
     /**
      * Called when the first point is selected.
      * 
-     * @param pos
+     * @param pos the position
      * @return true if something changed
      */
     public boolean selectPrimary(Vector pos);
@@ -43,7 +43,7 @@ public interface RegionSelector {
     /**
      * Called when the second point is selected.
      * 
-     * @param pos
+     * @param pos the position
      * @return true if something changed
      */
     public boolean selectSecondary(Vector pos);
@@ -51,9 +51,9 @@ public interface RegionSelector {
     /**
      * Tell the player information about his/her primary selection.
      * 
-     * @param player
-     * @param session 
-     * @param pos 
+     * @param player the player
+     * @param session the session
+     * @param pos the position changed
      */
     public void explainPrimarySelection(LocalPlayer player,
             LocalSession session, Vector pos);
@@ -61,9 +61,9 @@ public interface RegionSelector {
     /**
      * Tell the player information about his/her secondary selection.
      * 
-     * @param player
-     * @param session 
-     * @param pos 
+     * @param player the player
+     * @param session the session
+     * @param pos the position changed
      */
     public void explainSecondarySelection(LocalPlayer player,
             LocalSession session, Vector pos);
@@ -72,38 +72,38 @@ public interface RegionSelector {
      * The the player information about the region's changes. This may resend
      * all the defining region information if needed.
      * 
-     * @param player
-     * @param session
+     * @param player the player
+     * @param session the session
      */
     public void explainRegionAdjust(LocalPlayer player, LocalSession session);
 
     /**
      * Get the primary position.
      * 
-     * @return
-     * @throws IncompleteRegionException 
+     * @return the position
+     * @throws IncompleteRegionException if a region has not been defined
      */
     public BlockVector getPrimaryPosition() throws IncompleteRegionException;
 
     /**
      * Get the selection.
      * 
-     * @return
-     * @throws IncompleteRegionException 
+     * @return the position
+     * @throws IncompleteRegionException if a region has not been defined
      */
     public Region getRegion() throws IncompleteRegionException;
 
     /**
      * Get the region even if it's not fully defined.
      * 
-     * @return
+     * @return the incomplete region
      */
     public Region getIncompleteRegion();
 
     /**
      * Returns whether the region has been fully defined.
      * 
-     * @return
+     * @return true if fully defined
      */
     public boolean isDefined();
 
@@ -127,14 +127,14 @@ public interface RegionSelector {
     /**
      * Get a lowercase name of this region selector type.
      * 
-     * @return
+     * @return the name
      */
     public String getTypeName();
 
     /**
      * Get lines of information about the selection.
      * 
-     * @return
+     * @return the informational lines
      */
     public List<String> getInformationLines();
 }

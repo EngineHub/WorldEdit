@@ -31,6 +31,7 @@ import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.data.LegacyChunkStore;
 import com.sk89q.worldedit.data.McRegionChunkStore;
+import com.sk89q.worldedit.util.MathUtils;
 
 /**
  * Chunk tools.
@@ -59,8 +60,8 @@ public class ChunkCommands {
         int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
         int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
 
-        String folder1 = Integer.toString(WorldEdit.divisorMod(chunkX, 64), 36);
-        String folder2 = Integer.toString(WorldEdit.divisorMod(chunkZ, 64), 36);
+        String folder1 = Integer.toString(MathUtils.divisorMod(chunkX, 64), 36);
+        String folder2 = Integer.toString(MathUtils.divisorMod(chunkZ, 64), 36);
         String filename = "c." + Integer.toString(chunkX, 36)
                 + "." + Integer.toString(chunkZ, 36) + ".dat";
 

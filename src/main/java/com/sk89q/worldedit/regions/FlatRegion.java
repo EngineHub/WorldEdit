@@ -19,23 +19,50 @@
 
 package com.sk89q.worldedit.regions;
 
+import java.util.Iterator;
+
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector2D;
 
+/**
+ * A plane region that is parallel to the XZ plane, or at least has been projected
+ * onto the XZ plane.
+ */
 public interface FlatRegion extends Region {
 
     /**
-     * Gets the minimum Y value
-     *
-     * @return
+     * Get the minimum Y coordinate.
+     * 
+     * @return the minimum Y coordinate
      */
     public int getMinimumY();
 
     /**
-     * Gets the maximum Y value
-     *
-     * @return
+     * Get the maximum Y coordinate.
+     * 
+     * @return the maximum Y coordinate
      */
     public int getMaximumY();
 
+    /**
+     * Get an {@link Iterable} over all the points in the XZ plane.
+     * 
+     * @return the iterator
+     */
     public Iterable<Vector2D> asFlatRegion();
+
+    /**
+     * Get an iterator over all the points in the XZ plane.
+     * 
+     * @return the iterator
+     */
+    public Iterator<Vector2D> flatIterator();
+    
+    /**
+     * Get an iterator over every column over the XZ plane, represented as an iterator
+     * of the top most points in the region.
+     * 
+     * @return iterator of the top most inside the region
+     */
+    public Iterator<BlockVector> columnIterator();
 }

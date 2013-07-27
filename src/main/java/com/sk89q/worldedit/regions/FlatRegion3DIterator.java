@@ -29,7 +29,7 @@ public class FlatRegion3DIterator implements Iterator<BlockVector> {
     }
 
     public FlatRegion3DIterator(FlatRegion region) {
-        this(region, region.asFlatRegion().iterator());
+        this(region, region.flatIterator());
     }
 
     @Override

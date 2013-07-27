@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.util.StringUtil;
 
 /**
  * ItemType types.

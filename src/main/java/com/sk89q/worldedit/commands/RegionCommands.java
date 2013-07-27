@@ -1,401 +1,333 @@
 // $Id$
 /*
- * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com> and contributors
+ * This file is a part of WorldEdit.
+ * Copyright (c) sk89q <http://www.sk89q.com>
+ * Copyright (c) the WorldEdit team and contributors
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software 
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 package com.sk89q.worldedit.commands;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.ALL;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.ORIENTATION_REGION;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 
-import java.util.Set;
+import javax.annotation.Nullable;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
+import com.sk89q.rebar.command.binding.Range;
+import com.sk89q.rebar.command.binding.Switch;
+import com.sk89q.rebar.command.binding.Text;
+import com.sk89q.rebar.command.binding.Unmanaged;
+import com.sk89q.rebar.command.parametric.Optional;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.HeightMap;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.annotation.Direction;
+import com.sk89q.worldedit.annotation.Selection;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
+import com.sk89q.worldedit.masks.ExistingBlockMask;
 import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.operation.RejectedOperationException;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.transform.NaturalizeArea;
+import com.sk89q.worldedit.transform.OverlayBlocks;
+import com.sk89q.worldedit.transform.ReplaceBlocks;
+import com.sk89q.worldedit.util.HeightMap;
 
 /**
- * Region related commands.
- *
- * @author sk89q
+ * Commands that deal with a {@link Region} provided by the user's current
+ * selection.
  */
 public class RegionCommands {
-    private final WorldEdit we;
+    
+    private final WorldEdit worldEdit;
 
-    public RegionCommands(WorldEdit we) {
-        this.we = we;
+    /**
+     * Construct a new instance.
+     * 
+     * @param worldEdit an instance of WorldEdit
+     */
+    public RegionCommands(WorldEdit worldEdit) {
+        this.worldEdit = worldEdit;
     }
 
-    @Command(
-        aliases = { "/set" },
-        usage = "<block>",
-        desc = "Set all the blocks inside the selection to a block",
-        min = 1,
-        max = 1
-    )
+    /*
+     * Set blocks within a region to another block.
+     */
+    @Command(aliases = "/set",
+             desc = "Set all the blocks inside the selection to a block")
     @CommandPermissions("worldedit.region.set")
     @Logging(REGION)
-    public void set(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        Pattern pattern = we.getBlockPattern(player, args.getString(0));
-
-        int affected;
-
-        if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.setBlocks(session.getSelection(player.getWorld()),
-                    ((SingleBlockPattern) pattern).getBlock());
-        } else {
-            affected = editSession.setBlocks(session.getSelection(player.getWorld()), pattern);
-        }
-
-        player.print(affected + " block(s) have been changed.");
+    public void setBlocks(LocalPlayer player, @Unmanaged EditSession editSession,
+            @Selection Region region, Pattern replaceWith, @Unmanaged CommandContext context)
+            throws RejectedOperationException {
+        
+        ReplaceBlocks op = new ReplaceBlocks(editSession, region, replaceWith);
+        worldEdit.execute(player, op, editSession, "/" + context.getCommand());
     }
 
-    @Command(
-        aliases = { "/replace", "/re", "/rep" },
-        usage = "[from-block] <to-block>",
-        desc = "Replace all blocks in the selection with another",
-        flags = "f",
-        min = 1,
-        max = 2
-    )
+    /*
+     * Replace all the blocks within a region that match a given mask into a
+     * given block pattern.
+     */
+    @Command(aliases = { "/replace", "/re", "/rep", "/r" },
+             desc = "Replace all blocks in the selection with another")
     @CommandPermissions("worldedit.region.replace")
     @Logging(REGION)
-    public void replace(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        Set<BaseBlock> from;
-        Pattern to;
-        if (args.argsLength() == 1) {
-            from = null;
-            to = we.getBlockPattern(player, args.getString(0));
-        } else {
-            from = we.getBlocks(player, args.getString(0), true, !args.hasFlag('f'));
-            to = we.getBlockPattern(player, args.getString(1));
+    public void replaceBlocks(LocalPlayer player, EditSession editSession,
+            @Selection Region region, @Nullable Mask mask, Pattern replaceWith,
+            @Unmanaged CommandContext context)
+            throws RejectedOperationException {
+        
+        // No mask? Replace non-air blocks
+        if (mask == null) {
+            mask = new ExistingBlockMask();
         }
-
-        int affected = 0;
-        if (to instanceof SingleBlockPattern) {
-            affected = editSession.replaceBlocks(session.getSelection(player.getWorld()), from,
-                    ((SingleBlockPattern) to).getBlock());
-        } else {
-            affected = editSession.replaceBlocks(session.getSelection(player.getWorld()), from, to);
-        }
-
-        player.print(affected + " block(s) have been replaced.");
+        
+        ReplaceBlocks op = new ReplaceBlocks(editSession, region, replaceWith, mask);
+        worldEdit.execute(player, op, editSession, "/" + context.getCommand());
     }
 
-    @Command(
-        aliases = { "/overlay" },
-        usage = "<block>",
-        desc = "Set a block on top of blocks in the region",
-        min = 1,
-        max = 1
-    )
+    /*
+     * Place a pattern on top of blocks in a cuboid area contain the selection.
+     */
+    @Command(aliases = { "/overlay", "/over", "/o" },
+             desc = "Set a block on top of blocks in the region")
     @CommandPermissions("worldedit.region.overlay")
     @Logging(REGION)
-    public void overlay(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        Pattern pat = we.getBlockPattern(player, args.getString(0));
-
-        Region region = session.getSelection(player.getWorld());
-        int affected = 0;
-        if (pat instanceof SingleBlockPattern) {
-            affected = editSession.overlayCuboidBlocks(region,
-                    ((SingleBlockPattern) pat).getBlock());
-        } else {
-            affected = editSession.overlayCuboidBlocks(region, pat);
-        }
-        player.print(affected + " block(s) have been overlayed.");
+    public void overlayBlocks(LocalPlayer player, EditSession editSession,
+            @Selection Region region, Pattern overlayWith, @Unmanaged CommandContext context)
+            throws RejectedOperationException {
+        
+        OverlayBlocks op = new OverlayBlocks(editSession, region.toFlatRegion(), overlayWith);
+        worldEdit.execute(player, op, editSession, "/" + context.getCommand());
     }
 
-    @Command(
-        aliases = { "/center", "/middle" },
-        usage = "<block>",
-        desc = "Set the center block(s)",
-        min = 1,
-        max = 1
-    )
+    /*
+     * Set the block in the center.
+     */
+    @Command(aliases = { "/center", "/middle" },
+             desc = "Set the center block(s)")
     @Logging(REGION)
     @CommandPermissions("worldedit.region.center")
-    public void center(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-        Pattern pattern = we.getBlockPattern(player, args.getString(0));
-        Region region = session.getSelection(player.getWorld());
-
-        int affected = editSession.center(region, pattern);
-        player.print("Center set ("+ affected + " blocks changed)");
+    public void setCenterBlock(LocalPlayer player, EditSession editSession,
+            @Selection Region region, Pattern pattern, @Unmanaged CommandContext context)
+            throws RejectedOperationException {
+        
+        Vector centerVec = region.getCenter();
+        CuboidRegion center = new CuboidRegion(centerVec, centerVec);
+        ReplaceBlocks op = new ReplaceBlocks(editSession, center, pattern);
+        worldEdit.execute(player, op, editSession, "/" + context.getCommand());
     }
 
-    @Command(
-        aliases = { "/naturalize" },
-        usage = "",
-        desc = "3 layers of dirt on top then rock below",
-        min = 0,
-        max = 0
-    )
+    /*
+     * Make an area look natural.
+     */
+    @Command(aliases = { "/naturalize", "/n", "/nature", "/natural" },
+             desc = "3 layers of dirt on top then rock below")
     @CommandPermissions("worldedit.region.naturalize")
     @Logging(REGION)
-    public void naturalize(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void makeNatural(LocalPlayer player, EditSession editSession,
+            @Selection Region region, @Unmanaged CommandContext context)
+            throws RejectedOperationException {
 
-        Region region = session.getSelection(player.getWorld());
-        int affected = editSession.naturalizeCuboidBlocks(region);
-        player.print(affected + " block(s) have been naturalized.");
+        NaturalizeArea op = new NaturalizeArea(editSession, region.toFlatRegion());
+        worldEdit.execute(player, op, editSession, "/" + context.getCommand());
     }
 
-    @Command(
-        aliases = { "/walls" },
-        usage = "<block>",
-        desc = "Build the four sides of the selection",
-        min = 1,
-        max = 1
-    )
+    /*
+     * Set the four walls of a region.
+     */
+    @Command(aliases = { "/walls", "/sides" },
+             desc = "Set the four sides of the selection")
     @CommandPermissions("worldedit.region.walls")
     @Logging(REGION)
-    public void walls(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        Pattern pattern = we.getBlockPattern(player, args.getString(0));
-        int affected;
-        if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), ((SingleBlockPattern) pattern).getBlock());
-        } else {
-            affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), pattern);
-        }
-
+    public void setSideBlocks(LocalPlayer player, EditSession editSession,
+            @Selection Region region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        
+        int affected = editSession.makeCuboidWalls(region, pattern);
         player.print(affected + " block(s) have been changed.");
     }
 
-    @Command(
-        aliases = { "/faces", "/outline" },
-        usage = "<block>",
-        desc = "Build the walls, ceiling, and floor of a selection",
-        min = 1,
-        max = 1
-    )
+    /*
+     * Set the faces of a region.
+     */
+    @Command(aliases = { "/faces", "/outline" },
+             desc = "Build the walls, ceiling, and floor of a selection")
     @CommandPermissions("worldedit.region.faces")
     @Logging(REGION)
-    public void faces(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        Pattern pattern = we.getBlockPattern(player, args.getString(0));
-        int affected;
-        if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.makeCuboidFaces(session.getSelection(player.getWorld()), ((SingleBlockPattern) pattern).getBlock());
-        } else {
-            affected = editSession.makeCuboidFaces(session.getSelection(player.getWorld()), pattern);
-        }
-
+    public void setFaceBlocks(LocalPlayer player, EditSession editSession,
+            @Selection Region region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        
+        int affected = editSession.makeCuboidFaces(region, pattern);
         player.print(affected + " block(s) have been changed.");
     }
 
-    @Command(
-        aliases = { "/smooth" },
-        usage = "[iterations]",
-        flags = "n",
-        desc = "Smooth the elevation in the selection",
-        help =
-            "Smooths the elevation in the selection.\n" +
-            "The -n flag makes it only consider naturally occuring blocks.",
-        min = 0,
-        max = 1
-    )
+    /*
+     * Smooth the elevation of a region.
+     */
+    @Command(aliases = "/smooth",
+             desc = "Smooth the elevation in the selection",
+             help = "Smooths the elevation in the selection.\n" +
+                    "The -n flag makes it only consider naturally occuring blocks.")
     @CommandPermissions("worldedit.region.smooth")
     @Logging(REGION)
-    public void smooth(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        int iterations = 1;
-        if (args.argsLength() > 0) {
-            iterations = args.getInteger(0);
+    public void smoothen(LocalPlayer player, EditSession editSession,
+            @Selection Region region,
+            @Nullable @Range(min = 1) Integer iterations,
+            @Switch('n') boolean onlyNaturalBlocks)
+            throws MaxChangedBlocksException {
+        
+        if (iterations == null) {
+            iterations = 1;
         }
 
-        HeightMap heightMap = new HeightMap(editSession, session.getSelection(player.getWorld()), args.hasFlag('n'));
+        HeightMap heightMap = new HeightMap(editSession, region, onlyNaturalBlocks);
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         int affected = heightMap.applyFilter(filter, iterations);
         player.print("Terrain's height map smoothed. " + affected + " block(s) changed.");
 
     }
 
-    @Command(
-        aliases = { "/move" },
-        usage = "[count] [direction] [leave-id]",
-        flags = "s",
-        desc = "Move the contents of the selection",
-        help =
-            "Moves the contents of the selection.\n" +
-            "The -s flag shifts the selection to the target location.\n" +
-            "Optionally fills the old location with <leave-id>.",
-        min = 0,
-        max = 3
-    )
+    /*
+     * Move the contents of a region.
+     */
+    @Command(aliases = "/move",
+             desc = "Move the contents of the selection",
+             help = "Moves the contents of the selection.\n" +
+                    "The -s flag shifts the selection to the target location.\n" +
+                    "Optionally fills the old location with a given left over block.")
     @CommandPermissions("worldedit.region.move")
     @Logging(ORIENTATION_REGION)
-    public void move(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        int count = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
-        Vector dir = we.getDirection(player,
-                args.argsLength() > 1 ? args.getString(1).toLowerCase() : "me");
-        BaseBlock replace;
-
-        // Replacement block argument
-        if (args.argsLength() > 2) {
-            replace = we.getBlock(player, args.getString(2));
-        } else {
-            replace = new BaseBlock(BlockID.AIR);
+    public void move(LocalPlayer player, LocalSession session,
+            EditSession editSession, @Selection Region region,
+            @Optional("1") int count, @Optional(Direction.AIM) @Direction Vector direction,
+            @Nullable Pattern fillIn, @Switch('s') boolean shiftSelection)
+            throws WorldEditException {
+        if (fillIn == null) {
+            fillIn = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
         }
 
-        int affected = editSession.moveCuboidRegion(session.getSelection(player.getWorld()),
-                dir, count, true, replace);
-
-        if (args.hasFlag('s')) {
-            try {
-                Region region = session.getSelection(player.getWorld());
-                region.shift(dir.multiply(count));
-
-                session.getRegionSelector(player.getWorld()).learnChanges();
-                session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
-            } catch (RegionOperationException e) {
-                player.printError(e.getMessage());
-            }
-        }
+        int affected = editSession.moveCuboidRegion(region, direction, count, true, fillIn);
 
         player.print(affected + " blocks moved.");
+
+        if (shiftSelection) {
+            region.shift(direction.multiply(count));
+            
+            RegionSelector selector = session.getRegionSelector(player.getWorld());
+            selector.learnChanges();
+            selector.explainRegionAdjust(player, session);
+        }
     }
 
-    @Command(
-        aliases = { "/stack" },
-        usage = "[count] [direction]",
-        flags = "sa",
-        desc = "Repeat the contents of the selection",
-        help =
-            "Repeats the contents of the selection.\n" +
-            "Flags:\n" +
-            "  -s shifts the selection to the last stacked copy\n" +
-            "  -a skips air blocks",
-        min = 0,
-        max = 2
-    )
+    /*
+     * Stack the contents of a selection repeatedly.
+     */
+    @Command(aliases = "/stack",
+             desc = "Repeat the contents of the selection",
+             help = "Repeats the contents of the selection.\n" +
+                    "Flags:\n" +
+                    "  -s shifts the selection to the last stacked copy\n" +
+                    "  -a skips air blocks")
     @CommandPermissions("worldedit.region.stack")
     @Logging(ORIENTATION_REGION)
-    public void stack(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        int count = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
-        Vector dir = we.getDiagonalDirection(player,
-                args.argsLength() > 1 ? args.getString(1).toLowerCase() : "me");
-
-        int affected = editSession.stackCuboidRegion(session.getSelection(player.getWorld()),
-                dir, count, !args.hasFlag('a'));
-
-        if (args.hasFlag('s')) {
-            try {
-                final Region region = session.getSelection(player.getWorld());
-                final Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint());
-
-                final Vector shiftVector = dir.multiply(count * (Math.abs(dir.dot(size))+1));
-                region.shift(shiftVector);
-
-                session.getRegionSelector(player.getWorld()).learnChanges();
-                session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
-            } catch (RegionOperationException e) {
-                player.printError(e.getMessage());
-            }
-        }
+    public void stack(LocalPlayer player, LocalSession session,
+            EditSession editSession, @Selection Region region,
+            @Optional("1") int count, @Optional(Direction.AIM) @Direction Vector direction,
+            @Switch('s') boolean shiftSelection,
+            @Switch('a') boolean ignoreAirBlocks) throws WorldEditException {
+        
+        int affected = editSession.stackCuboidRegion(
+                region, direction, count, !ignoreAirBlocks);
 
         player.print(affected + " blocks changed. Undo with //undo");
+
+        if (shiftSelection) {
+            Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint());
+            Vector shiftVector = direction.multiply(count * (Math.abs(direction.dot(size)) + 1));
+            region.shift(shiftVector);
+            
+            RegionSelector selector = session.getRegionSelector(player.getWorld());
+            selector.learnChanges();
+            selector.explainRegionAdjust(player, session);
+        }
     }
 
-    @Command(
-        aliases = { "/regen" },
-        usage = "",
-        desc = "Regenerates the contents of the selection",
-        help =
-            "Regenerates the contents of the current selection.\n" +
-            "This command might affect things outside the selection,\n" +
-            "if they are within the same chunk.",
-        min = 0,
-        max = 0
-    )
+    /*
+     * Regenerate a chunk.
+     */
+    @Command(aliases = { "/regen", "/regenerate" },
+             desc = "Regenerates the contents of the selection",
+             help = "Regenerates the contents of the current selection.\n" +
+                    "This command might affect things outside the selection,\n" +
+                    "if they are within the same chunk.")
     @CommandPermissions("worldedit.regen")
     @Logging(REGION)
-    public void regenerateChunk(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void regenerateChunk(LocalPlayer player, LocalSession session,
+            EditSession editSession, @Selection Region region)
+            throws WorldEditException {
 
-        Region region = session.getSelection(player.getWorld());
         Mask mask = session.getMask();
-        session.setMask(null);
-        player.getWorld().regenerate(region, editSession);
-        session.setMask(mask);
+        try {
+            session.setMask(null);
+            player.getWorld().regenerate(region, editSession);
+        } finally {
+            session.setMask(mask);
+        }
         player.print("Region regenerated.");
     }
 
-    @Command(
-            aliases = { "/deform" },
-            usage = "<expression>",
-            desc = "Deforms a selected region with an expression",
-            help =
-                "Deforms a selected region with an expression\n" +
-                "The expression is executed for each block and is expected\n" +
-                "to modify the variables x, y and z to point to a new block\n" +
-                "to fetch. See also tinyurl.com/wesyntax.",
-            flags = "ro",
-            min = 1,
-            max = -1
-    )
+    /*
+     * Deform the contents of a region given an expression.
+     */
+    @Command(aliases = "/deform",
+             desc = "Deforms a selected region with an expression",
+             help = "Deforms a selected region with an expression\n" +
+                    "The expression is executed for each block and is expected\n" +
+                    "to modify the variables x, y and z to point to a new block\n" +
+                    "to fetch. See also tinyurl.com/wesyntax.")
     @CommandPermissions("worldedit.region.deform")
     @Logging(ALL)
-    public void deform(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        final Region region = session.getSelection(player.getWorld());
-
-        final String expression = args.getJoinedStrings(0);
-
+    public void deform(LocalPlayer player, LocalSession session,
+            EditSession editSession, @Selection Region region,
+            @Switch('r') boolean relativeXYZ, @Switch('o') boolean atOrigin,
+            @Text String expression) throws WorldEditException,
+            ExpressionException {
+        
         final Vector zero;
         Vector unit;
 
-        if (args.hasFlag('r')) {
+        if (relativeXYZ) {
             zero = new Vector(0, 0, 0);
             unit = new Vector(1, 1, 1);
-        } else if (args.hasFlag('o')) {
+        } else if (atOrigin) {
             zero = session.getPlacementPosition(player);
             unit = new Vector(1, 1, 1);
         } else {
@@ -410,36 +342,32 @@ public class RegionCommands {
             if (unit.getZ() == 0) unit = unit.setZ(1.0);
         }
 
-        try {
-            final int affected = editSession.deformRegion(region, zero, unit, expression);
-            player.findFreePosition();
-            player.print(affected + " block(s) have been deformed.");
-        } catch (ExpressionException e) {
-            player.printError(e.getMessage());
-        }
+        int affected = editSession.deformRegion(region, zero, unit, expression);
+        player.findFreePosition();
+        player.print(affected + " block(s) have been deformed.");
     }
 
-    @Command(
-        aliases = { "/hollow" },
-        usage = "[<thickness>[ <block>]]",
-        desc = "Hollows out the object contained in this selection",
-        help =
-            "Hollows out the object contained in this selection.\n" +
-            "Optionally fills the hollowed out part with the given block.\n" +
-            "Thickness is measured in manhattan distance.",
-        min = 0,
-        max = 2
-    )
+    /*
+     * Hollow out the contents of a region.
+     */
+    @Command(aliases = "/hollow",
+             desc = "Hollows out the object contained in this selection",
+             help = "Hollows out the object contained in this selection.\n" +
+                    "Optionally fills the hollowed out part with the given block.\n" +
+                    "Thickness is measured in manhattan distance.")
     @CommandPermissions("worldedit.region.hollow")
     @Logging(REGION)
-    public void hollow(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void hollow(LocalPlayer player, EditSession editSession,
+            @Selection Region region,
+            @Optional("1") @Range(min = 1) int thickness,
+            @Nullable Pattern pattern) throws WorldEditException {
+        
+        if (pattern == null) {
+            pattern = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
+        }
 
-        final int thickness = args.argsLength() >= 1 ? Math.max(1, args.getInteger(0)) : 1;
-        final Pattern pattern = args.argsLength() >= 2 ? we.getBlockPattern(player, args.getString(1)) : new SingleBlockPattern(new BaseBlock(BlockID.AIR));
-
-        final int affected = editSession.hollowOutRegion(session.getSelection(player.getWorld()), thickness, pattern);
-
+        int affected = editSession.hollowOutRegion(region, thickness, pattern);
         player.print(affected + " block(s) have been changed.");
     }
+    
 }

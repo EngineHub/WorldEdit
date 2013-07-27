@@ -26,10 +26,9 @@ import com.sk89q.worldedit.Vector;
 
 /**
  * Selector for spheres.
- *
- * @author TomyLobo
  */
 public class SphereRegionSelector extends EllipsoidRegionSelector {
+    
     public SphereRegionSelector(LocalWorld world) {
         super(world);
     }

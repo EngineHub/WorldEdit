@@ -25,6 +25,7 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 
 public class RegionIterator implements Iterator<BlockVector> {
+    
     private final Region region;
     private final int maxX;
     private final int maxY;
@@ -50,6 +51,7 @@ public class RegionIterator implements Iterator<BlockVector> {
         forward();
     }
 
+    @Override
     public boolean hasNext() {
         return nextX != Integer.MIN_VALUE;
     }
@@ -60,6 +62,7 @@ public class RegionIterator implements Iterator<BlockVector> {
         }
     }
 
+    @Override
     public BlockVector next() {
         if (!hasNext()) throw new java.util.NoSuchElementException();
 
@@ -88,6 +91,7 @@ public class RegionIterator implements Iterator<BlockVector> {
         nextX = Integer.MIN_VALUE;
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }

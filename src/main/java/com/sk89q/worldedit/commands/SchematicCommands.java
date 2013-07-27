@@ -18,30 +18,19 @@
 
 package com.sk89q.worldedit.commands;
 
+import com.sk89q.minecraft.util.commands.*;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.schematic.SchematicFormat;
+import com.sk89q.worldedit.util.FilenameResolutionException;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Console;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.FilenameResolutionException;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.data.DataException;
-import com.sk89q.worldedit.schematic.SchematicFormat;
-
 /**
  * Commands related to schematics
- *
- * @see com.sk89q.worldedit.commands.ClipboardCommands#schematic()
  */
 public class SchematicCommands {
     private final WorldEdit we;
@@ -77,8 +66,8 @@ public class SchematicCommands {
             formatName = args.getString(0);
             fileName = args.getString(1);
         }
-        File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = we.getSafeOpenFile(player, dir, fileName, "schematic", "schematic");
+        File dir = we.getApplicationData().getDirectory(config.saveDir, true);
+        File f = we.getApplicationData().getSafeOpenFile(player, dir, fileName, "schematic", "schematic");
 
         if (!f.exists()) {
             player.printError("Schematic " + fileName + " does not exist!");
@@ -150,8 +139,8 @@ public class SchematicCommands {
 
         String filename = args.getString(args.argsLength() - 1);
 
-        File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = we.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
+        File dir = we.getApplicationData().getDirectory(config.saveDir, true);
+        File f = we.getApplicationData().getSafeSaveFile(player, dir, filename, "schematic", "schematic");
 
         if (!dir.exists()) {
             if (!dir.mkdir()) {
@@ -219,7 +208,7 @@ public class SchematicCommands {
     @CommandPermissions("worldedit.schematic.list")
     public void list(CommandContext args, LocalSession session, LocalPlayer player,
                         EditSession editSession) throws WorldEditException {
-        File dir = we.getWorkingDirectoryFile(we.getConfiguration().saveDir);
+        File dir = we.getApplicationData().getDirectory(we.getConfiguration().saveDir, true);
         File[] files = dir.listFiles();
         if (files == null) {
             throw new FilenameResolutionException(dir.getPath(), "Schematics directory invalid or not found.");

@@ -12,7 +12,7 @@
 # - If you want to check the format of this file before putting it
 #   into WorldEdit, paste it into http://yaml-online-parser.appspot.com/
 #   and see if it gives "ERROR:".
-# - Lines starting with # are commentsand so they are ignored.
+# - Lines starting with # are comments.
 #
 
 limits:
@@ -64,6 +64,12 @@ files:
 history:
     size: 15
     expiration: 10
+    
+# These settings adjust the rate that commands and operations run at
+scheduler: 
+    blocks-per-batch: 10000
+    batch-interval: 1
+    queue-max-size: 4
 
 wand-item: 271
 shell-save-type:

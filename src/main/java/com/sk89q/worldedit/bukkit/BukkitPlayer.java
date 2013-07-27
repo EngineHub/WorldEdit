@@ -24,14 +24,14 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.cui.CUIEvent;
+import com.sk89q.worldedit.client.bridge.CUIEvent;
+import com.sk89q.worldedit.util.StringUtil;
 
 public class BukkitPlayer extends LocalPlayer {
     private Player player;

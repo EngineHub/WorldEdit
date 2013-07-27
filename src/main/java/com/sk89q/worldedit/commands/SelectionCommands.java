@@ -31,7 +31,6 @@ import com.sk89q.minecraft.util.commands.CommandAlias;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.Countable;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
@@ -53,6 +52,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.SphereRegionSelector;
+import com.sk89q.worldedit.util.Countable;
 
 /**
  * Selection commands.
@@ -702,7 +702,7 @@ public class SelectionCommands {
             selector = new ExtendingCuboidRegionSelector(oldSelector);
             player.print("Cuboid: left click for a starting point, right click to extend");
         } else if (typeName.equalsIgnoreCase("poly")) {
-            int maxPoints = we.getMaximumPolygonalPoints(player);
+            int maxPoints = we.getConfiguration().getMaximumPolygonalPoints(player);
             selector = new Polygonal2DRegionSelector(oldSelector, maxPoints);
             player.print("2D polygon selector: Left/right click to add a point.");
             if (maxPoints > -1) {

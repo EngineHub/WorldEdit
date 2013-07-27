@@ -76,6 +76,13 @@
       <url>http://repo.bukkit.org/content/groups/public</url>
     </repository>
   </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>sk89q-repo</id>
+      <url>http://maven.sk89q.com/repo/</url>
+    </pluginRepository>
+  </pluginRepositories>
   
   <dependencies>
     <dependency> <!-- Used for snapshots -->
@@ -111,6 +118,12 @@
       <scope>compile</scope>
       <type>jar</type>
       <optional>true</optional> <!-- Don't export -->
+    </dependency>
+    
+    <dependency> <!-- Method names for the command framework -->
+      <groupId>com.thoughtworks.paranamer</groupId>
+      <artifactId>paranamer</artifactId>
+      <version>2.5.2</version>
     </dependency>
 
     <dependency> <!-- Bukkit implementation -->
@@ -191,6 +204,25 @@
           <target>1.6</target>
         </configuration>
       </plugin>
+      
+      <plugin>
+        <groupId>com.thoughtworks.paranamer</groupId>
+        <artifactId>paranamer-maven-plugin-largestack</artifactId>
+        <version>2.5.5-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <id>run</id>
+            <phase>compile</phase>
+            <configuration>
+              <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+            </configuration>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -244,6 +276,7 @@
               <artifactSet>
                 <includes>
                   <include>com.sk89q:jchronic</include>
+                  <include>com.thoughtworks.paranamer:paranamer</include>
                 </includes>
               </artifactSet>
             </configuration>
@@ -302,7 +335,39 @@
         </configuration>
       </plugin>
     </plugins>
+    
+    <pluginManagement>
+      <plugins>
+        <!-- This plugin's configuration is used to store Eclipse m2e settings only. 
+             It has no influence on the Maven build itself. -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>com.thoughtworks.paranamer</groupId>
+                    <artifactId>paranamer-maven-plugin-largestack</artifactId>
+                    <versionRange>[2.5.5-SNAPSHOT,)</versionRange>
+                    <goals>
+                      <goal>generate</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
+  
   
   <profiles>
     <!-- Attach javadocs and source .jars -->

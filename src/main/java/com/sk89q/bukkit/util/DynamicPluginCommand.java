@@ -20,8 +20,9 @@
 package com.sk89q.bukkit.util;
 
 import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.util.StringUtil;
 import com.sk89q.wepif.PermissionsResolverManager;
+import com.sk89q.worldedit.util.StringUtil;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

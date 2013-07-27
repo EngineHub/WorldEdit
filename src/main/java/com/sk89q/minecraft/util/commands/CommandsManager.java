@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.util.StringUtil;
 
 /**
  * <p>Manager for handling commands. This allows you to easily process commands,

@@ -95,6 +95,8 @@ import com.sk89q.worldedit.blocks.SignBlock;
 import com.sk89q.worldedit.blocks.SkullBlock;
 import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.transaction.ReorderingTransaction;
+import com.sk89q.worldedit.transaction.Transaction;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 public class BukkitWorld extends LocalWorld {
@@ -1247,6 +1249,9 @@ public class BukkitWorld extends LocalWorld {
             world.refreshChunk(chunkPos.getBlockX(), chunkPos.getBlockZ());
         }
     }
+    public void fixAfterFastMode(BlockVector2D chunkPos) {
+        world.refreshChunk(chunkPos.getBlockX(), chunkPos.getBlockZ());
+    }
 
     private static final Map<Integer, Effect> effects = new HashMap<Integer, Effect>();
     static {
@@ -1340,7 +1345,17 @@ public class BukkitWorld extends LocalWorld {
     }
 
     @Override
+    public boolean setBlock(Vector location, BaseBlock block) {
+        return setBlock(location, block, true);
+    }
+
+    @Override
     public boolean setBlock(Vector pt, com.sk89q.worldedit.foundation.Block block, boolean notifyAdjacent) {
+        // No invalid blocks
+        if (!isValidBlockType(block.getData())) {
+            return false;
+        }
+        
         if (!skipNmsSafeSet) {
             try {
                 return (Boolean) nmsSetSafeMethod.invoke(null, this, pt, block, notifyAdjacent);
@@ -1351,5 +1366,20 @@ public class BukkitWorld extends LocalWorld {
         }
 
         return super.setBlock(pt, block, notifyAdjacent);
+    }
+
+    @Override
+    public Transaction createTransaction() {
+        return new ReorderingTransaction(this) {
+            @Override
+            protected boolean setBlockOnExtent(Vector location, BaseBlock block) {
+                return BukkitWorld.this.setBlock(location, block, false);
+            }
+
+            @Override
+            protected void flushChunk(BlockVector2D chunk) {
+                fixAfterFastMode(chunk);
+            }
+        };
     }
 }

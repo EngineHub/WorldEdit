@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.tools.brushes;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.HeightMap;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
@@ -29,6 +28,7 @@ import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.HeightMap;
 
 public class SmoothBrush implements Brush {
     private int iterations;

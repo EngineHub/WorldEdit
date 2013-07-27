@@ -21,22 +21,22 @@ package com.sk89q.worldedit.regions;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.cui.CUIRegion;
-import com.sk89q.worldedit.cui.SelectionEllipsoidPointEvent;
-import com.sk89q.worldedit.cui.SelectionPointEvent;
+import com.sk89q.worldedit.client.bridge.CUIRegion;
+import com.sk89q.worldedit.client.bridge.SelectionEllipsoidPointEvent;
+import com.sk89q.worldedit.client.bridge.SelectionPointEvent;
 
 /**
  * Selector for ellipsoids.
- *
- * @author TomyLobo
  */
 public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
+    
     protected EllipsoidRegion region;
 
     public EllipsoidRegionSelector(LocalWorld world) {
@@ -77,6 +77,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
         region.setRadius(radius);
     }
 
+    @Override
     public boolean selectPrimary(Vector pos) {
         if (pos.equals(region.getCenter()) && region.getRadius().lengthSq() == 0) {
             return false;
@@ -87,6 +88,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
         return true;
     }
 
+    @Override
     public boolean selectSecondary(Vector pos) {
         final Vector diff = pos.subtract(region.getCenter());
         final Vector minRadius = Vector.getMaximum(diff, diff.multiply(-1.0));
@@ -94,6 +96,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
         return true;
     }
 
+    @Override
     public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector pos) {
         if (isDefined()) {
             player.print("Center position set to " + region.getCenter() + " (" + region.getArea() + ").");
@@ -104,6 +107,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
         session.describeCUI(player);
     }
 
+    @Override
     public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
         if (isDefined()) {
             player.print("Radius set to " + region.getRadius() + " (" + region.getArea() + ").");
@@ -114,14 +118,17 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
         session.describeCUI(player);
     }
 
+    @Override
     public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
         session.describeCUI(player);
     }
 
+    @Override
     public boolean isDefined() {
         return region.getRadius().lengthSq() > 0;
     }
 
+    @Override
     public EllipsoidRegion getRegion() throws IncompleteRegionException {
         if (!isDefined()) {
             throw new IncompleteRegionException();
@@ -130,22 +137,27 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
         return region;
     }
 
+    @Override
     public EllipsoidRegion getIncompleteRegion() {
         return region;
     }
 
+    @Override
     public void learnChanges() {
     }
 
+    @Override
     public void clear() {
         region.setCenter(new Vector());
         region.setRadius(new Vector());
     }
 
+    @Override
     public String getTypeName() {
         return "ellipsoid";
     }
 
+    @Override
     public List<String> getInformationLines() {
         final List<String> lines = new ArrayList<String>();
 
@@ -162,28 +174,34 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
         return lines;
     }
 
+    @Override
     public int getArea() {
         return region.getArea();
     }
 
+    @Override
     public void describeCUI(LocalSession session, LocalPlayer player) {
         session.dispatchCUIEvent(player, new SelectionEllipsoidPointEvent(0, region.getCenter()));
         session.dispatchCUIEvent(player, new SelectionEllipsoidPointEvent(1, region.getRadius()));
     }
 
+    @Override
     public void describeLegacyCUI(LocalSession session, LocalPlayer player) {
         session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getMinimumPoint(), getArea()));
         session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getMaximumPoint(), getArea()));
     }
 
+    @Override
     public String getLegacyTypeID() {
         return "cuboid";
     }
 
+    @Override
     public int getProtocolVersion() {
         return 1;
     }
 
+    @Override
     public String getTypeID() {
         return "ellipsoid";
     }

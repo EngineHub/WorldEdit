@@ -19,7 +19,8 @@
 
 package com.sk89q.util.yaml;
 
-import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.util.StringUtil;
+
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;

@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.worldedit.util.FilenameException;
+
 public class InvalidFilenameException extends FilenameException {
     private static final long serialVersionUID = 7377072269988014886L;
 

@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.snapshots.SnapshotRepository;
@@ -106,6 +105,9 @@ public class PropertiesConfiguration extends LocalConfiguration {
         butcherMaxRadius = getInt("butcher-max-radius", butcherMaxRadius);
         allowExtraDataValues = getBool("allow-extra-data-values", allowExtraDataValues);
         allowSymlinks = getBool("allow-symbolic-links", allowSymlinks);
+        timePerBatch = getInt("time-per-batch", (int) timePerBatch);
+        batchInterval = getInt("batch-interval", batchInterval);
+        operationQueueMaxSize = getInt("operation-queue-max-size", operationQueueMaxSize);
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 
@@ -131,6 +133,8 @@ public class PropertiesConfiguration extends LocalConfiguration {
                 }
             }
         }
+        
+        super.load();
     }
 
     /**

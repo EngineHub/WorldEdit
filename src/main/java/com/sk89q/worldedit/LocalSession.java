@@ -1,20 +1,19 @@
 // $Id$
 /*
- * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com> and contributors
+ * This file is a part of WorldEdit.
+ * Copyright (c) sk89q <http://www.sk89q.com>
+ * Copyright (c) the WorldEdit team and contributors
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software 
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 package com.sk89q.worldedit;
@@ -24,23 +23,28 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TimeZone;
+
 import com.sk89q.jchronic.Chronic;
 import com.sk89q.jchronic.Options;
 import com.sk89q.jchronic.utils.Span;
 import com.sk89q.jchronic.utils.Time;
-import com.sk89q.worldedit.snapshots.Snapshot;
-import com.sk89q.worldedit.tools.BrushTool;
-import com.sk89q.worldedit.tools.SinglePickaxe;
-import com.sk89q.worldedit.tools.BlockTool;
-import com.sk89q.worldedit.tools.Tool;
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.cui.CUIRegion;
-import com.sk89q.worldedit.cui.CUIEvent;
-import com.sk89q.worldedit.cui.SelectionShapeEvent;
+import com.sk89q.worldedit.changelog.ApplyChangeLog;
+import com.sk89q.worldedit.changelog.NullLog;
+import com.sk89q.worldedit.client.bridge.CUIEvent;
+import com.sk89q.worldedit.client.bridge.CUIRegion;
+import com.sk89q.worldedit.client.bridge.SelectionShapeEvent;
 import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.operation.Operation;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.snapshots.Snapshot;
+import com.sk89q.worldedit.tools.BlockTool;
+import com.sk89q.worldedit.tools.BrushTool;
+import com.sk89q.worldedit.tools.InvalidToolBindException;
+import com.sk89q.worldedit.tools.SinglePickaxe;
+import com.sk89q.worldedit.tools.Tool;
 
 /**
  * An instance of this represents the WorldEdit session of a user. A session
@@ -119,7 +123,7 @@ public class LocalSession {
      */
     public void remember(EditSession editSession) {
         // Don't store anything if no changes were made
-        if (editSession.size() == 0) return;
+        if (editSession.getHistory().size() == 0) return;
 
         // Destroy any sessions after this undo point
         while (historyPointer < history.size()) {
@@ -133,45 +137,43 @@ public class LocalSession {
     }
 
     /**
-     * Performs an undo.
+     * Create a new {@link Operation} to undo the last stored 
+     * {@link EditSession} in history.
      *
-     * @param newBlockBag
-     * @param player
-     * @return whether anything was undone
+     * @param newBlockBag a new block bag
+     * @param player the player
+     * @return the operation to execute, or null if there's nothing left to undo
      */
-    public EditSession undo(BlockBag newBlockBag, LocalPlayer player) {
+    public ApplyChangeLog createUndo(BlockBag newBlockBag, LocalPlayer player) {
         --historyPointer;
         if (historyPointer >= 0) {
             EditSession editSession = history.get(historyPointer);
-            EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
+            EditSession undoSession = WorldEdit.getInstance().getEditSessionFactory()
                     .getEditSession(editSession.getWorld(), -1, newBlockBag, player);
-            newEditSession.enableQueue();
-            newEditSession.setFastMode(fastMode);
-            editSession.undo(newEditSession);
-            return editSession;
+            undoSession.setHistory(new NullLog()); // Don't add the undo to the history
+            return ApplyChangeLog.createUndo(undoSession, editSession.getHistory());
         } else {
             historyPointer = 0;
             return null;
         }
     }
-
+    
     /**
-     * Performs a redo
+     * Create a new {@link Operation} to redo the last stored 
+     * {@link EditSession} in history.
      *
-     * @param newBlockBag
-     * @param player
-     * @return whether anything was redone
+     * @param newBlockBag a new block bag
+     * @param player the player
+     * @return the operation to execute, or null if there's nothing left to redo
      */
-    public EditSession redo(BlockBag newBlockBag, LocalPlayer player) {
+    public ApplyChangeLog createRedo(BlockBag newBlockBag, LocalPlayer player) {
         if (historyPointer < history.size()) {
             EditSession editSession = history.get(historyPointer);
-            EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
+            EditSession redoSession = WorldEdit.getInstance().getEditSessionFactory()
                     .getEditSession(editSession.getWorld(), -1, newBlockBag, player);
-            newEditSession.enableQueue();
-            newEditSession.setFastMode(fastMode);
-            editSession.redo(newEditSession);
+            redoSession.setHistory(new NullLog()); // Don't add the undo to the history
             ++historyPointer;
-            return editSession;
+            return ApplyChangeLog.createRedo(redoSession, editSession.getHistory());
         }
 
         return null;
