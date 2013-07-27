@@ -530,4 +530,13 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
         clone.points = new ArrayList<BlockVector2D>(points);
         return clone; 
     }
+
+    @Override
+    public List<BlockVector2D> polygonize(int maxPoints) {
+        if (maxPoints >= 0 && maxPoints < points.size()) {
+            throw new IllegalArgumentException("Cannot polygonize a this Polygonal2DRegion into the amount of points given.");
+        }
+
+        return points;
+    }
 }

@@ -19,9 +19,12 @@
 
 package com.sk89q.worldedit.regions;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 
@@ -68,5 +71,24 @@ public abstract class AbstractRegion implements Region {
         } catch (CloneNotSupportedException exc) {
             return null;
         }
+    }
+
+    @Override
+    public List<BlockVector2D> polygonize(int maxPoints) {
+        if (maxPoints >= 0 && maxPoints < 4) {
+            throw new IllegalArgumentException("Cannot polygonize an AbstractRegion with no overridden polygonize method into less than 4 points.");
+        }
+
+        final BlockVector min = getMinimumPoint().toBlockVector();
+        final BlockVector max = getMaximumPoint().toBlockVector();
+
+        final List<BlockVector2D> points = new ArrayList<BlockVector2D>(4);
+
+        points.add(new BlockVector2D(min.getX(), min.getZ()));
+        points.add(new BlockVector2D(min.getX(), max.getZ()));
+        points.add(new BlockVector2D(max.getX(), max.getZ()));
+        points.add(new BlockVector2D(max.getX(), min.getZ()));
+
+        return points;
     }
 }

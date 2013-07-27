@@ -19,8 +19,10 @@
 
 package com.sk89q.worldedit.regions;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import com.sk89q.worldedit.BlockVector;
@@ -407,5 +409,26 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
 
     public CylinderRegion clone() {
         return (CylinderRegion) super.clone();
+    }
+
+    @Override
+    public List<BlockVector2D> polygonize(int maxPoints) {
+        final Vector2D radius = getRadius();
+        int nPoints = (int) Math.ceil(Math.PI*radius.length());
+
+        // These strange semantics for maxPoints are copied from the selectSecondary method.
+        if (maxPoints >= 0 && nPoints >= maxPoints) {
+            nPoints = maxPoints - 1;
+        }
+
+        final List<BlockVector2D> points = new ArrayList<BlockVector2D>(nPoints);
+        for (int i = 0; i < nPoints; ++i) {
+            double angle = i * (2.0 * Math.PI) / nPoints;
+            final Vector2D pos = new Vector2D(Math.cos(angle), Math.sin(angle));
+            final BlockVector2D blockVector2D = pos.multiply(radius).add(center).toBlockVector2D();
+            points.add(blockVector2D);
+        }
+
+        return points;
     }
 }
