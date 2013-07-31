@@ -20,8 +20,10 @@
 package com.sk89q.worldedit.regions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
@@ -92,5 +94,110 @@ public abstract class AbstractRegion implements Region {
         points.add(new BlockVector2D(max.getX(), min.getZ()));
 
         return points;
+    }
+
+    /**
+     * Get the number of blocks in the region.
+     *
+     * @return number of blocks
+     */
+    public int getArea() {
+        Vector min = getMinimumPoint();
+        Vector max = getMaximumPoint();
+
+        return (int)((max.getX() - min.getX() + 1) *
+                     (max.getY() - min.getY() + 1) *
+                     (max.getZ() - min.getZ() + 1));
+    }
+
+    /**
+     * Get X-size.
+     *
+     * @return width
+     */
+    public int getWidth() {
+        Vector min = getMinimumPoint();
+        Vector max = getMaximumPoint();
+
+        return (int) (max.getX() - min.getX() + 1);
+    }
+
+    /**
+     * Get Y-size.
+     *
+     * @return height
+     */
+    public int getHeight() {
+        Vector min = getMinimumPoint();
+        Vector max = getMaximumPoint();
+
+        return (int) (max.getY() - min.getY() + 1);
+    }
+
+    /**
+     * Get Z-size.
+     *
+     * @return length
+     */
+    public int getLength() {
+        Vector min = getMinimumPoint();
+        Vector max = getMaximumPoint();
+
+        return (int) (max.getZ() - min.getZ() + 1);
+    }
+
+    /**
+     * Get a list of chunks.
+     *
+     * @return
+     */
+    public Set<Vector2D> getChunks() {
+        final Set<Vector2D> chunks = new HashSet<Vector2D>();
+
+        final Vector min = getMinimumPoint();
+        final Vector max = getMaximumPoint();
+
+        final int minY = min.getBlockY();
+
+        for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
+            for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
+                if (!contains(new Vector(x, minY, z))) {
+                    continue;
+                }
+
+                chunks.add(new BlockVector2D(
+                    x >> ChunkStore.CHUNK_SHIFTS,
+                    z >> ChunkStore.CHUNK_SHIFTS
+                ));
+            }
+        }
+
+        return chunks;
+    }
+
+    @Override
+    public Set<Vector> getChunkCubes() {
+        final Set<Vector> chunks = new HashSet<Vector>();
+
+        final Vector min = getMinimumPoint();
+        final Vector max = getMaximumPoint();
+
+        for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
+            for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
+                for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
+                    if (!contains(new Vector(x, y, z))) {
+                        continue;
+                    }
+
+                    chunks.add(new BlockVector(
+                        x >> ChunkStore.CHUNK_SHIFTS,
+                        y >> ChunkStore.CHUNK_SHIFTS,
+                        z >> ChunkStore.CHUNK_SHIFTS
+                    ));
+                }
+            }
+        }
+
+        return chunks;
     }
 }
