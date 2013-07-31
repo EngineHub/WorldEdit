@@ -213,40 +213,22 @@ public class EllipsoidRegion extends AbstractRegion {
      * @return
      */
     public Set<Vector2D> getChunks() {
-        Set<Vector2D> chunks = new HashSet<Vector2D>();
+        final Set<Vector2D> chunks = new HashSet<Vector2D>();
 
-        Vector min = getMinimumPoint();
-        Vector max = getMaximumPoint();
-
-        for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
-            for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
-                for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
-                    if (contains(new BlockVector(x, y, z))) {
-                        chunks.add(new BlockVector2D(x >> ChunkStore.CHUNK_SHIFTS,
-                                z >> ChunkStore.CHUNK_SHIFTS));
-                    }
-                }
-            }
-        }
-
-        return chunks;
-    }
-
-    @Override
-    public Set<Vector> getChunkCubes() {
-        Set<Vector> chunks = new HashSet<Vector>();
-
-        Vector min = getMinimumPoint();
-        Vector max = getMaximumPoint();
+        final Vector min = getMinimumPoint();
+        final Vector max = getMaximumPoint();
+        final int centerY = getCenter().getBlockY();
 
         for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
-            for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
-                for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
-                    if (contains(new BlockVector(x, y, z))) {
-                        chunks.add(new BlockVector(x >> ChunkStore.CHUNK_SHIFTS,
-                                y >> ChunkStore.CHUNK_SHIFTS, z >> ChunkStore.CHUNK_SHIFTS));
-                    }
+            for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
+                if (!contains(new BlockVector(x, centerY, z))) {
+                    continue;
                 }
+
+                chunks.add(new BlockVector2D(
+                    x >> ChunkStore.CHUNK_SHIFTS,
+                    z >> ChunkStore.CHUNK_SHIFTS
+                ));
             }
         }
 
