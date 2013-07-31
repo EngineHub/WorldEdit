@@ -96,56 +96,6 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
     }
 
     /**
-     * Get the number of blocks in the region.
-     *
-     * @return number of blocks
-     */
-    public int getArea() {
-        Vector min = getMinimumPoint();
-        Vector max = getMaximumPoint();
-
-        return (int)((max.getX() - min.getX() + 1) *
-                     (max.getY() - min.getY() + 1) *
-                     (max.getZ() - min.getZ() + 1));
-    }
-
-    /**
-     * Get X-size.
-     *
-     * @return width
-     */
-    public int getWidth() {
-        Vector min = getMinimumPoint();
-        Vector max = getMaximumPoint();
-
-        return (int) (max.getX() - min.getX() + 1);
-    }
-
-    /**
-     * Get Y-size.
-     *
-     * @return height
-     */
-    public int getHeight() {
-        Vector min = getMinimumPoint();
-        Vector max = getMaximumPoint();
-
-        return (int) (max.getY() - min.getY() + 1);
-    }
-
-    /**
-     * Get Z-size.
-     *
-     * @return length
-     */
-    public int getLength() {
-        Vector min = getMinimumPoint();
-        Vector max = getMaximumPoint();
-
-        return (int) (max.getZ() - min.getZ() + 1);
-    }
-
-    /**
      * Expands the cuboid in a direction.
      *
      * @param change
