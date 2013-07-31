@@ -44,6 +44,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.data.ChunkStore;
+import com.sk89q.worldedit.regions.ConvexPolyhedralRegionSelector;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.CylinderRegionSelector;
 import com.sk89q.worldedit.regions.EllipsoidRegionSelector;
@@ -766,8 +767,12 @@ public class SelectionCommands {
         } else if (typeName.equalsIgnoreCase("cyl")) {
             selector = new CylinderRegionSelector(oldSelector);
             player.print("Cylindrical selector: Left click=center, right click to extend.");
+        } else if (typeName.equalsIgnoreCase("convex") || typeName.equalsIgnoreCase("hull") || typeName.equalsIgnoreCase("polyhedron")) {
+            int maxVertices = we.getMaximumPolygonalPoints(player); // TODO: separate maximum for polyhedra
+            selector = new ConvexPolyhedralRegionSelector(oldSelector, maxVertices);
+            player.print("Convex polyhedral selector: Left click=First vertex, right click to add more.");
         } else {
-            player.printError("Only cuboid|extend|poly|ellipsoid|sphere|cyl are accepted.");
+            player.printError("Only cuboid|extend|poly|ellipsoid|sphere|cyl|convex are accepted.");
             return;
         }
 
