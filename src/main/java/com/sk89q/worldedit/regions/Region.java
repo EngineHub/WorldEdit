@@ -106,7 +106,7 @@ public interface Region extends Iterable<BlockVector>, Cloneable {
     public void shift(Vector change) throws RegionOperationException;
 
     /**
-     * Returns true based on whether the region contains the point,
+     * Returns true based on whether the region contains the point.
      *
      * @param pt
      * @return
