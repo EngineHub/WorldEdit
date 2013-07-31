@@ -21,16 +21,13 @@ package com.sk89q.worldedit.regions;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.data.ChunkStore;
 
 /**
  * Represents a 2D polygonal region.
@@ -407,50 +404,6 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
         }
 
         return inside;
-    }
-
-    /**
-     * Get a list of chunks.
-     *
-     * @return
-     */
-    public Set<Vector2D> getChunks() {
-        Set<Vector2D> chunks = new HashSet<Vector2D>();
-
-        Vector min = getMinimumPoint();
-        Vector max = getMaximumPoint();
-
-        for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
-            for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
-                if (contains(new BlockVector(x, minY, z))) { // Not the best
-                    chunks.add(new BlockVector2D(x >> ChunkStore.CHUNK_SHIFTS,
-                            z >> ChunkStore.CHUNK_SHIFTS));
-                }
-            }
-        }
-
-        return chunks;
-    }
-
-    @Override
-    public Set<Vector> getChunkCubes() {
-        Set<Vector> chunks = new HashSet<Vector>();
-
-        Vector min = getMinimumPoint();
-        Vector max = getMaximumPoint();
-
-        for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
-            for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
-                for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
-                    if (contains(new BlockVector(x, y, z))) { // Not the best
-                        chunks.add(new BlockVector(x >> ChunkStore.CHUNK_SHIFTS,
-                                y >> ChunkStore.CHUNK_SHIFTS, z >> ChunkStore.CHUNK_SHIFTS));
-                    }
-                }
-            }
-        }
-
-        return chunks;
     }
 
     /**
