@@ -517,6 +517,7 @@ public enum BlockType {
         centralTopLimit.put(BlockID.REDSTONE_REPEATER_OFF, .125);
         centralTopLimit.put(BlockID.TRAP_DOOR, 0.1875);
         centralTopLimit.put(BlockID.SLOW_SAND, 0.875);
+        centralTopLimit.put(BlockID.COBBLESTONE_WALL, 1.5);
         centralTopLimit.put(BlockID.FLOWER_POT, 0.375);
         centralTopLimit.put(BlockID.COMPARATOR_OFF, .125);
         centralTopLimit.put(BlockID.COMPARATOR_ON, .125);
