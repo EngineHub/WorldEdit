@@ -44,6 +44,7 @@ import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
@@ -1830,6 +1831,54 @@ public class EditSession {
                     }
                 }
             }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Move a region.
+     *
+     * @param region
+     * @param dir
+     * @param distance
+     * @param copyAir
+     * @param replace
+     * @return number of blocks moved
+     * @throws MaxChangedBlocksException
+     * @throws RegionOperationException
+     */
+    public int moveRegion(Region region, Vector dir, int distance,
+            boolean copyAir, BaseBlock replace)
+            throws MaxChangedBlocksException, RegionOperationException {
+        int affected = 0;
+
+        final Vector shift = dir.multiply(distance);
+
+        final Region newRegion = region.clone();
+        newRegion.shift(shift);
+
+        final Map<Vector, BaseBlock> delayed = new LinkedHashMap<Vector, BaseBlock>();
+
+        for (Vector pos : region) {
+            final BaseBlock block = getBlock(pos);
+
+            if (!block.isAir() || copyAir) {
+                final Vector newPos = pos.add(shift);
+
+                delayed.put(newPos, getBlock(pos));
+
+                // Don't want to replace the old block if it's in
+                // the new area
+                if (!newRegion.contains(pos)) {
+                    setBlock(pos, replace);
+                }
+            }
+        }
+
+        for (Map.Entry<Vector, BaseBlock> entry : delayed.entrySet()) {
+            setBlock(entry.getKey(), entry.getValue());
+            ++affected;
         }
 
         return affected;
