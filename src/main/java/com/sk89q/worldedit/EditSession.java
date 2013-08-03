@@ -3002,11 +3002,12 @@ public class EditSession {
      * @param pattern The block pattern used to draw the line
      * @param pos1 One of the points that define the line.
      * @param pos2 The other point that defines the line.
+     * @param radius The radius of the line.
      *
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int drawLine(Pattern pattern, Vector pos1, Vector pos2)
+    public int drawLine(Pattern pattern, Vector pos1, Vector pos2, int radius)
         throws MaxChangedBlocksException {
 
         int affected = 0;
@@ -3018,7 +3019,19 @@ public class EditSession {
         int dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1), dz = Math.abs(z2 - z1);
 
         if (dx + dy + dz == 0) {
-            return setBlock(new Vector(tipx, tipy, tipz), pattern) ? 1 : 0;
+            for (int loopx = tipx - radius; loopx <= tipx + radius; loopx++) {
+                for (int loopy = tipy - radius; loopy <= tipy + radius; loopy++) {
+                    for (int loopz = tipz - radius; loopz <= tipz + radius; loopz++) {
+                        if (Math.sqrt(Math.pow(loopx - tipx, 2) + Math.pow(loopy - tipy, 2) + Math.pow(loopz - tipz, 2)) <= radius) {
+                            if (setBlock(new Vector(loopx, loopy, loopz), pattern)) {
+                                affected++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return affected;
         }
 
         if (Math.max(Math.max(dx, dy), dz) == dx && notdrawn) {
@@ -3027,8 +3040,16 @@ public class EditSession {
                 tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dx) * (y2 - y1 > 0 ? 1 : -1));
                 tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dx) * (z2 - z1 > 0 ? 1 : -1));
 
-                if (setBlock(new Vector(tipx, tipy, tipz), pattern)) {
-                    affected++;
+                for (int loopx = tipx - radius; loopx <= tipx + radius; loopx++) {
+                    for (int loopy = tipy - radius; loopy <= tipy + radius; loopy++) {
+                        for (int loopz = tipz - radius; loopz <= tipz + radius; loopz++) {
+                            if (Math.sqrt(Math.pow(loopx - tipx, 2) + Math.pow(loopy - tipy, 2) + Math.pow(loopz - tipz, 2)) <= radius) {
+                                if (setBlock(new Vector(loopx, loopy, loopz), pattern)) {
+                                    affected++;
+                                }
+                            }
+                        }
+                    }
                 }
             }
             notdrawn = false;
@@ -3040,8 +3061,16 @@ public class EditSession {
                 tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dy) * (x2 - x1 > 0 ? 1 : -1));
                 tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dy) * (z2 - z1 > 0 ? 1 : -1));
 
-                if (setBlock(new Vector(tipx, tipy, tipz), pattern)) {
-                    affected++;
+                for (int loopx = tipx - radius; loopx <= tipx + radius; loopx++) {
+                    for (int loopy = tipy - radius; loopy <= tipy + radius; loopy++) {
+                        for (int loopz = tipz - radius; loopz <= tipz + radius; loopz++) {
+                            if (Math.sqrt(Math.pow(loopx - tipx, 2) + Math.pow(loopy - tipy, 2) + Math.pow(loopz - tipz, 2)) <= radius) {
+                                if (setBlock(new Vector(loopx, loopy, loopz), pattern)) {
+                                    affected++;
+                                }
+                            }
+                        }
+                    }
                 }
             }
             notdrawn = false;
@@ -3053,8 +3082,16 @@ public class EditSession {
                 tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2-y1>0 ? 1 : -1));
                 tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2-x1>0 ? 1 : -1));
 
-                if (setBlock(new Vector(tipx, tipy, tipz), pattern)) {
-                    affected++;
+                for (int loopx = tipx - radius; loopx <= tipx + radius; loopx++) {
+                    for (int loopy = tipy - radius; loopy <= tipy + radius; loopy++) {
+			for (int loopz = tipz - radius; loopz <= tipz + radius; loopz++) {
+                            if (Math.sqrt(Math.pow(loopx - tipx, 2) + Math.pow(loopy - tipy, 2) + Math.pow(loopz - tipz, 2)) <= radius) {
+				if (setBlock(new Vector(loopx, loopy, loopz), pattern)) {
+                                    affected++;
+                                }
+                            }
+                        }
+                    }
                 }
             }
             notdrawn = false;

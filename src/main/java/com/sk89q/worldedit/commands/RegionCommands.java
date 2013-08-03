@@ -88,10 +88,10 @@ public class RegionCommands {
 
     @Command(
             aliases = { "/line" },
-            usage = "<block>",
+            usage = "<block> [thickness]",
             desc = "Draw a line segment between selection corners.",
             min = 1,
-            max = 1
+            max = 2
     )
     @CommandPermissions("worldedit.region.line")
     @Logging(REGION)
@@ -103,11 +103,15 @@ public class RegionCommands {
             player.printError("Invalid region type");
             return;
         }
+        if (args.argsLength() < 2 ? false : args.getInteger(1) < 0) {
+            player.printError("Invalid thickness. Must be greater than -1");
+            return;
+        }
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         Vector pos1 = ((CuboidRegion) region).getPos1();
         Vector pos2 = ((CuboidRegion) region).getPos2();
-        int blocksChanged = editSession.drawLine(pattern, pos1, pos2);
+        int blocksChanged = editSession.drawLine(pattern, pos1, pos2, args.argsLength() < 2 ? 0 : args.getInteger(1));
 
         player.print(blocksChanged + " block(s) have been changed.");
     }
