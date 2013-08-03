@@ -918,6 +918,18 @@ public class WorldEdit {
     }
 
     /**
+     * Checks to see if the specified brush radius is within bounds.
+     *
+     * @param radius
+     * @throws MaxBrushRadiusException
+     */
+    public void checkMaxBrushRadius(double radius) throws MaxBrushRadiusException {
+        if (config.maxBrushRadius > 0 && radius > config.maxBrushRadius) {
+            throw new MaxBrushRadiusException();
+        }
+    }
+
+    /**
      * Get a file relative to the defined working directory. If the specified
      * path is absolute, then the working directory is not used.
      *
@@ -1445,6 +1457,8 @@ public class WorldEdit {
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks changed in an operation reached ("
                     + e.getBlockLimit() + ").");
+        } catch (MaxBrushRadiusException e) {
+            player.printError("Maximum allowed brush radius/height: " + config.maxBrushRadius);
         } catch (MaxRadiusException e) {
             player.printError("Maximum radius: " + config.maxRadius);
         } catch (UnknownDirectionException e) {
