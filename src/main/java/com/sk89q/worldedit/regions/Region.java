@@ -103,7 +103,7 @@ public interface Region extends Iterable<BlockVector>, Cloneable {
      * @param change
      * @throws RegionOperationException
      */
-    public void shift(Vector multiply) throws RegionOperationException;
+    public void shift(Vector change) throws RegionOperationException;
 
     /**
      * Returns true based on whether the region contains the point,
