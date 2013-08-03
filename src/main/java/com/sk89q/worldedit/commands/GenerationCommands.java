@@ -86,6 +86,10 @@ public class GenerationCommands {
         }
         int height = args.argsLength() > 2 ? args.getInteger(2) : 1;
 
+        we.checkMaxRadius(radiusX);
+        we.checkMaxRadius(radiusZ);
+        we.checkMaxRadius(height);
+
         Vector pos = session.getPlacementPosition(player);
         int affected = editSession.makeCylinder(pos, block, radiusX, radiusZ, height, false);
         player.print(affected + " block(s) have been created.");
@@ -127,6 +131,10 @@ public class GenerationCommands {
         }
         int height = args.argsLength() > 2 ? args.getInteger(2) : 1;
 
+        we.checkMaxRadius(radiusX);
+        we.checkMaxRadius(radiusZ);
+        we.checkMaxRadius(height);
+
         Vector pos = session.getPlacementPosition(player);
         int affected = editSession.makeCylinder(pos, block, radiusX, radiusZ, height, true);
         player.print(affected + " block(s) have been created.");
@@ -167,6 +175,11 @@ public class GenerationCommands {
             player.printError("You must either specify 1 or 3 radius values.");
             return;
         }
+
+        we.checkMaxRadius(radiusX);
+        we.checkMaxRadius(radiusY);
+        we.checkMaxRadius(radiusZ);
+
         final boolean raised;
         if (args.argsLength() > 2) {
             raised = args.getString(2).equalsIgnoreCase("true") || args.getString(2).equalsIgnoreCase("yes");
@@ -219,6 +232,11 @@ public class GenerationCommands {
             player.printError("You must either specify 1 or 3 radius values.");
             return;
         }
+
+        we.checkMaxRadius(radiusX);
+        we.checkMaxRadius(radiusY);
+        we.checkMaxRadius(radiusZ);
+
         final boolean raised;
         if (args.argsLength() > 2) {
             raised = args.getString(2).equalsIgnoreCase("true") || args.getString(2).equalsIgnoreCase("yes");
@@ -299,6 +317,8 @@ public class GenerationCommands {
         int size = Math.max(1, args.getInteger(1));
         Vector pos = session.getPlacementPosition(player);
 
+        we.checkMaxRadius(size);
+
         int affected = editSession.makePyramid(pos, block, size, true);
 
         player.findFreePosition();
@@ -320,6 +340,8 @@ public class GenerationCommands {
         Pattern block = we.getBlockPattern(player, args.getString(0));
         int size = Math.max(1, args.getInteger(1));
         Vector pos = session.getPlacementPosition(player);
+
+        we.checkMaxRadius(size);
 
         int affected = editSession.makePyramid(pos, block, size, false);
 
