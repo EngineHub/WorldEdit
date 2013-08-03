@@ -334,7 +334,7 @@ public class SelectionCommands {
             return;
         }
 
-        Vector dir;
+        List<Vector> dirs = new ArrayList<Vector>();
         int change = args.getInteger(0);
         int reverseChange = 0;
 
@@ -343,30 +343,49 @@ public class SelectionCommands {
             // Either a reverse amount or a direction
             try {
                 reverseChange = args.getInteger(1);
-                dir = we.getDirection(player, "me");
+                dirs.add(we.getDirection(player, "me"));
             } catch (NumberFormatException e) {
-                dir = we.getDirection(player,
-                        args.getString(1).toLowerCase());
+                if (args.getString(1).contains(",")) {
+                    String[] split = args.getString(1).split(",");
+                    for (String s : split) {
+                        dirs.add(we.getDirection(player, s.toLowerCase()));
+                    }
+                } else {
+                    dirs.add(we.getDirection(player, args.getString(1).toLowerCase()));
+                }
             }
             break;
 
         case 3:
             // Both reverse amount and direction
             reverseChange = args.getInteger(1);
-            dir = we.getDirection(player,
-                    args.getString(2).toLowerCase());
+            if (args.getString(2).contains(",")) {
+                String[] split = args.getString(2).split(",");
+                for (String s : split) {
+                    dirs.add(we.getDirection(player, s.toLowerCase()));
+                }
+            } else {
+                dirs.add(we.getDirection(player, args.getString(2).toLowerCase()));
+            }
             break;
+
         default:
-            dir = we.getDirection(player, "me");
+            dirs.add(we.getDirection(player, "me"));
+            break;
+
         }
 
         Region region = session.getSelection(player.getWorld());
         int oldSize = region.getArea();
 
         if (reverseChange == 0) {
-            region.expand(dir.multiply(change));
+            for (Vector dir : dirs) {
+                region.expand(dir.multiply(change));
+            }
         } else {
-            region.expand(dir.multiply(change), dir.multiply(-reverseChange));
+            for (Vector dir : dirs) {
+                region.expand(dir.multiply(change), dir.multiply(-reverseChange));
+            }
         }
 
         session.getRegionSelector(player.getWorld()).learnChanges();
@@ -389,7 +408,7 @@ public class SelectionCommands {
     public void contract(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        Vector dir;
+        List<Vector> dirs = new ArrayList<Vector>();
         int change = args.getInteger(0);
         int reverseChange = 0;
 
@@ -398,28 +417,48 @@ public class SelectionCommands {
             // Either a reverse amount or a direction
             try {
                 reverseChange = args.getInteger(1);
-                dir = we.getDirection(player, "me");
+                dirs.add(we.getDirection(player, "me"));
             } catch (NumberFormatException e) {
-                dir = we.getDirection(player, args.getString(1).toLowerCase());
+                if (args.getString(1).contains(",")) {
+                    String[] split = args.getString(1).split(",");
+                    for (String s : split) {
+                        dirs.add(we.getDirection(player, s.toLowerCase()));
+                    }
+                } else {
+                    dirs.add(we.getDirection(player, args.getString(1).toLowerCase()));
+                }
             }
             break;
 
         case 3:
             // Both reverse amount and direction
             reverseChange = args.getInteger(1);
-            dir = we.getDirection(player, args.getString(2).toLowerCase());
+            if (args.getString(2).contains(",")) {
+                String[] split = args.getString(2).split(",");
+                for (String s : split) {
+                    dirs.add(we.getDirection(player, s.toLowerCase()));
+                }
+            } else {
+                dirs.add(we.getDirection(player, args.getString(2).toLowerCase()));
+            }
             break;
+
         default:
-            dir = we.getDirection(player, "me");
+            dirs.add(we.getDirection(player, "me"));
+            break;
         }
 
         try {
             Region region = session.getSelection(player.getWorld());
             int oldSize = region.getArea();
             if (reverseChange == 0) {
-                region.contract(dir.multiply(change));
+                for (Vector dir : dirs) {
+                    region.contract(dir.multiply(change));
+                }
             } else {
-                region.contract(dir.multiply(change), dir.multiply(-reverseChange));
+                for (Vector dir : dirs) {
+                    region.contract(dir.multiply(change), dir.multiply(-reverseChange));
+                }
             }
             session.getRegionSelector(player.getWorld()).learnChanges();
             int newSize = region.getArea();
@@ -444,18 +483,28 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.shift")
     public void shift(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        Vector dir;
 
+        List<Vector> dirs = new ArrayList<Vector>();
         int change = args.getInteger(0);
         if (args.argsLength() == 2) {
-            dir = we.getDirection(player, args.getString(1).toLowerCase());
+            if (args.getString(1).contains(",")) {
+                for (String s : args.getString(1).split(",")) {
+                    dirs.add(we.getDirection(player, s.toLowerCase()));
+                }
+            } else {
+                dirs.add(we.getDirection(player, args.getString(1).toLowerCase()));
+            }
         } else {
-            dir = we.getDirection(player, "me");
+            dirs.add(we.getDirection(player, "me"));
         }
 
         try {
             Region region = session.getSelection(player.getWorld());
-            region.shift(dir.multiply(change));
+
+            for (Vector dir : dirs) {
+                region.shift(dir.multiply(change));
+            }
+
             session.getRegionSelector(player.getWorld()).learnChanges();
 
             session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
