@@ -73,8 +73,6 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.sphere")
     public void sphereBrush(CommandContext args, LocalSession session,
             LocalPlayer player, EditSession editSession) throws WorldEditException {
-        
-        LocalConfiguration config = we.getConfiguration();
 
         double radius = args.argsLength() > 1 ? args.getDouble(1) : 2;
         we.checkMaxBrushRadius(radius);
@@ -108,8 +106,6 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.cylinder")
     public void cylinderBrush(CommandContext args, LocalSession session,
             LocalPlayer player, EditSession editSession) throws WorldEditException {
-        
-        LocalConfiguration config = we.getConfiguration();
 
         double radius = args.argsLength() > 1 ? args.getDouble(1) : 2;
         we.checkMaxBrushRadius(radius);
@@ -146,8 +142,6 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.clipboard")
     public void clipboardBrush(CommandContext args, LocalSession session,
             LocalPlayer player, EditSession editSession) throws WorldEditException {
-        
-        LocalConfiguration config = we.getConfiguration();
 
         CuboidClipboard clipboard = session.getClipboard();
 
@@ -182,8 +176,6 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.smooth")
     public void smoothBrush(CommandContext args, LocalSession session,
             LocalPlayer player, EditSession editSession) throws WorldEditException {
-        
-        LocalConfiguration config = we.getConfiguration();
 
         double radius = args.argsLength() > 0 ? args.getDouble(0) : 2;
         we.checkMaxBrushRadius(radius);
@@ -208,8 +200,6 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.ex")
     public void extinguishBrush(CommandContext args, LocalSession session,
             LocalPlayer player, EditSession editSession) throws WorldEditException {
-        
-        LocalConfiguration config = we.getConfiguration();
 
         double radius = args.argsLength() > 1 ? args.getDouble(1) : 5;
         we.checkMaxBrushRadius(radius);
@@ -240,8 +230,6 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.gravity")
     public void gravityBrush(CommandContext args, LocalSession session,
                                 LocalPlayer player, EditSession editSession) throws WorldEditException {
-
-        LocalConfiguration config = we.getConfiguration();
 
         double radius = args.argsLength() > 0 ? args.getDouble(0) : 5;
         we.checkMaxBrushRadius(radius);
