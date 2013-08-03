@@ -152,11 +152,7 @@ public class ToolUtilCommands {
         LocalConfiguration config = we.getConfiguration();
 
         int radius = args.getInteger(0);
-        if (radius > config.maxBrushRadius) {
-            player.printError("Maximum allowed brush radius: "
-                    + config.maxBrushRadius);
-            return;
-        }
+        we.checkMaxBrushRadius(radius);
 
         session.getBrushTool(player.getItemInHand()).setSize(radius);
         player.print("Brush size set.");
