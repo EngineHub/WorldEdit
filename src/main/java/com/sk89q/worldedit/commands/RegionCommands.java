@@ -282,7 +282,7 @@ public class RegionCommands {
             replace = new BaseBlock(BlockID.AIR);
         }
 
-        int affected = editSession.moveCuboidRegion(session.getSelection(player.getWorld()),
+        int affected = editSession.moveRegion(session.getSelection(player.getWorld()),
                 dir, count, true, replace);
 
         if (args.hasFlag('s')) {
