@@ -1458,7 +1458,7 @@ public class WorldEdit {
             player.printError("Max blocks changed in an operation reached ("
                     + e.getBlockLimit() + ").");
         } catch (MaxBrushRadiusException e) {
-            player.printError("Maximum allowed brush radius/height: " + config.maxBrushRadius);
+            player.printError("Maximum allowed brush size: " + config.maxBrushRadius);
         } catch (MaxRadiusException e) {
             player.printError("Maximum allowed size: " + config.maxRadius);
         } catch (UnknownDirectionException e) {
