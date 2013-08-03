@@ -204,6 +204,18 @@ public class CommandContext {
         return slice;
     }
 
+    public String[] getParsedSlice(int index) {
+        String[] slice = new String[parsedArgs.size() - index];
+        System.arraycopy(parsedArgs.toArray(new String[parsedArgs.size()]), index, slice, 0, parsedArgs.size() - index);
+        return slice;
+    }
+
+    public String[] getParsedPaddedSlice(int index, int padding) {
+        String[] slice = new String[parsedArgs.size() - index + padding];
+        System.arraycopy(parsedArgs.toArray(new String[parsedArgs.size()]), index, slice, padding, parsedArgs.size() - index);
+        return slice;
+    }
+
     public boolean hasFlag(char ch) {
         return booleanFlags.contains(ch) || valueFlags.containsKey(ch);
     }
