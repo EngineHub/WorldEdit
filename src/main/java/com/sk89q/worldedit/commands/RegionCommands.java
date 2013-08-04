@@ -89,7 +89,12 @@ public class RegionCommands {
     @Command(
             aliases = { "/line" },
             usage = "<block> [thickness]",
-            desc = "Draw a line segment between selection corners.",
+            desc = "Draws a line segment between selection corners",
+            help =
+                "Draws a line segment between selection corners.\n" +
+                "Flags:\n" +
+                "  -h generates only a shell",
+            flags = "h",
             min = 1,
             max = 2
     )
@@ -103,15 +108,16 @@ public class RegionCommands {
             player.printError("Invalid region type");
             return;
         }
-        if (args.argsLength() < 2 ? false : args.getInteger(1) < 0) {
-            player.printError("Invalid thickness. Must be greater than -1");
+        if (args.argsLength() < 2 ? false : args.getDouble(1) < 0) {
+            player.printError("Invalid thickness. Must not be negative");
             return;
         }
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
-        Vector pos1 = ((CuboidRegion) region).getPos1();
-        Vector pos2 = ((CuboidRegion) region).getPos2();
-        int blocksChanged = editSession.drawLine(pattern, pos1, pos2, args.argsLength() < 2 ? 0 : args.getInteger(1));
+        CuboidRegion cuboidregion = (CuboidRegion) region;
+        Vector pos1 = cuboidregion.getPos1();
+        Vector pos2 = cuboidregion.getPos2();
+        int blocksChanged = editSession.drawLine(pattern, pos1, pos2, args.argsLength() < 2 ? 0 : args.getDouble(1), !args.hasFlag('h'));
 
         player.print(blocksChanged + " block(s) have been changed.");
     }

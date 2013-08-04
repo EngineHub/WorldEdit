@@ -3003,35 +3003,35 @@ public class EditSession {
      * @param pos1 One of the points that define the line.
      * @param pos2 The other point that defines the line.
      * @param radius The radius of the line.
+     * @param filled If false, only a shell will be generated.
      *
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int drawLine(Pattern pattern, Vector pos1, Vector pos2, int radius)
+    public int drawLine(Pattern pattern, Vector pos1, Vector pos2, double radius, boolean filled)
         throws MaxChangedBlocksException {
 
+        Set<Vector> vset = new HashSet<Vector>();
         int affected = 0;
         boolean notdrawn = true;
 
+        int ceilrad = (int) Math.ceil(radius);
         int x1 = pos1.getBlockX(), y1 = pos1.getBlockY(), z1 = pos1.getBlockZ();
         int x2 = pos2.getBlockX(), y2 = pos2.getBlockY(), z2 = pos2.getBlockZ();
         int tipx = x1, tipy = y1, tipz = z1;
         int dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1), dz = Math.abs(z2 - z1);
 
         if (dx + dy + dz == 0) {
-            for (int loopx = tipx - radius; loopx <= tipx + radius; loopx++) {
-                for (int loopy = tipy - radius; loopy <= tipy + radius; loopy++) {
-                    for (int loopz = tipz - radius; loopz <= tipz + radius; loopz++) {
-                        if (Math.sqrt(Math.pow(loopx - tipx, 2) + Math.pow(loopy - tipy, 2) + Math.pow(loopz - tipz, 2)) <= radius) {
-                            if (setBlock(new Vector(loopx, loopy, loopz), pattern)) {
-                                affected++;
-                            }
+            for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
+                for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
+                    for (int loopz = tipz - ceilrad; loopz <= tipz + ceilrad; loopz++) {
+                        if (hypot(loopx - tipx, loopy - tipy, loopz - tipz) <= radius) {
+                            vset.add(new Vector(loopx, loopy, loopz));
                         }
                     }
                 }
             }
-
-            return affected;
+            notdrawn = false;
         }
 
         if (Math.max(Math.max(dx, dy), dz) == dx && notdrawn) {
@@ -3040,13 +3040,11 @@ public class EditSession {
                 tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dx) * (y2 - y1 > 0 ? 1 : -1));
                 tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dx) * (z2 - z1 > 0 ? 1 : -1));
 
-                for (int loopx = tipx - radius; loopx <= tipx + radius; loopx++) {
-                    for (int loopy = tipy - radius; loopy <= tipy + radius; loopy++) {
-                        for (int loopz = tipz - radius; loopz <= tipz + radius; loopz++) {
-                            if (Math.sqrt(Math.pow(loopx - tipx, 2) + Math.pow(loopy - tipy, 2) + Math.pow(loopz - tipz, 2)) <= radius) {
-                                if (setBlock(new Vector(loopx, loopy, loopz), pattern)) {
-                                    affected++;
-                                }
+                for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
+                    for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
+                        for (int loopz = tipz - ceilrad; loopz <= tipz + ceilrad; loopz++) {
+                            if (hypot(loopx - tipx, loopy - tipy, loopz - tipz) <= radius) {
+                                vset.add(new Vector(loopx, loopy, loopz));
                             }
                         }
                     }
@@ -3061,13 +3059,11 @@ public class EditSession {
                 tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dy) * (x2 - x1 > 0 ? 1 : -1));
                 tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dy) * (z2 - z1 > 0 ? 1 : -1));
 
-                for (int loopx = tipx - radius; loopx <= tipx + radius; loopx++) {
-                    for (int loopy = tipy - radius; loopy <= tipy + radius; loopy++) {
-                        for (int loopz = tipz - radius; loopz <= tipz + radius; loopz++) {
-                            if (Math.sqrt(Math.pow(loopx - tipx, 2) + Math.pow(loopy - tipy, 2) + Math.pow(loopz - tipz, 2)) <= radius) {
-                                if (setBlock(new Vector(loopx, loopy, loopz), pattern)) {
-                                    affected++;
-                                }
+                for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
+                    for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
+                        for (int loopz = tipz - ceilrad; loopz <= tipz + ceilrad; loopz++) {
+                            if (hypot(loopx - tipx, loopy - tipy, loopz - tipz) <= radius) {
+                                vset.add(new Vector(loopx, loopy, loopz));
                             }
                         }
                     }
@@ -3082,13 +3078,11 @@ public class EditSession {
                 tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2-y1>0 ? 1 : -1));
                 tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2-x1>0 ? 1 : -1));
 
-                for (int loopx = tipx - radius; loopx <= tipx + radius; loopx++) {
-                    for (int loopy = tipy - radius; loopy <= tipy + radius; loopy++) {
-			for (int loopz = tipz - radius; loopz <= tipz + radius; loopz++) {
-                            if (Math.sqrt(Math.pow(loopx - tipx, 2) + Math.pow(loopy - tipy, 2) + Math.pow(loopz - tipz, 2)) <= radius) {
-				if (setBlock(new Vector(loopx, loopy, loopz), pattern)) {
-                                    affected++;
-                                }
+                for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
+                    for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
+                        for (int loopz = tipz - ceilrad; loopz <= tipz + ceilrad; loopz++) {
+                            if (hypot(loopx - tipx, loopy - tipy, loopz - tipz) <= radius) {
+                                vset.add(new Vector(loopx, loopy, loopz));
                             }
                         }
                     }
@@ -3097,6 +3091,43 @@ public class EditSession {
             notdrawn = false;
         }
 
+        if (!filled) {
+            vset = getHollowed(vset);
+        }
+        return setBlocks(vset, pattern);
+    }
+
+    private static double hypot(double... pars) {
+        double sum = 0;
+        for (double d : pars) {
+            sum += Math.pow(d, 2);
+        }
+        return Math.sqrt(sum);
+    }
+
+    private static Set<Vector> getHollowed(Set<Vector> vset) {
+        Set<Vector> returnset = new HashSet<Vector>();
+        for (Vector v : vset) {
+            double x = v.getX(), y = v.getY(), z = v.getZ();
+            if (!(vset.contains(new Vector(x + 1, y, z)) &&
+            vset.contains(new Vector(x - 1, y, z)) &&
+            vset.contains(new Vector(x, y + 1, z)) &&
+            vset.contains(new Vector(x, y - 1, z)) &&
+            vset.contains(new Vector(x, y, z + 1)) &&
+            vset.contains(new Vector(x, y, z - 1)))) {
+                returnset.add(v);
+            }
+        }
+        return returnset;
+    }
+
+    private int setBlocks(Set<Vector> vset, Pattern pattern)
+        throws MaxChangedBlocksException {
+
+        int affected = 0;
+        for (Vector v : vset) {
+            affected += setBlock(v, pattern) ? 1 : 0;
+        }
         return affected;
     }
 
