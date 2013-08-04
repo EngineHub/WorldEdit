@@ -24,6 +24,11 @@ package com.sk89q.worldedit;
  * @author sk89q
  */
 public class Vector2D {
+    public static final Vector2D ZERO = new Vector2D(0, 0);
+    public static final Vector2D UNIT_X = new Vector2D(1, 0);
+    public static final Vector2D UNIT_Z = new Vector2D(0, 1);
+    public static final Vector2D ONE = new Vector2D(1, 1);
+
     protected final double x, z;
 
     /**

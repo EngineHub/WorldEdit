@@ -25,6 +25,12 @@ package com.sk89q.worldedit;
  * @author sk89q
  */
 public class BlockVector extends Vector {
+    public static final BlockVector ZERO = new BlockVector(0, 0, 0);
+    public static final BlockVector UNIT_X = new BlockVector(1, 0, 0);
+    public static final BlockVector UNIT_Y = new BlockVector(0, 1, 0);
+    public static final BlockVector UNIT_Z = new BlockVector(0, 0, 1);
+    public static final BlockVector ONE = new BlockVector(1, 1, 1);
+
     /**
      * Construct the Vector object.
      *
