@@ -21,7 +21,6 @@ package com.sk89q.worldedit.regions;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -36,7 +35,7 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
     /**
      * Vertices that are contained in the convex hull.
      */
-    private final Set<Vector> vertices = new HashSet<Vector>();
+    private final Set<Vector> vertices = new LinkedHashSet<Vector>();
 
     /**
      * Triangles that form the convex hull.
@@ -46,7 +45,7 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
     /**
      * Vertices that are coplanar to the first 3 vertices.
      */
-    private final Set<Vector> vertexBacklog = new HashSet<Vector>();
+    private final Set<Vector> vertexBacklog = new LinkedHashSet<Vector>();
 
     /**
      * Minimum point of the axis-aligned bounding box.
@@ -195,11 +194,13 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
         }
 
         if (!vertexBacklog.isEmpty()) {
+            vertices.remove(vertex);
             final List<Vector> vertexBacklog2 = new ArrayList<Vector>(vertexBacklog);
             vertexBacklog.clear();
             for (Vector vertex2 : vertexBacklog2) {
                 addVertex(vertex2);
             }
+            vertices.add(vertex);
         }
 
         return true;
