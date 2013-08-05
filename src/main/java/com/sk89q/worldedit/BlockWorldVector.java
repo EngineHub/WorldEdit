@@ -110,10 +110,10 @@ public class BlockWorldVector extends WorldVector {
      */
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof WorldVector)) {
+        if (!(obj instanceof Vector)) {
             return false;
         }
-        WorldVector other = (WorldVector) obj;
+        Vector other = (Vector) obj;
         return (int) other.getX() == (int) this.x && (int) other.getY() == (int) this.y
                 && (int) other.getZ() == (int) this.z;
 
