@@ -64,7 +64,7 @@ public class ClipboardCommands {
         Vector pos = session.getPlacementPosition(player);
 
         CuboidClipboard clipboard = new CuboidClipboard(
-                max.subtract(min).add(new Vector(1, 1, 1)),
+                max.subtract(min).add(Vector.ONE),
                 min, min.subtract(pos));
         clipboard.copy(editSession);
         if (args.hasFlag('e')) {
@@ -107,7 +107,7 @@ public class ClipboardCommands {
         Vector pos = session.getPlacementPosition(player);
 
         CuboidClipboard clipboard = new CuboidClipboard(
-                max.subtract(min).add(new Vector(1, 1, 1)),
+                max.subtract(min).add(Vector.ONE),
                 min, min.subtract(pos));
         clipboard.copy(editSession);
         if (args.hasFlag('e')) {
