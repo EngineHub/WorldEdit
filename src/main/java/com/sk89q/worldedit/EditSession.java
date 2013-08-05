@@ -41,6 +41,9 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
+import com.sk89q.worldedit.interpolation.Interpolation;
+import com.sk89q.worldedit.interpolation.KochanekBartelsInterpolation;
+import com.sk89q.worldedit.interpolation.Node;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -2972,38 +2975,28 @@ public class EditSession {
     /**
      * Draws a line (out of blocks) between two vectors.
      *
-     * @param pattern The block pattern used to draw the line
+     * @param pattern The block pattern used to draw the line.
      * @param pos1 One of the points that define the line.
      * @param pos2 The other point that defines the line.
-     * @param radius The radius of the line.
+     * @param radius The radius (thickness) of the line.
      * @param filled If false, only a shell will be generated.
      *
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
     public int drawLine(Pattern pattern, Vector pos1, Vector pos2, double radius, boolean filled)
-        throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException {
 
         Set<Vector> vset = new HashSet<Vector>();
-        int affected = 0;
         boolean notdrawn = true;
 
-        int ceilrad = (int) Math.ceil(radius);
         int x1 = pos1.getBlockX(), y1 = pos1.getBlockY(), z1 = pos1.getBlockZ();
         int x2 = pos2.getBlockX(), y2 = pos2.getBlockY(), z2 = pos2.getBlockZ();
         int tipx = x1, tipy = y1, tipz = z1;
         int dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1), dz = Math.abs(z2 - z1);
 
         if (dx + dy + dz == 0) {
-            for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
-                for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
-                    for (int loopz = tipz - ceilrad; loopz <= tipz + ceilrad; loopz++) {
-                        if (hypot(loopx - tipx, loopy - tipy, loopz - tipz) <= radius) {
-                            vset.add(new Vector(loopx, loopy, loopz));
-                        }
-                    }
-                }
-            }
+            vset.add(new Vector(tipx, tipy, tipz));
             notdrawn = false;
         }
 
@@ -3013,15 +3006,7 @@ public class EditSession {
                 tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dx) * (y2 - y1 > 0 ? 1 : -1));
                 tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dx) * (z2 - z1 > 0 ? 1 : -1));
 
-                for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
-                    for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
-                        for (int loopz = tipz - ceilrad; loopz <= tipz + ceilrad; loopz++) {
-                            if (hypot(loopx - tipx, loopy - tipy, loopz - tipz) <= radius) {
-                                vset.add(new Vector(loopx, loopy, loopz));
-                            }
-                        }
-                    }
-                }
+                vset.add(new Vector(tipx, tipy, tipz));
             }
             notdrawn = false;
         }
@@ -3032,15 +3017,7 @@ public class EditSession {
                 tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dy) * (x2 - x1 > 0 ? 1 : -1));
                 tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dy) * (z2 - z1 > 0 ? 1 : -1));
 
-                for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
-                    for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
-                        for (int loopz = tipz - ceilrad; loopz <= tipz + ceilrad; loopz++) {
-                            if (hypot(loopx - tipx, loopy - tipy, loopz - tipz) <= radius) {
-                                vset.add(new Vector(loopx, loopy, loopz));
-                            }
-                        }
-                    }
-                }
+                vset.add(new Vector(tipx, tipy, tipz));
             }
             notdrawn = false;
         }
@@ -3051,19 +3028,61 @@ public class EditSession {
                 tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2-y1>0 ? 1 : -1));
                 tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2-x1>0 ? 1 : -1));
 
-                for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
-                    for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
-                        for (int loopz = tipz - ceilrad; loopz <= tipz + ceilrad; loopz++) {
-                            if (hypot(loopx - tipx, loopy - tipy, loopz - tipz) <= radius) {
-                                vset.add(new Vector(loopx, loopy, loopz));
-                            }
-                        }
-                    }
-                }
+                vset.add(new Vector(tipx, tipy, tipz));
             }
             notdrawn = false;
         }
 
+        vset = getBallooned(vset, radius);
+        if (!filled) {
+            vset = getHollowed(vset);
+        }
+        return setBlocks(vset, pattern);
+    }
+
+    /**
+     * Draws a spline (out of blocks) between specified vectors.
+     *
+     * @param pattern The block pattern used to draw the spline.
+     * @param nodevectors The list of vectors to draw through.
+     * @param tension The tension of every node.
+     * @param bias The bias of every node.
+     * @param continuity The continuity of every node.
+     * @param quality The quality of the spline. Must be greater than 0.
+     * @param radius The radius (thickness) of the spline.
+     * @param filled If false, only a shell will be generated.
+     *
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int drawSpline(Pattern pattern, List<Vector> nodevectors, double tension, double bias, double continuity, double quality, double radius, boolean filled)
+            throws MaxChangedBlocksException {
+
+        Set<Vector> vset = new HashSet<Vector>();
+        List<Node> nodes = new ArrayList(nodevectors.size());
+
+        Interpolation interpol = new KochanekBartelsInterpolation();
+
+        for (int loop = 0; loop < nodevectors.size(); loop++) {
+            Node n = new Node(nodevectors.get(loop));
+            n.setTension(tension);
+            n.setBias(bias);
+            n.setContinuity(continuity);
+            nodes.add(n);
+        }
+
+        interpol.setNodes(nodes);
+        double splinelength = interpol.arcLength(0, 1);
+        for (double loop = 0; loop <= 1; loop += 1D / splinelength / quality) {
+            Vector tipv = interpol.getPosition(loop);
+            int tipx = (int) Math.round(tipv.getX());
+            int tipy = (int) Math.round(tipv.getY());
+            int tipz = (int) Math.round(tipv.getZ());
+
+            vset.add(new Vector(tipx, tipy, tipz));
+        }
+
+        vset = getBallooned(vset, radius);
         if (!filled) {
             vset = getHollowed(vset);
         }
@@ -3076,6 +3095,26 @@ public class EditSession {
             sum += Math.pow(d, 2);
         }
         return Math.sqrt(sum);
+    }
+
+    private static Set<Vector> getBallooned(Set<Vector> vset, double radius) {
+        Set<Vector> returnset = new HashSet<Vector>();
+        int ceilrad = (int) Math.ceil(radius);
+
+        for (Vector v : vset) {
+            int tipx = v.getBlockX(), tipy = v.getBlockY(), tipz = v.getBlockZ();
+
+            for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
+                for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
+                    for (int loopz = tipz - ceilrad; loopz <= tipz + ceilrad; loopz++) {
+                        if (hypot(loopx - tipx, loopy - tipy, loopz - tipz) <= radius) {
+                            returnset.add(new Vector(loopx, loopy, loopz));
+                        }
+                    }
+                }
+            }
+        }
+        return returnset;
     }
 
     private static Set<Vector> getHollowed(Set<Vector> vset) {
