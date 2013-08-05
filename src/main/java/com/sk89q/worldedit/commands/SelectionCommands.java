@@ -602,7 +602,7 @@ public class SelectionCommands {
 
             player.print("Size: " + size);
             player.print("Offset: " + offset);
-            player.print("Cuboid distance: " + size.distance( new Vector(1, 1, 1)));
+            player.print("Cuboid distance: " + size.distance(Vector.ONE));
             player.print("# of blocks: " 
                          + (int) (size.getX() * size.getY() * size.getZ()));
             return;

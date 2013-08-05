@@ -393,11 +393,11 @@ public class RegionCommands {
         Vector unit;
 
         if (args.hasFlag('r')) {
-            zero = new Vector(0, 0, 0);
-            unit = new Vector(1, 1, 1);
+            zero = Vector.ZERO;
+            unit = Vector.ONE;
         } else if (args.hasFlag('o')) {
             zero = session.getPlacementPosition(player);
-            unit = new Vector(1, 1, 1);
+            unit = Vector.ONE;
         } else {
             final Vector min = region.getMinimumPoint();
             final Vector max = region.getMaximumPoint();
