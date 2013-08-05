@@ -90,7 +90,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
     }
 
     public boolean selectPrimary(Vector pos) {
-        if (!region.getCenter().equals(new Vector(0, 0, 0)) && pos.compareTo(region.getCenter()) == 0) {
+        if (!region.getCenter().equals(Vector.ZERO) && pos.compareTo(region.getCenter()) == 0) {
             return false;
         }
 
@@ -103,7 +103,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
 
     public boolean selectSecondary(Vector pos) {
         Vector center = region.getCenter();
-        if ((center.compareTo(new Vector(0, 0, 0))) == 0) {
+        if ((center.compareTo(Vector.ZERO)) == 0) {
             return true;
         }
 
@@ -124,7 +124,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
 
     public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
         Vector center = region.getCenter();
-        if (!center.equals(new Vector(0, 0, 0))) {
+        if (!center.equals(Vector.ZERO)) {
             player.print("Radius set to " + format.format(region.getRadius().getX()) + "/" + format.format(region.getRadius().getZ()) + " blocks. (" + region.getArea() + ").");
         } else {
             player.printError("You must select the center point before setting the radius.");
@@ -159,7 +159,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
     }
 
     public boolean isDefined() {
-        return !region.getRadius().equals(new Vector2D(0, 0));
+        return !region.getRadius().equals(Vector2D.ZERO);
     }
 
     public void learnChanges() {
@@ -176,10 +176,10 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
     public List<String> getInformationLines() {
         final List<String> lines = new ArrayList<String>();
 
-        if (!region.getCenter().equals(new Vector(0, 0, 0))) {
+        if (!region.getCenter().equals(Vector.ZERO)) {
             lines.add("Center: " + region.getCenter());
         }
-        if (!region.getRadius().equals(new Vector2D(0, 0))) {
+        if (!region.getRadius().equals(Vector2D.ZERO)) {
             lines.add("Radius: " + region.getRadius());
         }
 
