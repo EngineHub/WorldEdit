@@ -74,6 +74,7 @@ public class ToolUtilCommands {
         aliases = { "superpickaxe", "pickaxe", "sp" },
         desc = "Select super pickaxe mode"
     )
+    @CommandPermissions("worldedit.superpickaxe.mode")
     @NestedCommand(SuperPickaxeCommands.class)
     public void pickaxe(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
@@ -83,6 +84,7 @@ public class ToolUtilCommands {
         aliases = {"tool"},
         desc = "Select a tool to bind"
     )
+    @CommandPermissions("worldedit.tool")
     @NestedCommand(ToolCommands.class)
     public void tool(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
