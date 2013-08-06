@@ -44,6 +44,7 @@ public class ToolCommands {
         min = 0,
         max = 0
     )
+    @CommandPermissions("worldedit.tool.none")
     public void none(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
@@ -155,6 +156,7 @@ public class ToolCommands {
         aliases = { "brush", "br" },
         desc = "Brush tool"
     )
+    @CommandPermissions("worldedit.brush")
     @NestedCommand(BrushCommands.class)
     public void brush(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
