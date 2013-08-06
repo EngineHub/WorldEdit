@@ -60,12 +60,12 @@ public class CanaryConfiguration extends LocalConfiguration {
         try {
             disallowedBlocks = new HashSet<Integer>(toIntegerList(properties.getIntArray("disallowed-blocks")));
         } catch (UtilityException e) {
-            // Derp
+            disallowedBlocks = new HashSet<Integer>();
         }
         try {
             allowedDataCycleBlocks = new HashSet<Integer>(toIntegerList(properties.getIntArray("allowed-data-cycle-blocks")));
         } catch (UtilityException e) {
-            // Derp
+            allowedDataCycleBlocks = new HashSet<Integer>();
         }
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(0, properties.getInt("history-size", 15));
@@ -100,7 +100,7 @@ public class CanaryConfiguration extends LocalConfiguration {
 
     /**
      * Helper to turn an array into a list of Integers
-     * 
+     *
      * @param arr
      * @return the given array as Integer list
      */
