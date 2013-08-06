@@ -34,9 +34,8 @@ public class WorldEditListener implements PluginListener {
     @HookHandler
     public void onBlockRightClick(BlockRightClickHook hook) {
         Block blockClicked = hook.getBlockClicked();
-        WorldVector pos = new WorldVector(new CanaryWorld(hook.getPlayer().getWorld()), blockClicked.getX(),
-                blockClicked.getY(), blockClicked.getZ());
-        if(WorldEdit.getController().handleBlockRightClick(wrapPlayer(hook.getPlayer()), pos)) {
+        WorldVector pos = new WorldVector(new CanaryWorld(hook.getPlayer().getWorld()), blockClicked.getX(), blockClicked.getY(), blockClicked.getZ());
+        if (WorldEdit.getController().handleBlockRightClick(wrapPlayer(hook.getPlayer()), pos)) {
             hook.setCanceled();
         }
     }
@@ -49,21 +48,22 @@ public class WorldEditListener implements PluginListener {
     @HookHandler
     public void onBlockDestroy(BlockDestroyHook hook) {
         Block blockClicked = hook.getBlock();
-        WorldVector pos = new WorldVector(new CanaryWorld(hook.getPlayer().getWorld()), blockClicked.getX(),
-                blockClicked.getY(), blockClicked.getZ());
-        if(WorldEdit.getController().handleBlockLeftClick(wrapPlayer(hook.getPlayer()), pos)) {
+        WorldVector pos = new WorldVector(new CanaryWorld(hook.getPlayer().getWorld()), blockClicked.getX(), blockClicked.getY(), blockClicked.getZ());
+        if (WorldEdit.getController().handleBlockLeftClick(wrapPlayer(hook.getPlayer()), pos)) {
             hook.setCanceled();
         }
     }
 
     @HookHandler
     public void onPlayerCommand(PlayerCommandHook hook) {
-        //This is a little dirty right now, as it is circumventing
-        //the command system. However, the help is registered anyway so it's not too bad.
-        if(WorldEdit.getController().handleCommand(wrapPlayer(hook.getPlayer()), hook.getCommand())) {
+        // This is a little dirty right now, as it is circumventing
+        // the command system. However, the help is registered anyway so it's
+        // not too bad.
+        if (WorldEdit.getController().handleCommand(wrapPlayer(hook.getPlayer()), hook.getCommand())) {
             hook.setCanceled();
         }
     }
+
     private LocalPlayer wrapPlayer(Player player) {
         return new CanaryPlayer(server, player);
     }

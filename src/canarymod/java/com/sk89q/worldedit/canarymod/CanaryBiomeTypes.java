@@ -36,7 +36,7 @@ public class CanaryBiomeTypes implements BiomeTypes, BiomeType {
 
     @Override
     public List<BiomeType> all() {
-        return Arrays.<BiomeType>asList(CanaryBiomeType.values());
+        return Arrays.<BiomeType> asList(CanaryBiomeType.values());
     }
 
 }

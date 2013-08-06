@@ -10,6 +10,7 @@ import com.sk89q.worldedit.Vector;
 public class CanaryUtil {
     /**
      * Turn a position into a world edit vector
+     * 
      * @param p
      * @return
      */
@@ -19,15 +20,17 @@ public class CanaryUtil {
 
     /**
      * Turn a worldedit vector to a canarymod position
+     * 
      * @param v
      * @return
      */
     public static Position toPosition(Vector v) {
-        return new Position(v.getX(),v.getY(), v.getZ());
+        return new Position(v.getX(), v.getY(), v.getZ());
     }
 
     /**
      * Turn a worldedit vector to a canarymod location
+     * 
      * @param world
      * @param v
      * @return
@@ -38,6 +41,7 @@ public class CanaryUtil {
 
     /**
      * Get a WorldEdit {@link CanaryWorld} from a CanaryMod {@link World}
+     * 
      * @param world
      * @return a new {@link CanaryWorld}
      */

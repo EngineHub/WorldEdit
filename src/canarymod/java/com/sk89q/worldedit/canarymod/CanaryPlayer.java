@@ -28,7 +28,7 @@ public class CanaryPlayer extends LocalPlayer {
     @Override
     public int getItemInHand() {
         Item i = player.getItemHeld();
-        if(i != null) {
+        if (i != null) {
             return i.getId();
         }
         return 0;
@@ -66,28 +66,28 @@ public class CanaryPlayer extends LocalPlayer {
 
     @Override
     public void printRaw(String msg) {
-        for(String str : msg.split("\n")) {
+        for (String str : msg.split("\n")) {
             player.message(str);
         }
     }
 
     @Override
     public void printDebug(String msg) {
-        for(String str : msg.split("\n")) {
+        for (String str : msg.split("\n")) {
             player.message(Colors.LIGHT_GRAY + str);
         }
     }
 
     @Override
     public void print(String msg) {
-        for(String str : msg.split("\n")) {
+        for (String str : msg.split("\n")) {
             player.message(str);
         }
     }
 
     @Override
     public void printError(String msg) {
-        for(String str : msg.split("\n")) {
+        for (String str : msg.split("\n")) {
             player.message(Colors.LIGHT_RED + str);
         }
     }
@@ -101,7 +101,7 @@ public class CanaryPlayer extends LocalPlayer {
     public String[] getGroups() {
         String[] groups = new String[player.getPlayerGroups().length];
         Group[] playergroups = player.getPlayerGroups();
-        for(int i = 0; i < groups.length; ++i) {
+        for (int i = 0; i < groups.length; ++i) {
             groups[i] = playergroups[i].getName();
         }
         return groups;

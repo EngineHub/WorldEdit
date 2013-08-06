@@ -1,6 +1,5 @@
 package com.sk89q.worldedit.canarymod;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +54,11 @@ import com.sk89q.worldedit.regions.Region;
 public class CanaryWorld extends LocalWorld {
 
     private World world;
+
     public CanaryWorld(World world) {
         this.world = world;
     }
+
     @Override
     public String getName() {
         return world.getFqName();
@@ -66,7 +67,7 @@ public class CanaryWorld extends LocalWorld {
     @Override
     @Deprecated
     public boolean setBlockType(Vector pt, int type) {
-        world.setBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (short)type);
+        world.setBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (short) type);
         return true;
     }
 
@@ -78,13 +79,13 @@ public class CanaryWorld extends LocalWorld {
     @Override
     @Deprecated
     public void setBlockData(Vector pt, int data) {
-        world.setDataAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (byte)data);
+        world.setDataAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (byte) data);
     }
 
     @Override
     @Deprecated
     public void setBlockDataFast(Vector pt, int data) {
-        world.setDataAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (byte)data);
+        world.setDataAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), (byte) data);
     }
 
     @Override
@@ -94,7 +95,7 @@ public class CanaryWorld extends LocalWorld {
 
     @Override
     public void setBiome(Vector2D pt, BiomeType biome) {
-        world.setBiome(pt.getBlockX(), pt.getBlockZ(), ((CanaryBiomeType)biome).getCanaryBiomeType());
+        world.setBiome(pt.getBlockX(), pt.getBlockZ(), ((CanaryBiomeType) biome).getCanaryBiomeType());
     }
 
     @Override
@@ -109,7 +110,7 @@ public class CanaryWorld extends LocalWorld {
 
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
-        //Code from l4mRh4x0rs implementation
+        // Code from l4mRh4x0rs implementation
         BaseBlock[] history = new BaseBlock[16 * 16 * 128];
 
         for (Vector2D chunk : region.getChunks()) {
@@ -143,8 +144,7 @@ public class CanaryWorld extends LocalWorld {
                         if (!region.contains(pt)) {
                             editSession.smartSetBlock(pt, history[index]);
                         } else { // Otherwise fool with history
-                            editSession.rememberChange(pt, history[index],
-                                    editSession.rawGetBlock(pt));
+                            editSession.rememberChange(pt, history[index], editSession.rawGetBlock(pt));
                         }
                     }
                 }
@@ -156,29 +156,31 @@ public class CanaryWorld extends LocalWorld {
 
     @Override
     public boolean copyToWorld(Vector pt, BaseBlock block) {
-     // Signs
+        // Signs
         if (block instanceof SignBlock) {
-            setSignText(pt, ((SignBlock)block).getText());
+            setSignText(pt, ((SignBlock) block).getText());
             return true;
 
-        // Furnaces
+            // Furnaces
         } else if (block instanceof FurnaceBlock) {
             TileEntity container = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-            if (container == null || !(container instanceof Furnace)) return false;
-            Furnace canary = (Furnace)container;
-            FurnaceBlock we = (FurnaceBlock)block;
+            if (container == null || !(container instanceof Furnace))
+                return false;
+            Furnace canary = (Furnace) container;
+            FurnaceBlock we = (FurnaceBlock) block;
             canary.setBurnTime(we.getBurnTime());
             canary.setCookTime(we.getCookTime());
-            return setContainerBlockContents(pt, ((ContainerBlock)block).getItems());
+            return setContainerBlockContents(pt, ((ContainerBlock) block).getItems());
 
-        // Chests/dispenser
+            // Chests/dispenser
         } else if (block instanceof ContainerBlock) {
-            return setContainerBlockContents(pt, ((ContainerBlock)block).getItems());
+            return setContainerBlockContents(pt, ((ContainerBlock) block).getItems());
 
-        // Mob spawners
+            // Mob spawners
         } else if (block instanceof MobSpawnerBlock) {
             TileEntity container = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-            if (container == null || !(container instanceof MobSpawner)) return false;
+            if (container == null || !(container instanceof MobSpawner))
+                return false;
             MobSpawner canary = (MobSpawner) container;
             MobSpawnerBlock we = (MobSpawnerBlock) block;
             Entity spawn = Canary.factory().getEntityFactory().newEntity(we.getMobType(), world);
@@ -187,12 +189,13 @@ public class CanaryWorld extends LocalWorld {
             canary.getLogic().setDelay(we.getDelay());
             return true;
 
-        // Note block
+            // Note block
         } else if (block instanceof com.sk89q.worldedit.blocks.NoteBlock) {
             TileEntity container = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-            if (container == null || !(container instanceof NoteBlock)) return false;
+            if (container == null || !(container instanceof NoteBlock))
+                return false;
             NoteBlock canary = (NoteBlock) container;
-            com.sk89q.worldedit.blocks.NoteBlock we = (com.sk89q.worldedit.blocks.NoteBlock)block;
+            com.sk89q.worldedit.blocks.NoteBlock we = (com.sk89q.worldedit.blocks.NoteBlock) block;
             canary.setNote(we.getNote());
             return true;
         }
@@ -202,15 +205,16 @@ public class CanaryWorld extends LocalWorld {
 
     @Override
     public boolean copyFromWorld(Vector pt, BaseBlock block) {
-     // Signs
+        // Signs
         if (block instanceof SignBlock) {
             ((SignBlock) block).setText(getSignText(pt));
             return true;
 
-        // Furnaces
+            // Furnaces
         } else if (block instanceof FurnaceBlock) {
             TileEntity canaryBlock = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-            if (canaryBlock == null || !(canaryBlock instanceof Furnace)) return false;
+            if (canaryBlock == null || !(canaryBlock instanceof Furnace))
+                return false;
             Furnace canary = (Furnace) canaryBlock;
             FurnaceBlock we = (FurnaceBlock) block;
             we.setBurnTime(canary.getBurnTime());
@@ -218,25 +222,27 @@ public class CanaryWorld extends LocalWorld {
             ((ContainerBlock) block).setItems(getContainerBlockContents(pt));
             return true;
 
-        // Chests/dispenser
+            // Chests/dispenser
         } else if (block instanceof ContainerBlock) {
             ((ContainerBlock) block).setItems(getContainerBlockContents(pt));
             return true;
 
-        // Mob spawners
+            // Mob spawners
         } else if (block instanceof MobSpawnerBlock) {
             TileEntity canaryBlock = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-            if (canaryBlock == null || !(canaryBlock instanceof MobSpawner)) return false;
+            if (canaryBlock == null || !(canaryBlock instanceof MobSpawner))
+                return false;
             MobSpawner canary = (MobSpawner) canaryBlock;
             MobSpawnerBlock we = (MobSpawnerBlock) block;
             we.setMobType(canary.getLogic().getSpawns()[0]);
-            we.setDelay((short)canary.getLogic().getMaxDelay());
+            we.setDelay((short) canary.getLogic().getMaxDelay());
             return true;
 
-        // Note block
+            // Note block
         } else if (block instanceof com.sk89q.worldedit.blocks.NoteBlock) {
             TileEntity canaryBlock = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-            if (canaryBlock == null || !(canaryBlock instanceof NoteBlock)) return false;
+            if (canaryBlock == null || !(canaryBlock instanceof NoteBlock))
+                return false;
             NoteBlock canary = (NoteBlock) canaryBlock;
             com.sk89q.worldedit.blocks.NoteBlock we = (com.sk89q.worldedit.blocks.NoteBlock) block;
             we.setNote(canary.getNote());
@@ -260,7 +266,7 @@ public class CanaryWorld extends LocalWorld {
     @Override
     public void dropItem(Vector pt, BaseItemStack item) {
         Item canary = Canary.factory().getItemFactory().newItem(item.getType(), item.getData(), item.getAmount());
-        for(Integer t : item.getEnchantments().keySet()) {
+        for (Integer t : item.getEnchantments().keySet()) {
             canary.addEnchantments(Canary.factory().getItemFactory().newEnchantment(Enchantment.Type.fromId(t), item.getEnchantments().get(t).shortValue()));
         }
         world.dropItem(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), canary);
@@ -276,66 +282,66 @@ public class CanaryWorld extends LocalWorld {
                 continue;
 
             switch (type) {
-                case BOATS:
-                    if (ent instanceof Boat) {
-                        ent.destroy();
-                        num++;
-                    }
-                    break;
-                case ITEMS:
-                    if (ent instanceof EntityItem) {
-                        ent.destroy();
-                        num++;
-                    }
-                    break;
-                case MINECARTS:
-                    if (ent instanceof Minecart) {
-                        ent.destroy();
-                        num++;
-                    }
-                    break;
-                case PAINTINGS:
-                    if (ent instanceof Painting) {
-                        ent.destroy();
-                        num++;
-                    }
-                    break;
-                case TNT:
-                    if (ent instanceof TNTPrimed) {
-                        ent.destroy();
-                        num++;
-                    }
-                    break;
-                case XP_ORBS:
-                    if (ent instanceof XPOrb) {
-                        ent.destroy();
-                        num++;
-                    }
-                    break;
-                case ALL:
+            case BOATS:
+                if (ent instanceof Boat) {
                     ent.destroy();
                     num++;
-                    break;
-                case FALLING_BLOCKS:
-                    if(ent instanceof Anvil) {
-                        ent.destroy();
-                        num++;
-                    }
-                    break;
-                case ITEM_FRAMES:
-                    if(ent instanceof ItemFrame) {
-                        ent.destroy();
-                        num++;
-                    }
-                    break;
-                case PROJECTILES:
-                    if(ent instanceof Arrow || ent instanceof Snowball || ent instanceof Fireball) {
-                        ent.destroy();
-                        num++;
-                    }
-                    break;
-                default:
-                    break;
+                }
+                break;
+            case ITEMS:
+                if (ent instanceof EntityItem) {
+                    ent.destroy();
+                    num++;
+                }
+                break;
+            case MINECARTS:
+                if (ent instanceof Minecart) {
+                    ent.destroy();
+                    num++;
+                }
+                break;
+            case PAINTINGS:
+                if (ent instanceof Painting) {
+                    ent.destroy();
+                    num++;
+                }
+                break;
+            case TNT:
+                if (ent instanceof TNTPrimed) {
+                    ent.destroy();
+                    num++;
+                }
+                break;
+            case XP_ORBS:
+                if (ent instanceof XPOrb) {
+                    ent.destroy();
+                    num++;
+                }
+                break;
+            case ALL:
+                ent.destroy();
+                num++;
+                break;
+            case FALLING_BLOCKS:
+                if (ent instanceof Anvil) {
+                    ent.destroy();
+                    num++;
+                }
+                break;
+            case ITEM_FRAMES:
+                if (ent instanceof ItemFrame) {
+                    ent.destroy();
+                    num++;
+                }
+                break;
+            case PROJECTILES:
+                if (ent instanceof Arrow || ent instanceof Snowball || ent instanceof Fireball) {
+                    ent.destroy();
+                    num++;
+                }
+                break;
+            default:
+                break;
             }
 
         }
@@ -376,10 +382,10 @@ public class CanaryWorld extends LocalWorld {
                 continue;
             }
 
-            //We don't have this lol
-//            if (!killAmbient && ent instanceof Ambient) {
-//                continue;
-//            }
+            // We don't have this lol
+            // if (!killAmbient && ent instanceof Ambient) {
+            // continue;
+            // }
 
             if (radius < 0 || (p.getDistance(ent.getLocation())) <= radiusSq) {
                 if (withLightning) {
@@ -396,8 +402,8 @@ public class CanaryWorld extends LocalWorld {
     @Override
     public LocalEntity[] getEntities(Region region) {
         List<CanaryEntity> entities = new ArrayList<CanaryEntity>();
-        for(Entity e : world.getEntityTracker().getTrackedEntities()) {
-            if(region.contains(CanaryUtil.toVector(e.getPosition()))) {
+        for (Entity e : world.getEntityTracker().getTrackedEntities()) {
+            if (region.contains(CanaryUtil.toVector(e.getPosition()))) {
                 entities.add(new CanaryEntity(e));
             }
         }
@@ -423,14 +429,13 @@ public class CanaryWorld extends LocalWorld {
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof CanaryWorld && world.equals(((CanaryWorld)other).world);
+        return other instanceof CanaryWorld && world.equals(((CanaryWorld) other).world);
     }
 
     @Override
     public int hashCode() {
         return world.hashCode();
     }
-
 
     /**
      * Helper to set text on signs at the given {@link Vector} in this world
@@ -439,7 +444,7 @@ public class CanaryWorld extends LocalWorld {
      * @param text
      */
     public void setSignText(Vector pt, String[] text) {
-        Sign signData = (Sign)world.getTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        Sign signData = (Sign) world.getTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (signData == null) {
             return;
         }
@@ -450,7 +455,8 @@ public class CanaryWorld extends LocalWorld {
     }
 
     /**
-     * Helper to set the inventory of a {@link TileEntity} at the given {@link Vector} in this world
+     * Helper to set the inventory of a {@link TileEntity} at the given
+     * {@link Vector} in this world
      * 
      * @param pt
      * @param items
@@ -478,9 +484,9 @@ public class CanaryWorld extends LocalWorld {
      * @return
      */
     public String[] getSignText(Vector pt) {
-        Sign signData = (Sign)world.getTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        Sign signData = (Sign) world.getTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (signData == null) {
-            return new String[]{"", "", "", ""};
+            return new String[] { "", "", "", "" };
         }
         String[] text = new String[4];
         for (byte i = 0; i < 4; i++) {
@@ -490,7 +496,8 @@ public class CanaryWorld extends LocalWorld {
     }
 
     /**
-     * Helper to get the inventory of a {@link TileEntity} at the given {@link Vector} in this world
+     * Helper to get the inventory of a {@link TileEntity} at the given
+     * {@link Vector} in this world
      * 
      * @param pt
      * @return
@@ -509,18 +516,16 @@ public class CanaryWorld extends LocalWorld {
         for (int i = 0; i < size; ++i) {
             Item canaryItem = container.getSlot(i);
             if (canaryItem != null) {
-                contents[i] = new BaseItemStack(
-                        canaryItem.getId(),
-                        canaryItem.getAmount(),
-                (short) canaryItem.getDamage());
+                contents[i] = new BaseItemStack(canaryItem.getId(), canaryItem.getAmount(), (short) canaryItem.getDamage());
             }
         }
 
         return contents;
     }
-    
+
     /**
-     * get the CanaryMod {@link World} that is wrapped in this {@link CanaryWorld}
+     * get the CanaryMod {@link World} that is wrapped in this
+     * {@link CanaryWorld}
      * 
      * @return the wrapped {@link World}
      */

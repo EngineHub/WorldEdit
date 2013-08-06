@@ -5,8 +5,7 @@ import java.util.Locale;
 import com.sk89q.worldedit.BiomeType;
 
 /**
- * BiomeType implementation.
- * Represents all of CanaryMods valid BiomeTypes
+ * BiomeType implementation. Represents all of CanaryMods valid BiomeTypes
  */
 public enum CanaryBiomeType implements BiomeType {
     OCEAN(net.canarymod.api.world.BiomeType.OCEAN),
@@ -36,15 +35,17 @@ public enum CanaryBiomeType implements BiomeType {
 
     /**
      * Construct a new {@link BiomeType}
-     * @param type the {@link net.canarymod.api.world.BiomeType}
+     *
+     * @param type
+     *            the {@link net.canarymod.api.world.BiomeType}
      */
     CanaryBiomeType(net.canarymod.api.world.BiomeType type) {
         this.type = type;
     }
-    
+
     /**
      * Get the name of this BiomeType
-     * 
+     *
      * @return String the name
      */
     @Override
@@ -54,7 +55,7 @@ public enum CanaryBiomeType implements BiomeType {
 
     /**
      * Get the CanaryMod BiomeType handle
-     * 
+     *
      * @return {@link net.canarymod.api.world.BiomeType} the CanaryMod BiomeType
      */
     public net.canarymod.api.world.BiomeType getCanaryBiomeType() {
@@ -62,13 +63,16 @@ public enum CanaryBiomeType implements BiomeType {
     }
 
     /**
-     * Get a WorldEdit {@link BiomeType} from a CanaryMod {@link net.canarymod.api.world.BiomeType}
-     * @param type the CanaryMod BiomeType
+     * Get a WorldEdit {@link BiomeType} from a CanaryMod
+     * {@link net.canarymod.api.world.BiomeType}
+     *
+     * @param type
+     *            the CanaryMod BiomeType
      * @return
      */
     public static CanaryBiomeType fromNative(net.canarymod.api.world.BiomeType type) {
-        for(CanaryBiomeType t : values()) {
-            if(t.getCanaryBiomeType() == type) {
+        for (CanaryBiomeType t : values()) {
+            if (t.getCanaryBiomeType() == type) {
                 return t;
             }
         }

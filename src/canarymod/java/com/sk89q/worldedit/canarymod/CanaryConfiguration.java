@@ -33,7 +33,6 @@ public class CanaryConfiguration extends LocalConfiguration {
         allowExtraDataValues = properties.getBoolean("allow-extra-data-values", false);
         allowSymlinks = properties.getBoolean("allow-symbolic-links", false);
 
-
         profile = properties.getBoolean("debug-profile", profile);
         wandItem = properties.getInt("wand-item", wandItem);
         defaultChangeLimit = Math.max(-1, properties.getInt("default-max-blocks-changed", defaultChangeLimit));
@@ -60,15 +59,13 @@ public class CanaryConfiguration extends LocalConfiguration {
         // Get disallowed blocks
         try {
             disallowedBlocks = new HashSet<Integer>(toIntegerList(properties.getIntArray("disallowed-blocks")));
-        }
-        catch(UtilityException e) {
-            //Derp
+        } catch (UtilityException e) {
+            // Derp
         }
         try {
             allowedDataCycleBlocks = new HashSet<Integer>(toIntegerList(properties.getIntArray("allowed-data-cycle-blocks")));
-        }
-        catch(UtilityException e) {
-            //Derp
+        } catch (UtilityException e) {
+            // Derp
         }
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(0, properties.getInt("history-size", 15));
@@ -109,7 +106,7 @@ public class CanaryConfiguration extends LocalConfiguration {
      */
     public static List<Integer> toIntegerList(int[] arr) {
         ArrayList<Integer> l = new ArrayList<Integer>();
-        for(int i : arr) {
+        for (int i : arr) {
             l.add(i);
         }
         return l;

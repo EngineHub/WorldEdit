@@ -23,6 +23,7 @@ public class CanaryBlockBag extends BlockBag {
 
     /**
      * Construct a new BlockBag for the given {@link Player}
+     * 
      * @param player
      */
     public CanaryBlockBag(Player player) {
@@ -31,6 +32,7 @@ public class CanaryBlockBag extends BlockBag {
 
     /**
      * Get the player for this {@link BlockBag}
+     * 
      * @return
      */
     public Player getPlayer() {
@@ -55,10 +57,12 @@ public class CanaryBlockBag extends BlockBag {
     }
 
     @Override
-    public void addSourcePosition(WorldVector pos) {}
+    public void addSourcePosition(WorldVector pos) {
+    }
 
     @Override
-    public void addSingleSourcePosition(WorldVector pos) {}
+    public void addSingleSourcePosition(WorldVector pos) {
+    }
 
     @Override
     public void fetchBlock(int id) throws BlockBagException {
@@ -73,7 +77,8 @@ public class CanaryBlockBag extends BlockBag {
         for (int slot = 0; slot < items.length; slot++) {
             Item item = items[slot];
 
-            if (item == null) continue;
+            if (item == null)
+                continue;
 
             if (item.getId() == id) {
                 int amount = item.getAmount();
@@ -152,7 +157,7 @@ public class CanaryBlockBag extends BlockBag {
 
     /**
      * Set the contents of an ItemArray.
-     *
+     * 
      * @param itemArray
      * @param contents
      */

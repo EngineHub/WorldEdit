@@ -27,6 +27,7 @@ public class CanaryServer extends ServerInterface {
 
     private WorldEdit plugin;
     private int taskid = 0;
+
     public CanaryServer(WorldEdit plugin) {
         this.plugin = plugin;
     }
@@ -34,7 +35,7 @@ public class CanaryServer extends ServerInterface {
     @Override
     public int resolveItem(String name) {
         ItemType t = ItemType.fromString(name);
-        if(t != null) {
+        if (t != null) {
             return t.getId();
         }
         return 0;
@@ -44,8 +45,7 @@ public class CanaryServer extends ServerInterface {
     public boolean isValidMobType(String type) {
         try {
             EntityType.valueOf(type);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             return false;
         }
         return true;
@@ -64,7 +64,7 @@ public class CanaryServer extends ServerInterface {
     @Override
     public List<LocalWorld> getWorlds() {
         List<LocalWorld> toRet = new ArrayList<LocalWorld>();
-        for(World w : Canary.getServer().getWorldManager().getAllWorlds()) {
+        for (World w : Canary.getServer().getWorldManager().getAllWorlds()) {
             toRet.add(new CanaryWorld(w));
         }
         return toRet;
@@ -133,7 +133,7 @@ public class CanaryServer extends ServerInterface {
 
                     @Override
                     protected void execute(MessageReceiver arg0, String[] arg1) {
-                        //Do nothing
+                        // Do nothing
                     }
                 };
 
@@ -144,8 +144,9 @@ public class CanaryServer extends ServerInterface {
 
     @Override
     public int schedule(long delay, long period, final Runnable task) {
-        if(ServerTaskManager.addTask(new ServerTask(plugin, period, period > 0) {
+        if (ServerTaskManager.addTask(new ServerTask(plugin, period, period > 0) {
             Runnable r = task;
+
             @Override
             public void run() {
                 r.run();

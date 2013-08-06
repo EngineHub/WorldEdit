@@ -29,8 +29,8 @@ public class WorldEdit extends Plugin implements TaskOwner {
      * @return
      */
     public static com.sk89q.worldedit.WorldEdit getController() {
-        if(controller == null) {
-            if(instance == null) {
+        if (controller == null) {
+            if (instance == null) {
                 throw new IllegalStateException("Plugin is not loaded yet, cannot instantiante a controller!");
             }
             CanaryConfiguration cfg = new CanaryConfiguration();
@@ -52,16 +52,13 @@ public class WorldEdit extends Plugin implements TaskOwner {
     public WorldEdit() {
         instance = this;
         logger = getLogman();
-        if(controller == null) {
-            if(instance == null) {
-                throw new IllegalStateException("Plugin is not loaded yet, cannot instantiante a controller!");
-            }
+        if (controller == null) {
             CanaryConfiguration cfg = new CanaryConfiguration();
             cfg.load();
             controller = new com.sk89q.worldedit.WorldEdit(new CanaryServer(instance), cfg);
         }
     }
-    
+
     @Override
     public boolean enable() {
         Canary.hooks().registerListener(new WorldEditListener(this), this);
@@ -76,7 +73,7 @@ public class WorldEdit extends Plugin implements TaskOwner {
 
     /**
      * Gets the region selection for the player.
-     *
+     * 
      * @param player
      * @return the selection or null if there was none
      */
@@ -106,6 +103,7 @@ public class WorldEdit extends Plugin implements TaskOwner {
 
     /**
      * Set the given {@link Selection} for the given {@link Player}
+     * 
      * @param player
      * @param selection
      */
@@ -119,9 +117,10 @@ public class WorldEdit extends Plugin implements TaskOwner {
         session.setRegionSelector(CanaryUtil.getLocalWorld(player.getWorld()), sel);
         session.dispatchCUISelection(wrapPlayer(player));
     }
-    
+
     /**
      * Helper to create a {@link CanaryPlayer} from the given {@link Player}
+     * 
      * @param player
      * @return a new {@link CanaryPlayer}
      */

@@ -7,6 +7,7 @@ import com.sk89q.worldedit.Location;
 
 public class CanaryEntity extends LocalEntity {
     Entity entity;
+
     public CanaryEntity(Entity entity) {
         super(new Location(new CanaryWorld(entity.getWorld()), CanaryUtil.toVector(entity.getPosition())));
         this.entity = entity;
