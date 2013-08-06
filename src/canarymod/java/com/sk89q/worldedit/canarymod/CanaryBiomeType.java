@@ -4,6 +4,10 @@ import java.util.Locale;
 
 import com.sk89q.worldedit.BiomeType;
 
+/**
+ * BiomeType implementation.
+ * Represents all of CanaryMods valid BiomeTypes
+ */
 public enum CanaryBiomeType implements BiomeType {
     OCEAN(net.canarymod.api.world.BiomeType.OCEAN),
     PLAINS(net.canarymod.api.world.BiomeType.PLAINS),
@@ -30,18 +34,38 @@ public enum CanaryBiomeType implements BiomeType {
 
     net.canarymod.api.world.BiomeType type;
 
+    /**
+     * Construct a new {@link BiomeType}
+     * @param type the {@link net.canarymod.api.world.BiomeType}
+     */
     CanaryBiomeType(net.canarymod.api.world.BiomeType type) {
         this.type = type;
     }
+    
+    /**
+     * Get the name of this BiomeType
+     * 
+     * @return String the name
+     */
     @Override
     public String getName() {
         return name().toLowerCase(Locale.ENGLISH);
     }
 
+    /**
+     * Get the CanaryMod BiomeType handle
+     * 
+     * @return {@link net.canarymod.api.world.BiomeType} the CanaryMod BiomeType
+     */
     public net.canarymod.api.world.BiomeType getCanaryBiomeType() {
         return type;
     }
 
+    /**
+     * Get a WorldEdit {@link BiomeType} from a CanaryMod {@link net.canarymod.api.world.BiomeType}
+     * @param type the CanaryMod BiomeType
+     * @return
+     */
     public static CanaryBiomeType fromNative(net.canarymod.api.world.BiomeType type) {
         for(CanaryBiomeType t : values()) {
             if(t.getCanaryBiomeType() == type) {

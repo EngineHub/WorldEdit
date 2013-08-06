@@ -36,6 +36,11 @@ public class CanaryUtil {
         return new Location(world, v.getX(), v.getY(), v.getZ(), 0f, 0f);
     }
 
+    /**
+     * Get a WorldEdit {@link CanaryWorld} from a CanaryMod {@link World}
+     * @param world
+     * @return a new {@link CanaryWorld}
+     */
     public static LocalWorld getLocalWorld(World world) {
         return new CanaryWorld(world);
     }

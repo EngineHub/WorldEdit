@@ -25,6 +25,7 @@ public class WorldEdit extends Plugin implements TaskOwner {
 
     /**
      * Return the WorldEdit controller
+     * 
      * @return
      */
     public static com.sk89q.worldedit.WorldEdit getController() {
@@ -41,6 +42,7 @@ public class WorldEdit extends Plugin implements TaskOwner {
 
     /**
      * Get the WorldEdit Plugin instance
+     * 
      * @return
      */
     public static WorldEdit getInstance() {
@@ -59,6 +61,7 @@ public class WorldEdit extends Plugin implements TaskOwner {
             controller = new com.sk89q.worldedit.WorldEdit(new CanaryServer(instance), cfg);
         }
     }
+    
     @Override
     public boolean enable() {
         Canary.hooks().registerListener(new WorldEditListener(this), this);
@@ -67,7 +70,8 @@ public class WorldEdit extends Plugin implements TaskOwner {
 
     @Override
     public void disable() {
-        // TODO Auto-generated method stub
+        // Everything we would need to do, such as unregistering help content,
+        // is handled in CanaryMods internals.
     }
 
     /**
@@ -100,6 +104,11 @@ public class WorldEdit extends Plugin implements TaskOwner {
         }
     }
 
+    /**
+     * Set the given {@link Selection} for the given {@link Player}
+     * @param player
+     * @param selection
+     */
     public void setSelection(Player player, Selection selection) {
         if (player == null) {
             throw new IllegalArgumentException("Null player not allowed");
@@ -110,6 +119,12 @@ public class WorldEdit extends Plugin implements TaskOwner {
         session.setRegionSelector(CanaryUtil.getLocalWorld(player.getWorld()), sel);
         session.dispatchCUISelection(wrapPlayer(player));
     }
+    
+    /**
+     * Helper to create a {@link CanaryPlayer} from the given {@link Player}
+     * @param player
+     * @return a new {@link CanaryPlayer}
+     */
     public LocalPlayer wrapPlayer(Player player) {
         return new CanaryPlayer(getController().getServer(), player);
     }

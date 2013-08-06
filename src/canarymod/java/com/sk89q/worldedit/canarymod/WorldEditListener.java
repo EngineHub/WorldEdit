@@ -58,8 +58,8 @@ public class WorldEditListener implements PluginListener {
 
     @HookHandler
     public void onPlayerCommand(PlayerCommandHook hook) {
-        //This is a little dirty right now, as it circumventing
-        //the command system. However, the help is registered so it's not too bad.
+        //This is a little dirty right now, as it is circumventing
+        //the command system. However, the help is registered anyway so it's not too bad.
         if(WorldEdit.getController().handleCommand(wrapPlayer(hook.getPlayer()), hook.getCommand())) {
             hook.setCanceled();
         }

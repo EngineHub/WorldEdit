@@ -21,16 +21,24 @@ public class CanaryBlockBag extends BlockBag {
      */
     private Item[] items;
 
+    /**
+     * Construct a new BlockBag for the given {@link Player}
+     * @param player
+     */
     public CanaryBlockBag(Player player) {
         this.player = player;
     }
 
+    /**
+     * Get the player for this {@link BlockBag}
+     * @return
+     */
     public Player getPlayer() {
         return player;
     }
 
     /**
-     * Loads inventory on first use.
+     * Load or update the inventory data from the {@link Player} object
      */
     private void loadInventory() {
         if (items == null) {
@@ -47,14 +55,10 @@ public class CanaryBlockBag extends BlockBag {
     }
 
     @Override
-    public void addSourcePosition(WorldVector pos) {
-        // TODO Auto-generated method stub
-    }
+    public void addSourcePosition(WorldVector pos) {}
 
     @Override
-    public void addSingleSourcePosition(WorldVector pos) {
-        // TODO Auto-generated method stub
-    }
+    public void addSingleSourcePosition(WorldVector pos) {}
 
     @Override
     public void fetchBlock(int id) throws BlockBagException {

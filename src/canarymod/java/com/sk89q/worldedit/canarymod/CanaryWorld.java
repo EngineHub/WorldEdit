@@ -432,6 +432,12 @@ public class CanaryWorld extends LocalWorld {
     }
 
 
+    /**
+     * Helper to set text on signs at the given {@link Vector} in this world
+     * 
+     * @param pt
+     * @param text
+     */
     public void setSignText(Vector pt, String[] text) {
         Sign signData = (Sign)world.getTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (signData == null) {
@@ -443,6 +449,13 @@ public class CanaryWorld extends LocalWorld {
         signData.update();
     }
 
+    /**
+     * Helper to set the inventory of a {@link TileEntity} at the given {@link Vector} in this world
+     * 
+     * @param pt
+     * @param items
+     * @return
+     */
     private boolean setContainerBlockContents(Vector pt, BaseItemStack[] items) {
         TileEntity complex = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (complex == null || !(complex instanceof Inventory))
@@ -458,6 +471,12 @@ public class CanaryWorld extends LocalWorld {
         return true;
     }
 
+    /**
+     * Helper to get text on signs at the given {@link Vector} in this world
+     * 
+     * @param pt
+     * @return
+     */
     public String[] getSignText(Vector pt) {
         Sign signData = (Sign)world.getTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (signData == null) {
@@ -470,6 +489,12 @@ public class CanaryWorld extends LocalWorld {
         return text;
     }
 
+    /**
+     * Helper to get the inventory of a {@link TileEntity} at the given {@link Vector} in this world
+     * 
+     * @param pt
+     * @return
+     */
     private BaseItemStack[] getContainerBlockContents(Vector pt) {
 
         TileEntity block = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
@@ -493,6 +518,12 @@ public class CanaryWorld extends LocalWorld {
 
         return contents;
     }
+    
+    /**
+     * get the CanaryMod {@link World} that is wrapped in this {@link CanaryWorld}
+     * 
+     * @return the wrapped {@link World}
+     */
     public World getHandle() {
         return world;
     }

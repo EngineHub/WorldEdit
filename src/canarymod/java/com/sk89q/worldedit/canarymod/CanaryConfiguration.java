@@ -101,6 +101,12 @@ public class CanaryConfiguration extends LocalConfiguration {
         properties.save();
     }
 
+    /**
+     * Helper to turn an array into a list of Integers
+     * 
+     * @param arr
+     * @return the given array as Integer list
+     */
     public static List<Integer> toIntegerList(int[] arr) {
         ArrayList<Integer> l = new ArrayList<Integer>();
         for(int i : arr) {
