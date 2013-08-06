@@ -17,14 +17,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package net.playblack.cm.selections;
+package com.sk89q.worldedit.canarymod.selections;
 
 import java.util.Collections;
 import java.util.List;
 
 import net.canarymod.api.world.World;
-import net.playblack.cm.CanaryUtil;
 
+import com.sk89q.worldedit.canarymod.CanaryUtil;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;

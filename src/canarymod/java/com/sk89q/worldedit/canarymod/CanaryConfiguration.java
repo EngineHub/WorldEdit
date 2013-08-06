@@ -1,4 +1,4 @@
-package net.playblack.cm;
+package com.sk89q.worldedit.canarymod;
 
 import java.io.IOException;
 import java.util.ArrayList;

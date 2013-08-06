@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package net.playblack.cm.selections;
+package com.sk89q.worldedit.canarymod.selections;
 
 import net.canarymod.api.world.World;
 import net.canarymod.api.world.position.Location;

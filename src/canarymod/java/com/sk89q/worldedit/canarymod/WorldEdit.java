@@ -1,4 +1,4 @@
-package net.playblack.cm;
+package com.sk89q.worldedit.canarymod;
 
 import net.canarymod.Canary;
 import net.canarymod.api.entity.living.humanoid.Player;
@@ -6,10 +6,10 @@ import net.canarymod.api.world.World;
 import net.canarymod.logger.Logman;
 import net.canarymod.plugin.Plugin;
 import net.canarymod.tasks.TaskOwner;
-import net.playblack.cm.selections.CuboidSelection;
-import net.playblack.cm.selections.Polygonal2DSelection;
-import net.playblack.cm.selections.Selection;
 
+import com.sk89q.worldedit.canarymod.selections.CuboidSelection;
+import com.sk89q.worldedit.canarymod.selections.Polygonal2DSelection;
+import com.sk89q.worldedit.canarymod.selections.Selection;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;

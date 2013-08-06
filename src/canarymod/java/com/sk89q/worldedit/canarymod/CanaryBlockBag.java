@@ -1,4 +1,4 @@
-package net.playblack.cm;
+package com.sk89q.worldedit.canarymod;
 
 import net.canarymod.Canary;
 import net.canarymod.api.entity.living.humanoid.Player;

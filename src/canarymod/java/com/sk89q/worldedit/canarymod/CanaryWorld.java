@@ -1,4 +1,4 @@
-package net.playblack.cm;
+package com.sk89q.worldedit.canarymod;
 
 
 import java.util.ArrayList;
