@@ -21,7 +21,7 @@ import com.sk89q.worldedit.snapshots.SnapshotRepository;
 public class CanaryConfiguration extends LocalConfiguration {
     private Logman logger = WorldEdit.logger;
 
-    private PropertiesFile properties = Configuration.getPluginConfig("WorldEdit");
+    private PropertiesFile properties = Configuration.getPluginConfig(WorldEdit.getInstance());
 
     @Override
     public void load() {
