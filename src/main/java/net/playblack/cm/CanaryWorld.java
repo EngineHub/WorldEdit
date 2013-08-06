@@ -10,10 +10,10 @@ import net.canarymod.api.entity.Arrow;
 import net.canarymod.api.entity.Entity;
 import net.canarymod.api.entity.EntityItem;
 import net.canarymod.api.entity.Fireball;
-import net.canarymod.api.entity.ItemFrame;
-import net.canarymod.api.entity.Painting;
 import net.canarymod.api.entity.TNTPrimed;
 import net.canarymod.api.entity.XPOrb;
+import net.canarymod.api.entity.hanging.ItemFrame;
+import net.canarymod.api.entity.hanging.Painting;
 import net.canarymod.api.entity.living.EntityLiving;
 import net.canarymod.api.entity.living.Golem;
 import net.canarymod.api.entity.living.animal.EntityAnimal;
@@ -29,7 +29,7 @@ import net.canarymod.api.inventory.Item;
 import net.canarymod.api.world.World;
 import net.canarymod.api.world.blocks.Anvil;
 import net.canarymod.api.world.blocks.BlockType;
-import net.canarymod.api.world.blocks.ComplexBlock;
+import net.canarymod.api.world.blocks.TileEntity;
 import net.canarymod.api.world.blocks.Furnace;
 import net.canarymod.api.world.blocks.MobSpawner;
 import net.canarymod.api.world.blocks.NoteBlock;
@@ -163,7 +163,7 @@ public class CanaryWorld extends LocalWorld {
 
         // Furnaces
         } else if (block instanceof FurnaceBlock) {
-            ComplexBlock container = world.getOnlyComplexBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            TileEntity container = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (container == null || !(container instanceof Furnace)) return false;
             Furnace canary = (Furnace)container;
             FurnaceBlock we = (FurnaceBlock)block;
@@ -177,7 +177,7 @@ public class CanaryWorld extends LocalWorld {
 
         // Mob spawners
         } else if (block instanceof MobSpawnerBlock) {
-            ComplexBlock container = world.getOnlyComplexBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            TileEntity container = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (container == null || !(container instanceof MobSpawner)) return false;
             MobSpawner canary = (MobSpawner) container;
             MobSpawnerBlock we = (MobSpawnerBlock) block;
@@ -189,7 +189,7 @@ public class CanaryWorld extends LocalWorld {
 
         // Note block
         } else if (block instanceof com.sk89q.worldedit.blocks.NoteBlock) {
-            ComplexBlock container = world.getOnlyComplexBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            TileEntity container = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (container == null || !(container instanceof NoteBlock)) return false;
             NoteBlock canary = (NoteBlock) container;
             com.sk89q.worldedit.blocks.NoteBlock we = (com.sk89q.worldedit.blocks.NoteBlock)block;
@@ -209,7 +209,7 @@ public class CanaryWorld extends LocalWorld {
 
         // Furnaces
         } else if (block instanceof FurnaceBlock) {
-            ComplexBlock canaryBlock = world.getOnlyComplexBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            TileEntity canaryBlock = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (canaryBlock == null || !(canaryBlock instanceof Furnace)) return false;
             Furnace canary = (Furnace) canaryBlock;
             FurnaceBlock we = (FurnaceBlock) block;
@@ -225,7 +225,7 @@ public class CanaryWorld extends LocalWorld {
 
         // Mob spawners
         } else if (block instanceof MobSpawnerBlock) {
-            ComplexBlock canaryBlock = world.getOnlyComplexBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            TileEntity canaryBlock = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (canaryBlock == null || !(canaryBlock instanceof MobSpawner)) return false;
             MobSpawner canary = (MobSpawner) canaryBlock;
             MobSpawnerBlock we = (MobSpawnerBlock) block;
@@ -235,7 +235,7 @@ public class CanaryWorld extends LocalWorld {
 
         // Note block
         } else if (block instanceof com.sk89q.worldedit.blocks.NoteBlock) {
-            ComplexBlock canaryBlock = world.getOnlyComplexBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            TileEntity canaryBlock = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             if (canaryBlock == null || !(canaryBlock instanceof NoteBlock)) return false;
             NoteBlock canary = (NoteBlock) canaryBlock;
             com.sk89q.worldedit.blocks.NoteBlock we = (com.sk89q.worldedit.blocks.NoteBlock) block;
@@ -247,7 +247,7 @@ public class CanaryWorld extends LocalWorld {
 
     @Override
     public boolean clearContainerBlockContents(Vector pt) {
-        ComplexBlock block = world.getOnlyComplexBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        TileEntity block = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (block == null || !(block instanceof Inventory)) {
             return false;
         }
@@ -433,8 +433,7 @@ public class CanaryWorld extends LocalWorld {
 
 
     public void setSignText(Vector pt, String[] text) {
-        Sign signData = (Sign)world.getComplexBlockAt(
-                pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        Sign signData = (Sign)world.getTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (signData == null) {
             return;
         }
@@ -445,7 +444,7 @@ public class CanaryWorld extends LocalWorld {
     }
 
     private boolean setContainerBlockContents(Vector pt, BaseItemStack[] items) {
-        ComplexBlock complex = world.getOnlyComplexBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        TileEntity complex = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (complex == null || !(complex instanceof Inventory))
             return false;
         Inventory container = (Inventory) complex;
@@ -460,7 +459,7 @@ public class CanaryWorld extends LocalWorld {
     }
 
     public String[] getSignText(Vector pt) {
-        Sign signData = (Sign)world.getComplexBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        Sign signData = (Sign)world.getTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (signData == null) {
             return new String[]{"", "", "", ""};
         }
@@ -473,7 +472,7 @@ public class CanaryWorld extends LocalWorld {
 
     private BaseItemStack[] getContainerBlockContents(Vector pt) {
 
-        ComplexBlock block = world.getOnlyComplexBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        TileEntity block = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (block == null || !(block instanceof Inventory)) {
             return new BaseItemStack[0];
         }

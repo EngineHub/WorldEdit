@@ -138,7 +138,7 @@
     <dependency>
       <groupId>net.canarymod</groupId>
       <artifactId>CanaryLib</artifactId>
-      <version>0.8-SNAPSHOT</version>
+      <version>0.10-SNAPSHOT</version>
     </dependency>
    
     <dependency> <!-- Unit tests -->

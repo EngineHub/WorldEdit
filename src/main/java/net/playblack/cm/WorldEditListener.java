@@ -8,7 +8,7 @@ import net.canarymod.hook.player.BlockDestroyHook;
 import net.canarymod.hook.player.BlockRightClickHook;
 import net.canarymod.hook.player.DisconnectionHook;
 import net.canarymod.hook.player.ItemUseHook;
-import net.canarymod.hook.player.PlayerLeftClickHook;
+import net.canarymod.hook.player.PlayerArmSwingHook;
 import net.canarymod.plugin.PluginListener;
 
 import com.sk89q.worldedit.LocalPlayer;
@@ -27,7 +27,7 @@ public class WorldEditListener implements PluginListener {
     }
 
     @HookHandler
-    public void onLeftClick(PlayerLeftClickHook hook) {
+    public void onLeftClick(PlayerArmSwingHook hook) {
         WorldEdit.getController().handleArmSwing(wrapPlayer(hook.getPlayer()));
     }
 
@@ -58,7 +58,8 @@ public class WorldEditListener implements PluginListener {
 
     @HookHandler
     public void onPlayerCommand(PlayerCommandHook hook) {
-        //This is dirty shit right now, there's probably a nicer method
+        //This is a little dirty right now, as it circumventing
+        //the command system. However, the help is registered so it's not too bad.
         if(WorldEdit.getController().handleCommand(wrapPlayer(hook.getPlayer()), hook.getCommand())) {
             hook.setCanceled();
         }
