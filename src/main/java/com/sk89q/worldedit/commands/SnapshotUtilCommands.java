@@ -58,6 +58,7 @@ public class SnapshotUtilCommands {
             aliases = { "snapshot", "snap" },
             desc = "Snapshot commands"
     )
+    @CommandPermissions("worldedit.snapshots")
     @NestedCommand(SnapshotCommands.class)
     public void snapshot(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
