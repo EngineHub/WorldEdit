@@ -31,7 +31,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.Arrays;
 
 /**
-* @author zml2008
+* An implementation of a dynamically registered {@link org.bukkit.command.Command} attached to a plugin
 */
 public class DynamicPluginCommand extends org.bukkit.command.Command implements PluginIdentifiableCommand {
 
