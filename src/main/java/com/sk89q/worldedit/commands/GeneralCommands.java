@@ -130,6 +130,7 @@ public class GeneralCommands {
         min = 0,
         max = 0
     )
+    @CommandPermissions("worldedit.toggle-place")
     public void togglePlace(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
@@ -153,6 +154,7 @@ public class GeneralCommands {
         min = 1,
         max = 1
     )
+    @CommandPermissions("worldedit.search-item")
     @Console
     public void searchItem(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
