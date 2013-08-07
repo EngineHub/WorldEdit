@@ -56,18 +56,18 @@ public class CommandsManagerRegistration extends CommandRegistration {
         for (Command command : registered) {
             List<String> permissions = null;
             Method cmdMethod = commands.getMethods().get(null).get(command.aliases()[0]);
-			Map<String, Method> childMethods = commands.getMethods().get(cmdMethod);
+            Map<String, Method> childMethods = commands.getMethods().get(cmdMethod);
 
-      		if (cmdMethod != null && cmdMethod.isAnnotationPresent(CommandPermissions.class)) {
+            if (cmdMethod != null && cmdMethod.isAnnotationPresent(CommandPermissions.class)) {
                 permissions = Arrays.asList(cmdMethod.getAnnotation(CommandPermissions.class).value());
             } else if (cmdMethod != null && childMethods != null && childMethods.size() > 0) {
-				permissions = new ArrayList<String>();
-				for (Method m : childMethods.values()) {
-					if (m.isAnnotationPresent(CommandPermissions.class)) {
-						permissions.addAll(Arrays.asList(m.getAnnotation(CommandPermissions.class).value()));
-					}
-				}
-			}
+                permissions = new ArrayList<String>();
+                for (Method m : childMethods.values()) {
+                    if (m.isAnnotationPresent(CommandPermissions.class)) {
+                        permissions.addAll(Arrays.asList(m.getAnnotation(CommandPermissions.class).value()));
+                    }
+                }
+            }
 
             toRegister.add(new CommandInfo(command.usage(), command.desc(), command.aliases(), commands, permissions == null ? null : permissions.toArray(new String[permissions.size()])));
         }
