@@ -27,7 +27,9 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zml2008
@@ -52,13 +54,22 @@ public class CommandsManagerRegistration extends CommandRegistration {
     public boolean registerAll(List<Command> registered) {
         List<CommandInfo> toRegister = new ArrayList<CommandInfo>();
         for (Command command : registered) {
-            String[] permissions = null;
+            List<String> permissions = null;
             Method cmdMethod = commands.getMethods().get(null).get(command.aliases()[0]);
-            if (cmdMethod != null && cmdMethod.isAnnotationPresent(CommandPermissions.class)) {
-                permissions = cmdMethod.getAnnotation(CommandPermissions.class).value();
-            }
+			Map<String, Method> childMethods = commands.getMethods().get(cmdMethod);
 
-            toRegister.add(new CommandInfo(command.usage(), command.desc(), command.aliases(), commands, permissions));
+      		if (cmdMethod != null && cmdMethod.isAnnotationPresent(CommandPermissions.class)) {
+                permissions = Arrays.asList(cmdMethod.getAnnotation(CommandPermissions.class).value());
+            } else if (cmdMethod != null && childMethods != null && childMethods.size() > 0) {
+				permissions = new ArrayList<String>();
+				for (Method m : childMethods.values()) {
+					if (m.isAnnotationPresent(CommandPermissions.class)) {
+						permissions.addAll(Arrays.asList(m.getAnnotation(CommandPermissions.class).value()));
+					}
+				}
+			}
+
+            toRegister.add(new CommandInfo(command.usage(), command.desc(), command.aliases(), commands, permissions == null ? null : permissions.toArray(new String[permissions.size()])));
         }
 
         return register(toRegister);
