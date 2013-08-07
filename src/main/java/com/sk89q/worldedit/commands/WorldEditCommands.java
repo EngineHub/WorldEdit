@@ -81,7 +81,7 @@ public class WorldEditCommands {
         min = 0,
         max = 0
     )
-    @CommandPermissions("worldedit.reload")
+    @CommandPermissions("worldedit.cui")
     public void cui(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
         session.setCUISupport(true);
