@@ -730,6 +730,7 @@ public class SelectionCommands {
         min = 0,
         max = 1
     )
+    @CommandPermissions("worldedit.selection")
     public void select(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
@@ -782,6 +783,7 @@ public class SelectionCommands {
 
     @Command(aliases = {"/desel", "/deselect"}, desc = "Deselect the current selection")
     @CommandAlias("/sel")
+    @CommandPermissions("worldedit.selection")
     public void deselect() {
 
     }

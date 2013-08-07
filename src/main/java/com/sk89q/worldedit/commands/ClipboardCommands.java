@@ -236,6 +236,7 @@ public class ClipboardCommands {
             aliases = { "/schematic", "/schem"},
             desc = "Schematic-related commands"
     )
+    @CommandPermissions("worldedit.schematic")
     @NestedCommand(SchematicCommands.class)
     public void schematic() {}
 
