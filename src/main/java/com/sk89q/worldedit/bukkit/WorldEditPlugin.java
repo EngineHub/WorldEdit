@@ -232,6 +232,13 @@ public class WorldEditPlugin extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd,
             String commandLabel, String[] args) {
+                if(cmd.getName().equalsIgnoreCase("explosion")){
+    		Player player = (Player) sender;
+			World world = player.getWorld();
+			Location location = player.getLocation();
+			int power = Integer.parseInt(args[0]);
+			world.createExplosion(location, power);
+		}
 
         // Add the command to the array because the underlying command handling
         // code of WorldEdit expects it
