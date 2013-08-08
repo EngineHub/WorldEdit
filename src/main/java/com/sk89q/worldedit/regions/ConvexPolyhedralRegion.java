@@ -134,12 +134,6 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
 
         centerAccum = centerAccum.add(vertex);
 
-        /*if (contains(vertex)) {
-            return true;
-        }*/
-
-        lastTriangle = null;
-
         if (minimumPoint == null) {
             minimumPoint = maximumPoint = vertex;
         } else {
@@ -194,12 +188,17 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
         }
 
         if (!vertexBacklog.isEmpty()) {
+            // Remove the new vertex 
             vertices.remove(vertex);
+
+            // Clone, clear and work through the backlog
             final List<Vector> vertexBacklog2 = new ArrayList<Vector>(vertexBacklog);
             vertexBacklog.clear();
             for (Vector vertex2 : vertexBacklog2) {
                 addVertex(vertex2);
             }
+
+            // Re-add the new vertex after the backlog.
             vertices.add(vertex);
         }
 
