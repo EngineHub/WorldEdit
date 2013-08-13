@@ -227,13 +227,15 @@ public class ForgeWorld extends LocalWorld {
             return true;
         }
 
+        /*
         if (block instanceof MobSpawnerBlock) {
             // Mob spawners
             TileEntityMobSpawner spawner = new TileEntityMobSpawner();
-            spawner.func_98049_a().setMobID(((MobSpawnerBlock) block).getMobType());
+            spawner.getSpawnerLogic().setMobID(((MobSpawnerBlock) block).getMobType());
             world.setBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), spawner);
             return true;
         }
+        */
 
         if (block instanceof NoteBlock) {
             // Note block
@@ -370,10 +372,6 @@ public class ForgeWorld extends LocalWorld {
                 continue;
             }
             EntityLiving ent = (EntityLiving) obj;
-
-            if (ent instanceof EntityPlayer) {
-                continue;
-            }
 
             if (!killAnimals && ent instanceof EntityAnimal) {
                 continue;
