@@ -71,6 +71,10 @@ public class ForgeServerInterface extends ServerInterface {
 
                     public void processCommand(ICommandSender var1, String[] var2) {
                     }
+
+                    public String getCommandUsage(ICommandSender icommandsender) {
+                        return null;
+                    }
                 });
             }
         }
