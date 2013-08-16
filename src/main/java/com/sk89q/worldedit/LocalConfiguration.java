@@ -84,6 +84,8 @@ public abstract class LocalConfiguration {
     public int maxChangeLimit = -1;
     public int defaultMaxPolygonalPoints = -1;
     public int maxPolygonalPoints = 20;
+    public int defaultMaxPolyhedronPoints = -1;
+    public int maxPolyhedronPoints = 20;
     public String shellSaveType = "";
     public SnapshotRepository snapshotRepo = null;
     public int maxRadius = -1;

@@ -768,7 +768,7 @@ public class SelectionCommands {
             selector = new CylinderRegionSelector(oldSelector);
             player.print("Cylindrical selector: Left click=center, right click to extend.");
         } else if (typeName.equalsIgnoreCase("convex") || typeName.equalsIgnoreCase("hull") || typeName.equalsIgnoreCase("polyhedron")) {
-            int maxVertices = we.getMaximumPolygonalPoints(player); // TODO: separate maximum for polyhedra
+            int maxVertices = we.getMaximumPolyhedronPoints(player);
             selector = new ConvexPolyhedralRegionSelector(oldSelector, maxVertices);
             player.print("Convex polyhedral selector: Left click=First vertex, right click to add more.");
         } else {
