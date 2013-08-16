@@ -905,6 +905,18 @@ public class WorldEdit {
         }
     }
 
+    public int getMaximumPolyhedronPoints(LocalPlayer player) {
+        if (player.hasPermission("worldedit.limit.unrestricted") || config.maxPolyhedronPoints < 0) {
+            return config.defaultMaxPolyhedronPoints;
+        } else {
+            if (config.defaultMaxPolyhedronPoints < 0) {
+                return config.maxPolyhedronPoints;
+            }
+            return Math.min(config.defaultMaxPolyhedronPoints,
+                    config.maxPolyhedronPoints);
+        }
+    }
+
     /**
      * Checks to see if the specified radius is within bounds.
      *
