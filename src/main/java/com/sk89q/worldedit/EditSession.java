@@ -621,7 +621,8 @@ public class EditSession {
         for (int y = maxY; y >= minY; --y) {
             Vector pt = new Vector(x, y, z);
             int id = getBlockType(pt);
-            if (naturalOnly ? BlockType.isNaturalTerrainBlock(id) : !BlockType.canPassThrough(id)) {
+            int data = getBlockData(pt);
+            if (naturalOnly ? BlockType.isNaturalTerrainBlock(id, data) : !BlockType.canPassThrough(id, data)) {
                 return y;
             }
         }
@@ -2481,6 +2482,7 @@ public class EditSession {
                 loop: for (int y = world.getMaxY(); y >= 1; --y) {
                     final Vector pt = new Vector(x, y, z);
                     final int id = getBlockType(pt);
+                    final int data = getBlockData(pt);
 
                     switch (id) {
                     case BlockID.DIRT:
@@ -2498,7 +2500,7 @@ public class EditSession {
 
                     default:
                         // ...and all non-passable blocks
-                        if (!BlockType.canPassThrough(id)) {
+                        if (!BlockType.canPassThrough(id, data)) {
                             break loop;
                         }
                     }
@@ -2968,7 +2970,7 @@ public class EditSession {
 
         while (!queue.isEmpty()) {
             final BlockVector current = queue.removeFirst();
-            if (!BlockType.canPassThrough(getBlockType(current))) {
+            if (!BlockType.canPassThrough(getBlockType(current), getBlockData(current))) {
                 continue;
             }
 
