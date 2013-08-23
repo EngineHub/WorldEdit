@@ -28,11 +28,11 @@ import net.canarymod.api.inventory.Item;
 import net.canarymod.api.world.World;
 import net.canarymod.api.world.blocks.Anvil;
 import net.canarymod.api.world.blocks.BlockType;
-import net.canarymod.api.world.blocks.TileEntity;
 import net.canarymod.api.world.blocks.Furnace;
 import net.canarymod.api.world.blocks.MobSpawner;
 import net.canarymod.api.world.blocks.NoteBlock;
 import net.canarymod.api.world.blocks.Sign;
+import net.canarymod.api.world.blocks.TileEntity;
 import net.canarymod.api.world.position.Vector3D;
 
 import com.sk89q.worldedit.BiomeType;
@@ -40,6 +40,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EntityType;
 import com.sk89q.worldedit.LocalEntity;
 import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.MobType;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -48,7 +49,6 @@ import com.sk89q.worldedit.blocks.ContainerBlock;
 import com.sk89q.worldedit.blocks.FurnaceBlock;
 import com.sk89q.worldedit.blocks.MobSpawnerBlock;
 import com.sk89q.worldedit.blocks.SignBlock;
-import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
 import com.sk89q.worldedit.regions.Region;
 
 public class CanaryWorld extends LocalWorld {
@@ -234,7 +234,13 @@ public class CanaryWorld extends LocalWorld {
                 return false;
             MobSpawner canary = (MobSpawner) canaryBlock;
             MobSpawnerBlock we = (MobSpawnerBlock) block;
-            we.setMobType(canary.getLogic().getSpawns()[0]);
+            //So this can happen. Apparently with player-placed spawner blocks
+            if(canary.getLogic().getSpawns().length > 0) {
+                we.setMobType(canary.getLogic().getSpawns()[0]);
+            }
+            else {
+                we.setMobType(MobType.ZOMBIE.getName());
+            }
             we.setDelay((short) canary.getLogic().getMaxDelay());
             return true;
 
@@ -407,7 +413,7 @@ public class CanaryWorld extends LocalWorld {
                 entities.add(new CanaryEntity(e));
             }
         }
-        return entities.toArray(new BukkitEntity[entities.size()]);
+        return entities.toArray(new CanaryEntity[entities.size()]);
     }
 
     @Override
@@ -439,7 +445,7 @@ public class CanaryWorld extends LocalWorld {
 
     /**
      * Helper to set text on signs at the given {@link Vector} in this world
-     * 
+     *
      * @param pt
      * @param text
      */
@@ -457,18 +463,22 @@ public class CanaryWorld extends LocalWorld {
     /**
      * Helper to set the inventory of a {@link TileEntity} at the given
      * {@link Vector} in this world
-     * 
+     *
      * @param pt
      * @param items
      * @return
      */
     private boolean setContainerBlockContents(Vector pt, BaseItemStack[] items) {
         TileEntity complex = world.getOnlyTileEntityAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        if (complex == null || !(complex instanceof Inventory))
+        if (complex == null || !(complex instanceof Inventory)) {
             return false;
-        Inventory container = (Inventory) complex;
+        }
 
+        Inventory container = (Inventory) complex;
         for (int i = 0; i < container.getContents().length; i++) {
+            if(i >= items.length) {
+                break;
+            }
             BaseItemStack item = items[i];
             if (item != null)
                 container.setSlot(item.getType(), item.getAmount(), item.getData(), i);
@@ -479,7 +489,7 @@ public class CanaryWorld extends LocalWorld {
 
     /**
      * Helper to get text on signs at the given {@link Vector} in this world
-     * 
+     *
      * @param pt
      * @return
      */
@@ -498,7 +508,7 @@ public class CanaryWorld extends LocalWorld {
     /**
      * Helper to get the inventory of a {@link TileEntity} at the given
      * {@link Vector} in this world
-     * 
+     *
      * @param pt
      * @return
      */
@@ -526,7 +536,7 @@ public class CanaryWorld extends LocalWorld {
     /**
      * get the CanaryMod {@link World} that is wrapped in this
      * {@link CanaryWorld}
-     * 
+     *
      * @return the wrapped {@link World}
      */
     public World getHandle() {
