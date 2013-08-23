@@ -134,8 +134,8 @@
       <type>jar</type>
       <optional>true</optional>
     </dependency>
-    <!-- CanaryMod implementation -->
-    <dependency>
+    
+    <dependency> <!-- CanaryMod implementation -->
       <groupId>net.canarymod</groupId>
       <artifactId>CanaryLib</artifactId>
       <version>0.10-SNAPSHOT</version>
