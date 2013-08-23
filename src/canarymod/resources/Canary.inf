@@ -1,0 +1,4 @@
+main-class=com.sk89q.worldedit.canarymod.WorldEdit
+author=sk89q - CanaryMod implementation: damagefilter
+version=5.5.8-SNAPSHOT
+name=WorldEdit
