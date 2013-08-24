@@ -29,7 +29,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.schematic.SchematicFormat;
 
 /**
@@ -129,29 +131,33 @@ public class CuboidClipboard {
         if (angle % 90 != 0) { // Can only rotate 90 degrees at the moment
             return;
         }
-        boolean reverse = angle < 0;
-        int numRotations = Math.abs((int) Math.floor(angle / 90.0));
+        final boolean reverse = angle < 0;
+        final int numRotations = Math.abs((int) Math.floor(angle / 90.0));
 
-        int width = getWidth();
-        int length = getLength();
-        int height = getHeight();
-        Vector sizeRotated = size.transform2D(angle, 0, 0, 0, 0);
-        int shiftX = sizeRotated.getX() < 0 ? -sizeRotated.getBlockX() - 1 : 0;
-        int shiftZ = sizeRotated.getZ() < 0 ? -sizeRotated.getBlockZ() - 1 : 0;
+        final int width = getWidth();
+        final int length = getLength();
+        final int height = getHeight();
+        final Vector sizeRotated = size.transform2D(angle, 0, 0, 0, 0);
+        final int shiftX = sizeRotated.getX() < 0 ? -sizeRotated.getBlockX() - 1 : 0;
+        final int shiftZ = sizeRotated.getZ() < 0 ? -sizeRotated.getBlockZ() - 1 : 0;
 
-        BaseBlock newData[][][] = new BaseBlock
+        final BaseBlock newData[][][] = new BaseBlock
                 [Math.abs(sizeRotated.getBlockX())]
                 [Math.abs(sizeRotated.getBlockY())]
                 [Math.abs(sizeRotated.getBlockZ())];
 
         for (int x = 0; x < width; ++x) {
             for (int z = 0; z < length; ++z) {
-                Vector v = (new Vector(x, 0, z)).transform2D(angle, 0, 0, 0, 0);
-                int newX = v.getBlockX();
-                int newZ = v.getBlockZ();
+                final Vector2D v = new Vector2D(x, z).transform2D(angle, 0, 0, shiftX, shiftZ);
+                final int newX = v.getBlockX();
+                final int newZ = v.getBlockZ();
                 for (int y = 0; y < height; ++y) {
-                    BaseBlock block = data[x][y][z];
-                    newData[shiftX + newX][y][shiftZ + newZ] = block;
+                    final BaseBlock block = data[x][y][z];
+                    newData[newX][y][newZ] = block;
+
+                    if (block == null) {
+                        continue;
+                    }
 
                     if (reverse) {
                         for (int i = 0; i < numRotations; ++i) {
@@ -200,10 +206,23 @@ public class CuboidClipboard {
             for (int xs = 0; xs < wid; ++xs) {
                 for (int z = 0; z < length; ++z) {
                     for (int y = 0; y < height; ++y) {
-                        BaseBlock old = data[xs][y][z].flip(dir);
-                        if (xs == width - xs - 1) continue;
-                        data[xs][y][z] = data[width - xs - 1][y][z].flip(dir);
-                        data[width - xs - 1][y][z] = old;
+                        // Skip the center plane
+                        if (xs == width - xs - 1) {
+                            continue;
+                        }
+
+                        final BaseBlock block1 = data[xs][y][z];
+                        if (block1 != null) {
+                            block1.flip(dir);
+                        }
+
+                        final BaseBlock block2 = data[width - xs - 1][y][z];
+                        if (block2 != null) {
+                            block2.flip(dir);
+                        }
+
+                        data[xs][y][z] = block2;
+                        data[width - xs - 1][y][z] = block1;
                     }
                 }
             }
@@ -219,10 +238,23 @@ public class CuboidClipboard {
             for (int zs = 0; zs < len; ++zs) {
                 for (int x = 0; x < width; ++x) {
                     for (int y = 0; y < height; ++y) {
-                        BaseBlock old = data[x][y][zs].flip(dir);
-                        if (zs == length - zs - 1) continue;
-                        data[x][y][zs] = data[x][y][length - zs - 1].flip(dir);
-                        data[x][y][length - zs - 1] = old;
+                        // Skip the center plane
+                        if (zs == length - zs - 1) {
+                            continue;
+                        }
+
+                        final BaseBlock block1 = data[x][y][zs];
+                        if (block1 != null) {
+                            block1.flip(dir);
+                        }
+
+                        final BaseBlock block2 = data[x][y][length - zs - 1];
+                        if (block2 != null) {
+                            block2.flip(dir);
+                        }
+
+                        data[x][y][zs] = block2;
+                        data[x][y][length - zs - 1] = block1;
                     }
                 }
             }
@@ -238,10 +270,23 @@ public class CuboidClipboard {
             for (int ys = 0; ys < hei; ++ys) {
                 for (int x = 0; x < width; ++x) {
                     for (int z = 0; z < length; ++z) {
-                        BaseBlock old = data[x][ys][z].flip(dir);
-                        if (ys == height - ys - 1) continue;
-                        data[x][ys][z] = data[x][height - ys - 1][z].flip(dir);
-                        data[x][height - ys - 1][z] = old;
+                        // Skip the center plane
+                        if (ys == height - ys - 1) {
+                            continue;
+                        }
+
+                        final BaseBlock block1 = data[x][ys][z];
+                        if (block1 != null) {
+                            block1.flip(dir);
+                        }
+
+                        final BaseBlock block2 = data[x][height - ys - 1][z];
+                        if (block2 != null) {
+                            block2.flip(dir);
+                        }
+
+                        data[x][ys][z] = block2;
+                        data[x][height - ys - 1][z] = block1;
                     }
                 }
             }
@@ -255,9 +300,9 @@ public class CuboidClipboard {
     }
 
     /**
-     * Copy to the clipboard.
+     * Copies blocks to the clipboard.
      *
-     * @param editSession
+     * @param editSession The EditSession from which to take the blocks
      */
     public void copy(EditSession editSession) {
         for (int x = 0; x < size.getBlockX(); ++x) {
@@ -265,6 +310,27 @@ public class CuboidClipboard {
                 for (int z = 0; z < size.getBlockZ(); ++z) {
                     data[x][y][z] =
                             editSession.getBlock(new Vector(x, y, z).add(getOrigin()));
+                }
+            }
+        }
+    }
+
+    /**
+     * Copies blocks to the clipboard.
+     *
+     * @param editSession The EditSession from which to take the blocks
+     * @param region A region that further constrains which blocks to take.
+     */
+    public void copy(EditSession editSession, Region region) {
+        for (int x = 0; x < size.getBlockX(); ++x) {
+            for (int y = 0; y < size.getBlockY(); ++y) {
+                for (int z = 0; z < size.getBlockZ(); ++z) {
+                    final Vector pt = new Vector(x, y, z).add(getOrigin());
+                    if (region.contains(pt)) {
+                        data[x][y][z] = editSession.getBlock(pt);
+                    } else {
+                        data[x][y][z] = null;
+                    }
                 }
             }
         }
@@ -303,11 +369,16 @@ public class CuboidClipboard {
         for (int x = 0; x < size.getBlockX(); ++x) {
             for (int y = 0; y < size.getBlockY(); ++y) {
                 for (int z = 0; z < size.getBlockZ(); ++z) {
-                    if (noAir && data[x][y][z].isAir()) {
+                    final BaseBlock block = data[x][y][z];
+                    if (block == null) {
                         continue;
                     }
 
-                    editSession.setBlock(new Vector(x, y, z).add(pos), data[x][y][z]);
+                    if (noAir && block.isAir()) {
+                        continue;
+                    }
+
+                    editSession.setBlock(new Vector(x, y, z).add(pos), block);
                 }
             }
         }
@@ -329,24 +400,38 @@ public class CuboidClipboard {
     }
 
     /**
-     * Get one point in the copy. The point is relative to the origin
-     * of the copy (0, 0, 0) and not to the actual copy origin.
+     * Get one point in the copy. 
      *
-     * @param pos
-     * @return null
-     * @throws ArrayIndexOutOfBoundsException
+     * @param The point, relative to the origin of the copy (0, 0, 0) and not to the actual copy origin.
+     * @return air, if this block was outside the (non-cuboid) selection while copying
+     * @throws ArrayIndexOutOfBoundsException if the position is outside the bounds of the CuboidClipboard
+     * @deprecated Use {@link #getBlock(Vector)} instead
      */
     public BaseBlock getPoint(Vector pos) throws ArrayIndexOutOfBoundsException {
+        final BaseBlock block = getBlock(pos);
+        if (block == null) {
+            return new BaseBlock(BlockID.AIR);
+        }
+
+        return block;
+    }
+
+    /**
+     * Get one point in the copy. 
+     *
+     * @param The point, relative to the origin of the copy (0, 0, 0) and not to the actual copy origin.
+     * @return null, if this block was outside the (non-cuboid) selection while copying
+     * @throws ArrayIndexOutOfBoundsException if the position is outside the bounds of the CuboidClipboard
+     */
+    public BaseBlock getBlock(Vector pos) throws ArrayIndexOutOfBoundsException {
         return data[pos.getBlockX()][pos.getBlockY()][pos.getBlockZ()];
     }
 
     /**
-     * Get one point in the copy. The point is relative to the origin
-     * of the copy (0, 0, 0) and not to the actual copy origin.
+     * Set one point in the copy. Pass null to remove the block.
      *
-     * @param pos
-     * @return null
-     * @throws ArrayIndexOutOfBoundsException
+     * @param The point, relative to the origin of the copy (0, 0, 0) and not to the actual copy origin. 
+     * @throws ArrayIndexOutOfBoundsException if the position is outside the bounds of the CuboidClipboard
      */
     public void setBlock(Vector pt, BaseBlock block) {
         data[pt.getBlockX()][pt.getBlockY()][pt.getBlockZ()] = block;
@@ -440,8 +525,12 @@ public class CuboidClipboard {
         for (int x = 0; x < maxX; ++x) {
             for (int y = 0; y < maxY; ++y) {
                 for (int z = 0; z < maxZ; ++z) {
+                    final BaseBlock block = data[x][y][z];
+                    if (block == null) {
+                        continue;
+                    }
 
-                    int id = data[x][y][z].getId();
+                    int id = block.getId();
 
                     if (map.containsKey(id)) {
                         map.get(id).increment();
@@ -477,16 +566,19 @@ public class CuboidClipboard {
         for (int x = 0; x < maxX; ++x) {
             for (int y = 0; y < maxY; ++y) {
                 for (int z = 0; z < maxZ; ++z) {
+                    final BaseBlock block = data[x][y][z];
+                    if (block == null) {
+                        continue;
+                    }
 
-                    int id = data[x][y][z].getId();
-                    int meta = data[x][y][z].getData();
-                    BaseBlock blk = new BaseBlock(id, meta);
+                    // Strip the block from metadata that is not part of our key
+                    final BaseBlock bareBlock = new BaseBlock(block.getId(), block.getData());
 
-                    if (map.containsKey(blk)) {
-                        map.get(blk).increment();
+                    if (map.containsKey(bareBlock)) {
+                        map.get(bareBlock).increment();
                     } else {
-                        Countable<BaseBlock> c = new Countable<BaseBlock>(blk, 1);
-                        map.put(blk, c);
+                        Countable<BaseBlock> c = new Countable<BaseBlock>(bareBlock, 1);
+                        map.put(bareBlock, c);
                         distribution.add(c);
                     }
                 }
