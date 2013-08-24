@@ -111,7 +111,7 @@ public class GeneralCommands {
         max = -1
     )
     @CommandPermissions("worldedit.global-mask")
-    public void mask(CommandContext args, LocalSession session, LocalPlayer player,
+    public void gmask(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
         if (args.argsLength() == 0) {
             session.setMask(null);
