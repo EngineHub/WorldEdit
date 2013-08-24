@@ -41,7 +41,7 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
     public SphereRegionSelector(RegionSelector oldSelector) {
         super(oldSelector);
         final Vector radius = region.getRadius();
-        double radiusScalar = Math.max(Math.max(radius.getX(), radius.getY()), radius.getZ());
+        final double radiusScalar = Math.max(Math.max(radius.getX(), radius.getY()), radius.getZ());
         region.setRadius(new Vector(radiusScalar, radiusScalar, radiusScalar));
     }
 
@@ -51,12 +51,9 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
 
     @Override
     public boolean selectSecondary(Vector pos) {
-        final Vector diff = pos.subtract(region.getCenter());
-        final Vector minRadius = Vector.getMaximum(diff, diff.multiply(-1.0));
+        final double radiusScalar = Math.ceil(pos.distance(region.getCenter()));
+        region.setRadius(new Vector(radiusScalar, radiusScalar, radiusScalar));
 
-        double minRadiusScalar = Math.max(Math.max(minRadius.getX(), minRadius.getY()), minRadius.getZ());
-
-        region.extendRadius(new Vector(minRadiusScalar, minRadiusScalar, minRadiusScalar));
         return true;
     }
 

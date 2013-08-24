@@ -763,7 +763,7 @@ public class SelectionCommands {
             player.print("Ellipsoid selector: left click=center, right click to extend");
         } else if (typeName.equalsIgnoreCase("sphere")) {
             selector = new SphereRegionSelector(oldSelector);
-            player.print("Sphere selector: left click=center, right click to extend");
+            player.print("Sphere selector: left click=center, right click to set radius");
         } else if (typeName.equalsIgnoreCase("cyl")) {
             selector = new CylinderRegionSelector(oldSelector);
             player.print("Cylindrical selector: Left click=center, right click to extend.");
