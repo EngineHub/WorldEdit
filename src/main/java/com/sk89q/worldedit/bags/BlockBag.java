@@ -32,7 +32,6 @@ public abstract class BlockBag {
      * Stores a block as if it was mined.
      * 
      * @param id
-     * @param data 
      * @throws BlockBagException
      * @deprecated Use {@link BlockBag#storeDroppedBlock(int, int)} instead
      */
