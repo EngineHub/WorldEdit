@@ -32,8 +32,8 @@ import java.util.List;
 
 public class DinnerPermsResolver implements PermissionsResolver {
 
-    private static final String GROUP_PREFIX = "group.";
-    private final Server server;
+    public static final String GROUP_PREFIX = "group.";
+    protected final Server server;
 
     public DinnerPermsResolver(Server server) {
         this.server = server;
@@ -115,7 +115,7 @@ public class DinnerPermsResolver implements PermissionsResolver {
         }
         return groupNames.toArray(new String[groupNames.size()]);
     }
-    
+
     public Permissible getPermissible(OfflinePlayer offline) {
         if (offline == null) return null;
         Permissible perm = null;
@@ -130,7 +130,8 @@ public class DinnerPermsResolver implements PermissionsResolver {
 
     /**
      * Checks the permission from dinnerperms
-     * @param perms Permissible to check for
+     *
+     * @param perms      Permissible to check for
      * @param permission The permission to check
      * @return -1 if the permission is explicitly denied, 1 if the permission is allowed,
      *         0 if the permission is denied by a default.
