@@ -393,6 +393,15 @@ public class WorldEdit {
 
         int data = -1;
 
+        if (testID.equalsIgnoreCase("hand")) {
+        	int handBlockId = player.getItemInHand();
+        	if (player.getWorld().isValidBlockType(handBlockId)) {
+        		blockId = handBlockId;
+        	} else {
+        		throw new UnknownItemException(ItemType.fromID(handBlockId).getName());
+        	}
+        }
+
         // Attempt to parse the item ID or otherwise resolve an item/block
         // name to its numeric ID
         try {
