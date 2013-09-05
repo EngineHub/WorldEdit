@@ -966,7 +966,7 @@ public class BukkitWorld extends LocalWorld {
                 continue;
             }
 
-            if (!killNPCs && ent instanceof Villager) {
+            if (!killNPCs && (ent instanceof Villager || ent.getType().toString().startsWith("CustomNpcs"))) {
                 continue;
             }
 
