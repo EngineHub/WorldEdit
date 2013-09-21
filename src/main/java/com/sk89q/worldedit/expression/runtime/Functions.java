@@ -34,6 +34,7 @@ import com.sk89q.worldedit.expression.runtime.Function.Dynamic;
  *
  * @author TomyLobo
  */
+@SuppressWarnings("UnusedDeclaration")
 public final class Functions {
     private static class Overload {
         private final Method method;
@@ -92,7 +93,7 @@ public final class Functions {
         }
     }
 
-    public static final Function getFunction(int position, String name, RValue... args) throws NoSuchMethodException {
+    public static Function getFunction(int position, String name, RValue... args) throws NoSuchMethodException {
         final Method getter = getMethod(name, false, args);
         try {
             Method setter = getMethod(name, true, args);
@@ -120,7 +121,7 @@ public final class Functions {
         for (Method method : Functions.class.getMethods()) {
             try {
                 addFunction(method);
-            } catch(IllegalArgumentException e) {}
+            } catch (IllegalArgumentException ignored) { }
         }
     }
 
@@ -139,114 +140,114 @@ public final class Functions {
     }
 
 
-    public static final double sin(RValue x) throws EvaluationException {
+    public static double sin(RValue x) throws EvaluationException {
         return Math.sin(x.getValue());
     }
 
-    public static final double cos(RValue x) throws EvaluationException {
+    public static double cos(RValue x) throws EvaluationException {
         return Math.cos(x.getValue());
     }
 
-    public static final double tan(RValue x) throws EvaluationException {
+    public static double tan(RValue x) throws EvaluationException {
         return Math.tan(x.getValue());
     }
 
 
-    public static final double asin(RValue x) throws EvaluationException {
+    public static double asin(RValue x) throws EvaluationException {
         return Math.asin(x.getValue());
     }
 
-    public static final double acos(RValue x) throws EvaluationException {
+    public static double acos(RValue x) throws EvaluationException {
         return Math.acos(x.getValue());
     }
 
-    public static final double atan(RValue x) throws EvaluationException {
+    public static double atan(RValue x) throws EvaluationException {
         return Math.atan(x.getValue());
     }
 
-    public static final double atan2(RValue y, RValue x) throws EvaluationException {
+    public static double atan2(RValue y, RValue x) throws EvaluationException {
         return Math.atan2(y.getValue(), x.getValue());
     }
 
 
-    public static final double sinh(RValue x) throws EvaluationException {
+    public static double sinh(RValue x) throws EvaluationException {
         return Math.sinh(x.getValue());
     }
 
-    public static final double cosh(RValue x) throws EvaluationException {
+    public static double cosh(RValue x) throws EvaluationException {
         return Math.cosh(x.getValue());
     }
 
-    public static final double tanh(RValue x) throws EvaluationException {
+    public static double tanh(RValue x) throws EvaluationException {
         return Math.tanh(x.getValue());
     }
 
 
-    public static final double sqrt(RValue x) throws EvaluationException {
+    public static double sqrt(RValue x) throws EvaluationException {
         return Math.sqrt(x.getValue());
     }
 
-    public static final double cbrt(RValue x) throws EvaluationException {
+    public static double cbrt(RValue x) throws EvaluationException {
         return Math.cbrt(x.getValue());
     }
 
 
-    public static final double abs(RValue x) throws EvaluationException {
+    public static double abs(RValue x) throws EvaluationException {
         return Math.abs(x.getValue());
     }
 
-    public static final double min(RValue a, RValue b) throws EvaluationException {
+    public static double min(RValue a, RValue b) throws EvaluationException {
         return Math.min(a.getValue(), b.getValue());
     }
 
-    public static final double min(RValue a, RValue b, RValue c) throws EvaluationException {
+    public static double min(RValue a, RValue b, RValue c) throws EvaluationException {
         return Math.min(a.getValue(), Math.min(b.getValue(), c.getValue()));
     }
 
-    public static final double max(RValue a, RValue b) throws EvaluationException {
+    public static double max(RValue a, RValue b) throws EvaluationException {
         return Math.max(a.getValue(), b.getValue());
     }
 
-    public static final double max(RValue a, RValue b, RValue c) throws EvaluationException {
+    public static double max(RValue a, RValue b, RValue c) throws EvaluationException {
         return Math.max(a.getValue(), Math.max(b.getValue(), c.getValue()));
     }
 
 
-    public static final double ceil(RValue x) throws EvaluationException {
+    public static double ceil(RValue x) throws EvaluationException {
         return Math.ceil(x.getValue());
     }
 
-    public static final double floor(RValue x) throws EvaluationException {
+    public static double floor(RValue x) throws EvaluationException {
         return Math.floor(x.getValue());
     }
 
-    public static final double rint(RValue x) throws EvaluationException {
+    public static double rint(RValue x) throws EvaluationException {
         return Math.rint(x.getValue());
     }
 
-    public static final double round(RValue x) throws EvaluationException {
+    public static double round(RValue x) throws EvaluationException {
         return Math.round(x.getValue());
     }
 
 
-    public static final double exp(RValue x) throws EvaluationException {
+    public static double exp(RValue x) throws EvaluationException {
         return Math.exp(x.getValue());
     }
 
-    public static final double ln(RValue x) throws EvaluationException {
+    public static double ln(RValue x) throws EvaluationException {
         return Math.log(x.getValue());
     }
 
-    public static final double log(RValue x) throws EvaluationException {
+    public static double log(RValue x) throws EvaluationException {
         return Math.log(x.getValue());
     }
 
-    public static final double log10(RValue x) throws EvaluationException {
+    public static double log10(RValue x) throws EvaluationException {
         return Math.log10(x.getValue());
     }
 
 
-    public static final double rotate(LValue x, LValue y, RValue angle) throws EvaluationException {
+    public static double rotate(LValue x, LValue y, RValue angle) throws EvaluationException {
         final double f = angle.getValue();
 
         final double cosF = Math.cos(f);
@@ -261,7 +262,7 @@ public final class Functions {
         return 0.0;
     }
 
-    public static final double swap(LValue x, LValue y) throws EvaluationException {
+    public static double swap(LValue x, LValue y) throws EvaluationException {
         final double tmp = x.getValue();
 
         x.assign(y.getValue());
@@ -290,27 +291,27 @@ public final class Functions {
     }
 
     @Dynamic
-    public static final double gmegabuf(RValue index) throws EvaluationException {
+    public static double gmegabuf(RValue index) throws EvaluationException {
         return getBufferItem(gmegabuf, (int) index.getValue());
     }
 
     @Dynamic
-    public static final double gmegabuf(RValue index, double value) throws EvaluationException {
+    public static double gmegabuf(RValue index, double value) throws EvaluationException {
         return setBufferItem(gmegabuf, (int) index.getValue(), value);
     }
 
     @Dynamic
-    public static final double megabuf(RValue index) throws EvaluationException {
+    public static double megabuf(RValue index) throws EvaluationException {
         return getBufferItem(Expression.getInstance().getMegabuf(), (int) index.getValue());
     }
 
     @Dynamic
-    public static final double megabuf(RValue index, double value) throws EvaluationException {
+    public static double megabuf(RValue index, double value) throws EvaluationException {
         return setBufferItem(Expression.getInstance().getMegabuf(), (int) index.getValue(), value);
     }
 
     @Dynamic
-    public static final double closest(RValue x, RValue y, RValue z, RValue index, RValue count, RValue stride) throws EvaluationException {
+    public static double closest(RValue x, RValue y, RValue z, RValue index, RValue count, RValue stride) throws EvaluationException {
         return findClosest(
             Expression.getInstance().getMegabuf(),
             x.getValue(),
@@ -323,7 +324,7 @@ public final class Functions {
     }
 
     @Dynamic
-    public static final double gclosest(RValue x, RValue y, RValue z, RValue index, RValue count, RValue stride) throws EvaluationException {
+    public static double gclosest(RValue x, RValue y, RValue z, RValue index, RValue count, RValue stride) throws EvaluationException {
         return findClosest(
             gmegabuf,
             x.getValue(),
@@ -361,12 +362,12 @@ public final class Functions {
     private static final Random random = new Random();
 
     @Dynamic
-    public static final double random() {
+    public static double random() {
         return random.nextDouble();
     }
 
     @Dynamic
-    public static final double randint(RValue max) throws EvaluationException {
+    public static double randint(RValue max) throws EvaluationException {
         return random.nextInt((int) Math.floor(max.getValue()));
     }
 }
