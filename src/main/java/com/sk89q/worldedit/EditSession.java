@@ -600,7 +600,6 @@ public class EditSession {
      * @param z
      * @param minY minimal height
      * @param maxY maximal height
-     * @param naturalOnly look at natural blocks or all blocks
      * @return height of highest block found or 'minY'
      */
     public int getHighestTerrainBlock(int x, int z, int minY, int maxY) {
@@ -1577,7 +1576,7 @@ public class EditSession {
      * Make walls of the region (as if it was a cuboid if it's not).
      *
      * @param region
-     * @param block
+     * @param pattern
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
@@ -2878,7 +2877,7 @@ public class EditSession {
         return affected;
     }
 
-    Vector[] recurseDirections = {
+    private static final Vector[] recurseDirections = {
         PlayerDirection.NORTH.vector(),
         PlayerDirection.EAST.vector(),
         PlayerDirection.SOUTH.vector(),
