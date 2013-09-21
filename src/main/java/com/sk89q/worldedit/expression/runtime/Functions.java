@@ -78,6 +78,10 @@ public final class Functions {
                 return false;
             }
 
+            if (this.method.getParameterTypes().length != args.length) { // TODO: optimize
+                return false;
+            }
+
             int accum = 0;
             for (RValue argument : args) {
                 accum <<= 2;
