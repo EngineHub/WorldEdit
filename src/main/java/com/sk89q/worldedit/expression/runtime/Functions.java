@@ -277,6 +277,7 @@ public final class Functions {
 
 
     private static final Map<Integer, double[]> gmegabuf = new HashMap<Integer, double[]>();
+    private final Map<Integer, double[]> megabuf = new HashMap<Integer, double[]>();
 
     private static double[] getSubBuffer(Map<Integer, double[]> megabuf, Integer key) {
         double[] ret = megabuf.get(key);
@@ -306,18 +307,18 @@ public final class Functions {
 
     @Dynamic
     public static double megabuf(RValue index) throws EvaluationException {
-        return getBufferItem(Expression.getInstance().getMegabuf(), (int) index.getValue());
+        return getBufferItem(Expression.getInstance().getFunctions().megabuf, (int) index.getValue());
     }
 
     @Dynamic
     public static double megabuf(RValue index, double value) throws EvaluationException {
-        return setBufferItem(Expression.getInstance().getMegabuf(), (int) index.getValue(), value);
+        return setBufferItem(Expression.getInstance().getFunctions().megabuf, (int) index.getValue(), value);
     }
 
     @Dynamic
     public static double closest(RValue x, RValue y, RValue z, RValue index, RValue count, RValue stride) throws EvaluationException {
         return findClosest(
-            Expression.getInstance().getMegabuf(),
+            Expression.getInstance().getFunctions().megabuf,
             x.getValue(),
             y.getValue(),
             z.getValue(),

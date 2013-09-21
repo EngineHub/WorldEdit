@@ -29,6 +29,7 @@ import com.sk89q.worldedit.expression.lexer.tokens.Token;
 import com.sk89q.worldedit.expression.parser.Parser;
 import com.sk89q.worldedit.expression.runtime.Constant;
 import com.sk89q.worldedit.expression.runtime.EvaluationException;
+import com.sk89q.worldedit.expression.runtime.Functions;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.expression.runtime.ReturnException;
 import com.sk89q.worldedit.expression.runtime.Variable;
@@ -63,7 +64,7 @@ public class Expression {
     private final Map<String, RValue> variables = new HashMap<String, RValue>();
     private final String[] variableNames;
     private RValue root;
-    private final Map<Integer, double[]> megabuf = new HashMap<Integer, double[]>();
+    private final Functions functions = new Functions();
 
     public static Expression compile(String expression, String... variableNames) throws ExpressionException {
         return new Expression(expression, variableNames);
@@ -153,7 +154,7 @@ public class Expression {
         }
     }
 
-    public Map<Integer, double[]> getMegabuf() {
-        return megabuf;
+    public Functions getFunctions() {
+        return functions;
     }
 }
