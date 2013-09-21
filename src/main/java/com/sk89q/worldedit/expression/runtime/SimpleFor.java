@@ -61,6 +61,7 @@ public class SimpleFor extends Node {
                 ret = body.getValue();
             } catch (BreakException e) {
                 if (e.doContinue) {
+                    //noinspection UnnecessaryContinue
                     continue;
                 } else {
                     break;
