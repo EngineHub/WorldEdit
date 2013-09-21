@@ -375,4 +375,60 @@ public final class Functions {
     public static double randint(RValue max) throws EvaluationException {
         return random.nextInt((int) Math.floor(max.getValue()));
     }
+
+
+    private static double queryInternal(LValue type, LValue data, double typeId, double dataValue) throws EvaluationException {
+        // Compare to input values and determine return value
+        final double ret = typeId == type.getValue() && typeId == type.getValue() ? 1.0 : 0.0;
+
+        type.assign(typeId);
+        data.assign(dataValue);
+
+        return ret;
+    }
+
+    @Dynamic
+    public static double query(RValue x, RValue y, RValue z, LValue type, LValue data) throws EvaluationException {
+        final double xp = x.getValue();
+        final double yp = y.getValue();
+        final double zp = z.getValue();
+
+        final ExpressionEnvironment environment = Expression.getInstance().getEnvironment();
+
+        // Read values from world
+        final double typeId = environment.getBlockType(xp, yp, zp);
+        final double dataValue = environment.getBlockData(xp, yp, zp);
+
+        return queryInternal(type, data, typeId, dataValue);
+    }
+
+    @Dynamic
+    public static double queryAbs(RValue x, RValue y, RValue z, LValue type, LValue data) throws EvaluationException {
+        final double xp = x.getValue();
+        final double yp = y.getValue();
+        final double zp = z.getValue();
+
+        final ExpressionEnvironment environment = Expression.getInstance().getEnvironment();
+
+        // Read values from world
+        final double typeId = environment.getBlockTypeAbs(xp, yp, zp);
+        final double dataValue = environment.getBlockDataAbs(xp, yp, zp);
+
+        return queryInternal(type, data, typeId, dataValue);
+    }
+
+    @Dynamic
+    public static double queryRel(RValue x, RValue y, RValue z, LValue type, LValue data) throws EvaluationException {
+        final double xp = x.getValue();
+        final double yp = y.getValue();
+        final double zp = z.getValue();
+
+        final ExpressionEnvironment environment = Expression.getInstance().getEnvironment();
+
+        // Read values from world
+        final double typeId = environment.getBlockTypeRel(xp, yp, zp);
+        final double dataValue = environment.getBlockDataRel(xp, yp, zp);
+
+        return queryInternal(type, data, typeId, dataValue);
+    }
 }
