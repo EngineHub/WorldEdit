@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
+import com.sk89q.worldedit.expression.Expression;
+import com.sk89q.worldedit.expression.parser.ParserException;
+
 /**
  * A simple-style for loop.
  *
@@ -58,6 +61,7 @@ public class SimpleFor extends Node {
                 ret = body.getValue();
             } catch (BreakException e) {
                 if (e.doContinue) {
+                    //noinspection UnnecessaryContinue
                     continue;
                 } else {
                     break;
@@ -83,5 +87,15 @@ public class SimpleFor extends Node {
         // TODO: unroll small loops into Sequences
 
         return new SimpleFor(getPosition(), (LValue) counter.optimize(), first.optimize(), last.optimize(), body.optimize());
+    }
+
+    @Override
+    public RValue bindVariables(Expression expression, boolean preferLValue) throws ParserException {
+        counter = counter.bindVariables(expression, true);
+        first = first.bindVariables(expression, false);
+        last = last.bindVariables(expression, false);
+        body = body.bindVariables(expression, false);
+
+        return this;
     }
 }

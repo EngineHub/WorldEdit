@@ -78,6 +78,10 @@ public final class Functions {
                 return false;
             }
 
+            if (this.method.getParameterTypes().length != args.length) { // TODO: optimize
+                return false;
+            }
+
             int accum = 0;
             for (RValue argument : args) {
                 accum <<= 2;
@@ -113,7 +117,7 @@ public final class Functions {
             }
         }
 
-        throw new NoSuchMethodException();
+        throw new NoSuchMethodException(); // TODO: return null (check for side-effects first)
     }
 
     private static final Map<String, List<Overload>> functions = new HashMap<String, List<Overload>>();
@@ -273,6 +277,7 @@ public final class Functions {
 
 
     private static final Map<Integer, double[]> gmegabuf = new HashMap<Integer, double[]>();
+    private final Map<Integer, double[]> megabuf = new HashMap<Integer, double[]>();
 
     private static double[] getSubBuffer(Map<Integer, double[]> megabuf, Integer key) {
         double[] ret = megabuf.get(key);
@@ -302,18 +307,18 @@ public final class Functions {
 
     @Dynamic
     public static double megabuf(RValue index) throws EvaluationException {
-        return getBufferItem(Expression.getInstance().getMegabuf(), (int) index.getValue());
+        return getBufferItem(Expression.getInstance().getFunctions().megabuf, (int) index.getValue());
     }
 
     @Dynamic
     public static double megabuf(RValue index, double value) throws EvaluationException {
-        return setBufferItem(Expression.getInstance().getMegabuf(), (int) index.getValue(), value);
+        return setBufferItem(Expression.getInstance().getFunctions().megabuf, (int) index.getValue(), value);
     }
 
     @Dynamic
     public static double closest(RValue x, RValue y, RValue z, RValue index, RValue count, RValue stride) throws EvaluationException {
         return findClosest(
-            Expression.getInstance().getMegabuf(),
+            Expression.getInstance().getFunctions().megabuf,
             x.getValue(),
             y.getValue(),
             z.getValue(),
@@ -369,5 +374,61 @@ public final class Functions {
     @Dynamic
     public static double randint(RValue max) throws EvaluationException {
         return random.nextInt((int) Math.floor(max.getValue()));
+    }
+
+
+    private static double queryInternal(LValue type, LValue data, double typeId, double dataValue) throws EvaluationException {
+        // Compare to input values and determine return value
+        final double ret = typeId == type.getValue() && typeId == type.getValue() ? 1.0 : 0.0;
+
+        type.assign(typeId);
+        data.assign(dataValue);
+
+        return ret;
+    }
+
+    @Dynamic
+    public static double query(RValue x, RValue y, RValue z, LValue type, LValue data) throws EvaluationException {
+        final double xp = x.getValue();
+        final double yp = y.getValue();
+        final double zp = z.getValue();
+
+        final ExpressionEnvironment environment = Expression.getInstance().getEnvironment();
+
+        // Read values from world
+        final double typeId = environment.getBlockType(xp, yp, zp);
+        final double dataValue = environment.getBlockData(xp, yp, zp);
+
+        return queryInternal(type, data, typeId, dataValue);
+    }
+
+    @Dynamic
+    public static double queryAbs(RValue x, RValue y, RValue z, LValue type, LValue data) throws EvaluationException {
+        final double xp = x.getValue();
+        final double yp = y.getValue();
+        final double zp = z.getValue();
+
+        final ExpressionEnvironment environment = Expression.getInstance().getEnvironment();
+
+        // Read values from world
+        final double typeId = environment.getBlockTypeAbs(xp, yp, zp);
+        final double dataValue = environment.getBlockDataAbs(xp, yp, zp);
+
+        return queryInternal(type, data, typeId, dataValue);
+    }
+
+    @Dynamic
+    public static double queryRel(RValue x, RValue y, RValue z, LValue type, LValue data) throws EvaluationException {
+        final double xp = x.getValue();
+        final double yp = y.getValue();
+        final double zp = z.getValue();
+
+        final ExpressionEnvironment environment = Expression.getInstance().getEnvironment();
+
+        // Read values from world
+        final double typeId = environment.getBlockTypeRel(xp, yp, zp);
+        final double dataValue = environment.getBlockDataRel(xp, yp, zp);
+
+        return queryInternal(type, data, typeId, dataValue);
     }
 }

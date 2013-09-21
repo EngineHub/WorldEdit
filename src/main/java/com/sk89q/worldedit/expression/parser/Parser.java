@@ -33,6 +33,7 @@ import com.sk89q.worldedit.expression.runtime.Break;
 import com.sk89q.worldedit.expression.runtime.Conditional;
 import com.sk89q.worldedit.expression.runtime.Constant;
 import com.sk89q.worldedit.expression.runtime.For;
+import com.sk89q.worldedit.expression.runtime.Function;
 import com.sk89q.worldedit.expression.runtime.Functions;
 import com.sk89q.worldedit.expression.runtime.LValue;
 import com.sk89q.worldedit.expression.runtime.RValue;
@@ -84,6 +85,9 @@ public class Parser {
             final Token token = peek();
             throw new ParserException(token.getPosition(), "Extra token at the end of the input: " + token);
         }
+
+        ret.bindVariables(expression, false);
+
         return ret;
     }
 
@@ -267,9 +271,6 @@ public class Parser {
                 default:
                     throw new ParserException(current.getPosition(), "Unexpected keyword '" + keyword + "'");
                 }
-                switch (1) {
-                default:
-                }
 
                 break;
 
@@ -331,13 +332,12 @@ public class Parser {
                 if (next.id() == '(') {
                     halfProcessed.add(parseFunctionCall(identifierToken));
                 } else {
-                    // Ugly hack to make temporary variables work while not sacrificing error reporting.
-                    final boolean isSimpleAssignment = next instanceof OperatorToken && ((OperatorToken) next).operator.equals("=");
-                    RValue variable = expression.getVariable(identifierToken.value, isSimpleAssignment);
+                    final RValue variable = expression.getVariable(identifierToken.value, false);
                     if (variable == null) {
-                        throw new ParserException(current.getPosition(), "Variable '" + identifierToken.value + "' not found");
+                        halfProcessed.add(new UnboundVariable(identifierToken.getPosition(), identifierToken.value));
+                    } else {
+                        halfProcessed.add(variable);
                     }
-                    halfProcessed.add(variable);
                 }
                 expressionStart = false;
                 break;
@@ -388,7 +388,7 @@ public class Parser {
         return tokens.get(position);
     }
 
-    private Identifiable parseFunctionCall(IdentifierToken identifierToken) throws ParserException {
+    private Function parseFunctionCall(IdentifierToken identifierToken) throws ParserException {
         consumeCharacter('(');
 
         try {

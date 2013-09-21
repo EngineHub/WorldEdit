@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
+import com.sk89q.worldedit.expression.Expression;
+import com.sk89q.worldedit.expression.parser.ParserException;
+
 /**
  * A value that can be used on the left side of an assignment.
  *
@@ -26,4 +29,8 @@ package com.sk89q.worldedit.expression.runtime;
  */
 public interface LValue extends RValue {
     public double assign(double value) throws EvaluationException;
+
+    public LValue optimize() throws EvaluationException;
+
+    public LValue bindVariables(Expression expression, boolean preferLValue) throws ParserException;
 }

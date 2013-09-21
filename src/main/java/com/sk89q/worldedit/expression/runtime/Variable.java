@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
+import com.sk89q.worldedit.expression.Expression;
+import com.sk89q.worldedit.expression.parser.ParserException;
+
 /**
  * A variable.
  *
@@ -50,5 +53,15 @@ public final class Variable extends Node implements LValue {
     @Override
     public double assign(double value) {
         return this.value = value;
+    }
+
+    @Override
+    public LValue optimize() throws EvaluationException {
+        return this;
+    }
+
+    @Override
+    public LValue bindVariables(Expression expression, boolean preferLValue) throws ParserException {
+        return this;
     }
 }

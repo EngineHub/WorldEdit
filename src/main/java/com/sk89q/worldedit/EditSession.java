@@ -2808,10 +2808,15 @@ public class EditSession {
         final RValue typeVariable = expression.getVariable("type", false);
         final RValue dataVariable = expression.getVariable("data", false);
 
+        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, unit, zero);
+        expression.setEnvironment(environment);
+
         final ArbitraryShape shape = new ArbitraryShape(region) {
             @Override
             protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
-                final Vector scaled = new Vector(x, y, z).subtract(zero).divide(unit);
+                final Vector current = new Vector(x, y, z);
+                environment.setCurrentBlock(current);
+                final Vector scaled = current.subtract(zero).divide(unit);
 
                 try {
                     if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ(), defaultMaterial.getType(), defaultMaterial.getData()) <= 0) {
@@ -2837,7 +2842,8 @@ public class EditSession {
         final RValue y = expression.getVariable("y", false);
         final RValue z = expression.getVariable("z", false);
 
-        Vector zero2 = zero.add(0.5, 0.5, 0.5);
+        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, unit, zero);
+        expression.setEnvironment(environment);
 
         final DoubleArrayList<BlockVector, BaseBlock> queue = new DoubleArrayList<BlockVector, BaseBlock>(false);
 
@@ -2848,13 +2854,11 @@ public class EditSession {
             // transform
             expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ());
 
-            final Vector sourceScaled = new Vector(x.getValue(), y.getValue(), z.getValue());
-
-            // unscale, unoffset, round-nearest
-            final BlockVector sourcePosition = sourceScaled.multiply(unit).add(zero2).toBlockPoint();
+            final BlockVector sourcePosition = environment.toWorld(scaled.getX(), scaled.getY(), scaled.getZ());
 
             // read block from world
-            BaseBlock material = new BaseBlock(world.getBlockType(sourcePosition), world.getBlockData(sourcePosition));
+            // TODO: use getBlock here once the reflection is out of the way
+            final BaseBlock material = new BaseBlock(world.getBlockType(sourcePosition), world.getBlockData(sourcePosition));
 
             // queue operation
             queue.put(position, material);
