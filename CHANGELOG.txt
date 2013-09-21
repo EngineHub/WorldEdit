@@ -1,3 +1,11 @@
+5.5.8
+- Update for Minecraft 1.6.2 and 1.6.4
+- Made generation commands respect max-radius config setting
+- Fixed use-inventory overrides not being applied in certain cases
+- Made //move work with non-cuboid regions
+- Added a convex polyhedron selector
+- Made clipboard work with non-cuboid regions
+
 5.5.7
 - Update for Minecraft 1.6.1
 - Fixed a bug with GroupManager detection.
