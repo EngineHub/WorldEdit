@@ -117,7 +117,7 @@ public final class Functions {
             }
         }
 
-        throw new NoSuchMethodException();
+        throw new NoSuchMethodException(); // TODO: return null (check for side-effects first)
     }
 
     private static final Map<String, List<Overload>> functions = new HashMap<String, List<Overload>>();

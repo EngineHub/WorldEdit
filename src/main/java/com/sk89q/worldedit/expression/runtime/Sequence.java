@@ -22,6 +22,9 @@ package com.sk89q.worldedit.expression.runtime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sk89q.worldedit.expression.Expression;
+import com.sk89q.worldedit.expression.parser.ParserException;
+
 /**
  * A sequence of operations, usually separated by semicolons in the input stream.
  *
@@ -93,5 +96,14 @@ public class Sequence extends Node {
         }
 
         return new Sequence(getPosition(), newSequence.toArray(new RValue[newSequence.size()]));
+    }
+
+    @Override
+    public RValue bindVariables(Expression expression, boolean preferLValue) throws ParserException {
+        for (int i = 0; i < sequence.length; ++i) {
+            sequence[i] = sequence[i].bindVariables(expression, false);
+        }
+
+        return this;
     }
 }

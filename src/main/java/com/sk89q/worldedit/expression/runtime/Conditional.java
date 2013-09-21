@@ -19,15 +19,18 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
+import com.sk89q.worldedit.expression.Expression;
+import com.sk89q.worldedit.expression.parser.ParserException;
+
 /**
  * An if/else statement or a ternary operator.
  *
  * @author TomyLobo
  */
 public class Conditional extends Node {
-    RValue condition;
-    RValue truePart;
-    RValue falsePart;
+    private RValue condition;
+    private RValue truePart;
+    private RValue falsePart;
 
     public Conditional(int position, RValue condition, RValue truePart, RValue falsePart) {
         super(position);
@@ -75,5 +78,16 @@ public class Conditional extends Node {
         }
 
         return new Conditional(getPosition(), newCondition, truePart.optimize(), falsePart == null ? null : falsePart.optimize());
+    }
+
+    @Override
+    public RValue bindVariables(Expression expression, boolean preferLValue) throws ParserException {
+        condition = condition.bindVariables(expression, false);
+        truePart = truePart.bindVariables(expression, false);
+        if (falsePart != null) {
+            falsePart = falsePart.bindVariables(expression, false);
+        }
+
+        return this;
     }
 }

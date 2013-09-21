@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
+import com.sk89q.worldedit.expression.Expression;
+import com.sk89q.worldedit.expression.parser.ParserException;
+
 /**
  * A Java/C-style for loop.
  *
@@ -86,5 +89,15 @@ public class For extends Node {
 
         //return new Sequence(getPosition(), init.optimize(), new While(getPosition(), condition, new Sequence(getPosition(), body, increment), false)).optimize();
         return new For(getPosition(), init.optimize(), newCondition, increment.optimize(), body.optimize());
+    }
+
+    @Override
+    public RValue bindVariables(Expression expression, boolean preferLValue) throws ParserException {
+        init = init.bindVariables(expression, false);
+        condition = condition.bindVariables(expression, false);
+        increment = increment.bindVariables(expression, false);
+        body = body.bindVariables(expression, false);
+
+        return this;
     }
 }
