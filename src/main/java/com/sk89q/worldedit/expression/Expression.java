@@ -24,11 +24,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.expression.lexer.Lexer;
 import com.sk89q.worldedit.expression.lexer.tokens.Token;
 import com.sk89q.worldedit.expression.parser.Parser;
+import com.sk89q.worldedit.expression.runtime.ExpressionEnvironment;
 import com.sk89q.worldedit.expression.runtime.Constant;
 import com.sk89q.worldedit.expression.runtime.EvaluationException;
+import com.sk89q.worldedit.expression.runtime.Functions;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.expression.runtime.ReturnException;
 import com.sk89q.worldedit.expression.runtime.Variable;
@@ -42,7 +46,7 @@ import com.sk89q.worldedit.expression.runtime.Variable;
  * Arithmetic: +, -, *, /, % (modulo), ^ (power), - (unary), --, ++ (prefix only)
  * Comparison: <=, >=, >, <, ==, !=, ~= (near)
  *
- * Supported functions: abs, acos, asin, atan, atan2, cbrt, ceil, cos, cosh, exp, floor, ln, log, log10, max, max, min, min, rint, round, sin, sinh, sqrt, tan, tanh
+ * Supported functions: abs, acos, asin, atan, atan2, cbrt, ceil, cos, cosh, exp, floor, ln, log, log10, max, max, min, min, rint, round, sin, sinh, sqrt, tan, tanh and more. (See the Functions class or the wiki)
  *
  * Constants: e, pi
  *
@@ -63,7 +67,8 @@ public class Expression {
     private final Map<String, RValue> variables = new HashMap<String, RValue>();
     private final String[] variableNames;
     private RValue root;
-    private final Map<Integer, double[]> megabuf = new HashMap<Integer, double[]>();
+    private final Functions functions = new Functions();
+    private ExpressionEnvironment environment;
 
     public static Expression compile(String expression, String... variableNames) throws ExpressionException {
         return new Expression(expression, variableNames);
@@ -153,7 +158,15 @@ public class Expression {
         }
     }
 
-    public Map<Integer, double[]> getMegabuf() {
-        return megabuf;
+    public Functions getFunctions() {
+        return functions;
+    }
+
+    public ExpressionEnvironment getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(ExpressionEnvironment environment) {
+        this.environment = environment;
     }
 }

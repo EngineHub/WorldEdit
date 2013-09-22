@@ -38,6 +38,7 @@ public interface Identifiable {
      *
      * PseudoTokens:
      * p - UnaryOperator
+     * V - UnboundVariable
      *
      * Nodes:
      * c - Constant

@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.expression.runtime;
 
+import com.sk89q.worldedit.expression.Expression;
+import com.sk89q.worldedit.expression.parser.ParserException;
+
 /**
  * A return statement.
  *
@@ -46,5 +49,12 @@ public class Return extends Node {
     @Override
     public String toString() {
         return "return " + value;
+    }
+
+    @Override
+    public RValue bindVariables(Expression expression, boolean preferLValue) throws ParserException {
+        value = value.bindVariables(expression, false);
+
+        return this;
     }
 }
