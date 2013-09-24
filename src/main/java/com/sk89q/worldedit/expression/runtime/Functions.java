@@ -377,18 +377,23 @@ public final class Functions {
     }
 
 
-    private static double queryInternal(LValue type, LValue data, double typeId, double dataValue) throws EvaluationException {
+    private static double queryInternal(RValue type, RValue data, double typeId, double dataValue) throws EvaluationException {
         // Compare to input values and determine return value
-        final double ret = typeId == type.getValue() && typeId == type.getValue() ? 1.0 : 0.0;
+        final double ret = (typeId == type.getValue() && dataValue == data.getValue()) ? 1.0 : 0.0;
 
-        type.assign(typeId);
-        data.assign(dataValue);
+        if (type instanceof LValue) {
+            ((LValue) type).assign(typeId);
+        }
+
+        if (data instanceof LValue) {
+            ((LValue) data).assign(dataValue);
+        }
 
         return ret;
     }
 
     @Dynamic
-    public static double query(RValue x, RValue y, RValue z, LValue type, LValue data) throws EvaluationException {
+    public static double query(RValue x, RValue y, RValue z, RValue type, RValue data) throws EvaluationException {
         final double xp = x.getValue();
         final double yp = y.getValue();
         final double zp = z.getValue();
@@ -403,7 +408,7 @@ public final class Functions {
     }
 
     @Dynamic
-    public static double queryAbs(RValue x, RValue y, RValue z, LValue type, LValue data) throws EvaluationException {
+    public static double queryAbs(RValue x, RValue y, RValue z, RValue type, RValue data) throws EvaluationException {
         final double xp = x.getValue();
         final double yp = y.getValue();
         final double zp = z.getValue();
@@ -418,7 +423,7 @@ public final class Functions {
     }
 
     @Dynamic
-    public static double queryRel(RValue x, RValue y, RValue z, LValue type, LValue data) throws EvaluationException {
+    public static double queryRel(RValue x, RValue y, RValue z, RValue type, RValue data) throws EvaluationException {
         final double xp = x.getValue();
         final double yp = y.getValue();
         final double zp = z.getValue();
