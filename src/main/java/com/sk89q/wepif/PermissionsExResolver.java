@@ -22,7 +22,6 @@ package com.sk89q.wepif;
 import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
@@ -67,11 +66,7 @@ public class PermissionsExResolver extends DinnerPermsResolver {
     }
 
     public boolean inGroup(OfflinePlayer player, String group) {
-        if (getPermissible(player) == null) {
-           return manager.getUser(player.getName()).inGroup(group);
-        } else {
-            return hasPermission(player, GROUP_PREFIX + group);
-        }
+        return super.inGroup(player, group) || manager.getUser(player.getName()).inGroup(group);
     }
 
     public String[] getGroups(OfflinePlayer player) {
