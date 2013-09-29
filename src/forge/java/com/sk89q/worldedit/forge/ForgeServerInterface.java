@@ -8,8 +8,10 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.entity.EntityList;
+import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.DimensionManager;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.worldedit.BiomeTypes;
@@ -19,17 +21,27 @@ import com.sk89q.worldedit.ServerInterface;
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public class ForgeServerInterface extends ServerInterface {
-    private WorldEditMod mod;
     private MinecraftServer server;
     private ForgeBiomeTypes biomes;
 
     public ForgeServerInterface() {
-        this.mod = WorldEditMod.inst;
         this.server = FMLCommonHandler.instance().getMinecraftServerInstance();
         this.biomes = new ForgeBiomeTypes();
     }
 
     public int resolveItem(String name) {
+    	if (name == null) return 0;
+        for (Item item : Item.itemsList) {
+            if (item == null) continue;
+            if (item.getUnlocalizedName() == null) continue;
+            if (item.getUnlocalizedName().startsWith("item.")) {
+                if (item.getUnlocalizedName().equalsIgnoreCase("item." + name)) return item.itemID;
+            }
+            if (item.getUnlocalizedName().startsWith("tile.")) {
+                if (item.getUnlocalizedName().equalsIgnoreCase("tile." + name)) return item.itemID;
+            }
+            if (item.getUnlocalizedName().equalsIgnoreCase(name)) return item.itemID;
+        }
         return 0;
     }
 
@@ -49,8 +61,8 @@ public class ForgeServerInterface extends ServerInterface {
     }
 
     public List<LocalWorld> getWorlds() {
-        List<WorldServer> worlds = Arrays.asList(this.server.worldServers);
-        List<LocalWorld> ret = new ArrayList(worlds.size());
+        List<WorldServer> worlds = Arrays.asList(DimensionManager.getWorlds());
+        List<LocalWorld> ret = new ArrayList<LocalWorld>(worlds.size());
         for (WorldServer world : worlds) {
             ret.add(new ForgeWorld(world));
         }
@@ -61,22 +73,26 @@ public class ForgeServerInterface extends ServerInterface {
     public void onCommandRegistration(List<Command> commands) {
         if (server == null) return;
         ServerCommandManager mcMan = (ServerCommandManager) server.getCommandManager();
-        for (Command cmd : commands) {
-            for (int i = 0; i < cmd.aliases().length; i++) {
-                final String name = cmd.aliases()[i];
-                mcMan.registerCommand(new CommandBase() {
-                    public String getCommandName() {
-                        return name;
-                    }
+        for (final Command cmd : commands) {
+            mcMan.registerCommand(new CommandBase() {
+                @Override
+                public String getCommandName() {
+                    return cmd.aliases()[0];
+                }
 
-                    public void processCommand(ICommandSender var1, String[] var2) {
-                    }
+                @Override
+                public List<String> getCommandAliases() {
+                    return Arrays.asList(cmd.aliases());
+                }
 
-                    public String getCommandUsage(ICommandSender icommandsender) {
-                        return null;
-                    }
-                });
-            }
+                @Override
+                public void processCommand(ICommandSender var1, String[] var2) {}
+
+                @Override
+                public String getCommandUsage(ICommandSender icommandsender) {
+                    return "/" + cmd.aliases()[0] + " " + cmd.usage();
+                }
+            });
         }
     }
 }

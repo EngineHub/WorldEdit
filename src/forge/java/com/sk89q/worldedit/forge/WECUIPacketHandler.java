@@ -15,13 +15,15 @@ public class WECUIPacketHandler implements IPacketHandler {
     public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
 
     public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
-        LocalSession session = WorldEditMod.inst.getSession((EntityPlayerMP) player);
+        if (player instanceof EntityPlayerMP) {
+            LocalSession session = WorldEditMod.inst.getSession((EntityPlayerMP) player);
 
-        if (session.hasCUISupport()) {
-            return;
+            if (session.hasCUISupport()) {
+                return;
+            }
+        
+            String text = new String(packet.data, UTF_8_CHARSET);
+            session.handleCUIInitializationMessage(text);
         }
-
-        String text = new String(packet.data, UTF_8_CHARSET);
-        session.handleCUIInitializationMessage(text);
     }
 }

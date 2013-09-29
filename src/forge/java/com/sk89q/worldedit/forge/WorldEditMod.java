@@ -18,23 +18,21 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.WorldEdit;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.ServerStarting;
-import cpw.mods.fml.common.Mod.ServerStopping;
+import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.network.NetworkMod;
 
-@Mod(modid = "WorldEdit", name = "WorldEdit", version = "5.5.2-forge-alpha1")
+@Mod(modid = "WorldEdit", name = "WorldEdit", version = "%VERSION%")
+@NetworkMod(channels="WECUI", packetHandler=WECUIPacketHandler.class)
 public class WorldEditMod {
 
-    @Mod.Instance("WorldEdit")
+    @Instance("WorldEdit")
     public static WorldEditMod inst;
 
     protected static Logger logger;
@@ -44,11 +42,11 @@ public class WorldEditMod {
     private ForgeConfiguration config;
     private File workingDir;
 
-    @Mod.PreInit
+    @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        logger = Logger.getLogger(((Mod) getClass().getAnnotation(Mod.class)).modid());
+        logger = Logger.getLogger(getClass().getAnnotation(Mod.class).modid());
         logger.setParent(FMLLog.getLogger());
-        String modVersion = ((Mod) WorldEditMod.class.getAnnotation(Mod.class)).version();
+        String modVersion = WorldEditMod.class.getAnnotation(Mod.class).version();
         String manifestVersion = WorldEdit.getVersion();
         if (!manifestVersion.equalsIgnoreCase(modVersion)) {
             WorldEdit.setVersion(manifestVersion + " (" + modVersion + ")");
@@ -63,23 +61,17 @@ public class WorldEditMod {
         // PermissionsResolverManager.initialize(this, this.workingDir);
     }
 
-    @Mod.Init
+    @EventHandler
     public void init(FMLInitializationEvent event) {
-        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
-            NetworkRegistry.instance().registerChannel(new WECUIPacketHandler(), "WECUI");
-        } /* else {
-            WE CUI stuff here?
-        } */
-
         MinecraftForge.EVENT_BUS.register(new WorldEditForgeListener());
     }
 
-    @Mod.PostInit
+    @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         logger.info("WorldEdit " + WorldEdit.getVersion() + " Loaded");
     }
 
-    @ServerStarting
+    @EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
         this.server = new ForgeServerInterface();
         this.controller = new WorldEdit(this.server, this.config);
@@ -121,14 +113,19 @@ public class WorldEditMod {
         File actual = new File(getWorkingDir(), name);
         if (!actual.exists()) {
             InputStream input = null;
+            JarFile file = null;
             try {
-                JarFile file = new JarFile(jar);
+                file = new JarFile(jar);
                 ZipEntry copy = file.getEntry("defaults/" + name);
                 if (copy == null)
                     throw new FileNotFoundException();
                 input = file.getInputStream(copy);
             } catch (IOException e) {
                 logger.severe("Unable to read default configuration: " + name);
+            } finally {
+                try {
+                    file.close();
+                } catch (Exception e) {}
             }
             if (input != null) {
                 FileOutputStream output = null;
