@@ -14,7 +14,7 @@ import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.UnknownBiomeTypeException;
 
 public class ForgeBiomeTypes implements BiomeTypes {
-    private static BiMap biomes = HashBiMap.create();
+    private static BiMap<BiomeType, BiomeGenBase> biomes = HashBiMap.create();
 
     public ForgeBiomeTypes() {
         all();
@@ -33,7 +33,7 @@ public class ForgeBiomeTypes implements BiomeTypes {
         if (biomes == null) {
             all();
         }
-        Iterator it = biomes.keySet().iterator();
+        Iterator<BiomeType> it = biomes.keySet().iterator();
         while (it.hasNext()) {
             BiomeType test = (BiomeType) it.next();
             if (test.getName().equalsIgnoreCase(name)) {
@@ -43,9 +43,9 @@ public class ForgeBiomeTypes implements BiomeTypes {
         throw new UnknownBiomeTypeException(name);
     }
 
-    public List all() {
+    public List<BiomeType> all() {
         if (biomes.isEmpty()) {
-            biomes = HashBiMap.create(new HashMap());
+            biomes = HashBiMap.create(new HashMap<BiomeType, BiomeGenBase>());
             for (BiomeGenBase biome : BiomeGenBase.biomeList) {
                 if ((biome == null) || (biomes.containsValue(biome))) {
                     continue;
@@ -53,7 +53,7 @@ public class ForgeBiomeTypes implements BiomeTypes {
                 biomes.put(new ForgeBiomeType(biome), biome);
             }
         }
-        List retBiomes = new ArrayList();
+        List<BiomeType> retBiomes = new ArrayList<BiomeType>();
         retBiomes.addAll(biomes.keySet());
         return retBiomes;
     }

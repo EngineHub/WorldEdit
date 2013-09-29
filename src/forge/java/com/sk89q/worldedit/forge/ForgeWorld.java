@@ -1,6 +1,10 @@
 package com.sk89q.worldedit.forge;
 
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityHanging;
@@ -20,15 +24,18 @@ import net.minecraft.entity.passive.EntityAmbientCreature;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.tileentity.TileEntityNote;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
+import net.minecraft.util.LongHashMap;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.ChunkProviderServer;
 
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.EditSession;
@@ -47,51 +54,50 @@ import com.sk89q.worldedit.foundation.Block;
 import com.sk89q.worldedit.regions.Region;
 
 public class ForgeWorld extends LocalWorld {
-    // TODO fix world leaks (see net.minecraftforge.common.getIDs()Z;)
-    private World world;
-
+    private WeakReference<World> world;
+    
     public ForgeWorld(World world) {
-        this.world = world;
+        this.world = new WeakReference<World>(world);
     }
 
     public String getName() {
-        return this.world.provider.getDimensionName();
+        return this.world.get().provider.getDimensionName();
     }
 
     public boolean setBlockType(Vector pt, int type) {
-        return this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type, 0, 3);
+        return this.world.get().setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type, 0, 3);
     }
 
     public boolean setBlockTypeFast(Vector pt, int type) {
-        return this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type);
+        return this.world.get().setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type);
     }
 
     public boolean setTypeIdAndData(Vector pt, int type, int data) {
-        return this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type, data, 3);
+        return this.world.get().setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type, data, 3);
     }
 
     public boolean setTypeIdAndDataFast(Vector pt, int type, int data) {
-        return this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type, data, 3);
+        return this.world.get().setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), type, data, 3);
     }
 
     public int getBlockType(Vector pt) {
-        return this.world.getBlockId(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        return this.world.get().getBlockId(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
     }
 
     public void setBlockData(Vector pt, int data) {
-        this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), data, 0, 3);
+        this.world.get().setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), data, 0, 3);
     }
 
     public void setBlockDataFast(Vector pt, int data) {
-        this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), data, 0, 3);
+        this.world.get().setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), data, 0, 3);
     }
 
     public int getBlockData(Vector pt) {
-        return this.world.getBlockMetadata(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        return this.world.get().getBlockMetadata(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
     }
 
     public int getBlockLightLevel(Vector pt) {
-        return this.world.getBlockLightValue(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        return this.world.get().getBlockLightValue(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
     }
 
     public boolean isValidBlockType(int id) {
@@ -99,12 +105,12 @@ public class ForgeWorld extends LocalWorld {
     }
 
     public BiomeType getBiome(Vector2D pt) {
-        return ForgeBiomeTypes.getFromBaseBiome(this.world.getBiomeGenForCoords(pt.getBlockX(), pt.getBlockZ()));
+        return ForgeBiomeTypes.getFromBaseBiome(this.world.get().getBiomeGenForCoords(pt.getBlockX(), pt.getBlockZ()));
     }
 
     public void setBiome(Vector2D pt, BiomeType biome) {
-        if (this.world.getChunkProvider().chunkExists(pt.getBlockX(), pt.getBlockZ())) {
-            Chunk chunk = this.world.getChunkFromBlockCoords(pt.getBlockX(), pt.getBlockZ());
+        if (this.world.get().getChunkProvider().chunkExists(pt.getBlockX(), pt.getBlockZ())) {
+            Chunk chunk = this.world.get().getChunkFromBlockCoords(pt.getBlockX(), pt.getBlockZ());
             if ((chunk != null) && (chunk.isChunkLoaded)) {
                 byte[] biomevals = chunk.getBiomeArray();
                 biomevals[((pt.getBlockZ() & 0xF) << 4 | pt.getBlockX() & 0xF)] = (byte) ForgeBiomeTypes.getFromBiomeType(biome).biomeID;
@@ -113,8 +119,6 @@ public class ForgeWorld extends LocalWorld {
     }
 
     public boolean regenerate(Region region, EditSession editSession) {
-        // TODO fix this
-        /*
         BaseBlock[] history = new BaseBlock[256 * (getMaxY() + 1)];
 
         for (Vector2D chunk : region.getChunks()) {
@@ -131,31 +135,60 @@ public class ForgeWorld extends LocalWorld {
             }
             try {
                 Set<Vector2D> chunks = region.getChunks();
-                IChunkProvider provider = this.world.getChunkProvider();
+                IChunkProvider provider = this.world.get().getChunkProvider();
                 if (!(provider instanceof ChunkProviderServer)) {
                     return false;
                 }
                 ChunkProviderServer chunkServer = (ChunkProviderServer) provider;
-                Field u = ChunkProviderServer.class.getDeclaredField("b"); // chunksToUnload
+                Field u = null;
+                try {
+                    u = ChunkProviderServer.class.getDeclaredField("field_73248_b"); // chunksToUnload
+                } catch(NoSuchFieldException e) {
+                    u = ChunkProviderServer.class.getDeclaredField("chunksToUnload");
+                }
                 u.setAccessible(true);
-                Set unloadQueue = (Set) u.get(chunkServer);
-                Field m = ChunkProviderServer.class.getDeclaredField("f"); // loadedChunkHashMap
+                Set<?> unloadQueue = (Set<?>) u.get(chunkServer);
+                Field m = null;
+                try {
+                    m = ChunkProviderServer.class.getDeclaredField("field_73244_f"); // loadedChunkHashMap
+                } catch(NoSuchFieldException e) {
+                    m = ChunkProviderServer.class.getDeclaredField("loadedChunkHashMap");
+                }
                 m.setAccessible(true);
                 LongHashMap loadedMap = (LongHashMap) m.get(chunkServer);
-                Field p = ChunkProviderServer.class.getDeclaredField("d"); // currentChunkProvider
+                Field lc = null;
+                try {
+                    lc = ChunkProviderServer.class.getDeclaredField("field_73245_g"); // loadedChunkHashMap
+                } catch(NoSuchFieldException e) {
+                    lc = ChunkProviderServer.class.getDeclaredField("loadedChunks");
+                }
+                lc.setAccessible(true);
+                List<Chunk> loaded = (List<Chunk>) lc.get(chunkServer);
+                Field p = null;
+                try {
+                    p = ChunkProviderServer.class.getDeclaredField("field_73246_d"); // currentChunkProvider
+                } catch(NoSuchFieldException e) {
+                    p = ChunkProviderServer.class.getDeclaredField("currentChunkProvider");
+                }
                 p.setAccessible(true);
                 IChunkProvider chunkProvider = (IChunkProvider) p.get(chunkServer);
 
                 for (Vector2D coord : chunks) {
+                    long pos = ChunkCoordIntPair.chunkXZ2Int(coord.getBlockX(), coord.getBlockZ());
                     Chunk mcChunk = null;
                     if (chunkServer.chunkExists(coord.getBlockX(), coord.getBlockZ())) {
                         mcChunk = chunkServer.loadChunk(coord.getBlockX(), coord.getBlockZ());
                         mcChunk.onChunkUnload();
                     }
-                    unloadQueue.remove(Long.valueOf((coord.getBlockX() << 32) + coord.getBlockZ() - -2147483648L));
-                    loadedMap.remove(((long) coord.getBlockX() << 32) + coord.getBlockZ() - Integer.MIN_VALUE);
-
+                    unloadQueue.remove(pos);
+                    loadedMap.remove(pos);
                     mcChunk = chunkProvider.provideChunk(coord.getBlockX(), coord.getBlockZ());
+                    loadedMap.add(pos, mcChunk);
+                    loaded.add(mcChunk);
+                    if (mcChunk != null) {
+                        mcChunk.onChunkLoad();
+                    }
+                    mcChunk.populateChunk(chunkProvider, chunkProvider, coord.getBlockX(), coord.getBlockZ());
                 }
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -178,7 +211,6 @@ public class ForgeWorld extends LocalWorld {
             }
         }
 
-        */
         return false;
     }
 
@@ -187,21 +219,21 @@ public class ForgeWorld extends LocalWorld {
             return false;
         }
 
-        boolean successful = this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), block.getId());
+        boolean successful = this.world.get().setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), block.getId());
 
         if (successful) {
             if (block instanceof TileEntityBlock) {
                 copyToWorld(pt, (BaseBlock) block);
             }
         }
-        this.world.setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), block.getId(), block.getData(), 3);
+        this.world.get().setBlock(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), block.getId(), block.getData(), 3);
         return successful;
     }
 
     public BaseBlock getBlock(Vector pt) {
         int type = getBlockType(pt);
         int data = getBlockData(pt);
-        TileEntity tile = this.world.getBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        TileEntity tile = this.world.get().getBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (tile != null) {
             TileEntityBaseBlock block = new TileEntityBaseBlock(type, data, tile);
             copyFromWorld(pt, block);
@@ -223,25 +255,23 @@ public class ForgeWorld extends LocalWorld {
             // Signs
             TileEntitySign sign = new TileEntitySign();
             sign.signText = ((SignBlock) block).getText();
-            world.setBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), sign);
+            world.get().setBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), sign);
             return true;
         }
 
-        /*
         if (block instanceof MobSpawnerBlock) {
             // Mob spawners
             TileEntityMobSpawner spawner = new TileEntityMobSpawner();
             spawner.getSpawnerLogic().setMobID(((MobSpawnerBlock) block).getMobType());
-            world.setBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), spawner);
+            world.get().setBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), spawner);
             return true;
         }
-        */
 
         if (block instanceof NoteBlock) {
             // Note block
             TileEntityNote note = new TileEntityNote();
             note.note = ((NoteBlock) block).getNote();
-            world.setBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), note);
+            world.get().setBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), note);
             return true;
         }
 
@@ -250,12 +280,12 @@ public class ForgeWorld extends LocalWorld {
             TileEntitySkull skull = new TileEntitySkull();
             skull.setSkullType(((SkullBlock) block).getSkullType(), ((SkullBlock) block).getOwner());
             skull.setSkullRotation(((SkullBlock) block).getRot());
-            world.setBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), skull);
+            world.get().setBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), skull);
             return true;
         }
 
         if (block instanceof TileEntityBaseBlock) {
-            TileEntityBaseBlock.set(this.world, pt, (TileEntityBaseBlock) block, hardcopy);
+            TileEntityBaseBlock.set(this.world.get(), pt, (TileEntityBaseBlock) block, hardcopy);
             return true;
         }
         return false;
@@ -265,12 +295,12 @@ public class ForgeWorld extends LocalWorld {
         if (!(block instanceof TileEntityBaseBlock)) {
             return false;
         }
-        ((TileEntityBaseBlock) block).setTile(this.world.getBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()));
+        ((TileEntityBaseBlock) block).setTile(this.world.get().getBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()));
         return true;
     }
 
     public boolean clearContainerBlockContents(Vector pt) {
-        TileEntity tile = this.world.getBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        TileEntity tile = this.world.get().getBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if ((tile instanceof IInventory)) {
             IInventory inv = (IInventory) tile;
             int size = inv.getSizeInventory();
@@ -286,16 +316,16 @@ public class ForgeWorld extends LocalWorld {
         if ((item == null) || (item.getType() == 0)) {
             return;
         }
-        EntityItem entity = new EntityItem(this.world, pt.getX(), pt.getY(), pt.getZ(), ForgeUtil.toForgeItemStack(item));
+        EntityItem entity = new EntityItem(this.world.get(), pt.getX(), pt.getY(), pt.getZ(), ForgeUtil.toForgeItemStack(item));
         entity.delayBeforeCanPickup = 10;
-        this.world.spawnEntityInWorld(entity);
+        this.world.get().spawnEntityInWorld(entity);
     }
 
     public int removeEntities(EntityType type, Vector origin, int radius) {
         int num = 0;
         double radiusSq = Math.pow(radius, 2.0D);
 
-        for (Iterator<Entity> it = this.world.loadedEntityList.iterator(); it.hasNext();) {
+        for (Iterator<Entity> it = this.world.get().loadedEntityList.iterator(); it.hasNext();) {
             Entity ent = it.next();
             if ((radius != -1) && (origin.distanceSq(new Vector(ent.posX, ent.posY, ent.posZ)) > radiusSq)) {
                 continue;
@@ -366,7 +396,7 @@ public class ForgeWorld extends LocalWorld {
         int num = 0;
         double radiusSq = radius * radius;
 
-        for (Iterator<Entity> it = this.world.loadedEntityList.iterator(); it.hasNext();) {
+        for (Iterator<Entity> it = this.world.get().loadedEntityList.iterator(); it.hasNext();) {
             Entity obj = it.next();
             if (!(obj instanceof EntityLiving)) {
                 continue;
@@ -404,17 +434,17 @@ public class ForgeWorld extends LocalWorld {
     }
 
     public World getWorld() {
-        return world;
+        return world.get();
     }
 
     public boolean equals(Object other) {
         if ((other instanceof ForgeWorld)) {
-            return ((ForgeWorld) other).world.equals(this.world);
+            return ((ForgeWorld) other).world.get().equals(this.world.get());
         }
         return false;
     }
 
     public int hashCode() {
-        return this.world.hashCode();
+        return this.world.get().hashCode();
     }
 }

@@ -59,7 +59,7 @@ public class TileEntityBaseBlock extends BaseBlock implements TileEntityBlock {
 
     private static TileEntity constructTEClass(World world, Vector pt, TileEntityBaseBlock block) {
         Class<? extends TileEntity> clazz = block.tile.getClass();
-        Constructor baseConstructor;
+        Constructor<? extends TileEntity> baseConstructor;
         try {
             baseConstructor = clazz.getConstructor(); // creates "blank" TE
         } catch (Throwable e) {
@@ -84,7 +84,6 @@ public class TileEntityBaseBlock extends BaseBlock implements TileEntityBlock {
     }
 
     public String getNbtId() {
-        String id = null;
         NBTTagCompound tag = new NBTTagCompound();
         try {
             this.tile.writeToNBT(tag);
