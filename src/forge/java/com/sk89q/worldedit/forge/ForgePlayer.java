@@ -39,11 +39,11 @@ public class ForgePlayer extends LocalPlayer {
     }
 
     public double getPitch() {
-        return this.player.cameraPitch;
+        return this.player.rotationPitch;
     }
 
     public double getYaw() {
-        return this.player.cameraYaw;
+        return this.player.rotationYaw;
     }
 
     public void giveItem(int type, int amt) {
@@ -62,25 +62,25 @@ public class ForgePlayer extends LocalPlayer {
 
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendChatToPlayer(ChatMessageComponent.func_111077_e(msg));
+            this.player.sendChatToPlayer(ChatMessageComponent.createFromText(part));
         }
     }
 
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendChatToPlayer(ChatMessageComponent.func_111077_e("\u00a77" + part));
+            this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a77" + part));
         }
     }
 
     public void print(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendChatToPlayer(ChatMessageComponent.func_111077_e("\u00a7d" + part));
+            this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a7d" + part));
         }
     }
 
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendChatToPlayer(ChatMessageComponent.func_111077_e("\u00a7c" + part));
+            this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a7c" + part));
         }
     }
 
