@@ -39,6 +39,8 @@ import java.util.regex.Matcher;
 
 import javax.script.ScriptException;
 
+import org.bukkit.inventory.ItemStack;
+
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissionsException;
 import com.sk89q.minecraft.util.commands.CommandUsageException;
@@ -60,6 +62,7 @@ import com.sk89q.worldedit.blocks.MobSpawnerBlock;
 import com.sk89q.worldedit.blocks.NoteBlock;
 import com.sk89q.worldedit.blocks.SignBlock;
 import com.sk89q.worldedit.blocks.SkullBlock;
+import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.commands.BiomeCommands;
 import com.sk89q.worldedit.commands.ChunkCommands;
 import com.sk89q.worldedit.commands.ClipboardCommands;
@@ -392,6 +395,21 @@ public class WorldEdit {
         int blockId = -1;
 
         int data = -1;
+
+        if (testID.equalsIgnoreCase("hand")) {
+        	int handBlockId = player.getItemInHand();
+        	if (player.getWorld().isValidBlockType(handBlockId)) {
+        		if (player instanceof BukkitPlayer) {
+	        		ItemStack itemStack = ((BukkitPlayer) player).getPlayer().getItemInHand();
+	        		blockId = itemStack.getTypeId();
+	        		data = itemStack.getData().getData();
+        		} else {
+        			blockId = handBlockId;        			
+        		}
+        	} else {
+        		throw new UnknownItemException(ItemType.fromID(handBlockId).getName());
+        	}
+        }
 
         // Attempt to parse the item ID or otherwise resolve an item/block
         // name to its numeric ID
