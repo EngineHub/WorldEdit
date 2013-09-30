@@ -49,6 +49,7 @@ public class WorldEditCommands {
         min = 0,
         max = 0
     )
+    @CommandPermissions("worldedit.version")
     @Console
     public void version(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
@@ -80,6 +81,7 @@ public class WorldEditCommands {
         min = 0,
         max = 0
     )
+    @CommandPermissions("worldedit.cui")
     public void cui(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
         session.setCUISupport(true);
@@ -93,6 +95,7 @@ public class WorldEditCommands {
         min = 1,
         max = 1
     )
+    @CommandPermissions("worldedit.tz")
     @Console
     public void tz(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {

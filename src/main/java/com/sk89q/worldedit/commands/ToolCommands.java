@@ -44,6 +44,7 @@ public class ToolCommands {
         min = 0,
         max = 0
     )
+    @CommandPermissions("worldedit.tool.none")
     public void none(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
