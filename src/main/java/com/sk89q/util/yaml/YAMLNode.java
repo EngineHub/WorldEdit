@@ -70,7 +70,7 @@ public class YAMLNode {
      */
     @SuppressWarnings("unchecked")
     public Object getProperty(String path) {
-        if (!path.contains(".")) {
+        if (!path.contains(".") || root.get(path) != null) {
             Object val = root.get(path);
             if (val == null) {
                 return null;
@@ -133,7 +133,7 @@ public class YAMLNode {
     public void setProperty(String path, Object value) {
         value = prepareSerialization(value);
 
-        if (!path.contains(".")) {
+        if (!path.contains(".") || root.get(path) != null) {
             root.put(path, value);
             return;
         }
@@ -772,7 +772,7 @@ public class YAMLNode {
      */
     @SuppressWarnings("unchecked")
     public void removeProperty(String path) {
-        if (!path.contains(".")) {
+        if (!path.contains(".") || root.get(path) != null) {
             root.remove(path);
             return;
         }
