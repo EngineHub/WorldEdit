@@ -225,6 +225,8 @@ public final class BlockData {
             else if (data == 8) return 4;
             else return 0; // sanitize extraneous data values since hay blocks are weird
 
+        case BlockID.BED:
+            return data & ~0x3 | (data + 1) & 0x3;
         }
 
         return data;
@@ -429,6 +431,8 @@ public final class BlockData {
             else if (data == 8) return 4;
             else return 0;
 
+        case BlockID.BED:
+            return data & ~0x3 | (data - 1) & 0x3;
         }
 
         return data;
@@ -707,6 +711,16 @@ public final class BlockData {
             }
             break;
 
+        case BlockID.BED:
+            switch (data & 0x3) {
+            case 0:
+            case 2:
+                return data ^ flipZ << 1;
+            case 1:
+            case 3:
+                return data ^ flipX << 1;
+            }
+            break;
         }
 
         return data;
