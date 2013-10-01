@@ -231,6 +231,14 @@ public final class BlockData {
 
         case BlockID.BED:
             return data & ~0x3 | (data + 1) & 0x3;
+
+        case BlockID.HEAD:
+            switch (data) {
+                case 2: return 5;
+                case 3: return 4;
+                case 4: return 2;
+                case 5: return 3;
+            }
         }
 
         return data;
@@ -441,6 +449,14 @@ public final class BlockData {
 
         case BlockID.BED:
             return data & ~0x3 | (data - 1) & 0x3;
+
+        case BlockID.HEAD:
+            switch (data) {
+                case 2: return 4;
+                case 3: return 5;
+                case 4: return 3;
+                case 5: return 2;
+            }
         }
 
         return data;
@@ -733,6 +749,17 @@ public final class BlockData {
             case 1:
             case 3:
                 return data ^ flipX << 1;
+            }
+            break;
+
+        case BlockID.HEAD:
+            switch (data) {
+                case 2:
+                case 3:
+                    return data ^ flipZ;
+                case 4:
+                case 5:
+                    return data ^ flipX;
             }
             break;
         }
