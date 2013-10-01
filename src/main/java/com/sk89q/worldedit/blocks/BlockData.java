@@ -682,10 +682,10 @@ public final class BlockData {
             switch (data & 0x3) {
             case 0:
             case 2:
-                return data ^ flipZ * 2;
+                return data ^ flipZ << 1;
             case 1:
             case 3:
-                return data ^ flipX * 2;
+                return data ^ flipX << 1;
             }
             break;
 
