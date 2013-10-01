@@ -106,6 +106,13 @@ public final class BlockData {
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
+            if ((data & 0x8) != 0) {
+                // door top halves contain no orientation information
+                break;
+            }
+
+            /* FALL-THROUGH */
+
         case BlockID.COCOA_PLANT:
         case BlockID.TRIPWIRE_HOOK:
             int extra = data & ~0x3;
@@ -305,6 +312,13 @@ public final class BlockData {
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
+            if ((data & 0x8) != 0) {
+                // door top halves contain no orientation information
+                break;
+            }
+
+            /* FALL-THROUGH */
+
         case BlockID.COCOA_PLANT:
         case BlockID.TRIPWIRE_HOOK:
             int extra = data & ~0x3;
@@ -532,7 +546,11 @@ public final class BlockData {
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
-            data ^= flipY << 3;
+            if ((data & 0x8) != 0) {
+                // door top halves contain no orientation information
+                break;
+            }
+
             switch (data & 0x3) {
             case 0: return data + flipX + flipZ * 3;
             case 1: return data - flipX + flipZ;
