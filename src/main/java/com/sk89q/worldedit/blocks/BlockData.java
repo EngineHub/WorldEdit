@@ -101,6 +101,10 @@ public final class BlockData {
             case 2: return 4 | thrown;
             case 3: return 2 | thrown;
             case 4: return 1 | thrown;
+            case 5: return 6 | thrown;
+            case 6: return 5 | thrown;
+            case 7: return 0 | thrown;
+            case 0: return 7 | thrown;
             }
             break;
 
@@ -309,6 +313,10 @@ public final class BlockData {
             case 4: return 2 | thrown;
             case 2: return 3 | thrown;
             case 1: return 4 | thrown;
+            case 6: return 5 | thrown;
+            case 5: return 6 | thrown;
+            case 0: return 7 | thrown;
+            case 7: return 0 | thrown;
             }
             break;
 
@@ -480,7 +488,7 @@ public final class BlockData {
         case BlockID.TORCH:
         case BlockID.REDSTONE_TORCH_OFF:
         case BlockID.REDSTONE_TORCH_ON:
-            if (data > 4) break;
+            if (data < 1 || data > 4) break;
             /* FALL-THROUGH */
 
         case BlockID.LEVER:
@@ -491,6 +499,12 @@ public final class BlockData {
             case 2: return data - flipX;
             case 3: return data + flipZ;
             case 4: return data - flipZ;
+            case 5:
+            case 7:
+                return data ^ flipY << 1;
+            case 6:
+            case 0:
+                return data ^ flipY * 6;
             }
             break;
 
