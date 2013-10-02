@@ -169,6 +169,7 @@ public final class BlockData {
             }
             break;
 
+        case BlockID.HAY_BLOCK:
         case BlockID.LOG:
             if (data >= 4 && data <= 11) data ^= 0xc;
             break;
@@ -223,11 +224,6 @@ public final class BlockData {
 
         case BlockID.ANVIL:
             return data ^ 0x1;
-
-        case BlockID.HAY_BLOCK:
-            if (data == 4) return 8;
-            else if (data == 8) return 4;
-            else return 0; // sanitize extraneous data values since hay blocks are weird
 
         case BlockID.BED:
             return data & ~0x3 | (data + 1) & 0x3;
@@ -388,6 +384,7 @@ public final class BlockData {
             }
             break;
 
+        case BlockID.HAY_BLOCK:
         case BlockID.LOG:
             if (data >= 4 && data <= 11) data ^= 0xc;
             break;
@@ -441,11 +438,6 @@ public final class BlockData {
 
         case BlockID.ANVIL:
             return data ^ 0x1;
-
-        case BlockID.HAY_BLOCK:
-            if (data == 4) return 8;
-            else if (data == 8) return 4;
-            else return 0;
 
         case BlockID.BED:
             return data & ~0x3 | (data - 1) & 0x3;
