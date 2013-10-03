@@ -441,6 +441,8 @@ public class WorldEdit {
                 if (blockType != null) {
                     switch (blockType) {
                         case CLOTH:
+                        case STAINED_CLAY:
+                        case CARPET:
                             ClothColor col = ClothColor.lookup(typeAndData[1]);
 
                             if (col != null) {
