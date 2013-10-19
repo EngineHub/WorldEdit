@@ -27,8 +27,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 
 public class CombinedMask implements Mask {
-
-    private List<Mask> masks = new ArrayList<Mask>();
+    private final List<Mask> masks = new ArrayList<Mask>();
 
     public CombinedMask() {
     }
@@ -53,12 +52,14 @@ public class CombinedMask implements Mask {
         return masks.contains(mask);
     }
 
+    @Override
     public void prepare(LocalSession session, LocalPlayer player, Vector target) {
         for (Mask mask : masks) {
             mask.prepare(session, player, target);
         }
     }
 
+    @Override
     public boolean matches(EditSession editSession, Vector pos) {
         for (Mask mask : masks) {
             if (!mask.matches(editSession, pos)) {

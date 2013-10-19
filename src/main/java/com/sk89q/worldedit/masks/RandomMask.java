@@ -6,7 +6,6 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 
 public class RandomMask implements Mask {
-
     private final double ratio;
 
     public RandomMask(double ratio) {

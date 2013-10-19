@@ -31,9 +31,8 @@ import com.sk89q.worldedit.Vector;
  * @author 1337
  */
 public class UnderOverlayMask implements Mask {
-
-    private int yMod;
-    private Mask mask;
+    private final int yMod;
+    private Mask mask; // TODO: Make this final and remove the deprecated classes
 
     @Deprecated
     public UnderOverlayMask(Set<Integer> ids, boolean overlay) {
@@ -57,10 +56,12 @@ public class UnderOverlayMask implements Mask {
         }
     }
 
+    @Override
     public void prepare(LocalSession session, LocalPlayer player, Vector target) {
         mask.prepare(session, player, target);
     }
 
+    @Override
     public boolean matches(EditSession editSession, Vector pos) {
         return mask.matches(editSession, pos.add(0, yMod, 0));
     }

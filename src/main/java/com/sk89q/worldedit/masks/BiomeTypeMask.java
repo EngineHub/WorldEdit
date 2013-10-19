@@ -11,8 +11,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 
 public class BiomeTypeMask implements Mask {
-
-    private Set<BiomeType> biomes;
+    private final Set<BiomeType> biomes;
 
     public BiomeTypeMask() {
         this(new HashSet<BiomeType>());
@@ -30,8 +29,8 @@ public class BiomeTypeMask implements Mask {
         return biomes.contains(biome);
     }
 
+    @Override
     public boolean matches(EditSession editSession, Vector pos) {
         return matches2D(editSession, pos.toVector2D());
     }
-
 }

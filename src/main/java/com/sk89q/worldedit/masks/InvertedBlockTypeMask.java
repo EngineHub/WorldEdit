@@ -51,5 +51,4 @@ public class InvertedBlockTypeMask extends BlockTypeMask {
     public boolean matches(EditSession editSession, Vector pos) {
         return !super.matches(editSession, pos);
     }
-
 }

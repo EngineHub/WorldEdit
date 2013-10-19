@@ -108,7 +108,7 @@ public class RegionCommands {
             to = we.getBlockPattern(player, args.getString(1));
         }
 
-        int affected = 0;
+        final int affected;
         if (to instanceof SingleBlockPattern) {
             affected = editSession.replaceBlocks(session.getSelection(player.getWorld()), from,
                     ((SingleBlockPattern) to).getBlock());

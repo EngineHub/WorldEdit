@@ -264,7 +264,7 @@ public class EditSession {
         }
         // }
 
-        current.put(pt.toBlockVector(), block);
+        current.put(blockPt, block);
 
         return smartSetBlock(pt, block);
     }

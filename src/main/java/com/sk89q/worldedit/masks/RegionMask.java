@@ -26,8 +26,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.Region;
 
 public class RegionMask implements Mask {
-
-    private Region region;
+    private final Region region;
 
     public RegionMask(Region region) {
         this.region = region.clone();
@@ -36,8 +35,8 @@ public class RegionMask implements Mask {
     public void prepare(LocalSession session, LocalPlayer player, Vector target) {
     }
 
+    @Override
     public boolean matches(EditSession editSession, Vector pos) {
         return region.contains(pos);
     }
-
 }

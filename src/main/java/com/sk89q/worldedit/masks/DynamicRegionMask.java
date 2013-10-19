@@ -8,9 +8,9 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.Region;
 
 public class DynamicRegionMask implements Mask {
-
     private Region region;
 
+    @Override
     public void prepare(LocalSession session, LocalPlayer player, Vector target) {
         try {
             region = session.getSelection(player.getWorld());

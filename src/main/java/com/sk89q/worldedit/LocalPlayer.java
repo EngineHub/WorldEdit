@@ -266,17 +266,17 @@ public abstract class LocalPlayer {
     /**
      * Just go up.
      *
-     * @param distance
+     * @param distance How far up to teleport
      * @return whether the player was moved
      */
     public boolean ascendUpwards(int distance) {
-        Vector pos = getBlockIn();
-        int x = pos.getBlockX();
-        int initialY = Math.max(0, pos.getBlockY());
+        final Vector pos = getBlockIn();
+        final int x = pos.getBlockX();
+        final int initialY = Math.max(0, pos.getBlockY());
         int y = Math.max(0, pos.getBlockY() + 1);
-        int z = pos.getBlockZ();
-        int maxY = Math.min(getWorld().getMaxY() + 1, initialY + distance);
-        LocalWorld world = getPosition().getWorld();
+        final int z = pos.getBlockZ();
+        final int maxY = Math.min(getWorld().getMaxY() + 1, initialY + distance);
+        final LocalWorld world = getPosition().getWorld();
 
         while (y <= world.getMaxY() + 2) {
             if (!BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {

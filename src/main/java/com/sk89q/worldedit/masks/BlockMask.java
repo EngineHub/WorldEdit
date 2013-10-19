@@ -11,8 +11,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 public class BlockMask implements Mask {
-
-    protected Set<BaseBlock> blocks;
+    private final Set<BaseBlock> blocks;
 
     public BlockMask() {
         blocks = new HashSet<BaseBlock>();
@@ -38,6 +37,7 @@ public class BlockMask implements Mask {
     public void prepare(LocalSession session, LocalPlayer player, Vector target) {
     }
 
+    @Override
     public boolean matches(EditSession editSession, Vector pos) {
         BaseBlock block = editSession.getBlock(pos);
         return  blocks.contains(block)

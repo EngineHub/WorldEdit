@@ -6,8 +6,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 
 public class InvertedMask implements Mask {
-
-    private Mask mask;
+    private final Mask mask;
 
     public InvertedMask(Mask mask) {
         this.mask = mask;

@@ -30,7 +30,6 @@ import com.sk89q.worldedit.blocks.BaseBlock;
  */
 @Deprecated
 public class BlockTypeMask extends BlockMask {
-
     public BlockTypeMask() {
         super();
     }

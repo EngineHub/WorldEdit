@@ -26,10 +26,10 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockID;
 
 public class ExistingBlockMask implements Mask {
-
     public void prepare(LocalSession session, LocalPlayer player, Vector target) {
     }
 
+    @Override
     public boolean matches(EditSession editSession, Vector pos) {
         return editSession.getBlockType(pos) != BlockID.AIR;
     }
