@@ -31,7 +31,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
  *
  * @author 1337
  */
-public class UnderOverlayMask implements Mask {
+public class UnderOverlayMask extends AbstractMask {
     private final int yMod;
     private Mask mask;
 

@@ -26,7 +26,7 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 
-public class CombinedMask implements Mask {
+public class CombinedMask extends AbstractMask {
     private final List<Mask> masks = new ArrayList<Mask>();
 
     public CombinedMask() {

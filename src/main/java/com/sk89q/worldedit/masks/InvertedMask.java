@@ -5,7 +5,7 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 
-public class InvertedMask implements Mask {
+public class InvertedMask extends AbstractMask {
     private final Mask mask;
 
     public InvertedMask(Mask mask) {

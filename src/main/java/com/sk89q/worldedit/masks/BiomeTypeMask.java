@@ -5,12 +5,10 @@ import java.util.Set;
 
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 
-public class BiomeTypeMask implements Mask {
+public class BiomeTypeMask extends AbstractMask {
     private final Set<BiomeType> biomes;
 
     public BiomeTypeMask() {
@@ -19,9 +17,6 @@ public class BiomeTypeMask implements Mask {
 
     public BiomeTypeMask(Set<BiomeType> biomes) {
         this.biomes = biomes;
-    }
-
-    public void prepare(LocalSession session, LocalPlayer player, Vector target) {
     }
 
     public boolean matches2D(EditSession editSession, Vector2D pos) {
