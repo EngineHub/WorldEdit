@@ -558,6 +558,7 @@ public enum BlockType {
         centralTopLimit.put(BlockID.COMPARATOR_OFF, .125);
         centralTopLimit.put(BlockID.COMPARATOR_ON, .125);
         centralTopLimit.put(BlockID.DAYLIGHT_SENSOR, 0.375);
+        centralTopLimit.put(BlockID.HOPPER, 0.625);
 
         // Some default values to be used if no data value is given
         centralTopLimit.put(BlockID.HEAD, 0.75);
