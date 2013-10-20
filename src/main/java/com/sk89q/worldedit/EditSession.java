@@ -1539,8 +1539,7 @@ public class EditSession {
             throws MaxChangedBlocksException {
         int affected = 0;
 
-        if (region instanceof Polygonal2DRegion && ((Polygonal2DRegion)region).isCollinear())
-        {
+        if (region instanceof Polygonal2DRegion && ((Polygonal2DRegion)region).isCollinear()) {
             Polygonal2DRegion polyRegion = (Polygonal2DRegion) region;
             List<BlockVector2D> points = polyRegion.getPoints();
 
@@ -1572,9 +1571,7 @@ public class EditSession {
                     }
                 }
             }
-        }
-        else
-        {
+        } else {
             Vector min = region.getMinimumPoint();
             Vector max = region.getMaximumPoint();
 
@@ -1593,7 +1590,6 @@ public class EditSession {
                     if (setBlock(new Vector(x, y, maxZ), block)) {
                         ++affected;
                     }
-                    ++affected;
                 }
             }
 
@@ -1624,8 +1620,7 @@ public class EditSession {
             throws MaxChangedBlocksException {
         int affected = 0;
 
-        if (region instanceof Polygonal2DRegion && ((Polygonal2DRegion)region).isCollinear())
-        {
+        if (region instanceof Polygonal2DRegion && ((Polygonal2DRegion)region).isCollinear()) {
             Polygonal2DRegion polyRegion = (Polygonal2DRegion) region;
             List<BlockVector2D> points = polyRegion.getPoints();
 
@@ -1659,9 +1654,7 @@ public class EditSession {
                     }
                 }
             }
-        }
-        else
-        {
+        } else {
             Vector min = region.getMinimumPoint();
             Vector max = region.getMaximumPoint();
 
@@ -1682,7 +1675,6 @@ public class EditSession {
                     if (setBlock(maxV, pattern.next(maxV))) {
                         ++affected;
                     }
-                    ++affected;
                 }
             }
 
@@ -1714,8 +1706,7 @@ public class EditSession {
             throws MaxChangedBlocksException {
         int affected = 0;
 
-        if (region instanceof Polygonal2DRegion && ((Polygonal2DRegion)region).isCollinear())
-        {
+        if (region instanceof Polygonal2DRegion && ((Polygonal2DRegion)region).isCollinear()) {
             Polygonal2DRegion polyRegion = (Polygonal2DRegion)region;
             List<BlockVector2D> points = polyRegion.getPoints();
             int minY = polyRegion.getMinimumY();
@@ -1756,9 +1747,7 @@ public class EditSession {
                     }
                 }
             }
-        }
-        else
-        {
+        } else {
             Vector min = region.getMinimumPoint();
             Vector max = region.getMaximumPoint();
 
@@ -1834,8 +1823,7 @@ public class EditSession {
             throws MaxChangedBlocksException {
         int affected = 0;
 
-        if (region instanceof Polygonal2DRegion && ((Polygonal2DRegion)region).isCollinear())
-        {
+        if (region instanceof Polygonal2DRegion && ((Polygonal2DRegion)region).isCollinear()) {
             Polygonal2DRegion polyRegion = (Polygonal2DRegion)region;
             List<BlockVector2D> points = polyRegion.getPoints();
             int minY = polyRegion.getMinimumY();
@@ -1874,9 +1862,7 @@ public class EditSession {
                     }
                 }
             }
-        }
-        else
-        {
+        } else {
             Vector min = region.getMinimumPoint();
             Vector max = region.getMaximumPoint();
 
