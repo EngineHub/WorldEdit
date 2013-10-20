@@ -44,9 +44,11 @@ import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.TreeGenerator;
+import net.minecraft.server.v1_6_R3.Block;
 
 /**
  * This class can wrap all block editing operations into one "edit session" that
@@ -1526,46 +1528,83 @@ public class EditSession {
     }
 
     /**
-     * Make walls of the region (as if it was a cuboid if it's not).
+     * Make walls of the region (as if it was a cuboid if it's not collinear).
      *
      * @param region
      * @param block
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeCuboidWalls(Region region, BaseBlock block)
+    public int makeWalls(Region region, BaseBlock block)
             throws MaxChangedBlocksException {
         int affected = 0;
 
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
+        if (region instanceof Polygonal2DRegion && ((Polygonal2DRegion)region).isCollinear())
+        {
+            Polygonal2DRegion polyRegion = (Polygonal2DRegion) region;
+            List<BlockVector2D> points = polyRegion.getPoints();
 
-        int minX = min.getBlockX();
-        int minY = min.getBlockY();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxY = max.getBlockY();
-        int maxZ = max.getBlockZ();
+            for (int p = 0; p < points.size(); ++p) {
+                BlockVector2D firstVector = points.get(p);
+                BlockVector2D secondVector = points.get(p < points.size() - 1 ? p + 1 : 0);
 
-        for (int x = minX; x <= maxX; ++x) {
-            for (int y = minY; y <= maxY; ++y) {
-                if (setBlock(new Vector(x, y, minZ), block)) {
-                    ++affected;
+                int minX = Math.min(firstVector.getBlockX(), secondVector.getBlockX());
+                int minY = polyRegion.getMinimumY();
+                int minZ = Math.min(firstVector.getBlockZ(), secondVector.getBlockZ());
+
+                int maxX = Math.max(firstVector.getBlockX(), secondVector.getBlockX());
+                int maxY = polyRegion.getMaximumY();
+                int maxZ = Math.max(firstVector.getBlockZ(), secondVector.getBlockZ());
+
+                for (int x = minX; x <= maxX; ++x) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        if (setBlock(new Vector(x, y, minZ), block)) {
+                            ++affected;
+                        }
+                    }
                 }
-                if (setBlock(new Vector(x, y, maxZ), block)) {
-                    ++affected;
+
+                for (int y = minY; y <= maxY; ++y) {
+                    for (int z = minZ; z <= maxZ; ++z) {
+                        if (setBlock(new Vector(minX, y, z), block)) {
+                            ++affected;
+                        }
+                    }
                 }
-                ++affected;
             }
         }
+        else
+        {
+            Vector min = region.getMinimumPoint();
+            Vector max = region.getMaximumPoint();
 
-        for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                if (setBlock(new Vector(minX, y, z), block)) {
+            int minX = min.getBlockX();
+            int minY = min.getBlockY();
+            int minZ = min.getBlockZ();
+            int maxX = max.getBlockX();
+            int maxY = max.getBlockY();
+            int maxZ = max.getBlockZ();
+
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    if (setBlock(new Vector(x, y, minZ), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(new Vector(x, y, maxZ), block)) {
+                        ++affected;
+                    }
                     ++affected;
                 }
-                if (setBlock(new Vector(maxX, y, z), block)) {
-                    ++affected;
+            }
+
+            for (int y = minY; y <= maxY; ++y) {
+                for (int z = minZ; z <= maxZ; ++z) {
+                    if (setBlock(new Vector(minX, y, z), block)) {
+                        ++affected;
+                    }
+                    if (setBlock(new Vector(maxX, y, z), block)) {
+                        ++affected;
+                    }
                 }
             }
         }
@@ -1574,50 +1613,316 @@ public class EditSession {
     }
 
     /**
-     * Make walls of the region (as if it was a cuboid if it's not).
+     * Make walls of the region (as if it was a cuboid if it's not collinear).
+     *
+     * @param region
+     * @param pattern
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int makeWalls(Region region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+
+        if (region instanceof Polygonal2DRegion && ((Polygonal2DRegion)region).isCollinear())
+        {
+            Polygonal2DRegion polyRegion = (Polygonal2DRegion) region;
+            List<BlockVector2D> points = polyRegion.getPoints();
+
+            for (int p = 0; p < points.size(); ++p) {
+                BlockVector2D firstVector = points.get(p);
+                BlockVector2D secondVector = points.get(p < points.size() - 1 ? p + 1 : 0);
+
+                int minX = Math.min(firstVector.getBlockX(), secondVector.getBlockX());
+                int minY = polyRegion.getMinimumY();
+                int minZ = Math.min(firstVector.getBlockZ(), secondVector.getBlockZ());
+
+                int maxX = Math.max(firstVector.getBlockX(), secondVector.getBlockX());
+                int maxY = polyRegion.getMaximumY();
+                int maxZ = Math.max(firstVector.getBlockZ(), secondVector.getBlockZ());
+
+                for (int x = minX; x <= maxX; ++x) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        Vector minV = new Vector(x, y, minZ);
+                        if (setBlock(minV, pattern.next(minV))) {
+                            ++affected;
+                        }
+                    }
+                }
+
+                for (int y = minY; y <= maxY; ++y) {
+                    for (int z = minZ; z <= maxZ; ++z) {
+                        Vector minV = new Vector(minX, y, z);
+                        if (setBlock(minV, pattern.next(minV))) {
+                            ++affected;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            Vector min = region.getMinimumPoint();
+            Vector max = region.getMaximumPoint();
+
+            int minX = min.getBlockX();
+            int minY = min.getBlockY();
+            int minZ = min.getBlockZ();
+            int maxX = max.getBlockX();
+            int maxY = max.getBlockY();
+            int maxZ = max.getBlockZ();
+
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    Vector minV = new Vector(x, y, minZ);
+                    if (setBlock(minV, pattern.next(minV))) {
+                        ++affected;
+                    }
+                    Vector maxV = new Vector(x, y, maxZ);
+                    if (setBlock(maxV, pattern.next(maxV))) {
+                        ++affected;
+                    }
+                    ++affected;
+                }
+            }
+
+            for (int y = minY; y <= maxY; ++y) {
+                for (int z = minZ; z <= maxZ; ++z) {
+                    Vector minV = new Vector(minX, y, z);
+                    if (setBlock(minV, pattern.next(minV))) {
+                        ++affected;
+                    }
+                    Vector maxV = new Vector(maxX, y, z);
+                    if (setBlock(maxV, pattern.next(maxV))) {
+                        ++affected;
+                    }
+                }
+            }
+        }
+        return affected;
+    }
+
+    /**
+     * Make a border for the region (as if it was a cuboid if it's not collinear).
      *
      * @param region
      * @param block
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeCuboidWalls(Region region, Pattern pattern)
+    public int createBorderBlocks(Region region, BaseBlock block)
             throws MaxChangedBlocksException {
         int affected = 0;
 
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
+        if (region instanceof Polygonal2DRegion && ((Polygonal2DRegion)region).isCollinear())
+        {
+            Polygonal2DRegion polyRegion = (Polygonal2DRegion)region;
+            List<BlockVector2D> points = polyRegion.getPoints();
+            int minY = polyRegion.getMinimumY();
+            int maxY = polyRegion.getMaximumY();
 
-        int minX = min.getBlockX();
-        int minY = min.getBlockY();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxY = max.getBlockY();
-        int maxZ = max.getBlockZ();
+            for (int p = 0; p < points.size(); ++p) {
+                BlockVector2D firstVector = points.get(p);
+                BlockVector2D secondVector = points.get(p < points.size() - 1 ? p + 1 : 0);
 
-        for (int x = minX; x <= maxX; ++x) {
-            for (int y = minY; y <= maxY; ++y) {
-                Vector minV = new Vector(x, y, minZ);
-                if (setBlock(minV, pattern.next(minV))) {
-                    ++affected;
+                int minX = Math.min(firstVector.getBlockX(), secondVector.getBlockX());
+                int minZ = Math.min(firstVector.getBlockZ(), secondVector.getBlockZ());
+
+                int maxX = Math.max(firstVector.getBlockX(), secondVector.getBlockX());
+                int maxZ = Math.max(firstVector.getBlockZ(), secondVector.getBlockZ());
+
+                for (int x = minX; x <= maxX; ++x) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        Vector above1 = new Vector(x, y + 1, minZ);
+                        if (y + 1 <= world.getMaxY() && !getBlock(new Vector(x, y, minZ)).isAir()
+                                && (getBlock(above1).isAir() || !Block.byId[getBlock(above1).getId()].material.isSolid())) {
+                            if (setBlock(above1, block)) {
+                                ++affected;
+                            }
+                            break;
+                        }
+                    }
                 }
-                Vector maxV = new Vector(x, y, maxZ);
-                if (setBlock(maxV, pattern.next(maxV))) {
-                    ++affected;
+                for (int z = minZ; z <= maxZ; ++z) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        Vector above1 = new Vector(minX, y + 1, z);
+                        if (y + 1 <= world.getMaxY() && !getBlock(new Vector(minX, y, z)).isAir()
+                                && (getBlock(above1).isAir() || !Block.byId[getBlock(above1).getId()].material.isSolid())) {
+                            if (setBlock(above1, block)) {
+                                ++affected;
+                            }
+                            break;
+                        }
+                    }
                 }
-                ++affected;
+            }
+        }
+        else
+        {
+            Vector min = region.getMinimumPoint();
+            Vector max = region.getMaximumPoint();
+
+            int minX = min.getBlockX();
+            int minY = min.getBlockY();
+            int minZ = min.getBlockZ();
+            int maxX = max.getBlockX();
+            int maxY = max.getBlockY();
+            int maxZ = max.getBlockZ();
+
+            for (int x = minX; x <= maxX; ++x) {
+                boolean minZSet = false;
+                boolean maxZSet = false;
+
+                for (int y = minY; y <= maxY; ++y) {
+                    Vector above1 = new Vector(x, y + 1, minZ);
+                    if (!minZSet && y + 1 <= world.getMaxY() && !getBlock(new Vector(x, y, minZ)).isAir()
+                            && (getBlock(above1).isAir() || !Block.byId[getBlock(above1).getId()].material.isSolid())) {
+                        if (setBlock(above1, block)) {
+                            ++affected;
+                        }
+                        minZSet = true;
+                    }
+
+                    Vector above2 = new Vector(x, y + 1, maxZ);
+                    if (!maxZSet && y + 1 <= world.getMaxY() && !getBlock(new Vector(x, y, maxZ)).isAir()
+                            && (getBlock(above2).isAir() || !Block.byId[getBlock(above2).getId()].material.isSolid())) {
+                        if (setBlock(above2, block)) {
+                            ++affected;
+                        }
+                        maxZSet = true;
+                    }
+                }
+            }
+            for (int z = minZ; z <= maxZ; ++z) {
+                boolean minXSet = false;
+                boolean maxXSet = false;
+
+                for (int y = minY; y <= maxY; ++y) {
+                    Vector above1 = new Vector(minX, y + 1, z);
+                    if (!minXSet && y + 1 <= world.getMaxY() && !getBlock(new Vector(minX, y, z)).isAir()
+                            && (getBlock(above1).isAir() || !Block.byId[getBlock(above1).getId()].material.isSolid())) {
+                        if (setBlock(above1, block)) {
+                            ++affected;
+                        }
+                        minXSet = true;
+                    }
+
+                    Vector above2 = new Vector(maxX, y + 1, z);
+                    if (!maxXSet && y + 1 <= world.getMaxY() && !getBlock(new Vector(maxX, y, z)).isAir()
+                            && (getBlock(above2).isAir() || !Block.byId[getBlock(above2).getId()].material.isSolid())) {
+                        if (setBlock(above2, block)) {
+                            ++affected;
+                        }
+                        maxXSet = true;
+                    }
+                }
             }
         }
 
-        for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                Vector minV = new Vector(minX, y, z);
-                if (setBlock(minV, pattern.next(minV))) {
-                    ++affected;
+        return affected;
+    }
+
+    /**
+     * Make a border for the region (as if it was a cuboid if it's not collinear).
+     *
+     * @param region
+     * @param pattern
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int createBorderBlocks(Region region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+
+        if (region instanceof Polygonal2DRegion && ((Polygonal2DRegion)region).isCollinear())
+        {
+            Polygonal2DRegion polyRegion = (Polygonal2DRegion)region;
+            List<BlockVector2D> points = polyRegion.getPoints();
+            int minY = polyRegion.getMinimumY();
+            int maxY = polyRegion.getMaximumY();
+
+            for (int p = 0; p < points.size(); ++p) {
+                BlockVector2D firstVector = points.get(p);
+                BlockVector2D secondVector = points.get(p < points.size() - 1 ? p + 1 : 0);
+
+                int minX = Math.min(firstVector.getBlockX(), secondVector.getBlockX());
+                int minZ = Math.min(firstVector.getBlockZ(), secondVector.getBlockZ());
+
+                int maxX = Math.max(firstVector.getBlockX(), secondVector.getBlockX());
+                int maxZ = Math.max(firstVector.getBlockZ(), secondVector.getBlockZ());
+
+                for (int x = minX; x <= maxX; ++x) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        Vector above1 = new Vector(x, y + 1, minZ);
+                        if (y + 1 <= world.getMaxY() && !getBlock(new Vector(x, y, minZ)).isAir()
+                                && (getBlock(above1).isAir() || !Block.byId[getBlock(above1).getId()].material.isSolid())) {
+                            if (setBlock(above1, pattern.next(above1))) {
+                                ++affected;
+                            }
+                        }
+                    }
                 }
-                Vector maxV = new Vector(maxX, y, z);
-                if (setBlock(maxV, pattern.next(maxV))) {
-                    ++affected;
+                for (int z = minZ; z <= maxZ; ++z) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        Vector above1 = new Vector(minX, y + 1, z);
+                        if (y + 1 <= world.getMaxY() && !getBlock(new Vector(minX, y, z)).isAir()
+                                && (getBlock(above1).isAir() || !Block.byId[getBlock(above1).getId()].material.isSolid())) {
+                            if (setBlock(above1, pattern.next(above1))) {
+                                ++affected;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            Vector min = region.getMinimumPoint();
+            Vector max = region.getMaximumPoint();
+
+            int minX = min.getBlockX();
+            int minY = min.getBlockY();
+            int minZ = min.getBlockZ();
+            int maxX = max.getBlockX();
+            int maxY = max.getBlockY();
+            int maxZ = max.getBlockZ();
+
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    Vector above1 = new Vector(x, y + 1, minZ);
+                    if (y + 1 <= world.getMaxY() && !getBlock(new Vector(x, y, minZ)).isAir()
+                            && (getBlock(above1).isAir() || !Block.byId[getBlock(above1).getId()].material.isSolid())) {
+                        if (setBlock(above1, pattern.next(above1))) {
+                            ++affected;
+                        }
+                    }
+
+                    Vector above2 = new Vector(x, y + 1, maxZ);
+                    if (y + 1 <= world.getMaxY() && !getBlock(new Vector(x, y, maxZ)).isAir()
+                            && (getBlock(above2).isAir() || !Block.byId[getBlock(above2).getId()].material.isSolid())) {
+                        if (setBlock(above2, pattern.next(above2))) {
+                            ++affected;
+                        }
+                    }
+                }
+            }
+            for (int z = minZ; z <= maxZ; ++z) {
+                for (int y = minY; y <= maxY; ++y) {
+                    Vector above1 = new Vector(minX, y + 1, z);
+                    if (y + 1 <= world.getMaxY() && !getBlock(new Vector(minX, y, z)).isAir()
+                            && (getBlock(above1).isAir() || !Block.byId[getBlock(above1).getId()].material.isSolid())) {
+                        if (setBlock(above1, pattern.next(above1))) {
+                            ++affected;
+                        }
+                    }
+
+                    Vector above2 = new Vector(maxX, y + 1, z);
+                    if (y + 1 <= world.getMaxY() && !getBlock(new Vector(maxX, y, z)).isAir()
+                            && (getBlock(above2).isAir() || !Block.byId[getBlock(above2).getId()].material.isSolid())) {
+                        if (setBlock(above2, pattern.next(above2))) {
+                            ++affected;
+                        }
+                    }
                 }
             }
         }
