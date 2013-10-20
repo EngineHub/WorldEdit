@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sk89q</groupId>
   <artifactId>worldedit</artifactId>
-  <version>5.5.8</version>
+  <version>5.5.8-1.6.2</version>
   <packaging>jar</packaging>
   
   <!-- Project information -->
@@ -41,7 +41,7 @@
     <connection>scm:git:git://github.com/sk89q/worldedit.git</connection>
     <developerConnection>scm:git:git@github.com:sk89q/worldedit.git</developerConnection>
     <url>https://github.com/sk89q/worldedit</url>
-    <tag>5.5.8</tag>
+    <tag>5.5.8-1.6.2</tag>
   </scm>
   
   <mailingLists>
