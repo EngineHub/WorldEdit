@@ -269,7 +269,7 @@ public class GenerationCommands {
         
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 10;
         TreeGenerator.TreeType type = args.argsLength() > 1 ?
-                type = TreeGenerator.lookup(args.getString(1))
+                TreeGenerator.lookup(args.getString(1))
                 : TreeGenerator.TreeType.TREE;
         double density = args.argsLength() > 2 ? args.getDouble(2) / 100 : 0.05;
 
