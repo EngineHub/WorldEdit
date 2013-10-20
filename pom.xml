@@ -125,7 +125,7 @@
     <dependency> <!-- NMS blocks -->
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.6.4-R0.1-SNAPSHOT</version>
+      <version>1.6.2-R0.1-SNAPSHOT</version>
       <scope>compile</scope>
       <type>jar</type>
       <optional>true</optional>
