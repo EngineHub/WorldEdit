@@ -46,6 +46,7 @@ import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.shape.ArbitraryBiomeShape;
 import com.sk89q.worldedit.shape.ArbitraryShape;
 import com.sk89q.worldedit.shape.RegionShape;
 import com.sk89q.worldedit.shape.WorldEditExpressionEnvironment;
@@ -3019,4 +3020,38 @@ public class EditSession {
         } // while
     }
 
+    public int makeBiomeShape(final Region region, final Vector zero, final Vector unit, final BiomeType biomeType, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException {
+        final Vector2D zero2D = zero.toVector2D();
+        final Vector2D unit2D = unit.toVector2D();
+
+        final Expression expression = Expression.compile(expressionString, "x", "z");
+        expression.optimize();
+
+        final EditSession editSession = this;
+        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(editSession, unit, zero);
+        expression.setEnvironment(environment);
+
+        final ArbitraryBiomeShape shape = new ArbitraryBiomeShape(region) {
+            @Override
+            protected BiomeType getBiome(int x, int z, BiomeType defaultBiomeType) {
+                final Vector2D current = new Vector2D(x, z);
+                environment.setCurrentBlock(current.toVector(0));
+                final Vector2D scaled = current.subtract(zero2D).divide(unit2D);
+
+                try {
+                    if (expression.evaluate(scaled.getX(), scaled.getZ()) <= 0) {
+                        return null;
+                    }
+
+                    // TODO: Allow biome setting via a script variable (needs BiomeType<->int mapping)
+                    return defaultBiomeType;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        };
+
+        return shape.generate(this, biomeType, hollow);
+    }
 }

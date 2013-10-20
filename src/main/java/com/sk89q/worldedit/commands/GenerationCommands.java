@@ -27,10 +27,12 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
+import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.expression.ExpressionException;
@@ -411,6 +413,73 @@ public class GenerationCommands {
             final int affected = editSession.makeShape(region, zero, unit, pattern, expression, hollow);
             player.findFreePosition();
             player.print(affected + " block(s) have been created.");
+        } catch (ExpressionException e) {
+            player.printError(e.getMessage());
+        }
+    }
+
+    @Command(
+        aliases = { "/generatebiome", "/genbiome", "/gb" },
+        usage = "<block> <expression>",
+        desc = "Sets biome according to a formula.",
+        help =
+            "Generates a shape according to a formula that is expected to\n" +
+            "return positive numbers (true) if the point is inside the shape\n" +
+            "Optionally set type/data to the desired block.\n" +
+            "Flags:\n" +
+            "  -h to generate a hollow shape\n" +
+            "  -r to use raw minecraft coordinates\n" +
+            "  -o is like -r, except offset from placement.\n" +
+            "  -c is like -r, except offset selection center.\n" +
+            "If neither -r nor -o is given, the selection is mapped to -1..1\n" +
+            "See also tinyurl.com/wesyntax.",
+        flags = "hroc",
+        min = 2,
+        max = -1
+    )
+    @CommandPermissions({"worldedit.generation.shape", "worldedit.biome.set"})
+    @Logging(ALL)
+    public void generateBiome(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
+
+        final BiomeType target = we.getServer().getBiomes().get(args.getString(0));
+        final Region region = session.getSelection(player.getWorld());
+
+        final boolean hollow = args.hasFlag('h');
+
+        final String expression = args.getJoinedStrings(1);
+
+        final Vector zero;
+        Vector unit;
+
+        if (args.hasFlag('r')) {
+            zero = Vector.ZERO;
+            unit = Vector.ONE;
+        } else if (args.hasFlag('o')) {
+            zero = session.getPlacementPosition(player);
+            unit = Vector.ONE;
+        } else if (args.hasFlag('c')) {
+            final Vector min = region.getMinimumPoint();
+            final Vector max = region.getMaximumPoint();
+
+            zero = max.add(min).multiply(0.5);
+            unit = Vector.ONE;
+        } else {
+            final Vector min = region.getMinimumPoint();
+            final Vector max = region.getMaximumPoint();
+
+            zero = max.add(min).multiply(0.5);
+            unit = max.subtract(zero);
+
+            if (unit.getX() == 0) unit = unit.setX(1.0);
+            if (unit.getY() == 0) unit = unit.setY(1.0);
+            if (unit.getZ() == 0) unit = unit.setZ(1.0);
+        }
+
+        try {
+            final int affected = editSession.makeBiomeShape(region, zero, unit, target, expression, hollow);
+            player.findFreePosition();
+            player.print("Biome changed to " + target.getName() + ". " + affected + " columns affected.");
         } catch (ExpressionException e) {
             player.printError(e.getMessage());
         }
