@@ -47,12 +47,16 @@ public class SnapshotRestore {
     /**
      * Store a list of chunks that are needed and the points in them.
      */
-    private Map<BlockVector2D, ArrayList<Vector>> neededChunks =
+    private final Map<BlockVector2D, ArrayList<Vector>> neededChunks =
             new LinkedHashMap<BlockVector2D, ArrayList<Vector>>();
     /**
      * Chunk store.
      */
-    private ChunkStore chunkStore;
+    private final ChunkStore chunkStore;
+    /**
+     * Edit session.
+     */
+    private final EditSession editSession;
     /**
      * Count of the number of missing chunks.
      */
@@ -69,11 +73,13 @@ public class SnapshotRestore {
     /**
      * Construct the snapshot restore operation.
      *
-     * @param chunkStore
-     * @param region
+     * @param chunkStore The {@link ChunkStore} to restore from
+     * @param editSession The {@link EditSession} to restore to
+     * @param region The {@link Region} to restore to
      */
-    public SnapshotRestore(ChunkStore chunkStore, Region region) {
+    public SnapshotRestore(ChunkStore chunkStore, EditSession editSession, Region region) {
         this.chunkStore = chunkStore;
+        this.editSession = editSession;
 
         if (region instanceof CuboidRegion) {
             findNeededCuboidChunks(region);
@@ -83,9 +89,9 @@ public class SnapshotRestore {
     }
 
     /**
-     * Find needed chunks in the cuboid of the region.
+     * Find needed chunks in the axis-aligned bounding box of the region.
      *
-     * @param region
+     * @param region The {@link Region} to iterate
      */
     private void findNeededCuboidChunks(Region region) {
         Vector min = region.getMinimumPoint();
@@ -97,14 +103,7 @@ public class SnapshotRestore {
             for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
                     Vector pos = new Vector(x, y, z);
-                    BlockVector2D chunkPos = ChunkStore.toChunk(pos);
-
-                    // Unidentified chunk
-                    if (!neededChunks.containsKey(chunkPos)) {
-                        neededChunks.put(chunkPos, new ArrayList<Vector>());
-                    }
-
-                    neededChunks.get(chunkPos).add(pos);
+                    checkAndAddBlock(pos);
                 }
             }
         }
@@ -113,21 +112,28 @@ public class SnapshotRestore {
     /**
      * Find needed chunks in the region.
      *
-     * @param region
+     * @param region The {@link Region} to iterate
      */
     private void findNeededChunks(Region region) {
         // First, we need to group points by chunk so that we only need
         // to keep one chunk in memory at any given moment
         for (Vector pos : region) {
-            BlockVector2D chunkPos = ChunkStore.toChunk(pos);
-
-            // Unidentified chunk
-            if (!neededChunks.containsKey(chunkPos)) {
-                neededChunks.put(chunkPos, new ArrayList<Vector>());
-            }
-
-            neededChunks.get(chunkPos).add(pos);
+            checkAndAddBlock(pos);
         }
+    }
+
+    private void checkAndAddBlock(Vector pos) {
+        if (editSession.getMask() != null && !editSession.getMask().matches(editSession, pos))
+            return;
+
+        BlockVector2D chunkPos = ChunkStore.toChunk(pos);
+
+        // Unidentified chunk
+        if (!neededChunks.containsKey(chunkPos)) {
+            neededChunks.put(chunkPos, new ArrayList<Vector>());
+        }
+
+        neededChunks.get(chunkPos).add(pos);
     }
 
     /**
@@ -142,11 +148,9 @@ public class SnapshotRestore {
     /**
      * Restores to world.
      *
-     * @param editSession
      * @throws MaxChangedBlocksException
      */
-    public void restore(EditSession editSession)
-            throws MaxChangedBlocksException {
+    public void restore() throws MaxChangedBlocksException {
 
         missingChunks = new ArrayList<Vector2D>();
         errorChunks = new ArrayList<Vector2D>();
