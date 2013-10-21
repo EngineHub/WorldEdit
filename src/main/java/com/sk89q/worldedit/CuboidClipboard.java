@@ -206,14 +206,14 @@ public class CuboidClipboard {
             for (int xs = 0; xs < wid; ++xs) {
                 for (int z = 0; z < length; ++z) {
                     for (int y = 0; y < height; ++y) {
-                        // Skip the center plane
-                        if (xs == width - xs - 1) {
-                            continue;
-                        }
-
                         final BaseBlock block1 = data[xs][y][z];
                         if (block1 != null) {
                             block1.flip(dir);
+                        }
+
+                        // Skip the center plane
+                        if (xs == width - xs - 1) {
+                            continue;
                         }
 
                         final BaseBlock block2 = data[width - xs - 1][y][z];
@@ -238,14 +238,14 @@ public class CuboidClipboard {
             for (int zs = 0; zs < len; ++zs) {
                 for (int x = 0; x < width; ++x) {
                     for (int y = 0; y < height; ++y) {
-                        // Skip the center plane
-                        if (zs == length - zs - 1) {
-                            continue;
-                        }
-
                         final BaseBlock block1 = data[x][y][zs];
                         if (block1 != null) {
                             block1.flip(dir);
+                        }
+
+                        // Skip the center plane
+                        if (zs == length - zs - 1) {
+                            continue;
                         }
 
                         final BaseBlock block2 = data[x][y][length - zs - 1];
@@ -270,14 +270,14 @@ public class CuboidClipboard {
             for (int ys = 0; ys < hei; ++ys) {
                 for (int x = 0; x < width; ++x) {
                     for (int z = 0; z < length; ++z) {
-                        // Skip the center plane
-                        if (ys == height - ys - 1) {
-                            continue;
-                        }
-
                         final BaseBlock block1 = data[x][ys][z];
                         if (block1 != null) {
                             block1.flip(dir);
+                        }
+
+                        // Skip the center plane
+                        if (ys == height - ys - 1) {
+                            continue;
                         }
 
                         final BaseBlock block2 = data[x][height - ys - 1][z];

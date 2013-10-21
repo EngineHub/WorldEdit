@@ -101,11 +101,22 @@ public final class BlockData {
             case 2: return 4 | thrown;
             case 3: return 2 | thrown;
             case 4: return 1 | thrown;
+            case 5: return 6 | thrown;
+            case 6: return 5 | thrown;
+            case 7: return 0 | thrown;
+            case 0: return 7 | thrown;
             }
             break;
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
+            if ((data & 0x8) != 0) {
+                // door top halves contain no orientation information
+                break;
+            }
+
+            /* FALL-THROUGH */
+
         case BlockID.COCOA_PLANT:
         case BlockID.TRIPWIRE_HOOK:
             int extra = data & ~0x3;
@@ -158,6 +169,7 @@ public final class BlockData {
             }
             break;
 
+        case BlockID.HAY_BLOCK:
         case BlockID.LOG:
             if (data >= 4 && data <= 11) data ^= 0xc;
             break;
@@ -213,11 +225,16 @@ public final class BlockData {
         case BlockID.ANVIL:
             return data ^ 0x1;
 
-        case BlockID.HAY_BLOCK:
-            if (data == 4) return 8;
-            else if (data == 8) return 4;
-            else return 0; // sanitize extraneous data values since hay blocks are weird
+        case BlockID.BED:
+            return data & ~0x3 | (data + 1) & 0x3;
 
+        case BlockID.HEAD:
+            switch (data) {
+                case 2: return 5;
+                case 3: return 4;
+                case 4: return 2;
+                case 5: return 3;
+            }
         }
 
         return data;
@@ -300,11 +317,22 @@ public final class BlockData {
             case 4: return 2 | thrown;
             case 2: return 3 | thrown;
             case 1: return 4 | thrown;
+            case 6: return 5 | thrown;
+            case 5: return 6 | thrown;
+            case 0: return 7 | thrown;
+            case 7: return 0 | thrown;
             }
             break;
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
+            if ((data & 0x8) != 0) {
+                // door top halves contain no orientation information
+                break;
+            }
+
+            /* FALL-THROUGH */
+
         case BlockID.COCOA_PLANT:
         case BlockID.TRIPWIRE_HOOK:
             int extra = data & ~0x3;
@@ -356,6 +384,7 @@ public final class BlockData {
             }
             break;
 
+        case BlockID.HAY_BLOCK:
         case BlockID.LOG:
             if (data >= 4 && data <= 11) data ^= 0xc;
             break;
@@ -410,11 +439,16 @@ public final class BlockData {
         case BlockID.ANVIL:
             return data ^ 0x1;
 
-        case BlockID.HAY_BLOCK:
-            if (data == 4) return 8;
-            else if (data == 8) return 4;
-            else return 0;
+        case BlockID.BED:
+            return data & ~0x3 | (data - 1) & 0x3;
 
+        case BlockID.HEAD:
+            switch (data) {
+                case 2: return 4;
+                case 3: return 5;
+                case 4: return 3;
+                case 5: return 2;
+            }
         }
 
         return data;
@@ -462,7 +496,7 @@ public final class BlockData {
         case BlockID.TORCH:
         case BlockID.REDSTONE_TORCH_OFF:
         case BlockID.REDSTONE_TORCH_ON:
-            if (data > 4) break;
+            if (data < 1 || data > 4) break;
             /* FALL-THROUGH */
 
         case BlockID.LEVER:
@@ -473,6 +507,12 @@ public final class BlockData {
             case 2: return data - flipX;
             case 3: return data + flipZ;
             case 4: return data - flipZ;
+            case 5:
+            case 7:
+                return data ^ flipY << 1;
+            case 6:
+            case 0:
+                return data ^ flipY * 6;
             }
             break;
 
@@ -532,7 +572,11 @@ public final class BlockData {
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
-            data ^= flipY << 3;
+            if ((data & 0x8) != 0) {
+                // door top halves contain no orientation information
+                break;
+            }
+
             switch (data & 0x3) {
             case 0: return data + flipX + flipZ * 3;
             case 1: return data - flipX + flipZ;
@@ -682,13 +726,34 @@ public final class BlockData {
             switch (data & 0x3) {
             case 0:
             case 2:
-                return data ^ flipZ * 2;
+                return data ^ flipZ << 1;
             case 1:
             case 3:
-                return data ^ flipX * 2;
+                return data ^ flipX << 1;
             }
             break;
 
+        case BlockID.BED:
+            switch (data & 0x3) {
+            case 0:
+            case 2:
+                return data ^ flipZ << 1;
+            case 1:
+            case 3:
+                return data ^ flipX << 1;
+            }
+            break;
+
+        case BlockID.HEAD:
+            switch (data) {
+                case 2:
+                case 3:
+                    return data ^ flipZ;
+                case 4:
+                case 5:
+                    return data ^ flipX;
+            }
+            break;
         }
 
         return data;
