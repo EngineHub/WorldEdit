@@ -1528,6 +1528,109 @@ public class EditSession {
     }
 
     /**
+     * Make walls of the region (as if it was a cuboid if it's not).
+     *
+     * @param region
+     * @param block
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     * @deprecated Use {@link #makeWalls(Region, BaseBlock)} instead
+     */
+    @Deprecated
+    public int makeCuboidWalls(Region region, BaseBlock block)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+
+        Vector min = region.getMinimumPoint();
+        Vector max = region.getMaximumPoint();
+
+        int minX = min.getBlockX();
+        int minY = min.getBlockY();
+        int minZ = min.getBlockZ();
+        int maxX = max.getBlockX();
+        int maxY = max.getBlockY();
+        int maxZ = max.getBlockZ();
+
+        for (int x = minX; x <= maxX; ++x) {
+            for (int y = minY; y <= maxY; ++y) {
+                if (setBlock(new Vector(x, y, minZ), block)) {
+                    ++affected;
+                }
+                if (setBlock(new Vector(x, y, maxZ), block)) {
+                    ++affected;
+                }
+            }
+        }
+
+        for (int y = minY; y <= maxY; ++y) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                if (setBlock(new Vector(minX, y, z), block)) {
+                    ++affected;
+                }
+                if (setBlock(new Vector(maxX, y, z), block)) {
+                    ++affected;
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Make walls of the region (as if it was a cuboid if it's not).
+     *
+     * @param region
+     * @param pattern
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     * @deprecated Use {@link #makeWalls(Region, Pattern)} instead
+     */
+    @Deprecated
+    public int makeCuboidWalls(Region region, Pattern pattern)
+            throws MaxChangedBlocksException {
+        int affected = 0;
+
+        Vector min = region.getMinimumPoint();
+        Vector max = region.getMaximumPoint();
+
+        int minX = min.getBlockX();
+        int minY = min.getBlockY();
+        int minZ = min.getBlockZ();
+        int maxX = max.getBlockX();
+        int maxY = max.getBlockY();
+        int maxZ = max.getBlockZ();
+
+        for (int x = minX; x <= maxX; ++x) {
+            for (int y = minY; y <= maxY; ++y) {
+                Vector minV = new Vector(x, y, minZ);
+                if (setBlock(minV, pattern.next(minV))) {
+                    ++affected;
+                }
+                Vector maxV = new Vector(x, y, maxZ);
+                if (setBlock(maxV, pattern.next(maxV))) {
+                    ++affected;
+                }
+            }
+        }
+
+        for (int y = minY; y <= maxY; ++y) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                Vector minV = new Vector(minX, y, z);
+                if (setBlock(minV, pattern.next(minV))) {
+                    ++affected;
+                }
+                Vector maxV = new Vector(maxX, y, z);
+                if (setBlock(maxV, pattern.next(maxV))) {
+                    ++affected;
+                }
+            }
+        }
+
+        return affected;
+    }
+
+
+    /**
      * Make walls of the region (as if it was a cuboid if it's not collinear).
      *
      * @param region
