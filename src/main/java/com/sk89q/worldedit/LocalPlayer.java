@@ -236,6 +236,17 @@ public abstract class LocalPlayer {
      * @return whether the player was moved
      */
     public boolean ascendToCeiling(int clearance) {
+        return ascendToCeiling(clearance, true);
+    }
+
+    /**
+     * Ascend to the ceiling above.
+     *
+     * @param clearance How many blocks to leave above the player's head
+     * @param alwaysGlass Always put glass under the player
+     * @return whether the player was moved
+     */
+    public boolean ascendToCeiling(int clearance, boolean alwaysGlass) {
         Vector pos = getBlockIn();
         int x = pos.getBlockX();
         int initialY = Math.max(0, pos.getBlockY());
@@ -252,8 +263,7 @@ public abstract class LocalPlayer {
             // Found a ceiling!
             if (!BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
-                world.setBlockType(new Vector(x, platformY, z), BlockID.GLASS);
-                setPosition(new Vector(x + 0.5, platformY + 1, z + 0.5));
+                floatAt(x, platformY + 1, z, alwaysGlass);
                 return true;
             }
 
@@ -270,6 +280,17 @@ public abstract class LocalPlayer {
      * @return whether the player was moved
      */
     public boolean ascendUpwards(int distance) {
+        return ascendUpwards(distance, true);
+    }
+
+    /**
+     * Just go up.
+     *
+     * @param distance How far up to teleport
+     * @param alwaysGlass Always put glass under the player
+     * @return whether the player was moved
+     */
+    public boolean ascendUpwards(int distance, boolean alwaysGlass) {
         final Vector pos = getBlockIn();
         final int x = pos.getBlockX();
         final int initialY = Math.max(0, pos.getBlockY());
@@ -284,8 +305,7 @@ public abstract class LocalPlayer {
             } else if (y > maxY + 1) {
                 break;
             } else if (y == maxY + 1) {
-                world.setBlockType(new Vector(x, y - 2, z), BlockID.GLASS);
-                setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
+                floatAt(x, y - 1, z, alwaysGlass);
                 return true;
             }
 
@@ -293,6 +313,18 @@ public abstract class LocalPlayer {
         }
 
         return false;
+    }
+
+    /**
+     * Make the player float in the given blocks.
+     *
+     * @param x The X coordinate of the block to float in
+     * @param y The Y coordinate of the block to float in
+     * @param z The Z coordinate of the block to float in
+     */
+    public void floatAt(int x, int y, int z, boolean alwaysGlass) {
+        getPosition().getWorld().setBlockType(new Vector(x, y - 1, z), BlockID.GLASS);
+        setPosition(new Vector(x + 0.5, y, z + 0.5));
     }
 
     /**
