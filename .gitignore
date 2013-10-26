@@ -7,3 +7,4 @@
 /*.iml
 /.idea
 /forge-download
+*-private.sh
