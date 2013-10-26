@@ -1,8 +1,11 @@
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.shape;
 
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.expression.runtime.ExpressionEnvironment;
 
-class WorldEditExpressionEnvironment implements ExpressionEnvironment {
+public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
     private final Vector unit;
     private final Vector zero2;
     private Vector current = new Vector();
