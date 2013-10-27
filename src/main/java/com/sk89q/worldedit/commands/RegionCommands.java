@@ -145,6 +145,31 @@ public class RegionCommands {
     }
 
     @Command(
+            aliases = { "/border" },
+            usage = "<block>",
+            desc = "Set a block on top of solid blocks as the region border",
+            min = 1,
+            max = 1
+    )
+    @CommandPermissions("worldedit.region.border")
+    @Logging(REGION)
+    public void border(CommandContext args, LocalSession session, LocalPlayer player,
+                        EditSession editSession) throws WorldEditException {
+
+        Pattern pat = we.getBlockPattern(player, args.getString(0));
+
+        Region region = session.getSelection(player.getWorld());
+        int affected = 0;
+        if (pat instanceof SingleBlockPattern) {
+            affected = editSession.createBorderBlocks(region,
+                    ((SingleBlockPattern) pat).getBlock());
+        } else {
+            affected = editSession.createBorderBlocks(region, pat);
+        }
+        player.print(affected + " block(s) have been created as a border.");
+    }
+
+    @Command(
         aliases = { "/center", "/middle" },
         usage = "<block>",
         desc = "Set the center block(s)",
@@ -182,7 +207,7 @@ public class RegionCommands {
     @Command(
         aliases = { "/walls" },
         usage = "<block>",
-        desc = "Build the four sides of the selection",
+        desc = "Build the sides of the selection",
         min = 1,
         max = 1
     )
@@ -194,9 +219,9 @@ public class RegionCommands {
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         int affected;
         if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), ((SingleBlockPattern) pattern).getBlock());
+            affected = editSession.makeWalls(session.getSelection(player.getWorld()), ((SingleBlockPattern) pattern).getBlock());
         } else {
-            affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), pattern);
+            affected = editSession.makeWalls(session.getSelection(player.getWorld()), pattern);
         }
 
         player.print(affected + " block(s) have been changed.");

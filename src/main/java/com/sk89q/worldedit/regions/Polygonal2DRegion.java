@@ -415,6 +415,25 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
         return points.size();
     }
 
+
+    /**
+     * Check if the region points are collinear.
+     *
+     * @return
+     */
+    public boolean isCollinear() {
+        for (int p = 0; p < points.size(); ++p) {
+            BlockVector2D firstVector = points.get(p);
+            BlockVector2D secondVector = points.get(p < points.size() - 1 ? p + 1 : 0);
+
+            // The Vector2D.isCollinearWith didn't worked as expected...
+            if (firstVector.getBlockX() != secondVector.getBlockX() && firstVector.getBlockZ() != secondVector.getBlockZ())
+                return false;
+        }
+
+        return true;
+    }
+
     /**
      * Expand the height of the polygon to fit the specified Y.
      *
