@@ -25,6 +25,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
  *
@@ -32,11 +33,11 @@ import com.sk89q.worldedit.Vector;
  */
 public class UnderOverlayMask implements Mask {
     private final int yMod;
-    private Mask mask; // TODO: Make this final and remove the deprecated classes
+    private Mask mask;
 
     @Deprecated
     public UnderOverlayMask(Set<Integer> ids, boolean overlay) {
-        this(new BlockTypeMask(ids), overlay); 
+        this(new BlockTypeMask(ids), overlay);
     }
     
     public UnderOverlayMask(Mask mask, boolean overlay) {
@@ -46,13 +47,17 @@ public class UnderOverlayMask implements Mask {
 
     @Deprecated
     public void addAll(Set<Integer> ids) {
-        if (mask instanceof BlockTypeMask) {
-            BlockTypeMask blockTypeMask = (BlockTypeMask) mask;
+        if (mask instanceof BlockMask) {
+            final BlockMask blockTypeMask = (BlockMask) mask;
             for (Integer id : ids) {
-                blockTypeMask.add(id);
+                blockTypeMask.add(new BaseBlock(id));
             }
         } else if (mask instanceof ExistingBlockMask) {
-            mask = new BlockTypeMask(ids);
+            final BlockMask blockMask = new BlockMask();
+            for (int type : ids) {
+                blockMask.add(new BaseBlock(type));
+            }
+            mask = blockMask;
         }
     }
 
