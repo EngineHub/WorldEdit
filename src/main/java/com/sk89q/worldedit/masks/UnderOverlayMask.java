@@ -68,7 +68,6 @@ public class UnderOverlayMask implements Mask {
 
     @Override
     public boolean matches(EditSession editSession, Vector pos) {
-        return mask.matches(editSession, pos.add(0, yMod, 0));
+        return !mask.matches(editSession, pos) && mask.matches(editSession, pos.add(0, yMod, 0));
     }
-
 }
