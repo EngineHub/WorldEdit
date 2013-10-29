@@ -84,6 +84,7 @@ import com.sk89q.worldedit.masks.InvertedMask;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.masks.RandomMask;
 import com.sk89q.worldedit.masks.RegionMask;
+import com.sk89q.worldedit.masks.SolidBlockMask;
 import com.sk89q.worldedit.masks.UnderOverlayMask;
 import com.sk89q.worldedit.patterns.BlockChance;
 import com.sk89q.worldedit.patterns.ClipboardPattern;
@@ -731,6 +732,8 @@ public class WorldEdit {
         case '#':
             if (component.equalsIgnoreCase("#existing")) {
                 return new ExistingBlockMask();
+            } else if (component.equalsIgnoreCase("#solid")) {
+                return new SolidBlockMask();
             } else if (component.equalsIgnoreCase("#dregion")
                     || component.equalsIgnoreCase("#dselection")
                     || component.equalsIgnoreCase("#dsel")) {
