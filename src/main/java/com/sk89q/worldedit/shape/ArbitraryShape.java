@@ -34,7 +34,7 @@ import com.sk89q.worldedit.regions.Region;
  * @author TomyLobo
  */
 public abstract class ArbitraryShape {
-    private final Region extent;
+    protected final Region extent;
     private int cacheOffsetX;
     private int cacheOffsetY;
     private int cacheOffsetZ;
@@ -148,6 +148,20 @@ public abstract class ArbitraryShape {
      * @throws MaxChangedBlocksException
      */
     public int generate(EditSession editSession, Pattern pattern, boolean hollow) throws MaxChangedBlocksException {
+        return generate(editSession, pattern, hollow, false);
+    }
+
+    /**
+     * Generates the shape.
+     *
+     * @param editSession The EditSession to use.
+     * @param pattern The pattern to generate default materials from.
+     * @param hollow Specifies whether to generate a hollow shape.
+     * @param flat If hollow mode is enabled, disregard blocks above/below
+     * @return number of affected blocks.
+     * @throws MaxChangedBlocksException
+     */
+    public int generate(EditSession editSession, Pattern pattern, boolean hollow, boolean flat) throws MaxChangedBlocksException {
         int affected = 0;
 
         for (BlockVector position : getExtent()) {
@@ -179,19 +193,24 @@ public abstract class ArbitraryShape {
                     draw = true;
                     break;
                 }
-                if (!isInsideCached(x, y + 1, z, pattern)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, y - 1, z, pattern)) {
-                    draw = true;
-                    break;
-                }
                 if (!isInsideCached(x, y, z + 1, pattern)) {
                     draw = true;
                     break;
                 }
                 if (!isInsideCached(x, y, z - 1, pattern)) {
+                    draw = true;
+                    break;
+                }
+
+                if (flat) {
+                    break;
+                }
+
+                if (!isInsideCached(x, y + 1, z, pattern)) {
+                    draw = true;
+                    break;
+                }
+                if (!isInsideCached(x, y - 1, z, pattern)) {
                     draw = true;
                     break;
                 }
