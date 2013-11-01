@@ -47,6 +47,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.shape.ArbitraryShape;
+import com.sk89q.worldedit.shape.RegionShape;
 import com.sk89q.worldedit.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.util.TreeGenerator;
 
@@ -1528,6 +1529,19 @@ public class EditSession {
     }
 
     /**
+     * Make faces of the region
+     *
+     * @param region
+     * @param pattern
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int makeFaces(final Region region, Pattern pattern) throws MaxChangedBlocksException {
+        return new RegionShape(region).generate(this, pattern, true);
+    }
+
+
+    /**
      * Make walls of the region (as if it was a cuboid if it's not).
      *
      * @param region
@@ -1625,6 +1639,18 @@ public class EditSession {
         }
 
         return affected;
+    }
+
+    /**
+     * Make walls of the region
+     *
+     * @param region
+     * @param pattern
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int makeWalls(final Region region, Pattern pattern) throws MaxChangedBlocksException {
+        return new RegionShape(region).generate(this, pattern, true, true);
     }
 
     /**

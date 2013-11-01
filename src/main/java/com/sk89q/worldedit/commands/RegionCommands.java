@@ -44,6 +44,7 @@ import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 
@@ -191,12 +192,15 @@ public class RegionCommands {
     public void walls(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        Pattern pattern = we.getBlockPattern(player, args.getString(0));
-        int affected;
-        if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), ((SingleBlockPattern) pattern).getBlock());
+        final Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        final int affected;
+        final Region region = session.getSelection(player.getWorld());
+        if (!(region instanceof CuboidRegion)) {
+            affected = editSession.makeWalls(region, pattern);
+        } else if (pattern instanceof SingleBlockPattern) {
+            affected = editSession.makeCuboidWalls(region, ((SingleBlockPattern) pattern).getBlock());
         } else {
-            affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), pattern);
+            affected = editSession.makeCuboidWalls(region, pattern);
         }
 
         player.print(affected + " block(s) have been changed.");
@@ -214,12 +218,15 @@ public class RegionCommands {
     public void faces(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        Pattern pattern = we.getBlockPattern(player, args.getString(0));
-        int affected;
-        if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.makeCuboidFaces(session.getSelection(player.getWorld()), ((SingleBlockPattern) pattern).getBlock());
+        final Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        final int affected;
+        final Region region = session.getSelection(player.getWorld());
+        if (!(region instanceof CuboidRegion)) {
+            affected = editSession.makeFaces(region, pattern);
+        } else if (pattern instanceof SingleBlockPattern) {
+            affected = editSession.makeCuboidFaces(region, ((SingleBlockPattern) pattern).getBlock());
         } else {
-            affected = editSession.makeCuboidFaces(session.getSelection(player.getWorld()), pattern);
+            affected = editSession.makeCuboidFaces(region, pattern);
         }
 
         player.print(affected + " block(s) have been changed.");
