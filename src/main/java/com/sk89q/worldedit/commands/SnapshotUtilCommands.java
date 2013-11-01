@@ -140,10 +140,10 @@ public class SnapshotUtilCommands {
 
         try {
             // Restore snapshot
-            SnapshotRestore restore = new SnapshotRestore(chunkStore, region);
+            SnapshotRestore restore = new SnapshotRestore(chunkStore, editSession, region);
             //player.print(restore.getChunksAffected() + " chunk(s) will be loaded.");
 
-            restore.restore(editSession);
+            restore.restore();
 
             if (restore.hadTotalFailure()) {
                 String error = restore.getLastErrorMessage();

@@ -190,12 +190,6 @@ public class EditSession {
             return false;
         }
 
-        if (mask != null) {
-            if (!mask.matches(this, pt)) {
-                return false;
-            }
-        }
-
         final int existing = world.getBlockType(pt);
 
         // Clear the container block so that it doesn't drop items
@@ -258,6 +252,12 @@ public class EditSession {
     public boolean setBlock(Vector pt, BaseBlock block)
             throws MaxChangedBlocksException {
         BlockVector blockPt = pt.toBlockVector();
+
+        if (mask != null) {
+            if (!mask.matches(this, blockPt)) {
+                return false;
+            }
+        }
 
         // if (!original.containsKey(blockPt)) {
         original.put(blockPt, getBlock(pt));
