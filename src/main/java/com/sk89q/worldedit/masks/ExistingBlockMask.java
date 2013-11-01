@@ -20,15 +20,10 @@
 package com.sk89q.worldedit.masks;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockID;
 
-public class ExistingBlockMask implements Mask {
-    public void prepare(LocalSession session, LocalPlayer player, Vector target) {
-    }
-
+public class ExistingBlockMask extends AbstractMask {
     @Override
     public boolean matches(EditSession editSession, Vector pos) {
         return editSession.getBlockType(pos) != BlockID.AIR;
