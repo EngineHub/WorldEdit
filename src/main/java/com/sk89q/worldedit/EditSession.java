@@ -1654,7 +1654,20 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int makeWalls(final Region region, Pattern pattern) throws MaxChangedBlocksException {
-        return new RegionShape(region).generate(this, pattern, true, true);
+        final int minY = region.getMinimumPoint().getBlockY();
+        final int maxY = region.getMaximumPoint().getBlockY();
+        final ArbitraryShape shape = new RegionShape(region) {
+            @Override
+            protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
+                if (y > maxY || y < minY) {
+                    // Put holes into the floor and ceiling by telling ArbitraryShape that the shape goes on outside the region
+                    return defaultMaterial;
+                }
+
+                return super.getMaterial(x, y, z, defaultMaterial);
+            }
+        };
+        return shape.generate(this, pattern, true);
     }
 
     /**
