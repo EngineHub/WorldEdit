@@ -21,6 +21,9 @@ package com.sk89q.worldedit.bukkit;
 
 import java.util.List;
 
+import com.sk89q.worldedit.NotABlockException;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -41,6 +44,7 @@ import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
 import com.sk89q.worldedit.bukkit.entity.BukkitExpOrb;
 import com.sk89q.worldedit.bukkit.entity.BukkitItem;
 import com.sk89q.worldedit.bukkit.entity.BukkitPainting;
+import org.bukkit.inventory.ItemStack;
 
 public class BukkitUtil {
     private BukkitUtil() {
@@ -152,5 +156,14 @@ public class BukkitUtil {
             default:
                 return new BukkitEntity(toLocation(e.getLocation()), e.getType(), e.getUniqueId());
         }
+    }
+
+    public static BaseBlock toBlock(LocalWorld world, ItemStack itemStack) throws WorldEditException {
+        final int typeId = itemStack.getTypeId();
+        if (world.isValidBlockType(typeId)) {
+            return new BaseBlock(typeId, itemStack.getDurability());
+        }
+
+        throw new NotABlockException(typeId);
     }
 }

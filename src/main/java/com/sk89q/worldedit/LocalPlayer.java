@@ -457,6 +457,19 @@ public abstract class LocalPlayer {
     public abstract int getItemInHand();
 
     /**
+     * Get the Block that the player is holding.
+     *
+     * @return the item id of the item the player is holding
+     */
+    public BaseBlock getBlockInHand() throws WorldEditException {
+        final int typeId = getItemInHand();
+        if (!getWorld().isValidBlockType(typeId)) {
+            throw new NotABlockException(typeId);
+        }
+        return new BaseBlock(typeId);
+    }
+
+    /**
      * Get the name of the player.
      *
      * @return String
