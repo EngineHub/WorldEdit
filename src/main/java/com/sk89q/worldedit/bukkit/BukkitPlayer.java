@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.blocks.BlockID;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

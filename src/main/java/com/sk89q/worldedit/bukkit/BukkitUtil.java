@@ -117,6 +117,7 @@ public class BukkitUtil {
      * Bukkit's Location class has serious problems with floating point
      * precision.
      */
+    @SuppressWarnings("RedundantIfStatement")
     public static boolean equals(org.bukkit.Location a, org.bukkit.Location b) {
         if (Math.abs(a.getX() - b.getX()) > EQUALS_PRECISION) return false;
         if (Math.abs(a.getY() - b.getY()) > EQUALS_PRECISION) return false;
