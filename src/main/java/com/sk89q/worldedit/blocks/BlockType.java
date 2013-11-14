@@ -450,7 +450,6 @@ public enum BlockType {
         canPassThrough.add(BlockID.END_PORTAL);
         canPassThrough.add(BlockID.TRIPWIRE_HOOK);
         canPassThrough.add(BlockID.TRIPWIRE);
-        canPassThrough.add(BlockID.FLOWER_POT);
         canPassThrough.add(BlockID.CARROTS);
         canPassThrough.add(BlockID.POTATOES);
         canPassThrough.add(BlockID.WOODEN_BUTTON);
