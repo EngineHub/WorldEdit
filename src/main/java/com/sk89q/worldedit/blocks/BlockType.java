@@ -1610,7 +1610,7 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.DETECTOR_RAIL, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.LONG_GRASS, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.DEAD_BUSH, PlayerDirection.DOWN);
-        for (int offset = 0; offset <= 8; offset += 8) {
+        for (int offset = 0; offset < 16; offset += 8) {
             dataAttachments.put(typeDataKey(BlockID.PISTON_EXTENSION, offset + 0), PlayerDirection.UP);
             dataAttachments.put(typeDataKey(BlockID.PISTON_EXTENSION, offset + 1), PlayerDirection.DOWN);
             addCardinals(BlockID.PISTON_EXTENSION, offset + 2, offset + 5, offset + 3, offset + 4);
@@ -1620,7 +1620,8 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.BROWN_MUSHROOM, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.RED_MUSHROOM, PlayerDirection.DOWN);
         for (int blockId : new int[] { BlockID.TORCH, BlockID.REDSTONE_TORCH_ON, BlockID.REDSTONE_TORCH_OFF }) {
-            dataAttachments.put(typeDataKey(blockId, 5), PlayerDirection.DOWN);
+            dataAttachments.put(typeDataKey(blockId, 0), PlayerDirection.DOWN);
+            dataAttachments.put(typeDataKey(blockId, 5), PlayerDirection.DOWN); // According to the minecraft wiki, this one is history. Keeping both, for now...
             addCardinals(blockId, 4, 1, 3, 2);
         }
         nonDataAttachments.put(BlockID.REDSTONE_WIRE, PlayerDirection.DOWN);
@@ -1630,16 +1631,18 @@ public enum BlockType {
         addCardinals(BlockID.LADDER, 2, 5, 3, 4);
         nonDataAttachments.put(BlockID.MINECART_TRACKS, PlayerDirection.DOWN);
         addCardinals(BlockID.WALL_SIGN, 2, 5, 3, 4);
-        for (int offset = 0; offset <= 8; offset += 8) {
+        for (int offset = 0; offset < 16; offset += 8) {
             addCardinals(BlockID.LEVER, offset + 4, offset + 1, offset + 3, offset + 2);
             dataAttachments.put(typeDataKey(BlockID.LEVER, offset + 5), PlayerDirection.DOWN);
             dataAttachments.put(typeDataKey(BlockID.LEVER, offset + 6), PlayerDirection.DOWN);
+            dataAttachments.put(typeDataKey(BlockID.LEVER, offset + 7), PlayerDirection.UP);
+            dataAttachments.put(typeDataKey(BlockID.LEVER, offset + 0), PlayerDirection.UP);
         }
         nonDataAttachments.put(BlockID.STONE_PRESSURE_PLATE, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.IRON_DOOR, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.WOODEN_PRESSURE_PLATE, PlayerDirection.DOWN);
         // redstone torches: see torches
-        for (int offset = 0; offset <= 8; offset += 8) {
+        for (int offset = 0; offset < 16; offset += 8) {
             addCardinals(BlockID.STONE_BUTTON, offset + 4, offset + 1, offset + 3, offset + 2);
             addCardinals(BlockID.WOODEN_BUTTON, offset + 4, offset + 1, offset + 3, offset + 2);
         }
@@ -1648,7 +1651,7 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.CAKE_BLOCK, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.REDSTONE_REPEATER_OFF, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.REDSTONE_REPEATER_ON, PlayerDirection.DOWN);
-        for (int offset = 0; offset <= 4; offset += 4) {
+        for (int offset = 0; offset < 16; offset += 4) {
             addCardinals(BlockID.TRAP_DOOR, offset + 0, offset + 3, offset + 1, offset + 2);
         }
         nonDataAttachments.put(BlockID.PUMPKIN_STEM, PlayerDirection.DOWN);
@@ -1657,10 +1660,10 @@ public enum BlockType {
         dataAttachments.put(typeDataKey(BlockID.VINE, 0), PlayerDirection.UP);
         addCardinals(BlockID.VINE, 1, 2, 4, 8);
         nonDataAttachments.put(BlockID.NETHER_WART, PlayerDirection.DOWN);
-        for (int offset = 0; offset <= 4; offset += 4) {
+        for (int offset = 0; offset < 16; offset += 4) {
             addCardinals(BlockID.COCOA_PLANT, offset + 0, offset + 1, offset + 2, offset + 3);
         }
-        for (int offset = 0; offset <= 4; offset += 4) {
+        for (int offset = 0; offset < 16; offset += 4) {
             addCardinals(BlockID.TRIPWIRE_HOOK, offset + 2, offset + 3, offset + 0, offset + 1);
         }
         nonDataAttachments.put(BlockID.TRIPWIRE, PlayerDirection.DOWN);
