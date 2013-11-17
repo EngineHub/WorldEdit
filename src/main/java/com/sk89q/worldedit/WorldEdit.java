@@ -377,6 +377,7 @@ public class WorldEdit {
      * @param player
      * @param arg
      * @param allAllowed true to ignore blacklists
+     * @param allowNoData return -1 for data if no data was given.
      * @return
      * @throws UnknownItemException
      * @throws DisallowedItemException
