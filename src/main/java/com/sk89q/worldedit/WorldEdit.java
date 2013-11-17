@@ -367,7 +367,7 @@ public class WorldEdit {
     }
 
     public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
         return getBlock(player, arg, allAllowed, false);
     }
 
@@ -384,7 +384,7 @@ public class WorldEdit {
      */
     public BaseBlock getBlock(LocalPlayer player, String arg,
                               boolean allAllowed, boolean allowNoData)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
         BlockType blockType;
         arg = arg.replace("_", " ");
         arg = arg.replace(";", "|");
@@ -620,12 +620,12 @@ public class WorldEdit {
      * @throws DisallowedItemException
      */
     public BaseBlock getBlock(LocalPlayer player, String id)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
         return getBlock(player, id, false);
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed, boolean allowNoData)
-            throws DisallowedItemException, UnknownItemException {
+            throws WorldEditException {
         String[] items = list.split(",");
         Set<BaseBlock> blocks = new HashSet<BaseBlock>();
         for (String id : items) {
@@ -635,12 +635,12 @@ public class WorldEdit {
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed)
-            throws DisallowedItemException, UnknownItemException {
+            throws WorldEditException {
         return getBlocks(player, list, allAllowed, false);
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list)
-            throws DisallowedItemException, UnknownItemException {
+            throws WorldEditException {
         return getBlocks(player, list, false);
     }
 
@@ -655,7 +655,7 @@ public class WorldEdit {
      * @throws DisallowedItemException
      */
     public Pattern getBlockPattern(LocalPlayer player, String patternString)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
 
         String[] items = patternString.split(",");
 
@@ -804,7 +804,7 @@ public class WorldEdit {
      */
     public Set<Integer> getBlockIDs(LocalPlayer player,
             String list, boolean allBlocksAllowed)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
 
         String[] items = list.split(",");
         Set<Integer> blocks = new HashSet<Integer>();
