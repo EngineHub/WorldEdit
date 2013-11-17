@@ -24,6 +24,11 @@ import java.util.List;
 import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.ItemID;
+import com.sk89q.worldedit.blocks.SkullBlock;
+import org.bukkit.DyeColor;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -45,6 +50,7 @@ import com.sk89q.worldedit.bukkit.entity.BukkitExpOrb;
 import com.sk89q.worldedit.bukkit.entity.BukkitItem;
 import com.sk89q.worldedit.bukkit.entity.BukkitPainting;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Dye;
 
 public class BukkitUtil {
     private BukkitUtil() {
@@ -162,6 +168,25 @@ public class BukkitUtil {
         final int typeId = itemStack.getTypeId();
         if (world.isValidBlockType(typeId)) {
             return new BaseBlock(typeId, itemStack.getDurability());
+        }
+
+        switch (typeId) {
+            case ItemID.INK_SACK:
+                final Dye materialData = (Dye) itemStack.getData();
+                if (materialData.getColor() == DyeColor.BROWN) {
+                    return new BaseBlock(BlockID.COCOA_PLANT, -1);
+                }
+                break;
+
+            case ItemID.HEAD:
+                return new SkullBlock(0, (byte) itemStack.getDurability());
+
+            default:
+                final BaseBlock baseBlock = BlockType.getBlockForItem(typeId);
+                if (baseBlock != null) {
+                    return baseBlock;
+                }
+                break;
         }
 
         throw new NotABlockException(typeId);
