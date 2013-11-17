@@ -766,6 +766,19 @@ public class EditSession {
                                 walked.addFirst(upperBlock);
                             }
                         }
+                        break;
+
+                    case BlockID.MINECART_TRACKS:
+                    case BlockID.POWERED_RAIL:
+                    case BlockID.DETECTOR_RAIL:
+                    case BlockID.ACTIVATOR_RAIL:
+                        // Here, rails are hardcoded to be attached to the block below them.
+                        // They're also attached to the block they're ascending towards via BlockType.getAttachment.
+                        BlockVector lowerBlock = current.add(0, -1, 0).toBlockVector();
+                        if (blocks.contains(lowerBlock) && !walked.contains(lowerBlock)) {
+                            walked.addFirst(lowerBlock);
+                        }
+                        break;
                     }
 
                     final PlayerDirection attachment = BlockType.getAttachment(type, data);
