@@ -1606,8 +1606,6 @@ public enum BlockType {
     private static final Map<Integer, PlayerDirection> nonDataAttachments = new HashMap<Integer, PlayerDirection>();
     static {
         nonDataAttachments.put(BlockID.SAPLING, PlayerDirection.DOWN);
-        nonDataAttachments.put(BlockID.POWERED_RAIL, PlayerDirection.DOWN);
-        nonDataAttachments.put(BlockID.DETECTOR_RAIL, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.LONG_GRASS, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.DEAD_BUSH, PlayerDirection.DOWN);
         for (int offset = 0; offset < 16; offset += 8) {
@@ -1629,7 +1627,6 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.SIGN_POST, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.WOODEN_DOOR, PlayerDirection.DOWN);
         addCardinals(BlockID.LADDER, 2, 5, 3, 4);
-        nonDataAttachments.put(BlockID.MINECART_TRACKS, PlayerDirection.DOWN);
         addCardinals(BlockID.WALL_SIGN, 2, 5, 3, 4);
         for (int offset = 0; offset < 16; offset += 8) {
             addCardinals(BlockID.LEVER, offset + 4, offset + 1, offset + 3, offset + 2);
@@ -1675,8 +1672,16 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.PRESSURE_PLATE_HEAVY, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.COMPARATOR_OFF, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.COMPARATOR_ON, PlayerDirection.DOWN);
-        nonDataAttachments.put(BlockID.ACTIVATOR_RAIL, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.CARPET, PlayerDirection.DOWN);
+
+        // Rails are hardcoded to be attached to the block below them.
+        // In addition to that, let's attach ascending rails to the block they're ascending towards.
+        for (int offset = 0; offset < 16; offset += 8) {
+            addCardinals(BlockID.POWERED_RAIL, offset + 3, offset + 4, offset + 2, offset + 5);
+            addCardinals(BlockID.DETECTOR_RAIL, offset + 3, offset + 4, offset + 2, offset + 5);
+            addCardinals(BlockID.MINECART_TRACKS, offset + 3, offset + 4, offset + 2, offset + 5);
+            addCardinals(BlockID.ACTIVATOR_RAIL, offset + 3, offset + 4, offset + 2, offset + 5);
+        }
     }
 
     /**
