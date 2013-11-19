@@ -240,6 +240,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <createSourcesJar>true</createSourcesJar>
               <artifactSet>
                 <includes>
                   <include>com.sk89q:jchronic</include>
