@@ -407,6 +407,18 @@ public class WorldEdit {
             blockId = blockInHand.getId();
             blockType = BlockType.fromID(blockId);
             data = blockInHand.getData();
+        } else if ("pos1".equalsIgnoreCase(testID)) {
+            // Get the block type from the "primary position"
+            final LocalWorld world = player.getWorld();
+            final BlockVector primaryPosition = getSession(player).getRegionSelector(world).getPrimaryPosition();
+            final BaseBlock blockInHand = world.getBlock(primaryPosition);
+            if (blockInHand.getClass() != BaseBlock.class) {
+                return blockInHand;
+            }
+
+            blockId = blockInHand.getId();
+            blockType = BlockType.fromID(blockId);
+            data = blockInHand.getData();
         } else {
             // Attempt to parse the item ID or otherwise resolve an item/block
             // name to its numeric ID
