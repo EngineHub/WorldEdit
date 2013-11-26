@@ -106,7 +106,6 @@ public class PropertiesConfiguration extends LocalConfiguration {
         scriptsDir = getString("craftscript-dir", scriptsDir);
         butcherDefaultRadius = getInt("butcher-default-radius", butcherDefaultRadius);
         butcherMaxRadius = getInt("butcher-max-radius", butcherMaxRadius);
-        allowExtraDataValues = getBool("allow-extra-data-values", allowExtraDataValues);
         allowSymlinks = getBool("allow-symbolic-links", allowSymlinks);
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));

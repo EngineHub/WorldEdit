@@ -79,9 +79,6 @@ public class YAMLConfiguration extends LocalConfiguration {
         disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
         allowedDataCycleBlocks = new HashSet<Integer>(config.getIntList("limits.allowed-data-cycle-blocks", null));
 
-        allowExtraDataValues = config.getBoolean("limits.allow-extra-data-values", false);
-
-
         registerHelp = config.getBoolean("register-help", true);
         logCommands = config.getBoolean("logging.log-commands", logCommands);
         logFile = config.getString("logging.file", logFile);
