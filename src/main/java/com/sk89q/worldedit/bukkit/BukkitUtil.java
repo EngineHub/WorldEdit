@@ -187,7 +187,7 @@ public class BukkitUtil {
         }
 
         if (world.isValidBlockType(typeId)) {
-            return new BaseBlock(typeId, -1);
+            return BaseBlock.wildcard(typeId, itemStack.getDurability(), 0);
         }
 
         throw new NotABlockException(typeId);
