@@ -33,6 +33,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.UnknownItemException;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.commands.InsufficientArgumentsException;
 import com.sk89q.worldedit.patterns.Pattern;
@@ -156,7 +157,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws DisallowedItemException
      */
     public BaseBlock getBlock(String arg, boolean allAllowed)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
         return controller.getBlock(player, arg, allAllowed);
     }
 
@@ -169,7 +170,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws DisallowedItemException
      */
     public BaseBlock getBlock(String id)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
         return controller.getBlock(player, id, false);
     }
 
@@ -182,7 +183,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws DisallowedItemException 
      */
     public Pattern getBlockPattern(String list)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
         return controller.getBlockPattern(player, list);
     }
 
@@ -196,7 +197,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws DisallowedItemException 
      */
     public Set<Integer> getBlockIDs(String list, boolean allBlocksAllowed)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
         return controller.getBlockIDs(player, list, allBlocksAllowed);
     }
 

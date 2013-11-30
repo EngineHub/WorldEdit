@@ -367,7 +367,7 @@ public class WorldEdit {
     }
 
     public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
         return getBlock(player, arg, allAllowed, false);
     }
 
@@ -384,7 +384,7 @@ public class WorldEdit {
      */
     public BaseBlock getBlock(LocalPlayer player, String arg,
                               boolean allAllowed, boolean allowNoData)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
         BlockType blockType;
         arg = arg.replace("_", " ");
         arg = arg.replace(";", "|");
@@ -397,44 +397,67 @@ public class WorldEdit {
         int data = -1;
 
         boolean parseDataValue = true;
+        if ("hand".equalsIgnoreCase(testID)) {
+            // Get the block type from the item in the user's hand.
+            final BaseBlock blockInHand = player.getBlockInHand();
+            if (blockInHand.getClass() != BaseBlock.class) {
+                return blockInHand;
+            }
 
-        // Attempt to parse the item ID or otherwise resolve an item/block
-        // name to its numeric ID
-        try {
-            blockId = Integer.parseInt(testID);
+            blockId = blockInHand.getId();
             blockType = BlockType.fromID(blockId);
-        } catch (NumberFormatException e) {
-            blockType = BlockType.lookup(testID);
-            if (blockType == null) {
-                int t = server.resolveItem(testID);
-                if (t > 0) {
-                    blockType = BlockType.fromID(t); // Could be null
-                    blockId = t;
+            data = blockInHand.getData();
+        } else if ("pos1".equalsIgnoreCase(testID)) {
+            // Get the block type from the "primary position"
+            final LocalWorld world = player.getWorld();
+            final BlockVector primaryPosition = getSession(player).getRegionSelector(world).getPrimaryPosition();
+            final BaseBlock blockInHand = world.getBlock(primaryPosition);
+            if (blockInHand.getClass() != BaseBlock.class) {
+                return blockInHand;
+            }
+
+            blockId = blockInHand.getId();
+            blockType = BlockType.fromID(blockId);
+            data = blockInHand.getData();
+        } else {
+            // Attempt to parse the item ID or otherwise resolve an item/block
+            // name to its numeric ID
+            try {
+                blockId = Integer.parseInt(testID);
+                blockType = BlockType.fromID(blockId);
+            } catch (NumberFormatException e) {
+                blockType = BlockType.lookup(testID);
+                if (blockType == null) {
+                    int t = server.resolveItem(testID);
+                    if (t > 0) {
+                        blockType = BlockType.fromID(t); // Could be null
+                        blockId = t;
+                    }
                 }
             }
-        }
 
-        if (blockId == -1 && blockType == null) {
-            // Maybe it's a cloth
-            ClothColor col = ClothColor.lookup(testID);
-            if (col == null) {
-                throw new UnknownItemException(arg);
+            if (blockId == -1 && blockType == null) {
+                // Maybe it's a cloth
+                ClothColor col = ClothColor.lookup(testID);
+                if (col == null) {
+                    throw new UnknownItemException(arg);
+                }
+
+                blockType = BlockType.CLOTH;
+                data = col.getID();
+
+                // Prevent overriding the data value
+                parseDataValue = false;
             }
 
-            blockType = BlockType.CLOTH;
-            data = col.getID();
+            // Read block ID
+            if (blockId == -1) {
+                blockId = blockType.getID();
+            }
 
-            // Prevent overriding the data value
-            parseDataValue = false;
-        }
-
-        // Read block ID
-        if (blockId == -1) {
-            blockId = blockType.getID();
-        }
-
-        if (!player.getWorld().isValidBlockType(blockId)) {
-            throw new UnknownItemException(arg);
+            if (!player.getWorld().isValidBlockType(blockId)) {
+                throw new UnknownItemException(arg);
+            }
         }
 
         if (!allowNoData && data == -1) {
@@ -620,12 +643,12 @@ public class WorldEdit {
      * @throws DisallowedItemException
      */
     public BaseBlock getBlock(LocalPlayer player, String id)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
         return getBlock(player, id, false);
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed, boolean allowNoData)
-            throws DisallowedItemException, UnknownItemException {
+            throws WorldEditException {
         String[] items = list.split(",");
         Set<BaseBlock> blocks = new HashSet<BaseBlock>();
         for (String id : items) {
@@ -635,12 +658,12 @@ public class WorldEdit {
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed)
-            throws DisallowedItemException, UnknownItemException {
+            throws WorldEditException {
         return getBlocks(player, list, allAllowed, false);
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list)
-            throws DisallowedItemException, UnknownItemException {
+            throws WorldEditException {
         return getBlocks(player, list, false);
     }
 
@@ -655,7 +678,7 @@ public class WorldEdit {
      * @throws DisallowedItemException
      */
     public Pattern getBlockPattern(LocalPlayer player, String patternString)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
 
         String[] items = patternString.split(",");
 
@@ -804,7 +827,7 @@ public class WorldEdit {
      */
     public Set<Integer> getBlockIDs(LocalPlayer player,
             String list, boolean allBlocksAllowed)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
 
         String[] items = list.split(",");
         Set<Integer> blocks = new HashSet<Integer>();
