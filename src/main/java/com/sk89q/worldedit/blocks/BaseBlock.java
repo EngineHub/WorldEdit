@@ -21,6 +21,7 @@ package com.sk89q.worldedit.blocks;
 
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.foundation.Block;
+import com.sk89q.worldedit.masks.MaskedBlockMask;
 
 import java.util.Collection;
 
@@ -49,23 +50,6 @@ public class BaseBlock extends Block {
      */
     public BaseBlock(int type, int data) {
         super(type, data);
-    }
-
-    public static BaseBlock wildcard(int type, int data, final int mask) {
-        if (mask == ~0) {
-            return new BaseBlock(type, data);
-        }
-
-        return new BaseBlock(type, data) {
-            @Override
-            public int getMask() {
-                return mask;
-            }
-        };
-    }
-
-    public int getMask() {
-        return ~0;
     }
 
     /**
@@ -167,43 +151,7 @@ public class BaseBlock extends Block {
         return getData() == otherBlock.getData();
     }
 
-    /**
-     * Checks whether the type ID and data value are equal, after applying masks to the data values.
-     *
-     * @param o other block
-     * @return true if equal
-     */
-    public boolean equalsFuzzy(BaseBlock o) {
-        if (getType() != o.getType()) {
-            return false;
-        }
-
-        final int mask = getMask() & o.getMask();
-        return (getData() & mask) == (o.getData() & mask);
-    }
-
-    /**
-     * @param iter
-     * @return
-     * @deprecated This method is silly, use {@link #containsFuzzy(java.util.Collection, BaseBlock)} instead.
-     */
-    @Deprecated
-    public boolean inIterable(Iterable<BaseBlock> iter) {
-        for (BaseBlock block : iter) {
-            if (block.equalsFuzzy(this)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean containsFuzzy(Collection<BaseBlock> collection, BaseBlock o) {
-        // allow masked data in the searchBlocks to match various types
-        for (BaseBlock b : collection) {
-            if (b.equalsFuzzy(o)) {
-                return true;
-            }
-        }
-        return false;
+    public static MaskedBlockMask wildcard(int blockId, int data, int mask) {
+        return new MaskedBlockMask(new BaseBlock(blockId, data), mask);
     }
 }

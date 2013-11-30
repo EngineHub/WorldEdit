@@ -21,6 +21,7 @@ package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.masks.MaskedBlockMask;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -51,7 +52,7 @@ public class BukkitPlayer extends LocalPlayer {
         return itemStack != null ? itemStack.getTypeId() : 0;
     }
 
-    public BaseBlock getBlockInHand() throws WorldEditException {
+    public MaskedBlockMask getBlockInHand() throws WorldEditException {
         ItemStack itemStack = player.getItemInHand();
         return BukkitUtil.toBlock(getWorld(), itemStack);
     }

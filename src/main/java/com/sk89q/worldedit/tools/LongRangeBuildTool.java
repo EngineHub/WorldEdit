@@ -22,6 +22,7 @@ package com.sk89q.worldedit.tools;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.patterns.Pattern;
 
 /**
  * A tool that can place (or remove) blocks at a distance.
@@ -30,10 +31,10 @@ import com.sk89q.worldedit.blocks.BlockID;
  */
 public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTool {
 
-    BaseBlock primary;
-    BaseBlock secondary;
+    Pattern primary;
+    Pattern secondary;
 
-    public LongRangeBuildTool(BaseBlock primary, BaseBlock secondary) {
+    public LongRangeBuildTool(Pattern primary, Pattern secondary) {
         super("worldedit.tool.lrbuild");
         this.primary = primary;
         this.secondary = secondary;
@@ -51,10 +52,11 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
         if (pos == null) return false;
         EditSession eS = session.createEditSession(player);
         try {
-            if (secondary.getType() == BlockID.AIR) {
-                eS.setBlock(pos, secondary);
+            final BaseBlock secondaryBlock = secondary.next(pos);
+            if (secondaryBlock.getType() == BlockID.AIR) {
+                eS.setBlock(pos, secondaryBlock);
             } else {
-                eS.setBlock(pos.getFaceVector(), secondary);
+                eS.setBlock(pos.getFaceVector(), secondaryBlock);
             }
             return true;
         } catch (MaxChangedBlocksException e) {
@@ -72,10 +74,11 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
         if (pos == null) return false;
         EditSession eS = session.createEditSession(player);
         try {
-            if (primary.getType() == BlockID.AIR) {
-                eS.setBlock(pos, primary);
+            final BaseBlock primaryBlock = primary.next(pos);
+            if (primaryBlock.getType() == BlockID.AIR) {
+                eS.setBlock(pos, primaryBlock);
             } else {
-                eS.setBlock(pos.getFaceVector(), primary);
+                eS.setBlock(pos.getFaceVector(), primaryBlock);
             }
             return true;
         } catch (MaxChangedBlocksException e) {

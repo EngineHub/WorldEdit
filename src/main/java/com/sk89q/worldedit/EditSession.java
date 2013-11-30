@@ -44,6 +44,7 @@ import com.sk89q.worldedit.interpolation.Interpolation;
 import com.sk89q.worldedit.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.interpolation.Node;
 import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.masks.MaskedBlockMask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -534,7 +535,7 @@ public class EditSession {
     }
 
     public int countBlock(Region region, Set<Integer> searchIDs) {
-        Set<BaseBlock> passOn = new HashSet<BaseBlock>();
+        List<MaskedBlockMask> passOn = new ArrayList<MaskedBlockMask>();
         for (Integer i : searchIDs) {
             passOn.add(BaseBlock.wildcard(i, 0, 0));
         }
@@ -548,7 +549,7 @@ public class EditSession {
      * @param searchBlocks
      * @return
      */
-    public int countBlocks(Region region, Set<BaseBlock> searchBlocks) {
+    public int countBlocks(Region region, List<MaskedBlockMask> searchBlocks) {
         int count = 0;
 
         if (region instanceof CuboidRegion) {
@@ -569,7 +570,7 @@ public class EditSession {
                         Vector pt = new Vector(x, y, z);
 
                         BaseBlock compare = new BaseBlock(getBlockType(pt), getBlockData(pt));
-                        if (BaseBlock.containsFuzzy(searchBlocks, compare)) {
+                        if (MaskedBlockMask.containsFuzzy(searchBlocks, compare)) {
                             ++count;
                         }
                     }
@@ -578,7 +579,7 @@ public class EditSession {
         } else {
             for (Vector pt : region) {
                 BaseBlock compare = new BaseBlock(getBlockType(pt), getBlockData(pt));
-                if (BaseBlock.containsFuzzy(searchBlocks, compare)) {
+                if (MaskedBlockMask.containsFuzzy(searchBlocks, compare)) {
                     ++count;
                 }
             }
@@ -1090,12 +1091,12 @@ public class EditSession {
      * Remove nearby blocks of a type.
      *
      * @param pos
-     * @param blockType
+     * @param mask
      * @param size
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int removeNear(Vector pos, int blockType, int size)
+    public int removeNear(Vector pos, Mask mask, int size)
             throws MaxChangedBlocksException {
         int affected = 0;
         BaseBlock air = new BaseBlock(BlockID.AIR);
@@ -1110,12 +1111,14 @@ public class EditSession {
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
                 for (int z = minZ; z <= maxZ; ++z) {
-                    Vector p = new Vector(x, y, z);
+                    Vector pt = new Vector(x, y, z);
 
-                    if (getBlockType(p) == blockType) {
-                        if (setBlock(p, air)) {
-                            ++affected;
-                        }
+                    if (!mask.matches(this, pt)) {
+                        continue;
+                    }
+
+                    if (setBlock(pt, air)) {
+                        ++affected;
                     }
                 }
             }
@@ -1225,7 +1228,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, BaseBlock toBlock) throws MaxChangedBlocksException {
+    public int replaceBlocks(Region region, List<MaskedBlockMask> fromBlockTypes, BaseBlock toBlock) throws MaxChangedBlocksException {
         int affected = 0;
 
         if (region instanceof CuboidRegion) {
@@ -1253,7 +1256,7 @@ public class EditSession {
                             }
                         } else {
                             //replace <from-block> <to-block>
-                            if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
+                            if (!MaskedBlockMask.containsFuzzy(fromBlockTypes, curBlockType)) {
                                 continue;
                             }
                         }
@@ -1275,7 +1278,7 @@ public class EditSession {
                     }
                 } else {
                     //replace <from-block> <to-block>
-                    if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
+                    if (!MaskedBlockMask.containsFuzzy(fromBlockTypes, curBlockType)) {
                         continue;
                     }
                 }
@@ -1298,7 +1301,7 @@ public class EditSession {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, Pattern pattern) throws MaxChangedBlocksException {
+    public int replaceBlocks(Region region, List<MaskedBlockMask> fromBlockTypes, Pattern pattern) throws MaxChangedBlocksException {
         int affected = 0;
 
         if (region instanceof CuboidRegion) {
@@ -1326,7 +1329,7 @@ public class EditSession {
                             }
                         } else {
                             //replace <from-block> <to-block>
-                            if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
+                            if (!MaskedBlockMask.containsFuzzy(fromBlockTypes, curBlockType)) {
                                 continue;
                             }
                         }
@@ -1348,7 +1351,7 @@ public class EditSession {
                     }
                 } else {
                     //replace <from-block> <to-block>
-                    if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
+                    if (!MaskedBlockMask.containsFuzzy(fromBlockTypes, curBlockType)) {
                         continue;
                     }
                 }
@@ -1856,6 +1859,7 @@ public class EditSession {
     /**
      * Move a region.
      *
+     *
      * @param region
      * @param dir
      * @param distance
@@ -1866,7 +1870,7 @@ public class EditSession {
      * @throws RegionOperationException
      */
     public int moveRegion(Region region, Vector dir, int distance,
-            boolean copyAir, BaseBlock replace)
+            boolean copyAir, Pattern replace)
             throws MaxChangedBlocksException, RegionOperationException {
         int affected = 0;
 

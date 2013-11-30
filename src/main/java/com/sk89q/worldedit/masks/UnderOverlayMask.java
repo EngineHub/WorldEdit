@@ -35,11 +35,6 @@ public class UnderOverlayMask extends AbstractMask {
     private final int yMod;
     private Mask mask;
 
-    @Deprecated
-    public UnderOverlayMask(Set<Integer> ids, boolean overlay) {
-        this(new BlockTypeMask(ids), overlay);
-    }
-    
     public UnderOverlayMask(Mask mask, boolean overlay) {
         this.yMod = overlay ? -1 : 1;
         this.mask = mask;

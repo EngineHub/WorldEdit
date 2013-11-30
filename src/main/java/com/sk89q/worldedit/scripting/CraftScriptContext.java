@@ -158,7 +158,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      */
     public BaseBlock getBlock(String arg, boolean allAllowed)
             throws WorldEditException {
-        return controller.getBlock(player, arg, allAllowed);
+        return controller.getBlock(player, arg, allAllowed).getBlock();
     }
 
     /**
@@ -171,7 +171,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      */
     public BaseBlock getBlock(String id)
             throws WorldEditException {
-        return controller.getBlock(player, id, false);
+        return controller.getBlock(player, id, false).getBlock();
     }
 
     /**

@@ -44,6 +44,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.data.ChunkStore;
+import com.sk89q.worldedit.masks.MaskedBlockMask;
 import com.sk89q.worldedit.regions.ConvexPolyhedralRegionSelector;
 import com.sk89q.worldedit.regions.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.CylinderRegionSelector;
@@ -645,7 +646,7 @@ public class SelectionCommands {
             useData = true; //override d flag, if they specified data they want it
         }
         if (useData) {
-            Set<BaseBlock> searchBlocks = we.getBlocks(player, args.getString(0), true);
+            List<MaskedBlockMask> searchBlocks = we.getBlocks(player, args.getString(0), true);
             int count = editSession.countBlocks(session.getSelection(player.getWorld()), searchBlocks);
             player.print("Counted: " + count);
         } else {

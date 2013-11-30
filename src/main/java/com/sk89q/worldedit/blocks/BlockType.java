@@ -29,6 +29,7 @@ import java.util.Set;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.foundation.Block;
+import com.sk89q.worldedit.masks.MaskedBlockMask;
 
 /**
  * Block types.
@@ -291,8 +292,8 @@ public enum BlockType {
         }
     }
 
-    private static Map<Integer, BaseBlock> itemBlockMapping = new HashMap<Integer, BaseBlock>();
-    private static Map<Integer, BaseBlock> dataItemBlockMapping = new HashMap<Integer, BaseBlock>();
+    private static Map<Integer, MaskedBlockMask> itemBlockMapping = new HashMap<Integer, MaskedBlockMask>();
+    private static Map<Integer, MaskedBlockMask> dataItemBlockMapping = new HashMap<Integer, MaskedBlockMask>();
     static {
         for (int data = 0; data < 16; ++data) {
             dataItemBlockMapping.put(typeDataKey(BlockID.SAPLING, data), BaseBlock.wildcard(BlockID.LOG, data, 0x7));
@@ -305,20 +306,20 @@ public enum BlockType {
             dataItemBlockMapping.put(typeDataKey(BlockID.LOG2, data), BaseBlock.wildcard(BlockID.LOG2, data, 0x3));
             dataItemBlockMapping.put(typeDataKey(BlockID.LEAVES2, data), BaseBlock.wildcard(BlockID.LEAVES2, data, 0x3));
 
-            dataItemBlockMapping.put(typeDataKey(BlockID.DIRT, data), new BaseBlock(BlockID.DIRT, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.WOOD, data), new BaseBlock(BlockID.WOOD, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.SAND, data), new BaseBlock(BlockID.SAND, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.SANDSTONE, data), new BaseBlock(BlockID.SANDSTONE, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.LONG_GRASS, data), new BaseBlock(BlockID.LONG_GRASS, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.CLOTH, data), new BaseBlock(BlockID.CLOTH, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.SILVERFISH_BLOCK, data), new BaseBlock(BlockID.SILVERFISH_BLOCK, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.STONE_BRICK, data), new BaseBlock(BlockID.STONE_BRICK, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.COBBLESTONE_WALL, data), new BaseBlock(BlockID.COBBLESTONE_WALL, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.STAINED_CLAY, data), new BaseBlock(BlockID.STAINED_CLAY, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.CARPET, data), new BaseBlock(BlockID.CARPET, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.RED_FLOWER, data), new BaseBlock(BlockID.RED_FLOWER, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.DOUBLE_PLANT, data), new BaseBlock(BlockID.DOUBLE_PLANT, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.STAINED_GLASS, data), new BaseBlock(BlockID.STAINED_GLASS, data));
+            addDataItemMapping(typeDataKey(BlockID.DIRT, data), new BaseBlock(BlockID.DIRT, data));
+            addDataItemMapping(typeDataKey(BlockID.WOOD, data), new BaseBlock(BlockID.WOOD, data));
+            addDataItemMapping(typeDataKey(BlockID.SAND, data), new BaseBlock(BlockID.SAND, data));
+            addDataItemMapping(typeDataKey(BlockID.SANDSTONE, data), new BaseBlock(BlockID.SANDSTONE, data));
+            addDataItemMapping(typeDataKey(BlockID.LONG_GRASS, data), new BaseBlock(BlockID.LONG_GRASS, data));
+            addDataItemMapping(typeDataKey(BlockID.CLOTH, data), new BaseBlock(BlockID.CLOTH, data));
+            addDataItemMapping(typeDataKey(BlockID.SILVERFISH_BLOCK, data), new BaseBlock(BlockID.SILVERFISH_BLOCK, data));
+            addDataItemMapping(typeDataKey(BlockID.STONE_BRICK, data), new BaseBlock(BlockID.STONE_BRICK, data));
+            addDataItemMapping(typeDataKey(BlockID.COBBLESTONE_WALL, data), new BaseBlock(BlockID.COBBLESTONE_WALL, data));
+            addDataItemMapping(typeDataKey(BlockID.STAINED_CLAY, data), new BaseBlock(BlockID.STAINED_CLAY, data));
+            addDataItemMapping(typeDataKey(BlockID.CARPET, data), new BaseBlock(BlockID.CARPET, data));
+            addDataItemMapping(typeDataKey(BlockID.RED_FLOWER, data), new BaseBlock(BlockID.RED_FLOWER, data));
+            addDataItemMapping(typeDataKey(BlockID.DOUBLE_PLANT, data), new BaseBlock(BlockID.DOUBLE_PLANT, data));
+            addDataItemMapping(typeDataKey(BlockID.STAINED_GLASS, data), new BaseBlock(BlockID.STAINED_GLASS, data));
         }
 
         itemBlockMapping.put(ItemID.FLINT_AND_TINDER, BaseBlock.wildcard(BlockID.FIRE, 0, 0));
@@ -344,8 +345,12 @@ public enum BlockType {
         itemBlockMapping.put(ItemID.COMPARATOR, BaseBlock.wildcard(BlockID.COMPARATOR_OFF, 0, 0));
     }
 
-    public static BaseBlock getBlockForItem(int typeId, int data) {
-        final BaseBlock block = itemBlockMapping.get(typeId);
+    private static void addDataItemMapping(int i, BaseBlock baseBlock) {
+        dataItemBlockMapping.put(i, new MaskedBlockMask(baseBlock));
+    }
+
+    public static MaskedBlockMask getBlockForItem(int typeId, int data) {
+        final MaskedBlockMask block = itemBlockMapping.get(typeId);
 
         if (block != null) {
             return block;

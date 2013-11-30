@@ -29,6 +29,8 @@ import com.sk89q.minecraft.util.commands.NestedCommand;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 
@@ -101,11 +103,11 @@ public class ClipboardCommands {
     public void cut(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        BaseBlock block = new BaseBlock(BlockID.AIR);
+        Pattern pattern = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
         LocalWorld world = player.getWorld();
 
         if (args.argsLength() > 0) {
-            block = we.getBlock(player, args.getString(0));
+            pattern = we.getBlock(player, args.getString(0));
         }
 
         Region region = session.getSelection(world);
@@ -132,7 +134,7 @@ public class ClipboardCommands {
         }
         session.setClipboard(clipboard);
 
-        editSession.setBlocks(region, block);
+        editSession.setBlocks(region, pattern);
         player.print("Block(s) cut.");
     }
 

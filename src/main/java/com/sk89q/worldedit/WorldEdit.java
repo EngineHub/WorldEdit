@@ -82,6 +82,7 @@ import com.sk89q.worldedit.masks.DynamicRegionMask;
 import com.sk89q.worldedit.masks.ExistingBlockMask;
 import com.sk89q.worldedit.masks.InvertedMask;
 import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.masks.MaskedBlockMask;
 import com.sk89q.worldedit.masks.RandomMask;
 import com.sk89q.worldedit.masks.RegionMask;
 import com.sk89q.worldedit.masks.SolidBlockMask;
@@ -366,7 +367,7 @@ public class WorldEdit {
         }
     }
 
-    public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed)
+    public MaskedBlockMask getBlock(LocalPlayer player, String arg, boolean allAllowed)
             throws WorldEditException {
         return getBlock(player, arg, allAllowed, false);
     }
@@ -382,7 +383,7 @@ public class WorldEdit {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public BaseBlock getBlock(LocalPlayer player, String arg,
+    public MaskedBlockMask getBlock(LocalPlayer player, String arg,
                               boolean allAllowed, boolean allowNoData)
             throws WorldEditException {
         BlockType blockType;
@@ -401,28 +402,29 @@ public class WorldEdit {
         boolean parseDataValue = true;
         if ("hand".equalsIgnoreCase(testID)) {
             // Get the block type from the item in the user's hand.
-            final BaseBlock blockInHand = player.getBlockInHand();
+            final MaskedBlockMask inHand = player.getBlockInHand();
+            final BaseBlock blockInHand = inHand.getBlock();
             if (blockInHand.getClass() != BaseBlock.class) {
-                return blockInHand;
+                return inHand;
             }
 
             blockId = blockInHand.getId();
             blockType = BlockType.fromID(blockId);
             data = blockInHand.getData();
-            mask = blockInHand.getMask();
+            mask = inHand.getMask();
         } else if ("pos1".equalsIgnoreCase(testID)) {
             // Get the block type from the "primary position"
             final LocalWorld world = player.getWorld();
             final BlockVector primaryPosition = getSession(player).getRegionSelector(world).getPrimaryPosition();
-            final BaseBlock blockInHand = world.getBlock(primaryPosition);
-            if (blockInHand.getClass() != BaseBlock.class) {
-                return blockInHand;
+            final BaseBlock blockInWorld = world.getBlock(primaryPosition);
+            if (blockInWorld.getClass() != BaseBlock.class) {
+                return new MaskedBlockMask(blockInWorld);
             }
 
-            blockId = blockInHand.getId();
+            blockId = blockInWorld.getId();
             blockType = BlockType.fromID(blockId);
-            data = blockInHand.getData();
-            mask = blockInHand.getMask();
+            data = blockInWorld.getData();
+            mask = ~0;
         } else {
             // Attempt to parse the item ID or otherwise resolve an item/block
             // name to its numeric ID
@@ -561,7 +563,7 @@ public class WorldEdit {
                 text[1] = blockAndExtraData.length > 2 ? blockAndExtraData[2] : "";
                 text[2] = blockAndExtraData.length > 3 ? blockAndExtraData[3] : "";
                 text[3] = blockAndExtraData.length > 4 ? blockAndExtraData[4] : "";
-                return new SignBlock(blockType.getID(), data, text);
+                return new MaskedBlockMask(new SignBlock(blockType.getID(), data, text));
 
             case MOB_SPAWNER:
                 // Allow setting mob spawn type
@@ -576,15 +578,15 @@ public class WorldEdit {
                     if (!server.isValidMobType(mobName)) {
                         throw new InvalidItemException(arg, "Unknown mob type '" + mobName + "'");
                     }
-                    return new MobSpawnerBlock(data, mobName);
+                    return new MaskedBlockMask(new MobSpawnerBlock(data, mobName));
                 } else {
-                    return new MobSpawnerBlock(data, MobType.PIG.getName());
+                    return new MaskedBlockMask(new MobSpawnerBlock(data, MobType.PIG.getName()));
                 }
 
             case NOTE_BLOCK:
                 // Allow setting note
                 if (blockAndExtraData.length <= 1) {
-                    return new NoteBlock(data, (byte) 0);
+                    return new MaskedBlockMask(new NoteBlock(data, (byte) 0));
                 }
 
                 byte note = Byte.parseByte(blockAndExtraData[1]);
@@ -592,12 +594,12 @@ public class WorldEdit {
                     throw new InvalidItemException(arg, "Out of range note value: '" + blockAndExtraData[1] + "'");
                 }
 
-                return new NoteBlock(data, note);
+                return new MaskedBlockMask(new NoteBlock(data, note));
 
             case HEAD:
                 // allow setting type/player/rotation
                 if (blockAndExtraData.length <= 1) {
-                    return new SkullBlock(data);
+                    return new MaskedBlockMask(new SkullBlock(data));
                 }
 
                 byte rot = 0;
@@ -625,9 +627,9 @@ public class WorldEdit {
                     else skullType = 3;
                 }
                 if (skullType == 3) {
-                    return new SkullBlock(data, rot, type.replace(" ", "_")); // valid MC usernames
+                    return new MaskedBlockMask(new SkullBlock(data, rot, type.replace(" ", "_"))); // valid MC usernames
                 } else {
-                    return new SkullBlock(data, skullType, rot);
+                    return new MaskedBlockMask(new SkullBlock(data, skullType, rot));
                 }
 
             default:
@@ -644,27 +646,27 @@ public class WorldEdit {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public BaseBlock getBlock(LocalPlayer player, String id)
+    public MaskedBlockMask getBlock(LocalPlayer player, String id)
             throws WorldEditException {
         return getBlock(player, id, false);
     }
 
-    public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed, boolean allowNoData)
+    public List<MaskedBlockMask> getBlocks(LocalPlayer player, String list, boolean allAllowed, boolean allowNoData)
             throws WorldEditException {
         String[] items = list.split(",");
-        Set<BaseBlock> blocks = new HashSet<BaseBlock>();
+        List<MaskedBlockMask> blocks = new ArrayList<MaskedBlockMask>();
         for (String id : items) {
             blocks.add(getBlock(player, id, allAllowed, allowNoData));
         }
         return blocks;
     }
 
-    public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed)
+    public List<MaskedBlockMask> getBlocks(LocalPlayer player, String list, boolean allAllowed)
             throws WorldEditException {
         return getBlocks(player, list, allAllowed, false);
     }
 
-    public Set<BaseBlock> getBlocks(LocalPlayer player, String list)
+    public List<MaskedBlockMask> getBlocks(LocalPlayer player, String list)
             throws WorldEditException {
         return getBlocks(player, list, false);
     }
@@ -702,7 +704,7 @@ public class WorldEdit {
 
         // If it's only one block, then just return that single one
         if (items.length == 1) {
-            return new SingleBlockPattern(getBlock(player, items[0]));
+            return getBlock(player, items[0]);
         }
 
         List<BlockChance> blockChances = new ArrayList<BlockChance>();
@@ -716,10 +718,10 @@ public class WorldEdit {
             if (s.matches("[0-9]+(\\.[0-9]*)?%.*")) {
                 String[] p = s.split("%");
                 chance = Double.parseDouble(p[0]);
-                block = getBlock(player, p[1]);
+                block = getBlock(player, p[1]).getBlock();
             } else {
                 chance = 1;
-                block = getBlock(player, s);
+                block = getBlock(player, s).getBlock();
             }
 
             blockChances.add(new BlockChance(block, chance));
@@ -834,7 +836,7 @@ public class WorldEdit {
         String[] items = list.split(",");
         Set<Integer> blocks = new HashSet<Integer>();
         for (String s : items) {
-            blocks.add(getBlock(player, s, allBlocksAllowed).getType());
+            blocks.add(getBlock(player, s, allBlocksAllowed).getBlock().getType());
         }
         return blocks;
     }
