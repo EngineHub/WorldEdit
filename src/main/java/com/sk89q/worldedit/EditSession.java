@@ -2913,7 +2913,7 @@ public class EditSession {
             // transform
             expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ());
 
-            final BlockVector sourcePosition = environment.toWorld(scaled.getX(), scaled.getY(), scaled.getZ());
+            final BlockVector sourcePosition = environment.toWorld(x.getValue(), y.getValue(), z.getValue());
 
             // read block from world
             // TODO: use getBlock here once the reflection is out of the way
