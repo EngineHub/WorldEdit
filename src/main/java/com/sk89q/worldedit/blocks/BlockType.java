@@ -284,7 +284,25 @@ public enum BlockType {
     }
 
     private static Map<Integer, BaseBlock> itemBlockMapping = new HashMap<Integer, BaseBlock>();
+    private static Map<Integer, BaseBlock> dataItemBlockMapping = new HashMap<Integer, BaseBlock>();
     static {
+        for (int data = 0; data < 16; ++data) {
+            //dataItemBlockMapping.put(typeDataKey(BlockID.DIRT, data), new BaseBlock(BlockID.DIRT, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.WOOD, data), new BaseBlock(BlockID.WOOD, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.SAND, data), new BaseBlock(BlockID.SAND, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.SANDSTONE, data), new BaseBlock(BlockID.SANDSTONE, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.LONG_GRASS, data), new BaseBlock(BlockID.LONG_GRASS, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.CLOTH, data), new BaseBlock(BlockID.CLOTH, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.SILVERFISH_BLOCK, data), new BaseBlock(BlockID.SILVERFISH_BLOCK, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.STONE_BRICK, data), new BaseBlock(BlockID.STONE_BRICK, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.COBBLESTONE_WALL, data), new BaseBlock(BlockID.COBBLESTONE_WALL, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.STAINED_CLAY, data), new BaseBlock(BlockID.STAINED_CLAY, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.CARPET, data), new BaseBlock(BlockID.CARPET, data));
+            //dataItemBlockMapping.put(typeDataKey(BlockID.FLOWER, data), new BaseBlock(BlockID.FLOWER, data));
+            //dataItemBlockMapping.put(typeDataKey(BlockID.LARGE_FLOWER, data), new BaseBlock(BlockID.LARGE_FLOWER, data));
+            //dataItemBlockMapping.put(typeDataKey(BlockID.STAINED_GLASS, data), new BaseBlock(BlockID.STAINED_GLASS, data));
+        }
+
         itemBlockMapping.put(ItemID.FLINT_AND_TINDER, new BaseBlock(BlockID.FIRE, -1));
         itemBlockMapping.put(ItemID.STRING, new BaseBlock(BlockID.TRIPWIRE, -1));
         itemBlockMapping.put(ItemID.SEEDS, new BaseBlock(BlockID.CROPS, -1));
@@ -312,8 +330,14 @@ public enum BlockType {
         itemBlockMapping.put(ItemID.MILK_BUCKET, new BaseBlock(BlockID.SNOW, -1)); // Whoops, spilled the milk
     }
 
-    public static BaseBlock getBlockForItem(int typeId) {
-        return itemBlockMapping.get(typeId);
+    public static BaseBlock getBlockForItem(int typeId, int data) {
+        final BaseBlock block = itemBlockMapping.get(typeId);
+
+        if (block != null) {
+            return block;
+        }
+
+        return dataItemBlockMapping.get(typeDataKey(typeId, data));
     }
 
     /**

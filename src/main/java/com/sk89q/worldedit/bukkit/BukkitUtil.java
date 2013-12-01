@@ -166,9 +166,6 @@ public class BukkitUtil {
 
     public static BaseBlock toBlock(LocalWorld world, ItemStack itemStack) throws WorldEditException {
         final int typeId = itemStack.getTypeId();
-        if (world.isValidBlockType(typeId)) {
-            return new BaseBlock(typeId, itemStack.getDurability());
-        }
 
         switch (typeId) {
             case ItemID.INK_SACK:
@@ -182,11 +179,15 @@ public class BukkitUtil {
                 return new SkullBlock(0, (byte) itemStack.getDurability());
 
             default:
-                final BaseBlock baseBlock = BlockType.getBlockForItem(typeId);
+                final BaseBlock baseBlock = BlockType.getBlockForItem(typeId, itemStack.getDurability());
                 if (baseBlock != null) {
                     return baseBlock;
                 }
                 break;
+        }
+
+        if (world.isValidBlockType(typeId)) {
+            return new BaseBlock(typeId, -1);
         }
 
         throw new NotABlockException(typeId);
