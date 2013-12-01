@@ -295,6 +295,16 @@ public enum BlockType {
     private static Map<Integer, BaseBlock> dataItemBlockMapping = new HashMap<Integer, BaseBlock>();
     static {
         for (int data = 0; data < 16; ++data) {
+            dataItemBlockMapping.put(typeDataKey(BlockID.SAPLING, data), BaseBlock.wildcard(BlockID.LOG, data, 0x7));
+            dataItemBlockMapping.put(typeDataKey(BlockID.LOG, data), BaseBlock.wildcard(BlockID.LOG, data, 0x3));
+            dataItemBlockMapping.put(typeDataKey(BlockID.LEAVES, data), BaseBlock.wildcard(BlockID.LEAVES, data, 0x3));
+            dataItemBlockMapping.put(typeDataKey(BlockID.DOUBLE_STEP, data), BaseBlock.wildcard(BlockID.DOUBLE_STEP, data, 0x7));
+            dataItemBlockMapping.put(typeDataKey(BlockID.STEP, data), BaseBlock.wildcard(BlockID.STEP, data, 0x7));
+            dataItemBlockMapping.put(typeDataKey(BlockID.DOUBLE_WOODEN_STEP, data), BaseBlock.wildcard(BlockID.DOUBLE_WOODEN_STEP, data, 0x7));
+            dataItemBlockMapping.put(typeDataKey(BlockID.WOODEN_STEP, data), BaseBlock.wildcard(BlockID.WOODEN_STEP, data, 0x7));
+            dataItemBlockMapping.put(typeDataKey(BlockID.LOG2, data), BaseBlock.wildcard(BlockID.LOG2, data, 0x3));
+            dataItemBlockMapping.put(typeDataKey(BlockID.LEAVES2, data), BaseBlock.wildcard(BlockID.LEAVES2, data, 0x3));
+
             dataItemBlockMapping.put(typeDataKey(BlockID.DIRT, data), new BaseBlock(BlockID.DIRT, data));
             dataItemBlockMapping.put(typeDataKey(BlockID.WOOD, data), new BaseBlock(BlockID.WOOD, data));
             dataItemBlockMapping.put(typeDataKey(BlockID.SAND, data), new BaseBlock(BlockID.SAND, data));
