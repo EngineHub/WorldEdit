@@ -460,7 +460,7 @@ public class WorldEdit {
             }
         }
 
-        if (!allowNoData && data == -1) {
+        if (!allowNoData && data < 0) {
             // No wildcards allowed => eliminate them.
             data = 0;
         }
