@@ -473,7 +473,7 @@ public class WorldEdit {
                 }
 
                 if (data > 15) {
-                    throw new InvalidItemException(arg, "Unknown invalid data value '" + typeAndData[1] + "'");
+                    throw new InvalidItemException(arg, "Invalid data value '" + typeAndData[1] + "'");
                 }
 
                 if (data < 0 && !(allAllowed && data == -1)) {
