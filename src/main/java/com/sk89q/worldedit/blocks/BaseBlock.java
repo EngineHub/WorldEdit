@@ -140,7 +140,12 @@ public class BaseBlock extends Block {
             return false;
         }
 
-        return getType() == ((BaseBlock) o).getType() && getData() == ((BaseBlock) o).getData();
+        final BaseBlock otherBlock = (BaseBlock) o;
+        if (getType() != otherBlock.getType()) {
+            return false;
+        }
+
+        return getData() == otherBlock.getData();
     }
 
     /**
