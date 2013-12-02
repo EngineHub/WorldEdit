@@ -1226,19 +1226,6 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, BaseBlock toBlock) throws MaxChangedBlocksException {
-        Set<BaseBlock> definiteBlockTypes = new HashSet<BaseBlock>();
-        Set<Integer> fuzzyBlockTypes = new HashSet<Integer>();
-
-        if (fromBlockTypes != null) {
-            for (BaseBlock block : fromBlockTypes) {
-                if (block.getMask() != ~0) {
-                    fuzzyBlockTypes.add(block.getType());
-                } else {
-                    definiteBlockTypes.add(block);
-                }
-            }
-        }
-
         int affected = 0;
 
         if (region instanceof CuboidRegion) {
@@ -1266,7 +1253,7 @@ public class EditSession {
                             }
                         } else {
                             //replace <from-block> <to-block>
-                            if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                            if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
                                 continue;
                             }
                         }
@@ -1288,7 +1275,7 @@ public class EditSession {
                     }
                 } else {
                     //replace <from-block> <to-block>
-                    if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                    if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
                         continue;
                     }
                 }
@@ -1312,18 +1299,6 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, Pattern pattern) throws MaxChangedBlocksException {
-        Set<BaseBlock> definiteBlockTypes = new HashSet<BaseBlock>();
-        Set<Integer> fuzzyBlockTypes = new HashSet<Integer>();
-        if (fromBlockTypes != null) {
-            for (BaseBlock block : fromBlockTypes) {
-                if (block.getMask() != ~0) {
-                    fuzzyBlockTypes.add(block.getType());
-                } else {
-                    definiteBlockTypes.add(block);
-                }
-            }
-        }
-
         int affected = 0;
 
         if (region instanceof CuboidRegion) {
@@ -1351,7 +1326,7 @@ public class EditSession {
                             }
                         } else {
                             //replace <from-block> <to-block>
-                            if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                            if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
                                 continue;
                             }
                         }
@@ -1373,7 +1348,7 @@ public class EditSession {
                     }
                 } else {
                     //replace <from-block> <to-block>
-                    if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                    if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
                         continue;
                     }
                 }
