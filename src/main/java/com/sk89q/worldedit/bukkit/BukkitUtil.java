@@ -171,7 +171,7 @@ public class BukkitUtil {
             case ItemID.INK_SACK:
                 final Dye materialData = (Dye) itemStack.getData();
                 if (materialData.getColor() == DyeColor.BROWN) {
-                    return new BaseBlock(BlockID.COCOA_PLANT, -1);
+                    return BaseBlock.wildcard(BlockID.COCOA_PLANT, 0, 0);
                 }
                 break;
 
