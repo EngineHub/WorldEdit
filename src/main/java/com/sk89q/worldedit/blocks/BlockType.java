@@ -321,27 +321,27 @@ public enum BlockType {
             dataItemBlockMapping.put(typeDataKey(BlockID.STAINED_GLASS, data), new BaseBlock(BlockID.STAINED_GLASS, data));
         }
 
-        itemBlockMapping.put(ItemID.FLINT_AND_TINDER, new BaseBlock(BlockID.FIRE, -1));
-        itemBlockMapping.put(ItemID.STRING, new BaseBlock(BlockID.TRIPWIRE, -1));
-        itemBlockMapping.put(ItemID.SEEDS, new BaseBlock(BlockID.CROPS, -1));
-        itemBlockMapping.put(ItemID.SIGN, new BaseBlock(BlockID.SIGN_POST, -1));
-        itemBlockMapping.put(ItemID.WOODEN_DOOR_ITEM, new BaseBlock(BlockID.WOODEN_DOOR, -1));
-        itemBlockMapping.put(ItemID.WATER_BUCKET, new BaseBlock(BlockID.STATIONARY_WATER, -1));
-        itemBlockMapping.put(ItemID.LAVA_BUCKET, new BaseBlock(BlockID.STATIONARY_LAVA, -1));
-        itemBlockMapping.put(ItemID.IRON_DOOR_ITEM, new BaseBlock(BlockID.IRON_DOOR, -1));
-        itemBlockMapping.put(ItemID.REDSTONE_DUST, new BaseBlock(BlockID.REDSTONE_WIRE, -1));
-        itemBlockMapping.put(ItemID.SUGAR_CANE_ITEM, new BaseBlock(BlockID.REED, -1));
-        itemBlockMapping.put(ItemID.BED_ITEM, new BaseBlock(BlockID.BED, -1));
-        itemBlockMapping.put(ItemID.REDSTONE_REPEATER, new BaseBlock(BlockID.REDSTONE_REPEATER_OFF, -1));
-        itemBlockMapping.put(ItemID.PUMPKIN_SEEDS, new BaseBlock(BlockID.PUMPKIN_STEM, -1));
-        itemBlockMapping.put(ItemID.MELON_SEEDS, new BaseBlock(BlockID.MELON_STEM, -1));
-        itemBlockMapping.put(ItemID.NETHER_WART_SEED, new BaseBlock(BlockID.NETHER_WART, -1));
-        itemBlockMapping.put(ItemID.BREWING_STAND, new BaseBlock(BlockID.BREWING_STAND, -1));
-        itemBlockMapping.put(ItemID.CAULDRON, new BaseBlock(BlockID.CAULDRON, -1));
-        itemBlockMapping.put(ItemID.FLOWER_POT, new BaseBlock(BlockID.FLOWER_POT, -1));
-        itemBlockMapping.put(ItemID.CARROT, new BaseBlock(BlockID.CARROTS, -1));
-        itemBlockMapping.put(ItemID.POTATO, new BaseBlock(BlockID.POTATOES, -1));
-        itemBlockMapping.put(ItemID.COMPARATOR, new BaseBlock(BlockID.COMPARATOR_OFF, -1));
+        itemBlockMapping.put(ItemID.FLINT_AND_TINDER, BaseBlock.wildcard(BlockID.FIRE, 0, 0));
+        itemBlockMapping.put(ItemID.STRING, BaseBlock.wildcard(BlockID.TRIPWIRE, 0, 0));
+        itemBlockMapping.put(ItemID.SEEDS, BaseBlock.wildcard(BlockID.CROPS, 0, 0));
+        itemBlockMapping.put(ItemID.SIGN, BaseBlock.wildcard(BlockID.SIGN_POST, 0, 0));
+        itemBlockMapping.put(ItemID.WOODEN_DOOR_ITEM, BaseBlock.wildcard(BlockID.WOODEN_DOOR, 0, 0));
+        itemBlockMapping.put(ItemID.WATER_BUCKET, BaseBlock.wildcard(BlockID.STATIONARY_WATER, 0, 0));
+        itemBlockMapping.put(ItemID.LAVA_BUCKET, BaseBlock.wildcard(BlockID.STATIONARY_LAVA, 0, 0));
+        itemBlockMapping.put(ItemID.IRON_DOOR_ITEM, BaseBlock.wildcard(BlockID.IRON_DOOR, 0, 0));
+        itemBlockMapping.put(ItemID.REDSTONE_DUST, BaseBlock.wildcard(BlockID.REDSTONE_WIRE, 0, 0));
+        itemBlockMapping.put(ItemID.SUGAR_CANE_ITEM, BaseBlock.wildcard(BlockID.REED, 0, 0));
+        itemBlockMapping.put(ItemID.BED_ITEM, BaseBlock.wildcard(BlockID.BED, 0, 0));
+        itemBlockMapping.put(ItemID.REDSTONE_REPEATER, BaseBlock.wildcard(BlockID.REDSTONE_REPEATER_OFF, 0, 0));
+        itemBlockMapping.put(ItemID.PUMPKIN_SEEDS, BaseBlock.wildcard(BlockID.PUMPKIN_STEM, 0, 0));
+        itemBlockMapping.put(ItemID.MELON_SEEDS, BaseBlock.wildcard(BlockID.MELON_STEM, 0, 0));
+        itemBlockMapping.put(ItemID.NETHER_WART_SEED, BaseBlock.wildcard(BlockID.NETHER_WART, 0, 0));
+        itemBlockMapping.put(ItemID.BREWING_STAND, BaseBlock.wildcard(BlockID.BREWING_STAND, 0, 0));
+        itemBlockMapping.put(ItemID.CAULDRON, BaseBlock.wildcard(BlockID.CAULDRON, 0, 0));
+        itemBlockMapping.put(ItemID.FLOWER_POT, BaseBlock.wildcard(BlockID.FLOWER_POT, 0, 0));
+        itemBlockMapping.put(ItemID.CARROT, BaseBlock.wildcard(BlockID.CARROTS, 0, 0));
+        itemBlockMapping.put(ItemID.POTATO, BaseBlock.wildcard(BlockID.POTATOES, 0, 0));
+        itemBlockMapping.put(ItemID.COMPARATOR, BaseBlock.wildcard(BlockID.COMPARATOR_OFF, 0, 0));
     }
 
     public static BaseBlock getBlockForItem(int typeId, int data) {

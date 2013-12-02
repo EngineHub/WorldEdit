@@ -536,7 +536,7 @@ public class EditSession {
     public int countBlock(Region region, Set<Integer> searchIDs) {
         Set<BaseBlock> passOn = new HashSet<BaseBlock>();
         for (Integer i : searchIDs) {
-            passOn.add(new BaseBlock(i, -1));
+            passOn.add(BaseBlock.wildcard(i, 0, 0));
         }
         return countBlocks(region, passOn);
     }
@@ -1231,7 +1231,7 @@ public class EditSession {
 
         if (fromBlockTypes != null) {
             for (BaseBlock block : fromBlockTypes) {
-                if (block.getData() == -1) {
+                if (block.getMask() != ~0) {
                     fuzzyBlockTypes.add(block.getType());
                 } else {
                     definiteBlockTypes.add(block);
@@ -1316,7 +1316,7 @@ public class EditSession {
         Set<Integer> fuzzyBlockTypes = new HashSet<Integer>();
         if (fromBlockTypes != null) {
             for (BaseBlock block : fromBlockTypes) {
-                if (block.getData() == -1) {
+                if (block.getMask() != ~0) {
                     fuzzyBlockTypes.add(block.getType());
                 } else {
                     definiteBlockTypes.add(block);
