@@ -394,7 +394,9 @@ public class WorldEdit {
 
         int blockId = -1;
 
-        int data = -1;
+        int data = 0;
+
+        int mask = 0;
 
         boolean parseDataValue = true;
         if ("hand".equalsIgnoreCase(testID)) {
@@ -407,6 +409,7 @@ public class WorldEdit {
             blockId = blockInHand.getId();
             blockType = BlockType.fromID(blockId);
             data = blockInHand.getData();
+            mask = blockInHand.getMask();
         } else if ("pos1".equalsIgnoreCase(testID)) {
             // Get the block type from the "primary position"
             final LocalWorld world = player.getWorld();
@@ -419,6 +422,7 @@ public class WorldEdit {
             blockId = blockInHand.getId();
             blockType = BlockType.fromID(blockId);
             data = blockInHand.getData();
+            mask = blockInHand.getMask();
         } else {
             // Attempt to parse the item ID or otherwise resolve an item/block
             // name to its numeric ID
@@ -445,6 +449,7 @@ public class WorldEdit {
 
                 blockType = BlockType.CLOTH;
                 data = col.getID();
+                mask = ~0;
 
                 // Prevent overriding the data value
                 parseDataValue = false;
@@ -460,24 +465,20 @@ public class WorldEdit {
             }
         }
 
-        if (!allowNoData && data < 0) {
-            // No wildcards allowed => eliminate them.
-            data = 0;
-        }
-
         if (parseDataValue) { // Block data not yet detected
             // Parse the block data (optional)
             try {
                 if (typeAndData.length > 1 && typeAndData[1].length() > 0) {
                     data = Integer.parseInt(typeAndData[1]);
-                }
 
-                if (data > 15) {
-                    throw new InvalidItemException(arg, "Invalid data value '" + typeAndData[1] + "'");
-                }
+                    if (data > 15) {
+                        throw new InvalidItemException(arg, "Invalid data value '" + typeAndData[1] + "'");
+                    }
 
-                if (data < 0 && !(allAllowed && data == -1)) {
-                    data = 0;
+                    if (data < 0) {
+                        data = 0;
+                    }
+                    mask = ~0;
                 }
             } catch (NumberFormatException e) {
                 if (blockType == null) {
@@ -533,6 +534,7 @@ public class WorldEdit {
                             default:
                                 throw new InvalidItemException(arg, "Invalid step type '" + typeAndData[1] + "'");
                         }
+                        mask = ~0;
                         break;
 
                     default:
@@ -547,7 +549,7 @@ public class WorldEdit {
         }
 
         if (blockType == null) {
-            return new BaseBlock(blockId, data);
+            return BaseBlock.wildcard(blockId, data, mask);
         }
 
         switch (blockType) {
@@ -629,7 +631,7 @@ public class WorldEdit {
                 }
 
             default:
-                return new BaseBlock(blockId, data);
+                return BaseBlock.wildcard(blockId, data, mask);
         }
     }
 
