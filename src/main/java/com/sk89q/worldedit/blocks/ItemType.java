@@ -88,7 +88,7 @@ public enum ItemType {
     TORCH(BlockID.TORCH, "Torch", "torch", "light", "candle"),
     FIRE(BlockID.FIRE, "Fire", "fire", "flame", "flames"),
     MOB_SPAWNER(BlockID.MOB_SPAWNER, "Mob spawner", "mobspawner", "spawner"),
-    WOODEN_STAIRS(BlockID.WOODEN_STAIRS, "Wooden stairs", "woodstair", "woodstairs", "woodenstair", "woodenstairs"),
+    WOODEN_STAIRS(BlockID.OAK_WOOD_STAIRS, "Wooden stairs", "woodstair", "woodstairs", "woodenstair", "woodenstairs"),
     CHEST(BlockID.CHEST, "Chest", "chest", "storage", "storagechest"),
     REDSTONE_WIRE(BlockID.REDSTONE_WIRE, "Redstone wire", "redstone", "redstoneblock"),
     DIAMOND_ORE(BlockID.DIAMOND_ORE, "Diamond ore", "diamondore"),
@@ -130,7 +130,8 @@ public enum ItemType {
     CAKE(BlockID.CAKE_BLOCK, "Cake", "cake", "cakeblock"),
     REDSTONE_REPEATER_OFF(BlockID.REDSTONE_REPEATER_OFF, "Redstone repeater (off)", "diodeoff", "redstonerepeater", "repeateroff", "delayeroff"),
     REDSTONE_REPEATER_ON(BlockID.REDSTONE_REPEATER_ON, "Redstone repeater (on)", "diodeon", "redstonerepeateron", "repeateron", "delayeron"),
-    LOCKED_CHEST(BlockID.LOCKED_CHEST, "Locked chest", "lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"),
+    @Deprecated LOCKED_CHEST(BlockID.LOCKED_CHEST, "thisblockisinvalidusedstainedglassinstead"),
+    STAINED_GLASS(BlockID.STAINED_GLASS, "Stained Glass", "stainedglass"),
     TRAP_DOOR(BlockID.TRAP_DOOR, "Trap door", "trapdoor", "hatch", "floordoor"),
     SILVERFISH_BLOCK(BlockID.SILVERFISH_BLOCK, "Silverfish block", "silverfish", "silver"),
     STONE_BRICK(BlockID.STONE_BRICK, "Stone brick", "stonebrick", "sbrick", "smoothstonebrick"),
@@ -145,7 +146,7 @@ public enum ItemType {
     FENCE_GATE(BlockID.FENCE_GATE, "Fence gate", "fencegate", "gate"),
     BRICK_STAIRS(BlockID.BRICK_STAIRS, "Brick stairs", "brickstairs", "bricksteps"),
     STONE_BRICK_STAIRS(BlockID.STONE_BRICK_STAIRS, "Stone brick stairs", "stonebrickstairs", "smoothstonebrickstairs"),
-    MYCELIUM(BlockID.MYCELIUM, "Mycelium", "fungus", "mycel"),
+    MYCELIUM(BlockID.MYCELIUM, "Mycelium", "mycelium", "fungus", "mycel"),
     LILY_PAD(BlockID.LILY_PAD, "Lily pad", "lilypad", "waterlily"),
     NETHER_BRICK(BlockID.NETHER_BRICK, "Nether brick", "netherbrick"),
     NETHER_BRICK_FENCE(BlockID.NETHER_BRICK_FENCE, "Nether brick fence", "netherbrickfence", "netherfence"),
@@ -175,30 +176,38 @@ public enum ItemType {
     COMMAND_BLOCK(BlockID.COMMAND_BLOCK, "Command block", "commandblock", "cmdblock", "command", "cmd"),
     BEACON(BlockID.BEACON, "Beacon", "beacon", "beaconblock"),
     COBBLESTONE_WALL(BlockID.COBBLESTONE_WALL, "Cobblestone wall", "cobblestonewall", "cobblewall"),
-    FLOWER_POT_BLOCK(BlockID.FLOWER_POT, "Flower pot", "flowerpot", "plantpot", "pot", "flowerpotblock"),
-    CARROTS_BLOCK(BlockID.CARROTS, "Carrots", "carrots", "carrotsplant", "carrotsblock"),
-    POTATOES_BLOCK(BlockID.POTATOES, "Potatoes", "patatoes", "potatoesblock"),
+    FLOWER_POT_BLOCK(BlockID.FLOWER_POT, "Flower pot", "flowerpot", "plantpot", "pot"),
+    CARROTS(BlockID.CARROTS, "Carrots", "carrots", "carrotsplant", "carrotsblock"),
+    POTATOES(BlockID.POTATOES, "Potatoes", "potatoes", "potatoesblock"),
     WOODEN_BUTTON(BlockID.WOODEN_BUTTON, "Wooden button", "woodbutton", "woodenbutton"),
-    HEAD_BLOCK(BlockID.HEAD, "Head", "head", "headmount", "mount", "headblock", "mountblock"),
+    HEAD_BLOCK(BlockID.HEAD, "Head", "head", "skull"),
     ANVIL(BlockID.ANVIL, "Anvil", "anvil", "blacksmith"),
     TRAPPED_CHEST(BlockID.TRAPPED_CHEST, "Trapped Chest", "trappedchest", "redstonechest"),
     PRESSURE_PLATE_LIGHT(BlockID.PRESSURE_PLATE_LIGHT, "Weighted Pressure Plate (Light)", "lightpressureplate"),
     PRESSURE_PLATE_HEAVY(BlockID.PRESSURE_PLATE_HEAVY, "Weighted Pressure Plate (Heavy)", "heavypressureplate"),
     COMPARATOR_OFF(BlockID.COMPARATOR_OFF, "Redstone Comparator (inactive)", "redstonecomparator", "comparator"),
     COMPARATOR_ON(BlockID.COMPARATOR_ON, "Redstone Comparator (active)", "redstonecomparatoron", "comparatoron"),
-    DAYLIGHT_SENSOR(BlockID.DAYLIGHT_SENSOR, "Daylight Sesnor", "daylightsensor", "lightsensor"),
+    DAYLIGHT_SENSOR(BlockID.DAYLIGHT_SENSOR, "Daylight Sensor", "daylightsensor", "lightsensor", "daylightdetector"),
     REDSTONE_BLOCK(BlockID.REDSTONE_BLOCK, "Block of Redstone", "redstoneblock", "blockofredstone"),
     QUARTZ_ORE(BlockID.QUARTZ_ORE, "Nether Quartz Ore", "quartzore", "netherquartzore"),
     HOPPER(BlockID.HOPPER, "Hopper", "hopper"),
-    QUARTZ_BLOCK(BlockID.QUARTZ_BLOCK, "Block of Quartz", "quartzblock"),
+    QUARTZ_BLOCK(BlockID.QUARTZ_BLOCK, "Block of Quartz", "quartzblock", "quartz"),
     QUARTZ_STAIRS(BlockID.QUARTZ_STAIRS, "Quartz Stairs", "quartzstairs"),
     ACTIVATOR_RAIL(BlockID.ACTIVATOR_RAIL, "Activator Rail", "activatorrail", "tntrail", "activatortrack"),
     DROPPER(BlockID.DROPPER, "Dropper", "dropper"),
-    STAINED_CLAY(BlockID.STAINED_CLAY, "Stained clay", "stainedclay"),
+    STAINED_CLAY(BlockID.STAINED_CLAY, "Stained Clay", "stainedclay", "stainedhardenedclay"),
+    STAINED_GLASS_PANE(BlockID.STAINED_GLASS_PANE, "Stained Glass Pane", "stainedglasspane"),
+    LEAVES2(BlockID.LEAVES2, "Leaves", "leaves2", "acacialeaves", "darkoakleaves"),
+    LOG2(BlockID.LOG2, "Log", "log2", "acacia", "darkoak"),
+    ACACIA_STAIRS(BlockID.ACACIA_STAIRS, "Acacia Wood Stairs", "acaciawoodstairs", "acaciastairs"),
+    DARK_OAK_STAIRS(BlockID.DARK_OAK_STAIRS, "Dark Oak Wood Stairs", "darkoakwoodstairs", "darkoakstairs"),
     HAY_BLOCK(BlockID.HAY_BLOCK, "Hay Block", "hayblock", "haybale", "wheatbale"),
     CARPET(BlockID.CARPET, "Carpet", "carpet"),
     HARDENED_CLAY(BlockID.HARDENED_CLAY, "Hardened Clay", "hardenedclay", "hardclay"),
     COAL_BLOCK(BlockID.COAL_BLOCK, "Block of Coal", "coalblock", "blockofcoal"),
+    PACKED_ICE(BlockID.PACKED_ICE, "Packed Ice", "packedice", "hardice"),
+    DOUBLE_PLANT(BlockID.DOUBLE_PLANT, "Large Flowers", "largeflowers", "doubleflowers"),
+
 
     // Items
     IRON_SHOVEL(ItemID.IRON_SHOVEL, "Iron shovel", "ironshovel"),
@@ -359,6 +368,7 @@ public enum ItemType {
     HORSE_ARMOR_DIAMOND(ItemID.HORSE_ARMOR_DIAMOND, "Diamond Horse Armor", "diamondhorsearmor", "diamondbarding"),
     LEAD(ItemID.LEAD, "Lead", "lead", "leash"),
     NAME_TAG(ItemID.NAME_TAG, "Name Tag", "nametag"),
+    COMMAND_BLOCK_MINECART(ItemID.COMMAND_BLOCK_MINECART, "Minecart with Command Block"),
     DISC_13(ItemID.DISC_13, "Music Disc - 13", "disc_13"),
     DISC_CAT(ItemID.DISC_CAT, "Music Disc - Cat", "disc_cat"),
     DISC_BLOCKS(ItemID.DISC_BLOCKS, "Music Disc - blocks", "disc_blocks"),
@@ -592,6 +602,7 @@ public enum ItemType {
         shouldNotStack.add(ItemID.HORSE_ARMOR_IRON);
         shouldNotStack.add(ItemID.HORSE_ARMOR_GOLD);
         shouldNotStack.add(ItemID.HORSE_ARMOR_DIAMOND);
+        shouldNotStack.add(ItemID.COMMAND_BLOCK_MINECART);
         shouldNotStack.add(ItemID.DISC_13);
         shouldNotStack.add(ItemID.DISC_CAT);
         shouldNotStack.add(ItemID.DISC_BLOCKS);
@@ -618,13 +629,16 @@ public enum ItemType {
 
     private static final Set<Integer> usesDamageValue = new HashSet<Integer>();
     static {
+        usesDamageValue.add(BlockID.DIRT);
         usesDamageValue.add(BlockID.WOOD);
         usesDamageValue.add(BlockID.SAPLING);
+        usesDamageValue.add(BlockID.SAND);
         usesDamageValue.add(BlockID.LOG);
         usesDamageValue.add(BlockID.LEAVES);
         usesDamageValue.add(BlockID.SANDSTONE);
         usesDamageValue.add(BlockID.LONG_GRASS);
         usesDamageValue.add(BlockID.CLOTH);
+        usesDamageValue.add(BlockID.RED_FLOWER);
         usesDamageValue.add(BlockID.DOUBLE_STEP);
         usesDamageValue.add(BlockID.STEP);
         usesDamageValue.add(BlockID.SILVERFISH_BLOCK);
@@ -646,6 +660,8 @@ public enum ItemType {
         usesDamageValue.add(ItemID.MAP);
         usesDamageValue.add(ItemID.HEAD);
         usesDamageValue.add(ItemID.GOLD_APPLE);
+        usesDamageValue.add(ItemID.RAW_FISH);
+        usesDamageValue.add(ItemID.COOKED_FISH);
     }
 
     /**
