@@ -1029,9 +1029,11 @@ public enum BlockType {
     /**
      * Checks if the block type is naturally occuring
      *
-     * @param id
-     * @return
+     * @param id      ID of the block
+     * @return true if the block type is naturally occuring
+     * @deprecated Use {@link #isNaturalTerrainBlock(int, int)}
      */
+    @Deprecated
     public static boolean isNaturalTerrainBlock(int id) {
         return isNaturalTerrainBlock.contains(id);
     }
@@ -1039,8 +1041,9 @@ public enum BlockType {
     /**
      * Checks if the block type is naturally occuring
      *
-     * @param block
-     * @return
+     * @param id      ID of the block
+     * @param data    Data value of the block
+     * @return true if the block type is naturally occuring
      */
     public static boolean isNaturalTerrainBlock(int id, int data) {
         return isNaturalTerrainBlock.contains(-16*id-data) || isNaturalTerrainBlock.contains(id);
@@ -1049,8 +1052,8 @@ public enum BlockType {
     /**
      * Checks if the block type is naturally occuring
      *
-     * @param block
-     * @return
+     * @param block The block
+     * @return true if the block type is naturally occuring
      */
     public static boolean isNaturalTerrainBlock(Block block) {
         return isNaturalTerrainBlock(block.getId(), block.getData());
@@ -1059,7 +1062,7 @@ public enum BlockType {
     /**
      * Checks if the block type is naturally occuring
      *
-     * @return
+     * @return true if the block type is naturally occuring
      */
     public boolean isNaturalTerrainBlock() {
         return isNaturalTerrainBlock.contains(id);
