@@ -23,7 +23,6 @@ import java.util.List;
 
 import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
@@ -172,7 +171,7 @@ public class BukkitUtil {
             case ItemID.INK_SACK:
                 final Dye materialData = (Dye) itemStack.getData();
                 if (materialData.getColor() == DyeColor.BROWN) {
-                    return BaseBlock.wildcard(BlockID.COCOA_PLANT, 0, 0);
+                    return MaskedBlockMask.fromValues(BlockID.COCOA_PLANT, 0, 0);
                 }
                 break;
 
@@ -188,7 +187,7 @@ public class BukkitUtil {
         }
 
         if (world.isValidBlockType(typeId)) {
-            return BaseBlock.wildcard(typeId, itemStack.getDurability(), 0);
+            return MaskedBlockMask.fromValues(typeId, itemStack.getDurability(), 0);
         }
 
         throw new NotABlockException(typeId);

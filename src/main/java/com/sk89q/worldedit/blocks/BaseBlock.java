@@ -150,8 +150,4 @@ public class BaseBlock extends Block {
 
         return getData() == otherBlock.getData();
     }
-
-    public static MaskedBlockMask wildcard(int blockId, int data, int mask) {
-        return new MaskedBlockMask(new BaseBlock(blockId, data), mask);
-    }
 }

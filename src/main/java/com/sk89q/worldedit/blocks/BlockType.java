@@ -296,15 +296,15 @@ public enum BlockType {
     private static Map<Integer, MaskedBlockMask> dataItemBlockMapping = new HashMap<Integer, MaskedBlockMask>();
     static {
         for (int data = 0; data < 16; ++data) {
-            dataItemBlockMapping.put(typeDataKey(BlockID.SAPLING, data), BaseBlock.wildcard(BlockID.LOG, data, 0x7));
-            dataItemBlockMapping.put(typeDataKey(BlockID.LOG, data), BaseBlock.wildcard(BlockID.LOG, data, 0x3));
-            dataItemBlockMapping.put(typeDataKey(BlockID.LEAVES, data), BaseBlock.wildcard(BlockID.LEAVES, data, 0x3));
-            dataItemBlockMapping.put(typeDataKey(BlockID.DOUBLE_STEP, data), BaseBlock.wildcard(BlockID.DOUBLE_STEP, data, 0x7));
-            dataItemBlockMapping.put(typeDataKey(BlockID.STEP, data), BaseBlock.wildcard(BlockID.STEP, data, 0x7));
-            dataItemBlockMapping.put(typeDataKey(BlockID.DOUBLE_WOODEN_STEP, data), BaseBlock.wildcard(BlockID.DOUBLE_WOODEN_STEP, data, 0x7));
-            dataItemBlockMapping.put(typeDataKey(BlockID.WOODEN_STEP, data), BaseBlock.wildcard(BlockID.WOODEN_STEP, data, 0x7));
-            dataItemBlockMapping.put(typeDataKey(BlockID.LOG2, data), BaseBlock.wildcard(BlockID.LOG2, data, 0x3));
-            dataItemBlockMapping.put(typeDataKey(BlockID.LEAVES2, data), BaseBlock.wildcard(BlockID.LEAVES2, data, 0x3));
+            dataItemBlockMapping.put(typeDataKey(BlockID.SAPLING, data), MaskedBlockMask.fromValues(BlockID.LOG, data, 0x7));
+            dataItemBlockMapping.put(typeDataKey(BlockID.LOG, data), MaskedBlockMask.fromValues(BlockID.LOG, data, 0x3));
+            dataItemBlockMapping.put(typeDataKey(BlockID.LEAVES, data), MaskedBlockMask.fromValues(BlockID.LEAVES, data, 0x3));
+            dataItemBlockMapping.put(typeDataKey(BlockID.DOUBLE_STEP, data), MaskedBlockMask.fromValues(BlockID.DOUBLE_STEP, data, 0x7));
+            dataItemBlockMapping.put(typeDataKey(BlockID.STEP, data), MaskedBlockMask.fromValues(BlockID.STEP, data, 0x7));
+            dataItemBlockMapping.put(typeDataKey(BlockID.DOUBLE_WOODEN_STEP, data), MaskedBlockMask.fromValues(BlockID.DOUBLE_WOODEN_STEP, data, 0x7));
+            dataItemBlockMapping.put(typeDataKey(BlockID.WOODEN_STEP, data), MaskedBlockMask.fromValues(BlockID.WOODEN_STEP, data, 0x7));
+            dataItemBlockMapping.put(typeDataKey(BlockID.LOG2, data), MaskedBlockMask.fromValues(BlockID.LOG2, data, 0x3));
+            dataItemBlockMapping.put(typeDataKey(BlockID.LEAVES2, data), MaskedBlockMask.fromValues(BlockID.LEAVES2, data, 0x3));
 
             addDataItemMapping(typeDataKey(BlockID.DIRT, data), new BaseBlock(BlockID.DIRT, data));
             addDataItemMapping(typeDataKey(BlockID.WOOD, data), new BaseBlock(BlockID.WOOD, data));
@@ -322,27 +322,27 @@ public enum BlockType {
             addDataItemMapping(typeDataKey(BlockID.STAINED_GLASS, data), new BaseBlock(BlockID.STAINED_GLASS, data));
         }
 
-        itemBlockMapping.put(ItemID.FLINT_AND_TINDER, BaseBlock.wildcard(BlockID.FIRE, 0, 0));
-        itemBlockMapping.put(ItemID.STRING, BaseBlock.wildcard(BlockID.TRIPWIRE, 0, 0));
-        itemBlockMapping.put(ItemID.SEEDS, BaseBlock.wildcard(BlockID.CROPS, 0, 0));
-        itemBlockMapping.put(ItemID.SIGN, BaseBlock.wildcard(BlockID.SIGN_POST, 0, 0));
-        itemBlockMapping.put(ItemID.WOODEN_DOOR_ITEM, BaseBlock.wildcard(BlockID.WOODEN_DOOR, 0, 0));
-        itemBlockMapping.put(ItemID.WATER_BUCKET, BaseBlock.wildcard(BlockID.STATIONARY_WATER, 0, 0));
-        itemBlockMapping.put(ItemID.LAVA_BUCKET, BaseBlock.wildcard(BlockID.STATIONARY_LAVA, 0, 0));
-        itemBlockMapping.put(ItemID.IRON_DOOR_ITEM, BaseBlock.wildcard(BlockID.IRON_DOOR, 0, 0));
-        itemBlockMapping.put(ItemID.REDSTONE_DUST, BaseBlock.wildcard(BlockID.REDSTONE_WIRE, 0, 0));
-        itemBlockMapping.put(ItemID.SUGAR_CANE_ITEM, BaseBlock.wildcard(BlockID.REED, 0, 0));
-        itemBlockMapping.put(ItemID.BED_ITEM, BaseBlock.wildcard(BlockID.BED, 0, 0));
-        itemBlockMapping.put(ItemID.REDSTONE_REPEATER, BaseBlock.wildcard(BlockID.REDSTONE_REPEATER_OFF, 0, 0));
-        itemBlockMapping.put(ItemID.PUMPKIN_SEEDS, BaseBlock.wildcard(BlockID.PUMPKIN_STEM, 0, 0));
-        itemBlockMapping.put(ItemID.MELON_SEEDS, BaseBlock.wildcard(BlockID.MELON_STEM, 0, 0));
-        itemBlockMapping.put(ItemID.NETHER_WART_SEED, BaseBlock.wildcard(BlockID.NETHER_WART, 0, 0));
-        itemBlockMapping.put(ItemID.BREWING_STAND, BaseBlock.wildcard(BlockID.BREWING_STAND, 0, 0));
-        itemBlockMapping.put(ItemID.CAULDRON, BaseBlock.wildcard(BlockID.CAULDRON, 0, 0));
-        itemBlockMapping.put(ItemID.FLOWER_POT, BaseBlock.wildcard(BlockID.FLOWER_POT, 0, 0));
-        itemBlockMapping.put(ItemID.CARROT, BaseBlock.wildcard(BlockID.CARROTS, 0, 0));
-        itemBlockMapping.put(ItemID.POTATO, BaseBlock.wildcard(BlockID.POTATOES, 0, 0));
-        itemBlockMapping.put(ItemID.COMPARATOR, BaseBlock.wildcard(BlockID.COMPARATOR_OFF, 0, 0));
+        itemBlockMapping.put(ItemID.FLINT_AND_TINDER, MaskedBlockMask.fromValues(BlockID.FIRE, 0, 0));
+        itemBlockMapping.put(ItemID.STRING, MaskedBlockMask.fromValues(BlockID.TRIPWIRE, 0, 0));
+        itemBlockMapping.put(ItemID.SEEDS, MaskedBlockMask.fromValues(BlockID.CROPS, 0, 0));
+        itemBlockMapping.put(ItemID.SIGN, MaskedBlockMask.fromValues(BlockID.SIGN_POST, 0, 0));
+        itemBlockMapping.put(ItemID.WOODEN_DOOR_ITEM, MaskedBlockMask.fromValues(BlockID.WOODEN_DOOR, 0, 0));
+        itemBlockMapping.put(ItemID.WATER_BUCKET, MaskedBlockMask.fromValues(BlockID.STATIONARY_WATER, 0, 0));
+        itemBlockMapping.put(ItemID.LAVA_BUCKET, MaskedBlockMask.fromValues(BlockID.STATIONARY_LAVA, 0, 0));
+        itemBlockMapping.put(ItemID.IRON_DOOR_ITEM, MaskedBlockMask.fromValues(BlockID.IRON_DOOR, 0, 0));
+        itemBlockMapping.put(ItemID.REDSTONE_DUST, MaskedBlockMask.fromValues(BlockID.REDSTONE_WIRE, 0, 0));
+        itemBlockMapping.put(ItemID.SUGAR_CANE_ITEM, MaskedBlockMask.fromValues(BlockID.REED, 0, 0));
+        itemBlockMapping.put(ItemID.BED_ITEM, MaskedBlockMask.fromValues(BlockID.BED, 0, 0));
+        itemBlockMapping.put(ItemID.REDSTONE_REPEATER, MaskedBlockMask.fromValues(BlockID.REDSTONE_REPEATER_OFF, 0, 0));
+        itemBlockMapping.put(ItemID.PUMPKIN_SEEDS, MaskedBlockMask.fromValues(BlockID.PUMPKIN_STEM, 0, 0));
+        itemBlockMapping.put(ItemID.MELON_SEEDS, MaskedBlockMask.fromValues(BlockID.MELON_STEM, 0, 0));
+        itemBlockMapping.put(ItemID.NETHER_WART_SEED, MaskedBlockMask.fromValues(BlockID.NETHER_WART, 0, 0));
+        itemBlockMapping.put(ItemID.BREWING_STAND, MaskedBlockMask.fromValues(BlockID.BREWING_STAND, 0, 0));
+        itemBlockMapping.put(ItemID.CAULDRON, MaskedBlockMask.fromValues(BlockID.CAULDRON, 0, 0));
+        itemBlockMapping.put(ItemID.FLOWER_POT, MaskedBlockMask.fromValues(BlockID.FLOWER_POT, 0, 0));
+        itemBlockMapping.put(ItemID.CARROT, MaskedBlockMask.fromValues(BlockID.CARROTS, 0, 0));
+        itemBlockMapping.put(ItemID.POTATO, MaskedBlockMask.fromValues(BlockID.POTATOES, 0, 0));
+        itemBlockMapping.put(ItemID.COMPARATOR, MaskedBlockMask.fromValues(BlockID.COMPARATOR_OFF, 0, 0));
     }
 
     private static void addDataItemMapping(int i, BaseBlock baseBlock) {

@@ -537,7 +537,7 @@ public class EditSession {
     public int countBlock(Region region, Set<Integer> searchIDs) {
         List<MaskedBlockMask> passOn = new ArrayList<MaskedBlockMask>();
         for (Integer i : searchIDs) {
-            passOn.add(BaseBlock.wildcard(i, 0, 0));
+            passOn.add(MaskedBlockMask.fromValues(i, 0, 0));
         }
         return countBlocks(region, passOn);
     }

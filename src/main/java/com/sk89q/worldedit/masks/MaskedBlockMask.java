@@ -18,6 +18,10 @@ public class MaskedBlockMask extends AbstractMask implements Pattern {
         this(block, ~0);
     }
 
+    public static MaskedBlockMask fromValues(int blockId, int data, int mask) {
+        return new MaskedBlockMask(new BaseBlock(blockId, data), mask);
+    }
+
     public BaseBlock getBlock() {
         return block;
     }

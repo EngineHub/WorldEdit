@@ -91,7 +91,6 @@ import com.sk89q.worldedit.patterns.BlockChance;
 import com.sk89q.worldedit.patterns.ClipboardPattern;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.RandomFillPattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.scripting.CraftScriptContext;
 import com.sk89q.worldedit.scripting.CraftScriptEngine;
@@ -551,7 +550,7 @@ public class WorldEdit {
         }
 
         if (blockType == null) {
-            return BaseBlock.wildcard(blockId, data, mask);
+            return MaskedBlockMask.fromValues(blockId, data, mask);
         }
 
         switch (blockType) {
@@ -633,7 +632,7 @@ public class WorldEdit {
                 }
 
             default:
-                return BaseBlock.wildcard(blockId, data, mask);
+                return MaskedBlockMask.fromValues(blockId, data, mask);
         }
     }
 
