@@ -69,7 +69,7 @@ public final class BlockData {
             }
             break;
 
-        case BlockID.WOODEN_STAIRS:
+        case BlockID.OAK_WOOD_STAIRS:
         case BlockID.COBBLESTONE_STAIRS:
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
@@ -79,6 +79,8 @@ public final class BlockData {
         case BlockID.BIRCH_WOOD_STAIRS:
         case BlockID.JUNGLE_WOOD_STAIRS:
         case BlockID.QUARTZ_STAIRS:
+        case BlockID.ACACIA_STAIRS:
+        case BlockID.DARK_OAK_STAIRS:
             switch (data) {
             case 0: return 2;
             case 1: return 3;
@@ -171,6 +173,7 @@ public final class BlockData {
 
         case BlockID.HAY_BLOCK:
         case BlockID.LOG:
+        case BlockID.LOG2:
             if (data >= 4 && data <= 11) data ^= 0xc;
             break;
 
@@ -285,7 +288,7 @@ public final class BlockData {
             }
             break;
 
-        case BlockID.WOODEN_STAIRS:
+        case BlockID.OAK_WOOD_STAIRS:
         case BlockID.COBBLESTONE_STAIRS:
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
@@ -295,6 +298,8 @@ public final class BlockData {
         case BlockID.BIRCH_WOOD_STAIRS:
         case BlockID.JUNGLE_WOOD_STAIRS:
         case BlockID.QUARTZ_STAIRS:
+        case BlockID.ACACIA_STAIRS:
+        case BlockID.DARK_OAK_STAIRS:
             switch (data) {
             case 2: return 0;
             case 3: return 1;
@@ -386,6 +391,7 @@ public final class BlockData {
 
         case BlockID.HAY_BLOCK:
         case BlockID.LOG:
+        case BlockID.LOG2:
             if (data >= 4 && data <= 11) data ^= 0xc;
             break;
 
@@ -545,7 +551,7 @@ public final class BlockData {
         case BlockID.WOODEN_STEP:
             return data ^ (flipY << 3);
 
-        case BlockID.WOODEN_STAIRS:
+        case BlockID.OAK_WOOD_STAIRS:
         case BlockID.COBBLESTONE_STAIRS:
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
@@ -555,6 +561,8 @@ public final class BlockData {
         case BlockID.BIRCH_WOOD_STAIRS:
         case BlockID.JUNGLE_WOOD_STAIRS:
         case BlockID.QUARTZ_STAIRS:
+        case BlockID.ACACIA_STAIRS:
+        case BlockID.DARK_OAK_STAIRS:
             data ^= flipY << 2;
             switch (data) {
             case 0:
@@ -779,6 +787,7 @@ public final class BlockData {
 
         // special case here, going to use "forward" for type and "backward" for orientation
         case BlockID.LOG:
+        case BlockID.LOG2:
             if (increment == -1) {
                 store = data & 0x3; // copy bottom (type) bits
                 return mod((data & ~0x3) + 4, 16) | store; // switch orientation with top bits and reapply bottom bits;
@@ -812,7 +821,7 @@ public final class BlockData {
 
         case BlockID.LONG_GRASS:
         case BlockID.SANDSTONE:
-        case BlockID.SILVERFISH_BLOCK:
+        case BlockID.DIRT:
             if (data > 2) return -1;
             return mod((data + increment), 3);
 
@@ -822,7 +831,7 @@ public final class BlockData {
             if (data < 1 || data > 4) return -1;
             return mod((data - 1 + increment), 4) + 1;
 
-        case BlockID.WOODEN_STAIRS:
+        case BlockID.OAK_WOOD_STAIRS:
         case BlockID.COBBLESTONE_STAIRS:
         case BlockID.BRICK_STAIRS:
         case BlockID.STONE_BRICK_STAIRS:
@@ -832,6 +841,8 @@ public final class BlockData {
         case BlockID.BIRCH_WOOD_STAIRS:
         case BlockID.JUNGLE_WOOD_STAIRS:
         case BlockID.QUARTZ_STAIRS:
+        case BlockID.ACACIA_STAIRS:
+        case BlockID.DARK_OAK_STAIRS:
             if (data > 7) return -1;
             return mod((data + increment), 8);
 
@@ -852,8 +863,15 @@ public final class BlockData {
         case BlockID.CAKE_BLOCK:
         case BlockID.PISTON_BASE:
         case BlockID.PISTON_STICKY_BASE:
+        case BlockID.SILVERFISH_BLOCK:
             if (data > 5) return -1;
             return mod((data + increment), 6);
+
+        case BlockID.DOUBLE_PLANT:
+            store = data & 0x8; // top half flag
+            data &= ~0x8;
+            if (data > 5) return -1;
+            return mod((data + increment), 6) | store;
 
         case BlockID.CROPS:
         case BlockID.PUMPKIN_STEM:
@@ -862,6 +880,7 @@ public final class BlockData {
             return mod((data + increment), 7);
 
         case BlockID.SOIL:
+        case BlockID.RED_FLOWER:
             if (data > 8) return -1;
             return mod((data + increment), 9);
 
@@ -904,6 +923,7 @@ public final class BlockData {
         case BlockID.TRAP_DOOR:
         case BlockID.FENCE_GATE:
         case BlockID.LEAVES:
+        case BlockID.LEAVES2:
             if (data > 7) return -1;
             store = data & ~0x3;
             return mod(((data & 0x3) + increment), 4) | store;
@@ -917,9 +937,15 @@ public final class BlockData {
             store = data & ~0x3;
             return mod(((data & 0x3) + increment), 3) | store;
 
+        case BlockID.FLOWER_POT:
+            if (data > 13) return -1;
+            return mod((data + increment), 14);
+
         case BlockID.CLOTH:
         case BlockID.STAINED_CLAY:
         case BlockID.CARPET:
+        case BlockID.STAINED_GLASS:
+        case BlockID.STAINED_GLASS_PANE:
             if (increment == 1) {
                 data = nextClothColor(data);
             } else if (increment == -1) {

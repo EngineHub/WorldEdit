@@ -78,6 +78,8 @@ public class BlockDataTest {
             // Cloth isn't monotonous, and thus excluded.
             if (type == BlockID.CLOTH
                     || type == BlockID.STAINED_CLAY
+                    || type == BlockID.STAINED_GLASS
+                    || type == BlockID.STAINED_GLASS_PANE
                     || type == BlockID.CARPET) {
                 continue;
             }
