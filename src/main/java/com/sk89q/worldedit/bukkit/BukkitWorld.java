@@ -876,14 +876,6 @@ public class BukkitWorld extends LocalWorld {
             new EnumMap<TreeGenerator.TreeType, TreeType>(TreeGenerator.TreeType.class);
 
     static {
-        // Mappings for new TreeType values not yet in Bukkit
-        treeTypeMapping.put(TreeGenerator.TreeType.SWAMP, TreeType.TREE);
-        treeTypeMapping.put(TreeGenerator.TreeType.JUNGLE_BUSH, TreeType.TREE);
-        try {
-            treeTypeMapping.put(TreeGenerator.TreeType.SHORT_JUNGLE, TreeType.valueOf("SMALL_JUNGLE"));
-        } catch (IllegalArgumentException e) {
-            treeTypeMapping.put(TreeGenerator.TreeType.SHORT_JUNGLE, TreeType.TREE);
-        }
         for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
             try {
                 TreeType bukkitType = TreeType.valueOf(type.name());
@@ -893,6 +885,7 @@ public class BukkitWorld extends LocalWorld {
             }
         }
         // Other mappings for WE-specific values
+        treeTypeMapping.put(TreeGenerator.TreeType.SHORT_JUNGLE, TreeType.SMALL_JUNGLE);
         treeTypeMapping.put(TreeGenerator.TreeType.RANDOM, TreeType.BROWN_MUSHROOM);
         treeTypeMapping.put(TreeGenerator.TreeType.RANDOM_REDWOOD, TreeType.REDWOOD);
         treeTypeMapping.put(TreeGenerator.TreeType.PINE, TreeType.REDWOOD);

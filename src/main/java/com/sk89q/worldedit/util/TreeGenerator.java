@@ -56,11 +56,20 @@ public class TreeGenerator {
             }
         },
         JUNGLE("Jungle", "jungle"),
-        SHORT_JUNGLE("Short jungle", "shortjungle", "smalljungle"),
+        SMALL_JUNGLE("Small jungle", "shortjungle", "smalljungle"),
+        SHORT_JUNGLE("Short jungle") {
+            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+                return SMALL_JUNGLE.generate(editSession, pos);
+            }
+        },
         JUNGLE_BUSH("Jungle bush", "junglebush", "jungleshrub"),
         RED_MUSHROOM("Red Mushroom", "redmushroom", "redgiantmushroom"),
         BROWN_MUSHROOM("Brown Mushroom", "brownmushroom", "browngiantmushroom"),
         SWAMP("Swamp", "swamp", "swamptree"),
+        ACACIA("Acacia", "acacia"),
+        DARK_OAK("Dark Oak", "darkoak"),
+        MEGA_REDWOOD("Mega Redwood", "megaredwood"),
+        TALL_BIRCH("Tall Birch", "tallbirch"),
         RANDOM("Random", "rand", "random" ) {
             public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
                 TreeType[] choices = new TreeType[] {
