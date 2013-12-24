@@ -2720,6 +2720,8 @@ public class EditSession {
                         treeGenerator.generate(this, new Vector(x, y + 1, z));
                         ++affected;
                         break;
+                    } else if (t == BlockID.SNOW) {
+                        setBlock(new Vector(x, y, z), new BaseBlock(BlockID.AIR));
                     } else if (t != BlockID.AIR) { // Trees won't grow on this!
                         break;
                     }
