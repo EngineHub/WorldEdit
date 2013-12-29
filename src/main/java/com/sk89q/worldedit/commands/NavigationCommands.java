@@ -118,7 +118,7 @@ public class NavigationCommands {
         aliases = { "ceil" },
         usage = "[clearance]",
         desc = "Go to the celing",
-        flags = "g",
+        flags = "f",
         min = 0,
         max = 1
     )
@@ -130,8 +130,8 @@ public class NavigationCommands {
         int clearence = args.argsLength() > 0 ?
             Math.max(0, args.getInteger(0)) : 0;
 
-        final boolean alwaysGlass = args.hasFlag('g');
-        if (player.ascendToCeiling(clearence, alwaysGlass)) {
+        final boolean useFlight = args.hasFlag('f');
+        if (player.ascendToCeiling(clearence, !useFlight)) {
             player.print("Whoosh!");
         } else {
             player.printError("No free spot above you found.");
@@ -179,7 +179,7 @@ public class NavigationCommands {
         aliases = { "up" },
         usage = "<block>",
         desc = "Go upwards some distance",
-        flags = "g",
+        flags = "f",
         min = 1,
         max = 1
     )
@@ -190,8 +190,8 @@ public class NavigationCommands {
 
         int distance = args.getInteger(0);
 
-        final boolean alwaysGlass = args.hasFlag('g');
-        if (player.ascendUpwards(distance, alwaysGlass)) {
+        final boolean useFlight = args.hasFlag('f');
+        if (player.ascendUpwards(distance, !useFlight)) {
             player.print("Whoosh!");
         } else {
             player.printError("You would hit something above you.");
