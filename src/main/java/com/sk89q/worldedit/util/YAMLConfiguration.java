@@ -98,6 +98,7 @@ public class YAMLConfiguration extends LocalConfiguration {
 
         navigationWand = config.getInt("navigation-wand.item", navigationWand);
         navigationWandMaxDistance = config.getInt("navigation-wand.max-distance", navigationWandMaxDistance);
+        navigationUseGlass = config.getBoolean("navigation.use-glass", navigationUseGlass);
 
         scriptTimeout = config.getInt("scripting.timeout", scriptTimeout);
         scriptsDir = config.getString("scripting.dir", scriptsDir);

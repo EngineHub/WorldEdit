@@ -101,6 +101,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         useInventoryCreativeOverride = getBool("use-inventory-creative-override", useInventoryCreativeOverride);
         navigationWand = getInt("nav-wand-item", navigationWand);
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);
+        navigationUseGlass = getBool("nav-use-glass", navigationUseGlass);
         scriptTimeout = getInt("scripting-timeout", scriptTimeout);
         saveDir = getString("schematic-save-dir", saveDir);
         scriptsDir = getString("craftscript-dir", scriptsDir);
