@@ -8,3 +8,7 @@
 /.idea
 /forge-download
 *-private.sh
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
