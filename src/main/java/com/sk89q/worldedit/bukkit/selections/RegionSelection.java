@@ -26,6 +26,10 @@ import org.bukkit.World;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import org.bukkit.block.BlockState;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class RegionSelection implements Selection {
 
@@ -101,6 +105,30 @@ public abstract class RegionSelection implements Selection {
         }
 
         return region.contains(toVector(pt));
+    }
+
+    public List<BlockState> getBlocks() {
+        List<BlockState> blocks = new ArrayList<BlockState>();
+
+        int minX = getMinimumPoint().getBlockX();
+        int minY = getMinimumPoint().getBlockY();
+        int minZ = getMinimumPoint().getBlockZ();
+
+        int maxX = getMaximumPoint().getBlockX();
+        int maxY = getMaximumPoint().getBlockY();
+        int maxZ = getMaximumPoint().getBlockZ();
+
+        World world = getWorld();
+
+        for(int x = minX; x < maxX; x++) {
+            for(int y = minY; y < maxY; y++) {
+                for(int z = minZ; z < maxZ; z++) {
+                    blocks.add(world.getBlockAt(x, y, z).getState());
+                }
+            }
+        }
+
+        return blocks;
     }
 
 }
