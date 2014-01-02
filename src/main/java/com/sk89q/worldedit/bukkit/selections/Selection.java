@@ -23,6 +23,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.RegionSelector;
+import org.bukkit.block.BlockState;
+
+import java.util.List;
 
 public interface Selection {
     /**
@@ -102,4 +105,12 @@ public interface Selection {
      * @return 
      */
     public boolean contains(Location pt);
+
+    /**
+     * Returns a list of all blocks within the selection
+     *
+     * @return blocks
+     */
+
+    public List<BlockState> getBlocks();
 }
