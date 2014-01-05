@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,9 +58,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
         super("MCEdit", "mcedit", "mce");
     }
 
-    @Override
-    public CuboidClipboard load(File file) throws IOException, DataException {
-        FileInputStream stream = new FileInputStream(file);
+    public CuboidClipboard load(InputStream stream) throws IOException, DataException {
         NBTInputStream nbtStream = new NBTInputStream(
                 new GZIPInputStream(stream));
 
@@ -192,6 +191,11 @@ public class MCEditSchematicFormat extends SchematicFormat {
         }
 
         return clipboard;
+    }
+
+    @Override
+    public CuboidClipboard load(File file) throws IOException, DataException {
+        return load(new FileInputStream(file));
     }
 
     @Override
