@@ -51,7 +51,9 @@ public class FloatingTreeRemover implements BlockTool {
 
         switch (world.getBlockType(clicked)) {
         case BlockID.LOG:
+        case BlockID.LOG2:
         case BlockID.LEAVES:
+        case BlockID.LEAVES2:
         case BlockID.BROWN_MUSHROOM_CAP:
         case BlockID.RED_MUSHROOM_CAP:
         case BlockID.VINE:
@@ -75,7 +77,9 @@ public class FloatingTreeRemover implements BlockTool {
                 final int typeId = editSession.getBlock(blockVector).getType();
                 switch (typeId) {
                 case BlockID.LOG:
+                case BlockID.LOG2:
                 case BlockID.LEAVES:
+                case BlockID.LEAVES2:
                 case BlockID.BROWN_MUSHROOM_CAP:
                 case BlockID.RED_MUSHROOM_CAP:
                 case BlockID.VINE:
@@ -131,7 +135,9 @@ public class FloatingTreeRemover implements BlockTool {
                         continue;
 
                     case BlockID.LOG:
+                    case BlockID.LOG2:
                     case BlockID.LEAVES:
+                    case BlockID.LEAVES2:
                     case BlockID.BROWN_MUSHROOM_CAP:
                     case BlockID.RED_MUSHROOM_CAP:
                     case BlockID.VINE:
@@ -142,7 +148,8 @@ public class FloatingTreeRemover implements BlockTool {
                     default:
                         // we hit something solid - evaluate where we came from
                         final int curId = world.getBlockType(current);
-                        if (curId == BlockID.LEAVES || curId == BlockID.VINE) {
+                        if (curId == BlockID.LEAVES || curId == BlockID.LEAVES2
+                                || curId == BlockID.VINE) {
                             // leaves touching a wall/the ground => stop walking this route
                             continue;
                         } else {
