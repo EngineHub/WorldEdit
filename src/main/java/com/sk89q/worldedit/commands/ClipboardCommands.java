@@ -30,6 +30,7 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.Region;
 
 /**
@@ -139,13 +140,14 @@ public class ClipboardCommands {
     @Command(
         aliases = { "/paste" },
         usage = "",
-        flags = "ao",
+        flags = "sao",
         desc = "Paste the clipboard's contents",
         help =
             "Pastes the clipboard's contents.\n" +
             "Flags:\n" +
             "  -a skips air blocks\n" +
-            "  -o pastes at the original position",
+            "  -o pastes at the original position\n" +
+            "  -s selects the region after pasting",
         min = 0,
         max = 0
     )
@@ -157,17 +159,32 @@ public class ClipboardCommands {
         boolean atOrigin = args.hasFlag('o');
         boolean pasteNoAir = args.hasFlag('a');
 
+        CuboidClipboard clipboard = session.getClipboard();
+
+        Vector pos = atOrigin ? session.getClipboard().getOrigin()
+                : session.getPlacementPosition(player);
+
         if (atOrigin) {
-            Vector pos = session.getClipboard().getOrigin();
-            session.getClipboard().place(editSession, pos, pasteNoAir);
-            session.getClipboard().pasteEntities(pos);
+            clipboard.place(editSession, pos, pasteNoAir);
+            clipboard.pasteEntities(pos);
             player.findFreePosition();
             player.print("Pasted to copy origin. Undo with //undo");
         } else {
-            Vector pos = session.getPlacementPosition(player);
-            session.getClipboard().paste(editSession, pos, pasteNoAir, true);
+            clipboard.paste(editSession, pos, pasteNoAir, true);
             player.findFreePosition();
             player.print("Pasted relative to you. Undo with //undo");
+        }
+
+        if (args.hasFlag('s')) {
+            LocalWorld world = player.getWorld();
+            Vector pos2 = pos.add(clipboard.getSize().subtract(1, 1, 1));
+            if (!atOrigin) {
+                pos2 = pos2.add(clipboard.getOffset());
+                pos = pos.add(clipboard.getOffset());
+            }
+            session.setRegionSelector(world, new CuboidRegionSelector(world, pos, pos2));
+            session.getRegionSelector(world).learnChanges();
+            session.getRegionSelector(world).explainRegionAdjust(player, session);
         }
     }
 
