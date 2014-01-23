@@ -381,7 +381,7 @@ public class RegionCommands {
             }
         }
 
-        player.print(affected + " blocks moved.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s") +" moved.");
     }
 
     @Command(
@@ -424,7 +424,7 @@ public class RegionCommands {
             }
         }
 
-        player.print(affected + " blocks changed. Undo with //undo");
+        player.print(affected + " block" + (affected == 1 ? "" : "s") +" changed. Undo with //undo");
     }
 
     @Command(

@@ -394,7 +394,7 @@ public class SelectionCommands {
         
         session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
 
-        player.print("Region expanded " + (newSize - oldSize) + " blocks.");
+        player.print("Region expanded " + (newSize - oldSize) + " block" + ((newSize - oldSize) == 1 ? "" : "s") +".");
     }
 
     @Command(
@@ -467,7 +467,7 @@ public class SelectionCommands {
             session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
 
 
-            player.print("Region contracted " + (oldSize - newSize) + " blocks.");
+            player.print("Region contracted " + (oldSize - newSize) + " block" + ((newSize - oldSize) == 1 ? "" : "s") +".");
         } catch (RegionOperationException e) {
             player.printError(e.getMessage());
         }
