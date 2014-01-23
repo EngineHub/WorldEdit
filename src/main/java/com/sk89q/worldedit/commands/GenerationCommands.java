@@ -94,7 +94,7 @@ public class GenerationCommands {
 
         Vector pos = session.getPlacementPosition(player);
         int affected = editSession.makeCylinder(pos, block, radiusX, radiusZ, height, false);
-        player.print(affected + " block(s) have been created.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been created.");
     }
 
     @Command(
@@ -139,7 +139,7 @@ public class GenerationCommands {
 
         Vector pos = session.getPlacementPosition(player);
         int affected = editSession.makeCylinder(pos, block, radiusX, radiusZ, height, true);
-        player.print(affected + " block(s) have been created.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been created.");
     }
 
     @Command(
@@ -196,7 +196,7 @@ public class GenerationCommands {
 
         int affected = editSession.makeSphere(pos, block, radiusX, radiusY, radiusZ, false);
         player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been created.");
     }
 
     @Command(
@@ -253,7 +253,7 @@ public class GenerationCommands {
 
         int affected = editSession.makeSphere(pos, block, radiusX, radiusY, radiusZ, true);
         player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been created.");
     }
 
     @Command(
@@ -324,7 +324,7 @@ public class GenerationCommands {
         int affected = editSession.makePyramid(pos, block, size, true);
 
         player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been created.");
     }
 
     @Command(
@@ -348,7 +348,7 @@ public class GenerationCommands {
         int affected = editSession.makePyramid(pos, block, size, false);
 
         player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been created.");
     }
 
     @Command(
@@ -412,7 +412,7 @@ public class GenerationCommands {
         try {
             final int affected = editSession.makeShape(region, zero, unit, pattern, expression, hollow);
             player.findFreePosition();
-            player.print(affected + " block(s) have been created.");
+            player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been created.");
         } catch (ExpressionException e) {
             player.printError(e.getMessage());
         }

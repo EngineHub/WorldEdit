@@ -86,7 +86,7 @@ public class UtilityCommands {
         } else {
             affected = editSession.fillXZ(pos, pattern, radius, depth, false);
         }
-        player.print(affected + " block(s) have been created.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been created.");
     }
 
     @Command(
@@ -115,7 +115,7 @@ public class UtilityCommands {
         } else {
             affected = editSession.fillXZ(pos, pattern, radius, depth, true);
         }
-        player.print(affected + " block(s) have been created.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been created.");
     }
 
     @Command(
@@ -134,7 +134,7 @@ public class UtilityCommands {
         we.checkMaxRadius(radius);
         int affected = editSession.drainArea(
                 session.getPlacementPosition(player), radius);
-        player.print(affected + " block(s) have been changed.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been changed.");
     }
 
     @Command(
@@ -153,7 +153,7 @@ public class UtilityCommands {
         we.checkMaxRadius(radius);
         int affected = editSession.fixLiquid(
                 session.getPlacementPosition(player), radius, 10, 11);
-        player.print(affected + " block(s) have been changed.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been changed.");
     }
 
     @Command(
@@ -172,7 +172,7 @@ public class UtilityCommands {
         we.checkMaxRadius(radius);
         int affected = editSession.fixLiquid(
                 session.getPlacementPosition(player), radius, 8, 9);
-        player.print(affected + " block(s) have been changed.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been changed.");
     }
 
     @Command(
@@ -194,7 +194,7 @@ public class UtilityCommands {
 
         int affected = editSession.removeAbove(
                 session.getPlacementPosition(player), size, height);
-        player.print(affected + " block(s) have been removed.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been removed.");
     }
 
     @Command(
@@ -215,7 +215,7 @@ public class UtilityCommands {
         int height = args.argsLength() > 1 ? Math.min((world.getMaxY() + 1), args.getInteger(1) + 2) : (world.getMaxY() + 1);
 
         int affected = editSession.removeBelow(session.getPlacementPosition(player), size, height);
-        player.print(affected + " block(s) have been removed.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been removed.");
     }
 
     @Command(
@@ -235,7 +235,7 @@ public class UtilityCommands {
         we.checkMaxRadius(size);
 
         int affected = editSession.removeNear(session.getPlacementPosition(player), block.getType(), size);
-        player.print(affected + " block(s) have been removed.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been removed.");
     }
 
     @Command(
@@ -273,7 +273,7 @@ public class UtilityCommands {
         } else {
             affected = editSession.replaceBlocks(region, from, to);
         }
-        player.print(affected + " block(s) have been replaced.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been replaced.");
     }
 
     @Command(
@@ -352,7 +352,7 @@ public class UtilityCommands {
         we.checkMaxRadius(size);
 
         int affected = editSession.removeNear(session.getPlacementPosition(player), 51, size);
-        player.print(affected + " block(s) have been removed.");
+        player.print(affected + " block" + (affected == 1 ? "" : "s" ) + " have been removed.");
     }
 
     @Command(
@@ -417,9 +417,9 @@ public class UtilityCommands {
         }
 
         if (radius < 0) {
-            player.print("Killed " + killed + " mobs.");
+            player.print("Killed " + killed + " mob" + (killed == 1 ? "" : "s" ) + ".");
         } else {
-            player.print("Killed " + killed + " mobs in a radius of " + radius + ".");
+            player.print("Killed " + killed + " mob" + (killed == 1 ? "" : "s" ) + " in a radius of " + radius + ".");
         }
     }
 
