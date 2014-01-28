@@ -137,12 +137,12 @@ public class BukkitUtil {
 
     public static final double EQUALS_PRECISION = 0.0001;
 
-    public static org.bukkit.Location toLocation(Location teleportLocation) {
-        Vector pt = teleportLocation.getPosition();
+    public static org.bukkit.Location toLocation(Location location) {
+        Vector pt = location.getPosition();
         return new org.bukkit.Location(
-            toWorld(teleportLocation.getWorld()),
+            toWorld(location.getWorld()),
             pt.getX(), pt.getY(), pt.getZ(),
-            teleportLocation.getYaw(), teleportLocation.getPitch()
+            location.getYaw(), location.getPitch()
         );
     }
 
