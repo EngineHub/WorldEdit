@@ -39,10 +39,6 @@ public class CUIChannelListener implements PluginMessageListener {
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         LocalSession session = plugin.getSession(player);
-        if (session.hasCUISupport()) { // Already initialized
-            return;
-        }
-
         String text = new String(message, UTF_8_CHARSET);
         session.handleCUIInitializationMessage(text);
     }
