@@ -605,12 +605,9 @@ public class LocalSession {
     }
 
     public void handleCUIInitializationMessage(String text) {
-        if(!hasCUISupport()) {
-            setCUISupport(true);
-        }
-
         String[] split = text.split("\\|");
         if (split.length > 1 && split[0].equalsIgnoreCase("v")) { // enough fields and right message
+            setCUISupport(true);
             try {
                 setCUIVersion(Integer.parseInt(split[1]));
             } catch (NumberFormatException e) {
