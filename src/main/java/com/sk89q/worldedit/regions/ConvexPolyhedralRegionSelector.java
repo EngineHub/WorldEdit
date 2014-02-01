@@ -183,7 +183,7 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
     public void describeCUI(LocalSession session, LocalPlayer player) {
         Collection<Vector> vertices = region.getVertices();
         Collection<Triangle> triangles = region.getTriangles();
-        
+
         Map<Vector, Integer> vertexIds = new HashMap<Vector, Integer>(vertices.size());
         int lastVertexId = -1;
         for (Vector vertex : vertices) {
