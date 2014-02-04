@@ -411,6 +411,10 @@ public enum BlockType {
         shouldPlaceLast.add(BlockID.POTATOES);
         shouldPlaceLast.add(BlockID.WOODEN_BUTTON);
         shouldPlaceLast.add(BlockID.ANVIL); // becomes relevant with asynchronous placement
+        shouldPlaceLast.add(BlockID.WATER); // Becomes important with incremental placement
+        shouldPlaceLast.add(BlockID.STATIONARY_WATER);// Becomes important with incremental placement
+        shouldPlaceLast.add(BlockID.LAVA); // Becomes important with incremental placement
+        shouldPlaceLast.add(BlockID.STATIONARY_LAVA);// Becomes important with incremental placement
         shouldPlaceLast.add(BlockID.PRESSURE_PLATE_LIGHT);
         shouldPlaceLast.add(BlockID.PRESSURE_PLATE_HEAVY);
         shouldPlaceLast.add(BlockID.COMPARATOR_OFF);
