@@ -104,8 +104,8 @@ public class ToolCommands {
     public void repl(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        BaseBlock targetBlock = we.getBlock(player, args.getString(0));
-        session.setTool(player.getItemInHand(), new BlockReplacer(targetBlock));
+        Pattern targetPattern = we.getBlock(player, args.getString(0));
+        session.setTool(player.getItemInHand(), new BlockReplacer(targetPattern));
         player.print("Block replacer tool bound to "
                 + ItemType.toHeldName(player.getItemInHand()) + ".");
     }
@@ -202,11 +202,13 @@ public class ToolCommands {
     public void longrangebuildtool(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        BaseBlock secondary = we.getBlock(player, args.getString(0));
-        BaseBlock primary = we.getBlock(player, args.getString(1));
+        final String secondaryName = args.getString(0);
+        final String primaryName = args.getString(1);
+        final Pattern secondary = we.getBlock(player, secondaryName);
+        final Pattern primary = we.getBlock(player, primaryName);
         session.setTool(player.getItemInHand(), new LongRangeBuildTool(primary, secondary));
         player.print("Long-range building tool bound to " + ItemType.toHeldName(player.getItemInHand()) + ".");
-        player.print("Left-click set to " + ItemType.toName(secondary.getType()) + "; right-click set to "
-                + ItemType.toName(primary.getType()) + ".");
+        player.print("Left-click set to " + secondaryName + "; right-click set to "
+                + primaryName + ".");
     }
 }

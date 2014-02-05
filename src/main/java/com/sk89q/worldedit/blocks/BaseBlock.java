@@ -21,6 +21,7 @@ package com.sk89q.worldedit.blocks;
 
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.foundation.Block;
+import com.sk89q.worldedit.masks.MaskedBlockMask;
 
 import java.util.Collection;
 
@@ -148,40 +149,5 @@ public class BaseBlock extends Block {
         }
 
         return getData() == otherBlock.getData();
-    }
-
-    /**
-     * Checks if the type is the same, and if data is the same if only data != -1.
-     * 
-     * @param o other block
-     * @return true if equal
-     */
-    public boolean equalsFuzzy(BaseBlock o) {
-        return (getType() == o.getType()) && (getData() == o.getData() || getData() == -1 || o.getData() == -1);
-    }
-
-    /**
-     * @param iter
-     * @return
-     * @deprecated This method is silly, use {@link #containsFuzzy(java.util.Collection, BaseBlock)} instead.
-     */
-    @Deprecated
-    public boolean inIterable(Iterable<BaseBlock> iter) {
-        for (BaseBlock block : iter) {
-            if (block.equalsFuzzy(this)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean containsFuzzy(Collection<BaseBlock> collection, BaseBlock o) {
-        // allow masked data in the searchBlocks to match various types
-        for (BaseBlock b : collection) {
-            if (b.equalsFuzzy(o)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

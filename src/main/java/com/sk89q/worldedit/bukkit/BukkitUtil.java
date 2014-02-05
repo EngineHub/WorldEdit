@@ -23,11 +23,11 @@ import java.util.List;
 
 import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.blocks.SkullBlock;
+import com.sk89q.worldedit.masks.MaskedBlockMask;
 import org.bukkit.DyeColor;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -164,22 +164,22 @@ public class BukkitUtil {
         }
     }
 
-    public static BaseBlock toBlock(LocalWorld world, ItemStack itemStack) throws WorldEditException {
+    public static MaskedBlockMask toBlock(LocalWorld world, ItemStack itemStack) throws WorldEditException {
         final int typeId = itemStack.getTypeId();
 
         switch (typeId) {
             case ItemID.INK_SACK:
                 final Dye materialData = (Dye) itemStack.getData();
                 if (materialData.getColor() == DyeColor.BROWN) {
-                    return new BaseBlock(BlockID.COCOA_PLANT, -1);
+                    return MaskedBlockMask.fromValues(BlockID.COCOA_PLANT, 0, 0);
                 }
                 break;
 
             case ItemID.HEAD:
-                return new SkullBlock(0, (byte) itemStack.getDurability());
+                return new MaskedBlockMask(new SkullBlock(0, (byte) itemStack.getDurability()));
 
             default:
-                final BaseBlock baseBlock = BlockType.getBlockForItem(typeId, itemStack.getDurability());
+                final MaskedBlockMask baseBlock = BlockType.getBlockForItem(typeId, itemStack.getDurability());
                 if (baseBlock != null) {
                     return baseBlock;
                 }
@@ -187,7 +187,7 @@ public class BukkitUtil {
         }
 
         if (world.isValidBlockType(typeId)) {
-            return new BaseBlock(typeId, -1);
+            return MaskedBlockMask.fromValues(typeId, itemStack.getDurability(), 0);
         }
 
         throw new NotABlockException(typeId);

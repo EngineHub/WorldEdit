@@ -27,6 +27,7 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.cui.CUIEvent;
+import com.sk89q.worldedit.masks.MaskedBlockMask;
 import com.sk89q.worldedit.util.TargetBlock;
 
 /**
@@ -461,12 +462,12 @@ public abstract class LocalPlayer {
      *
      * @return the item id of the item the player is holding
      */
-    public BaseBlock getBlockInHand() throws WorldEditException {
+    public MaskedBlockMask getBlockInHand() throws WorldEditException {
         final int typeId = getItemInHand();
         if (!getWorld().isValidBlockType(typeId)) {
             throw new NotABlockException(typeId);
         }
-        return new BaseBlock(typeId);
+        return new MaskedBlockMask(new BaseBlock(typeId), ~0);
     }
 
     /**

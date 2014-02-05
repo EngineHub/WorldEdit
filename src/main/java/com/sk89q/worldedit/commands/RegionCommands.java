@@ -44,6 +44,7 @@ import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.masks.MaskedBlockMask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
@@ -176,7 +177,7 @@ public class RegionCommands {
     public void replace(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        Set<BaseBlock> from;
+        List<MaskedBlockMask> from;
         Pattern to;
         if (args.argsLength() == 1) {
             from = null;
@@ -357,13 +358,13 @@ public class RegionCommands {
         int count = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         Vector dir = we.getDirection(player,
                 args.argsLength() > 1 ? args.getString(1).toLowerCase() : "me");
-        BaseBlock replace;
+        MaskedBlockMask replace;
 
         // Replacement block argument
         if (args.argsLength() > 2) {
             replace = we.getBlock(player, args.getString(2));
         } else {
-            replace = new BaseBlock(BlockID.AIR);
+            replace = new MaskedBlockMask(new BaseBlock(BlockID.AIR));
         }
 
         int affected = editSession.moveRegion(session.getSelection(player.getWorld()),

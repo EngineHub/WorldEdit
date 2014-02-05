@@ -22,6 +22,7 @@ package com.sk89q.worldedit.commands;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -43,6 +44,10 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.masks.BlockMask;
+import com.sk89q.worldedit.masks.MaskedBlockMask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -230,11 +235,11 @@ public class UtilityCommands {
     public void removeNear(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        BaseBlock block = we.getBlock(player, args.getString(0), true);
+        List<MaskedBlockMask> blocks = we.getBlocks(player, args.getString(0), true);
         int size = Math.max(1, args.getInteger(1, 50));
         we.checkMaxRadius(size);
 
-        int affected = editSession.removeNear(session.getPlacementPosition(player), block.getType(), size);
+        int affected = editSession.removeNear(session.getPlacementPosition(player), new BlockMask(blocks), size);
         player.print(affected + " block(s) have been removed.");
     }
 
@@ -253,7 +258,7 @@ public class UtilityCommands {
         
         int size = Math.max(1, args.getInteger(0));
         int affected;
-        Set<BaseBlock> from;
+        List<MaskedBlockMask> from;
         Pattern to;
         if (args.argsLength() == 2) {
             from = null;
@@ -351,7 +356,7 @@ public class UtilityCommands {
                 : defaultRadius;
         we.checkMaxRadius(size);
 
-        int affected = editSession.removeNear(session.getPlacementPosition(player), 51, size);
+        int affected = editSession.removeNear(session.getPlacementPosition(player), new BlockMask(BlockType.FIRE), size);
         player.print(affected + " block(s) have been removed.");
     }
 

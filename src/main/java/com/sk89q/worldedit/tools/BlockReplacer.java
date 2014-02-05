@@ -23,6 +23,8 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.patterns.SingleBlockPattern;
 
 /**
  * A mode that replaces one block.
@@ -30,10 +32,10 @@ import com.sk89q.worldedit.blocks.BlockType;
  * @author sk89q
  */
 public class BlockReplacer implements DoubleActionBlockTool {
-    private BaseBlock targetBlock;
+    private Pattern targetPattern;
 
-    public BlockReplacer(BaseBlock targetBlock) {
-        this.targetBlock = targetBlock;
+    public BlockReplacer(Pattern targetPattern) {
+        this.targetPattern = targetPattern;
     }
 
     public boolean canUse(LocalPlayer player) {
@@ -49,7 +51,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1, bag, player);
 
         try {
-            editSession.setBlock(clicked, targetBlock);
+            editSession.setBlock(clicked, targetPattern);
         } catch (MaxChangedBlocksException e) {
         } finally {
             if (bag != null) {
@@ -67,8 +69,9 @@ public class BlockReplacer implements DoubleActionBlockTool {
 
         LocalWorld world = clicked.getWorld();
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1, player);
-        targetBlock = (editSession).getBlock(clicked);
-        BlockType type = BlockType.fromID(targetBlock.getType());
+        final BaseBlock block = editSession.getBlock(clicked);
+        targetPattern = new SingleBlockPattern(block);
+        BlockType type = BlockType.fromID(block.getType());
 
         if (type != null) {
             player.print("Replacer tool switched to: " + type.getName());
