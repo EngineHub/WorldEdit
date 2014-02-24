@@ -60,6 +60,10 @@
       <id>maven.sk89q.com</id>
       <url>http://maven.sk89q.com/artifactory/libs-release-local</url>
     </repository>
+    <snapshotRepository>
+      <id>maven.sk89q.com-snapshot</id>
+      <url>http://maven.sk89q.com/artifactory/libs-snapshot-local</url>
+    </snapshotRepository>
   </distributionManagement>
   
   <properties> <!-- Fix encoding warnings -->
