@@ -26,6 +26,8 @@
 - Added usage of non-existent variables in all LValue expressions.
 - Changed /up and /ceil command to use glass block by default. Flight can be 
   done via -f flag now.
+- Removed the /fill command as an alias of /material (which sets the brush
+  material).
 - Fixed //deform not doing anything at all.
 - Fixed //walls on non-cuboid regions so that they no longer introduces gaps 
   in walls beyond 45 degrees.

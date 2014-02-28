@@ -109,7 +109,7 @@ public class ToolUtilCommands {
     }
 
     @Command(
-        aliases = { "mat", "material", "fill" },
+        aliases = { "mat", "material" },
         usage = "[pattern]",
         desc = "Set the brush material",
         min = 1,
