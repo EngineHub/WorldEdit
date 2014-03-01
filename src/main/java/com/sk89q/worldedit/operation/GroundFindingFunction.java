@@ -29,14 +29,16 @@ import com.sk89q.worldedit.regions.Region;
 
 /**
  * An abstract implementation of {@link com.sk89q.worldedit.operation.FlatRegionFunction}
- * that searches for the ground, which is considered to be any non-air block.
+ * that searches for the first "ground" block." A ground block is found when the
+ * method {@link #shouldPassThrough(Vector, BaseBlock)} returns false, which, by default,
+ * does so for all non-air blocks.
  * <p>
- * It functions by starting from the upperY in each column and traversing
- * down the column until it finds the first non-air block, at which point
- * {@link #apply(com.sk89q.worldedit.Vector, com.sk89q.worldedit.blocks.BaseBlock)}
- * is called on that non-air block. {@link #shouldContinue(com.sk89q.worldedit.Vector2D)}
- * is called before each column is traversed, which allows implementations
- * to "skip" a column and avoid the ground search.
+ * This function starts from the provided upperY in each block column and traverses
+ * down the column until it finds the first ground block, at which point
+ * {@link #apply(Vector, BaseBlock)} is called with the position and the
+ * {@link BaseBlock} for the found ground block. Implementations that want
+ * to skip certain columns (and avoid the ground search) can override
+ * {@link #shouldContinue(com.sk89q.worldedit.Vector2D)} and return true as necessary.
  */
 public abstract class GroundFindingFunction implements FlatRegionFunction {
 
@@ -130,7 +132,7 @@ public abstract class GroundFindingFunction implements FlatRegionFunction {
             Vector testPt = pt.toVector(y);
             BaseBlock block = editSession.getBlock(testPt);
 
-            if (block.getType() != BlockID.AIR) {
+            if (!shouldPassThrough(testPt, block)) {
                 return apply(testPt, block);
             }
         }
@@ -150,19 +152,37 @@ public abstract class GroundFindingFunction implements FlatRegionFunction {
     }
 
     /**
+     * Returns whether the given block should be "passed through" when
+     * conducting the ground search.
+     * <p>
+     * Examples of blocks where this method could return true include snow, tall
+     * grass, shrubs, and flowers. Note that this method will also receive
+     * calls on each air block so that condition must be handled. Be aware
+     * that blocks passed through are not automatically removed
+     * from the world, so implementations may need to remove the block
+     * immediately above the ground.
+     * <p>
+     * The default implementation only returns true for air blocks.
+     *
+     * @param position the position
+     * @param block the block
+     * @return true if the block should be passed through during the ground search
+     */
+    protected boolean shouldPassThrough(Vector position, BaseBlock block) {
+        return block.getType() == BlockID.AIR;
+    }
+
+    /**
      * Apply the function to the given ground block.
      * <p>
-     * The block above the given ground block may or may not be air, but it is
-     * a block that can be replaced. For example, this block may be a tall
-     * grass block or a flower. However, the ground block also could be
-     * the flower or grass block itself, depending on the configuration of the
-     * GroundFindingFunction.
+     * Naive implementations may provide flowers, tall grass, and other
+     * blocks not often considered to be the ground as the ground block.
      *
-     * @param pt the position
+     * @param position the position
      * @param block the block
      * @return true if something was changed
      * @throws WorldEditException thrown on an error
      */
-    protected abstract boolean apply(Vector pt, BaseBlock block) throws WorldEditException;
+    protected abstract boolean apply(Vector position, BaseBlock block) throws WorldEditException;
 
 }
