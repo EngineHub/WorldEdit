@@ -2,7 +2,7 @@
 - Added //forest that generates a forest in a selection.
 - Added -s flag to //paste to select the pasted area.
 - Added //line command and EditSession method.
-- Added /curve.
+- Added //curve.
 - Added 1.7 blocks, biomes, trees, and items.
 - Added a "hand" pseudo block type that uses the currently selected block.
 - Added a "pos1" pseudo block type, which uses the block type from the 
