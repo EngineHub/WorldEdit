@@ -22,21 +22,18 @@ package com.sk89q.worldedit.generator;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.operation.GroundFindingFunction;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
  * Generates forests by searching for the ground starting from the given upper Y
  * coordinate for every column given.
  */
-public class ForestGenerator extends GroundFindingFunction {
+public class ForestGenerator extends GroundGenerator {
 
     private final TreeGenerator treeGenerator;
     private final EditSession editSession;
-    private double density;
 
     /**
      * Create a new instance.
@@ -50,31 +47,6 @@ public class ForestGenerator extends GroundFindingFunction {
         super(editSession, lowerY, upperY);
         this.editSession = editSession;
         this.treeGenerator = treeGenerator;
-    }
-
-    /**
-     * Set the density (0 <= density <= 1) which indicates the percentage chance
-     * that a tree will spawn in each column.
-     *
-     * @return the density
-     */
-    public double getDensity() {
-        return density;
-    }
-
-    /**
-     * Get the density (0 <= density <= 1) which indicates the percentage chance
-     * that a tree will spawn in each column.
-     *
-     * @param density the density
-     */
-    public void setDensity(double density) {
-        this.density = density;
-    }
-
-    @Override
-    protected boolean shouldContinue(Vector2D pt) {
-        return Math.random() < density;
     }
 
     @Override
