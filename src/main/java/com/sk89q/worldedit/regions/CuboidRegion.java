@@ -42,6 +42,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
      * Store the second point.
      */
     private Vector pos2;
+
     /**
      * Construct a new instance of this cuboid region.
      *
@@ -396,4 +397,16 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
     public CuboidRegion clone() {
         return (CuboidRegion) super.clone();
     }
+
+    /**
+     * Make a cuboid region out of the given region using the minimum and maximum
+     * bounds of the provided region.
+     *
+     * @param region the region
+     * @return a new cuboid region
+     */
+    public static CuboidRegion makeCuboid(Region region) {
+        return new CuboidRegion(region.getMinimumPoint(), region.getMaximumPoint());
+    }
+
 }
