@@ -19,34 +19,21 @@
 
 package com.sk89q.worldedit.commands;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
+import com.sk89q.minecraft.util.commands.*;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.LocalWorld.KillFlags;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.patterns.SingleBlockPattern;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 
 import java.util.Comparator;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.minecraft.util.commands.Console;
-import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EntityType;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.LocalWorld.KillFlags;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.Region;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
 
 /**
  * Utility commands.
@@ -554,7 +541,7 @@ public class UtilityCommands {
             return;
         }
 
-        String command = args.getJoinedStrings(0).replaceAll("/", "");
+        String command = args.getJoinedStrings(0).toLowerCase().replaceAll("/", "");
 
         String helpMessage = commandsManager.getHelpMessages().get(command);
         if (helpMessage == null) {
