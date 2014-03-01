@@ -30,13 +30,18 @@ import com.sk89q.worldedit.regions.Region;
  */
 public class FlatRegionApplicator implements Operation {
 
-    private final Region region;
+    private final FlatRegion flatRegion;
     private final FlatRegionFunction function;
     private int affected = 0;
 
     public FlatRegionApplicator(Region region, FlatRegionFunction function) {
-        this.region = region;
         this.function = function;
+
+        if (region instanceof FlatRegion) {
+            flatRegion = (FlatRegion) region;
+        } else {
+            flatRegion = CuboidRegion.makeCuboid(region);
+        }
     }
 
     /**
@@ -50,14 +55,6 @@ public class FlatRegionApplicator implements Operation {
 
     @Override
     public Operation resume() throws WorldEditException {
-        FlatRegion flatRegion;
-
-        if (region instanceof FlatRegion) {
-            flatRegion = (FlatRegion) region;
-        } else {
-            flatRegion = CuboidRegion.makeCuboid(region);
-        }
-
         for (Vector2D pt : flatRegion.asFlatRegion()) {
             if (function.apply(pt)) {
                 affected++;
