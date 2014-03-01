@@ -713,8 +713,12 @@ public class WorldEdit {
             // Parse special percentage syntax
             if (s.matches("[0-9]+(\\.[0-9]*)?%.*")) {
                 String[] p = s.split("%");
-                chance = Double.parseDouble(p[0]);
-                block = getBlock(player, p[1]);
+                if (p.length < 2) {
+                    throw new UnknownItemException(s);
+                } else {
+                    chance = Double.parseDouble(p[0]);
+                    block = getBlock(player, p[1]);
+                }
             } else {
                 chance = 1;
                 block = getBlock(player, s);
