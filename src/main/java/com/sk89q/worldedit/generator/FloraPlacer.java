@@ -23,13 +23,6 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.patterns.BlockChance;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.RandomFillPattern;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Generates flora over an applied area.
@@ -37,8 +30,7 @@ import java.util.List;
 public class FloraPlacer extends GroundGenerator {
 
     private final EditSession editSession;
-    private final Pattern desertPattern = getDesertPattern();
-    private final Pattern temperatePattern = getTemperatePattern();
+    private FloraGenerator floraGenerator;
 
     /**
      * Create a new instance.
@@ -48,46 +40,30 @@ public class FloraPlacer extends GroundGenerator {
     public FloraPlacer(EditSession editSession) {
         super(editSession);
         this.editSession = editSession;
+        this.floraGenerator = new FloraGenerator(editSession);
     }
 
     /**
-     * Get a pattern for plants to place inside a desert environment.
+     * Get the flora generator.
      *
-     * @return a pattern that places flora
+     * @return the flora generator
      */
-    public static Pattern getDesertPattern() {
-        List<BlockChance> chance = new ArrayList<BlockChance>();
-        chance.add(new BlockChance(new BaseBlock(BlockID.DEAD_BUSH), 30));
-        chance.add(new BlockChance(new BaseBlock(BlockID.CACTUS), 20));
-        chance.add(new BlockChance(new BaseBlock(BlockID.AIR), 300));
-        return new RandomFillPattern(chance);
+    public FloraGenerator getFloraGenerator() {
+        return floraGenerator;
     }
 
     /**
-     * Get a pattern for plants to place inside a temperate environment.
+     * Set the flora generator.
      *
-     * @return a pattern that places flora
+     * @param floraGenerator the flora generator
      */
-    public static Pattern getTemperatePattern() {
-        List<BlockChance> chance = new ArrayList<BlockChance>();
-        chance.add(new BlockChance(new BaseBlock(BlockID.LONG_GRASS, 1), 300));
-        chance.add(new BlockChance(new BaseBlock(BlockID.RED_FLOWER), 5));
-        chance.add(new BlockChance(new BaseBlock(BlockID.RED_FLOWER, 1), 1));
-        chance.add(new BlockChance(new BaseBlock(BlockID.YELLOW_FLOWER), 5));
-        return new RandomFillPattern(chance);
+    public void setFloraGenerator(FloraGenerator floraGenerator) {
+        this.floraGenerator = floraGenerator;
     }
 
     @Override
     protected boolean apply(Vector pt, BaseBlock block) throws WorldEditException {
-        if (block.getType() == BlockID.GRASS) {
-            editSession.setBlock(pt.add(0, 1, 0), temperatePattern.next(pt));
-            return true;
-        } else if (block.getType() == BlockID.SAND) {
-            editSession.setBlock(pt.add(0, 1, 0), desertPattern.next(pt));
-            return true;
-        }
-
-        return false;
+        return floraGenerator.apply(pt);
     }
 
 }
