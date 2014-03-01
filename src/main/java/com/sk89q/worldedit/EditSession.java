@@ -18,19 +18,6 @@
  */
 package com.sk89q.worldedit;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.Stack;
-
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.bags.BlockBagException;
 import com.sk89q.worldedit.bags.UnplaceableBlockException;
@@ -53,6 +40,8 @@ import com.sk89q.worldedit.shape.ArbitraryShape;
 import com.sk89q.worldedit.shape.RegionShape;
 import com.sk89q.worldedit.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.util.TreeGenerator;
+
+import java.util.*;
 
 /**
  * This class can wrap all block editing operations into one "edit session" that
@@ -2745,6 +2734,56 @@ public class EditSession {
                     } else if (t != BlockID.AIR) { // Trees won't grow on this!
                         break;
                     }
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Makes a forest.
+     *
+     * @param it an iterator over the points within the region
+     * @param upperY the Y to start from (upperY >= lowerY), inclusive
+     * @param lowerY the Y to end at (upperY >= lowerY), inclusive
+     * @param density density of the forest
+     * @param treeGenerator the tree generator
+     * @return number of trees created
+     * @throws MaxChangedBlocksException
+     */
+    public int makeForest(Iterable<Vector2D> it, int upperY, int lowerY,
+                          double density, TreeGenerator treeGenerator) throws MaxChangedBlocksException {
+        if (upperY < lowerY) {
+            throw new IllegalArgumentException("upperY must be greater than or equal to lowerY");
+        }
+
+        int affected = 0;
+
+        for (Vector2D pt : it) {
+            // Don't want to be in the ground
+            if (!getBlock(pt.toVector(upperY)).isAir()) {
+                continue;
+            }
+
+            // The gods don't want a tree here
+            if (Math.random() >= density) {
+                continue;
+            } // def 0.05
+
+            for (int y = upperY; y >= lowerY; --y) {
+                // Check if we hit the ground
+                Vector testPt = pt.toVector(y);
+                int t = getBlock(testPt).getType();
+
+                if (t == BlockID.GRASS || t == BlockID.DIRT) {
+                    treeGenerator.generate(this, testPt.add(0, 1, 0));
+                    ++affected;
+                    break;
+                } else if (t == BlockID.SNOW) {
+                    setBlock(testPt, new BaseBlock(BlockID.AIR));
+                } else if (t != BlockID.AIR) { // Trees won't grow on this!
+                    break;
                 }
             }
         }
