@@ -27,6 +27,7 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
+import com.sk89q.worldedit.generator.ForestGenerator;
 import com.sk89q.worldedit.interpolation.Interpolation;
 import com.sk89q.worldedit.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.interpolation.Node;
@@ -2753,38 +2754,16 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int makeForest(Iterable<Vector2D> it, int upperY, int lowerY,
-                          double density, TreeGenerator treeGenerator) throws MaxChangedBlocksException {
-        if (upperY < lowerY) {
-            throw new IllegalArgumentException("upperY must be greater than or equal to lowerY");
-        }
+                          double density, TreeGenerator treeGenerator)
+            throws WorldEditException {
 
+        ForestGenerator generator = new ForestGenerator(this, treeGenerator, lowerY, upperY);
+        generator.setDensity(density);
         int affected = 0;
 
         for (Vector2D pt : it) {
-            // Don't want to be in the ground
-            if (!getBlock(pt.toVector(upperY)).isAir()) {
-                continue;
-            }
-
-            // The gods don't want a tree here
-            if (Math.random() >= density) {
-                continue;
-            } // def 0.05
-
-            for (int y = upperY; y >= lowerY; --y) {
-                // Check if we hit the ground
-                Vector testPt = pt.toVector(y);
-                int t = getBlock(testPt).getType();
-
-                if (t == BlockID.GRASS || t == BlockID.DIRT) {
-                    treeGenerator.generate(this, testPt.add(0, 1, 0));
-                    ++affected;
-                    break;
-                } else if (t == BlockID.SNOW) {
-                    setBlock(testPt, new BaseBlock(BlockID.AIR));
-                } else if (t != BlockID.AIR) { // Trees won't grow on this!
-                    break;
-                }
+            if (generator.apply(pt)) {
+                affected++;
             }
         }
 
