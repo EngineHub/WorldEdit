@@ -199,8 +199,6 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         if (isDefined()) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getMinimumPoint(), getArea()));
             session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getMaximumPoint(), getArea()));
-        } else {
-            session.dispatchCUIEvent(player, new SelectionShapeEvent(getLegacyTypeID()));
         }
     }
 
