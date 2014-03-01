@@ -29,8 +29,9 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
-import com.sk89q.worldedit.generator.FloraPlacer;
+import com.sk89q.worldedit.generator.FloraGenerator;
 import com.sk89q.worldedit.generator.ForestGenerator;
+import com.sk89q.worldedit.operation.GroundScatterFunction;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.operation.FlatRegionApplicator;
 import com.sk89q.worldedit.operation.OperationHelper;
@@ -566,11 +567,16 @@ public class RegionCommands {
 
         Region region = session.getSelection(player.getWorld());
 
-        FloraPlacer function = new FloraPlacer(editSession);
-        function.setRange(region);
-        function.setDensity(density);
+        // We want to generate flora
+        FloraGenerator generator = new FloraGenerator(editSession);
 
-        FlatRegionApplicator operation = new FlatRegionApplicator(region, function);
+        // And we want to scatter them
+        GroundScatterFunction scatter = new GroundScatterFunction(editSession, generator);
+        scatter.setDensity(density);
+        scatter.setRange(region);
+
+        // Generate that flora
+        FlatRegionApplicator operation = new FlatRegionApplicator(region, scatter);
         OperationHelper.complete(operation);
 
         player.print(operation.getAffected() + " flora created.");

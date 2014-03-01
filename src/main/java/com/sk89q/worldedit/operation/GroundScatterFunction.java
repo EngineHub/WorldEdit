@@ -17,53 +17,54 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.generator;
+package com.sk89q.worldedit.operation;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.generator.GroundGenerator;
 
 /**
- * Generates flora over an applied area.
+ * Randomly applies the given {@link RegionFunction} onto random ground blocks.
+ * <p>
+ * This class can be used to generate a structure randomly over an area.
  */
-public class FloraPlacer extends GroundGenerator {
+public class GroundScatterFunction extends GroundGenerator {
 
-    private final EditSession editSession;
-    private FloraGenerator floraGenerator;
+    private RegionFunction function;
 
     /**
      * Create a new instance.
      *
      * @param editSession the edit session
+     * @param function the function
      */
-    public FloraPlacer(EditSession editSession) {
+    public GroundScatterFunction(EditSession editSession, RegionFunction function) {
         super(editSession);
-        this.editSession = editSession;
-        this.floraGenerator = new FloraGenerator(editSession);
+        this.function = function;
     }
 
     /**
-     * Get the flora generator.
+     * Get the function to apply.
      *
-     * @return the flora generator
+     * @return the region function
      */
-    public FloraGenerator getFloraGenerator() {
-        return floraGenerator;
+    public RegionFunction getFunction() {
+        return function;
     }
 
     /**
-     * Set the flora generator.
+     * Set the function to apply.
      *
-     * @param floraGenerator the flora generator
+     * @param function the region function
      */
-    public void setFloraGenerator(FloraGenerator floraGenerator) {
-        this.floraGenerator = floraGenerator;
+    public void setFunction(RegionFunction function) {
+        this.function = function;
     }
 
     @Override
-    protected boolean apply(Vector pt, BaseBlock block) throws WorldEditException {
-        return floraGenerator.apply(pt);
+    protected boolean apply(Vector position, BaseBlock block) throws WorldEditException {
+        return function.apply(position);
     }
-
 }

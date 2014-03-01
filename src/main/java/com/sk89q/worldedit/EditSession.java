@@ -28,10 +28,14 @@ import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.generator.ForestGenerator;
+import com.sk89q.worldedit.generator.GardenPatchGenerator;
+import com.sk89q.worldedit.operation.GroundScatterFunction;
 import com.sk89q.worldedit.interpolation.Interpolation;
 import com.sk89q.worldedit.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.interpolation.Node;
 import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.operation.FlatRegionApplicator;
+import com.sk89q.worldedit.operation.OperationHelper;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -2566,134 +2570,31 @@ public class EditSession {
     }
 
     /**
-     * Makes a pumpkin patch.
+     * Makes pumpkin patches randomly in an area around the given position.
      *
-     * @param basePos
-     */
-    private void makePumpkinPatch(Vector basePos)
-            throws MaxChangedBlocksException {
-        // BaseBlock logBlock = new BaseBlock(BlockID.LOG);
-        BaseBlock leavesBlock = new BaseBlock(BlockID.LEAVES);
-
-        // setBlock(basePos.subtract(0, 1, 0), logBlock);
-        setBlockIfAir(basePos, leavesBlock);
-
-        makePumpkinPatchVine(basePos, basePos.add(0, 0, 1));
-        makePumpkinPatchVine(basePos, basePos.add(0, 0, -1));
-        makePumpkinPatchVine(basePos, basePos.add(1, 0, 0));
-        makePumpkinPatchVine(basePos, basePos.add(-1, 0, 0));
-    }
-
-    /**
-     * Make a pumpkin patch fine.
-     *
-     * @param basePos
-     * @param pos
-     */
-    private void makePumpkinPatchVine(Vector basePos, Vector pos)
-            throws MaxChangedBlocksException {
-        if (pos.distance(basePos) > 4) return;
-        if (getBlockType(pos) != 0) return;
-
-        for (int i = -1; i > -3; --i) {
-            Vector testPos = pos.add(0, i, 0);
-            if (getBlockType(testPos) == BlockID.AIR) {
-                pos = testPos;
-            } else {
-                break;
-            }
-        }
-
-        setBlockIfAir(pos, new BaseBlock(BlockID.LEAVES));
-
-        int t = prng.nextInt(4);
-        int h = prng.nextInt(3) - 1;
-
-        BaseBlock log = new BaseBlock(BlockID.LOG);
-
-        switch (t) {
-        case 0:
-            if (prng.nextBoolean()) {
-                makePumpkinPatchVine(basePos, pos.add(1, 0, 0));
-            }
-            if (prng.nextBoolean()) {
-                setBlockIfAir(pos.add(1, h, -1), log);
-            }
-            setBlockIfAir(pos.add(0, 0, -1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
-            break;
-
-        case 1:
-            if (prng.nextBoolean()) {
-                makePumpkinPatchVine(basePos, pos.add(0, 0, 1));
-            }
-            if (prng.nextBoolean()) {
-                setBlockIfAir(pos.add(1, h, 0), log);
-            }
-            setBlockIfAir(pos.add(1, 0, 1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
-            break;
-
-        case 2:
-            if (prng.nextBoolean()) {
-                makePumpkinPatchVine(basePos, pos.add(0, 0, -1));
-            }
-            if (prng.nextBoolean()) {
-                setBlockIfAir(pos.add(-1, h, 0), log);
-            }
-            setBlockIfAir(pos.add(-1, 0, 1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
-            break;
-
-        case 3:
-            if (prng.nextBoolean()) {
-                makePumpkinPatchVine(basePos, pos.add(-1, 0, 0));
-            }
-            if (prng.nextBoolean()) {
-                setBlockIfAir(pos.add(-1, h, -1), log);
-            }
-            setBlockIfAir(pos.add(-1, 0, -1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
-            break;
-        }
-    }
-
-    /**
-     * Makes pumpkin patches.
-     *
-     * @param basePos
-     * @param size
-     * @return number of trees created
+     * @param position the base position
+     * @param apothem the apothem of the (square) area
+     * @return number of patches created
      * @throws MaxChangedBlocksException
      */
-    public int makePumpkinPatches(Vector basePos, int size)
-            throws MaxChangedBlocksException {
-        int affected = 0;
+    public int makePumpkinPatches(Vector position, int apothem) throws MaxChangedBlocksException {
+        // We want to generate pumpkins
+        GardenPatchGenerator generator = new GardenPatchGenerator(this);
+        generator.setPlant(GardenPatchGenerator.getPumpkinPattern());
 
-        for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX()
-                + size; ++x) {
-            for (int z = basePos.getBlockZ() - size; z <= basePos.getBlockZ()
-                    + size; ++z) {
-                // Don't want to be in the ground
-                if (!getBlock(new Vector(x, basePos.getBlockY(), z)).isAir()) {
-                    continue;
-                }
-                // The gods don't want a pumpkin patch here
-                if (Math.random() < 0.98) {
-                    continue;
-                }
+        // In a region of the given radius
+        Region region = new CuboidRegion(position.add(-apothem, -5, -apothem), position.add(apothem, 10, apothem));
 
-                for (int y = basePos.getBlockY(); y >= basePos.getBlockY() - 10; --y) {
-                    // Check if we hit the ground
-                    int t = getBlock(new Vector(x, y, z)).getType();
-                    if (t == BlockID.GRASS || t == BlockID.DIRT) {
-                        makePumpkinPatch(new Vector(x, y + 1, z));
-                        ++affected;
-                        break;
-                    } else if (t != BlockID.AIR) { // Trees won't grow on this!
-                        break;
-                    }
-                }
-            }
-        }
+        // And we want to scatter them
+        GroundScatterFunction scatter = new GroundScatterFunction(this, generator);
+        scatter.setDensity(0.02);
+        scatter.setRange(region);
 
-        return affected;
+        // Generate those patches!
+        FlatRegionApplicator operation = new FlatRegionApplicator(region, scatter);
+        OperationHelper.completeLegacy(operation);
+
+        return operation.getAffected();
     }
 
     /**
