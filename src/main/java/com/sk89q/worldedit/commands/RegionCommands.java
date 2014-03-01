@@ -19,25 +19,11 @@
 
 package com.sk89q.worldedit.commands;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.ALL;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.ORIENTATION_REGION;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.HeightMap;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.expression.ExpressionException;
@@ -46,10 +32,14 @@ import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
-import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.regions.*;
+import com.sk89q.worldedit.util.TreeGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 
 /**
  * Region related commands.
@@ -526,4 +516,42 @@ public class RegionCommands {
 
         player.print(affected + " block(s) have been changed.");
     }
+
+
+    @Command(
+            aliases = { "/forest" },
+            usage = "[type] [density]",
+            desc = "Make a forest within the region",
+            min = 0,
+            max = 2
+    )
+    @CommandPermissions("worldedit.region.forest")
+    @Logging(REGION)
+    public void forest(CommandContext args, LocalSession session, LocalPlayer player,
+                           EditSession editSession) throws WorldEditException {
+        TreeGenerator.TreeType type = args.argsLength() > 1 ? TreeGenerator.lookup(args.getString(1)) : TreeGenerator.TreeType.TREE;
+        double density = args.argsLength() > 2 ? args.getDouble(2) / 100 : 0.05;
+
+        if (type == null) {
+            player.printError("Tree type '" + args.getString(1) + "' is unknown.");
+            return;
+        }
+
+        Region region = session.getSelection(player.getWorld());
+        FlatRegion flatRegion;
+
+        if (region instanceof FlatRegion) {
+            flatRegion = (FlatRegion) region;
+        } else {
+            player.print("(The given region is not a 'flat region', so a cuboid region will be used instead.)");
+            flatRegion = CuboidRegion.makeCuboid(region);
+        }
+
+        int upperY = flatRegion.getMaximumY() + 1; // Increase by 1 to have trees generate above the selection 1 block
+        int lowerY = flatRegion.getMinimumY();
+
+        int affected = editSession.makeForest(flatRegion.asFlatRegion(), upperY, lowerY, density, new TreeGenerator(type));
+        player.print(affected + " trees created.");
+    }
+
 }

@@ -1,4 +1,5 @@
 5.6
+- Added //forest that generates a forest in a selection.
 - Added -s flag to //paste to select the pasted area.
 - Added //line command and EditSession method.
 - Added /curve.
