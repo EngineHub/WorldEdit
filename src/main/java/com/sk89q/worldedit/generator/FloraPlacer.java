@@ -44,11 +44,9 @@ public class FloraPlacer extends GroundGenerator {
      * Create a new instance.
      *
      * @param editSession the edit session
-     * @param lowerY the lower Y
-     * @param upperY the upper Y (lowerY <= upperY)
      */
-    public FloraPlacer(EditSession editSession, int lowerY, int upperY) {
-        super(editSession, lowerY, upperY);
+    public FloraPlacer(EditSession editSession) {
+        super(editSession);
         this.editSession = editSession;
     }
 

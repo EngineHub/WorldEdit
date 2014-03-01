@@ -34,11 +34,9 @@ public abstract class GroundGenerator extends GroundFindingFunction {
      * Create a new instance.
      *
      * @param editSession the edit session
-     * @param lowerY the lower Y
-     * @param upperY the upper Y (lowerY <= upperY)
      */
-    protected GroundGenerator(EditSession editSession, int lowerY, int upperY) {
-        super(editSession, lowerY, upperY);
+    protected GroundGenerator(EditSession editSession) {
+        super(editSession);
     }
 
     /**

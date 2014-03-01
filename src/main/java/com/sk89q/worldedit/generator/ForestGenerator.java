@@ -40,11 +40,9 @@ public class ForestGenerator extends GroundGenerator {
      *
      * @param editSession the edit session
      * @param treeGenerator a tree generator
-     * @param lowerY the lower Y boundary to end the ground search from
-     * @param upperY the upper Y boundary to start the ground search at
      */
-    public ForestGenerator(EditSession editSession, TreeGenerator treeGenerator, int lowerY, int upperY) {
-        super(editSession, lowerY, upperY);
+    public ForestGenerator(EditSession editSession, TreeGenerator treeGenerator) {
+        super(editSession);
         this.editSession = editSession;
         this.treeGenerator = treeGenerator;
     }

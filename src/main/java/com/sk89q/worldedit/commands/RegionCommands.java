@@ -576,10 +576,9 @@ public class RegionCommands {
             flatRegion = CuboidRegion.makeCuboid(region);
         }
 
-        int upperY = flatRegion.getMaximumY();
-        int lowerY = flatRegion.getMinimumY();
-
-        FloraPlacer generator = new FloraPlacer(editSession, lowerY, upperY);
+        FloraPlacer generator = new FloraPlacer(editSession);
+        generator.setLowerY(flatRegion.getMinimumY());
+        generator.setUpperY(flatRegion.getMaximumY());
         generator.setDensity(density);
         int affected = 0;
 

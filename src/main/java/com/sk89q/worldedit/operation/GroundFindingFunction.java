@@ -26,6 +26,13 @@ import com.sk89q.worldedit.blocks.BlockID;
 /**
  * An abstract implementation of {@link com.sk89q.worldedit.operation.FlatRegionFunction}
  * that searches for the ground, which is considered to be any non-air block.
+ * <p>
+ * It functions by starting from the upperY in each column and traversing
+ * down the column until it finds the first non-air block, at which point
+ * {@link #apply(com.sk89q.worldedit.Vector, com.sk89q.worldedit.blocks.BaseBlock)}
+ * is called on that non-air block. {@link #shouldContinue(com.sk89q.worldedit.Vector2D)}
+ * is called before each column is traversed, which allows implementations
+ * to "skip" a column and avoid the ground search.
  */
 public abstract class GroundFindingFunction implements FlatRegionFunction {
 
@@ -37,13 +44,9 @@ public abstract class GroundFindingFunction implements FlatRegionFunction {
      * Create a new instance.
      *
      * @param editSession the edit session
-     * @param lowerY the lower Y
-     * @param upperY the upper Y (lowerY <= upperY)
      */
-    protected GroundFindingFunction(EditSession editSession, int lowerY, int upperY) {
+    protected GroundFindingFunction(EditSession editSession) {
         this.editSession = editSession;
-        this.lowerY = lowerY;
-        this.upperY = upperY;
         checkYBounds();
     }
 
@@ -118,7 +121,8 @@ public abstract class GroundFindingFunction implements FlatRegionFunction {
     }
 
     /**
-     * Returns whether a search for the ground should be performed for the given point.
+     * Returns whether a search for the ground should be performed for the given
+     * column. Return false if the column is to be skipped.
      *
      * @param pt the point
      * @return true if the search should begin
@@ -129,6 +133,12 @@ public abstract class GroundFindingFunction implements FlatRegionFunction {
 
     /**
      * Apply the function to the given ground block.
+     * <p>
+     * The block above the given ground block may or may not be air, but it is
+     * a block that can be replaced. For example, this block may be a tall
+     * grass block or a flower. However, the ground block also could be
+     * the flower or grass block itself, depending on the configuration of the
+     * GroundFindingFunction.
      *
      * @param pt the position
      * @param block the block

@@ -2757,7 +2757,9 @@ public class EditSession {
                           double density, TreeGenerator treeGenerator)
             throws WorldEditException {
 
-        ForestGenerator generator = new ForestGenerator(this, treeGenerator, lowerY, upperY);
+        ForestGenerator generator = new ForestGenerator(this, treeGenerator);
+        generator.setLowerY(lowerY);
+        generator.setUpperY(upperY);
         generator.setDensity(density);
         int affected = 0;
 
