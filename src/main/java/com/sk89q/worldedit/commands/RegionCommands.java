@@ -529,11 +529,11 @@ public class RegionCommands {
     @Logging(REGION)
     public void forest(CommandContext args, LocalSession session, LocalPlayer player,
                            EditSession editSession) throws WorldEditException {
-        TreeGenerator.TreeType type = args.argsLength() > 1 ? TreeGenerator.lookup(args.getString(1)) : TreeGenerator.TreeType.TREE;
-        double density = args.argsLength() > 2 ? args.getDouble(2) / 100 : 0.05;
+        TreeGenerator.TreeType type = args.argsLength() > 0 ? TreeGenerator.lookup(args.getString(0)) : TreeGenerator.TreeType.TREE;
+        double density = args.argsLength() > 1 ? args.getDouble(1) / 100 : 0.05;
 
         if (type == null) {
-            player.printError("Tree type '" + args.getString(1) + "' is unknown.");
+            player.printError("Tree type '" + args.getString(0) + "' is unknown.");
             return;
         }
 
