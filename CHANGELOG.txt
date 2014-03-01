@@ -44,6 +44,8 @@
 - Fixed some attachments that would result in items being dropped.
 - Fixed the query functions not comparing data values at all for their 
   return values.
+- Fixed improper block probability patterns (i.e. 20%,10%grass) causing an error.
+- Fixed /we help not finding commands if uppercase names are used.
 
 5.5.8
 - Update for Minecraft 1.6.2 and 1.6.4
