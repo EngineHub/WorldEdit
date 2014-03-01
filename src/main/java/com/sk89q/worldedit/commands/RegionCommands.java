@@ -30,7 +30,10 @@ import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.generator.FloraPlacer;
+import com.sk89q.worldedit.generator.ForestGenerator;
 import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.operation.FlatRegionApplicator;
+import com.sk89q.worldedit.operation.OperationHelper;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.*;
@@ -538,20 +541,15 @@ public class RegionCommands {
         }
 
         Region region = session.getSelection(player.getWorld());
-        FlatRegion flatRegion;
 
-        if (region instanceof FlatRegion) {
-            flatRegion = (FlatRegion) region;
-        } else {
-            player.print("(The given region is not a 'flat region', so a cuboid region will be used instead.)");
-            flatRegion = CuboidRegion.makeCuboid(region);
-        }
+        ForestGenerator function = new ForestGenerator(editSession, new TreeGenerator(type));
+        function.setRange(region);
+        function.setDensity(density);
 
-        int upperY = flatRegion.getMaximumY() + 1; // Increase by 1 to have trees generate above the selection 1 block
-        int lowerY = flatRegion.getMinimumY();
+        FlatRegionApplicator operation = new FlatRegionApplicator(region, function);
+        OperationHelper.complete(operation);
 
-        int affected = editSession.makeForest(flatRegion.asFlatRegion(), upperY, lowerY, density, new TreeGenerator(type));
-        player.print(affected + " trees created.");
+        player.print(operation.getAffected() + " trees created.");
     }
 
     @Command(
@@ -567,28 +565,15 @@ public class RegionCommands {
         double density = args.argsLength() > 0 ? args.getDouble(0) / 100 : 0.1;
 
         Region region = session.getSelection(player.getWorld());
-        FlatRegion flatRegion;
 
-        if (region instanceof FlatRegion) {
-            flatRegion = (FlatRegion) region;
-        } else {
-            player.print("(The given region is not a 'flat region', so a cuboid region will be used instead.)");
-            flatRegion = CuboidRegion.makeCuboid(region);
-        }
+        FloraPlacer function = new FloraPlacer(editSession);
+        function.setRange(region);
+        function.setDensity(density);
 
-        FloraPlacer generator = new FloraPlacer(editSession);
-        generator.setLowerY(flatRegion.getMinimumY());
-        generator.setUpperY(flatRegion.getMaximumY());
-        generator.setDensity(density);
-        int affected = 0;
+        FlatRegionApplicator operation = new FlatRegionApplicator(region, function);
+        OperationHelper.complete(operation);
 
-        for (Vector2D pt : flatRegion.asFlatRegion()) {
-            if (generator.apply(pt)) {
-                affected++;
-            }
-        }
-
-        player.print(affected + " flora created.");
+        player.print(operation.getAffected() + " flora created.");
     }
 
 }

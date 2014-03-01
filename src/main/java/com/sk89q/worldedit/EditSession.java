@@ -2752,14 +2752,16 @@ public class EditSession {
      * @param treeGenerator the tree generator
      * @return number of trees created
      * @throws MaxChangedBlocksException
+     * @deprecated Use {@link com.sk89q.worldedit.generator.ForestGenerator} with a
+     *             {@link com.sk89q.worldedit.operation.FlatRegionApplicator}
      */
+    @Deprecated
     public int makeForest(Iterable<Vector2D> it, int upperY, int lowerY,
                           double density, TreeGenerator treeGenerator)
             throws WorldEditException {
 
         ForestGenerator generator = new ForestGenerator(this, treeGenerator);
-        generator.setLowerY(lowerY);
-        generator.setUpperY(upperY);
+        generator.setRange(lowerY, upperY);
         generator.setDensity(density);
         int affected = 0;
 
