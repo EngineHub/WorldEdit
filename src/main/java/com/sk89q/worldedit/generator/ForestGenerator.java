@@ -20,17 +20,18 @@
 package com.sk89q.worldedit.generator;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.operation.RegionFunction;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
  * Generates forests by searching for the ground starting from the given upper Y
  * coordinate for every column given.
  */
-public class ForestGenerator extends GroundGenerator {
+public class ForestGenerator implements RegionFunction {
 
     private final TreeGenerator treeGenerator;
     private final EditSession editSession;
@@ -42,25 +43,23 @@ public class ForestGenerator extends GroundGenerator {
      * @param treeGenerator a tree generator
      */
     public ForestGenerator(EditSession editSession, TreeGenerator treeGenerator) {
-        super(editSession);
         this.editSession = editSession;
         this.treeGenerator = treeGenerator;
     }
 
     @Override
-    protected boolean apply(Vector pt, BaseBlock block) throws MaxChangedBlocksException {
+    public boolean apply(Vector position) throws WorldEditException {
+        BaseBlock block = editSession.getBlock(position);
         int t = block.getType();
 
         if (t == BlockID.GRASS || t == BlockID.DIRT) {
-            treeGenerator.generate(editSession, pt.add(0, 1, 0));
+            treeGenerator.generate(editSession, position.add(0, 1, 0));
             return true;
         } else if (t == BlockID.SNOW) {
-            editSession.setBlock(pt, new BaseBlock(BlockID.AIR));
+            editSession.setBlock(position, new BaseBlock(BlockID.AIR));
             return false;
         } else { // Trees won't grow on this!
             return false;
         }
     }
-
-
 }

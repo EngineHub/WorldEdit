@@ -543,11 +543,16 @@ public class RegionCommands {
 
         Region region = session.getSelection(player.getWorld());
 
-        ForestGenerator function = new ForestGenerator(editSession, new TreeGenerator(type));
-        function.setRange(region);
-        function.setDensity(density);
+        // We want to generate trees
+        ForestGenerator generator = new ForestGenerator(editSession, new TreeGenerator(type));
 
-        FlatRegionApplicator operation = new FlatRegionApplicator(region, function);
+        // And we want to scatter them
+        GroundScatterFunction scatter = new GroundScatterFunction(editSession, generator);
+        scatter.setDensity(density);
+        scatter.setRange(region);
+
+        // Generate that forest
+        FlatRegionApplicator operation = new FlatRegionApplicator(region, scatter);
         OperationHelper.complete(operation);
 
         player.print(operation.getAffected() + " trees created.");

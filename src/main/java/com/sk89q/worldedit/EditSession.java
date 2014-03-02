@@ -2662,12 +2662,16 @@ public class EditSession {
             throws WorldEditException {
 
         ForestGenerator generator = new ForestGenerator(this, treeGenerator);
-        generator.setRange(lowerY, upperY);
-        generator.setDensity(density);
+
+        // And we want to scatter them
+        GroundScatterFunction scatter = new GroundScatterFunction(this, generator);
+        scatter.setDensity(density);
+        scatter.setRange(lowerY, upperY);
+
         int affected = 0;
 
         for (Vector2D pt : it) {
-            if (generator.apply(pt)) {
+            if (scatter.apply(pt)) {
                 affected++;
             }
         }
