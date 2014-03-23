@@ -926,7 +926,7 @@ public class BukkitWorld extends LocalWorld {
      * @param origin The center of the area to kill mobs in.
      * @param radius Maximum distance to kill mobs at; radius < 0 means kill all mobs
      * @param flags various flags that determine what to kill
-     * @return
+     * @return number of mobs killed
      */
     @Override
     public int killMobs(Vector origin, double radius, int flags) {

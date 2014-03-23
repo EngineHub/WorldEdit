@@ -354,8 +354,9 @@ public abstract class LocalWorld implements World {
     /**
      * Kill mobs in an area, excluding pet wolves.
      *
-     * @param origin  -1 for the whole world
-     * @return
+     * @param origin The center of the area to kill mobs in
+     * @param radius -1 for the whole world
+     * @return number of mobs killed
      */
     @Deprecated
     public int killMobs(Vector origin, int radius) {
@@ -368,7 +369,7 @@ public abstract class LocalWorld implements World {
      * @param origin The center of the area to kill mobs in
      * @param radius -1 for all mobs
      * @param killPets whether to kill pets
-     * @return
+     * @return number of mobs killed
      */
     @Deprecated
     public int killMobs(Vector origin, int radius, boolean killPets) {
@@ -378,10 +379,10 @@ public abstract class LocalWorld implements World {
     /**
      * Kill mobs in an area.
      *
-     * @param origin
-     * @param radius
-     * @param flags
-     * @return
+     * @param origin The center of the area to kill mobs in
+     * @param radius -1 for all mobs
+     * @param flags various flags that determine what to kill
+     * @return number of mobs killed
      */
     public int killMobs(Vector origin, double radius, int flags) {
         return killMobs(origin, (int) radius, (flags & KillFlags.PETS) != 0);
