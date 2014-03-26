@@ -29,12 +29,12 @@ import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.generator.ForestGenerator;
 import com.sk89q.worldedit.generator.GardenPatchGenerator;
+import com.sk89q.worldedit.operation.FlatRegionVisitor;
 import com.sk89q.worldedit.operation.GroundScatterFunction;
 import com.sk89q.worldedit.interpolation.Interpolation;
 import com.sk89q.worldedit.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.interpolation.Node;
 import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.operation.FlatRegionApplicator;
 import com.sk89q.worldedit.operation.OperationHelper;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -2591,7 +2591,7 @@ public class EditSession {
         scatter.setRange(region);
 
         // Generate those patches!
-        FlatRegionApplicator operation = new FlatRegionApplicator(region, scatter);
+        FlatRegionVisitor operation = new FlatRegionVisitor(region, scatter);
         OperationHelper.completeLegacy(operation);
 
         return operation.getAffected();
@@ -2654,7 +2654,7 @@ public class EditSession {
      * @return number of trees created
      * @throws MaxChangedBlocksException
      * @deprecated Use {@link com.sk89q.worldedit.generator.ForestGenerator} with a
-     *             {@link com.sk89q.worldedit.operation.FlatRegionApplicator}
+     *             {@link com.sk89q.worldedit.operation.FlatRegionVisitor}
      */
     @Deprecated
     public int makeForest(Iterable<Vector2D> it, int upperY, int lowerY,

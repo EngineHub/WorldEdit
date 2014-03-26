@@ -28,13 +28,13 @@ import com.sk89q.worldedit.regions.Region;
 /**
  * Utility class to apply region functions to {@link com.sk89q.worldedit.regions.Region}.
  */
-public class FlatRegionApplicator implements Operation {
+public class FlatRegionVisitor implements Operation {
 
     private final FlatRegion flatRegion;
     private final FlatRegionFunction function;
     private int affected = 0;
 
-    public FlatRegionApplicator(Region region, FlatRegionFunction function) {
+    public FlatRegionVisitor(Region region, FlatRegionFunction function) {
         this.function = function;
 
         if (region instanceof FlatRegion) {
