@@ -61,4 +61,21 @@ public final class OperationHelper {
         }
     }
 
+    /**
+     * Complete a given operation synchronously until it completes. Re-throw all
+     * {@link com.sk89q.worldedit.WorldEditException} exceptions as
+     * {@link java.lang.RuntimeException}s.
+     *
+     * @param op operation to execute
+     */
+    public static void completeBlindly(Operation op) {
+        while (op != null) {
+            try {
+                op = op.resume();
+            } catch (WorldEditException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 }
