@@ -530,7 +530,7 @@ public class EditSession {
     public int countBlock(Region region, Set<Integer> searchIDs) {
         Set<BaseBlock> passOn = new HashSet<BaseBlock>();
         for (Integer i : searchIDs) {
-            passOn.add(new BaseBlock(i, -1));
+            passOn.add(BaseBlock.wildcard(i, 0, 0));
         }
         return countBlocks(region, passOn);
     }
@@ -1220,19 +1220,6 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, BaseBlock toBlock) throws MaxChangedBlocksException {
-        Set<BaseBlock> definiteBlockTypes = new HashSet<BaseBlock>();
-        Set<Integer> fuzzyBlockTypes = new HashSet<Integer>();
-
-        if (fromBlockTypes != null) {
-            for (BaseBlock block : fromBlockTypes) {
-                if (block.getData() == -1) {
-                    fuzzyBlockTypes.add(block.getType());
-                } else {
-                    definiteBlockTypes.add(block);
-                }
-            }
-        }
-
         int affected = 0;
 
         if (region instanceof CuboidRegion) {
@@ -1260,7 +1247,7 @@ public class EditSession {
                             }
                         } else {
                             //replace <from-block> <to-block>
-                            if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                            if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
                                 continue;
                             }
                         }
@@ -1282,7 +1269,7 @@ public class EditSession {
                     }
                 } else {
                     //replace <from-block> <to-block>
-                    if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                    if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
                         continue;
                     }
                 }
@@ -1306,18 +1293,6 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, Pattern pattern) throws MaxChangedBlocksException {
-        Set<BaseBlock> definiteBlockTypes = new HashSet<BaseBlock>();
-        Set<Integer> fuzzyBlockTypes = new HashSet<Integer>();
-        if (fromBlockTypes != null) {
-            for (BaseBlock block : fromBlockTypes) {
-                if (block.getData() == -1) {
-                    fuzzyBlockTypes.add(block.getType());
-                } else {
-                    definiteBlockTypes.add(block);
-                }
-            }
-        }
-
         int affected = 0;
 
         if (region instanceof CuboidRegion) {
@@ -1345,7 +1320,7 @@ public class EditSession {
                             }
                         } else {
                             //replace <from-block> <to-block>
-                            if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                            if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
                                 continue;
                             }
                         }
@@ -1367,7 +1342,7 @@ public class EditSession {
                     }
                 } else {
                     //replace <from-block> <to-block>
-                    if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                    if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
                         continue;
                     }
                 }

@@ -171,7 +171,7 @@ public class BukkitUtil {
             case ItemID.INK_SACK:
                 final Dye materialData = (Dye) itemStack.getData();
                 if (materialData.getColor() == DyeColor.BROWN) {
-                    return new BaseBlock(BlockID.COCOA_PLANT, -1);
+                    return BaseBlock.wildcard(BlockID.COCOA_PLANT, 0, 0);
                 }
                 break;
 
@@ -187,7 +187,7 @@ public class BukkitUtil {
         }
 
         if (world.isValidBlockType(typeId)) {
-            return new BaseBlock(typeId, -1);
+            return BaseBlock.wildcard(typeId, itemStack.getDurability(), 0);
         }
 
         throw new NotABlockException(typeId);
