@@ -275,7 +275,7 @@ public class BrushCommands {
         if (args.argsLength() == 2) {
             String flagString = args.getString(1);
             // straight from the command, using contains instead of hasflag
-            flags.or(KillFlags.FRIENDLY      , flagString.contains("f"));
+            flags.or(KillFlags.FRIENDLY      , flagString.contains("f")); // No permission check here. Flags will instead be filtered by the subsequent calls.
             flags.or(KillFlags.PETS          , flagString.contains("p"), "worldedit.butcher.pets");
             flags.or(KillFlags.NPCS          , flagString.contains("n"), "worldedit.butcher.npcs");
             flags.or(KillFlags.GOLEMS        , flagString.contains("g"), "worldedit.butcher.golems");

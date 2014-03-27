@@ -384,14 +384,14 @@ public class UtilityCommands {
         }
 
         FlagContainer flags = new FlagContainer(player);
-        flags.or(KillFlags.FRIENDLY      , args.hasFlag('f'));
+        flags.or(KillFlags.FRIENDLY      , args.hasFlag('f')); // No permission check here. Flags will instead be filtered by the subsequent calls.
         flags.or(KillFlags.PETS          , args.hasFlag('p'), "worldedit.butcher.pets");
         flags.or(KillFlags.NPCS          , args.hasFlag('n'), "worldedit.butcher.npcs");
         flags.or(KillFlags.GOLEMS        , args.hasFlag('g'), "worldedit.butcher.golems");
         flags.or(KillFlags.ANIMALS       , args.hasFlag('a'), "worldedit.butcher.animals");
         flags.or(KillFlags.AMBIENT       , args.hasFlag('b'), "worldedit.butcher.ambient");
         flags.or(KillFlags.WITH_LIGHTNING, args.hasFlag('l'), "worldedit.butcher.lightning");
-        // If you add flags here, please add them to com.sk89q.worldedit.tools.brushes.ButcherBrush as well
+        // If you add flags here, please add them to com.sk89q.worldedit.commands.BrushCommands.butcherBrush() as well
 
         int killed;
         if (player.isPlayer()) {
