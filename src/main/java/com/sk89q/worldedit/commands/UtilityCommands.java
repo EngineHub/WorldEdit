@@ -91,7 +91,7 @@ public class UtilityCommands {
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         double radius = Math.max(1, args.getDouble(1));
         we.checkMaxRadius(radius);
-        int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : 1;
+        int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : Integer.MAX_VALUE;
 
         Vector pos = session.getPlacementPosition(player);
         int affected = 0;
