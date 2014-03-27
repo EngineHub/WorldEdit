@@ -19,12 +19,13 @@
 
 package com.sk89q.worldedit.masks;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CombinedMask extends AbstractMask {
     private final List<Mask> masks = new ArrayList<Mask>();
@@ -33,7 +34,13 @@ public class CombinedMask extends AbstractMask {
     }
 
     public CombinedMask(Mask mask) {
-        masks.add(mask);
+        add(mask);
+    }
+
+    public CombinedMask(Mask ...mask) {
+        for (Mask m : mask) {
+            add(m);
+        }
     }
 
     public CombinedMask(List<Mask> masks) {

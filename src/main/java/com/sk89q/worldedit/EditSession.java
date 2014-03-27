@@ -29,15 +29,15 @@ import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.generator.ForestGenerator;
 import com.sk89q.worldedit.generator.GardenPatchGenerator;
-import com.sk89q.worldedit.operation.GroundScatterFunction;
 import com.sk89q.worldedit.interpolation.Interpolation;
 import com.sk89q.worldedit.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.interpolation.Node;
-import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.operation.FlatRegionApplicator;
-import com.sk89q.worldedit.operation.OperationHelper;
+import com.sk89q.worldedit.masks.*;
+import com.sk89q.worldedit.operation.*;
 import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.EllipsoidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.shape.ArbitraryBiomeShape;
@@ -530,7 +530,7 @@ public class EditSession {
     public int countBlock(Region region, Set<Integer> searchIDs) {
         Set<BaseBlock> passOn = new HashSet<BaseBlock>();
         for (Integer i : searchIDs) {
-            passOn.add(new BaseBlock(i, -1));
+            passOn.add(BaseBlock.wildcard(i, 0, 0));
         }
         return countBlocks(region, passOn);
     }
@@ -538,47 +538,16 @@ public class EditSession {
     /**
      * Count the number of blocks of a list of types in a region.
      *
-     * @param region
-     * @param searchBlocks
-     * @return
+     * @param region the region
+     * @param searchBlocks the list of blocks to search
+     * @return the number of blocks that matched the pattern
      */
     public int countBlocks(Region region, Set<BaseBlock> searchBlocks) {
-        int count = 0;
-
-        if (region instanceof CuboidRegion) {
-            // Doing this for speed
-            Vector min = region.getMinimumPoint();
-            Vector max = region.getMaximumPoint();
-
-            int minX = min.getBlockX();
-            int minY = min.getBlockY();
-            int minZ = min.getBlockZ();
-            int maxX = max.getBlockX();
-            int maxY = max.getBlockY();
-            int maxZ = max.getBlockZ();
-
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    for (int z = minZ; z <= maxZ; ++z) {
-                        Vector pt = new Vector(x, y, z);
-
-                        BaseBlock compare = new BaseBlock(getBlockType(pt), getBlockData(pt));
-                        if (BaseBlock.containsFuzzy(searchBlocks, compare)) {
-                            ++count;
-                        }
-                    }
-                }
-            }
-        } else {
-            for (Vector pt : region) {
-                BaseBlock compare = new BaseBlock(getBlockType(pt), getBlockData(pt));
-                if (BaseBlock.containsFuzzy(searchBlocks, compare)) {
-                    ++count;
-                }
-            }
-        }
-
-        return count;
+        FuzzyBlockMask mask = new FuzzyBlockMask(searchBlocks);
+        BlockCount counter = new BlockCount(this, mask);
+        RegionVisitor visitor = new RegionVisitor(region, counter);
+        OperationHelper.completeBlindly(visitor); // We can't throw exceptions, nor do we expect any
+        return counter.getCount();
     }
 
     /**
@@ -803,211 +772,56 @@ public class EditSession {
     /**
      * Fills an area recursively in the X/Z directions.
      *
-     * @param origin
-     * @param block
-     * @param radius
-     * @param depth
-     * @param recursive
+     * @param origin the location to start from
+     * @param block the block to fill with
+     * @param radius the radius of the spherical area to fill
+     * @param depth the maximum depth, starting from the origin
+     * @param recursive whether a breadth-first search should be performed
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int fillXZ(Vector origin, BaseBlock block, double radius, int depth,
-            boolean recursive) throws MaxChangedBlocksException {
-
-        int affected = 0;
-        int originX = origin.getBlockX();
-        int originY = origin.getBlockY();
-        int originZ = origin.getBlockZ();
-
-        HashSet<BlockVector> visited = new HashSet<BlockVector>();
-        Stack<BlockVector> queue = new Stack<BlockVector>();
-
-        queue.push(new BlockVector(originX, originY, originZ));
-
-        while (!queue.empty()) {
-            BlockVector pt = queue.pop();
-            int cx = pt.getBlockX();
-            int cy = pt.getBlockY();
-            int cz = pt.getBlockZ();
-
-            if (cy < 0 || cy > originY || visited.contains(pt)) {
-                continue;
-            }
-
-            visited.add(pt);
-
-            if (recursive) {
-                if (origin.distance(pt) > radius) {
-                    continue;
-                }
-
-                if (getBlock(pt).isAir()) {
-                    if (setBlock(pt, block)) {
-                        ++affected;
-                    }
-                } else {
-                    continue;
-                }
-
-                queue.push(new BlockVector(cx, cy - 1, cz));
-                queue.push(new BlockVector(cx, cy + 1, cz));
-            } else {
-                double dist = Math.sqrt(Math.pow(originX - cx, 2)
-                        + Math.pow(originZ - cz, 2));
-                int minY = originY - depth + 1;
-
-                if (dist > radius) {
-                    continue;
-                }
-
-                if (getBlock(pt).isAir()) {
-                    affected += fillY(cx, originY, cz, block, minY);
-                } else {
-                    continue;
-                }
-            }
-
-            queue.push(new BlockVector(cx + 1, cy, cz));
-            queue.push(new BlockVector(cx - 1, cy, cz));
-            queue.push(new BlockVector(cx, cy, cz + 1));
-            queue.push(new BlockVector(cx, cy, cz - 1));
-        }
-
-        return affected;
-    }
-
-    /**
-     * Recursively fills a block and below until it hits another block.
-     *
-     * @param x
-     * @param cy
-     * @param z
-     * @param block
-     * @param minY
-     * @throws MaxChangedBlocksException
-     * @return
-     */
-    private int fillY(int x, int cy, int z, BaseBlock block, int minY)
+    public int fillXZ(Vector origin, BaseBlock block, double radius, int depth, boolean recursive)
             throws MaxChangedBlocksException {
-        int affected = 0;
-
-        for (int y = cy; y >= minY; --y) {
-            Vector pt = new Vector(x, y, z);
-
-            if (getBlock(pt).isAir()) {
-                setBlock(pt, block);
-                ++affected;
-            } else {
-                break;
-            }
-        }
-
-        return affected;
+        return fillXZ(origin, new SingleBlockPattern(block), radius, depth, recursive);
     }
 
     /**
      * Fills an area recursively in the X/Z directions.
      *
      * @param origin
-     * @param pattern
-     * @param radius
-     * @param depth
-     * @param recursive
+     * @param pattern the pattern to fill with
+     * @param radius the radius of the spherical area to fill
+     * @param depth the maximum depth, starting from the origin
+     * @param recursive whether a breadth-first search should be performed
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int fillXZ(Vector origin, Pattern pattern, double radius, int depth,
-            boolean recursive) throws MaxChangedBlocksException {
-
-        int affected = 0;
-        int originX = origin.getBlockX();
-        int originY = origin.getBlockY();
-        int originZ = origin.getBlockZ();
-
-        HashSet<BlockVector> visited = new HashSet<BlockVector>();
-        Stack<BlockVector> queue = new Stack<BlockVector>();
-
-        queue.push(new BlockVector(originX, originY, originZ));
-
-        while (!queue.empty()) {
-            BlockVector pt = queue.pop();
-            int cx = pt.getBlockX();
-            int cy = pt.getBlockY();
-            int cz = pt.getBlockZ();
-
-            if (cy < 0 || cy > originY || visited.contains(pt)) {
-                continue;
-            }
-
-            visited.add(pt);
-
-            if (recursive) {
-                if (origin.distance(pt) > radius) {
-                    continue;
-                }
-
-                if (getBlock(pt).isAir()) {
-                    if (setBlock(pt, pattern.next(pt))) {
-                        ++affected;
-                    }
-                } else {
-                    continue;
-                }
-
-                queue.push(new BlockVector(cx, cy - 1, cz));
-                queue.push(new BlockVector(cx, cy + 1, cz));
-            } else {
-                double dist = Math.sqrt(Math.pow(originX - cx, 2)
-                        + Math.pow(originZ - cz, 2));
-                int minY = originY - depth + 1;
-
-                if (dist > radius) {
-                    continue;
-                }
-
-                if (getBlock(pt).isAir()) {
-                    affected += fillY(cx, originY, cz, pattern, minY);
-                } else {
-                    continue;
-                }
-            }
-
-            queue.push(new BlockVector(cx + 1, cy, cz));
-            queue.push(new BlockVector(cx - 1, cy, cz));
-            queue.push(new BlockVector(cx, cy, cz + 1));
-            queue.push(new BlockVector(cx, cy, cz - 1));
-        }
-
-        return affected;
-    }
-
-    /**
-     * Recursively fills a block and below until it hits another block.
-     *
-     * @param x
-     * @param cy
-     * @param z
-     * @param pattern
-     * @param minY
-     * @throws MaxChangedBlocksException
-     * @return
-     */
-    private int fillY(int x, int cy, int z, Pattern pattern, int minY)
+    public int fillXZ(Vector origin, Pattern pattern, double radius, int depth, boolean recursive)
             throws MaxChangedBlocksException {
-        int affected = 0;
 
-        for (int y = cy; y >= minY; --y) {
-            Vector pt = new Vector(x, y, z);
+        CombinedMask mask = new CombinedMask(
+                new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
+                new BoundedYMask(origin.getBlockY() - depth + 1, origin.getBlockY()),
+                new InvertedMask(new ExistingBlockMask()));
 
-            if (getBlock(pt).isAir()) {
-                setBlock(pt, pattern.next(pt));
-                ++affected;
-            } else {
-                break;
-            }
+        // Want to replace blocks
+        BlockReplace replace = new BlockReplace(this, pattern);
+
+        // Pick how we're going to visit blocks
+        RecursiveVisitor visitor;
+        if (recursive) {
+            visitor = new RecursiveVisitor(this, mask, replace);
+        } else {
+            visitor = new DownwardVisitor(this, mask, replace, origin.getBlockY());
         }
 
-        return affected;
+        // Start at the origin
+        visitor.visit(origin);
+
+        // Execute
+        OperationHelper.completeLegacy(visitor);
+
+        return visitor.getAffected();
     }
 
     /**
@@ -1220,19 +1034,6 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, BaseBlock toBlock) throws MaxChangedBlocksException {
-        Set<BaseBlock> definiteBlockTypes = new HashSet<BaseBlock>();
-        Set<Integer> fuzzyBlockTypes = new HashSet<Integer>();
-
-        if (fromBlockTypes != null) {
-            for (BaseBlock block : fromBlockTypes) {
-                if (block.getData() == -1) {
-                    fuzzyBlockTypes.add(block.getType());
-                } else {
-                    definiteBlockTypes.add(block);
-                }
-            }
-        }
-
         int affected = 0;
 
         if (region instanceof CuboidRegion) {
@@ -1260,7 +1061,7 @@ public class EditSession {
                             }
                         } else {
                             //replace <from-block> <to-block>
-                            if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                            if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
                                 continue;
                             }
                         }
@@ -1282,7 +1083,7 @@ public class EditSession {
                     }
                 } else {
                     //replace <from-block> <to-block>
-                    if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                    if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
                         continue;
                     }
                 }
@@ -1306,18 +1107,6 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, Pattern pattern) throws MaxChangedBlocksException {
-        Set<BaseBlock> definiteBlockTypes = new HashSet<BaseBlock>();
-        Set<Integer> fuzzyBlockTypes = new HashSet<Integer>();
-        if (fromBlockTypes != null) {
-            for (BaseBlock block : fromBlockTypes) {
-                if (block.getData() == -1) {
-                    fuzzyBlockTypes.add(block.getType());
-                } else {
-                    definiteBlockTypes.add(block);
-                }
-            }
-        }
-
         int affected = 0;
 
         if (region instanceof CuboidRegion) {
@@ -1345,7 +1134,7 @@ public class EditSession {
                             }
                         } else {
                             //replace <from-block> <to-block>
-                            if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                            if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
                                 continue;
                             }
                         }
@@ -1367,7 +1156,7 @@ public class EditSession {
                     }
                 } else {
                     //replace <from-block> <to-block>
-                    if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
+                    if (!BaseBlock.containsFuzzy(fromBlockTypes, curBlockType)) {
                         continue;
                     }
                 }
@@ -2591,7 +2380,7 @@ public class EditSession {
         scatter.setRange(region);
 
         // Generate those patches!
-        FlatRegionApplicator operation = new FlatRegionApplicator(region, scatter);
+        FlatRegionVisitor operation = new FlatRegionVisitor(region, scatter);
         OperationHelper.completeLegacy(operation);
 
         return operation.getAffected();
@@ -2654,7 +2443,7 @@ public class EditSession {
      * @return number of trees created
      * @throws MaxChangedBlocksException
      * @deprecated Use {@link com.sk89q.worldedit.generator.ForestGenerator} with a
-     *             {@link com.sk89q.worldedit.operation.FlatRegionApplicator}
+     *             {@link com.sk89q.worldedit.operation.FlatRegionVisitor}
      */
     @Deprecated
     public int makeForest(Iterable<Vector2D> it, int upperY, int lowerY,

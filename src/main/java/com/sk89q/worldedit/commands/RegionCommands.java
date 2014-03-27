@@ -31,9 +31,9 @@ import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.generator.FloraGenerator;
 import com.sk89q.worldedit.generator.ForestGenerator;
+import com.sk89q.worldedit.operation.FlatRegionVisitor;
 import com.sk89q.worldedit.operation.GroundScatterFunction;
 import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.operation.FlatRegionApplicator;
 import com.sk89q.worldedit.operation.OperationHelper;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
@@ -552,7 +552,7 @@ public class RegionCommands {
         scatter.setRange(region);
 
         // Generate that forest
-        FlatRegionApplicator operation = new FlatRegionApplicator(region, scatter);
+        FlatRegionVisitor operation = new FlatRegionVisitor(region, scatter);
         OperationHelper.complete(operation);
 
         player.print(operation.getAffected() + " trees created.");
@@ -581,7 +581,7 @@ public class RegionCommands {
         scatter.setRange(region);
 
         // Generate that flora
-        FlatRegionApplicator operation = new FlatRegionApplicator(region, scatter);
+        FlatRegionVisitor operation = new FlatRegionVisitor(region, scatter);
         OperationHelper.complete(operation);
 
         player.print(operation.getAffected() + " flora created.");
