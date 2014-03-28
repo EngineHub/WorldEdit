@@ -27,13 +27,16 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
-import com.sk89q.worldedit.generator.ForestGenerator;
-import com.sk89q.worldedit.generator.GardenPatchGenerator;
+import com.sk89q.worldedit.function.block.BlockCount;
+import com.sk89q.worldedit.function.operation.OperationHelper;
+import com.sk89q.worldedit.function.block.BlockReplace;
+import com.sk89q.worldedit.function.generator.ForestGenerator;
+import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
 import com.sk89q.worldedit.interpolation.Interpolation;
 import com.sk89q.worldedit.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.interpolation.Node;
 import com.sk89q.worldedit.masks.*;
-import com.sk89q.worldedit.operation.*;
+import com.sk89q.worldedit.function.*;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -48,10 +51,10 @@ import com.sk89q.worldedit.shape.RegionShape;
 import com.sk89q.worldedit.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.noise.RandomNoise;
-import com.sk89q.worldedit.visitor.DownwardVisitor;
-import com.sk89q.worldedit.visitor.FlatRegionVisitor;
-import com.sk89q.worldedit.visitor.RecursiveVisitor;
-import com.sk89q.worldedit.visitor.RegionVisitor;
+import com.sk89q.worldedit.function.visitor.DownwardVisitor;
+import com.sk89q.worldedit.function.visitor.FlatRegionVisitor;
+import com.sk89q.worldedit.function.visitor.RecursiveVisitor;
+import com.sk89q.worldedit.function.visitor.RegionVisitor;
 
 import java.util.*;
 
@@ -2123,8 +2126,8 @@ public class EditSession {
      * @param treeGenerator the tree generator
      * @return number of trees created
      * @throws MaxChangedBlocksException
-     * @deprecated Use {@link com.sk89q.worldedit.generator.ForestGenerator} with a
-     *             {@link com.sk89q.worldedit.visitor.FlatRegionVisitor}
+     * @deprecated Use {@link com.sk89q.worldedit.function.generator.ForestGenerator} with a
+     *             {@link com.sk89q.worldedit.function.visitor.FlatRegionVisitor}
      */
     @Deprecated
     public int makeForest(Iterable<Vector2D> it, int upperY, int lowerY,

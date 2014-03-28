@@ -17,31 +17,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.operation;
+package com.sk89q.worldedit.function.visitor;
 
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.function.RegionFunction;
 
 /**
- * Counts the number of blocks.
+ * An implementation of an {@link BreadthFirstSearch} that uses a mask to
+ * determine where a block should be visited.
  */
- public class BlockCount implements RegionFunction {
+public class RecursiveVisitor extends BreadthFirstSearch {
 
-    private int count;
-    
-    /**
-     * Returns the number of blocks that have been counted.
-     *
-     * @return the number of blocks
-     */
-    public int getCount() {
-        return count;
+    private final EditSession editSession;
+    private final Mask mask;
+
+    public RecursiveVisitor(EditSession editSession, Mask mask, RegionFunction function) {
+        super(function);
+        this.editSession = editSession;
+        this.mask = mask;
     }
 
     @Override
-    public boolean apply(Vector position) throws WorldEditException {
-        count++;
-        return false;
+    protected boolean isVisitable(Vector from, Vector to) {
+        int y = to.getBlockY();
+        if (y < 0 || y > editSession.getWorld().getMaxY()) {
+            return false;
+        }
+        return mask.matches(editSession, to);
     }
-
 }

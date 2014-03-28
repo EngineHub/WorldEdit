@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.generator;
+package com.sk89q.worldedit.function.generator;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
@@ -25,7 +25,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.operation.RegionFunction;
+import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.patterns.BlockChance;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.RandomFillPattern;

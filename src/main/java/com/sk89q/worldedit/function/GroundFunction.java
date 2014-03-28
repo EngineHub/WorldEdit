@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.operation;
+package com.sk89q.worldedit.function;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;

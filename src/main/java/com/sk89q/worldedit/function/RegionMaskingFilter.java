@@ -17,49 +17,46 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.generator;
+package com.sk89q.worldedit.function;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.operation.RegionFunction;
-import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.masks.Mask;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Generates forests by searching for the ground starting from the given upper Y
- * coordinate for every column given.
+ * Passes calls to {@link #apply(com.sk89q.worldedit.Vector)} to the
+ * delegate {@link com.sk89q.worldedit.function.RegionFunction} if they
+ * match the given mask.
  */
-public class ForestGenerator implements RegionFunction {
+public class RegionMaskingFilter implements RegionFunction {
 
-    private final TreeGenerator treeGenerator;
     private final EditSession editSession;
+    private final RegionFunction function;
+    private Mask mask;
 
     /**
-     * Create a new instance.
+     * Create a new masking filter.
      *
      * @param editSession the edit session
-     * @param treeGenerator a tree generator
+     * @param mask the mask
+     * @param function the function
      */
-    public ForestGenerator(EditSession editSession, TreeGenerator treeGenerator) {
+    public RegionMaskingFilter(EditSession editSession, Mask mask, RegionFunction function) {
+        checkNotNull(function);
+        checkNotNull(editSession);
+        checkNotNull(mask);
+
         this.editSession = editSession;
-        this.treeGenerator = treeGenerator;
+        this.mask = mask;
+        this.function = function;
     }
 
     @Override
     public boolean apply(Vector position) throws WorldEditException {
-        BaseBlock block = editSession.getBlock(position);
-        int t = block.getType();
-
-        if (t == BlockID.GRASS || t == BlockID.DIRT) {
-            treeGenerator.generate(editSession, position.add(0, 1, 0));
-            return true;
-        } else if (t == BlockID.SNOW) {
-            editSession.setBlock(position, new BaseBlock(BlockID.AIR));
-            return false;
-        } else { // Trees won't grow on this!
-            return false;
-        }
+        return mask.matches(editSession, position) && function.apply(position);
     }
+
 }

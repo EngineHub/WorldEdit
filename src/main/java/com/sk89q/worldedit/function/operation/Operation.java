@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.operation;
+package com.sk89q.worldedit.function.operation;
 
 import com.sk89q.worldedit.WorldEditException;
 

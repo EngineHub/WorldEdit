@@ -17,46 +17,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.operation;
+package com.sk89q.worldedit.function.block;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.masks.Mask2D;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.patterns.Pattern;
 
 /**
- * Passes calls to {@link #apply(com.sk89q.worldedit.Vector2D)} to the
- * delegate {@link com.sk89q.worldedit.operation.FlatRegionFunction} if they
- * match the given mask.
+ * Replaces blocks with the given pattern.
  */
-public class FlatRegionMaskingFilter implements FlatRegionFunction {
+public class BlockReplace implements RegionFunction {
 
     private final EditSession editSession;
-    private final FlatRegionFunction function;
-    private Mask2D mask;
+    private Pattern pattern;
 
     /**
-     * Create a new masking filter.
+     * Create a new instance.
      *
      * @param editSession the edit session
-     * @param mask the mask
-     * @param function the delegate function to call
+     * @param pattern a pattern
      */
-    public FlatRegionMaskingFilter(EditSession editSession, Mask2D mask, FlatRegionFunction function) {
-        checkNotNull(function);
-        checkNotNull(editSession);
-        checkNotNull(mask);
-
+    public BlockReplace(EditSession editSession, Pattern pattern) {
         this.editSession = editSession;
-        this.mask = mask;
-        this.function = function;
+        this.pattern = pattern;
     }
 
     @Override
-    public boolean apply(Vector2D position) throws WorldEditException {
-        return mask.matches(editSession, position) && function.apply(position);
+    public boolean apply(Vector position) throws WorldEditException {
+        return editSession.setBlock(position, pattern.next(position));
     }
 
 }

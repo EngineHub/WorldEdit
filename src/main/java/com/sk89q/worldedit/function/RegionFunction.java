@@ -17,36 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.operation;
+package com.sk89q.worldedit.function;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.patterns.Pattern;
 
 /**
- * Replaces blocks with the given pattern.
+ * Performs a function on points in a region.
  */
-public class BlockReplace implements RegionFunction {
-
-    private final EditSession editSession;
-    private Pattern pattern;
+public interface RegionFunction {
 
     /**
-     * Create a new instance.
+     * Apply the function to the given position.
      *
-     * @param editSession the edit session
-     * @param pattern a pattern
+     * @param position the position
+     * @return true if something was changed
+     * @throws WorldEditException thrown on an error
      */
-    public BlockReplace(EditSession editSession, Pattern pattern) {
-        this.editSession = editSession;
-        this.pattern = pattern;
-    }
-
-    @Override
-    public boolean apply(Vector position) throws WorldEditException {
-        return editSession.setBlock(position, pattern.next(position));
-    }
+    public boolean apply(Vector position) throws WorldEditException;
 
 }

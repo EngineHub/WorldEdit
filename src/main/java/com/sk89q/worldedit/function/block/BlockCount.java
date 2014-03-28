@@ -17,23 +17,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.operation;
+package com.sk89q.worldedit.function.block;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.function.RegionFunction;
 
 /**
- * Performs a function on points in a region.
+ * Counts the number of blocks.
  */
-public interface RegionFunction {
+ public class BlockCount implements RegionFunction {
 
+    private int count;
+    
     /**
-     * Apply the function to the given position.
+     * Returns the number of blocks that have been counted.
      *
-     * @param position the position
-     * @return true if something was changed
-     * @throws WorldEditException thrown on an error
+     * @return the number of blocks
      */
-    public boolean apply(Vector position) throws WorldEditException;
+    public int getCount() {
+        return count;
+    }
+
+    @Override
+    public boolean apply(Vector position) throws WorldEditException {
+        count++;
+        return false;
+    }
 
 }

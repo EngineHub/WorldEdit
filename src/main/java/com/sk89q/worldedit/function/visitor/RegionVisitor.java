@@ -17,12 +17,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.visitor;
+package com.sk89q.worldedit.function.visitor;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.operation.Operation;
-import com.sk89q.worldedit.operation.RegionFunction;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.regions.Region;
 
 /**
