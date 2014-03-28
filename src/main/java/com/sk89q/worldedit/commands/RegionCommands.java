@@ -31,7 +31,7 @@ import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.generator.FloraGenerator;
 import com.sk89q.worldedit.generator.ForestGenerator;
-import com.sk89q.worldedit.operation.FlatRegionVisitor;
+import com.sk89q.worldedit.visitor.FlatRegionVisitor;
 import com.sk89q.worldedit.operation.GroundScatterFunction;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.operation.OperationHelper;

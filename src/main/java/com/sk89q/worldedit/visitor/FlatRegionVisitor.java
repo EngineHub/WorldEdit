@@ -17,24 +17,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.operation;
+package com.sk89q.worldedit.visitor;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.operation.FlatRegionFunction;
+import com.sk89q.worldedit.operation.Operation;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
 
 /**
  * Utility class to apply region functions to {@link com.sk89q.worldedit.regions.Region}.
  */
-public class RegionVisitor implements Operation {
+public class FlatRegionVisitor implements Operation {
 
-    private final Region region;
-    private final RegionFunction function;
+    private final FlatRegion flatRegion;
+    private final FlatRegionFunction function;
     private int affected = 0;
 
-    public RegionVisitor(Region region, RegionFunction function) {
-        this.region = region;
+    public FlatRegionVisitor(Region region, FlatRegionFunction function) {
         this.function = function;
+
+        if (region instanceof FlatRegion) {
+            flatRegion = (FlatRegion) region;
+        } else {
+            flatRegion = CuboidRegion.makeCuboid(region);
+        }
     }
 
     /**
@@ -48,7 +57,7 @@ public class RegionVisitor implements Operation {
 
     @Override
     public Operation resume() throws WorldEditException {
-        for (Vector pt : region) {
+        for (Vector2D pt : flatRegion.asFlatRegion()) {
             if (function.apply(pt)) {
                 affected++;
             }

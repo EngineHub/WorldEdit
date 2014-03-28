@@ -45,6 +45,10 @@ import com.sk89q.worldedit.shape.ArbitraryShape;
 import com.sk89q.worldedit.shape.RegionShape;
 import com.sk89q.worldedit.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.visitor.DownwardVisitor;
+import com.sk89q.worldedit.visitor.FlatRegionVisitor;
+import com.sk89q.worldedit.visitor.RecursiveVisitor;
+import com.sk89q.worldedit.visitor.RegionVisitor;
 
 import java.util.*;
 
@@ -2255,7 +2259,7 @@ public class EditSession {
      * @return number of trees created
      * @throws MaxChangedBlocksException
      * @deprecated Use {@link com.sk89q.worldedit.generator.ForestGenerator} with a
-     *             {@link com.sk89q.worldedit.operation.FlatRegionVisitor}
+     *             {@link com.sk89q.worldedit.visitor.FlatRegionVisitor}
      */
     @Deprecated
     public int makeForest(Iterable<Vector2D> it, int upperY, int lowerY,
