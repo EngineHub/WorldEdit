@@ -978,25 +978,26 @@ public class EditSession {
         return visitor.getAffected();
     }
 
-    public int center(Region region, Pattern pattern)
-            throws MaxChangedBlocksException {
+    /**
+     * Sets the blocks at the center of the given region to the given pattern.
+     * If the center sits between two blocks on a certain axis, then two blocks
+     * will be placed to mark the center.
+     *
+     * @param region the region to find the center of
+     * @param pattern the replacement pattern
+     * @return the number of blocks placed
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int center(Region region, Pattern pattern) throws MaxChangedBlocksException {
+        checkNotNull(region, "region must not be null");
+        checkNotNull(pattern, "pattern must not be null");
+
         Vector center = region.getCenter();
-        int x2 = center.getBlockX();
-        int y2 = center.getBlockY();
-        int z2 = center.getBlockZ();
-
-        int affected = 0;
-        for (int x = (int) center.getX(); x <= x2; x++) {
-            for (int y = (int) center.getY(); y <= y2; y++) {
-                for (int z = (int) center.getZ(); z <= z2; z++) {
-                    if (setBlock(new Vector(x, y, z), pattern)) {
-                        affected++;
-                    }
-                }
-            }
-        }
-
-        return affected;
+        Region centerRegion = new CuboidRegion(
+                getWorld(), // Causes clamping of Y range
+                new Vector((int) center.getX(), (int) center.getY(), (int) center.getZ()),
+                center.toBlockVector());
+        return setBlocks(centerRegion, pattern);
     }
 
     /**
