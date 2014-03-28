@@ -19,15 +19,12 @@
 
 package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.data.ChunkStore;
+
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.HashSet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -53,8 +50,8 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
      * Construct a new instance of this cuboid using two corners of the cuboid.
      *
      * @param world the world
-     * @param pos1 the first position
-     * @param pos2 the second position
+     * @param pos1  the first position
+     * @param pos2  the second position
      */
     public CuboidRegion(LocalWorld world, Vector pos1, Vector pos2) {
         super(world);
@@ -109,18 +106,61 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         pos2 = pos2.clampY(0, world == null ? 255 : world.getMaxY());
     }
 
+    /**
+     * Get a region that contains the faces of this cuboid.
+     *
+     * @return a new complex region
+     */
+    public Region getFaces() {
+        Vector min = getMinimumPoint();
+        Vector max = getMaximumPoint();
+
+        return new RegionIntersection(
+                // Project to Z-Y plane
+                new CuboidRegion(pos1.setX(min.getX()), pos2.setX(min.getX())),
+                new CuboidRegion(pos1.setX(max.getX()), pos2.setX(max.getX())),
+
+                // Project to X-Y plane
+                new CuboidRegion(pos1.setZ(min.getZ()), pos2.setZ(min.getZ())),
+                new CuboidRegion(pos1.setZ(max.getZ()), pos2.setZ(max.getZ())),
+
+                // Project to the X-Z plane
+                new CuboidRegion(pos1.setY(min.getY()), pos2.setY(min.getY())),
+                new CuboidRegion(pos1.setY(max.getY()), pos2.setY(max.getY())));
+    }
+
+    /**
+     * Get a region that contains the walls (all faces but the ones parallel to
+     * the X-Z plane) of this cuboid.
+     *
+     * @return a new complex region
+     */
+    public Region getWalls() {
+        Vector min = getMinimumPoint();
+        Vector max = getMaximumPoint();
+
+        return new RegionIntersection(
+                // Project to Z-Y plane
+                new CuboidRegion(pos1.setX(min.getX()), pos2.setX(min.getX())),
+                new CuboidRegion(pos1.setX(max.getX()), pos2.setX(max.getX())),
+
+                // Project to X-Y plane
+                new CuboidRegion(pos1.setZ(min.getZ()), pos2.setZ(min.getZ())),
+                new CuboidRegion(pos1.setZ(max.getZ()), pos2.setZ(max.getZ())));
+    }
+
     @Override
     public Vector getMinimumPoint() {
         return new Vector(Math.min(pos1.getX(), pos2.getX()),
-                         Math.min(pos1.getY(), pos2.getY()),
-                         Math.min(pos1.getZ(), pos2.getZ()));
+                Math.min(pos1.getY(), pos2.getY()),
+                Math.min(pos1.getZ(), pos2.getZ()));
     }
 
     @Override
     public Vector getMaximumPoint() {
         return new Vector(Math.max(pos1.getX(), pos2.getX()),
-                         Math.max(pos1.getY(), pos2.getY()),
-                         Math.max(pos1.getZ(), pos2.getZ()));
+                Math.max(pos1.getY(), pos2.getY()),
+                Math.max(pos1.getZ(), pos2.getZ()));
     }
 
     @Override
