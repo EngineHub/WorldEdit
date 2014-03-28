@@ -845,6 +845,7 @@ public class EditSession {
         checkArgument(height >= 1, "height >= 1");
 
         Region region = new CuboidRegion(
+                getWorld(), // Causes clamping of Y range
                 position.add(-apothem + 1, 0, -apothem + 1),
                 position.add(apothem - 1, height - 1, apothem - 1));
         Pattern pattern = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
@@ -866,6 +867,7 @@ public class EditSession {
         checkArgument(height >= 1, "height >= 1");
 
         Region region = new CuboidRegion(
+                getWorld(), // Causes clamping of Y range
                 position.add(-apothem + 1, 0, -apothem + 1),
                 position.add(apothem - 1, -height + 1, apothem - 1));
         Pattern pattern = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
@@ -887,7 +889,10 @@ public class EditSession {
 
         Mask mask = new FuzzyBlockMask(new BaseBlock(blockType, -1));
         Vector adjustment = new Vector(1, 1, 1).multiply(apothem - 1);
-        Region region = new CuboidRegion(position.add(adjustment.multiply(-1)), position.add(adjustment));
+        Region region = new CuboidRegion(
+                getWorld(), // Causes clamping of Y range
+                position.add(adjustment.multiply(-1)),
+                position.add(adjustment));
         Pattern pattern = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
         return replaceBlocks(region, mask, pattern);
     }
@@ -2175,7 +2180,10 @@ public class EditSession {
         generator.setPlant(GardenPatchGenerator.getPumpkinPattern());
 
         // In a region of the given radius
-        Region region = new CuboidRegion(position.add(-apothem, -5, -apothem), position.add(apothem, 10, apothem));
+        Region region = new CuboidRegion(
+                getWorld(), // Causes clamping of Y range
+                position.add(-apothem, -5, -apothem),
+                position.add(apothem, 10, apothem));
 
         // And we want to scatter them
         GroundScatterFunction scatter = new GroundScatterFunction(this, generator);
