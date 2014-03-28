@@ -40,11 +40,14 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.EllipsoidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.regions.search.GroundSearch;
+import com.sk89q.worldedit.regions.search.MaskingGroundSearch;
 import com.sk89q.worldedit.shape.ArbitraryBiomeShape;
 import com.sk89q.worldedit.shape.ArbitraryShape;
 import com.sk89q.worldedit.shape.RegionShape;
 import com.sk89q.worldedit.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.noise.RandomNoise;
 import com.sk89q.worldedit.visitor.DownwardVisitor;
 import com.sk89q.worldedit.visitor.FlatRegionVisitor;
 import com.sk89q.worldedit.visitor.RecursiveVisitor;
@@ -552,7 +555,7 @@ public class EditSession {
     public int countBlocks(Region region, Set<BaseBlock> searchBlocks) {
         FuzzyBlockMask mask = new FuzzyBlockMask(searchBlocks);
         BlockCount count = new BlockCount();
-        RegionMaskFilter filter = new RegionMaskFilter(this, mask, count);
+        RegionMaskingFilter filter = new RegionMaskingFilter(this, mask, count);
         RegionVisitor visitor = new RegionVisitor(region, filter);
         OperationHelper.completeBlindly(visitor); // We can't throw exceptions, nor do we expect any
         return count.getCount();
@@ -977,7 +980,7 @@ public class EditSession {
         checkNotNull(pattern);
 
         BlockReplace replace = new BlockReplace(this, pattern);
-        RegionMaskFilter filter = new RegionMaskFilter(this, mask, replace);
+        RegionMaskingFilter filter = new RegionMaskingFilter(this, mask, replace);
         RegionVisitor visitor = new RegionVisitor(region, filter);
         OperationHelper.completeLegacy(visitor);
         return visitor.getAffected();
@@ -2045,13 +2048,20 @@ public class EditSession {
                 position.add(-apothem, -5, -apothem),
                 position.add(apothem, 10, apothem));
 
-        // And we want to scatter them
-        GroundScatterFunction scatter = new GroundScatterFunction(this, generator);
-        scatter.setDensity(0.02);
-        scatter.setRange(region);
+        int lowerY = region.getMinimumPoint().getBlockY();
+        int upperY = region.getMaximumPoint().getBlockY();
+        double density = 0.02;
+
+        // We want to find the ground
+        GroundSearch search = new MaskingGroundSearch(this, new ExistingBlockMask());
+        GroundFunction groundFunction = new GroundFunction(search, lowerY, upperY, generator);
+
+        // We don't want to place a patch in every column
+        Mask2D mask = new NoiseFilter2D(new RandomNoise(), density);
+        FlatRegionMaskingFilter filter = new FlatRegionMaskingFilter(this, mask, groundFunction);
 
         // Generate those patches!
-        FlatRegionVisitor operation = new FlatRegionVisitor(region, scatter);
+        FlatRegionVisitor operation = new FlatRegionVisitor(region, filter);
         OperationHelper.completeLegacy(operation);
 
         return operation.getAffected();
@@ -2122,16 +2132,14 @@ public class EditSession {
             throws WorldEditException {
 
         ForestGenerator generator = new ForestGenerator(this, treeGenerator);
-
-        // And we want to scatter them
-        GroundScatterFunction scatter = new GroundScatterFunction(this, generator);
-        scatter.setDensity(density);
-        scatter.setRange(lowerY, upperY);
+        GroundSearch search = new MaskingGroundSearch(this, new ExistingBlockMask());
+        GroundFunction groundFunction = new GroundFunction(search, lowerY, upperY, generator);
+        Mask2D mask = new NoiseFilter2D(new RandomNoise(), density);
+        FlatRegionMaskingFilter filter = new FlatRegionMaskingFilter(this, mask, groundFunction);
 
         int affected = 0;
-
         for (Vector2D pt : it) {
-            if (scatter.apply(pt)) {
+            if (filter.apply(pt)) {
                 affected++;
             }
         }

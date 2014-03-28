@@ -31,8 +31,15 @@ import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.generator.FloraGenerator;
 import com.sk89q.worldedit.generator.ForestGenerator;
+import com.sk89q.worldedit.masks.ExistingBlockMask;
+import com.sk89q.worldedit.masks.Mask2D;
+import com.sk89q.worldedit.masks.NoiseFilter2D;
+import com.sk89q.worldedit.operation.FlatRegionMaskingFilter;
+import com.sk89q.worldedit.operation.GroundFunction;
+import com.sk89q.worldedit.regions.search.GroundSearch;
+import com.sk89q.worldedit.regions.search.MaskingGroundSearch;
+import com.sk89q.worldedit.util.noise.RandomNoise;
 import com.sk89q.worldedit.visitor.FlatRegionVisitor;
-import com.sk89q.worldedit.operation.GroundScatterFunction;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.operation.OperationHelper;
 import com.sk89q.worldedit.patterns.Pattern;
@@ -543,16 +550,18 @@ public class RegionCommands {
 
         Region region = session.getSelection(player.getWorld());
 
-        // We want to generate trees
         ForestGenerator generator = new ForestGenerator(editSession, new TreeGenerator(type));
 
-        // And we want to scatter them
-        GroundScatterFunction scatter = new GroundScatterFunction(editSession, generator);
-        scatter.setDensity(density);
-        scatter.setRange(region);
+        int lowerY = region.getMinimumPoint().getBlockY();
+        int upperY = region.getMaximumPoint().getBlockY();
 
-        // Generate that forest
-        FlatRegionVisitor operation = new FlatRegionVisitor(region, scatter);
+        GroundSearch search = new MaskingGroundSearch(editSession, new ExistingBlockMask());
+        GroundFunction groundFunction = new GroundFunction(search, lowerY, upperY, generator);
+        Mask2D mask = new NoiseFilter2D(new RandomNoise(), density);
+        FlatRegionMaskingFilter filter = new FlatRegionMaskingFilter(editSession, mask, groundFunction);
+
+        // Execute
+        FlatRegionVisitor operation = new FlatRegionVisitor(region, filter);
         OperationHelper.complete(operation);
 
         player.print(operation.getAffected() + " trees created.");
@@ -571,17 +580,18 @@ public class RegionCommands {
         double density = args.argsLength() > 0 ? args.getDouble(0) / 100 : 0.1;
 
         Region region = session.getSelection(player.getWorld());
-
-        // We want to generate flora
         FloraGenerator generator = new FloraGenerator(editSession);
 
-        // And we want to scatter them
-        GroundScatterFunction scatter = new GroundScatterFunction(editSession, generator);
-        scatter.setDensity(density);
-        scatter.setRange(region);
+        int lowerY = region.getMinimumPoint().getBlockY();
+        int upperY = region.getMaximumPoint().getBlockY();
 
-        // Generate that flora
-        FlatRegionVisitor operation = new FlatRegionVisitor(region, scatter);
+        GroundSearch search = new MaskingGroundSearch(editSession, new ExistingBlockMask());
+        GroundFunction groundFunction = new GroundFunction(search, lowerY, upperY, generator);
+        Mask2D mask = new NoiseFilter2D(new RandomNoise(), density);
+        FlatRegionMaskingFilter filter = new FlatRegionMaskingFilter(editSession, mask, groundFunction);
+
+        // Execute
+        FlatRegionVisitor operation = new FlatRegionVisitor(region, filter);
         OperationHelper.complete(operation);
 
         player.print(operation.getAffected() + " flora created.");

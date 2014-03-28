@@ -27,18 +27,27 @@ import com.sk89q.worldedit.masks.Mask;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Passes positions that match the given mask onto the provided function.
+ * Passes calls to {@link #apply(com.sk89q.worldedit.Vector)} to the
+ * delegate {@link com.sk89q.worldedit.operation.RegionFunction} if they
+ * match the given mask.
  */
-public class RegionMaskFilter implements RegionFunction {
+public class RegionMaskingFilter implements RegionFunction {
 
     private final EditSession editSession;
-    private final Mask mask;
     private final RegionFunction function;
+    private Mask mask;
 
-    public RegionMaskFilter(EditSession editSession, Mask mask, RegionFunction function) {
-        checkNotNull(function, "function must not be null");
-        checkNotNull(editSession, "editSession must not be null");
-        checkNotNull(mask, "mask must not be null");
+    /**
+     * Create a new masking filter.
+     *
+     * @param editSession the edit session
+     * @param mask the mask
+     * @param function the function
+     */
+    public RegionMaskingFilter(EditSession editSession, Mask mask, RegionFunction function) {
+        checkNotNull(function);
+        checkNotNull(editSession);
+        checkNotNull(mask);
 
         this.editSession = editSession;
         this.mask = mask;
@@ -47,11 +56,7 @@ public class RegionMaskFilter implements RegionFunction {
 
     @Override
     public boolean apply(Vector position) throws WorldEditException {
-        if (mask.matches(editSession, position)) {
-            return function.apply(position);
-        } else {
-            return false;
-        }
+        return mask.matches(editSession, position) && function.apply(position);
     }
 
 }
