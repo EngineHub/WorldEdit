@@ -805,8 +805,8 @@ public class EditSession {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int fillXZ(Vector origin, Pattern pattern, double radius, int depth, boolean recursive) throws MaxChangedBlocksException {
-        checkNotNull(origin, "origin must not be null");
-        checkNotNull(pattern, "pattern must not be null");
+        checkNotNull(origin);
+        checkNotNull(pattern);
         checkArgument(radius >= 0, "radius >= 0");
         checkArgument(depth >= 1, "depth >= 1");
 
@@ -845,7 +845,7 @@ public class EditSession {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int removeAbove(Vector position, int apothem, int height) throws MaxChangedBlocksException {
-        checkNotNull(position, "position must not be null");
+        checkNotNull(position);
         checkArgument(apothem >= 1, "apothem >= 1");
         checkArgument(height >= 1, "height >= 1");
 
@@ -867,7 +867,7 @@ public class EditSession {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int removeBelow(Vector position, int apothem, int height) throws MaxChangedBlocksException {
-        checkNotNull(position, "position must not be null");
+        checkNotNull(position);
         checkArgument(apothem >= 1, "apothem >= 1");
         checkArgument(height >= 1, "height >= 1");
 
@@ -889,7 +889,7 @@ public class EditSession {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int removeNear(Vector position, int blockType, int apothem) throws MaxChangedBlocksException {
-        checkNotNull(position, "position must not be null");
+        checkNotNull(position);
         checkArgument(apothem >= 1, "apothem >= 1");
 
         Mask mask = new FuzzyBlockMask(new BaseBlock(blockType, -1));
@@ -923,8 +923,8 @@ public class EditSession {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int setBlocks(Region region, Pattern pattern) throws MaxChangedBlocksException {
-        checkNotNull(region, "region must not be null");
-        checkNotNull(pattern, "pattern must not be null");
+        checkNotNull(region);
+        checkNotNull(pattern);
 
         BlockReplace replace = new BlockReplace(this, pattern);
         RegionVisitor visitor = new RegionVisitor(region, replace);
@@ -972,9 +972,9 @@ public class EditSession {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int replaceBlocks(Region region, Mask mask, Pattern pattern) throws MaxChangedBlocksException {
-        checkNotNull(region, "region must not be null");
-        checkNotNull(mask, "mask must not be null");
-        checkNotNull(pattern, "pattern must not be null");
+        checkNotNull(region);
+        checkNotNull(mask);
+        checkNotNull(pattern);
 
         BlockReplace replace = new BlockReplace(this, pattern);
         RegionMaskFilter filter = new RegionMaskFilter(this, mask, replace);
@@ -994,8 +994,8 @@ public class EditSession {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int center(Region region, Pattern pattern) throws MaxChangedBlocksException {
-        checkNotNull(region, "region must not be null");
-        checkNotNull(pattern, "pattern must not be null");
+        checkNotNull(region);
+        checkNotNull(pattern);
 
         Vector center = region.getCenter();
         Region centerRegion = new CuboidRegion(
