@@ -27,16 +27,23 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
+import com.sk89q.worldedit.function.FlatRegionMaskingFilter;
+import com.sk89q.worldedit.function.GroundFunction;
+import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.block.BlockCount;
-import com.sk89q.worldedit.function.operation.OperationHelper;
 import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.generator.ForestGenerator;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
+import com.sk89q.worldedit.function.operation.OperationHelper;
+import com.sk89q.worldedit.function.util.RegionOffset;
+import com.sk89q.worldedit.function.visitor.DownwardVisitor;
+import com.sk89q.worldedit.function.visitor.FlatRegionVisitor;
+import com.sk89q.worldedit.function.visitor.RecursiveVisitor;
+import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.interpolation.Interpolation;
 import com.sk89q.worldedit.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.interpolation.Node;
 import com.sk89q.worldedit.masks.*;
-import com.sk89q.worldedit.function.*;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -51,10 +58,6 @@ import com.sk89q.worldedit.shape.RegionShape;
 import com.sk89q.worldedit.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.noise.RandomNoise;
-import com.sk89q.worldedit.function.visitor.DownwardVisitor;
-import com.sk89q.worldedit.function.visitor.FlatRegionVisitor;
-import com.sk89q.worldedit.function.visitor.RecursiveVisitor;
-import com.sk89q.worldedit.function.visitor.RegionVisitor;
 
 import java.util.*;
 
@@ -1128,87 +1131,44 @@ public class EditSession {
     }
 
     /**
-     * Overlays a layer of blocks over a cuboid area.
+     * Places a layer of blocks on top of ground blocks in the given region
+     * (as if it were a cuboid).
      *
-     * @param region
-     * @param block
+     * @param region the region
+     * @param block the placed block
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int overlayCuboidBlocks(Region region, BaseBlock block)
-            throws MaxChangedBlocksException {
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
+    public int overlayCuboidBlocks(Region region, BaseBlock block) throws MaxChangedBlocksException {
+        checkNotNull(block);
 
-        int upperY = Math.min(world.getMaxY(), max.getBlockY() + 1);
-        int lowerY = Math.max(0, min.getBlockY() - 1);
-
-        int affected = 0;
-
-        int minX = min.getBlockX();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxZ = max.getBlockZ();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                for (int y = upperY; y >= lowerY; --y) {
-                    Vector above = new Vector(x, y + 1, z);
-
-                    if (y + 1 <= world.getMaxY() && !getBlock(new Vector(x, y, z)).isAir()
-                            && getBlock(above).isAir()) {
-                        if (setBlock(above, block)) {
-                            ++affected;
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-
-        return affected;
+        return overlayCuboidBlocks(region, new SingleBlockPattern(block));
     }
 
     /**
-     * Overlays a layer of blocks over a cuboid area.
+     * Places a layer of blocks on top of ground blocks in the given region
+     * (as if it were a cuboid).
      *
-     * @param region
-     * @param pattern
+     * @param region the region
+     * @param pattern the placed block pattern
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int overlayCuboidBlocks(Region region, Pattern pattern)
-            throws MaxChangedBlocksException {
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
+    public int overlayCuboidBlocks(Region region, Pattern pattern) throws MaxChangedBlocksException {
+        checkNotNull(region);
+        checkNotNull(pattern);
 
-        int upperY = Math.min(world.getMaxY(), max.getBlockY() + 1);
-        int lowerY = Math.max(0, min.getBlockY() - 1);
+        int lowerY = region.getMinimumPoint().getBlockY();
+        int upperY = region.getMaximumPoint().getBlockY();
 
-        int affected = 0;
+        BlockReplace replace = new BlockReplace(this, pattern);
+        RegionOffset offset = new RegionOffset(new Vector(0, 1, 0), replace);
+        GroundSearch search = new MaskingGroundSearch(this, new ExistingBlockMask());
+        GroundFunction groundFunction = new GroundFunction(search, lowerY, upperY, offset);
+        FlatRegionVisitor operation = new FlatRegionVisitor(region, groundFunction);
+        OperationHelper.completeLegacy(operation);
 
-        int minX = min.getBlockX();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxZ = max.getBlockZ();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                for (int y = upperY; y >= lowerY; --y) {
-                    Vector above = new Vector(x, y + 1, z);
-
-                    if (y + 1 <= world.getMaxY() && !getBlock(new Vector(x, y, z)).isAir()
-                            && getBlock(above).isAir()) {
-                        if (setBlock(above, pattern.next(above))) {
-                            ++affected;
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-
-        return affected;
+        return operation.getAffected();
     }
 
     /**
