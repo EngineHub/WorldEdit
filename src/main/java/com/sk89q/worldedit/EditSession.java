@@ -791,16 +791,19 @@ public class EditSession {
     /**
      * Fills an area recursively in the X/Z directions.
      *
-     * @param origin
+     * @param origin the origin to start the fill from
      * @param pattern the pattern to fill with
-     * @param radius the radius of the spherical area to fill
-     * @param depth the maximum depth, starting from the origin
+     * @param radius the radius of the spherical area to fill, with 0 as the smallest radius
+     * @param depth the maximum depth, starting from the origin, with 1 as the smallest depth
      * @param recursive whether a breadth-first search should be performed
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int fillXZ(Vector origin, Pattern pattern, double radius, int depth, boolean recursive)
-            throws MaxChangedBlocksException {
+    public int fillXZ(Vector origin, Pattern pattern, double radius, int depth, boolean recursive) throws MaxChangedBlocksException {
+        checkNotNull(origin, "origin must not be null");
+        checkNotNull(pattern, "pattern must not be null");
+        checkArgument(radius >= 0, "radius >= 0");
+        checkArgument(depth >= 1, "depth >= 1");
 
         CombinedMask mask = new CombinedMask(
                 new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
@@ -831,10 +834,10 @@ public class EditSession {
      * Remove a cuboid above the given position with a given apothem and a given height.
      *
      * @param position base position
-     * @param apothem an apothem of the cuboid, where the minimum is 1
+     * @param apothem an apothem of the cuboid (on the XZ plane), where the minimum is 1
      * @param height the height of the cuboid, where the minimum is 1
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int removeAbove(Vector position, int apothem, int height) throws MaxChangedBlocksException {
         checkNotNull(position, "position must not be null");
@@ -852,10 +855,10 @@ public class EditSession {
      * Remove a cuboid below the given position with a given apothem and a given height.
      *
      * @param position base position
-     * @param apothem an apothem of the cuboid, where the minimum is 1
+     * @param apothem an apothem of the cuboid (on the XZ plane), where the minimum is 1
      * @param height the height of the cuboid, where the minimum is 1
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int removeBelow(Vector position, int apothem, int height) throws MaxChangedBlocksException {
         checkNotNull(position, "position must not be null");
@@ -870,41 +873,23 @@ public class EditSession {
     }
 
     /**
-     * Remove nearby blocks of a type.
+     * Remove blocks of a certain type nearby a given position.
      *
-     * @param pos
-     * @param blockType
-     * @param size
+     * @param position center position of cuboid
+     * @param blockType the block type to match
+     * @param apothem an apothem of the cuboid, where the minimum is 1
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int removeNear(Vector pos, int blockType, int size)
-            throws MaxChangedBlocksException {
-        int affected = 0;
-        BaseBlock air = new BaseBlock(BlockID.AIR);
+    public int removeNear(Vector position, int blockType, int apothem) throws MaxChangedBlocksException {
+        checkNotNull(position, "position must not be null");
+        checkArgument(apothem >= 1, "apothem >= 1");
 
-        int minX = pos.getBlockX() - size;
-        int maxX = pos.getBlockX() + size;
-        int minY = Math.max(0, pos.getBlockY() - size);
-        int maxY = Math.min(world.getMaxY(), pos.getBlockY() + size);
-        int minZ = pos.getBlockZ() - size;
-        int maxZ = pos.getBlockZ() + size;
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int y = minY; y <= maxY; ++y) {
-                for (int z = minZ; z <= maxZ; ++z) {
-                    Vector p = new Vector(x, y, z);
-
-                    if (getBlockType(p) == blockType) {
-                        if (setBlock(p, air)) {
-                            ++affected;
-                        }
-                    }
-                }
-            }
-        }
-
-        return affected;
+        Mask mask = new FuzzyBlockMask(new BaseBlock(blockType, -1));
+        Vector adjustment = new Vector(1, 1, 1).multiply(apothem - 1);
+        Region region = new CuboidRegion(position.add(adjustment.multiply(-1)), position.add(adjustment));
+        Pattern pattern = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
+        return replaceBlocks(region, mask, pattern);
     }
 
     /**
@@ -930,6 +915,7 @@ public class EditSession {
     public int setBlocks(Region region, Pattern pattern) throws MaxChangedBlocksException {
         checkNotNull(region, "region must not be null");
         checkNotNull(pattern, "pattern must not be null");
+
         BlockReplace replace = new BlockReplace(this, pattern);
         RegionVisitor visitor = new RegionVisitor(region, replace);
         OperationHelper.completeLegacy(visitor);
@@ -937,174 +923,54 @@ public class EditSession {
     }
 
     /**
-     * Replaces all the blocks of a type inside a region to another block type.
+     * Replaces all the blocks matching a given filter, within a given region, to a block
+     * returned by a given pattern.
      *
-     * @param region
-     * @param fromBlockTypes -1 for non-air
-     * @param toBlock
+     * @param region the region to replace the blocks within
+     * @param filter a list of block types to match, or null to use {@link com.sk89q.worldedit.masks.ExistingBlockMask}
+     * @param replacement the replacement block
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, BaseBlock toBlock) throws MaxChangedBlocksException {
-        Set<BaseBlock> definiteBlockTypes = new HashSet<BaseBlock>();
-        Set<Integer> fuzzyBlockTypes = new HashSet<Integer>();
-
-        if (fromBlockTypes != null) {
-            for (BaseBlock block : fromBlockTypes) {
-                if (block.getData() == -1) {
-                    fuzzyBlockTypes.add(block.getType());
-                } else {
-                    definiteBlockTypes.add(block);
-                }
-            }
-        }
-
-        int affected = 0;
-
-        if (region instanceof CuboidRegion) {
-            // Doing this for speed
-            Vector min = region.getMinimumPoint();
-            Vector max = region.getMaximumPoint();
-
-            int minX = min.getBlockX();
-            int minY = min.getBlockY();
-            int minZ = min.getBlockZ();
-            int maxX = max.getBlockX();
-            int maxY = max.getBlockY();
-            int maxZ = max.getBlockZ();
-
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    for (int z = minZ; z <= maxZ; ++z) {
-                        Vector pt = new Vector(x, y, z);
-                        BaseBlock curBlockType = getBlock(pt);
-
-                        if (fromBlockTypes == null) {
-                            //replace <to-block>
-                            if (curBlockType.isAir()) {
-                                continue;
-                            }
-                        } else {
-                            //replace <from-block> <to-block>
-                            if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
-                                continue;
-                            }
-                        }
-
-                        if (setBlock(pt, toBlock)) {
-                            ++affected;
-                        }
-                    }
-                }
-            }
-        } else {
-            for (Vector pt : region) {
-                BaseBlock curBlockType = getBlock(pt);
-
-                if (fromBlockTypes == null) {
-                    //replace <to-block>
-                    if (curBlockType.isAir()) {
-                        continue;
-                    }
-                } else {
-                    //replace <from-block> <to-block>
-                    if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
-                        continue;
-                    }
-                }
-
-                if (setBlock(pt, toBlock)) {
-                    ++affected;
-                }
-            }
-        }
-
-        return affected;
+    public int replaceBlocks(Region region, Set<BaseBlock> filter, BaseBlock replacement) throws MaxChangedBlocksException {
+        return replaceBlocks(region, filter, new SingleBlockPattern(replacement));
     }
 
     /**
-     * Replaces all the blocks of a type inside a region to another block type.
+     * Replaces all the blocks matching a given filter, within a given region, to a block
+     * returned by a given pattern.
      *
-     * @param region
-     * @param fromBlockTypes -1 for non-air
-     * @param pattern
+     * @param region the region to replace the blocks within
+     * @param filter a list of block types to match, or null to use {@link com.sk89q.worldedit.masks.ExistingBlockMask}
+     * @param pattern the pattern that provides the new blocks
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int replaceBlocks(Region region, Set<BaseBlock> fromBlockTypes, Pattern pattern) throws MaxChangedBlocksException {
-        Set<BaseBlock> definiteBlockTypes = new HashSet<BaseBlock>();
-        Set<Integer> fuzzyBlockTypes = new HashSet<Integer>();
-        if (fromBlockTypes != null) {
-            for (BaseBlock block : fromBlockTypes) {
-                if (block.getData() == -1) {
-                    fuzzyBlockTypes.add(block.getType());
-                } else {
-                    definiteBlockTypes.add(block);
-                }
-            }
-        }
+    public int replaceBlocks(Region region, Set<BaseBlock> filter, Pattern pattern) throws MaxChangedBlocksException {
+        Mask mask = filter == null ? new ExistingBlockMask() : new FuzzyBlockMask(filter);
+        return replaceBlocks(region, mask, pattern);
+    }
 
-        int affected = 0;
+    /**
+     * Replaces all the blocks matching a given mask, within a given region, to a block
+     * returned by a given pattern.
+     *
+     * @param region the region to replace the blocks within
+     * @param mask the mask that blocks must match
+     * @param pattern the pattern that provides the new blocks
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int replaceBlocks(Region region, Mask mask, Pattern pattern) throws MaxChangedBlocksException {
+        checkNotNull(region, "region must not be null");
+        checkNotNull(mask, "mask must not be null");
+        checkNotNull(pattern, "pattern must not be null");
 
-        if (region instanceof CuboidRegion) {
-            // Doing this for speed
-            Vector min = region.getMinimumPoint();
-            Vector max = region.getMaximumPoint();
-
-            int minX = min.getBlockX();
-            int minY = min.getBlockY();
-            int minZ = min.getBlockZ();
-            int maxX = max.getBlockX();
-            int maxY = max.getBlockY();
-            int maxZ = max.getBlockZ();
-
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    for (int z = minZ; z <= maxZ; ++z) {
-                        Vector pt = new Vector(x, y, z);
-                        BaseBlock curBlockType = getBlock(pt);
-
-                        if (fromBlockTypes == null) {
-                            //replace <to-block>
-                            if (curBlockType.isAir()) {
-                                continue;
-                            }
-                        } else {
-                            //replace <from-block> <to-block>
-                            if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
-                                continue;
-                            }
-                        }
-
-                        if (setBlock(pt, pattern.next(pt))) {
-                            ++affected;
-                        }
-                    }
-                }
-            }
-        } else {
-            for (Vector pt : region) {
-                BaseBlock curBlockType = getBlock(pt);
-
-                if (fromBlockTypes == null) {
-                    //replace <to-block>
-                    if (curBlockType.isAir()) {
-                        continue;
-                    }
-                } else {
-                    //replace <from-block> <to-block>
-                    if (!definiteBlockTypes.contains(curBlockType) && !fuzzyBlockTypes.contains(curBlockType.getType())) {
-                        continue;
-                    }
-                }
-
-                if (setBlock(pt, pattern.next(pt))) {
-                    ++affected;
-                }
-            }
-        }
-
-        return affected;
+        BlockReplace replace = new BlockReplace(this, pattern);
+        RegionMaskFilter filter = new RegionMaskFilter(this, mask, replace);
+        RegionVisitor visitor = new RegionVisitor(region, filter);
+        OperationHelper.completeLegacy(visitor);
+        return visitor.getAffected();
     }
 
     public int center(Region region, Pattern pattern)
