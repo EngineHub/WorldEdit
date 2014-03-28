@@ -48,6 +48,9 @@ import com.sk89q.worldedit.util.TreeGenerator;
 
 import java.util.*;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * This class can wrap all block editing operations into one "edit session" that
  * stores the state of the blocks before modification. This allows for easy undo
@@ -825,73 +828,45 @@ public class EditSession {
     }
 
     /**
-     * Remove blocks above.
+     * Remove a cuboid above the given position with a given apothem and a given height.
      *
-     * @param pos
-     * @param size
-     * @param height
+     * @param position base position
+     * @param apothem an apothem of the cuboid, where the minimum is 1
+     * @param height the height of the cuboid, where the minimum is 1
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int removeAbove(Vector pos, int size, int height)
-            throws MaxChangedBlocksException {
-        int maxY = Math.min(world.getMaxY(), pos.getBlockY() + height - 1);
-        --size;
-        int affected = 0;
+    public int removeAbove(Vector position, int apothem, int height) throws MaxChangedBlocksException {
+        checkNotNull(position, "position must not be null");
+        checkArgument(apothem >= 1, "apothem >= 1");
+        checkArgument(height >= 1, "height >= 1");
 
-        int oX = pos.getBlockX();
-        int oY = pos.getBlockY();
-        int oZ = pos.getBlockZ();
-
-        for (int x = oX - size; x <= oX + size; ++x) {
-            for (int z = oZ - size; z <= oZ + size; ++z) {
-                for (int y = oY; y <= maxY; ++y) {
-                    Vector pt = new Vector(x, y, z);
-
-                    if (getBlockType(pt) != BlockID.AIR) {
-                        setBlock(pt, new BaseBlock(BlockID.AIR));
-                        ++affected;
-                    }
-                }
-            }
-        }
-
-        return affected;
+        Region region = new CuboidRegion(
+                position.add(-apothem + 1, 0, -apothem + 1),
+                position.add(apothem - 1, height - 1, apothem - 1));
+        Pattern pattern = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
+        return setBlocks(region, pattern);
     }
 
     /**
-     * Remove blocks below.
+     * Remove a cuboid below the given position with a given apothem and a given height.
      *
-     * @param pos
-     * @param size
-     * @param height
+     * @param position base position
+     * @param apothem an apothem of the cuboid, where the minimum is 1
+     * @param height the height of the cuboid, where the minimum is 1
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int removeBelow(Vector pos, int size, int height)
-            throws MaxChangedBlocksException {
-        int minY = Math.max(0, pos.getBlockY() - height);
-        --size;
-        int affected = 0;
+    public int removeBelow(Vector position, int apothem, int height) throws MaxChangedBlocksException {
+        checkNotNull(position, "position must not be null");
+        checkArgument(apothem >= 1, "apothem >= 1");
+        checkArgument(height >= 1, "height >= 1");
 
-        int oX = pos.getBlockX();
-        int oY = pos.getBlockY();
-        int oZ = pos.getBlockZ();
-
-        for (int x = oX - size; x <= oX + size; ++x) {
-            for (int z = oZ - size; z <= oZ + size; ++z) {
-                for (int y = oY; y >= minY; --y) {
-                    Vector pt = new Vector(x, y, z);
-
-                    if (getBlockType(pt) != BlockID.AIR) {
-                        setBlock(pt, new BaseBlock(BlockID.AIR));
-                        ++affected;
-                    }
-                }
-            }
-        }
-
-        return affected;
+        Region region = new CuboidRegion(
+                position.add(-apothem + 1, 0, -apothem + 1),
+                position.add(apothem - 1, -height + 1, apothem - 1));
+        Pattern pattern = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
+        return setBlocks(region, pattern);
     }
 
     /**
@@ -933,95 +908,32 @@ public class EditSession {
     }
 
     /**
-     * Sets all the blocks inside a region to a certain block type.
+     * Sets all the blocks inside a region to a given block type.
      *
-     * @param region
-     * @param block
+     * @param region the region
+     * @param block the block
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int setBlocks(Region region, BaseBlock block)
-            throws MaxChangedBlocksException {
-        int affected = 0;
-
-        if (region instanceof CuboidRegion) {
-            // Doing this for speed
-            Vector min = region.getMinimumPoint();
-            Vector max = region.getMaximumPoint();
-
-            int minX = min.getBlockX();
-            int minY = min.getBlockY();
-            int minZ = min.getBlockZ();
-            int maxX = max.getBlockX();
-            int maxY = max.getBlockY();
-            int maxZ = max.getBlockZ();
-
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    for (int z = minZ; z <= maxZ; ++z) {
-                        Vector pt = new Vector(x, y, z);
-
-                        if (setBlock(pt, block)) {
-                            ++affected;
-                        }
-                    }
-                }
-            }
-        } else {
-            for (Vector pt : region) {
-                if (setBlock(pt, block)) {
-                    ++affected;
-                }
-            }
-        }
-
-        return affected;
+    public int setBlocks(Region region, BaseBlock block) throws MaxChangedBlocksException {
+        return setBlocks(region, new SingleBlockPattern(block));
     }
 
     /**
-     * Sets all the blocks inside a region to a certain block type.
+     * Sets all the blocks inside a region to a given pattern.
      *
-     * @param region
-     * @param pattern
+     * @param region the region
+     * @param pattern the pattern that provides the replacement block
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int setBlocks(Region region, Pattern pattern)
-            throws MaxChangedBlocksException {
-        int affected = 0;
-
-        if (region instanceof CuboidRegion) {
-            // Doing this for speed
-            Vector min = region.getMinimumPoint();
-            Vector max = region.getMaximumPoint();
-
-            int minX = min.getBlockX();
-            int minY = min.getBlockY();
-            int minZ = min.getBlockZ();
-            int maxX = max.getBlockX();
-            int maxY = max.getBlockY();
-            int maxZ = max.getBlockZ();
-
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    for (int z = minZ; z <= maxZ; ++z) {
-                        Vector pt = new Vector(x, y, z);
-
-                        if (setBlock(pt, pattern.next(pt))) {
-                            ++affected;
-                        }
-                    }
-                }
-            }
-        } else {
-            for (Vector pt : region) {
-                if (setBlock(pt, pattern.next(pt))) {
-                    ++affected;
-                }
-            }
-        }
-
-        return affected;
+    public int setBlocks(Region region, Pattern pattern) throws MaxChangedBlocksException {
+        checkNotNull(region, "region must not be null");
+        checkNotNull(pattern, "pattern must not be null");
+        BlockReplace replace = new BlockReplace(this, pattern);
+        RegionVisitor visitor = new RegionVisitor(region, replace);
+        OperationHelper.completeLegacy(visitor);
+        return visitor.getAffected();
     }
 
     /**
