@@ -1006,265 +1006,119 @@ public class EditSession {
     }
 
     /**
-     * Make faces of the region (as if it was a cuboid if it's not).
+     * Make the faces of the given region as if it was a {@link CuboidRegion}.
      *
-     * @param region
-     * @param block
+     * @param region the region
+     * @param block the block to place
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeCuboidFaces(Region region, BaseBlock block)
-            throws MaxChangedBlocksException {
-        int affected = 0;
-
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
-
-        int minX = min.getBlockX();
-        int minY = min.getBlockY();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxY = max.getBlockY();
-        int maxZ = max.getBlockZ();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int y = minY; y <= maxY; ++y) {
-                if (setBlock(new Vector(x, y, minZ), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(x, y, maxZ), block)) {
-                    ++affected;
-                }
-                ++affected;
-            }
-        }
-
-        for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                if (setBlock(new Vector(minX, y, z), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(maxX, y, z), block)) {
-                    ++affected;
-                }
-            }
-        }
-
-        for (int z = minZ; z <= maxZ; ++z) {
-            for (int x = minX; x <= maxX; ++x) {
-                if (setBlock(new Vector(x, minY, z), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(x, maxY, z), block)) {
-                    ++affected;
-                }
-            }
-        }
-
-        return affected;
+    public int makeCuboidFaces(Region region, BaseBlock block) throws MaxChangedBlocksException {
+        return makeCuboidFaces(region, new SingleBlockPattern(block));
     }
 
     /**
-     * Make faces of the region (as if it was a cuboid if it's not).
+     * Make the faces of the given region as if it was a {@link CuboidRegion}.
      *
-     * @param region
-     * @param pattern
+     * @param region the region
+     * @param pattern the pattern to place
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int makeCuboidFaces(Region region, Pattern pattern)
-            throws MaxChangedBlocksException {
-        int affected = 0;
+    public int makeCuboidFaces(Region region, Pattern pattern) throws MaxChangedBlocksException {
+        checkNotNull(region);
+        checkNotNull(pattern);
 
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
-
-        int minX = min.getBlockX();
-        int minY = min.getBlockY();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxY = max.getBlockY();
-        int maxZ = max.getBlockZ();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int y = minY; y <= maxY; ++y) {
-                Vector minV = new Vector(x, y, minZ);
-                if (setBlock(minV, pattern.next(minV))) {
-                    ++affected;
-                }
-                Vector maxV = new Vector(x, y, maxZ);
-                if (setBlock(maxV, pattern.next(maxV))) {
-                    ++affected;
-                }
-                ++affected;
-            }
-        }
-
-        for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                Vector minV = new Vector(minX, y, z);
-                if (setBlock(minV, pattern.next(minV))) {
-                    ++affected;
-                }
-                Vector maxV = new Vector(maxX, y, z);
-                if (setBlock(maxV, pattern.next(maxV))) {
-                    ++affected;
-                }
-            }
-        }
-
-        for (int z = minZ; z <= maxZ; ++z) {
-            for (int x = minX; x <= maxX; ++x) {
-                Vector minV = new Vector(x, minY, z);
-                if (setBlock(minV, pattern.next(minV))) {
-                    ++affected;
-                }
-                Vector maxV = new Vector(x, maxY, z);
-                if (setBlock(maxV, pattern.next(maxV))) {
-                    ++affected;
-                }
-            }
-        }
-
-        return affected;
+        CuboidRegion cuboid = CuboidRegion.makeCuboid(region);
+        Region faces = cuboid.getFaces();
+        return setBlocks(faces, pattern);
     }
 
     /**
-     * Make faces of the region
+     * Make the faces of the given region. The method by which the faces are found
+     * may be inefficient, because there may not be an efficient implementation supported
+     * for that specific shape.
      *
-     * @param region
-     * @param pattern
+     * @param region the region
+     * @param pattern the pattern to place
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int makeFaces(final Region region, Pattern pattern) throws MaxChangedBlocksException {
-        return new RegionShape(region).generate(this, pattern, true);
+        checkNotNull(region);
+        checkNotNull(pattern);
+
+        if (region instanceof CuboidRegion) {
+            return makeCuboidFaces(region, pattern);
+        } else {
+            return new RegionShape(region).generate(this, pattern, true);
+        }
     }
 
 
     /**
-     * Make walls of the region (as if it was a cuboid if it's not).
+     * Make the walls (all faces but those parallel to the X-Z plane) of the given region
+     * as if it was a {@link CuboidRegion}.
      *
-     * @param region
-     * @param block
+     * @param region the region
+     * @param block the block to place
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int makeCuboidWalls(Region region, BaseBlock block)
-            throws MaxChangedBlocksException {
-        int affected = 0;
-
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
-
-        int minX = min.getBlockX();
-        int minY = min.getBlockY();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxY = max.getBlockY();
-        int maxZ = max.getBlockZ();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int y = minY; y <= maxY; ++y) {
-                if (setBlock(new Vector(x, y, minZ), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(x, y, maxZ), block)) {
-                    ++affected;
-                }
-                ++affected;
-            }
-        }
-
-        for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                if (setBlock(new Vector(minX, y, z), block)) {
-                    ++affected;
-                }
-                if (setBlock(new Vector(maxX, y, z), block)) {
-                    ++affected;
-                }
-            }
-        }
-
-        return affected;
+    public int makeCuboidWalls(Region region, BaseBlock block) throws MaxChangedBlocksException {
+        return makeCuboidWalls(region, new SingleBlockPattern(block));
     }
 
     /**
-     * Make walls of the region (as if it was a cuboid if it's not).
+     * Make the walls (all faces but those parallel to the X-Z plane) of the given region
+     * as if it was a {@link CuboidRegion}.
      *
-     * @param region
-     * @param pattern
+     * @param region the region
+     * @param pattern the pattern to place
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int makeCuboidWalls(Region region, Pattern pattern)
-            throws MaxChangedBlocksException {
-        int affected = 0;
+    public int makeCuboidWalls(Region region, Pattern pattern) throws MaxChangedBlocksException {
+        checkNotNull(region);
+        checkNotNull(pattern);
 
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
-
-        int minX = min.getBlockX();
-        int minY = min.getBlockY();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxY = max.getBlockY();
-        int maxZ = max.getBlockZ();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int y = minY; y <= maxY; ++y) {
-                Vector minV = new Vector(x, y, minZ);
-                if (setBlock(minV, pattern.next(minV))) {
-                    ++affected;
-                }
-                Vector maxV = new Vector(x, y, maxZ);
-                if (setBlock(maxV, pattern.next(maxV))) {
-                    ++affected;
-                }
-                ++affected;
-            }
-        }
-
-        for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                Vector minV = new Vector(minX, y, z);
-                if (setBlock(minV, pattern.next(minV))) {
-                    ++affected;
-                }
-                Vector maxV = new Vector(maxX, y, z);
-                if (setBlock(maxV, pattern.next(maxV))) {
-                    ++affected;
-                }
-            }
-        }
-
-        return affected;
+        CuboidRegion cuboid = CuboidRegion.makeCuboid(region);
+        Region faces = cuboid.getWalls();
+        return setBlocks(faces, pattern);
     }
 
     /**
-     * Make walls of the region
+     * Make the walls of the given region. The method by which the walls are found
+     * may be inefficient, because there may not be an efficient implementation supported
+     * for that specific shape.
      *
-     * @param region
-     * @param pattern
+     * @param region the region
+     * @param pattern the pattern to place
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int makeWalls(final Region region, Pattern pattern) throws MaxChangedBlocksException {
-        final int minY = region.getMinimumPoint().getBlockY();
-        final int maxY = region.getMaximumPoint().getBlockY();
-        final ArbitraryShape shape = new RegionShape(region) {
-            @Override
-            protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
-                if (y > maxY || y < minY) {
-                    // Put holes into the floor and ceiling by telling ArbitraryShape that the shape goes on outside the region
-                    return defaultMaterial;
-                }
+        checkNotNull(region);
+        checkNotNull(pattern);
 
-                return super.getMaterial(x, y, z, defaultMaterial);
-            }
-        };
-        return shape.generate(this, pattern, true);
+        if (region instanceof CuboidRegion) {
+            return makeCuboidWalls(region, pattern);
+        } else {
+            final int minY = region.getMinimumPoint().getBlockY();
+            final int maxY = region.getMaximumPoint().getBlockY();
+            final ArbitraryShape shape = new RegionShape(region) {
+                @Override
+                protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
+                    if (y > maxY || y < minY) {
+                        // Put holes into the floor and ceiling by telling ArbitraryShape that the shape goes on outside the region
+                        return defaultMaterial;
+                    }
+
+                    return super.getMaterial(x, y, z, defaultMaterial);
+                }
+            };
+            return shape.generate(this, pattern, true);
+        }
     }
 
     /**
