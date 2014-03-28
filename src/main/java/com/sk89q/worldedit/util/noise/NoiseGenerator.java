@@ -17,45 +17,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.noise;
+package com.sk89q.worldedit.util.noise;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 
-import java.util.Random;
-
 /**
- * Generates noise non-deterministically using {@link java.util.Random}.
+ * Generates noise in a deterministic or non-deterministic manner.
  */
-public class RandomNoise implements NoiseGenerator {
-
-    private final Random random;
+public interface NoiseGenerator {
 
     /**
-     * Create a new noise generator using the given <code>Random</code>.
+     * Get the noise for the given position.
      *
-     * @param random the random instance
+     * @param position the position
+     * @return a noise value between 0 (inclusive) and 1 (inclusive)
      */
-    public RandomNoise(Random random) {
-        this.random = random;
-    }
+    float noise(Vector2D position);
 
     /**
-     * Create a new noise generator with a newly constructed <code>Random</code>
-     * instance.
+     * Get the noise for the given position.
+     *
+     * @param position the position
+     * @return a noise value between 0 (inclusive) and 1 (inclusive)
      */
-    public RandomNoise() {
-        this(new Random());
-    }
-
-    @Override
-    public float noise(Vector2D position) {
-        return random.nextFloat();
-    }
-
-    @Override
-    public float noise(Vector position) {
-        return random.nextFloat();
-    }
+    float noise(Vector position);
 
 }
