@@ -19,30 +19,15 @@
 
 package com.sk89q.worldedit.operation;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.masks.Mask;
 
 /**
- * Counts the number of blocks that match a given mask.
+ * Counts the number of blocks.
  */
  public class BlockCount implements RegionFunction {
 
-    private final EditSession editSession;
-    private Mask mask;
     private int count;
-
-    /**
-     * Create a new block counter.
-     *
-     * @param editSession the edit session
-     * @param mask the mask
-     */
-    public BlockCount(EditSession editSession, Mask mask) {
-        this.editSession = editSession;
-        this.mask = mask;
-    }
     
     /**
      * Returns the number of blocks that have been counted.
@@ -55,9 +40,7 @@ import com.sk89q.worldedit.masks.Mask;
 
     @Override
     public boolean apply(Vector position) throws WorldEditException {
-        if (mask.matches(editSession, position)) {
-            count++;
-        }
+        count++;
         return false;
     }
 

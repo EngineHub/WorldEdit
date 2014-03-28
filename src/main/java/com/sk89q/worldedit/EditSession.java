@@ -551,10 +551,11 @@ public class EditSession {
      */
     public int countBlocks(Region region, Set<BaseBlock> searchBlocks) {
         FuzzyBlockMask mask = new FuzzyBlockMask(searchBlocks);
-        BlockCount counter = new BlockCount(this, mask);
-        RegionVisitor visitor = new RegionVisitor(region, counter);
+        BlockCount count = new BlockCount();
+        RegionMaskFilter filter = new RegionMaskFilter(this, mask, count);
+        RegionVisitor visitor = new RegionVisitor(region, filter);
         OperationHelper.completeBlindly(visitor); // We can't throw exceptions, nor do we expect any
-        return counter.getCount();
+        return count.getCount();
     }
 
     /**
