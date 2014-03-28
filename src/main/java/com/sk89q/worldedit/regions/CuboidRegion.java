@@ -29,80 +29,114 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- *
- * @author sk89q
+ * An axis-aligned cuboid. It can be defined using two corners of the cuboid.
  */
 public class CuboidRegion extends AbstractRegion implements FlatRegion {
-    /**
-     * Store the first point.
-     */
+
     private Vector pos1;
-    /**
-     * Store the second point.
-     */
     private Vector pos2;
 
     /**
-     * Construct a new instance of this cuboid region.
+     * Construct a new instance of this cuboid using two corners of the cuboid.
      *
-     * @param pos1
-     * @param pos2
+     * @param pos1 the first position
+     * @param pos2 the second position
      */
     public CuboidRegion(Vector pos1, Vector pos2) {
         this(null, pos1, pos2);
     }
 
     /**
-     * Construct a new instance of this cuboid region.
+     * Construct a new instance of this cuboid using two corners of the cuboid.
      *
-     * @param world
-     * @param pos1
-     * @param pos2
+     * @param world the world
+     * @param pos1 the first position
+     * @param pos2 the second position
      */
     public CuboidRegion(LocalWorld world, Vector pos1, Vector pos2) {
         super(world);
+        checkNotNull(pos1);
+        checkNotNull(pos2);
         this.pos1 = pos1;
         this.pos2 = pos2;
         recalculate();
     }
 
     /**
-     * Get the lower point of the cuboid.
+     * Get the first cuboid-defining corner.
      *
-     * @return min point
+     * @return a position
      */
+    public Vector getPos1() {
+        return pos1;
+    }
+
+    /**
+     * Set the first cuboid-defining corner.
+     *
+     * @param pos1 a position
+     */
+    public void setPos1(Vector pos1) {
+        this.pos1 = pos1;
+    }
+
+    /**
+     * Get the second cuboid-defining corner.
+     *
+     * @return a position
+     */
+    public Vector getPos2() {
+        return pos2;
+    }
+
+    /**
+     * Set the second cuboid-defining corner.
+     *
+     * @param pos2 a position
+     */
+    public void setPos2(Vector pos2) {
+        this.pos2 = pos2;
+    }
+
+    /**
+     * Clamps the cuboid according to boundaries of the world.
+     */
+    private void recalculate() {
+        pos1 = pos1.clampY(0, world == null ? 255 : world.getMaxY());
+        pos2 = pos2.clampY(0, world == null ? 255 : world.getMaxY());
+    }
+
+    @Override
     public Vector getMinimumPoint() {
         return new Vector(Math.min(pos1.getX(), pos2.getX()),
                          Math.min(pos1.getY(), pos2.getY()),
                          Math.min(pos1.getZ(), pos2.getZ()));
     }
 
-    /**
-     * Get the upper point of the cuboid.
-     *
-     * @return max point
-     */
+    @Override
     public Vector getMaximumPoint() {
         return new Vector(Math.max(pos1.getX(), pos2.getX()),
                          Math.max(pos1.getY(), pos2.getY()),
                          Math.max(pos1.getZ(), pos2.getZ()));
     }
 
+    @Override
     public int getMinimumY() {
         return Math.min(pos1.getBlockY(), pos2.getBlockY());
     }
 
+    @Override
     public int getMaximumY() {
         return Math.max(pos1.getBlockY(), pos2.getBlockY());
     }
 
-    /**
-     * Expands the cuboid in a direction.
-     *
-     * @param change
-     */
+    @Override
     public void expand(Vector... changes) {
+        checkNotNull(changes);
+
         for (Vector change : changes) {
             if (change.getX() > 0) {
                 if (Math.max(pos1.getX(), pos2.getX()) == pos1.getX()) {
@@ -150,12 +184,10 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         recalculate();
     }
 
-    /**
-     * Contracts the cuboid in a direction.
-     *
-     * @param change
-     */
+    @Override
     public void contract(Vector... changes) {
+        checkNotNull(changes);
+
         for (Vector change : changes) {
             if (change.getX() < 0) {
                 if (Math.max(pos1.getX(), pos2.getX()) == pos1.getX()) {
@@ -203,11 +235,6 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         recalculate();
     }
 
-    private void recalculate() {
-        pos1 = pos1.clampY(0, world == null ? 255 : world.getMaxY());
-        pos2 = pos2.clampY(0, world == null ? 255 : world.getMaxY());
-    }
-
     @Override
     public void shift(Vector change) throws RegionOperationException {
         pos1 = pos1.add(change);
@@ -216,47 +243,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         recalculate();
     }
 
-    /**
-     * Get position 1.
-     *
-     * @return position 1
-     */
-    public Vector getPos1() {
-        return pos1;
-    }
-
-    /**
-     * Set position 1.
-     *
-     * @param pos1
-     */
-    public void setPos1(Vector pos1) {
-        this.pos1 = pos1;
-    }
-
-    /**
-     * Get position 2.
-     *
-     * @return position 2
-     */
-    public Vector getPos2() {
-        return pos2;
-    }
-
-    /**
-     * Set position 2.
-     *
-     * @param pos2
-     */
-    public void setPos2(Vector pos2) {
-        this.pos2 = pos2;
-    }
-
-    /**
-     * Get a list of chunks that this region is within.
-     *
-     * @return
-     */
+    @Override
     public Set<Vector2D> getChunks() {
         Set<Vector2D> chunks = new HashSet<Vector2D>();
 
@@ -273,6 +260,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         return chunks;
     }
 
+    @Override
     public Set<Vector> getChunkCubes() {
         Set<Vector> chunks = new HashSet<Vector>();
 
@@ -291,11 +279,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         return chunks;
     }
 
-    /**
-     * Returns true based on whether the region contains the point,
-     *
-     * @param pt
-     */
+    @Override
     public boolean contains(Vector pt) {
         double x = pt.getX();
         double y = pt.getY();
@@ -309,11 +293,6 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
                 && z >= min.getBlockZ() && z <= max.getBlockZ();
     }
 
-    /**
-     * Get the iterator.
-     *
-     * @return iterator of points inside the region
-     */
     @Override
     public Iterator<BlockVector> iterator() {
         return new Iterator<BlockVector>() {
@@ -323,10 +302,12 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
             private int nextY = min.getBlockY();
             private int nextZ = min.getBlockZ();
 
+            @Override
             public boolean hasNext() {
                 return (nextX != Integer.MIN_VALUE);
             }
 
+            @Override
             public BlockVector next() {
                 if (!hasNext()) throw new java.util.NoSuchElementException();
                 BlockVector answer = new BlockVector(nextX, nextY, nextZ);
@@ -342,6 +323,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
                 return answer;
             }
 
+            @Override
             public void remove() {
                 throw new UnsupportedOperationException();
             }
@@ -359,10 +341,12 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
                     private int nextX = min.getBlockX();
                     private int nextZ = min.getBlockZ();
 
+                    @Override
                     public boolean hasNext() {
                         return (nextX != Integer.MIN_VALUE);
                     }
 
+                    @Override
                     public Vector2D next() {
                         if (!hasNext()) throw new java.util.NoSuchElementException();
                         Vector2D answer = new Vector2D(nextX, nextZ);
@@ -384,17 +368,12 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         };
     }
 
-    /**
-     * Returns string representation in the format
-     * "(minX, minY, minZ) - (maxX, maxY, maxZ)".
-     *
-     * @return string
-     */
     @Override
     public String toString() {
         return getMinimumPoint() + " - " + getMaximumPoint();
     }
 
+    @Override
     public CuboidRegion clone() {
         return (CuboidRegion) super.clone();
     }
