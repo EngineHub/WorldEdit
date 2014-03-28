@@ -64,6 +64,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         super(world);
         this.pos1 = pos1;
         this.pos2 = pos2;
+        recalculate();
     }
 
     /**
