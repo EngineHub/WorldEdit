@@ -70,7 +70,7 @@ public abstract class BreadthFirstSearch implements Operation {
      *
      * @return the list of directions
      */
-    protected List<Vector> getDirections() {
+    protected Collection<Vector> getDirections() {
         return directions;
     }
 

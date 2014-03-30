@@ -23,7 +23,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.mask.Mask;
 
-import java.util.List;
+import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -51,7 +51,7 @@ public class DownwardVisitor extends RecursiveVisitor {
 
         this.baseY = baseY;
 
-        List<Vector> directions = getDirections();
+        Collection<Vector> directions = getDirections();
         directions.clear();
         directions.add(new Vector(1, 0, 0));
         directions.add(new Vector(-1, 0, 0));
