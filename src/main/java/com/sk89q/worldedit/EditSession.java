@@ -32,24 +32,19 @@ import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.block.BlockCount;
 import com.sk89q.worldedit.function.block.BlockReplace;
+import com.sk89q.worldedit.function.block.Naturalizer;
 import com.sk89q.worldedit.function.generator.ForestGenerator;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
 import com.sk89q.worldedit.function.operation.OperationHelper;
 import com.sk89q.worldedit.function.util.RegionOffset;
-import com.sk89q.worldedit.function.visitor.DownwardVisitor;
-import com.sk89q.worldedit.function.visitor.FlatRegionVisitor;
-import com.sk89q.worldedit.function.visitor.RecursiveVisitor;
-import com.sk89q.worldedit.function.visitor.RegionVisitor;
+import com.sk89q.worldedit.function.visitor.*;
 import com.sk89q.worldedit.interpolation.Interpolation;
 import com.sk89q.worldedit.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.interpolation.Node;
 import com.sk89q.worldedit.masks.*;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.EllipsoidRegion;
-import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.regions.*;
 import com.sk89q.worldedit.regions.search.GroundSearch;
 import com.sk89q.worldedit.regions.search.MaskingGroundSearch;
 import com.sk89q.worldedit.shape.ArbitraryBiomeShape;
@@ -63,6 +58,8 @@ import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.regions.Regions.maximumBlockY;
+import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
 
 /**
  * This class can wrap all block editing operations into one "edit session" that
@@ -236,9 +233,9 @@ public class EditSession {
                 }
             }
         }
-        
+
         boolean result;
-        
+
         if (type == 0) {
             if (fastMode) {
                 result = world.setBlockTypeFast(pt, 0);
@@ -248,7 +245,7 @@ public class EditSession {
         } else {
             result = world.setBlock(pt, block, !fastMode);
         }
-        
+
         return result;
     }
 
@@ -1175,73 +1172,18 @@ public class EditSession {
      * Turns the first 3 layers into dirt/grass and the bottom layers
      * into rock, like a natural Minecraft mountain.
      *
-     * @param region
+     * @param region the region to affect
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int naturalizeCuboidBlocks(Region region)
-            throws MaxChangedBlocksException {
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
+    public int naturalizeCuboidBlocks(Region region) throws MaxChangedBlocksException {
+        checkNotNull(region);
 
-        int upperY = Math.min(world.getMaxY(), max.getBlockY() + 1);
-        int lowerY = Math.max(0, min.getBlockY() - 1);
-
-        int affected = 0;
-
-        int minX = min.getBlockX();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxZ = max.getBlockZ();
-
-        BaseBlock grass = new BaseBlock(BlockID.GRASS);
-        BaseBlock dirt = new BaseBlock(BlockID.DIRT);
-        BaseBlock stone = new BaseBlock(BlockID.STONE);
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                int level = -1;
-
-                for (int y = upperY; y >= lowerY; --y) {
-                    Vector pt = new Vector(x, y, z);
-                    //Vector above = new Vector(x, y + 1, z);
-                    int blockType = getBlockType(pt);
-
-                    boolean isTransformable =
-                            blockType == BlockID.GRASS
-                            || blockType == BlockID.DIRT
-                            || blockType == BlockID.STONE;
-
-                    // Still searching for the top block
-                    if (level == -1) {
-                        if (!isTransformable) {
-                            continue; // Not transforming this column yet
-                        }
-
-                        level = 0;
-                    }
-
-                    if (level >= 0) {
-                        if (isTransformable) {
-                            if (level == 0) {
-                                setBlock(pt, grass);
-                                affected++;
-                            } else if (level <= 2) {
-                                setBlock(pt, dirt);
-                                affected++;
-                            } else {
-                                setBlock(pt, stone);
-                                affected++;
-                            }
-                        }
-
-                        level++;
-                    }
-                }
-            }
-        }
-
-        return affected;
+        Naturalizer naturalizer = new Naturalizer(this);
+        FlatRegion flatRegion = Regions.asFlatRegion(region);
+        LayerVisitor visitor = new LayerVisitor(flatRegion, minimumBlockY(region), maximumBlockY(region), naturalizer);
+        OperationHelper.completeLegacy(visitor);
+        return naturalizer.getAffected();
     }
 
     /**
