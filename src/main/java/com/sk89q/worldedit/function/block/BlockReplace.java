@@ -19,34 +19,38 @@
 
 package com.sk89q.worldedit.function.block;
 
-import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.Extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.patterns.Pattern;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Replaces blocks with the given pattern.
  */
 public class BlockReplace implements RegionFunction {
 
-    private final EditSession editSession;
+    private final Extent extent;
     private Pattern pattern;
 
     /**
      * Create a new instance.
      *
-     * @param editSession the edit session
+     * @param extent an extent
      * @param pattern a pattern
      */
-    public BlockReplace(EditSession editSession, Pattern pattern) {
-        this.editSession = editSession;
+    public BlockReplace(Extent extent, Pattern pattern) {
+        checkNotNull(extent);
+        checkNotNull(pattern);
+        this.extent = extent;
         this.pattern = pattern;
     }
 
     @Override
     public boolean apply(Vector position) throws WorldEditException {
-        return editSession.setBlock(position, pattern.next(position));
+        return extent.setBlock(position, pattern.next(position), true);
     }
 
 }
