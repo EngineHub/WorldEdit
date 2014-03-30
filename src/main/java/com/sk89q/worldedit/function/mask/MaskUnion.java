@@ -17,34 +17,48 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.visitor;
+package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.RegionFunction;
+
+import java.util.Collection;
 
 /**
- * An implementation of an {@link BreadthFirstSearch} that uses a mask to
- * determine where a block should be visited.
+ * Combines several masks and requires that one or more masks return true
+ * when a certain position is tested. It serves as a logical OR operation
+ * on a list of masks.
  */
-public class RecursiveVisitor extends BreadthFirstSearch {
+public class MaskUnion extends MaskIntersection {
 
-    private final EditSession editSession;
-    private final Mask mask;
+    /**
+     * Create a new union.
+     *
+     * @param masks a list of masks
+     */
+    public MaskUnion(Collection<Mask> masks) {
+        super(masks);
+    }
 
-    public RecursiveVisitor(EditSession editSession, Mask mask, RegionFunction function) {
-        super(function);
-        this.editSession = editSession;
-        this.mask = mask;
+    /**
+     * Create a new union.
+     *
+     * @param mask a list of masks
+     */
+    public MaskUnion(Mask... mask) {
+        super(mask);
     }
 
     @Override
-    protected boolean isVisitable(Vector from, Vector to) {
-        int y = to.getBlockY();
-        if (y < 0 || y > editSession.getWorld().getMaxY()) {
-            return false;
+    public boolean test(Vector vector) {
+        Collection<Mask> masks = getMasks();
+
+        for (Mask mask : masks) {
+            if (mask.test(vector)) {
+                return true;
+            }
         }
-        return mask.test(to);
+
+        return false;
     }
+
 }

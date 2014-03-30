@@ -17,19 +17,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.masks;
+package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.Extent;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseBlock;
 
-/**
- * A mask that only returns <code>true</code>.
- */
-public class DummyMask extends AbstractMask {
+import java.util.Collection;
 
-    @Override
-    public boolean matches(EditSession editSession, Vector pos) {
-        return true;
+public class FuzzyBlockMask extends BlockMask {
+
+    public FuzzyBlockMask(Extent extent, Collection<BaseBlock> blocks) {
+        super(extent, blocks);
     }
 
+    public FuzzyBlockMask(Extent extent, BaseBlock... block) {
+        super(extent, block);
+    }
+
+    @Override
+    public boolean test(Vector vector) {
+        Extent extent = getExtent();
+        Collection<BaseBlock> blocks = getBlocks();
+        BaseBlock compare = new BaseBlock(extent.getBlockType(vector), extent.getBlockData(vector));
+        return BaseBlock.containsFuzzy(blocks, compare);
+    }
 }

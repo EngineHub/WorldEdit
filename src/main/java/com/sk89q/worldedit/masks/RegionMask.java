@@ -23,6 +23,10 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.Region;
 
+/**
+ * @deprecated See {@link com.sk89q.worldedit.function.mask.RegionMask}
+ */
+@Deprecated
 public class RegionMask extends AbstractMask {
     private final Region region;
 

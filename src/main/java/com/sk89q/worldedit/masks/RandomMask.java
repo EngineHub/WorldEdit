@@ -2,7 +2,12 @@ package com.sk89q.worldedit.masks;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.function.mask.NoiseFilter;
 
+/**
+ * @deprecated See {@link NoiseFilter}
+ */
+@Deprecated
 public class RandomMask extends AbstractMask {
     private final double ratio;
 

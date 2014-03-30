@@ -24,9 +24,9 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.LayerFunction;
+import com.sk89q.worldedit.function.mask.Mask2D;
+import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.masks.DummyMask2D;
-import com.sk89q.worldedit.masks.Mask2D;
 import com.sk89q.worldedit.regions.FlatRegion;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -45,7 +45,7 @@ public class LayerVisitor implements Operation {
     private final EditSession editSession;
     private final FlatRegion flatRegion;
     private final LayerFunction function;
-    private Mask2D mask = new DummyMask2D();
+    private Mask2D mask = Masks.alwaysTrue2D();
     private int minY;
     private int maxY;
 
@@ -94,7 +94,7 @@ public class LayerVisitor implements Operation {
     @Override
     public Operation resume() throws WorldEditException {
         for (Vector2D column : flatRegion.asFlatRegion()) {
-            if (!mask.matches(editSession, column)) {
+            if (!mask.test(column)) {
                 continue;
             }
 

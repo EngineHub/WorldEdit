@@ -17,34 +17,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.visitor;
+package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.RegionFunction;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
- * An implementation of an {@link BreadthFirstSearch} that uses a mask to
- * determine where a block should be visited.
+ * Has the criteria where the Y value of passed positions must be within
+ * a certain range of Y values (inclusive).
  */
-public class RecursiveVisitor extends BreadthFirstSearch {
+public class BoundedHeightMask extends AbstractMask {
 
-    private final EditSession editSession;
-    private final Mask mask;
+    private final int minY;
+    private final int maxY;
 
-    public RecursiveVisitor(EditSession editSession, Mask mask, RegionFunction function) {
-        super(function);
-        this.editSession = editSession;
-        this.mask = mask;
+    /**
+     * Create a new bounded height mask.
+     *
+     * @param minY the minimum Y
+     * @param maxY the maximum Y (must be equal to or greater than minY)
+     */
+    public BoundedHeightMask(int minY, int maxY) {
+        checkArgument(minY <= maxY, "minY <= maxY required");
+        this.minY = minY;
+        this.maxY = maxY;
     }
 
     @Override
-    protected boolean isVisitable(Vector from, Vector to) {
-        int y = to.getBlockY();
-        if (y < 0 || y > editSession.getWorld().getMaxY()) {
-            return false;
-        }
-        return mask.test(to);
+    public boolean test(Vector vector) {
+        return vector.getY() >= minY && vector.getY() <= maxY;
     }
+
 }

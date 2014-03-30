@@ -17,10 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.masks;
+package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.math.noise.NoiseGenerator;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -30,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * A mask that uses a noise generator and returns true whenever the noise
  * generator returns a value above the given density.
  */
-public class NoiseFilter2D extends AbstractMask2D {
+public class NoiseFilter extends AbstractMask {
 
     private NoiseGenerator noiseGenerator;
     private double density;
@@ -41,7 +40,7 @@ public class NoiseFilter2D extends AbstractMask2D {
      * @param noiseGenerator the noise generator
      * @param density the density
      */
-    public NoiseFilter2D(NoiseGenerator noiseGenerator, double density) {
+    public NoiseFilter(NoiseGenerator noiseGenerator, double density) {
         setNoiseGenerator(noiseGenerator);
         setDensity(density);
     }
@@ -86,8 +85,8 @@ public class NoiseFilter2D extends AbstractMask2D {
     }
 
     @Override
-    public boolean matches(EditSession editSession, Vector2D pos) {
-        return noiseGenerator.noise(pos) <= density;
+    public boolean test(Vector vector) {
+        return noiseGenerator.noise(vector) <= density;
     }
 
 }

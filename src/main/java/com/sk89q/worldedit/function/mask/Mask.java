@@ -17,31 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.masks;
+package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 
 /**
- * Fails all tests against locations outside a range of Y values.
+ * Tests whether a given vector meets a criteria.
  */
-public class BoundedYMask extends AbstractMask {
+public interface Mask {
 
-    private final int minY;
-    private final int maxY;
-
-    public BoundedYMask(int minY, int maxY) {
-        if (minY > maxY) {
-            throw new IllegalArgumentException("minY must be less than or equal to maxY");
-        }
-        this.minY = minY;
-        this.maxY = maxY;
-    }
-
-    @Override
-    public boolean matches(EditSession editSession, Vector pos) {
-        int y = pos.getBlockY();
-        return y >= minY && y <= maxY;
-    }
+    /**
+     * Returns true if the criteria is met.
+     *
+     * @param vector the vector to test
+     * @return true if the criteria is met
+     */
+    boolean test(Vector vector);
 
 }

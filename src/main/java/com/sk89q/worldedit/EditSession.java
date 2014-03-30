@@ -33,6 +33,7 @@ import com.sk89q.worldedit.function.block.BlockCount;
 import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.block.Naturalizer;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
+import com.sk89q.worldedit.function.mask.*;
 import com.sk89q.worldedit.function.operation.OperationHelper;
 import com.sk89q.worldedit.function.util.RegionOffset;
 import com.sk89q.worldedit.function.visitor.DownwardVisitor;
@@ -42,7 +43,8 @@ import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.interpolation.Interpolation;
 import com.sk89q.worldedit.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.interpolation.Node;
-import com.sk89q.worldedit.masks.*;
+import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.math.noise.RandomNoise;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.*;
@@ -51,7 +53,6 @@ import com.sk89q.worldedit.shape.ArbitraryShape;
 import com.sk89q.worldedit.shape.RegionShape;
 import com.sk89q.worldedit.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.math.noise.RandomNoise;
 
 import java.util.*;
 
@@ -559,9 +560,9 @@ public class EditSession implements Extent {
      * @return the number of blocks that matched the pattern
      */
     public int countBlocks(Region region, Set<BaseBlock> searchBlocks) {
-        FuzzyBlockMask mask = new FuzzyBlockMask(searchBlocks);
+        FuzzyBlockMask mask = new FuzzyBlockMask(this, searchBlocks);
         BlockCount count = new BlockCount();
-        RegionMaskingFilter filter = new RegionMaskingFilter(this, mask, count);
+        RegionMaskingFilter filter = new RegionMaskingFilter(mask, count);
         RegionVisitor visitor = new RegionVisitor(region, filter);
         OperationHelper.completeBlindly(visitor); // We can't throw exceptions, nor do we expect any
         return count.getCount();
@@ -819,10 +820,10 @@ public class EditSession implements Extent {
         checkArgument(radius >= 0, "radius >= 0");
         checkArgument(depth >= 1, "depth >= 1");
 
-        CombinedMask mask = new CombinedMask(
+        MaskIntersection mask = new MaskIntersection(
                 new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
-                new BoundedYMask(origin.getBlockY() - depth + 1, origin.getBlockY()),
-                new InvertedMask(new ExistingBlockMask()));
+                new BoundedHeightMask(origin.getBlockY() - depth + 1, origin.getBlockY()),
+                Masks.negate(new ExistingBlockMask(this)));
 
         // Want to replace blocks
         BlockReplace replace = new BlockReplace(this, pattern);
@@ -901,7 +902,7 @@ public class EditSession implements Extent {
         checkNotNull(position);
         checkArgument(apothem >= 1, "apothem >= 1");
 
-        Mask mask = new FuzzyBlockMask(new BaseBlock(blockType, -1));
+        Mask mask = new com.sk89q.worldedit.masks.FuzzyBlockMask(new BaseBlock(blockType, -1));
         Vector adjustment = new Vector(1, 1, 1).multiply(apothem - 1);
         Region region = new CuboidRegion(
                 getWorld(), // Causes clamping of Y range
@@ -966,7 +967,7 @@ public class EditSession implements Extent {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int replaceBlocks(Region region, Set<BaseBlock> filter, Pattern pattern) throws MaxChangedBlocksException {
-        Mask mask = filter == null ? new ExistingBlockMask() : new FuzzyBlockMask(filter);
+        Mask mask = filter == null ? new com.sk89q.worldedit.masks.ExistingBlockMask() : new com.sk89q.worldedit.masks.FuzzyBlockMask(filter);
         return replaceBlocks(region, mask, pattern);
     }
 
@@ -986,7 +987,7 @@ public class EditSession implements Extent {
         checkNotNull(pattern);
 
         BlockReplace replace = new BlockReplace(this, pattern);
-        RegionMaskingFilter filter = new RegionMaskingFilter(this, mask, replace);
+        RegionMaskingFilter filter = new RegionMaskingFilter(Masks.wrap(this, mask), replace);
         RegionVisitor visitor = new RegionVisitor(region, filter);
         OperationHelper.completeLegacy(visitor);
         return visitor.getAffected();

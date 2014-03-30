@@ -23,10 +23,15 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.function.mask.MaskIntersection;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @deprecated See {@link MaskIntersection}
+ */
+@Deprecated
 public class CombinedMask extends AbstractMask {
     private final List<Mask> masks = new ArrayList<Mask>();
 

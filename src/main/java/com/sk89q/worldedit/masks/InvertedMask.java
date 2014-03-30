@@ -4,7 +4,12 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.function.mask.Masks;
 
+/**
+ * @deprecated See {@link Masks#negate(com.sk89q.worldedit.function.mask.Mask)}
+ */
+@Deprecated
 public class InvertedMask extends AbstractMask {
     private final Mask mask;
 

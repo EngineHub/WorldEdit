@@ -7,7 +7,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.Region;
 
-public class DynamicRegionMask implements Mask {
+public class DynamicRegionMask extends AbstractMask {
     private Region region;
 
     @Override

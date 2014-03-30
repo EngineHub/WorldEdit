@@ -17,40 +17,51 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function;
+package com.sk89q.worldedit.function.mask;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.regions.Region;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Passes calls to {@link #apply(com.sk89q.worldedit.Vector)} to the
- * delegate {@link com.sk89q.worldedit.function.RegionFunction} if they
- * match the given mask.
+ * A mask that tests whether given positions are contained within a region.
  */
-public class RegionMaskingFilter implements RegionFunction {
+public class RegionMask extends AbstractMask {
 
-    private final RegionFunction function;
-    private Mask mask;
+    private Region region;
 
     /**
-     * Create a new masking filter.
+     * Create a new region mask.
      *
-     * @param mask the mask
-     * @param function the function
+     * @param region the region
      */
-    public RegionMaskingFilter(Mask mask, RegionFunction function) {
-        checkNotNull(function);
-        checkNotNull(mask);
-        this.mask = mask;
-        this.function = function;
+    public RegionMask(Region region) {
+        setRegion(region);
+    }
+
+    /**
+     * Get the region.
+     *
+     * @return the region
+     */
+    public Region getRegion() {
+        return region;
+    }
+
+    /**
+     * Set the region that positions must be contained within.
+     *
+     * @param region the region
+     */
+    public void setRegion(Region region) {
+        checkNotNull(region);
+        this.region = region;
     }
 
     @Override
-    public boolean apply(Vector position) throws WorldEditException {
-        return mask.test(position) && function.apply(position);
+    public boolean test(Vector vector) {
+        return region.contains(vector);
     }
 
 }

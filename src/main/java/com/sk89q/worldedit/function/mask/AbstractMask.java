@@ -17,19 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.masks;
-
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector2D;
+package com.sk89q.worldedit.function.mask;
 
 /**
- * A mask that only returns <code>true</code>.
+ * A base class of {@link Mask} that all masks should inherit from.
  */
-public class DummyMask2D extends AbstractMask2D {
-
-    @Override
-    public boolean matches(EditSession editSession, Vector2D position) {
-        return true;
-    }
-
+public abstract class AbstractMask implements Mask {
 }

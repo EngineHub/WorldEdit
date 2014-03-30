@@ -35,7 +35,7 @@ import com.sk89q.worldedit.function.generator.ForestGenerator;
 import com.sk89q.worldedit.function.operation.OperationHelper;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
 import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.masks.NoiseFilter2D;
+import com.sk89q.worldedit.function.mask.NoiseFilter2D;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;

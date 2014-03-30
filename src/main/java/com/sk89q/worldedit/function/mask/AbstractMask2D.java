@@ -17,10 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.masks;
+package com.sk89q.worldedit.function.mask;
 
 /**
- * An abstract implementaiton of {@link com.sk89q.worldedit.masks.Mask2D}.
+ * A base class of {@link Mask2D} that all masks should inherit from.
  */
 public abstract class AbstractMask2D implements Mask2D {
 }

@@ -23,9 +23,13 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockID;
 
-public class ExistingBlockMask extends ExtentAwareMask {
+/**
+ * @deprecated See {@link com.sk89q.worldedit.function.mask.ExistingBlockMask}
+ */
+@Deprecated
+public class ExistingBlockMask extends AbstractMask {
     @Override
     public boolean matches(EditSession editSession, Vector pos) {
-        return getExtent(editSession).getBlockType(pos) != BlockID.AIR;
+        return editSession.getBlockType(pos) != BlockID.AIR;
     }
 }

@@ -17,23 +17,45 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.masks;
+package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.Extent;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A 2-dimensional mask, similar to {@link com.sk89q.worldedit.masks.Mask}.
+ * An abstract implementation of {@link Mask} that takes uses an {@link Extent}.
  */
-public interface Mask2D {
+public abstract class AbstractExtentMask extends AbstractMask {
+
+    private Extent extent;
 
     /**
-     * Return whether the given position is matched by this mask.
+     * Construct a new mask.
      *
-     * @param editSession an edit session
-     * @param position a mask
-     * @return true if there is a match
+     * @param extent the extent
      */
-    boolean matches(EditSession editSession, Vector2D position);
+    protected AbstractExtentMask(Extent extent) {
+        setExtent(extent);
+    }
+
+    /**
+     * Get the extent.
+     *
+     * @return the extent
+     */
+    public Extent getExtent() {
+        return extent;
+    }
+
+    /**
+     * Set the extent.
+     *
+     * @param extent the extent
+     */
+    public void setExtent(Extent extent) {
+        checkNotNull(extent);
+        this.extent = extent;
+    }
 
 }

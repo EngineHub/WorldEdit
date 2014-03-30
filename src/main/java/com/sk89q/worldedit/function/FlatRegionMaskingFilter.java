@@ -19,10 +19,9 @@
 
 package com.sk89q.worldedit.function;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.masks.Mask2D;
+import com.sk89q.worldedit.function.mask.Mask2D;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,30 +32,26 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class FlatRegionMaskingFilter implements FlatRegionFunction {
 
-    private final EditSession editSession;
     private final FlatRegionFunction function;
     private Mask2D mask;
 
     /**
      * Create a new masking filter.
      *
-     * @param editSession the edit session
      * @param mask the mask
      * @param function the delegate function to call
      */
-    public FlatRegionMaskingFilter(EditSession editSession, Mask2D mask, FlatRegionFunction function) {
+    public FlatRegionMaskingFilter(Mask2D mask, FlatRegionFunction function) {
         checkNotNull(function);
-        checkNotNull(editSession);
         checkNotNull(mask);
 
-        this.editSession = editSession;
         this.mask = mask;
         this.function = function;
     }
 
     @Override
     public boolean apply(Vector2D position) throws WorldEditException {
-        return mask.matches(editSession, position) && function.apply(position);
+        return mask.test(position) && function.apply(position);
     }
 
 }

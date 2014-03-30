@@ -17,34 +17,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.visitor;
+package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.Extent;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.blocks.BlockID;
 
 /**
- * An implementation of an {@link BreadthFirstSearch} that uses a mask to
- * determine where a block should be visited.
+ * A mask that returns true whenever the block at the location is not
+ * an air block (it contains some other block).
  */
-public class RecursiveVisitor extends BreadthFirstSearch {
+public class ExistingBlockMask extends AbstractExtentMask {
 
-    private final EditSession editSession;
-    private final Mask mask;
-
-    public RecursiveVisitor(EditSession editSession, Mask mask, RegionFunction function) {
-        super(function);
-        this.editSession = editSession;
-        this.mask = mask;
+    /**
+     * Create a new existing block map.
+     *
+     * @param extent the extent to check
+     */
+    public ExistingBlockMask(Extent extent) {
+        super(extent);
     }
 
     @Override
-    protected boolean isVisitable(Vector from, Vector to) {
-        int y = to.getBlockY();
-        if (y < 0 || y > editSession.getWorld().getMaxY()) {
-            return false;
-        }
-        return mask.test(to);
+    public boolean test(Vector vector) {
+        return getExtent().getBlockType(vector) != BlockID.AIR;
     }
+
 }

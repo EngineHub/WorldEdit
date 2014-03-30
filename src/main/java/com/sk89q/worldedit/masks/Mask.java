@@ -25,13 +25,9 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 
 /**
- * Base matcher for the block filtering framework. Implementing classes
- * can be used to filter blocks to set or replace.
- * <p>
- * <u>Do NOT</u> implement this interface. Extend {@link AbstractMask} instead.
- *
- * @author sk89q
+ * @deprecated Use {@link com.sk89q.worldedit.function.mask.Mask}
  */
+@Deprecated
 public interface Mask {
 
     /**

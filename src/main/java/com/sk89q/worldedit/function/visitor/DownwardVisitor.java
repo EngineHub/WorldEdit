@@ -21,8 +21,8 @@ package com.sk89q.worldedit.function.visitor;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.mask.Mask;
 
 import java.util.List;
 
