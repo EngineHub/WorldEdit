@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.masks;
 
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.Extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
@@ -30,7 +31,7 @@ import java.util.Set;
  * Uses {@link BaseBlock#containsFuzzy(java.util.Collection, BaseBlock)} to
  * match blocks.
  */
-public class FuzzyBlockMask extends AbstractMask {
+public class FuzzyBlockMask extends ExtentAwareMask {
 
     private final Set<BaseBlock> filter;
 
@@ -58,7 +59,8 @@ public class FuzzyBlockMask extends AbstractMask {
 
     @Override
     public boolean matches(EditSession editSession, Vector pos) {
-        BaseBlock compare = new BaseBlock(editSession.getBlockType(pos), editSession.getBlockData(pos));
+        Extent extent = getExtent(editSession);
+        BaseBlock compare = new BaseBlock(extent.getBlockType(pos), extent.getBlockData(pos));
         return BaseBlock.containsFuzzy(filter, compare);
     }
 }

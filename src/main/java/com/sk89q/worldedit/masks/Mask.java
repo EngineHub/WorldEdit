@@ -48,8 +48,8 @@ public interface Mask {
      * that position matches the filter. Block information is not provided
      * as getting a BaseBlock has unneeded overhead in most block querying
      * situations (enumerating a chest's contents is a waste, for example).
-     * 
-     * @param editSession 
+     *
+     * @param editSession
      * @param pos
      * @return
      */

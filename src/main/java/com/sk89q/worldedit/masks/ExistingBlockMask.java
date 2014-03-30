@@ -23,9 +23,9 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockID;
 
-public class ExistingBlockMask extends AbstractMask {
+public class ExistingBlockMask extends ExtentAwareMask {
     @Override
     public boolean matches(EditSession editSession, Vector pos) {
-        return editSession.getBlockType(pos) != BlockID.AIR;
+        return getExtent(editSession).getBlockType(pos) != BlockID.AIR;
     }
 }
