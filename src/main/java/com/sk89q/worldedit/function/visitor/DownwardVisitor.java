@@ -25,6 +25,8 @@ import com.sk89q.worldedit.function.mask.Mask;
 
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Visits adjacent points on the same X-Z plane as long as the points
  * pass the given mask, and then executes the provided region
@@ -45,6 +47,7 @@ public class DownwardVisitor extends RecursiveVisitor {
      */
     public DownwardVisitor(Mask mask, RegionFunction function, int baseY) {
         super(mask, function);
+        checkNotNull(mask);
 
         this.baseY = baseY;
 

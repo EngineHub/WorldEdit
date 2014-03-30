@@ -23,6 +23,8 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.mask.Mask;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * An implementation of an {@link BreadthFirstSearch} that uses a mask to
  * determine where a block should be visited.
@@ -31,8 +33,15 @@ public class RecursiveVisitor extends BreadthFirstSearch {
 
     private final Mask mask;
 
+    /**
+     * Create a new recursive visitor.
+     *
+     * @param mask the mask
+     * @param function the function
+     */
     public RecursiveVisitor(Mask mask, RegionFunction function) {
         super(function);
+        checkNotNull(mask);
         this.mask = mask;
     }
 

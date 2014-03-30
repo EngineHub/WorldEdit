@@ -27,6 +27,8 @@ import com.sk89q.worldedit.function.RegionFunction;
 
 import java.util.*;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Performs a breadth-first search starting from points added with
  * {@link #visit(com.sk89q.worldedit.Vector)}. The search continues
@@ -51,7 +53,8 @@ public abstract class BreadthFirstSearch implements Operation {
      *
      * @param function the function to apply to visited blocks
      */
-    public BreadthFirstSearch(RegionFunction function) {
+    protected BreadthFirstSearch(RegionFunction function) {
+        checkNotNull(function);
         this.function = function;
         addAxes();
     }

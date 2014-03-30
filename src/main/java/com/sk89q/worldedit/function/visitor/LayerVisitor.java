@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.function.visitor;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
