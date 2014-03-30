@@ -21,12 +21,12 @@ package com.sk89q.worldedit.patterns;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.function.pattern.BlockPattern;
 
 /**
- * Always returns the same block type.
- *
- * @author sk89q
+ * @deprecated See {@link BlockPattern}
  */
+@Deprecated
 public class SingleBlockPattern implements Pattern {
     /**
      * Block type.

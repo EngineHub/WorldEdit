@@ -39,6 +39,7 @@ import com.sk89q.worldedit.function.mask.*;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.OperationHelper;
 import com.sk89q.worldedit.function.operation.OperationQueue;
+import com.sk89q.worldedit.function.pattern.Patterns;
 import com.sk89q.worldedit.function.util.RegionOffset;
 import com.sk89q.worldedit.function.visitor.DownwardVisitor;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
@@ -831,7 +832,7 @@ public class EditSession implements Extent {
                 Masks.negate(new ExistingBlockMask(this)));
 
         // Want to replace blocks
-        BlockReplace replace = new BlockReplace(this, pattern);
+        BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
 
         // Pick how we're going to visit blocks
         RecursiveVisitor visitor;
@@ -941,7 +942,7 @@ public class EditSession implements Extent {
         checkNotNull(region);
         checkNotNull(pattern);
 
-        BlockReplace replace = new BlockReplace(this, pattern);
+        BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
         RegionVisitor visitor = new RegionVisitor(region, replace);
         OperationHelper.completeLegacy(visitor);
         return visitor.getAffected();
@@ -991,7 +992,7 @@ public class EditSession implements Extent {
         checkNotNull(mask);
         checkNotNull(pattern);
 
-        BlockReplace replace = new BlockReplace(this, pattern);
+        BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
         RegionMaskingFilter filter = new RegionMaskingFilter(Masks.wrap(this, mask), replace);
         RegionVisitor visitor = new RegionVisitor(region, filter);
         OperationHelper.completeLegacy(visitor);
@@ -1164,7 +1165,7 @@ public class EditSession implements Extent {
         checkNotNull(region);
         checkNotNull(pattern);
 
-        BlockReplace replace = new BlockReplace(this, pattern);
+        BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
         RegionOffset offset = new RegionOffset(new Vector(0, 1, 0), replace);
         GroundFunction ground = new GroundFunction(this, offset);
         LayerVisitor visitor = new LayerVisitor(
@@ -1241,7 +1242,7 @@ public class EditSession implements Extent {
         Pattern pattern = replacement != null ?
                 new SingleBlockPattern(replacement) :
                 new SingleBlockPattern(new BaseBlock(BlockID.AIR));
-        BlockReplace remove = new BlockReplace(this, pattern);
+        BlockReplace remove = new BlockReplace(this, Patterns.wrap(pattern));
 
         // Copy to a buffer so we don't destroy our original before we can copy all the blocks from it
         ExtentBuffer buffer = new ExtentBuffer(this, new RegionMask(region));

@@ -26,13 +26,10 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.function.RegionFunction;
-import com.sk89q.worldedit.patterns.BlockChance;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.RandomFillPattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
+import com.sk89q.worldedit.function.pattern.BlockPattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.function.pattern.RandomPattern;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class GardenPatchGenerator implements RegionFunction {
@@ -115,7 +112,7 @@ public class GardenPatchGenerator implements RegionFunction {
                     editSession.setBlockIfAir(pos.add(1, h, -1), log);
                     affected++;
                 }
-                editSession.setBlockIfAir(p = pos.add(0, 0, -1), plant.next(p));
+                editSession.setBlockIfAir(p = pos.add(0, 0, -1), plant.apply(p));
                 affected++;
                 break;
 
@@ -127,7 +124,7 @@ public class GardenPatchGenerator implements RegionFunction {
                     editSession.setBlockIfAir(pos.add(1, h, 0), log);
                     affected++;
                 }
-                editSession.setBlockIfAir(p = pos.add(1, 0, 1), plant.next(p));
+                editSession.setBlockIfAir(p = pos.add(1, 0, 1), plant.apply(p));
                 affected++;
                 break;
 
@@ -139,7 +136,7 @@ public class GardenPatchGenerator implements RegionFunction {
                     editSession.setBlockIfAir(pos.add(-1, h, 0), log);
                     affected++;
                 }
-                editSession.setBlockIfAir(p = pos.add(-1, 0, 1), plant.next(p));
+                editSession.setBlockIfAir(p = pos.add(-1, 0, 1), plant.apply(p));
                 affected++;
                 break;
 
@@ -151,7 +148,7 @@ public class GardenPatchGenerator implements RegionFunction {
                     editSession.setBlockIfAir(pos.add(-1, h, -1), log);
                     affected++;
                 }
-                editSession.setBlockIfAir(p = pos.add(-1, 0, -1), plant.next(p));
+                editSession.setBlockIfAir(p = pos.add(-1, 0, -1), plant.apply(p));
                 affected++;
                 break;
         }
@@ -185,11 +182,11 @@ public class GardenPatchGenerator implements RegionFunction {
      * @return a pumpkin pattern
      */
     public static Pattern getPumpkinPattern() {
-        List<BlockChance> chance = new ArrayList<BlockChance>();
+        RandomPattern pattern = new RandomPattern();
         for (int i = 0; i < 4; i++) {
-            chance.add(new BlockChance(new BaseBlock(BlockID.PUMPKIN, i), 100));
+            pattern.add(new BlockPattern(new BaseBlock(BlockID.PUMPKIN, i)), 100);
         }
-        return new RandomFillPattern(chance);
+        return pattern;
     }
 
     /**
@@ -198,6 +195,6 @@ public class GardenPatchGenerator implements RegionFunction {
      * @return a melon pattern
      */
     public static Pattern getMelonPattern() {
-        return new SingleBlockPattern(new BaseBlock(BlockID.MELON_BLOCK));
+        return new BlockPattern(new BaseBlock(BlockID.MELON_BLOCK));
     }
 }

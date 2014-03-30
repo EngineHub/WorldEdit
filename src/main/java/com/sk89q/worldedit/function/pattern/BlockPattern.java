@@ -17,40 +17,51 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.block;
+package com.sk89q.worldedit.function.pattern;
 
-import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.function.RegionFunction;
-import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.blocks.BaseBlock;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Replaces blocks with the given pattern.
+ * A pattern that returns the same {@link BaseBlock} each time.
  */
-public class BlockReplace implements RegionFunction {
+public class BlockPattern extends AbstractPattern {
 
-    private final Extent extent;
-    private Pattern pattern;
+    private BaseBlock block;
 
     /**
-     * Create a new instance.
+     * Create a new pattern with the given block.
      *
-     * @param extent an extent
-     * @param pattern a pattern
+     * @param block the block
      */
-    public BlockReplace(Extent extent, Pattern pattern) {
-        checkNotNull(extent);
-        checkNotNull(pattern);
-        this.extent = extent;
-        this.pattern = pattern;
+    public BlockPattern(BaseBlock block) {
+        setBlock(block);
+    }
+
+    /**
+     * Get the block.
+     *
+     * @return the block that is always returned
+     */
+    public BaseBlock getBlock() {
+        return block;
+    }
+
+    /**
+     * Set the block that is returned.
+     *
+     * @param block the block
+     */
+    public void setBlock(BaseBlock block) {
+        checkNotNull(block);
+        this.block = block;
     }
 
     @Override
-    public boolean apply(Vector position) throws WorldEditException {
-        return extent.setBlock(position, pattern.apply(position), true);
+    public BaseBlock apply(Vector position) {
+        return block;
     }
 
 }

@@ -25,12 +25,9 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.function.RegionFunction;
-import com.sk89q.worldedit.patterns.BlockChance;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.RandomFillPattern;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.sk89q.worldedit.function.pattern.BlockPattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.function.pattern.RandomPattern;
 
 /**
  * Generates flora (which may include tall grass, flowers, etc.).
@@ -85,11 +82,11 @@ public class FloraGenerator implements RegionFunction {
      * @return a pattern that places flora
      */
     public static Pattern getDesertPattern() {
-        List<BlockChance> chance = new ArrayList<BlockChance>();
-        chance.add(new BlockChance(new BaseBlock(BlockID.DEAD_BUSH), 30));
-        chance.add(new BlockChance(new BaseBlock(BlockID.CACTUS), 20));
-        chance.add(new BlockChance(new BaseBlock(BlockID.AIR), 300));
-        return new RandomFillPattern(chance);
+        RandomPattern pattern = new RandomPattern();
+        pattern.add(new BlockPattern(new BaseBlock(BlockID.DEAD_BUSH)), 30);
+        pattern.add(new BlockPattern(new BaseBlock(BlockID.CACTUS)), 20);
+        pattern.add(new BlockPattern(new BaseBlock(BlockID.AIR)), 300);
+        return pattern;
     }
 
     /**
@@ -98,11 +95,11 @@ public class FloraGenerator implements RegionFunction {
      * @return a pattern that places flora
      */
     public static Pattern getTemperatePattern() {
-        List<BlockChance> chance = new ArrayList<BlockChance>();
-        chance.add(new BlockChance(new BaseBlock(BlockID.LONG_GRASS, 1), 300));
-        chance.add(new BlockChance(new BaseBlock(BlockID.RED_FLOWER), 5));
-        chance.add(new BlockChance(new BaseBlock(BlockID.YELLOW_FLOWER), 5));
-        return new RandomFillPattern(chance);
+        RandomPattern pattern = new RandomPattern();
+        pattern.add(new BlockPattern(new BaseBlock(BlockID.LONG_GRASS, 1)), 300);
+        pattern.add(new BlockPattern(new BaseBlock(BlockID.RED_FLOWER)), 5);
+        pattern.add(new BlockPattern(new BaseBlock(BlockID.YELLOW_FLOWER)), 5);
+        return pattern;
     }
 
     @Override
@@ -110,10 +107,10 @@ public class FloraGenerator implements RegionFunction {
         BaseBlock block = editSession.getBlock(position);
 
         if (block.getType() == BlockID.GRASS) {
-            editSession.setBlock(position.add(0, 1, 0), temperatePattern.next(position));
+            editSession.setBlock(position.add(0, 1, 0), temperatePattern.apply(position));
             return true;
         } else if (block.getType() == BlockID.SAND) {
-            editSession.setBlock(position.add(0, 1, 0), desertPattern.next(position));
+            editSession.setBlock(position.add(0, 1, 0), desertPattern.apply(position));
             return true;
         }
 

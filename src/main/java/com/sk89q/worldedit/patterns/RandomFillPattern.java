@@ -19,17 +19,18 @@
 
 package com.sk89q.worldedit.patterns;
 
-import java.util.Random;
-import java.util.List;
-import java.util.ArrayList;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.function.pattern.RandomPattern;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
- * Pattern proportionally fills.
- *
- * @author sk89q
+ * @deprecated See {@link RandomPattern}
  */
+@Deprecated
 public class RandomFillPattern implements Pattern {
     /**
      * Random number generator.

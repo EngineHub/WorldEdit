@@ -17,40 +17,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.block;
+package com.sk89q.worldedit.function.pattern;
 
-import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.function.RegionFunction;
-import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.blocks.BaseBlock;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Replaces blocks with the given pattern.
+ * Utility methods related to {@link Pattern}s.
  */
-public class BlockReplace implements RegionFunction {
+public final class Patterns {
 
-    private final Extent extent;
-    private Pattern pattern;
-
-    /**
-     * Create a new instance.
-     *
-     * @param extent an extent
-     * @param pattern a pattern
-     */
-    public BlockReplace(Extent extent, Pattern pattern) {
-        checkNotNull(extent);
-        checkNotNull(pattern);
-        this.extent = extent;
-        this.pattern = pattern;
+    private Patterns() {
     }
 
-    @Override
-    public boolean apply(Vector position) throws WorldEditException {
-        return extent.setBlock(position, pattern.apply(position), true);
+    /**
+     * Wrap an old-style pattern and return a new pattern.
+     *
+     * @param pattern the pattern
+     * @return a new-style pattern
+     */
+    public static Pattern wrap(final com.sk89q.worldedit.patterns.Pattern pattern) {
+        checkNotNull(pattern);
+        return new Pattern() {
+            @Override
+            public BaseBlock apply(Vector position) {
+                return pattern.next(position);
+            }
+        };
     }
 
 }

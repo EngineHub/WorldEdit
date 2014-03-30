@@ -1,7 +1,7 @@
-// $Id$
 /*
- * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com> and contributors
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,33 +15,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-package com.sk89q.worldedit.patterns;
+package com.sk89q.worldedit.function.pattern;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
- * @deprecated See {@link com.sk89q.worldedit.function.pattern.Pattern}
+ * Returns a {@link BaseBlock} for a given position.
  */
-@Deprecated
 public interface Pattern {
-    /**
-     * Get a block for a position. This return value of this method does
-     * not have to be consistent for the same position.
-     *
-     * @param pos
-     * @return
-     */
-    public BaseBlock next(Vector pos);
 
     /**
-     * Get a block for a position. This return value of this method does
-     * not have to be consistent for the same position.
+     * Return a {@link BaseBlock} for the given position.
      *
-     * @param pos
-     * @return
+     * @param position the position
+     * @return a block
      */
-    public BaseBlock next(int x, int y, int z);
+    BaseBlock apply(Vector position);
+
 }

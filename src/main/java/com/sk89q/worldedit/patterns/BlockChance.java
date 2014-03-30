@@ -22,10 +22,9 @@ package com.sk89q.worldedit.patterns;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
- * Gives a block a chance.
- *
- * @author sk89q
+ * @deprecated Will be removed in the future -- there is no replacement
  */
+@Deprecated
 public class BlockChance {
     /**
      * Block.

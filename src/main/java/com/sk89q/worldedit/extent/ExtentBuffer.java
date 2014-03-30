@@ -26,7 +26,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
-import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.regions.AbstractRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
@@ -115,18 +115,13 @@ public class ExtentBuffer implements Extent, Pattern {
     }
 
     @Override
-    public BaseBlock next(Vector pos) {
+    public BaseBlock apply(Vector pos) {
         BaseBlock block = buffer.get(pos.toBlockVector());
         if (block != null) {
             return block;
         } else {
             return AIR;
         }
-    }
-
-    @Override
-    public BaseBlock next(int x, int y, int z) {
-        return next(new Vector(x, y, z));
     }
 
     /**
