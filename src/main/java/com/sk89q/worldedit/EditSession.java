@@ -1284,69 +1284,18 @@ public class EditSession implements Extent {
     }
 
     /**
-     * Move a cuboid region.
+     * Move the blocks in a region a certain direction.
      *
-     * @param region
-     * @param dir
-     * @param distance
-     * @param copyAir
-     * @param replace
+     * @param region the region to move
+     * @param dir the direction
+     * @param distance the distance to move
+     * @param copyAir true to copy air blocks
+     * @param replacement the replacement block to fill in after moving, or null to use air
      * @return number of blocks moved
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int moveCuboidRegion(Region region, Vector dir, int distance,
-            boolean copyAir, BaseBlock replace)
-            throws MaxChangedBlocksException {
-        int affected = 0;
-
-        Vector shift = dir.multiply(distance);
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
-
-        int minX = min.getBlockX();
-        int minY = min.getBlockY();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxY = max.getBlockY();
-        int maxZ = max.getBlockZ();
-
-        Vector newMin = min.add(shift);
-        Vector newMax = min.add(shift);
-
-        Map<Vector, BaseBlock> delayed = new LinkedHashMap<Vector, BaseBlock>();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                for (int y = minY; y <= maxY; ++y) {
-                    Vector pos = new Vector(x, y, z);
-                    BaseBlock block = getBlock(pos);
-
-                    if (!block.isAir() || copyAir) {
-                        Vector newPos = pos.add(shift);
-
-                        delayed.put(newPos, getBlock(pos));
-
-                        // Don't want to replace the old block if it's in
-                        // the new area
-                        if (x >= newMin.getBlockX() && x <= newMax.getBlockX()
-                                && y >= newMin.getBlockY()
-                                && y <= newMax.getBlockY()
-                                && z >= newMin.getBlockZ()
-                                && z <= newMax.getBlockZ()) {
-                        } else {
-                            setBlock(pos, replace);
-                        }
-                    }
-                }
-            }
-        }
-
-        for (Map.Entry<Vector, BaseBlock> entry : delayed.entrySet()) {
-            setBlock(entry.getKey(), entry.getValue());
-            ++affected;
-        }
-
-        return affected;
+    public int moveCuboidRegion(Region region, Vector dir, int distance, boolean copyAir, BaseBlock replacement) throws MaxChangedBlocksException {
+        return moveRegion(region, dir, distance, copyAir, replacement);
     }
 
     /**
