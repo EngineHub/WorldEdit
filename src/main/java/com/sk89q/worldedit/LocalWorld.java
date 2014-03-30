@@ -23,6 +23,8 @@ import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.foundation.Block;
 import com.sk89q.worldedit.foundation.World;
+import com.sk89q.worldedit.function.mask.BlockMask;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 
@@ -35,6 +37,7 @@ import java.util.Random;
  * @author sk89q
  */
 public abstract class LocalWorld implements World, Extent {
+
     /**
      * Named flags to use as parameters to {@link LocalWorld#killMobs(Vector, double, int)}
      */
@@ -599,4 +602,20 @@ public abstract class LocalWorld implements World, Extent {
             return new BaseBlock(type, data);
         }
     }
+
+    /**
+     * Create a mask that matches all liquids.
+     * </p>
+     * Implementations should override this so that custom liquids are supported.
+     *
+     * @return a mask
+     */
+    public Mask createLiquidMask() {
+        return new BlockMask(this,
+                new BaseBlock(BlockID.STATIONARY_LAVA, -1),
+                new BaseBlock(BlockID.LAVA, -1),
+                new BaseBlock(BlockID.STATIONARY_WATER, -1),
+                new BaseBlock(BlockID.WATER, -1));
+    }
+
 }

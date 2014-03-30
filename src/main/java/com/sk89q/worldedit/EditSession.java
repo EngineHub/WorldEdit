@@ -1313,11 +1313,7 @@ public class EditSession implements Extent {
         MaskIntersection mask = new MaskIntersection(
                 new BoundedHeightMask(0, getWorld().getMaxY()),
                 new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
-                new BlockMask(this,
-                        new BaseBlock(BlockID.STATIONARY_LAVA, -1),
-                        new BaseBlock(BlockID.LAVA, -1),
-                        new BaseBlock(BlockID.STATIONARY_WATER, -1),
-                        new BaseBlock(BlockID.WATER, -1)));
+                getWorld().createLiquidMask());
 
         BlockReplace replace = new BlockReplace(this, new BlockPattern(new BaseBlock(BlockID.AIR)));
         RecursiveVisitor visitor = new RecursiveVisitor(mask, replace);
