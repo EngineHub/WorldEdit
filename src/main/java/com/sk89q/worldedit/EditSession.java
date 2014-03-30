@@ -45,8 +45,6 @@ import com.sk89q.worldedit.masks.*;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.*;
-import com.sk89q.worldedit.regions.search.GroundSearch;
-import com.sk89q.worldedit.regions.search.MaskingGroundSearch;
 import com.sk89q.worldedit.shape.ArbitraryBiomeShape;
 import com.sk89q.worldedit.shape.ArbitraryShape;
 import com.sk89q.worldedit.shape.RegionShape;
@@ -58,6 +56,7 @@ import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.regions.Regions.asFlatRegion;
 import static com.sk89q.worldedit.regions.Regions.maximumBlockY;
 import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
 
@@ -1155,17 +1154,13 @@ public class EditSession {
         checkNotNull(region);
         checkNotNull(pattern);
 
-        int lowerY = region.getMinimumPoint().getBlockY();
-        int upperY = region.getMaximumPoint().getBlockY();
-
         BlockReplace replace = new BlockReplace(this, pattern);
         RegionOffset offset = new RegionOffset(new Vector(0, 1, 0), replace);
-        GroundSearch search = new MaskingGroundSearch(this, new ExistingBlockMask());
-        GroundFunction groundFunction = new GroundFunction(search, lowerY, upperY, offset);
-        FlatRegionVisitor operation = new FlatRegionVisitor(Regions.asFlatRegion(region), groundFunction);
-        OperationHelper.completeLegacy(operation);
-
-        return operation.getAffected();
+        GroundFunction ground = new GroundFunction(this, offset);
+        LayerVisitor visitor = new LayerVisitor(
+                this, asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
+        OperationHelper.completeLegacy(visitor);
+        return ground.getAffected();
     }
 
     /**
@@ -1181,7 +1176,8 @@ public class EditSession {
 
         Naturalizer naturalizer = new Naturalizer(this);
         FlatRegion flatRegion = Regions.asFlatRegion(region);
-        LayerVisitor visitor = new LayerVisitor(flatRegion, minimumBlockY(region), maximumBlockY(region), naturalizer);
+        LayerVisitor visitor = new LayerVisitor(
+                this, flatRegion, minimumBlockY(region), maximumBlockY(region), naturalizer);
         OperationHelper.completeLegacy(visitor);
         return naturalizer.getAffected();
     }
@@ -1948,28 +1944,18 @@ public class EditSession {
         generator.setPlant(GardenPatchGenerator.getPumpkinPattern());
 
         // In a region of the given radius
-        Region region = new CuboidRegion(
+        FlatRegion region = new CuboidRegion(
                 getWorld(), // Causes clamping of Y range
                 position.add(-apothem, -5, -apothem),
                 position.add(apothem, 10, apothem));
-
-        int lowerY = region.getMinimumPoint().getBlockY();
-        int upperY = region.getMaximumPoint().getBlockY();
         double density = 0.02;
 
-        // We want to find the ground
-        GroundSearch search = new MaskingGroundSearch(this, new ExistingBlockMask());
-        GroundFunction groundFunction = new GroundFunction(search, lowerY, upperY, generator);
-
-        // We don't want to place a patch in every column
-        Mask2D mask = new NoiseFilter2D(new RandomNoise(), density);
-        FlatRegionMaskingFilter filter = new FlatRegionMaskingFilter(this, mask, groundFunction);
-
-        // Generate those patches!
-        FlatRegionVisitor operation = new FlatRegionVisitor(Regions.asFlatRegion(region), filter);
-        OperationHelper.completeLegacy(operation);
-
-        return operation.getAffected();
+        GroundFunction ground = new GroundFunction(this, generator);
+        LayerVisitor visitor = new LayerVisitor(
+                this, region, minimumBlockY(region), maximumBlockY(region), ground);
+        visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
+        OperationHelper.completeLegacy(visitor);
+        return ground.getAffected();
     }
 
     /**
@@ -2012,40 +1998,6 @@ public class EditSession {
                         break;
                     }
                 }
-            }
-        }
-
-        return affected;
-    }
-
-    /**
-     * Makes a forest.
-     *
-     * @param it an iterator over the points within the region
-     * @param upperY the Y to start from (upperY >= lowerY), inclusive
-     * @param lowerY the Y to end at (upperY >= lowerY), inclusive
-     * @param density density of the forest
-     * @param treeGenerator the tree generator
-     * @return number of trees created
-     * @throws MaxChangedBlocksException
-     * @deprecated Use {@link com.sk89q.worldedit.function.generator.ForestGenerator} with a
-     *             {@link com.sk89q.worldedit.function.visitor.FlatRegionVisitor}
-     */
-    @Deprecated
-    public int makeForest(Iterable<Vector2D> it, int upperY, int lowerY,
-                          double density, TreeGenerator treeGenerator)
-            throws WorldEditException {
-
-        ForestGenerator generator = new ForestGenerator(this, treeGenerator);
-        GroundSearch search = new MaskingGroundSearch(this, new ExistingBlockMask());
-        GroundFunction groundFunction = new GroundFunction(search, lowerY, upperY, generator);
-        Mask2D mask = new NoiseFilter2D(new RandomNoise(), density);
-        FlatRegionMaskingFilter filter = new FlatRegionMaskingFilter(this, mask, groundFunction);
-
-        int affected = 0;
-        for (Vector2D pt : it) {
-            if (filter.apply(pt)) {
-                affected++;
             }
         }
 

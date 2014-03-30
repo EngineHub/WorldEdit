@@ -29,29 +29,28 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
+import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.generator.FloraGenerator;
 import com.sk89q.worldedit.function.generator.ForestGenerator;
-import com.sk89q.worldedit.masks.ExistingBlockMask;
-import com.sk89q.worldedit.masks.Mask2D;
-import com.sk89q.worldedit.masks.NoiseFilter2D;
-import com.sk89q.worldedit.function.FlatRegionMaskingFilter;
-import com.sk89q.worldedit.function.GroundFunction;
-import com.sk89q.worldedit.regions.search.GroundSearch;
-import com.sk89q.worldedit.regions.search.MaskingGroundSearch;
-import com.sk89q.worldedit.util.noise.RandomNoise;
-import com.sk89q.worldedit.function.visitor.FlatRegionVisitor;
-import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.function.operation.OperationHelper;
+import com.sk89q.worldedit.function.visitor.LayerVisitor;
+import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.masks.NoiseFilter2D;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
-import com.sk89q.worldedit.regions.*;
+import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.noise.RandomNoise;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
+import static com.sk89q.worldedit.regions.Regions.*;
 
 /**
  * Region related commands.
@@ -551,20 +550,13 @@ public class RegionCommands {
         Region region = session.getSelection(player.getWorld());
 
         ForestGenerator generator = new ForestGenerator(editSession, new TreeGenerator(type));
+        GroundFunction ground = new GroundFunction(editSession, generator);
+        LayerVisitor visitor = new LayerVisitor(
+                editSession, asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
+        visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
+        OperationHelper.completeLegacy(visitor);
 
-        int lowerY = region.getMinimumPoint().getBlockY();
-        int upperY = region.getMaximumPoint().getBlockY();
-
-        GroundSearch search = new MaskingGroundSearch(editSession, new ExistingBlockMask());
-        GroundFunction groundFunction = new GroundFunction(search, lowerY, upperY, generator);
-        Mask2D mask = new NoiseFilter2D(new RandomNoise(), density);
-        FlatRegionMaskingFilter filter = new FlatRegionMaskingFilter(editSession, mask, groundFunction);
-
-        // Execute
-        FlatRegionVisitor operation = new FlatRegionVisitor(Regions.asFlatRegion(region), filter);
-        OperationHelper.complete(operation);
-
-        player.print(operation.getAffected() + " trees created.");
+        player.print(ground.getAffected() + " trees created.");
     }
 
     @Command(
@@ -581,20 +573,13 @@ public class RegionCommands {
 
         Region region = session.getSelection(player.getWorld());
         FloraGenerator generator = new FloraGenerator(editSession);
+        GroundFunction ground = new GroundFunction(editSession, generator);
+        LayerVisitor visitor = new LayerVisitor(
+                editSession, asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
+        visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
+        OperationHelper.completeLegacy(visitor);
 
-        int lowerY = region.getMinimumPoint().getBlockY();
-        int upperY = region.getMaximumPoint().getBlockY();
-
-        GroundSearch search = new MaskingGroundSearch(editSession, new ExistingBlockMask());
-        GroundFunction groundFunction = new GroundFunction(search, lowerY, upperY, generator);
-        Mask2D mask = new NoiseFilter2D(new RandomNoise(), density);
-        FlatRegionMaskingFilter filter = new FlatRegionMaskingFilter(editSession, mask, groundFunction);
-
-        // Execute
-        FlatRegionVisitor operation = new FlatRegionVisitor(Regions.asFlatRegion(region), filter);
-        OperationHelper.complete(operation);
-
-        player.print(operation.getAffected() + " flora created.");
+        player.print(ground.getAffected() + " flora created.");
     }
 
 }

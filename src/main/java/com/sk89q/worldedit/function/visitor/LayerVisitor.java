@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.function.visitor;
 
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
@@ -41,6 +42,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class LayerVisitor implements Operation {
 
+    private final EditSession editSession;
     private final FlatRegion flatRegion;
     private final LayerFunction function;
     private Mask2D mask = new DummyMask2D();
@@ -55,11 +57,13 @@ public class LayerVisitor implements Operation {
      * @param maxY the maximum Y to begin the search at
      * @param function the layer function to apply t blocks
      */
-    public LayerVisitor(FlatRegion flatRegion, int minY, int maxY, LayerFunction function) {
+    public LayerVisitor(EditSession editSession, FlatRegion flatRegion, int minY, int maxY, LayerFunction function) {
+        checkNotNull(editSession);
         checkNotNull(flatRegion);
         checkArgument(minY <= maxY, "minY <= maxY required");
         checkNotNull(function);
 
+        this.editSession = editSession;
         this.flatRegion = flatRegion;
         this.minY = minY;
         this.maxY = maxY;
@@ -90,6 +94,10 @@ public class LayerVisitor implements Operation {
     @Override
     public Operation resume() throws WorldEditException {
         for (Vector2D column : flatRegion.asFlatRegion()) {
+            if (!mask.matches(editSession, column)) {
+                continue;
+            }
+
             // Abort if we are underground
             if (function.isGround(column.toVector(maxY + 1))) {
                 return null;

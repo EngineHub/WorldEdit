@@ -19,46 +19,79 @@
 
 package com.sk89q.worldedit.function;
 
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.regions.search.GroundSearch;
+import com.sk89q.worldedit.masks.ExistingBlockMask;
+import com.sk89q.worldedit.masks.Mask;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Accepts 2D coordinates to columns, finds the first ground block in each
- * column, and applies the given {@link RegionFunction} onto the ground blocks.
+ * Applies a {@link RegionFunction} to the first ground block.
  */
-public class GroundFunction implements FlatRegionFunction {
+public class GroundFunction implements LayerFunction {
 
+    private final EditSession editSession;
     private final RegionFunction function;
-    private GroundSearch groundSearch;
-    private int minY;
-    private int maxY;
+    private Mask mask = new ExistingBlockMask();
+    private int affected;
 
     /**
-     * Create a new instance.
+     * Create a new ground function.
      *
-     * @param groundSearch the ground search implementation
-     * @param minY the minimum Y (inclusive)
-     * @param maxY the maximum Y (inclusive)
-     * @param function the function to apply on ground blocks
+     * @param editSession an edit session
+     * @param function the function to apply
      */
-    public GroundFunction(GroundSearch groundSearch, int minY, int maxY, RegionFunction function) {
+    public GroundFunction(EditSession editSession, RegionFunction function) {
+        checkNotNull(editSession);
         checkNotNull(function);
-        checkNotNull(groundSearch);
-        checkArgument(minY <= maxY, "minY <= maxY required");
+        this.editSession = editSession;
         this.function = function;
-        this.groundSearch = groundSearch;
-        this.minY = minY;
-        this.maxY = maxY;
+    }
+
+    /**
+     * Get the mask that determines what the ground consists of.
+     *
+     * @return a mask
+     */
+    public Mask getMask() {
+        return mask;
+    }
+
+    /**
+     * Set the mask that determines what the ground consists of.
+     *
+     * @param mask a mask
+     */
+    public void setMask(Mask mask) {
+        checkNotNull(mask);
+        this.mask = mask;
+    }
+
+    /**
+     * Get the number of affected objects.
+     *
+     * @return the number of affected
+     */
+    public int getAffected() {
+        return affected;
     }
 
     @Override
-    public boolean apply(Vector2D pt) throws WorldEditException {
-        Vector ground = groundSearch.findGround(pt.toVector(maxY), minY);
-        return ground != null && function.apply(ground);
+    public boolean isGround(Vector position) {
+        return mask.matches(editSession, position);
     }
+
+    @Override
+    public boolean apply(Vector position, int depth) throws WorldEditException {
+        if (depth == 0) {
+            if (function.apply(position)) {
+                affected++;
+            }
+        }
+
+        return false;
+    }
+
 }
