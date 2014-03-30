@@ -34,6 +34,7 @@ import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.block.Naturalizer;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
 import com.sk89q.worldedit.function.mask.*;
+import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.OperationHelper;
 import com.sk89q.worldedit.function.util.RegionOffset;
 import com.sk89q.worldedit.function.visitor.DownwardVisitor;
@@ -45,6 +46,7 @@ import com.sk89q.worldedit.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.interpolation.Node;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.math.noise.RandomNoise;
+import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.*;
@@ -249,8 +251,8 @@ public class EditSession implements Extent {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) {
-        return setBlock(location, block, true);
+    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws MaxChangedBlocksException {
+        return setBlock(location, block);
     }
 
     /**
@@ -1190,52 +1192,28 @@ public class EditSession implements Extent {
     /**
      * Stack a cuboid region.
      *
-     * @param region
-     * @param dir
-     * @param count
-     * @param copyAir
+     * @param region the region to stack
+     * @param dir the direction to stack
+     * @param count the number of times to stack
+     * @param copyAir true to also copy air blocks
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int stackCuboidRegion(Region region, Vector dir, int count,
-            boolean copyAir) throws MaxChangedBlocksException {
-        int affected = 0;
-
-        Vector min = region.getMinimumPoint();
-        Vector max = region.getMaximumPoint();
-
-        int minX = min.getBlockX();
-        int minY = min.getBlockY();
-        int minZ = min.getBlockZ();
-        int maxX = max.getBlockX();
-        int maxY = max.getBlockY();
-        int maxZ = max.getBlockZ();
-
-        int xs = region.getWidth();
-        int ys = region.getHeight();
-        int zs = region.getLength();
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                for (int y = minY; y <= maxY; ++y) {
-                    BaseBlock block = getBlock(new Vector(x, y, z));
-
-                    if (!block.isAir() || copyAir) {
-                        for (int i = 1; i <= count; ++i) {
-                            Vector pos = new Vector(x + xs * dir.getBlockX()
-                                    * i, y + ys * dir.getBlockY() * i, z + zs
-                                    * dir.getBlockZ() * i);
-
-                            if (setBlock(pos, block)) {
-                                ++affected;
-                            }
-                        }
-                    }
-                }
-            }
+    public int stackCuboidRegion(Region region, Vector dir, int count, boolean copyAir) throws MaxChangedBlocksException {
+        checkNotNull(region);
+        checkNotNull(dir);
+        checkArgument(count >= 1, "count >= 1 required");
+        
+        Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
+        Vector to = region.getMinimumPoint();
+        ForwardExtentCopy copy = new ForwardExtentCopy(this, region, this, to);
+        copy.setRepetitions(count);
+        copy.setTransform(new AffineTransform().translate(dir.multiply(size)));
+        if (!copyAir) {
+            copy.setSourceMask(new ExistingBlockMask(this));
         }
-
-        return affected;
+        OperationHelper.completeLegacy(copy);
+        return copy.getAffected();
     }
 
     /**
