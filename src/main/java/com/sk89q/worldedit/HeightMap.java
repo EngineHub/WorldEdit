@@ -21,7 +21,7 @@ package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.filtering.HeightMapFilter;
+import com.sk89q.worldedit.math.convolution.HeightMapFilter;
 import com.sk89q.worldedit.regions.Region;
 
 /**
