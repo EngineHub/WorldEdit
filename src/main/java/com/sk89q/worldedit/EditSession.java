@@ -1301,67 +1301,37 @@ public class EditSession implements Extent {
     /**
      * Drain nearby pools of water or lava.
      *
-     * @param pos
-     * @param radius
+     * @param origin the origin to drain from, which will search a 3x3 area
+     * @param radius the radius of the removal, where a value should be 0 or greater
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int drainArea(Vector pos, double radius)
-            throws MaxChangedBlocksException {
-        int affected = 0;
+    public int drainArea(Vector origin, double radius) throws MaxChangedBlocksException {
+        checkNotNull(origin);
+        checkArgument(radius >= 0, "radius >= 0 required");
 
-        HashSet<BlockVector> visited = new HashSet<BlockVector>();
-        Stack<BlockVector> queue = new Stack<BlockVector>();
+        MaskIntersection mask = new MaskIntersection(
+                new BoundedHeightMask(0, getWorld().getMaxY()),
+                new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
+                new BlockMask(this,
+                        new BaseBlock(BlockID.STATIONARY_LAVA, -1),
+                        new BaseBlock(BlockID.LAVA, -1),
+                        new BaseBlock(BlockID.STATIONARY_WATER, -1),
+                        new BaseBlock(BlockID.WATER, -1)));
 
-        for (int x = pos.getBlockX() - 1; x <= pos.getBlockX() + 1; ++x) {
-            for (int z = pos.getBlockZ() - 1; z <= pos.getBlockZ() + 1; ++z) {
-                for (int y = pos.getBlockY() - 1; y <= pos.getBlockY() + 1; ++y) {
-                    queue.push(new BlockVector(x, y, z));
-                }
+        BlockReplace replace = new BlockReplace(this, new BlockPattern(new BaseBlock(BlockID.AIR)));
+        RecursiveVisitor visitor = new RecursiveVisitor(mask, replace);
+
+        // Around the origin in a 3x3 block
+        for (BlockVector position : CuboidRegion.fromCenter(origin, 1)) {
+            if (mask.test(position)) {
+                visitor.visit(position);
             }
         }
 
-        while (!queue.empty()) {
-            BlockVector cur = queue.pop();
+        OperationHelper.completeLegacy(visitor);
 
-            int type = getBlockType(cur);
-
-            // Check block type
-            if (type != BlockID.WATER && type != BlockID.STATIONARY_WATER
-                    && type != BlockID.LAVA && type != BlockID.STATIONARY_LAVA) {
-                continue;
-            }
-
-            // Don't want to revisit
-            if (visited.contains(cur)) {
-                continue;
-            }
-
-            visited.add(cur);
-
-            // Check radius
-            if (pos.distance(cur) > radius) {
-                continue;
-            }
-
-            for (int x = cur.getBlockX() - 1; x <= cur.getBlockX() + 1; ++x) {
-                for (int z = cur.getBlockZ() - 1; z <= cur.getBlockZ() + 1; ++z) {
-                    for (int y = cur.getBlockY() - 1; y <= cur.getBlockY() + 1; ++y) {
-                        BlockVector newPos = new BlockVector(x, y, z);
-
-                        if (!cur.equals(newPos)) {
-                            queue.push(newPos);
-                        }
-                    }
-                }
-            }
-
-            if (setBlock(cur, new BaseBlock(BlockID.AIR))) {
-                ++affected;
-            }
-        }
-
-        return affected;
+        return visitor.getAffected();
     }
 
     /**
