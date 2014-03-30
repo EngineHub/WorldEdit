@@ -27,6 +27,7 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
+import com.sk89q.worldedit.extent.ExtentBuffer;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.block.BlockCount;
@@ -36,6 +37,7 @@ import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
 import com.sk89q.worldedit.function.mask.*;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.OperationHelper;
+import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.util.RegionOffset;
 import com.sk89q.worldedit.function.visitor.DownwardVisitor;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
@@ -1203,7 +1205,7 @@ public class EditSession implements Extent {
         checkNotNull(region);
         checkNotNull(dir);
         checkArgument(count >= 1, "count >= 1 required");
-        
+
         Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
         Vector to = region.getMinimumPoint();
         ForwardExtentCopy copy = new ForwardExtentCopy(this, region, this, to);
@@ -1217,51 +1219,46 @@ public class EditSession implements Extent {
     }
 
     /**
-     * Move a region.
+     * Move the blocks in a region a certain direction.
      *
-     * @param region
-     * @param dir
-     * @param distance
-     * @param copyAir
-     * @param replace
+     * @param region the region to move
+     * @param dir the direction
+     * @param distance the distance to move
+     * @param copyAir true to copy air blocks
+     * @param replacement the replacement block to fill in after moving, or null to use air
      * @return number of blocks moved
-     * @throws MaxChangedBlocksException
-     * @throws RegionOperationException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int moveRegion(Region region, Vector dir, int distance,
-            boolean copyAir, BaseBlock replace)
-            throws MaxChangedBlocksException, RegionOperationException {
-        int affected = 0;
+    public int moveRegion(Region region, Vector dir, int distance, boolean copyAir, BaseBlock replacement) throws MaxChangedBlocksException {
+        checkNotNull(region);
+        checkNotNull(dir);
+        checkArgument(distance >= 1, "distance >= 1 required");
 
-        final Vector shift = dir.multiply(distance);
+        Vector to = region.getMinimumPoint();
 
-        final Region newRegion = region.clone();
-        newRegion.shift(shift);
+        // Remove the original blocks
+        Pattern pattern = replacement != null ?
+                new SingleBlockPattern(replacement) :
+                new SingleBlockPattern(new BaseBlock(BlockID.AIR));
+        BlockReplace remove = new BlockReplace(this, pattern);
 
-        final Map<Vector, BaseBlock> delayed = new LinkedHashMap<Vector, BaseBlock>();
-
-        for (Vector pos : region) {
-            final BaseBlock block = getBlock(pos);
-
-            if (!block.isAir() || copyAir) {
-                final Vector newPos = pos.add(shift);
-
-                delayed.put(newPos, getBlock(pos));
-
-                // Don't want to replace the old block if it's in
-                // the new area
-                if (!newRegion.contains(pos)) {
-                    setBlock(pos, replace);
-                }
-            }
+        // Copy to a buffer so we don't destroy our original before we can copy all the blocks from it
+        ExtentBuffer buffer = new ExtentBuffer(this, new RegionMask(region));
+        ForwardExtentCopy copy = new ForwardExtentCopy(this, region, buffer, to);
+        copy.setTransform(new AffineTransform().translate(dir.multiply(distance)));
+        copy.setSourceFunction(remove); // Remove
+        if (!copyAir) {
+            copy.setSourceMask(new ExistingBlockMask(this));
         }
 
-        for (Map.Entry<Vector, BaseBlock> entry : delayed.entrySet()) {
-            setBlock(entry.getKey(), entry.getValue());
-            ++affected;
-        }
+        // Then we need to copy the buffer to the world
+        BlockReplace replace = new BlockReplace(this, buffer);
+        RegionVisitor visitor = new RegionVisitor(buffer.asRegion(), replace);
 
-        return affected;
+        OperationQueue operation = new OperationQueue(copy, visitor);
+        OperationHelper.completeLegacy(operation);
+
+        return copy.getAffected();
     }
 
     /**
