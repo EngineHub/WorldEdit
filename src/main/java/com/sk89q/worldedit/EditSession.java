@@ -42,10 +42,7 @@ import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
 import com.sk89q.worldedit.function.util.RegionOffset;
-import com.sk89q.worldedit.function.visitor.DownwardVisitor;
-import com.sk89q.worldedit.function.visitor.LayerVisitor;
-import com.sk89q.worldedit.function.visitor.RecursiveVisitor;
-import com.sk89q.worldedit.function.visitor.RegionVisitor;
+import com.sk89q.worldedit.function.visitor.*;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.math.interpolation.Interpolation;
 import com.sk89q.worldedit.math.interpolation.KochanekBartelsInterpolation;
@@ -1340,61 +1337,42 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
-    public int fixLiquid(Vector pos, double radius, int moving, int stationary)
-            throws MaxChangedBlocksException {
-        int affected = 0;
+    public int fixLiquid(Vector origin, double radius, int moving, int stationary) throws MaxChangedBlocksException {
+        checkNotNull(origin);
+        checkArgument(radius >= 0, "radius >= 0 required");
 
-        HashSet<BlockVector> visited = new HashSet<BlockVector>();
-        Stack<BlockVector> queue = new Stack<BlockVector>();
+        // Our origins can only be liquids
+        BlockMask liquidMask = new BlockMask(
+                this,
+                new BaseBlock(moving, -1),
+                new BaseBlock(stationary, -1));
 
-        for (int x = pos.getBlockX() - 1; x <= pos.getBlockX() + 1; ++x) {
-            for (int z = pos.getBlockZ() - 1; z <= pos.getBlockZ() + 1; ++z) {
-                for (int y = pos.getBlockY() - 1; y <= pos.getBlockY() + 1; ++y) {
-                    int type = getBlock(new Vector(x, y, z)).getType();
+        // But we will also visit air blocks
+        MaskIntersection blockMask =
+                new MaskUnion(liquidMask,
+                        new BlockMask(
+                                this,
+                                new BaseBlock(BlockID.AIR)));
 
-                    // Check block type
-                    if (type == moving || type == stationary) {
-                        queue.push(new BlockVector(x, y, z));
-                    }
-                }
+        // There are boundaries that the routine needs to stay in
+        MaskIntersection mask = new MaskIntersection(
+                new BoundedHeightMask(0, Math.min(origin.getBlockY(), getWorld().getMaxY())),
+                new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
+                blockMask);
+
+        BlockReplace replace = new BlockReplace(this, new BlockPattern(new BaseBlock(stationary)));
+        NonRisingVisitor visitor = new NonRisingVisitor(mask, replace);
+
+        // Around the origin in a 3x3 block
+        for (BlockVector position : CuboidRegion.fromCenter(origin, 1)) {
+            if (liquidMask.test(position)) {
+                visitor.visit(position);
             }
         }
 
-        BaseBlock stationaryBlock = new BaseBlock(stationary);
+        OperationHelper.completeLegacy(visitor);
 
-        while (!queue.empty()) {
-            BlockVector cur = queue.pop();
-
-            int type = getBlockType(cur);
-
-            // Check block type
-            if (type != moving && type != stationary && type != BlockID.AIR) {
-                continue;
-            }
-
-            // Don't want to revisit
-            if (visited.contains(cur)) {
-                continue;
-            }
-
-            visited.add(cur);
-
-            if (setBlock(cur, stationaryBlock)) {
-                ++affected;
-            }
-
-            // Check radius
-            if (pos.distance(cur) > radius) {
-                continue;
-            }
-
-            queue.push(cur.add(1, 0, 0).toBlockVector());
-            queue.push(cur.add(-1, 0, 0).toBlockVector());
-            queue.push(cur.add(0, 0, 1).toBlockVector());
-            queue.push(cur.add(0, 0, -1).toBlockVector());
-        }
-
-        return affected;
+        return visitor.getAffected();
     }
 
     /**
