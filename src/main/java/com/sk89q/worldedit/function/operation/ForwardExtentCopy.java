@@ -22,6 +22,8 @@ package com.sk89q.worldedit.function.operation;
 import com.sk89q.worldedit.Extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.function.CombinedRegionFunction;
+import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.block.ExtentBlockCopy;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -49,6 +51,7 @@ public class ForwardExtentCopy implements Operation {
     private final Vector to;
     private int repetitions = 1;
     private Mask sourceMask = Masks.alwaysTrue();
+    private RegionFunction sourceFunction = null;
     private Transform transform = new Identity();
     private Transform currentTransform = null;
     private RegionVisitor lastVisitor;
@@ -118,6 +121,26 @@ public class ForwardExtentCopy implements Operation {
     }
 
     /**
+     * Get the function that gets applied to all source blocks <em>after</em>
+     * the copy has been made.
+     *
+     * @return a source function, or null if none is to be applied
+     */
+    public RegionFunction getSourceFunction() {
+        return sourceFunction;
+    }
+
+    /**
+     * Set the function that gets applied to all source blocks <em>after</em>
+     * the copy has been made.
+     *
+     * @param function a source function, or null if none is to be applied
+     */
+    public void setSourceFunction(RegionFunction function) {
+        this.sourceFunction = function;
+    }
+
+    /**
      * Get the number of repetitions left.
      *
      * @return the number of repetitions
@@ -161,7 +184,8 @@ public class ForwardExtentCopy implements Operation {
 
             ExtentBlockCopy copy = new ExtentBlockCopy(source, region.getMinimumPoint(), destination, to, currentTransform);
             RegionMaskingFilter filter = new RegionMaskingFilter(sourceMask, copy);
-            RegionVisitor visitor = new RegionVisitor(region, filter);
+            RegionFunction function = sourceFunction != null ? new CombinedRegionFunction(filter, sourceFunction) : filter;
+            RegionVisitor visitor = new RegionVisitor(region, function);
             lastVisitor = visitor;
             currentTransform = currentTransform.combine(transform);
             return new DelegateOperation(this, visitor);
