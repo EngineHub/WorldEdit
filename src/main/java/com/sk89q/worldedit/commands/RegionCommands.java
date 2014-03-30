@@ -561,7 +561,7 @@ public class RegionCommands {
         FlatRegionMaskingFilter filter = new FlatRegionMaskingFilter(editSession, mask, groundFunction);
 
         // Execute
-        FlatRegionVisitor operation = new FlatRegionVisitor(region, filter);
+        FlatRegionVisitor operation = new FlatRegionVisitor(Regions.asFlatRegion(region), filter);
         OperationHelper.complete(operation);
 
         player.print(operation.getAffected() + " trees created.");
@@ -591,7 +591,7 @@ public class RegionCommands {
         FlatRegionMaskingFilter filter = new FlatRegionMaskingFilter(editSession, mask, groundFunction);
 
         // Execute
-        FlatRegionVisitor operation = new FlatRegionVisitor(region, filter);
+        FlatRegionVisitor operation = new FlatRegionVisitor(Regions.asFlatRegion(region), filter);
         OperationHelper.complete(operation);
 
         player.print(operation.getAffected() + " flora created.");

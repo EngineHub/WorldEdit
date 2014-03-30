@@ -23,12 +23,12 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.FlatRegionFunction;
 import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.FlatRegion;
-import com.sk89q.worldedit.regions.Region;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Utility class to apply region functions to {@link com.sk89q.worldedit.regions.Region}.
+ * Applies region functions to columns in a {@link FlatRegion}.
  */
 public class FlatRegionVisitor implements Operation {
 
@@ -36,14 +36,18 @@ public class FlatRegionVisitor implements Operation {
     private final FlatRegionFunction function;
     private int affected = 0;
 
-    public FlatRegionVisitor(Region region, FlatRegionFunction function) {
-        this.function = function;
+    /**
+     * Create a new visitor.
+     *
+     * @param flatRegion a flat region
+     * @param function a function to apply to columns
+     */
+    public FlatRegionVisitor(FlatRegion flatRegion, FlatRegionFunction function) {
+        checkNotNull(flatRegion);
+        checkNotNull(function);
 
-        if (region instanceof FlatRegion) {
-            flatRegion = (FlatRegion) region;
-        } else {
-            flatRegion = CuboidRegion.makeCuboid(region);
-        }
+        this.flatRegion = flatRegion;
+        this.function = function;
     }
 
     /**

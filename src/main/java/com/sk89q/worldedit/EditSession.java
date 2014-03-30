@@ -1162,7 +1162,7 @@ public class EditSession {
         RegionOffset offset = new RegionOffset(new Vector(0, 1, 0), replace);
         GroundSearch search = new MaskingGroundSearch(this, new ExistingBlockMask());
         GroundFunction groundFunction = new GroundFunction(search, lowerY, upperY, offset);
-        FlatRegionVisitor operation = new FlatRegionVisitor(region, groundFunction);
+        FlatRegionVisitor operation = new FlatRegionVisitor(Regions.asFlatRegion(region), groundFunction);
         OperationHelper.completeLegacy(operation);
 
         return operation.getAffected();
@@ -1966,7 +1966,7 @@ public class EditSession {
         FlatRegionMaskingFilter filter = new FlatRegionMaskingFilter(this, mask, groundFunction);
 
         // Generate those patches!
-        FlatRegionVisitor operation = new FlatRegionVisitor(region, filter);
+        FlatRegionVisitor operation = new FlatRegionVisitor(Regions.asFlatRegion(region), filter);
         OperationHelper.completeLegacy(operation);
 
         return operation.getAffected();
