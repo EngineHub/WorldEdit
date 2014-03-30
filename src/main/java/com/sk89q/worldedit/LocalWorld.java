@@ -20,6 +20,7 @@
 package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.foundation.Block;
 import com.sk89q.worldedit.foundation.World;
 import com.sk89q.worldedit.regions.Region;
