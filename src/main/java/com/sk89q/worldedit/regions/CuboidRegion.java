@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -426,7 +427,21 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
      * @return a new cuboid region
      */
     public static CuboidRegion makeCuboid(Region region) {
+        checkNotNull(region);
         return new CuboidRegion(region.getMinimumPoint(), region.getMaximumPoint());
     }
 
+    /**
+     * Make a cuboid from the center.
+     *
+     * @param origin the origin
+     * @param apothem the apothem, where 0 is the minimum value to make a 1x1 cuboid
+     * @return a cuboid region
+     */
+    public static CuboidRegion fromCenter(Vector origin, int apothem) {
+        checkNotNull(origin);
+        checkArgument(apothem >= 0, "apothem => 0 required");
+        Vector size = new Vector(1, 1, 1).multiply(apothem);
+        return new CuboidRegion(origin.subtract(size), origin.add(size));
+    }
 }
