@@ -21,7 +21,7 @@ package com.sk89q.worldedit.masks;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.util.noise.NoiseGenerator;
+import com.sk89q.worldedit.math.noise.NoiseGenerator;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;

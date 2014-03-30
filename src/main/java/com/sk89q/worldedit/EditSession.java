@@ -51,7 +51,7 @@ import com.sk89q.worldedit.shape.ArbitraryShape;
 import com.sk89q.worldedit.shape.RegionShape;
 import com.sk89q.worldedit.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.noise.RandomNoise;
+import com.sk89q.worldedit.math.noise.RandomNoise;
 
 import java.util.*;
 

@@ -43,7 +43,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.noise.RandomNoise;
+import com.sk89q.worldedit.math.noise.RandomNoise;
 
 import java.util.ArrayList;
 import java.util.List;
