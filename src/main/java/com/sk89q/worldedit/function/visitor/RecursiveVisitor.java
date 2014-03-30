@@ -19,10 +19,9 @@
 
 package com.sk89q.worldedit.function.visitor;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.mask.Mask;
 
 /**
  * An implementation of an {@link BreadthFirstSearch} that uses a mask to
@@ -30,21 +29,15 @@ import com.sk89q.worldedit.function.RegionFunction;
  */
 public class RecursiveVisitor extends BreadthFirstSearch {
 
-    private final EditSession editSession;
     private final Mask mask;
 
-    public RecursiveVisitor(EditSession editSession, Mask mask, RegionFunction function) {
+    public RecursiveVisitor(Mask mask, RegionFunction function) {
         super(function);
-        this.editSession = editSession;
         this.mask = mask;
     }
 
     @Override
     protected boolean isVisitable(Vector from, Vector to) {
-        int y = to.getBlockY();
-        if (y < 0 || y > editSession.getWorld().getMaxY()) {
-            return false;
-        }
         return mask.test(to);
     }
 }

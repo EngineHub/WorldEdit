@@ -42,7 +42,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class LayerVisitor implements Operation {
 
-    private final EditSession editSession;
     private final FlatRegion flatRegion;
     private final LayerFunction function;
     private Mask2D mask = Masks.alwaysTrue2D();
@@ -57,13 +56,11 @@ public class LayerVisitor implements Operation {
      * @param maxY the maximum Y to begin the search at
      * @param function the layer function to apply t blocks
      */
-    public LayerVisitor(EditSession editSession, FlatRegion flatRegion, int minY, int maxY, LayerFunction function) {
-        checkNotNull(editSession);
+    public LayerVisitor(FlatRegion flatRegion, int minY, int maxY, LayerFunction function) {
         checkNotNull(flatRegion);
         checkArgument(minY <= maxY, "minY <= maxY required");
         checkNotNull(function);
 
-        this.editSession = editSession;
         this.flatRegion = flatRegion;
         this.minY = minY;
         this.maxY = maxY;

@@ -828,7 +828,9 @@ public class EditSession implements Extent {
 
         MaskIntersection mask = new MaskIntersection(
                 new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
-                new BoundedHeightMask(origin.getBlockY() - depth + 1, origin.getBlockY()),
+                new BoundedHeightMask(
+                        Math.max(origin.getBlockY() - depth + 1, 0),
+                        Math.min(getWorld().getMaxY(), origin.getBlockY())),
                 Masks.negate(new ExistingBlockMask(this)));
 
         // Want to replace blocks
@@ -837,9 +839,9 @@ public class EditSession implements Extent {
         // Pick how we're going to visit blocks
         RecursiveVisitor visitor;
         if (recursive) {
-            visitor = new RecursiveVisitor(this, mask, replace);
+            visitor = new RecursiveVisitor(mask, replace);
         } else {
-            visitor = new DownwardVisitor(this, mask, replace, origin.getBlockY());
+            visitor = new DownwardVisitor(mask, replace, origin.getBlockY());
         }
 
         // Start at the origin

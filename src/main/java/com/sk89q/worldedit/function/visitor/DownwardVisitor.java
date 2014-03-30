@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.function.visitor;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -40,13 +39,12 @@ public class DownwardVisitor extends RecursiveVisitor {
     /**
      * Create a new visitor.
      *
-     * @param editSession the edit session
      * @param mask the mask
      * @param function the function
      * @param baseY the base Y
      */
-    public DownwardVisitor(EditSession editSession, Mask mask, RegionFunction function, int baseY) {
-        super(editSession, mask, function);
+    public DownwardVisitor(Mask mask, RegionFunction function, int baseY) {
+        super(mask, function);
 
         this.baseY = baseY;
 
