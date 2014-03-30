@@ -27,17 +27,18 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
-import com.sk89q.worldedit.function.FlatRegionMaskingFilter;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.block.BlockCount;
 import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.block.Naturalizer;
-import com.sk89q.worldedit.function.generator.ForestGenerator;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
 import com.sk89q.worldedit.function.operation.OperationHelper;
 import com.sk89q.worldedit.function.util.RegionOffset;
-import com.sk89q.worldedit.function.visitor.*;
+import com.sk89q.worldedit.function.visitor.DownwardVisitor;
+import com.sk89q.worldedit.function.visitor.LayerVisitor;
+import com.sk89q.worldedit.function.visitor.RecursiveVisitor;
+import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.interpolation.Interpolation;
 import com.sk89q.worldedit.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.interpolation.Node;
@@ -56,9 +57,7 @@ import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.regions.Regions.asFlatRegion;
-import static com.sk89q.worldedit.regions.Regions.maximumBlockY;
-import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
+import static com.sk89q.worldedit.regions.Regions.*;
 
 /**
  * This class can wrap all block editing operations into one "edit session" that
@@ -70,7 +69,7 @@ import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
  *
  * @author sk89q
  */
-public class EditSession {
+public class EditSession implements Extent {
 
     /**
      * Random number generator.
@@ -246,6 +245,11 @@ public class EditSession {
         }
 
         return result;
+    }
+
+    @Override
+    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) {
+        return setBlock(location, block, true);
     }
 
     /**

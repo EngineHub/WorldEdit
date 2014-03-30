@@ -19,31 +19,21 @@
 
 package com.sk89q.worldedit;
 
-import java.util.PriorityQueue;
-import java.util.Random;
-
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.blocks.ChestBlock;
-import com.sk89q.worldedit.blocks.DispenserBlock;
-import com.sk89q.worldedit.blocks.FurnaceBlock;
-import com.sk89q.worldedit.blocks.MobSpawnerBlock;
-import com.sk89q.worldedit.blocks.NoteBlock;
-import com.sk89q.worldedit.blocks.SignBlock;
-import com.sk89q.worldedit.blocks.SkullBlock;
+import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.foundation.Block;
 import com.sk89q.worldedit.foundation.World;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
+
+import java.util.PriorityQueue;
+import java.util.Random;
 
 /**
  * Represents a world.
  *
  * @author sk89q
  */
-public abstract class LocalWorld implements World {
+public abstract class LocalWorld implements World, Extent {
     /**
      * Named flags to use as parameters to {@link LocalWorld#killMobs(Vector, double, int)}
      */
@@ -527,6 +517,11 @@ public abstract class LocalWorld implements World {
 
     public int killEntities(LocalEntity... entities) {
         return 0;
+    }
+
+    @Override
+    public boolean setBlock(Vector pt, BaseBlock block, boolean notifyAdjacent) {
+        return setBlock(pt, (Block) block, notifyAdjacent);
     }
     
     @Override
