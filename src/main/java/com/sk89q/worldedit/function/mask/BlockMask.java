@@ -50,7 +50,7 @@ public class BlockMask extends AbstractExtentMask {
     public BlockMask(Extent extent, Collection<BaseBlock> blocks) {
         super(extent);
         checkNotNull(blocks);
-        blocks.addAll(blocks);
+        this.blocks.addAll(blocks);
     }
 
     /**
@@ -70,7 +70,7 @@ public class BlockMask extends AbstractExtentMask {
      */
     public void add(Collection<BaseBlock> blocks) {
         checkNotNull(blocks);
-        blocks.addAll(blocks);
+        this.blocks.addAll(blocks);
     }
 
     /**

@@ -44,7 +44,7 @@ public class MaskIntersection extends AbstractMask {
      */
     public MaskIntersection(Collection<Mask> masks) {
         checkNotNull(masks);
-        masks.addAll(masks);
+        this.masks.addAll(masks);
     }
 
     /**
@@ -63,7 +63,7 @@ public class MaskIntersection extends AbstractMask {
      */
     public void add(Collection<Mask> masks) {
         checkNotNull(masks);
-        masks.addAll(masks);
+        this.masks.addAll(masks);
     }
 
     /**
