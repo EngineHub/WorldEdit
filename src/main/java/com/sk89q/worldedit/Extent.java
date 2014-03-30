@@ -31,7 +31,7 @@ public interface Extent {
      * Get a copy of the block at the given location. May return null if the location
      * given is out of bounds. The returned block must not be tied to any real block
      * in the world, so changes to the returned {@link BaseBlock} have no effect until
-     * {@link #setBlock(Vector, BaseBlock)} is called.
+     * {@link #setBlock(Vector, BaseBlock, boolean)} is called.
      *
      * @param location location of the block
      * @return the block, or null if the block does not exist
@@ -72,6 +72,6 @@ public interface Extent {
      * @param notifyAdjacent true to notify adjacent blocks of changes
      * @return true if the block was successfully set (return value may not be accurate)
      */
-    boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent);
+    boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException;
 
 }
