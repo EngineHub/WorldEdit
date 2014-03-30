@@ -19,16 +19,19 @@
 
 package com.sk89q.worldedit.masks;
 
-import java.util.Set;
-
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+
+import java.util.Set;
 
 /**
  *
  * @author 1337
  */
-public class UnderOverlayMask extends ExtentAwareMask {
+public class UnderOverlayMask extends AbstractMask {
     private final int yMod;
     private Mask mask;
 
@@ -65,7 +68,6 @@ public class UnderOverlayMask extends ExtentAwareMask {
 
     @Override
     public boolean matches(EditSession editSession, Vector pos) {
-        Extent extent = getExtent(editSession);
-        return !mask.matches(extent, pos) && mask.matches(extent, pos.add(0, yMod, 0));
+        return !mask.matches(editSession, pos) && mask.matches(editSession, pos.add(0, yMod, 0));
     }
 }
