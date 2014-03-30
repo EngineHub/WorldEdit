@@ -1301,7 +1301,7 @@ public class EditSession implements Extent {
      * @param origin the origin to drain from, which will search a 3x3 area
      * @param radius the radius of the removal, where a value should be 0 or greater
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int drainArea(Vector origin, double radius) throws MaxChangedBlocksException {
         checkNotNull(origin);
@@ -1328,14 +1328,14 @@ public class EditSession implements Extent {
     }
 
     /**
-     * Level water.
+     * Fix liquids so that they turn into stationary blocks and extend outward.
      *
-     * @param pos
-     * @param radius
-     * @param moving
-     * @param stationary
+     * @param origin the original position
+     * @param radius the radius to fix
+     * @param moving the block ID of the moving liquid
+     * @param stationary the block ID of the stationary liquid
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int fixLiquid(Vector origin, double radius, int moving, int stationary) throws MaxChangedBlocksException {
         checkNotNull(origin);
