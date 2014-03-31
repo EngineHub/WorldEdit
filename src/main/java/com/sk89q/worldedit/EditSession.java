@@ -36,6 +36,7 @@ import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.block.Naturalizer;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
 import com.sk89q.worldedit.function.mask.*;
+import com.sk89q.worldedit.function.operation.ChangeSetExecutor;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.OperationHelper;
 import com.sk89q.worldedit.function.operation.OperationQueue;
@@ -43,6 +44,10 @@ import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
 import com.sk89q.worldedit.function.util.RegionOffset;
 import com.sk89q.worldedit.function.visitor.*;
+import com.sk89q.worldedit.history.changeset.BlockOptimizedHistory;
+import com.sk89q.worldedit.history.changeset.ChangeSet;
+import com.sk89q.worldedit.history.UndoContext;
+import com.sk89q.worldedit.history.change.BlockChange;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.math.interpolation.Interpolation;
 import com.sk89q.worldedit.math.interpolation.KochanekBartelsInterpolation;
@@ -76,27 +81,10 @@ import static com.sk89q.worldedit.regions.Regions.*;
  */
 public class EditSession implements Extent {
 
-    /**
-     * Random number generator.
-     */
-    private static Random prng = new Random();
+    private final static Random prng = new Random();
 
-    /**
-     * World.
-     */
     protected LocalWorld world;
-
-    /**
-     * Stores the original blocks before modification.
-     */
-    private DoubleArrayList<BlockVector, BaseBlock> original =
-            new DoubleArrayList<BlockVector, BaseBlock>(true);
-
-    /**
-     * Stores the current blocks.
-     */
-    private DoubleArrayList<BlockVector, BaseBlock> current =
-            new DoubleArrayList<BlockVector, BaseBlock>(false);
+    private final ChangeSet changeSet = new BlockOptimizedHistory();
 
     /**
      * Blocks that should be placed before last.
@@ -277,31 +265,35 @@ public class EditSession implements Extent {
             }
         }
 
-        // if (!original.containsKey(blockPt)) {
-        original.put(blockPt, getBlock(pt));
-
-        if (maxBlocks != -1 && original.size() > maxBlocks) {
+        if (maxBlocks != -1 && changeSet.size() > maxBlocks) {
             throw new MaxChangedBlocksException(maxBlocks);
         }
-        // }
 
-        current.put(blockPt, block);
+        changeSet.add(new BlockChange(blockPt, getBlock(pt), block));
 
         return smartSetBlock(pt, block);
     }
 
     /**
+     * Get the underlying {@link ChangeSet}.
+     *
+     * @return the change set
+     */
+    public ChangeSet getChangeSet() {
+        return changeSet;
+    }
+
+    /**
      * Insert a contrived block change into the history.
      *
-     * @param pt
-     * @param existing
-     * @param block
+     * @param position the position
+     * @param existing the previous block at that position
+     * @param block the new block
+     * @deprecated Get the change set with {@link #getChangeSet()} and add the change with that
      */
-    public void rememberChange(Vector pt, BaseBlock existing, BaseBlock block) {
-        BlockVector blockPt = pt.toBlockVector();
-
-        original.put(blockPt, existing);
-        current.put(pt.toBlockVector(), block);
+    @Deprecated
+    public void rememberChange(Vector position, BaseBlock existing, BaseBlock block) {
+        changeSet.add(new BlockChange(position.toBlockVector(), existing, block));
     }
 
     /**
@@ -436,10 +428,9 @@ public class EditSession implements Extent {
      * @param sess
      */
     public void undo(EditSession sess) {
-        for (Map.Entry<BlockVector, BaseBlock> entry : original) {
-            BlockVector pt = entry.getKey();
-            sess.smartSetBlock(pt, entry.getValue());
-        }
+        UndoContext context = new UndoContext();
+        context.setExtent(sess);
+        OperationHelper.completeBlindly(ChangeSetExecutor.createUndo(changeSet, context));
         sess.flushQueue();
     }
 
@@ -449,10 +440,9 @@ public class EditSession implements Extent {
      * @param sess
      */
     public void redo(EditSession sess) {
-        for (Map.Entry<BlockVector, BaseBlock> entry : current) {
-            BlockVector pt = entry.getKey();
-            sess.smartSetBlock(pt, entry.getValue());
-        }
+        UndoContext context = new UndoContext();
+        context.setExtent(sess);
+        OperationHelper.completeBlindly(ChangeSetExecutor.createRedo(changeSet, context));
         sess.flushQueue();
     }
 
@@ -462,7 +452,7 @@ public class EditSession implements Extent {
      * @return
      */
     public int size() {
-        return original.size();
+        return changeSet.size();
     }
 
     /**
@@ -648,7 +638,7 @@ public class EditSession implements Extent {
      * @return
      */
     public int getBlockChangeCount() {
-        return original.size();
+        return changeSet.size();
     }
 
     /**
