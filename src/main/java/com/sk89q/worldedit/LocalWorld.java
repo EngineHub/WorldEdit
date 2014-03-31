@@ -25,9 +25,11 @@ import com.sk89q.worldedit.foundation.Block;
 import com.sk89q.worldedit.foundation.World;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 
+import javax.annotation.Nullable;
 import java.util.PriorityQueue;
 import java.util.Random;
 
@@ -616,6 +618,11 @@ public abstract class LocalWorld implements World, Extent {
                 new BaseBlock(BlockID.LAVA, -1),
                 new BaseBlock(BlockID.STATIONARY_WATER, -1),
                 new BaseBlock(BlockID.WATER, -1));
+    }
+
+    @Override
+    public @Nullable Operation commit() {
+        return null;
     }
 
 }

@@ -38,14 +38,16 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Buffers changes to an {@link Extent} and allows later retrieval of buffered
- * changes for actual setting.
+ * Buffers changes to an {@link Extent} and allows later retrieval for
+ * actual application of the changes.
+ * </p>
+ * This buffer will not attempt to return results from the buffer when
+ * accessor methods (such as {@link #getBlock(Vector)}) are called.
  */
-public class ExtentBuffer implements Extent, Pattern {
+public class ForgetfulExtentBuffer extends ExtentDelegate implements Pattern {
 
     private static final BaseBlock AIR = new BaseBlock(BlockID.AIR);
 
-    private final Extent delegate;
     private final Map<BlockVector, BaseBlock> buffer = new LinkedHashMap<BlockVector, BaseBlock>();
     private final Mask mask;
     private Vector min = null;
@@ -56,7 +58,7 @@ public class ExtentBuffer implements Extent, Pattern {
      *
      * @param delegate the delegate extent for {@link Extent#getBlock(Vector)}, etc. calls
      */
-    public ExtentBuffer(Extent delegate) {
+    public ForgetfulExtentBuffer(Extent delegate) {
         this(delegate, Masks.alwaysTrue());
     }
 
@@ -67,26 +69,11 @@ public class ExtentBuffer implements Extent, Pattern {
      * @param delegate the delegate extent for {@link Extent#getBlock(Vector)}, etc. calls
      * @param mask the mask
      */
-    public ExtentBuffer(Extent delegate, Mask mask) {
+    public ForgetfulExtentBuffer(Extent delegate, Mask mask) {
+        super(delegate);
         checkNotNull(delegate);
         checkNotNull(mask);
-        this.delegate = delegate;
         this.mask = mask;
-    }
-
-    @Override
-    public BaseBlock getBlock(Vector location) {
-        return delegate.getBlock(location);
-    }
-
-    @Override
-    public int getBlockType(Vector location) {
-        return delegate.getBlockType(location);
-    }
-
-    @Override
-    public int getBlockData(Vector location) {
-        return delegate.getBlockData(location);
     }
 
     @Override
@@ -110,7 +97,7 @@ public class ExtentBuffer implements Extent, Pattern {
             buffer.put(blockVector, block);
             return true;
         } else {
-            return delegate.setBlock(location, block, notifyAdjacent);
+            return getExtent().setBlock(location, block, notifyAdjacent);
         }
     }
 

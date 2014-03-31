@@ -22,6 +22,9 @@ package com.sk89q.worldedit.extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.function.operation.Operation;
+
+import javax.annotation.Nullable;
 
 /**
  * A world, portion of a world, clipboard, or other object that can have blocks set or
@@ -75,5 +78,13 @@ public interface Extent {
      * @return true if the block was successfully set (return value may not be accurate)
      */
     boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException;
+
+    /**
+     * Return an {@link Operation} that should be called to tie up loose ends
+     * (such as to commit changes in a buffer).
+     *
+     * @return an operation or null if there is none to execute
+     */
+    @Nullable Operation commit();
 
 }
