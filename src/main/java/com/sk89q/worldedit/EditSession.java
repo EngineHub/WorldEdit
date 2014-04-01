@@ -129,7 +129,8 @@ public class EditSession implements Extent {
         // This extents are ALWAYS used
         fastModeExtent                          = new FastModeExtent(world, false);
         ChunkLoadingExtent chunkLoadingExtent   = new ChunkLoadingExtent(fastModeExtent, world);
-        BlockQuirkExtent quirkExtent            = new BlockQuirkExtent(chunkLoadingExtent, world);
+        LastAccessExtentCache cacheExtent       = new LastAccessExtentCache(chunkLoadingExtent);
+        BlockQuirkExtent quirkExtent            = new BlockQuirkExtent(cacheExtent, world);
         DataValidatorExtent validator           = new DataValidatorExtent(quirkExtent, world);
         blockBagExtent                          = new BlockBagExtent(validator, world, blockBag);
 
