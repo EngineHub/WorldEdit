@@ -574,7 +574,7 @@ public class EditSession implements Extent {
     public void undo(EditSession editSession) {
         UndoContext context = new UndoContext();
         context.setExtent(editSession.bypassHistory);
-        OperationHelper.completeBlindly(ChangeSetExecutor.createUndo(changeSet, context));
+        Operations.completeBlindly(ChangeSetExecutor.createUndo(changeSet, context));
         editSession.flushQueue();
     }
 
@@ -586,7 +586,7 @@ public class EditSession implements Extent {
     public void redo(EditSession editSession) {
         UndoContext context = new UndoContext();
         context.setExtent(editSession.bypassHistory);
-        OperationHelper.completeBlindly(ChangeSetExecutor.createRedo(changeSet, context));
+        Operations.completeBlindly(ChangeSetExecutor.createRedo(changeSet, context));
         editSession.flushQueue();
     }
 
@@ -603,7 +603,7 @@ public class EditSession implements Extent {
      * Finish off the queue.
      */
     public void flushQueue() {
-        OperationHelper.completeBlindly(commit());
+        Operations.completeBlindly(commit());
     }
 
     @Override
@@ -631,7 +631,7 @@ public class EditSession implements Extent {
         Counter count = new Counter();
         RegionMaskingFilter filter = new RegionMaskingFilter(mask, count);
         RegionVisitor visitor = new RegionVisitor(region, filter);
-        OperationHelper.completeBlindly(visitor); // We can't throw exceptions, nor do we expect any
+        Operations.completeBlindly(visitor); // We can't throw exceptions, nor do we expect any
         return count.getCount();
     }
 
@@ -692,7 +692,7 @@ public class EditSession implements Extent {
         visitor.visit(origin);
 
         // Execute
-        OperationHelper.completeLegacy(visitor);
+        Operations.completeLegacy(visitor);
 
         return visitor.getAffected();
     }
@@ -795,7 +795,7 @@ public class EditSession implements Extent {
 
         BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
         RegionVisitor visitor = new RegionVisitor(region, replace);
-        OperationHelper.completeLegacy(visitor);
+        Operations.completeLegacy(visitor);
         return visitor.getAffected();
     }
 
@@ -849,7 +849,7 @@ public class EditSession implements Extent {
         BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
         RegionMaskingFilter filter = new RegionMaskingFilter(Masks.wrap(this, mask), replace);
         RegionVisitor visitor = new RegionVisitor(region, filter);
-        OperationHelper.completeLegacy(visitor);
+        Operations.completeLegacy(visitor);
         return visitor.getAffected();
     }
 
@@ -1032,7 +1032,7 @@ public class EditSession implements Extent {
         RegionOffset offset = new RegionOffset(new Vector(0, 1, 0), replace);
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(this), offset);
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
-        OperationHelper.completeLegacy(visitor);
+        Operations.completeLegacy(visitor);
         return ground.getAffected();
     }
 
@@ -1050,7 +1050,7 @@ public class EditSession implements Extent {
         Naturalizer naturalizer = new Naturalizer(this);
         FlatRegion flatRegion = Regions.asFlatRegion(region);
         LayerVisitor visitor = new LayerVisitor(flatRegion, minimumBlockY(region), maximumBlockY(region), naturalizer);
-        OperationHelper.completeLegacy(visitor);
+        Operations.completeLegacy(visitor);
         return naturalizer.getAffected();
     }
 
@@ -1077,7 +1077,7 @@ public class EditSession implements Extent {
         if (!copyAir) {
             copy.setSourceMask(new ExistingBlockMask(this));
         }
-        OperationHelper.completeLegacy(copy);
+        Operations.completeLegacy(copy);
         return copy.getAffected();
     }
 
@@ -1119,7 +1119,7 @@ public class EditSession implements Extent {
         RegionVisitor visitor = new RegionVisitor(buffer.asRegion(), replace);
 
         OperationQueue operation = new OperationQueue(copy, visitor);
-        OperationHelper.completeLegacy(operation);
+        Operations.completeLegacy(operation);
 
         return copy.getAffected();
     }
@@ -1166,7 +1166,7 @@ public class EditSession implements Extent {
             }
         }
 
-        OperationHelper.completeLegacy(visitor);
+        Operations.completeLegacy(visitor);
 
         return visitor.getAffected();
     }
@@ -1214,7 +1214,7 @@ public class EditSession implements Extent {
             }
         }
 
-        OperationHelper.completeLegacy(visitor);
+        Operations.completeLegacy(visitor);
 
         return visitor.getAffected();
     }
@@ -1684,7 +1684,7 @@ public class EditSession implements Extent {
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(this), generator);
         LayerVisitor visitor = new LayerVisitor(region, minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
-        OperationHelper.completeLegacy(visitor);
+        Operations.completeLegacy(visitor);
         return ground.getAffected();
     }
 

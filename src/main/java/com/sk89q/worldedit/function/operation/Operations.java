@@ -25,9 +25,9 @@ import com.sk89q.worldedit.WorldEditException;
 /**
  * Operation helper methods.
  */
-public final class OperationHelper {
+public final class Operations {
 
-    private OperationHelper() {
+    private Operations() {
     }
 
     /**
