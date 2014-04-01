@@ -17,53 +17,21 @@ package com.sk89q.worldedit.bukkit;
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import net.minecraft.server.v1_7_R1.NBTBase;
-import net.minecraft.server.v1_7_R1.NBTTagByte;
-import net.minecraft.server.v1_7_R1.NBTTagByteArray;
-import net.minecraft.server.v1_7_R1.NBTTagCompound;
-import net.minecraft.server.v1_7_R1.NBTTagDouble;
-import net.minecraft.server.v1_7_R1.NBTTagEnd;
-import net.minecraft.server.v1_7_R1.NBTTagFloat;
-import net.minecraft.server.v1_7_R1.NBTTagInt;
-import net.minecraft.server.v1_7_R1.NBTTagIntArray;
-import net.minecraft.server.v1_7_R1.NBTTagList;
-import net.minecraft.server.v1_7_R1.NBTTagLong;
-import net.minecraft.server.v1_7_R1.NBTTagShort;
-import net.minecraft.server.v1_7_R1.NBTTagString;
-import net.minecraft.server.v1_7_R1.TileEntity;
-
-import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
-
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.ByteTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.DoubleTag;
-import com.sk89q.jnbt.EndTag;
-import com.sk89q.jnbt.FloatTag;
-import com.sk89q.jnbt.IntArrayTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.LongTag;
-import com.sk89q.jnbt.NBTConstants;
-import com.sk89q.jnbt.ShortTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
+import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.data.DataException;
 import com.sk89q.worldedit.foundation.Block;
+import net.minecraft.server.v1_7_R2.*;
+import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * A blind handler of blocks with TileEntity data that directly access Minecraft's
@@ -82,7 +50,7 @@ public class DefaultNmsBlock extends NmsBlock {
     static {
         Field field;
         try {
-            field = net.minecraft.server.v1_7_R1.Block.class.getDeclaredField("isTileEntity");
+            field = net.minecraft.server.v1_7_R2.Block.class.getDeclaredField("isTileEntity");
             field.setAccessible(true);
         } catch (NoSuchFieldException e) {
             // logger.severe("Could not find NMS block tile entity field!");
@@ -270,7 +238,7 @@ public class DefaultNmsBlock extends NmsBlock {
     }
 
     public static boolean hasTileEntity(int type) {
-        net.minecraft.server.v1_7_R1.Block nmsBlock = getNmsBlock(type);
+        net.minecraft.server.v1_7_R2.Block nmsBlock = getNmsBlock(type);
         if (nmsBlock == null) {
             return false;
         }
@@ -282,8 +250,8 @@ public class DefaultNmsBlock extends NmsBlock {
         }
     }
 
-    public static net.minecraft.server.v1_7_R1.Block getNmsBlock(int type) {
-        return net.minecraft.server.v1_7_R1.Block.e(type);
+    public static net.minecraft.server.v1_7_R2.Block getNmsBlock(int type) {
+        return net.minecraft.server.v1_7_R2.Block.e(type);
     }
 
     /**
@@ -462,7 +430,7 @@ public class DefaultNmsBlock extends NmsBlock {
     }
 
     public static boolean isValidBlockType(int type) throws NoClassDefFoundError {
-        return type == 0 || (type >= 1 && net.minecraft.server.v1_7_R1.Block.e(type) != null);
+        return type == 0 || (type >= 1 && net.minecraft.server.v1_7_R2.Block.e(type) != null);
     }
 
 }

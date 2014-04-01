@@ -1,3 +1,8 @@
+5.6.1
+- Added support for Minecraft 1.7.5 on Bukkit.
+- Added //flora command to place flora over grass.
+- Fixed //forest accepting the wrong arguments.
+
 5.6
 - Added //forest that generates a forest in a selection.
 - Added -s flag to //paste to select the pasted area.
