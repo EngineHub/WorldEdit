@@ -28,6 +28,9 @@ import java.util.Iterator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Performs an undo or redo from a given {@link ChangeSet}.
+ */
 public class ChangeSetExecutor implements Operation {
 
     public enum Type {UNDO, REDO}
@@ -36,6 +39,13 @@ public class ChangeSetExecutor implements Operation {
     private final Type type;
     private final UndoContext context;
 
+    /**
+     * Create a new instance.
+     *
+     * @param changeSet the change set
+     * @param type type of change
+     * @param context the undo context
+     */
     private ChangeSetExecutor(ChangeSet changeSet, Type type, UndoContext context) {
         checkNotNull(changeSet);
         checkNotNull(type);
@@ -69,10 +79,24 @@ public class ChangeSetExecutor implements Operation {
     public void cancel() {
     }
 
+    /**
+     * Create a new undo operation.
+     *
+     * @param changeSet the change set
+     * @param context an undo context
+     * @return an operation
+     */
     public static ChangeSetExecutor createUndo(ChangeSet changeSet, UndoContext context) {
         return new ChangeSetExecutor(changeSet, Type.UNDO, context);
     }
 
+    /**
+     * Create a new redo operation.
+     *
+     * @param changeSet the change set
+     * @param context an undo context
+     * @return an operation
+     */
     public static ChangeSetExecutor createRedo(ChangeSet changeSet, UndoContext context) {
         return new ChangeSetExecutor(changeSet, Type.REDO, context);
     }
