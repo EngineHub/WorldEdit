@@ -521,25 +521,25 @@ public class EditSession implements Extent {
     /**
      * Restores all blocks to their initial state.
      *
-     * @param sess a new {@link EditSession} to perform the undo in
+     * @param editSession a new {@link EditSession} to perform the undo in
      */
-    public void undo(EditSession sess) {
+    public void undo(EditSession editSession) {
         UndoContext context = new UndoContext();
-        context.setExtent(sess);
+        context.setExtent(editSession.bypassHistory);
         OperationHelper.completeBlindly(ChangeSetExecutor.createUndo(changeSet, context));
-        sess.flushQueue();
+        editSession.flushQueue();
     }
 
     /**
      * Sets to new state.
      *
-     * @param sess a new {@link EditSession} to perform the redo in
+     * @param editSession a new {@link EditSession} to perform the redo in
      */
-    public void redo(EditSession sess) {
+    public void redo(EditSession editSession) {
         UndoContext context = new UndoContext();
-        context.setExtent(sess);
+        context.setExtent(editSession.bypassHistory);
         OperationHelper.completeBlindly(ChangeSetExecutor.createRedo(changeSet, context));
-        sess.flushQueue();
+        editSession.flushQueue();
     }
 
     /**
