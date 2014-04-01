@@ -77,7 +77,7 @@ import static com.sk89q.worldedit.regions.Regions.*;
 public class EditSession implements Extent {
 
     /**
-     * Used by {@link #setBlock(Vector, BaseBlock, boolean, Level)} to
+     * Used by {@link #setBlock(Vector, BaseBlock, Level)} to
      * determine which {@link Extent}s should be bypassed.
      */
     public enum Level {
@@ -363,7 +363,6 @@ public class EditSession implements Extent {
      *
      * @param position the position to set the block at
      * @param block the block
-     * @param notifyAdjacent true to notify adjacent
      * @param level the level
      * @return whether the block changed
      */
@@ -386,7 +385,7 @@ public class EditSession implements Extent {
      * @param position the position to set the block at
      * @param block the block
      * @return whether the block changed
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock, boolean, Level)}
+     * @deprecated Use {@link #setBlock(Vector, BaseBlock, Level)}
      */
     @Deprecated
     public boolean rawSetBlock(Vector position, BaseBlock block) {
@@ -403,7 +402,7 @@ public class EditSession implements Extent {
      * @param position the position to set the block at
      * @param block the block
      * @return whether the block changed
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock, boolean, Level)}
+     * @deprecated Use {@link #setBlock(Vector, BaseBlock, Level)}
      */
     @Deprecated
     public boolean smartSetBlock(Vector position, BaseBlock block) {
