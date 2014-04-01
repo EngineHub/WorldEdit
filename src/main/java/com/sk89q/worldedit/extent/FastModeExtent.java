@@ -82,27 +82,29 @@ public class FastModeExtent extends ExtentDelegate {
 
     @Override
     public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
-        dirtyChunks.add(new BlockVector2D(location.getBlockX() >> 4, location.getBlockZ() >> 4));
-        return world.setBlock(location, block, !enabled);
+        if (enabled) {
+            dirtyChunks.add(new BlockVector2D(location.getBlockX() >> 4, location.getBlockZ() >> 4));
+            return world.setBlock(location, block, false);
+        } else {
+            return world.setBlock(location, block, true);
+        }
     }
 
     @Override
     protected Operation commitBefore() {
-        if (dirtyChunks.size() > 0) {
-            return new Operation() {
-                @Override
-                public Operation resume() throws WorldEditException {
+        return new Operation() {
+            @Override
+            public Operation resume() throws WorldEditException {
+                if (dirtyChunks.size() > 0) {
                     world.fixAfterFastMode(dirtyChunks);
-                    return null;
                 }
+                return null;
+            }
 
-                @Override
-                public void cancel() {
-                }
-            };
-        } else {
-            return null;
-        }
+            @Override
+            public void cancel() {
+            }
+        };
     }
 
 }
