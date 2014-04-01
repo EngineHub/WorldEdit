@@ -87,10 +87,11 @@ public class BlockBagExtent extends ExtentDelegate {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+    public boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
         if (blockBag != null) {
+            BaseBlock lazyBlock = getExtent().getLazyBlock(position);
+            int existing = lazyBlock.getType();
             final int type = block.getType();
-            final int existing = world.getBlockType(location);
 
             if (type > 0) {
                 try {
@@ -109,12 +110,12 @@ public class BlockBagExtent extends ExtentDelegate {
 
             if (existing > 0) {
                 try {
-                    blockBag.storeDroppedBlock(existing, world.getBlockData(location));
+                    blockBag.storeDroppedBlock(existing, lazyBlock.getData());
                 } catch (BlockBagException ignored) {
                 }
             }
         }
 
-        return super.setBlock(location, block);
+        return super.setBlock(position, block);
     }
 }
