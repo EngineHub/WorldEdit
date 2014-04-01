@@ -22,27 +22,30 @@ package com.sk89q.worldedit.function.operation;
 import com.sk89q.worldedit.WorldEditException;
 
 /**
- * An task that may be split into multiple steps to be run sequentially immediately
- * or at a varying or fixed interval. Operations should attempt to break apart tasks
- * into smaller tasks that can be completed in quicker successions.
+ * An task that may be split into multiple steps to be run sequentially
+ * immediately or at a varying or fixed interval. Operations should attempt
+ * to break apart tasks into smaller tasks that can be completed in quicker
+ * successions.
  */
 public interface Operation {
 
     /**
-     * Complete the next step. If this method returns true, then the method may be
-     * called again in the future, or possibly never. If this method returns false,
-     * then this method should not be called again.
+     * Complete the next step. If this method returns true, then the method may
+     * be called again in the future, or possibly never. If this method
+     * returns false, then this method should not be called again.
      *
+     * @param run describes information about the current run
      * @return another operation to run that operation again, or null to stop
      * @throws WorldEditException an error
      */
-    Operation resume() throws WorldEditException;
+    Operation resume(RunContext run) throws WorldEditException;
 
     /**
-     * Abort the current task. After the this method is called, {@link #resume()} should
-     * not be called at any point in the future. This method should not be called after
-     * successful completion of the operation. This method must be called if
-     * the operation is interrupted before completion.
+     * Abort the current task. After the this method is called,
+     * {@link #resume(RunContext)} should not be called at any point in the
+     * future. This method should not be called after successful completion of
+     * the operation. This method must be called if the operation is
+     * interrupted before completion.
      */
     void cancel();
 

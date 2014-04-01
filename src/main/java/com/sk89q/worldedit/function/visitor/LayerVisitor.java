@@ -26,6 +26,7 @@ import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.function.mask.Mask2D;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.regions.FlatRegion;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -88,7 +89,7 @@ public class LayerVisitor implements Operation {
     }
 
     @Override
-    public Operation resume() throws WorldEditException {
+    public Operation resume(RunContext run) throws WorldEditException {
         for (Vector2D column : flatRegion.asFlatRegion()) {
             if (!mask.test(column)) {
                 continue;

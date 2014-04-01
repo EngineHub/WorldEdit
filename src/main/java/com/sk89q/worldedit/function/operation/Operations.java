@@ -38,7 +38,7 @@ public final class Operations {
      */
     public static void complete(Operation op) throws WorldEditException {
         while (op != null) {
-            op = op.resume();
+            op = op.resume(new RunContext());
         }
     }
 
@@ -52,7 +52,7 @@ public final class Operations {
     public static void completeLegacy(Operation op) throws MaxChangedBlocksException {
         while (op != null) {
             try {
-                op = op.resume();
+                op = op.resume(new RunContext());
             } catch (MaxChangedBlocksException e) {
                 throw e;
             } catch (WorldEditException e) {
@@ -71,7 +71,7 @@ public final class Operations {
     public static void completeBlindly(Operation op) {
         while (op != null) {
             try {
-                op = op.resume();
+                op = op.resume(new RunContext());
             } catch (WorldEditException e) {
                 throw new RuntimeException(e);
             }

@@ -76,13 +76,13 @@ public class OperationQueue implements Operation {
     }
 
     @Override
-    public Operation resume() throws WorldEditException {
+    public Operation resume(RunContext run) throws WorldEditException {
         if (current == null && queue.size() > 0) {
             current = queue.poll();
         }
 
         if (current != null) {
-            current = current.resume();
+            current = current.resume(run);
 
             if (current == null) {
                 current = queue.poll();

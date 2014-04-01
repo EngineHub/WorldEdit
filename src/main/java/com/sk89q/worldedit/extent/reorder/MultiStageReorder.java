@@ -32,6 +32,7 @@ import com.sk89q.worldedit.extent.ExtentDelegate;
 import com.sk89q.worldedit.function.operation.BlockMapEntryPlacer;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
+import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.util.collection.TupleArrayList;
 
 import java.util.*;
@@ -122,7 +123,7 @@ public class MultiStageReorder extends ExtentDelegate implements ReorderingExten
     private class Stage3Committer implements Operation {
 
         @Override
-        public Operation resume() throws WorldEditException {
+        public Operation resume(RunContext run) throws WorldEditException {
             Extent extent = getExtent();
 
             final Set<BlockVector> blocks = new HashSet<BlockVector>();

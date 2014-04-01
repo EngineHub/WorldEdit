@@ -169,7 +169,7 @@ public class ForwardExtentCopy implements Operation {
     }
 
     @Override
-    public Operation resume() throws WorldEditException {
+    public Operation resume(RunContext run) throws WorldEditException {
         if (lastVisitor != null) {
             affected += lastVisitor.getAffected();
             lastVisitor = null;

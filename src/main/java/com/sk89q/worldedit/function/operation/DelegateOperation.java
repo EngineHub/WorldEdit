@@ -46,8 +46,8 @@ public class DelegateOperation implements Operation {
     }
 
     @Override
-    public Operation resume() throws WorldEditException {
-        delegate = delegate.resume();
+    public Operation resume(RunContext run) throws WorldEditException {
+        delegate = delegate.resume(run);
         return delegate != null ? this : original;
     }
 

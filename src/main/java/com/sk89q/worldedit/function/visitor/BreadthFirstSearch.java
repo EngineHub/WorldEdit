@@ -24,6 +24,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.operation.RunContext;
 
 import java.util.*;
 
@@ -154,7 +155,7 @@ public abstract class BreadthFirstSearch implements Operation {
     }
 
     @Override
-    public Operation resume() throws WorldEditException {
+    public Operation resume(RunContext run) throws WorldEditException {
         Vector position;
         
         while ((position = queue.poll()) != null) {

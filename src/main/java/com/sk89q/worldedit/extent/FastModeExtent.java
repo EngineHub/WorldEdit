@@ -25,6 +25,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.RunContext;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -94,7 +95,7 @@ public class FastModeExtent extends ExtentDelegate {
     protected Operation commitBefore() {
         return new Operation() {
             @Override
-            public Operation resume() throws WorldEditException {
+            public Operation resume(RunContext run) throws WorldEditException {
                 if (dirtyChunks.size() > 0) {
                     world.fixAfterFastMode(dirtyChunks);
                 }
