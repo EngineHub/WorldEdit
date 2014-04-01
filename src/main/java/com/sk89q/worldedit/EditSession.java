@@ -296,16 +296,35 @@ public class EditSession implements Extent {
     }
 
     @Override
+    public BaseBlock getLazyBlock(Vector position) {
+        return world.getLazyBlock(position);
+    }
+
+    @Override
     public BaseBlock getBlock(Vector position) {
         return world.getBlock(position);
     }
 
-    @Override
+    /**
+     * Get a block type at the given position.
+     *
+     * @param position the position
+     * @return the block type
+     * @deprecated Use {@link #getLazyBlock(Vector)} or {@link #getBlock(Vector)}
+     */
+    @Deprecated
     public int getBlockType(Vector position) {
         return world.getBlockType(position);
     }
 
-    @Override
+    /**
+     * Get a block data at the given position.
+     *
+     * @param position the position
+     * @return the block data
+     * @deprecated Use {@link #getLazyBlock(Vector)} or {@link #getBlock(Vector)}
+     */
+    @Deprecated
     public int getBlockData(Vector position) {
         return world.getBlockData(position);
     }

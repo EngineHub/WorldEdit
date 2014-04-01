@@ -39,7 +39,8 @@ public class FuzzyBlockMask extends BlockMask {
     public boolean test(Vector vector) {
         Extent extent = getExtent();
         Collection<BaseBlock> blocks = getBlocks();
-        BaseBlock compare = new BaseBlock(extent.getBlockType(vector), extent.getBlockData(vector));
+        BaseBlock lazyBlock = extent.getLazyBlock(vector);
+        BaseBlock compare = new BaseBlock(lazyBlock.getType(), lazyBlock.getData());
         return BaseBlock.containsFuzzy(blocks, compare);
     }
 }

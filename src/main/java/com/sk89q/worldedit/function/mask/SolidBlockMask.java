@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.function.mask;
 
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockType;
@@ -32,7 +33,8 @@ public class SolidBlockMask extends AbstractExtentMask {
     @Override
     public boolean test(Vector vector) {
         Extent extent = getExtent();
-        return !BlockType.canPassThrough(extent.getBlockType(vector), extent.getBlockData(vector));
+        BaseBlock lazyBlock = extent.getLazyBlock(vector);
+        return !BlockType.canPassThrough(lazyBlock.getType(), lazyBlock.getData());
     }
 
 }

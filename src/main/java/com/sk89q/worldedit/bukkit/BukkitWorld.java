@@ -19,83 +19,33 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EntityType;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.blocks.ContainerBlock;
+import com.sk89q.worldedit.blocks.NoteBlock;
+import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.TreeGenerator;
+import org.bukkit.*;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.SkullType;
-import org.bukkit.TreeType;
-import org.bukkit.World;
-import org.bukkit.block.Biome;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
-import org.bukkit.block.CreatureSpawner;
-import org.bukkit.block.Furnace;
-import org.bukkit.block.Sign;
-import org.bukkit.block.Skull;
+import org.bukkit.block.*;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Ambient;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.Boat;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.ExperienceOrb;
-import org.bukkit.entity.FallingBlock;
-import org.bukkit.entity.Golem;
-import org.bukkit.entity.Hanging;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Painting;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.TNTPrimed;
-import org.bukkit.entity.Tameable;
-import org.bukkit.entity.Villager;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import com.sk89q.worldedit.BiomeType;
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EntityType;
-import com.sk89q.worldedit.LocalEntity;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.ContainerBlock;
-import com.sk89q.worldedit.blocks.FurnaceBlock;
-import com.sk89q.worldedit.blocks.MobSpawnerBlock;
-import com.sk89q.worldedit.blocks.NoteBlock;
-import com.sk89q.worldedit.blocks.SignBlock;
-import com.sk89q.worldedit.blocks.SkullBlock;
-import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
-import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.TreeGenerator;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BukkitWorld extends LocalWorld {
 
@@ -1353,6 +1303,13 @@ public class BukkitWorld extends LocalWorld {
         }
 
         return super.getBlock(pt);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public BaseBlock getLazyBlock(Vector position) {
+        Block bukkitBlock = world.getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        return new LazyBlock(bukkitBlock.getTypeId(), bukkitBlock.getData(), this, position);
     }
 
     @Override

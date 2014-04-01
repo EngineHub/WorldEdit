@@ -56,18 +56,13 @@ public class ExtentDelegate implements Extent {
     }
 
     @Override
-    public BaseBlock getBlock(Vector location) {
-        return extent.getBlock(location);
+    public BaseBlock getBlock(Vector position) {
+        return extent.getBlock(position);
     }
 
     @Override
-    public int getBlockType(Vector location) {
-        return extent.getBlockType(location);
-    }
-
-    @Override
-    public int getBlockData(Vector location) {
-        return extent.getBlockData(location);
+    public BaseBlock getLazyBlock(Vector position) {
+        return extent.getLazyBlock(position);
     }
 
     @Override

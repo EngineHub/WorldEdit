@@ -93,6 +93,7 @@ public abstract class LocalWorld implements World, Extent {
      * @param pt
      * @return
      */
+    @Deprecated
     public abstract int getBlockType(Vector pt);
 
     /**
@@ -162,6 +163,7 @@ public abstract class LocalWorld implements World, Extent {
      * @param pt
      * @return
      */
+    @Deprecated
     public abstract int getBlockData(Vector pt);
 
     /**
@@ -546,6 +548,11 @@ public abstract class LocalWorld implements World, Extent {
         }
         
         return successful;
+    }
+
+    @Override
+    public BaseBlock getLazyBlock(Vector position) {
+        return getBlock(position);
     }
 
     @Override

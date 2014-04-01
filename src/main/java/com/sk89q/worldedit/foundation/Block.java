@@ -74,8 +74,8 @@ public class Block implements TileEntityBlock {
      * @see #setId(int)
      */
     public Block(int id) {
-        setId(id);
-        setData(0);
+        internalSetId(id);
+        internalSetData(0);
     }
     
     /**
@@ -87,8 +87,8 @@ public class Block implements TileEntityBlock {
      * @see #setData(int)
      */
     public Block(int id, int data) {
-        setId(id);
-        setData(data);
+        internalSetId(id);
+        internalSetData(data);
     }
     
     /**
@@ -116,13 +116,13 @@ public class Block implements TileEntityBlock {
     public int getId() {
         return id;
     }
-    
+
     /**
      * Set the block ID.
-     * 
+     *
      * @param id block id (between 0 and {@link #MAX_ID}).
      */
-    public void setId(int id) {
+    protected final void internalSetId(int id) {
         if (id > MAX_ID) {
             throw new IllegalArgumentException("Can't have a block ID above "
                     + MAX_ID + " (" + id + " given)");
@@ -131,8 +131,17 @@ public class Block implements TileEntityBlock {
         if (id < 0) {
             throw new IllegalArgumentException("Can't have a block ID below 0");
         }
-        
+
         this.id = (short) id;
+    }
+
+    /**
+     * Set the block ID.
+     *
+     * @param id block id (between 0 and {@link #MAX_ID}).
+     */
+    public void setId(int id) {
+        internalSetId(id);
     }
     
     /**
@@ -149,7 +158,7 @@ public class Block implements TileEntityBlock {
      * 
      * @param data block data value (between 0 and {@link #MAX_DATA}).
      */
-    public void setData(int data) {
+    protected final void internalSetData(int data) {
         if (data > MAX_DATA) {
             throw new IllegalArgumentException(
                     "Can't have a block data value above " + MAX_DATA + " ("
@@ -161,6 +170,15 @@ public class Block implements TileEntityBlock {
         }
         
         this.data = (short) data;
+    }
+
+    /**
+     * Set the block's data value.
+     *
+     * @param data block data value (between 0 and {@link #MAX_DATA}).
+     */
+    public void setData(int data) {
+        internalSetData(data);
     }
     
     /**

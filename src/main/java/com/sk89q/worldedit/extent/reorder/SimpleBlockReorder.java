@@ -83,6 +83,8 @@ public class SimpleBlockReorder extends ExtentDelegate {
 
     @Override
     public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+        BaseBlock lazyBlock = getLazyBlock(location);
+
         if (!enabled) {
             return super.setBlock(location, block);
         }
@@ -90,18 +92,18 @@ public class SimpleBlockReorder extends ExtentDelegate {
         if (BlockType.shouldPlaceLast(block.getType())) {
             // Place torches, etc. last
             stage2.put(location.toBlockVector(), block);
-            return !(getBlockType(location) == block.getType() && getBlockData(location) == block.getData());
+            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
         } else if (BlockType.shouldPlaceFinal(block.getType())) {
             // Place signs, reed, etc even later
             stage3.put(location.toBlockVector(), block);
-            return !(getBlockType(location) == block.getType() && getBlockData(location) == block.getData());
-        } else if (BlockType.shouldPlaceLast(getBlockType(location))) {
+            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
+        } else if (BlockType.shouldPlaceLast(lazyBlock.getType())) {
             // Destroy torches, etc. first
             super.setBlock(location, new BaseBlock(BlockID.AIR));
             return super.setBlock(location, block);
         } else {
             stage1.put(location.toBlockVector(), block);
-            return !(getBlockType(location) == block.getType() && getBlockData(location) == block.getData());
+            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
         }
     }
 
