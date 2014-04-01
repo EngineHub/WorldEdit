@@ -22,11 +22,10 @@ package com.sk89q.worldedit.history.changeset;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.DoubleArrayList;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.history.change.BlockChange;
 import com.sk89q.worldedit.history.change.Change;
+import com.sk89q.worldedit.util.collection.TupleArrayList;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -44,8 +43,8 @@ import static java.util.Map.Entry;
  */
 public class BlockOptimizedHistory extends ArrayListHistory {
 
-    private final DoubleArrayList<BlockVector, BaseBlock> previous = new DoubleArrayList<BlockVector, BaseBlock>(true);
-    private final DoubleArrayList<BlockVector, BaseBlock> current = new DoubleArrayList<BlockVector, BaseBlock>(false);
+    private final TupleArrayList<BlockVector, BaseBlock> previous = new TupleArrayList<BlockVector, BaseBlock>();
+    private final TupleArrayList<BlockVector, BaseBlock> current = new TupleArrayList<BlockVector, BaseBlock>();
 
     @Override
     public void add(Change change) {
@@ -94,4 +93,5 @@ public class BlockOptimizedHistory extends ArrayListHistory {
             }
         };
     }
+
 }
