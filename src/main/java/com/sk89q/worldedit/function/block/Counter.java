@@ -24,9 +24,9 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.RegionFunction;
 
 /**
- * Counts the number of blocks.
+ * Keeps a count of the number of times that {@link #apply(Vector)} is called.
  */
- public class BlockCount implements RegionFunction {
+ public class Counter implements RegionFunction {
 
     private int count;
     

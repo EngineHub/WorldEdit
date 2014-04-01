@@ -29,11 +29,21 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Sets block from an iterator of {@link Map.Entry} containing a
+ * {@link BlockVector} as the key and a {@link BaseBlock} as the value.
+ */
 public class BlockMapEntryPlacer implements Operation {
 
     private final Extent extent;
     private final Iterator<Map.Entry<BlockVector, BaseBlock>> iterator;
 
+    /**
+     * Create a new instance.
+     *
+     * @param extent the extent to set the blocks on
+     * @param iterator the iterator
+     */
     public BlockMapEntryPlacer(Extent extent, Iterator<Map.Entry<BlockVector, BaseBlock>> iterator) {
         checkNotNull(extent);
         checkNotNull(iterator);

@@ -19,11 +19,9 @@
 
 package com.sk89q.worldedit.function;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.masks.ExistingBlockMask;
-import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.function.mask.Mask;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -32,21 +30,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class GroundFunction implements LayerFunction {
 
-    private final EditSession editSession;
+    private Mask mask;
     private final RegionFunction function;
-    private Mask mask = new ExistingBlockMask();
     private int affected;
 
     /**
      * Create a new ground function.
      *
-     * @param editSession an edit session
+     * @param mask a mask
      * @param function the function to apply
      */
-    public GroundFunction(EditSession editSession, RegionFunction function) {
-        checkNotNull(editSession);
+    public GroundFunction(Mask mask, RegionFunction function) {
+        checkNotNull(mask);
         checkNotNull(function);
-        this.editSession = editSession;
+        this.mask = mask;
         this.function = function;
     }
 
@@ -80,7 +77,7 @@ public class GroundFunction implements LayerFunction {
 
     @Override
     public boolean isGround(Vector position) {
-        return mask.matches(editSession, position);
+        return mask.test(position);
     }
 
     @Override

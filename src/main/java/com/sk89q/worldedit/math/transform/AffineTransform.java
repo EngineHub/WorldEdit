@@ -24,8 +24,9 @@ import com.sk89q.worldedit.Vector;
 /**
  * An affine transform.
  * </p>
- * This class is from the <a href="http://geom-java.sourceforge.net/index.html>JavaGeom
- * project</a>, which is licensed under LGPL v2.1.
+ * This class is from the
+ * <a href="http://geom-java.sourceforge.net/index.html>JavaGeom project</a>,
+ * which is licensed under LGPL v2.1.
  */
 public class AffineTransform implements Transform {
 

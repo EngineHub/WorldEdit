@@ -31,8 +31,8 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A mask that checks whether blocks at the given positions are listed
- * in a list of block types.
+ * A mask that checks whether blocks at the given positions are matched by
+ * a block in a list.
  * </p>
  * This mask checks for both an exact block ID and data value match, as well
  * for a block with the same ID but a data value of -1.

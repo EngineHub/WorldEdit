@@ -39,7 +39,7 @@ import java.util.*;
 /**
  * Re-orders blocks into several stages.
  */
-public class SimpleBlockReorder extends ExtentDelegate {
+public class MultiStageReorder extends ExtentDelegate implements ReorderingExtent {
 
     private TupleArrayList<BlockVector, BaseBlock> stage1 = new TupleArrayList<BlockVector, BaseBlock>();
     private TupleArrayList<BlockVector, BaseBlock> stage2 = new TupleArrayList<BlockVector, BaseBlock>();
@@ -52,7 +52,7 @@ public class SimpleBlockReorder extends ExtentDelegate {
      * @param extent the extent
      * @param enabled true to enable
      */
-    public SimpleBlockReorder(Extent extent, boolean enabled) {
+    public MultiStageReorder(Extent extent, boolean enabled) {
         super(extent);
         this.enabled = enabled;
     }
@@ -62,7 +62,7 @@ public class SimpleBlockReorder extends ExtentDelegate {
      *
      * @param extent the extent
      */
-    public SimpleBlockReorder(Extent extent) {
+    public MultiStageReorder(Extent extent) {
         this(extent, true);
     }
 

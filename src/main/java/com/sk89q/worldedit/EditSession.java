@@ -27,10 +27,10 @@ import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
 import com.sk89q.worldedit.extent.*;
-import com.sk89q.worldedit.extent.reorder.SimpleBlockReorder;
+import com.sk89q.worldedit.extent.reorder.MultiStageReorder;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
-import com.sk89q.worldedit.function.block.BlockCount;
+import com.sk89q.worldedit.function.block.Counter;
 import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.block.Naturalizer;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
@@ -93,7 +93,7 @@ public class EditSession implements Extent {
 
     private final FastModeExtent fastModeExtent;
     private final BlockBagExtent blockBagExtent;
-    private final SimpleBlockReorder reorderExtent;
+    private final MultiStageReorder reorderExtent;
     private final MaskingExtent maskingExtent;
     private final BlockChangeLimiter changeLimiter;
 
@@ -136,7 +136,7 @@ public class EditSession implements Extent {
         blockBagExtent                          = new BlockBagExtent(validator, world, blockBag);
 
         // This extent can be skipped by calling rawSetBlock()
-        reorderExtent                           = new SimpleBlockReorder(blockBagExtent, false);
+        reorderExtent                           = new MultiStageReorder(blockBagExtent, false);
 
         // These extents can be skipped by calling smartSetBlock()
         ChangeSetExtent changeSetExtent         = new ChangeSetExtent(reorderExtent, changeSet);
@@ -581,7 +581,7 @@ public class EditSession implements Extent {
      */
     public int countBlocks(Region region, Set<BaseBlock> searchBlocks) {
         FuzzyBlockMask mask = new FuzzyBlockMask(this, searchBlocks);
-        BlockCount count = new BlockCount();
+        Counter count = new Counter();
         RegionMaskingFilter filter = new RegionMaskingFilter(mask, count);
         RegionVisitor visitor = new RegionVisitor(region, filter);
         OperationHelper.completeBlindly(visitor); // We can't throw exceptions, nor do we expect any
@@ -983,7 +983,7 @@ public class EditSession implements Extent {
 
         BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
         RegionOffset offset = new RegionOffset(new Vector(0, 1, 0), replace);
-        GroundFunction ground = new GroundFunction(this, offset);
+        GroundFunction ground = new GroundFunction(new ExistingBlockMask(this), offset);
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         OperationHelper.completeLegacy(visitor);
         return ground.getAffected();
@@ -1634,7 +1634,7 @@ public class EditSession implements Extent {
                 position.add(apothem, 10, apothem));
         double density = 0.02;
 
-        GroundFunction ground = new GroundFunction(this, generator);
+        GroundFunction ground = new GroundFunction(new ExistingBlockMask(this), generator);
         LayerVisitor visitor = new LayerVisitor(region, minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
         OperationHelper.completeLegacy(visitor);

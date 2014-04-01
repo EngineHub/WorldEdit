@@ -21,9 +21,10 @@ package com.sk89q.worldedit.function;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.function.visitor.LayerVisitor;
 
 /**
- * A function that accepts layers of blocks.
+ * A function that takes a position and a depth.
  */
 public interface LayerFunction {
 
@@ -38,11 +39,14 @@ public interface LayerFunction {
 
     /**
      * Apply the function to the given position.
+     * </p>
+     * The depth would be the number of blocks from the surface if
+     * a {@link LayerVisitor} was used.
      *
      * @param position the position
      * @param depth the depth as a number starting from 0
      * @return true whether this method should be called for further layers
-     * @throws com.sk89q.worldedit.WorldEditException thrown on an error
+     * @throws WorldEditException thrown on an error
      */
     boolean apply(Vector position, int depth) throws WorldEditException;
 }

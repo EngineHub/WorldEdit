@@ -32,6 +32,9 @@ import com.sk89q.worldedit.function.pattern.RandomPattern;
 
 import java.util.Random;
 
+/**
+ * Generates patches of fruit (i.e. pumpkin patches).
+ */
 public class GardenPatchGenerator implements RegionFunction {
 
     private final Random random = new Random();

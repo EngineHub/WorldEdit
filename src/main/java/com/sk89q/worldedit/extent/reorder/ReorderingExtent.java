@@ -17,25 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function;
+package com.sk89q.worldedit.extent.reorder;
 
-import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.regions.FlatRegion;
+import com.sk89q.worldedit.extent.Extent;
 
 /**
- * Performs a function on the columns in a {@link FlatRegion}, or also
- * known as vectors with only X and Z components (where Y is height).
+ * An interface for {@link Extent}s that are meant to reorder changes so
+ * that they are more successful.
+ * </p>
+ * For example, torches in Minecraft need to be placed on a block. A smart
+ * reordering implementation might place the torch after the block has
+ * been placed.
  */
-public interface FlatRegionFunction {
-
-    /**
-     * Apply the function to the given position.
-     *
-     * @param position the position
-     * @return true if something was changed
-     * @throws WorldEditException thrown on an error
-     */
-    public boolean apply(Vector2D position) throws WorldEditException;
+public interface ReorderingExtent extends Extent {
 
 }

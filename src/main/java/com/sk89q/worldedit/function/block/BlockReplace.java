@@ -28,7 +28,7 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Replaces blocks with the given pattern.
+ * Replaces blocks with a given pattern.
  */
 public class BlockReplace implements RegionFunction {
 

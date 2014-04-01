@@ -25,7 +25,8 @@ import com.sk89q.worldedit.Vector2D;
 import java.util.Random;
 
 /**
- * Generates noise non-deterministically using {@link java.util.Random}.
+ * Generates noise using {@link java.util.Random}. Every time a noise
+ * generating function is called, a new value will be returned.
  */
 public class RandomNoise implements NoiseGenerator {
 

@@ -26,6 +26,9 @@ import com.sk89q.worldedit.function.mask.Mask;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Requires that all mutating methods pass a given {@link Mask}.
+ */
 public class MaskingExtent extends ExtentDelegate {
 
     private Mask mask;
@@ -63,11 +66,7 @@ public class MaskingExtent extends ExtentDelegate {
 
     @Override
     public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
-        if (mask.test(location)) {
-            return super.setBlock(location, block);
-        } else {
-            return false;
-        }
+        return mask.test(location) && super.setBlock(location, block);
     }
 
 }

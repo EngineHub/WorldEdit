@@ -27,6 +27,7 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.expression.ExpressionException;
+import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.math.convolution.GaussianKernel;
 import com.sk89q.worldedit.math.convolution.HeightMap;
 import com.sk89q.worldedit.math.convolution.HeightMapFilter;
@@ -551,7 +552,7 @@ public class RegionCommands {
         Region region = session.getSelection(player.getWorld());
 
         ForestGenerator generator = new ForestGenerator(editSession, new TreeGenerator(type));
-        GroundFunction ground = new GroundFunction(editSession, generator);
+        GroundFunction ground = new GroundFunction(new ExistingBlockMask(editSession), generator);
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
         OperationHelper.completeLegacy(visitor);
@@ -573,7 +574,7 @@ public class RegionCommands {
 
         Region region = session.getSelection(player.getWorld());
         FloraGenerator generator = new FloraGenerator(editSession);
-        GroundFunction ground = new GroundFunction(editSession, generator);
+        GroundFunction ground = new GroundFunction(new ExistingBlockMask(editSession), generator);
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
         OperationHelper.completeLegacy(visitor);
