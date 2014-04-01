@@ -74,6 +74,10 @@ import static com.sk89q.worldedit.regions.Regions.*;
  * Most of the actual functionality is implemented with a number of other
  * {@link Extent}s that are chained together. For example, history is logged
  * using the {@link ChangeSetExtent}.
+ * </p>
+ * Subclasses can override {@link #wrapBeforeHistory(Extent)},
+ * {@link #wrapBeforeReorder(Extent)} and {@link #wrapBeforeSet(Extent)} to
+ * inject custom {@link Extent}s.
  */
 public class EditSession implements Extent {
 
@@ -127,25 +131,68 @@ public class EditSession implements Extent {
 
         this.world = world;
 
+        Extent wrappedExtent;
+
         // This extents are ALWAYS used
         fastModeExtent                          = new FastModeExtent(world, false);
         ChunkLoadingExtent chunkLoadingExtent   = new ChunkLoadingExtent(fastModeExtent, world);
         LastAccessExtentCache cacheExtent       = new LastAccessExtentCache(chunkLoadingExtent);
-        BlockQuirkExtent quirkExtent            = new BlockQuirkExtent(cacheExtent, world);
+        wrappedExtent                           = checkNotNull(wrapBeforeSet(cacheExtent), "wrapBeforeSet() returned null");
+        BlockQuirkExtent quirkExtent            = new BlockQuirkExtent(wrappedExtent, world);
         DataValidatorExtent validator           = new DataValidatorExtent(quirkExtent, world);
         blockBagExtent                          = new BlockBagExtent(validator, world, blockBag);
 
         // This extent can be skipped by calling rawSetBlock()
         reorderExtent                           = new MultiStageReorder(blockBagExtent, false);
+        wrappedExtent                           = checkNotNull(wrapBeforeReorder(reorderExtent), "wrapBeforeReorder() returned null");
 
         // These extents can be skipped by calling smartSetBlock()
-        ChangeSetExtent changeSetExtent         = new ChangeSetExtent(reorderExtent, changeSet);
-        maskingExtent                           = new MaskingExtent(changeSetExtent, Masks.alwaysTrue());
+        ChangeSetExtent changeSetExtent         = new ChangeSetExtent(wrappedExtent, changeSet);
+        wrappedExtent                           = checkNotNull(wrapBeforeHistory(changeSetExtent), "wrapBeforeHistory() returned null");
+        maskingExtent                           = new MaskingExtent(wrappedExtent, Masks.alwaysTrue());
         changeLimiter                           = new BlockChangeLimiter(maskingExtent, maxBlocks);
 
         this.bypassReorderHistory = blockBagExtent;
         this.bypassHistory = reorderExtent;
         this.bypassNone = changeLimiter;
+    }
+
+    /**
+     * Wrap the given extent at an early point.
+     * </p>
+     * Extents added here are called after most of the other extents have been
+     * called, meaning that it will receive the final changes.
+     *
+     * @param extent the extent that needs to be wrapped
+     * @return the replacement extent
+     */
+    protected Extent wrapBeforeSet(Extent extent) {
+        return extent;
+    }
+
+    /**
+     * Wrap the given extent at a point before reordering is done.
+     * </p>
+     * Extents added here are called before changes are re-ordered.
+     *
+     * @param extent the extent that needs to be wrapped
+     * @return the replacement extent
+     */
+    protected Extent wrapBeforeReorder(Extent extent) {
+        return extent;
+    }
+
+    /**
+     * Wrap the given extent at a point before history is logged.
+     * </p>
+     * Extents added here are called before the changes are stored
+     * in history.
+     *
+     * @param extent the extent that needs to be wrapped
+     * @return the replacement extent
+     */
+    protected Extent wrapBeforeHistory(Extent extent) {
+        return extent;
     }
 
     /**
