@@ -20,16 +20,19 @@
 package com.sk89q.worldedit.extent.reorder;
 
 import com.google.common.collect.Iterators;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.extent.ExtentDelegate;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.ExtentDelegate;
 import com.sk89q.worldedit.function.operation.BlockMapEntryPlacer;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
+import com.sk89q.worldedit.util.collection.TupleArrayList;
 
 import java.util.*;
 
@@ -38,9 +41,9 @@ import java.util.*;
  */
 public class SimpleBlockReorder extends ExtentDelegate {
 
-    private DoubleArrayList<BlockVector, BaseBlock> stage1 = new DoubleArrayList<BlockVector, BaseBlock>(false);
-    private DoubleArrayList<BlockVector, BaseBlock> stage2 = new DoubleArrayList<BlockVector, BaseBlock>(false);
-    private DoubleArrayList<BlockVector, BaseBlock> stage3 = new DoubleArrayList<BlockVector, BaseBlock>(false);
+    private TupleArrayList<BlockVector, BaseBlock> stage1 = new TupleArrayList<BlockVector, BaseBlock>();
+    private TupleArrayList<BlockVector, BaseBlock> stage2 = new TupleArrayList<BlockVector, BaseBlock>();
+    private TupleArrayList<BlockVector, BaseBlock> stage3 = new TupleArrayList<BlockVector, BaseBlock>();
     private boolean enabled;
 
     /**
