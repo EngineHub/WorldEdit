@@ -85,12 +85,12 @@ public class BlockChange implements Change {
 
     @Override
     public void undo(UndoContext context) throws WorldEditException {
-        checkNotNull(context.getExtent()).setBlock(position, previous, true);
+        checkNotNull(context.getExtent()).setBlock(position, previous);
     }
 
     @Override
     public void redo(UndoContext context) throws WorldEditException {
-        checkNotNull(context.getExtent()).setBlock(position, current, true);
+        checkNotNull(context.getExtent()).setBlock(position, current);
     }
 
 }

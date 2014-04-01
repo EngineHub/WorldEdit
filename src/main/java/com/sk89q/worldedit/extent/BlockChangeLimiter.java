@@ -75,13 +75,13 @@ public class BlockChangeLimiter extends ExtentDelegate {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException {
+    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         if (limit >= 0) {
             if (count >= limit) {
                 throw new MaxChangedBlocksException(limit);
             }
             count++;
         }
-        return super.setBlock(location, block, notifyAdjacent);
+        return super.setBlock(location, block);
     }
 }

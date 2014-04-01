@@ -71,8 +71,8 @@ public class ExtentDelegate implements Extent {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException {
-        return extent.setBlock(location, block, notifyAdjacent);
+    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+        return extent.setBlock(location, block);
     }
 
     protected Operation commitBefore() {

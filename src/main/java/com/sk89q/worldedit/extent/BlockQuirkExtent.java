@@ -49,7 +49,7 @@ public class BlockQuirkExtent extends ExtentDelegate {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException {
+    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         final int existing = world.getBlockType(location);
 
         if (BlockType.isContainerBlock(existing)) {
@@ -58,7 +58,7 @@ public class BlockQuirkExtent extends ExtentDelegate {
             world.setBlockType(location, BlockID.AIR); // Ice turns until water so this has to be done first
         }
 
-        return super.setBlock(location, block, notifyAdjacent);
+        return super.setBlock(location, block);
     }
 
 }

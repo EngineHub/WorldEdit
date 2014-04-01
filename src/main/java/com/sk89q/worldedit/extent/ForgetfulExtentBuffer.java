@@ -77,7 +77,7 @@ public class ForgetfulExtentBuffer extends ExtentDelegate implements Pattern {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException {
+    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         // Update minimum
         if (min == null) {
             min = location;
@@ -97,7 +97,7 @@ public class ForgetfulExtentBuffer extends ExtentDelegate implements Pattern {
             buffer.put(blockVector, block);
             return true;
         } else {
-            return getExtent().setBlock(location, block, notifyAdjacent);
+            return getExtent().setBlock(location, block);
         }
     }
 

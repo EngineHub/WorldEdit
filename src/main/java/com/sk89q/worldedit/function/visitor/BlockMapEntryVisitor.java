@@ -46,7 +46,7 @@ public class BlockMapEntryVisitor implements Operation {
     public Operation resume() throws WorldEditException {
         while (iterator.hasNext()) {
             Map.Entry<BlockVector, BaseBlock> entry = iterator.next();
-            extent.setBlock(entry.getKey(), entry.getValue(), true);
+            extent.setBlock(entry.getKey(), entry.getValue());
         }
 
         return null;

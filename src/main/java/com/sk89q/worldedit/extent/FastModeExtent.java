@@ -81,9 +81,9 @@ public class FastModeExtent extends ExtentDelegate {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException {
+    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         dirtyChunks.add(new BlockVector2D(location.getBlockX() >> 4, location.getBlockZ() >> 4));
-        return super.setBlock(location, block, notifyAdjacent || enabled);
+        return world.setBlock(location, block, !enabled);
     }
 
     @Override

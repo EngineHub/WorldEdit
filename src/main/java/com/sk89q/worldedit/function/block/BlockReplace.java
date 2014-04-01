@@ -50,7 +50,7 @@ public class BlockReplace implements RegionFunction {
 
     @Override
     public boolean apply(Vector position) throws WorldEditException {
-        return extent.setBlock(position, pattern.apply(position), true);
+        return extent.setBlock(position, pattern.apply(position));
     }
 
 }

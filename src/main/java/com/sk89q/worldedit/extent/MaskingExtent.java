@@ -62,9 +62,9 @@ public class MaskingExtent extends ExtentDelegate {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException {
+    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         if (mask.test(location)) {
-            return super.setBlock(location, block, notifyAdjacent);
+            return super.setBlock(location, block);
         } else {
             return false;
         }

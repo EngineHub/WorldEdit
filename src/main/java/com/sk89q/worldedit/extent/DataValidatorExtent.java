@@ -46,7 +46,7 @@ public class DataValidatorExtent extends ExtentDelegate {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException {
+    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         final int y = location.getBlockY();
         final int type = block.getType();
         if (y < 0 || y > world.getMaxY()) {
@@ -58,6 +58,6 @@ public class DataValidatorExtent extends ExtentDelegate {
             return false;
         }
 
-        return super.setBlock(location, block, notifyAdjacent);
+        return super.setBlock(location, block);
     }
 }

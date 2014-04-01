@@ -82,9 +82,9 @@ public class SimpleBlockReorder extends ExtentDelegate {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException {
+    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         if (!enabled) {
-            return super.setBlock(location, block, notifyAdjacent);
+            return super.setBlock(location, block);
         }
 
         if (BlockType.shouldPlaceLast(block.getType())) {
@@ -97,8 +97,8 @@ public class SimpleBlockReorder extends ExtentDelegate {
             return !(getBlockType(location) == block.getType() && getBlockData(location) == block.getData());
         } else if (BlockType.shouldPlaceLast(getBlockType(location))) {
             // Destroy torches, etc. first
-            super.setBlock(location, new BaseBlock(BlockID.AIR), notifyAdjacent);
-            return super.setBlock(location, block, notifyAdjacent);
+            super.setBlock(location, new BaseBlock(BlockID.AIR));
+            return super.setBlock(location, block);
         } else {
             stage1.put(location.toBlockVector(), block);
             return !(getBlockType(location) == block.getType() && getBlockData(location) == block.getData());
@@ -191,7 +191,7 @@ public class SimpleBlockReorder extends ExtentDelegate {
                 }
 
                 for (BlockVector pt : walked) {
-                    extent.setBlock(pt, blockTypes.get(pt), true);
+                    extent.setBlock(pt, blockTypes.get(pt));
                     blocks.remove(pt);
                 }
             }

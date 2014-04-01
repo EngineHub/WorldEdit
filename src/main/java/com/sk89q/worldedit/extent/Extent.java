@@ -23,6 +23,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.pattern.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -33,51 +34,58 @@ import javax.annotation.Nullable;
 public interface Extent {
 
     /**
-     * Get a copy of the block at the given location. May return null if the location
-     * given is out of bounds. The returned block must not be tied to any real block
-     * in the world, so changes to the returned {@link BaseBlock} have no effect until
-     * {@link #setBlock(Vector, BaseBlock, boolean)} is called.
+     * Get a snapshot of the block at the given location.
+     * </p>
+     * If the given position is out of the bounds of the extent, then the behavior
+     * is undefined (an air block could be returned). However, <code>null</code>
+     * should <strong>not</strong> be returned.
+     * </p>
+     * The returned block is mutable and is a snapshot of the block at the time
+     * of call. It has no position attached to it, so it could be reused in
+     * {@link Pattern}s and so on.
+     * </p>
+     * Calls to this method can actually be quite expensive, so cache results
+     * whenever it is possible, while being aware of the mutability aspect.
+     * The cost, however, depends on the implementation and particular extent.
      *
-     * @param location location of the block
+     * @param position position of the block
      * @return the block, or null if the block does not exist
      */
-    BaseBlock getBlock(Vector location);
+    BaseBlock getBlock(Vector position);
 
     /**
      * Get the block ID at the given location.
      *
-     * @param location location of the block
+     * @param position position of the block
      * @return the block ID
      */
-    int getBlockType(Vector location);
+    int getBlockType(Vector position);
 
     /**
      * Get the data value of the block at the given location.
      *
-     * @param location the location of the block
+     * @param position position of the block
      * @return the block data value
      */
-    int getBlockData(Vector location);
+    int getBlockData(Vector position);
 
     /**
      * Change the block at the given location to the given block. The operation may
      * not tie the given {@link BaseBlock} to the world, so future changes to the
      * {@link BaseBlock} do not affect the world until this method is called again.
+     * </p>
+     * The return value of this method indicates whether the change was probably
+     * successful. It may not be successful if, for example, the location is out
+     * of the bounds of the extent. It may be unsuccessful if the block passed
+     * is the same as the one in the world. However, the return value is only an
+     * estimation and it may be incorrect, but it could be used to count, for
+     * example, the approximate number of changes.
      *
-     * <p>The return value of this method indicates whether the change "went through," as
-     * in the block was changed in the world in any way. If the new block is no different
-     * than the block already at the position in the world, 'false' would be returned.
-     * If the position is invalid (out of bounds, for example), then nothing should
-     * occur and 'false' should be returned. If possible, the return value should be
-     * accurate as possible, but implementations may choose to not provide an accurate
-     * value if it is not possible to know.</p>
-     *
-     * @param location location of the block
+     * @param position position of the block
      * @param block block to set
-     * @param notifyAdjacent true to notify adjacent blocks of changes
      * @return true if the block was successfully set (return value may not be accurate)
      */
-    boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException;
+    boolean setBlock(Vector position, BaseBlock block) throws WorldEditException;
 
     /**
      * Return an {@link Operation} that should be called to tie up loose ends

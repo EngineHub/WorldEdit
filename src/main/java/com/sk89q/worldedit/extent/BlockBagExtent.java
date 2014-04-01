@@ -87,7 +87,7 @@ public class BlockBagExtent extends ExtentDelegate {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException {
+    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         if (blockBag != null) {
             final int type = block.getType();
             final int existing = world.getBlockType(location);
@@ -115,6 +115,6 @@ public class BlockBagExtent extends ExtentDelegate {
             }
         }
 
-        return super.setBlock(location, block, notifyAdjacent);
+        return super.setBlock(location, block);
     }
 }

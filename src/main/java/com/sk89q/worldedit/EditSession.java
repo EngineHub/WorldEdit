@@ -367,22 +367,17 @@ public class EditSession implements Extent {
      * @param level the level
      * @return whether the block changed
      */
-    public boolean setBlock(Vector position, BaseBlock block, boolean notifyAdjacent, Level level) throws WorldEditException {
+    public boolean setBlock(Vector position, BaseBlock block, Level level) throws WorldEditException {
         switch (level) {
             case NORMAL:
-                return bypassNone.setBlock(position, block, notifyAdjacent);
+                return bypassNone.setBlock(position, block);
             case NO_HISTORY_REORDER:
-                return bypassHistory.setBlock(position, block, notifyAdjacent);
+                return bypassHistory.setBlock(position, block);
             case NO_HISTORY:
-                return bypassReorderHistory.setBlock(position, block, notifyAdjacent);
+                return bypassReorderHistory.setBlock(position, block);
         }
 
         throw new RuntimeException("New enum entry added that is unhandled here");
-    }
-
-    @Override
-    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException {
-        return setBlock(location, block, notifyAdjacent, Level.NORMAL);
     }
 
     /**
@@ -396,7 +391,7 @@ public class EditSession implements Extent {
     @Deprecated
     public boolean rawSetBlock(Vector position, BaseBlock block) {
         try {
-            return setBlock(position, block, true, Level.NO_HISTORY_REORDER);
+            return setBlock(position, block, Level.NO_HISTORY_REORDER);
         } catch (WorldEditException e) {
             throw new RuntimeException("Unexpected exception", e);
         }
@@ -413,23 +408,16 @@ public class EditSession implements Extent {
     @Deprecated
     public boolean smartSetBlock(Vector position, BaseBlock block) {
         try {
-            return setBlock(position, block, true, Level.NO_HISTORY);
+            return setBlock(position, block, Level.NO_HISTORY);
         } catch (WorldEditException e) {
             throw new RuntimeException("Unexpected exception", e);
         }
     }
 
-    /**
-     * Sets the block at a position, subject to both history and block re-ordering.
-     *
-     * @param position the position
-     * @param block the block
-     * @return Whether the block changed -- not entirely dependable
-     * @throws MaxChangedBlocksException thrown if too many blocks are changed
-     */
+    @Override
     public boolean setBlock(Vector position, BaseBlock block) throws MaxChangedBlocksException {
         try {
-            return setBlock(position, block, true, Level.NORMAL);
+            return setBlock(position, block, Level.NORMAL);
         } catch (MaxChangedBlocksException e) {
             throw e;
         } catch (WorldEditException e) {

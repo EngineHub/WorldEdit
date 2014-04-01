@@ -47,10 +47,10 @@ public class ChangeSetExtent extends ExtentDelegate {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException {
+    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         BaseBlock previous = getBlock(location);
         changeSet.add(new BlockChange(location.toBlockVector(), previous, block));
-        return super.setBlock(location, block, notifyAdjacent);
+        return super.setBlock(location, block);
     }
 
 }

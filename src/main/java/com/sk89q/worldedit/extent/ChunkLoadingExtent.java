@@ -59,8 +59,8 @@ public class ChunkLoadingExtent extends ExtentDelegate {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent) throws WorldEditException {
+    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         world.checkLoadedChunk(location);
-        return super.setBlock(location, block, notifyAdjacent);
+        return super.setBlock(location, block);
     }
 }

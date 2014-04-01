@@ -526,8 +526,8 @@ public abstract class LocalWorld implements World, Extent {
     }
 
     @Override
-    public boolean setBlock(Vector pt, BaseBlock block, boolean notifyAdjacent) {
-        return setBlock(pt, (Block) block, notifyAdjacent);
+    public boolean setBlock(Vector pt, BaseBlock block) {
+        return setBlock(pt, block, true);
     }
     
     @Override
