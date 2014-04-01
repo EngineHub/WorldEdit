@@ -17,25 +17,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.visitor;
+package com.sk89q.worldedit.function.operation;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.function.operation.Operation;
 
 import java.util.Iterator;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class BlockMapEntryVisitor implements Operation {
+public class BlockMapEntryPlacer implements Operation {
 
     private final Extent extent;
     private final Iterator<Map.Entry<BlockVector, BaseBlock>> iterator;
 
-    public BlockMapEntryVisitor(Extent extent, Iterator<Map.Entry<BlockVector, BaseBlock>> iterator) {
+    public BlockMapEntryPlacer(Extent extent, Iterator<Map.Entry<BlockVector, BaseBlock>> iterator) {
         checkNotNull(extent);
         checkNotNull(iterator);
         this.extent = extent;

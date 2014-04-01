@@ -27,9 +27,9 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.extent.ExtentDelegate;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.function.operation.BlockMapEntryPlacer;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
-import com.sk89q.worldedit.function.visitor.BlockMapEntryVisitor;
 
 import java.util.*;
 
@@ -110,7 +110,7 @@ public class SimpleBlockReorder extends ExtentDelegate {
     @Override
     public Operation commitBefore() {
         return new OperationQueue(
-                new BlockMapEntryVisitor(
+                new BlockMapEntryPlacer(
                         getExtent(),
                         Iterators.concat(stage1.iterator(), stage2.iterator())),
                 new Stage3Committer());
