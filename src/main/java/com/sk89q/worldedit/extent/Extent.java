@@ -19,89 +19,12 @@
 
 package com.sk89q.worldedit.extent;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.pattern.Pattern;
-
-import javax.annotation.Nullable;
-
 /**
- * A world, portion of a world, clipboard, or other object that can have blocks set or
- * entities placed.
+ * A world, portion of a world, clipboard, or other object that can have blocks
+ * set or entities placed.
+ *
+ * @see InputExtent the get____() portion
+ * @see OutputExtent the set____() portion
  */
-public interface Extent {
-
-    /**
-     * Get a snapshot of the block at the given location.
-     * </p>
-     * If the given position is out of the bounds of the extent, then the behavior
-     * is undefined (an air block could be returned). However, <code>null</code>
-     * should <strong>not</strong> be returned.
-     * </p>
-     * The returned block is mutable and is a snapshot of the block at the time
-     * of call. It has no position attached to it, so it could be reused in
-     * {@link Pattern}s and so on.
-     * </p>
-     * Calls to this method can actually be quite expensive, so cache results
-     * whenever it is possible, while being aware of the mutability aspect.
-     * The cost, however, depends on the implementation and particular extent.
-     * If only basic information about the block is required, then use of
-     * {@link #getLazyBlock(Vector)} is recommended.
-     *
-     * @param position position of the block
-     * @return the block
-     */
-    BaseBlock getBlock(Vector position);
-
-    /**
-     * Get a lazy, immutable snapshot of the block at the given location that only
-     * immediately contains information about the block's type (and metadata).
-     * </p>
-     * Further information (such as NBT data) will be available <strong>by the
-     * time of access</strong>. Therefore, it is not recommended that
-     * this method is used if the world is being simulated at the time of
-     * call. If the block needs to be stored for future use, then this method should
-     * definitely not be used. Moreover, the block that is returned is immutable (or
-     * should be), and therefore modifications should not be attempted on it. If a
-     * modifiable copy is required, then the block should be cloned.
-     * </p>
-     * This method exists because it is sometimes important to inspect the block
-     * at a given location, but {@link #getBlock(Vector)} may be too expensive in
-     * the underlying implementation. It is also not possible to implement
-     * caching if the returned object is mutable, so this methods allows caching
-     * implementations to be used.
-     *
-     * @param position position of the block
-     * @return the block
-     */
-    BaseBlock getLazyBlock(Vector position);
-
-    /**
-     * Change the block at the given location to the given block. The operation may
-     * not tie the given {@link BaseBlock} to the world, so future changes to the
-     * {@link BaseBlock} do not affect the world until this method is called again.
-     * </p>
-     * The return value of this method indicates whether the change was probably
-     * successful. It may not be successful if, for example, the location is out
-     * of the bounds of the extent. It may be unsuccessful if the block passed
-     * is the same as the one in the world. However, the return value is only an
-     * estimation and it may be incorrect, but it could be used to count, for
-     * example, the approximate number of changes.
-     *
-     * @param position position of the block
-     * @param block block to set
-     * @return true if the block was successfully set (return value may not be accurate)
-     */
-    boolean setBlock(Vector position, BaseBlock block) throws WorldEditException;
-
-    /**
-     * Return an {@link Operation} that should be called to tie up loose ends
-     * (such as to commit changes in a buffer).
-     *
-     * @return an operation or null if there is none to execute
-     */
-    @Nullable Operation commit();
-
+public interface Extent extends InputExtent, OutputExtent {
 }
