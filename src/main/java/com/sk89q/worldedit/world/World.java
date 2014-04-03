@@ -16,10 +16,12 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.foundation;
+package com.sk89q.worldedit.world;
 
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.foundation.Block;
 
 /**
  * Represents a world instance that can be modified. The world instance could be
@@ -33,8 +35,8 @@ public interface World {
 
     /**
      * Change the block at the given location to the given block. The operation may
-     * not tie the given {@link Block} to the world, so future changes to the
-     * {@link Block} do not affect the world until this method is called again.
+     * not tie the given {@link BaseBlock} to the world, so future changes to the
+     * {@link BaseBlock} do not affect the world until this method is called again.
      * </p>
      * Implementations may or may not consider the value of the notifyAdjacent
      * parameter, and implementations may to choose to either apply physics anyway or
@@ -47,23 +49,23 @@ public interface World {
      * occur and 'false' should be returned. If possible, the return value should be
      * accurate as possible, but implementations may choose to not provide an accurate
      * value if it is not possible to know.
-     * 
+     *
      * @param location location of the block
      * @param block block to set
      * @param notifyAdjacent true to to notify adjacent (perform physics)
      * @return true if the block was successfully set (return value may not be accurate)
      */
-    boolean setBlock(Vector location, Block block, boolean notifyAdjacent);
-    
+    boolean setBlock(Vector location, BaseBlock block, boolean notifyAdjacent);
+
     /**
      * Get a copy of the block at the given location. May return null if the location
      * given is out of bounds. The returned block must not be tied to any real block
      * in the world, so changes to the returned {@link Block} have no effect until
-     * {@link #setBlock(Vector, Block, boolean)} is called.
-     * 
+     * {@link #setBlock(Vector, BaseBlock, boolean)} is called.
+     *
      * @param location location of the block
      * @return the block, or null if the block does not exist
      */
-    Block getBlock(Vector location);
+    BaseBlock getBlock(Vector location);
 
 }

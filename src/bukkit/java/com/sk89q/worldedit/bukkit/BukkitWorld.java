@@ -1313,7 +1313,7 @@ public class BukkitWorld extends LocalWorld {
     }
 
     @Override
-    public boolean setBlock(Vector pt, com.sk89q.worldedit.foundation.Block block, boolean notifyAdjacent) {
+    public boolean setBlock(Vector pt, BaseBlock block, boolean notifyAdjacent) {
         if (!skipNmsSafeSet) {
             try {
                 return (Boolean) nmsSetSafeMethod.invoke(null, this, pt, block, notifyAdjacent);

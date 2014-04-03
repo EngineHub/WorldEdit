@@ -16,7 +16,7 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.foundation;
+package com.sk89q.worldedit.world;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.world.DataException;

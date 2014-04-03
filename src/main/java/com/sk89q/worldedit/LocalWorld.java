@@ -21,8 +21,7 @@ package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.foundation.Block;
-import com.sk89q.worldedit.foundation.World;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -533,7 +532,7 @@ public abstract class LocalWorld implements World, Extent {
     }
     
     @Override
-    public boolean setBlock(Vector pt, Block block, boolean notifyAdjacent) {
+    public boolean setBlock(Vector pt, BaseBlock block, boolean notifyAdjacent) {
         boolean successful;
         
         // Default implementation will call the old deprecated methods
