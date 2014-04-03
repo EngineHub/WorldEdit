@@ -1,0 +1,72 @@
+#
+# WorldEdit's configuration file
+#
+# About editing this file:
+# - DO NOT USE TABS. You MUST use spaces or Bukkit will complain. If
+#   you use an editor like Notepad++ (recommended for Windows users), you
+#   must configure it to "replace tabs with spaces." In Notepad++, this can
+#   be changed in Settings > Preferences > Language Menu.
+# - Don't get rid of the indents. They are indented so some entries are
+#   in categories (like "max-blocks-changed" is in the "limits"
+#   category.
+# - If you want to check the format of this file before putting it
+#   into WorldEdit, paste it into http://yaml-online-parser.appspot.com/
+#   and see if it gives "ERROR:".
+# - Lines starting with # are commentsand so they are ignored.
+#
+
+limits:
+    allow-extra-data-values: false
+    max-blocks-changed:
+        default: -1
+        maximum: -1
+    max-polygonal-points:
+        default: -1
+        maximum: 20
+    max-radius: -1
+    max-super-pickaxe-size: 5
+    max-brush-radius: 5
+    butcher-radius:
+        default: -1
+        maximum: -1
+    disallowed-blocks: [6, 7, 14, 15, 16, 26, 27, 28, 29, 39, 31, 32, 33, 34, 36, 37, 38, 39, 40, 46, 50, 51, 56, 59, 69, 73, 74, 75, 76, 77, 81, 83]
+
+use-inventory:
+    enable: false
+    allow-override: true
+    creative-mode-overrides: false
+
+logging:
+    log-commands: false
+    file: worldedit.log
+
+super-pickaxe:
+    drop-items: true
+    many-drop-items: false
+
+snapshots:
+    directory:
+
+navigation-wand:
+    item: 345
+    max-distance: 100
+
+scripting:
+    timeout: 3000
+    dir: craftscripts
+
+saving:
+    dir: schematics
+
+files:
+    allow-symbolic-links: false
+
+history:
+    size: 15
+    expiration: 10
+
+wand-item: 271
+shell-save-type:
+no-double-slash: false
+no-op-permissions: false
+debug: false
