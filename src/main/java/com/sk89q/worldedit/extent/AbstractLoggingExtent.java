@@ -33,16 +33,22 @@ public abstract class AbstractLoggingExtent extends ExtentDelegate {
      *
      * @param extent the extent
      */
-    public AbstractLoggingExtent(Extent extent) {
+    protected AbstractLoggingExtent(Extent extent) {
         super(extent);
     }
 
-    protected void onBlockSet(Vector position, BaseBlock newBlock) {
+    /**
+     * Called when a block is being changed.
+     *
+     * @param position the position
+     * @param newBlock the new block to replace the old one
+     */
+    protected void onBlockChange(Vector position, BaseBlock newBlock) {
     }
 
     @Override
     public final boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
-        onBlockSet(position, block);
+        onBlockChange(position, block);
         return super.setBlock(position, block);
     }
     

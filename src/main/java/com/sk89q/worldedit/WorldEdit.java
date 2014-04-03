@@ -1,7 +1,7 @@
-// $Id$
 /*
- * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com> and contributors
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,155 +15,62 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.worldedit;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import com.sk89q.minecraft.util.commands.*;
+import com.sk89q.minecraft.util.commands.Console;
+import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
+import com.sk89q.worldedit.bags.BlockBag;
+import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.commands.*;
+import com.sk89q.worldedit.event.extent.EditSessionEvent;
+import com.sk89q.worldedit.masks.*;
+import com.sk89q.worldedit.patterns.*;
+import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.scripting.CraftScriptContext;
+import com.sk89q.worldedit.scripting.CraftScriptEngine;
+import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
+import com.sk89q.worldedit.tools.*;
+import com.sk89q.worldedit.util.eventbus.EventBus;
+
+import javax.script.ScriptException;
+import java.io.*;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
-import javax.script.ScriptException;
-
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandPermissionsException;
-import com.sk89q.minecraft.util.commands.CommandUsageException;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.minecraft.util.commands.Console;
-import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
-import com.sk89q.minecraft.util.commands.SimpleInjector;
-import com.sk89q.minecraft.util.commands.UnhandledCommandException;
-import com.sk89q.minecraft.util.commands.WrappedCommandException;
-import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
-import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.blocks.ClothColor;
-import com.sk89q.worldedit.blocks.ItemType;
-import com.sk89q.worldedit.blocks.MobSpawnerBlock;
-import com.sk89q.worldedit.blocks.NoteBlock;
-import com.sk89q.worldedit.blocks.SignBlock;
-import com.sk89q.worldedit.blocks.SkullBlock;
-import com.sk89q.worldedit.commands.BiomeCommands;
-import com.sk89q.worldedit.commands.ChunkCommands;
-import com.sk89q.worldedit.commands.ClipboardCommands;
-import com.sk89q.worldedit.commands.GeneralCommands;
-import com.sk89q.worldedit.commands.GenerationCommands;
-import com.sk89q.worldedit.commands.HistoryCommands;
-import com.sk89q.worldedit.commands.InsufficientArgumentsException;
-import com.sk89q.worldedit.commands.NavigationCommands;
-import com.sk89q.worldedit.commands.RegionCommands;
-import com.sk89q.worldedit.commands.ScriptingCommands;
-import com.sk89q.worldedit.commands.SelectionCommands;
-import com.sk89q.worldedit.commands.SnapshotUtilCommands;
-import com.sk89q.worldedit.commands.ToolCommands;
-import com.sk89q.worldedit.commands.ToolUtilCommands;
-import com.sk89q.worldedit.commands.UtilityCommands;
-import com.sk89q.worldedit.masks.BiomeTypeMask;
-import com.sk89q.worldedit.masks.BlockMask;
-import com.sk89q.worldedit.masks.CombinedMask;
-import com.sk89q.worldedit.masks.DynamicRegionMask;
-import com.sk89q.worldedit.masks.ExistingBlockMask;
-import com.sk89q.worldedit.masks.InvertedMask;
-import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.masks.RandomMask;
-import com.sk89q.worldedit.masks.RegionMask;
-import com.sk89q.worldedit.masks.SolidBlockMask;
-import com.sk89q.worldedit.masks.UnderOverlayMask;
-import com.sk89q.worldedit.patterns.BlockChance;
-import com.sk89q.worldedit.patterns.ClipboardPattern;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.RandomFillPattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
-import com.sk89q.worldedit.regions.RegionSelector;
-import com.sk89q.worldedit.scripting.CraftScriptContext;
-import com.sk89q.worldedit.scripting.CraftScriptEngine;
-import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
-import com.sk89q.worldedit.tools.BlockTool;
-import com.sk89q.worldedit.tools.DoubleActionBlockTool;
-import com.sk89q.worldedit.tools.DoubleActionTraceTool;
-import com.sk89q.worldedit.tools.Tool;
-import com.sk89q.worldedit.tools.TraceTool;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This class is the main entry point for WorldEdit. All events are routed
- * to an instance of this controller for processing by WorldEdit. For
- * integrating WorldEdit in other platforms, an instance of this class
- * should be created and events should be redirected to it.
- *
- * @author sk89q
+ * The current instance of WorldEdit.
  */
 public class WorldEdit {
-    /**
-     * Logger for debugging.
-     */
+
     public static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     public final Logger commandLogger = Logger.getLogger("Minecraft.WorldEdit.CommandLogger");
 
-    /**
-     * Holds the current instance of this class, for static access
-     */
     private static WorldEdit instance;
-    
-    /**
-     * Holds WorldEdit's version.
-     */
     private static String version;
 
-    /**
-     * Interface to the server.
-     */
     private final ServerInterface server;
-
-    /**
-     * Configuration. This is a subclass.
-     */
     private final LocalConfiguration config;
-
-    /**
-     * List of commands.
-     */
     private final CommandsManager<LocalPlayer> commands;
-    
-    /**
-     * Holds the factory responsible for the creation of edit sessions
-     */
-    private EditSessionFactory editSessionFactory = new EditSessionFactory();
-
-    /**
-     * Stores a list of WorldEdit sessions, keyed by players' names. Sessions
-     * persist only for the user's session. On disconnect, the session will be
-     * removed. Sessions are created only when they are needed and those
-     * without any WorldEdit abilities or never use WorldEdit in a session will
-     * not have a session object generated for them.
-     */
+    private final EventBus eventBus = new EventBus();
+    private final EditSessionFactory editSessionFactory = new EditSessionFactory(eventBus);
     private final HashMap<String, LocalSession> sessions = new HashMap<String, LocalSession>();
 
-    /**
-     * Initialize statically.
-     */
     static {
         getVersion();
     }
 
     /**
-     * Construct an instance of the plugin
+     * Construct an instance of WorldEdit.
      *
      * @param server
      * @param config
@@ -288,6 +195,15 @@ public class WorldEdit {
      */
     public static WorldEdit getInstance() {
         return instance;
+    }
+
+    /**
+     * Get the event bus for WorldEdit.
+     *
+     * @return the event bus
+     */
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
     /**
@@ -1679,25 +1595,24 @@ public class WorldEdit {
     }
 
     /**
-     * Get the edit session factory
-     * 
-     * @return
+     * Get a factory for {@link EditSession}s.
      */
     public EditSessionFactory getEditSessionFactory() {
-        return this.editSessionFactory;
+        return editSessionFactory;
     }
 
     /**
-     * Set the edit session factory
-     * 
-     * @param factory
+     * @deprecated EditSessionFactories are no longer used. Please register an {@link EditSessionEvent} event
+     *             with the event bus in order to override or catch changes to the world
      */
+    @Deprecated
     public void setEditSessionFactory(EditSessionFactory factory) {
-        if (factory == null) {
-            throw new IllegalArgumentException("New EditSessionFactory may not be null");
-        }
-        logger.info("Accepted EditSessionFactory of type " + factory.getClass().getName() + " from " + factory.getClass().getPackage().getName());
-        this.editSessionFactory = factory;
+        checkNotNull(factory);
+        logger.severe("Got request to set EditSessionFactory of type " +
+                factory.getClass().getName() + " from " + factory.getClass().getPackage().getName() +
+                " but EditSessionFactories have been removed in favor of extending EditSession's extents.\n\n" +
+                "This may mean that any block logger / intercepters addons/plugins/mods that you have installed will not " +
+                "intercept WorldEdit's changes! Please notify the maintainer of the other addon about this.");
     }
 
     /**
