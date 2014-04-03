@@ -22,7 +22,7 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.worldedit.WorldVector;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import com.sk89q.worldedit.bags.*;
+import com.sk89q.worldedit.extent.inventory.*;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;

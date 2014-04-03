@@ -32,10 +32,10 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.cui.CUIRegion;
-import com.sk89q.worldedit.cui.SelectionPointEvent;
-import com.sk89q.worldedit.cui.SelectionPolygonEvent;
-import com.sk89q.worldedit.cui.SelectionShapeEvent;
+import com.sk89q.worldedit.internal.cui.CUIRegion;
+import com.sk89q.worldedit.internal.cui.SelectionPointEvent;
+import com.sk89q.worldedit.internal.cui.SelectionPolygonEvent;
+import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.regions.polyhedron.Triangle;
 
 public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion {

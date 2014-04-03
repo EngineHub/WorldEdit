@@ -25,7 +25,7 @@ import java.util.Set;
 
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.ItemID;
-import com.sk89q.worldedit.snapshots.SnapshotRepository;
+import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 /**
  * Represents WorldEdit's configuration.

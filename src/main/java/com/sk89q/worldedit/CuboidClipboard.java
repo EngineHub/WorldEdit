@@ -30,9 +30,10 @@ import java.util.Map;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.schematic.SchematicFormat;
+import com.sk89q.worldedit.util.Countable;
 
 /**
  * The clipboard remembers the state of a cuboid region.

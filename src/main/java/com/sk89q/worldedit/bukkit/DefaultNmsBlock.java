@@ -22,7 +22,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
-import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.foundation.Block;
 import net.minecraft.server.v1_7_R2.*;
 import org.bukkit.World;

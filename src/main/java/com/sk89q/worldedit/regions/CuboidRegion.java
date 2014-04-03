@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.data.ChunkStore;
+import com.sk89q.worldedit.world.storage.ChunkStore;
 
 import java.util.HashSet;
 import java.util.Iterator;

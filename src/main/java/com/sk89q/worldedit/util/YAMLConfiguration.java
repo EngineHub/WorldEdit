@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.snapshots.SnapshotRepository;
+import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 /**
  * A less simple implementation of {@link LocalConfiguration} using YAML configuration files.

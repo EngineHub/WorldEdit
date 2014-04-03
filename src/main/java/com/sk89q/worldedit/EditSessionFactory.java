@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.bags.BlockBag;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 

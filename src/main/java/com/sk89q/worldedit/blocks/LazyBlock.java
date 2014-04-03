@@ -21,7 +21,7 @@ package com.sk89q.worldedit.blocks;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.extent.Extent;
 
 import static com.google.common.base.Preconditions.checkNotNull;

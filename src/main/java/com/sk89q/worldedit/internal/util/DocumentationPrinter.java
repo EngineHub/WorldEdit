@@ -31,20 +31,20 @@ import java.util.List;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
-import com.sk89q.worldedit.commands.BiomeCommands;
-import com.sk89q.worldedit.commands.ChunkCommands;
-import com.sk89q.worldedit.commands.ClipboardCommands;
-import com.sk89q.worldedit.commands.GeneralCommands;
-import com.sk89q.worldedit.commands.GenerationCommands;
-import com.sk89q.worldedit.commands.HistoryCommands;
-import com.sk89q.worldedit.commands.NavigationCommands;
-import com.sk89q.worldedit.commands.RegionCommands;
-import com.sk89q.worldedit.commands.ScriptingCommands;
-import com.sk89q.worldedit.commands.SelectionCommands;
-import com.sk89q.worldedit.commands.SnapshotUtilCommands;
-import com.sk89q.worldedit.commands.ToolCommands;
-import com.sk89q.worldedit.commands.ToolUtilCommands;
-import com.sk89q.worldedit.commands.UtilityCommands;
+import com.sk89q.worldedit.command.BiomeCommands;
+import com.sk89q.worldedit.command.ChunkCommands;
+import com.sk89q.worldedit.command.ClipboardCommands;
+import com.sk89q.worldedit.command.GeneralCommands;
+import com.sk89q.worldedit.command.GenerationCommands;
+import com.sk89q.worldedit.command.HistoryCommands;
+import com.sk89q.worldedit.command.NavigationCommands;
+import com.sk89q.worldedit.command.RegionCommands;
+import com.sk89q.worldedit.command.ScriptingCommands;
+import com.sk89q.worldedit.command.SelectionCommands;
+import com.sk89q.worldedit.command.SnapshotUtilCommands;
+import com.sk89q.worldedit.command.ToolCommands;
+import com.sk89q.worldedit.command.ToolUtilCommands;
+import com.sk89q.worldedit.command.UtilityCommands;
 
 public class DocumentationPrinter {
     public static void main(String[] args) throws IOException {

@@ -30,7 +30,7 @@ import java.util.Set;
 
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.world.DataException;
 
 /**
  * Represents a format that a schematic can be stored as

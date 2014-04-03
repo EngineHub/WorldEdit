@@ -45,7 +45,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditOperation;
-import com.sk89q.worldedit.bags.BlockBag;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Polygonal2DSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;

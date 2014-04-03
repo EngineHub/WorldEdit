@@ -27,7 +27,7 @@ import com.sk89q.worldedit.PlayerNeededException;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.bags.BlockBag;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandSource;
 import org.spout.api.entity.Player;

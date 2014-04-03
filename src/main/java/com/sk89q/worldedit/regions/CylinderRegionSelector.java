@@ -28,11 +28,11 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.cui.CUIRegion;
-import com.sk89q.worldedit.cui.SelectionCylinderEvent;
-import com.sk89q.worldedit.cui.SelectionMinMaxEvent;
-import com.sk89q.worldedit.cui.SelectionPointEvent;
-import com.sk89q.worldedit.cui.SelectionShapeEvent;
+import com.sk89q.worldedit.internal.cui.CUIRegion;
+import com.sk89q.worldedit.internal.cui.SelectionCylinderEvent;
+import com.sk89q.worldedit.internal.cui.SelectionMinMaxEvent;
+import com.sk89q.worldedit.internal.cui.SelectionPointEvent;
+import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
 import java.text.NumberFormat;
 
 /**

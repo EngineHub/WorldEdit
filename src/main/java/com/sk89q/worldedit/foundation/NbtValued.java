@@ -19,7 +19,7 @@
 package com.sk89q.worldedit.foundation;
 
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.world.DataException;
 
 /**
  * Indicates an object that contains extra data identified as an NBT structure. This
