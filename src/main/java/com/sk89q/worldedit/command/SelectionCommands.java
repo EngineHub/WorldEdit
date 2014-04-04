@@ -594,7 +594,7 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.size")
     public void size(CommandContext args, LocalSession session, LocalPlayer player, 
             EditSession editSession) throws WorldEditException {
-    	
+        
         if (args.hasFlag('c')) {
             CuboidClipboard clipboard = session.getClipboard();
             Vector size = clipboard.getSize();

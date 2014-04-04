@@ -30,7 +30,7 @@ public class ForgeServerInterface extends ServerInterface {
     }
 
     public int resolveItem(String name) {
-    	if (name == null) return 0;
+        if (name == null) return 0;
         for (Item item : Item.itemsList) {
             if (item == null) continue;
             if (item.getUnlocalizedName() == null) continue;

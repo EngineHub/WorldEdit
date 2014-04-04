@@ -53,11 +53,11 @@ import com.sk89q.worldedit.command.tool.brush.SphereBrush;
  * @author sk89q
  */
 public class BrushCommands {
-	private final WorldEdit we;
-	
-	public BrushCommands(WorldEdit we) {
-		this.we = we;
-	}
+    private final WorldEdit we;
+    
+    public BrushCommands(WorldEdit we) {
+        this.we = we;
+    }
 
     @Command(
         aliases = { "sphere", "s" },

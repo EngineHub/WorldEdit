@@ -41,9 +41,9 @@ public class CommandRegistration {
       Bukkit.getServer().getHelpMap().registerHelpTopicFactory(DynamicPluginCommand.class, new DynamicPluginCommandHelpTopic.Factory());
     }
 
-	protected final Plugin plugin;
+    protected final Plugin plugin;
     protected final CommandExecutor executor;
-	private CommandMap fallbackCommands;
+    private CommandMap fallbackCommands;
 
     public CommandRegistration(Plugin plugin) {
         this(plugin, plugin);
