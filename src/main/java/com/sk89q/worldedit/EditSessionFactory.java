@@ -19,28 +19,14 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
-import com.sk89q.worldedit.util.eventbus.EventBus;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
 
 /**
- * A factory for {@link EditSession}s.
+ * @deprecated To wrap {@link EditSession}s, please hook into {@link EditSessionEvent}
  */
-public final class EditSessionFactory {
-
-    private final EventBus eventBus;
-
-    /**
-     * Create a new factory.
-     *
-     * @param eventBus the event bus
-     */
-    public EditSessionFactory(EventBus eventBus) {
-        checkNotNull(eventBus);
-        this.eventBus = eventBus;
-    }
+@Deprecated
+public class EditSessionFactory {
 
     /**
      * Construct an edit session with a maximum number of blocks.
@@ -49,7 +35,7 @@ public final class EditSessionFactory {
      * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
      */
     public EditSession getEditSession(LocalWorld world, int maxBlocks) {
-        return new EditSession(eventBus, world, maxBlocks, null, new EditSessionEvent(world, null, maxBlocks));
+        throw new IllegalArgumentException("This class is being removed");
     }
 
     /**
@@ -60,7 +46,7 @@ public final class EditSessionFactory {
      * @param player the player that the {@link EditSession} is for
      */
     public EditSession getEditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
-        return new EditSession(eventBus, world, maxBlocks, null, new EditSessionEvent(world, player, maxBlocks));
+        throw new IllegalArgumentException("This class is being removed");
     }
 
     /**
@@ -71,7 +57,7 @@ public final class EditSessionFactory {
      * @param blockBag an optional {@link BlockBag} to use, otherwise null
      */
     public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag) {
-        return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, null, maxBlocks));
+        throw new IllegalArgumentException("This class is being removed");
     }
 
     /**
@@ -83,7 +69,7 @@ public final class EditSessionFactory {
      * @param player the player that the {@link EditSession} is for
      */
     public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
-        return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, player, maxBlocks));
+        throw new IllegalArgumentException("This class is being removed");
     }
 
 }
