@@ -1,7 +1,7 @@
-// $Id$
 /*
- * WorldEdit
- * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com> and contributors
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,22 +15,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.worldedit.regions.selector;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.IncompleteRegionException;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionPointEvent;
@@ -41,17 +30,40 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.polyhedron.Triangle;
 
-public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion {
+import javax.annotation.Nullable;
+import java.util.*;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+/**
+ * A {@link RegionSelector} for {@link ConvexPolyhedralRegion}s.
+ */
+public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion {
+
     private int maxVertices;
     private final ConvexPolyhedralRegion region;
     private BlockVector pos1;
 
-    public ConvexPolyhedralRegionSelector(LocalWorld world, int maxVertices) {
+    /**
+     * Create a new selector.
+     *
+     * @param world the world
+     * @param maxVertices the maximum number of vertices, where a number below 0 means unbounded
+     */
+    public ConvexPolyhedralRegionSelector(@Nullable LocalWorld world, int maxVertices) {
         this.maxVertices = maxVertices;
         region = new ConvexPolyhedralRegion(world);
     }
 
+    /**
+     * Create a new selector.
+     *
+     * @param oldSelector the old selector
+     * @param maxVertices the maximum number of vertices, where a number below 0 means unbounded
+     */
     public ConvexPolyhedralRegionSelector(RegionSelector oldSelector, int maxVertices) {
+        checkNotNull(oldSelector);
+
         this.maxVertices = maxVertices;
         if (oldSelector instanceof ConvexPolyhedralRegionSelector) {
             final ConvexPolyhedralRegionSelector convexPolyhedralRegionSelector = (ConvexPolyhedralRegionSelector) oldSelector;
@@ -219,4 +231,5 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
             session.dispatchCUIEvent(player, new SelectionShapeEvent(getLegacyTypeID()));
         }
     }
+
 }

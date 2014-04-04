@@ -1,7 +1,7 @@
-// $Id$
 /*
- * WorldEdit
- * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com> and contributors
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,27 +15,36 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.worldedit.regions.selector;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.RegionSelector;
 
+import javax.annotation.Nullable;
+
 /**
- * Alternative selector for cuboids.
- *
- * @author sk89q
+ * A {@link RegionSelector} for {@link CuboidRegion}s that enlarges the
+ * region with every secondary selection.
  */
 public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
-    public ExtendingCuboidRegionSelector(LocalWorld world) {
+
+    /**
+     * Create a new selector.
+     *
+     * @param world the world
+     */
+    public ExtendingCuboidRegionSelector(@Nullable LocalWorld world) {
         super(world);
     }
 
+    /**
+     * Create a new selector from another one.
+     *
+     * @param oldSelector the other selector
+     */
     public ExtendingCuboidRegionSelector(RegionSelector oldSelector) {
         super(oldSelector);
 
@@ -49,7 +58,14 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
         region.setPos2(pos2);
     }
 
-    public ExtendingCuboidRegionSelector(LocalWorld world, Vector pos1, Vector pos2) {
+    /**
+     * Create a new selector.
+     *
+     * @param world the world
+     * @param pos1 the first position
+     * @param pos2 the second position
+     */
+    public ExtendingCuboidRegionSelector(@Nullable LocalWorld world, Vector pos1, Vector pos2) {
         this(world);
         pos1 = Vector.getMinimum(pos1,  pos2);
         pos2 = Vector.getMaximum(pos1,  pos2);
@@ -114,4 +130,5 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
 
         explainRegionAdjust(player, session);
     }
+
 }

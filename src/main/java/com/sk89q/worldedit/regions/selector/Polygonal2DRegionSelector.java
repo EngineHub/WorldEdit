@@ -1,7 +1,7 @@
-// $Id$
 /*
- * WorldEdit
- * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com> and contributors
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.worldedit.regions.selector;
 
-import java.util.Collections;
-import java.util.List;
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.IncompleteRegionException;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionMinMaxEvent;
 import com.sk89q.worldedit.internal.cui.SelectionPoint2DEvent;
@@ -36,33 +28,56 @@ import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * Selector for polygonal regions.
- *
- * @author sk89q
+ * A {@link RegionSelector} for {@link Polygonal2DRegion}s.
  */
-public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
+public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
+
     private int maxPoints;
     private BlockVector pos1;
     private Polygonal2DRegion region;
 
+    /**
+     * @deprecated Use {@link #Polygonal2DRegionSelector(LocalWorld, int)}
+     */
     @Deprecated
-    public Polygonal2DRegionSelector(LocalWorld world) {
+    public Polygonal2DRegionSelector(@Nullable LocalWorld world) {
         this(world, 50);
     }
 
-    public Polygonal2DRegionSelector(LocalWorld world, int maxPoints) {
+    /**
+     * Create a new selector.
+     *
+     * @param world the world
+     * @param maxPoints the maximum number of points
+     */
+    public Polygonal2DRegionSelector(@Nullable LocalWorld world, int maxPoints) {
         this.maxPoints = maxPoints;
         region = new Polygonal2DRegion(world);
     }
 
+    /**
+     * @deprecated Use {@link #Polygonal2DRegionSelector(RegionSelector, int)}
+     */
     @Deprecated
     public Polygonal2DRegionSelector(RegionSelector oldSelector) {
         this(oldSelector, 50);
     }
 
+    /**
+     * Create a new selector from another one.
+     *
+     * @param oldSelector the old selector
+     * @param maxPoints the maximum number of points
+     */
     public Polygonal2DRegionSelector(RegionSelector oldSelector, int maxPoints) {
-        this(oldSelector.getIncompleteRegion().getWorld(), maxPoints);
+        this(checkNotNull(oldSelector).getIncompleteRegion().getWorld(), maxPoints);
         if (oldSelector instanceof Polygonal2DRegionSelector) {
             final Polygonal2DRegionSelector polygonal2DRegionSelector = (Polygonal2DRegionSelector) oldSelector;
 
@@ -86,12 +101,23 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
         }
     }
 
-    public Polygonal2DRegionSelector(LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
+    /**
+     * Create a new selector.
+     *
+     * @param world the world
+     * @param points a list of points
+     * @param minY the minimum Y
+     * @param maxY the maximum Y
+     */
+    public Polygonal2DRegionSelector(@Nullable LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
+        checkNotNull(points);
+        
         final BlockVector2D pos2D = points.get(0);
         pos1 = new BlockVector(pos2D.getX(), minY, pos2D.getZ());
         region = new Polygonal2DRegion(world, points, minY, maxY);
     }
 
+    @Override
     public boolean selectPrimary(Vector pos) {
         if (pos.equals(pos1)) {
             return false;
@@ -105,6 +131,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
         return true;
     }
 
+    @Override
     public boolean selectSecondary(Vector pos) {
         if (region.size() > 0) {
             final List<BlockVector2D> points = region.getPoints();
@@ -125,6 +152,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
         return true;
     }
 
+    @Override
     public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector pos) {
         player.print("Starting a new polygon at " + pos + ".");
 
@@ -133,6 +161,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
         session.dispatchCUIEvent(player, new SelectionMinMaxEvent(region.getMinimumY(), region.getMaximumY()));
     }
 
+    @Override
     public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
         player.print("Added point #" + region.size() + " at " + pos + ".");
 
@@ -140,11 +169,13 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
         session.dispatchCUIEvent(player, new SelectionMinMaxEvent(region.getMinimumY(), region.getMaximumY()));
     }
 
+    @Override
     public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
         session.dispatchCUIEvent(player, new SelectionShapeEvent(getTypeID()));
         describeCUI(session, player);
     }
 
+    @Override
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
         if (pos1 == null) {
             throw new IncompleteRegionException();
@@ -153,6 +184,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
         return pos1;
     }
 
+    @Override
     public Polygonal2DRegion getRegion() throws IncompleteRegionException {
         if (!isDefined()) {
             throw new IncompleteRegionException();
@@ -161,40 +193,54 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
         return region;
     }
 
+    @Override
     public Polygonal2DRegion getIncompleteRegion() {
         return region;
     }
 
+    @Override
     public boolean isDefined() {
         return region.size() > 2;
     }
 
+    @Override
     public void learnChanges() {
         BlockVector2D pt = region.getPoints().get(0);
         pos1 = new BlockVector(pt.getBlockX(), region.getMinimumPoint().getBlockY(), pt.getBlockZ());
     }
 
+    @Override
     public void clear() {
         pos1 = null;
         region = new Polygonal2DRegion(region.getWorld());
     }
 
+    @Override
     public String getTypeName() {
         return "2Dx1D polygon";
     }
 
+    @Override
     public List<String> getInformationLines() {
         return Collections.singletonList("# points: " + region.size());
     }
 
+    @Override
     public int getArea() {
         return region.getArea();
     }
 
+    /**
+     * Get the number of points.
+     *
+     * @return the number of points
+     */
+    @Override
     public int getPointCount() {
         return region.getPoints().size();
     }
 
+    @Override
     public void describeCUI(LocalSession session, LocalPlayer player) {
         final List<BlockVector2D> points = region.getPoints();
         for (int id = 0; id < points.size(); id++) {
@@ -204,19 +250,24 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
         session.dispatchCUIEvent(player, new SelectionMinMaxEvent(region.getMinimumY(), region.getMaximumY()));
     }
 
+    @Override
     public void describeLegacyCUI(LocalSession session, LocalPlayer player) {
         describeCUI(session, player);
     }
 
+    @Override
     public int getProtocolVersion() {
         return 0;
     }
 
+    @Override
     public String getTypeID() {
         return "polygon2d";
     }
 
+    @Override
     public String getLegacyTypeID() {
         return "polygon2d";
     }
+
 }

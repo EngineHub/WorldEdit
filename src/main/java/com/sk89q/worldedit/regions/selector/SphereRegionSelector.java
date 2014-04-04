@@ -1,7 +1,7 @@
-// $Id$
 /*
- * WorldEdit
- * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com> and contributors
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.worldedit.regions.selector;
 
@@ -25,20 +25,34 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.RegionSelector;
 
+import javax.annotation.Nullable;
+
 /**
- * Selector for spheres.
- *
- * @author TomyLobo
+ * A {@link RegionSelector} for {@link SphereRegionSelector}s.
  */
 public class SphereRegionSelector extends EllipsoidRegionSelector {
-    public SphereRegionSelector(LocalWorld world) {
+
+    /**
+     * Create a new selector.
+     *
+     * @param world the world
+     */
+    public SphereRegionSelector(@Nullable LocalWorld world) {
         super(world);
     }
 
+    /**
+     * Create a new selector.
+     */
     public SphereRegionSelector() {
         super();
     }
 
+    /**
+     * Create a new selector from another one
+     *
+     * @param oldSelector the old selector
+     */
     public SphereRegionSelector(RegionSelector oldSelector) {
         super(oldSelector);
         final Vector radius = region.getRadius();
@@ -46,7 +60,14 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
         region.setRadius(new Vector(radiusScalar, radiusScalar, radiusScalar));
     }
 
-    public SphereRegionSelector(LocalWorld world, Vector center, int radius) {
+    /**
+     * Create a new selector.
+     *
+     * @param world the world
+     * @param center the center position
+     * @param radius the radius
+     */
+    public SphereRegionSelector(@Nullable LocalWorld world, Vector center, int radius) {
         super(world, center, new Vector(radius, radius, radius));
     }
 
@@ -73,4 +94,5 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
     public String getTypeName() {
         return "sphere";
     }
+
 }

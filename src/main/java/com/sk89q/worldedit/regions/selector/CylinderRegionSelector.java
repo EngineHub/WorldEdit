@@ -1,7 +1,7 @@
-// $Id$
 /*
- * WorldEdit
- * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com> and contributors
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,36 +15,28 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.worldedit.regions.selector;
 
-import java.util.ArrayList;
-import java.util.List;
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.IncompleteRegionException;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.internal.cui.CUIRegion;
-import com.sk89q.worldedit.internal.cui.SelectionCylinderEvent;
-import com.sk89q.worldedit.internal.cui.SelectionMinMaxEvent;
-import com.sk89q.worldedit.internal.cui.SelectionPointEvent;
-import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.internal.cui.*;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 
+import javax.annotation.Nullable;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Selector for polygonal regions.
- *
- * @author sk89q
+ * A {@link RegionSelector} for {@link CylinderRegion}s.
  */
-public class CylinderRegionSelector implements RegionSelector, CUIRegion {
+public class CylinderRegionSelector extends com.sk89q.worldedit.regions.CylinderRegionSelector implements RegionSelector, CUIRegion {
+
     protected CylinderRegion region;
     protected static final NumberFormat format;
 
@@ -53,12 +45,22 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         format.setMaximumFractionDigits(3);
     }
 
-    public CylinderRegionSelector(LocalWorld world) {
+    /**
+     * Create a new region selector.
+     *
+     * @param world the world
+     */
+    public CylinderRegionSelector(@Nullable LocalWorld world) {
         region = new CylinderRegion(world);
     }
 
+    /**
+     * Create a new selector from the given one.
+     *
+     * @param oldSelector the old selector
+     */
     public CylinderRegionSelector(RegionSelector oldSelector) {
-        this(oldSelector.getIncompleteRegion().getWorld());
+        this(checkNotNull(oldSelector).getIncompleteRegion().getWorld());
         if (oldSelector instanceof CylinderRegionSelector) {
             final CylinderRegionSelector cylSelector = (CylinderRegionSelector) oldSelector;
 
@@ -83,7 +85,16 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         }
     }
 
-    public CylinderRegionSelector(LocalWorld world, Vector2D center, Vector2D radius, int minY, int maxY) {
+    /**
+     * Create a new selector.
+     *
+     * @param world the world
+     * @param center the center
+     * @param radius the radius
+     * @param minY the minimum Y
+     * @param maxY the maximum Y
+     */
+    public CylinderRegionSelector(@Nullable LocalWorld world, Vector2D center, Vector2D radius, int minY, int maxY) {
         this(world);
 
         region.setCenter(center);
@@ -93,6 +104,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         region.setMaximumY(Math.max(minY, maxY));
     }
 
+    @Override
     public boolean selectPrimary(Vector pos) {
         if (!region.getCenter().equals(Vector.ZERO) && pos.compareTo(region.getCenter()) == 0) {
             return false;
@@ -105,6 +117,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         return true;
     }
 
+    @Override
     public boolean selectSecondary(Vector pos) {
         Vector center = region.getCenter();
         if ((center.compareTo(Vector.ZERO)) == 0) {
@@ -120,12 +133,14 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         return true;
     }
 
+    @Override
     public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector pos) {
         player.print("Starting a new cylindrical selection at " + pos + ".");
 
         session.describeCUI(player);
     }
 
+    @Override
     public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
         Vector center = region.getCenter();
         if (!center.equals(Vector.ZERO)) {
@@ -138,10 +153,12 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         session.describeCUI(player);
     }
 
+    @Override
     public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
         session.describeCUI(player);
     }
 
+    @Override
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
         if (!isDefined()) {
             throw new IncompleteRegionException();
@@ -150,6 +167,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         return region.getCenter().toBlockVector();
     }
 
+    @Override
     public CylinderRegion getRegion() throws IncompleteRegionException {
         if (!isDefined()) {
             throw new IncompleteRegionException();
@@ -158,25 +176,31 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         return region;
     }
 
+    @Override
     public CylinderRegion getIncompleteRegion() {
         return region;
     }
 
+    @Override
     public boolean isDefined() {
         return !region.getRadius().equals(Vector2D.ZERO);
     }
 
+    @Override
     public void learnChanges() {
     }
 
+    @Override
     public void clear() {
         region = new CylinderRegion(region.getWorld());
     }
 
+    @Override
     public String getTypeName() {
         return "Cylinder";
     }
 
+    @Override
     public List<String> getInformationLines() {
         final List<String> lines = new ArrayList<String>();
 
@@ -190,15 +214,18 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         return lines;
     }
 
+    @Override
     public int getArea() {
         return region.getArea();
     }
 
+    @Override
     public void describeCUI(LocalSession session, LocalPlayer player) {
         session.dispatchCUIEvent(player, new SelectionCylinderEvent(region.getCenter(), region.getRadius()));
         session.dispatchCUIEvent(player, new SelectionMinMaxEvent(region.getMinimumY(), region.getMaximumY()));
     }
 
+    @Override
     public void describeLegacyCUI(LocalSession session, LocalPlayer player) {
         if (isDefined()) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getMinimumPoint(), getArea()));
@@ -208,15 +235,19 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         }
     }
 
+    @Override
     public int getProtocolVersion() {
         return 1;
     }
 
+    @Override
     public String getTypeID() {
         return "cylinder";
     }
 
+    @Override
     public String getLegacyTypeID() {
         return "cuboid";
     }
+
 }
