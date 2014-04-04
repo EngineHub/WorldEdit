@@ -24,7 +24,11 @@ import java.lang.reflect.Field;
 /**
  * @author zml2008
  */
-public class ReflectionUtil {
+public final class ReflectionUtil {
+
+    private ReflectionUtil() {
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> T getField(Object from, String name) {
         Class<?> checkClass = from.getClass();
@@ -39,4 +43,5 @@ public class ReflectionUtil {
         } while (checkClass.getSuperclass() != Object.class && ((checkClass = checkClass.getSuperclass()) != null));
         return null;
     }
+
 }

@@ -26,7 +26,11 @@ import java.util.Map;
  * 
  * @author sk89q
  */
-public class StringUtil {
+public final class StringUtil {
+
+    private StringUtil() {
+    }
+
     /**
      * Trim a string if it is longer than a certain length.
      *  

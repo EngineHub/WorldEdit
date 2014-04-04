@@ -19,18 +19,14 @@
 
 package com.sk89q.worldedit.internal.expression.parser;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-
 import com.sk89q.worldedit.internal.expression.Identifiable;
 import com.sk89q.worldedit.internal.expression.lexer.tokens.OperatorToken;
 import com.sk89q.worldedit.internal.expression.lexer.tokens.Token;
 import com.sk89q.worldedit.internal.expression.runtime.Conditional;
-import com.sk89q.worldedit.internal.expression.runtime.RValue;
 import com.sk89q.worldedit.internal.expression.runtime.Operators;
+import com.sk89q.worldedit.internal.expression.runtime.RValue;
+
+import java.util.*;
 
 /**
  * Helper classfor Parser. Contains processors for statements and operators.
@@ -146,6 +142,9 @@ public final class ParserProcessors {
                 }
             }
         }
+    }
+
+    private ParserProcessors() {
     }
 
     static RValue processExpression(LinkedList<Identifiable> input) throws ParserException {

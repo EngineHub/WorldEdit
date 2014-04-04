@@ -19,15 +19,11 @@
 
 package com.sk89q.worldedit.internal.expression.runtime;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.runtime.Function.Dynamic;
+
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Contains all functions that can be used in expressions.
@@ -278,6 +274,10 @@ public final class Functions {
 
     private static final Map<Integer, double[]> gmegabuf = new HashMap<Integer, double[]>();
     private final Map<Integer, double[]> megabuf = new HashMap<Integer, double[]>();
+
+    public Map<Integer, double[]> getMegabuf() {
+        return megabuf;
+    }
 
     private static double[] getSubBuffer(Map<Integer, double[]> megabuf, Integer key) {
         double[] ret = megabuf.get(key);

@@ -29,6 +29,9 @@ import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
  */
 @Deprecated
 public final class BlockData {
+    private BlockData() {
+    }
+
     /**
      * Rotate a block's data value 90 degrees (north->east->south->west->north);
      * 

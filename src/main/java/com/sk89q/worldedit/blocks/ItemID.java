@@ -199,4 +199,7 @@ public final class ItemID {
     public static final int DISC_WARD = 2265;
     public static final int DISC_11 = 2266;
     public static final int DISC_WAIT = 2267;
+
+    private ItemID() {
+    }
 }

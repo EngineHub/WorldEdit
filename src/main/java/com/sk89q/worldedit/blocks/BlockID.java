@@ -203,4 +203,6 @@ public final class BlockID {
     public static final int PACKED_ICE = 174;
     public static final int DOUBLE_PLANT = 175;
 
+    private BlockID() {
+    }
 }

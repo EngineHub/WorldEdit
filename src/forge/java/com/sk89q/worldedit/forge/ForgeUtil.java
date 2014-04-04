@@ -9,7 +9,10 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 
-public class ForgeUtil {
+public final class ForgeUtil {
+
+    private ForgeUtil() {
+    }
 
     public static boolean hasPermission(EntityPlayerMP player, String perm) {
         // TODO fix WEPIF

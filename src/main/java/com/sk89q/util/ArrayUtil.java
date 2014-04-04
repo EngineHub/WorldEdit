@@ -18,7 +18,10 @@
 
 package com.sk89q.util;
 
-public class ArrayUtil {
+public final class ArrayUtil {
+
+    private ArrayUtil() {
+    }
 
     public static String[] removePortionOfArray(String[] array, int from, int to, String replace) {
         String[] newArray = new String[from + array.length - to - (replace == null ? 1 : 0)];

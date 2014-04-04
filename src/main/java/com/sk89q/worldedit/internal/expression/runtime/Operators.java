@@ -26,6 +26,9 @@ package com.sk89q.worldedit.internal.expression.runtime;
  */
 @SuppressWarnings("UnusedDeclaration")
 public final class Operators {
+    private Operators() {
+    }
+
     public static Function getOperator(int position, String name, RValue lhs, RValue rhs) throws NoSuchMethodException {
         if (lhs instanceof LValue) {
             try {
