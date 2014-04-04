@@ -1,8 +1,8 @@
 package com.sk89q.jnbt;
 
-import java.util.Map;
-
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
+
+import java.util.Map;
 
 /*
  * JNBT License
@@ -181,7 +181,7 @@ public final class NBTUtils {
      * @throws InvalidFormatException
      */
     public static <T extends Tag> T getChildTag(Map<String,Tag> items, String key,
-            Class<T> expected) throws InvalidFormatException {
+                                                Class<T> expected) throws InvalidFormatException {
         if (!items.containsKey(key)) {
             throw new InvalidFormatException("Missing a \"" + key + "\" tag");
         }

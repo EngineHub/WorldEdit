@@ -576,8 +576,7 @@ public enum BlockType {
         for (int data = 0; data < 16; ++data) {
             if ((data & 4) != 0) {
                 centralTopLimit.put(-16*BlockID.END_PORTAL_FRAME-data, 1.0);
-            }
-            else {
+            } else {
                 centralTopLimit.put(-16*BlockID.END_PORTAL_FRAME-data, 0.8125);
             }
             centralTopLimit.put(-16*BlockID.HEAD-data, 0.75);

@@ -19,18 +19,13 @@
 
 package com.sk89q.worldedit.blocks;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.NBTUtils;
-import com.sk89q.jnbt.ShortTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
+import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.MobType;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A mob spawner block.
@@ -186,28 +181,36 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
         CompoundTag spawnDataTag = null;
         try {
             spawnCountTag = NBTUtils.getChildTag(values, "SpawnCount", ShortTag.class);
-        } catch (InvalidFormatException e) {};
+        } catch (InvalidFormatException ignored) {
+        }
         try {
             spawnRangeTag = NBTUtils.getChildTag(values, "SpawnRange", ShortTag.class);
-        } catch (InvalidFormatException e) {};
+        } catch (InvalidFormatException ignored) {
+        }
         try {
             minSpawnDelayTag = NBTUtils.getChildTag(values, "MinSpawnDelay", ShortTag.class);
-        } catch (InvalidFormatException e) {};
+        } catch (InvalidFormatException ignored) {
+        }
         try {
             maxSpawnDelayTag = NBTUtils.getChildTag(values, "MaxSpawnDelay", ShortTag.class);
-        } catch (InvalidFormatException e) {};
+        } catch (InvalidFormatException ignored) {
+        }
         try {
             maxNearbyEntitiesTag = NBTUtils.getChildTag(values, "MaxNearbyEntities", ShortTag.class);
-        } catch (InvalidFormatException e) {};
+        } catch (InvalidFormatException ignored) {
+        }
         try {
             requiredPlayerRangeTag = NBTUtils.getChildTag(values, "RequiredPlayerRange", ShortTag.class);
-        } catch (InvalidFormatException e) {};
+        } catch (InvalidFormatException ignored) {
+        }
         try {
             spawnPotentialsTag = NBTUtils.getChildTag(values, "SpawnPotentials", ListTag.class);
-        } catch (InvalidFormatException e) {};
+        } catch (InvalidFormatException ignored) {
+        }
         try {
             spawnDataTag = NBTUtils.getChildTag(values, "SpawnData", CompoundTag.class);
-        } catch (InvalidFormatException e) {};
+        } catch (InvalidFormatException ignored) {
+        }
 
         if (spawnCountTag != null) {
             this.spawnCount = spawnCountTag.getValue();
