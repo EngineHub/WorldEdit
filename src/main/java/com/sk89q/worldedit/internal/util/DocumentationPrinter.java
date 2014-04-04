@@ -37,6 +37,12 @@ public final class DocumentationPrinter {
     private DocumentationPrinter() {
     }
 
+    /**
+     * Generates documentation.
+     *
+     * @param args arguments
+     * @throws IOException thrown on I/O error
+     */
     public static void main(String[] args) throws IOException {
         File commandsDir = new File(args[0]);
 
@@ -96,7 +102,7 @@ public final class DocumentationPrinter {
         try {
             stream = new FileOutputStream("wiki_permissions.txt");
             PrintStream print = new PrintStream(stream);
-            _writePermissionsWikiTable(print, commandClasses, "/");
+            writePermissionsWikiTable(print, commandClasses, "/");
         } finally {
             if (stream != null) {
                 stream.close();
@@ -104,8 +110,8 @@ public final class DocumentationPrinter {
         }
     }
 
-    private static void _writePermissionsWikiTable(PrintStream stream,
-            List<Class<?>> commandClasses, String prefix) {
+    private static void writePermissionsWikiTable(PrintStream stream,
+                                                  List<Class<?>> commandClasses, String prefix) {
 
         for (Class<?> cls : commandClasses) {
             for (Method method : cls.getMethods()) {
@@ -162,7 +168,7 @@ public final class DocumentationPrinter {
                             method.getAnnotation(NestedCommand.class);
 
                     Class<?>[] nestedClasses = nested.value();
-                    _writePermissionsWikiTable(stream,
+                    writePermissionsWikiTable(stream,
                             Arrays.asList(nestedClasses),
                             prefix + cmd.aliases()[0] + " ");
                 }
@@ -176,7 +182,7 @@ public final class DocumentationPrinter {
         try {
             stream = new FileOutputStream("plugin.yml");
             PrintStream print = new PrintStream(stream);
-            _writeBukkitYAML(print);
+            writeBukkitYAML(print);
         } finally {
             if (stream != null) {
                 stream.close();
@@ -184,7 +190,7 @@ public final class DocumentationPrinter {
         }
     }
 
-    private static void _writeBukkitYAML(PrintStream stream) {
+    private static void writeBukkitYAML(PrintStream stream) {
 
         stream.println("name: WorldEdit");
         stream.println("main: com.sk89q.worldedit.bukkit.WorldEditPlugin");

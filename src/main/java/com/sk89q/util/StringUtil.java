@@ -246,7 +246,7 @@ public final class StringUtil {
         int i; // iterates through s
         int j; // iterates through t
 
-        char t_j; // jth character of t
+        char tj; // jth character of t
 
         int cost; // cost
 
@@ -255,11 +255,11 @@ public final class StringUtil {
         }
 
         for (j = 1; j <= m; ++j) {
-            t_j = t.charAt(j - 1);
+            tj = t.charAt(j - 1);
             d[0] = j;
 
             for (i = 1; i <= n; ++i) {
-                cost = s.charAt(i - 1) == t_j ? 0 : 1;
+                cost = s.charAt(i - 1) == tj ? 0 : 1;
                 // minimum of cell to the left+1, to the top+1, diagonally left
                 // and up +cost
                 d[i] = Math.min(Math.min(d[i - 1] + 1, p[i] + 1), p[i - 1]

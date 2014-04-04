@@ -60,9 +60,9 @@ public class OldChunk implements Chunk {
 
         
         blocks = NBTUtils.getChildTag(rootTag.getValue(), "Blocks", ByteArrayTag.class).getValue();
-        data = NBTUtils.getChildTag(  rootTag.getValue(), "Data", ByteArrayTag.class).getValue();
-        rootX = NBTUtils.getChildTag( rootTag.getValue(), "xPos", IntTag.class).getValue();
-        rootZ = NBTUtils.getChildTag( rootTag.getValue(), "zPos", IntTag.class).getValue();
+        data = NBTUtils.getChildTag(rootTag.getValue(), "Data", ByteArrayTag.class).getValue();
+        rootX = NBTUtils.getChildTag(rootTag.getValue(), "xPos", IntTag.class).getValue();
+        rootZ = NBTUtils.getChildTag(rootTag.getValue(), "zPos", IntTag.class).getValue();
 
         int size = 16 * 16 * 128;
         if (blocks.length != size) {

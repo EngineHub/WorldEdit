@@ -209,16 +209,16 @@ public final class Operators {
     }
 
     // Usable AlmostEqual function, based on http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
-    private static boolean almostEqual2sComplement(double A, double B, long maxUlps) {
+    private static boolean almostEqual2sComplement(double a, double b, long maxUlps) {
         // Make sure maxUlps is non-negative and small enough that the
         // default NAN won't compare as equal to anything.
         //assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024); // this is for floats, not doubles
 
-        long aLong = Double.doubleToRawLongBits(A);
+        long aLong = Double.doubleToRawLongBits(a);
         // Make aLong lexicographically ordered as a twos-complement long
         if (aLong < 0) aLong = 0x8000000000000000L - aLong;
 
-        long bLong = Double.doubleToRawLongBits(B);
+        long bLong = Double.doubleToRawLongBits(b);
         // Make bLong lexicographically ordered as a twos-complement long
         if (bLong < 0) bLong = 0x8000000000000000L - bLong;
 

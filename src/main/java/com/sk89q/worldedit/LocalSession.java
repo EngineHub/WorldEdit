@@ -650,8 +650,8 @@ public class LocalSession {
      *
      * @param CUIVersion
      */
-    public void setCUIVersion(int CUIVersion) {
-        this.cuiVersion = CUIVersion;
+    public void setCUIVersion(int cuiVersion) {
+        this.cuiVersion = cuiVersion;
     }
 
     /**

@@ -47,7 +47,7 @@ public class TreeGenerator {
                 return true;
             }
         },
-        RANDOM_REDWOOD("Random redwood",  "randredwood", "randomredwood", "anyredwood" ) {
+        RANDOM_REDWOOD("Random redwood",  "randredwood", "randomredwood", "anyredwood") {
             public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
                 TreeType[] choices = new TreeType[] {
                         TreeType.REDWOOD, TreeType.TALL_REDWOOD
@@ -70,7 +70,7 @@ public class TreeGenerator {
         DARK_OAK("Dark Oak", "darkoak"),
         MEGA_REDWOOD("Mega Redwood", "megaredwood"),
         TALL_BIRCH("Tall Birch", "tallbirch"),
-        RANDOM("Random", "rand", "random" ) {
+        RANDOM("Random", "rand", "random") {
             public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
                 TreeType[] choices = new TreeType[] {
                         TreeType.TREE, TreeType.BIG_TREE, TreeType.BIRCH,

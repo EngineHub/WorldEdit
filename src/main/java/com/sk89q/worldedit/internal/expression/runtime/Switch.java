@@ -136,7 +136,7 @@ public class Switch extends Node implements RValue {
             }
 
             boolean breakDetected = false;
-            for (int i = index; i < caseStatements.length && !breakDetected ; ++i) {
+            for (int i = index; i < caseStatements.length && !breakDetected; ++i) {
                 final RValue invokable = caseStatements[i].optimize();
 
                 if (invokable instanceof Sequence) {

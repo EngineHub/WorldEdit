@@ -128,8 +128,8 @@ public class HeightMap {
                 int newHeight = Math.min(maxY, data[index]);
 
                 // Offset x,z to be 'real' coordinates
-                int X = x + originX;
-                int Z = z + originZ;
+                int xr = x + originX;
+                int zr = z + originZ;
 
                 // We are keeping the topmost blocks so take that in account for the scale
                 double scale = (double) (curHeight - originY) / (double) (newHeight - originY);
@@ -137,18 +137,18 @@ public class HeightMap {
                 // Depending on growing or shrinking we need to start at the bottom or top
                 if (newHeight > curHeight) {
                     // Set the top block of the column to be the same type (this might go wrong with rounding)
-                    BaseBlock existing = session.getBlock(new Vector(X, curHeight, Z));
+                    BaseBlock existing = session.getBlock(new Vector(xr, curHeight, zr));
 
                     // Skip water/lava
                     if (existing.getType() != BlockID.WATER && existing.getType() != BlockID.STATIONARY_WATER
                             && existing.getType() != BlockID.LAVA && existing.getType() != BlockID.STATIONARY_LAVA) {
-                        session.setBlock(new Vector(X, newHeight, Z), existing);
+                        session.setBlock(new Vector(xr, newHeight, zr), existing);
                         ++blocksChanged;
 
                         // Grow -- start from 1 below top replacing airblocks
                         for (int y = newHeight - 1 - originY; y >= 0; --y) {
                             int copyFrom = (int) (y * scale);
-                            session.setBlock(new Vector(X, originY + y, Z), session.getBlock(new Vector(X, originY + copyFrom, Z)));
+                            session.setBlock(new Vector(xr, originY + y, zr), session.getBlock(new Vector(xr, originY + copyFrom, zr)));
                             ++blocksChanged;
                         }
                     }
@@ -156,18 +156,18 @@ public class HeightMap {
                     // Shrink -- start from bottom
                     for (int y = 0; y < newHeight - originY; ++y) {
                         int copyFrom = (int) (y * scale);
-                        session.setBlock(new Vector(X, originY + y, Z), session.getBlock(new Vector(X, originY + copyFrom, Z)));
+                        session.setBlock(new Vector(xr, originY + y, zr), session.getBlock(new Vector(xr, originY + copyFrom, zr)));
                         ++blocksChanged;
                     }
 
                     // Set the top block of the column to be the same type
                     // (this could otherwise go wrong with rounding)
-                    session.setBlock(new Vector(X, newHeight, Z), session.getBlock(new Vector(X, curHeight, Z)));
+                    session.setBlock(new Vector(xr, newHeight, zr), session.getBlock(new Vector(xr, curHeight, zr)));
                     ++blocksChanged;
 
                     // Fill rest with air
                     for (int y = newHeight + 1; y <= curHeight; ++y) {
-                        session.setBlock(new Vector(X, y, Z), fillerAir);
+                        session.setBlock(new Vector(xr, y, zr), fillerAir);
                         ++blocksChanged;
                     }
                 }

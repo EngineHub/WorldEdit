@@ -68,7 +68,7 @@ public class Snapshot implements Comparable<Snapshot> {
      * @throws DataException
      */
     public ChunkStore getChunkStore() throws IOException, DataException {
-        ChunkStore chunkStore = _getChunkStore();
+        ChunkStore chunkStore = internalGetChunkStore();
 
         logger.info("WorldEdit: Using " + chunkStore.getClass().getCanonicalName()
                 + " for loading snapshot '" + file.getAbsolutePath() + "'");
@@ -83,7 +83,7 @@ public class Snapshot implements Comparable<Snapshot> {
      * @throws IOException
      * @throws DataException
      */
-    public ChunkStore _getChunkStore() throws IOException, DataException {
+    private ChunkStore internalGetChunkStore() throws IOException, DataException {
         if (file.getName().toLowerCase().endsWith(".zip")) {
             try {
                 ChunkStore chunkStore = new TrueZipMcRegionChunkStore(file);

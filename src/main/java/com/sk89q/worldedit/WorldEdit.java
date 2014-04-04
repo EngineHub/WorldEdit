@@ -818,7 +818,7 @@ public class WorldEdit {
                 return false;
             }
 
-            if (!player.hasPermission("worldedit.navigation.jumpto.tool") ){
+            if (!player.hasPermission("worldedit.navigation.jumpto.tool")) {
                 return false;
             }
 
