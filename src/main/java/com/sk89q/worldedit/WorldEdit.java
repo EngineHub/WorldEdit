@@ -36,7 +36,6 @@ import com.sk89q.worldedit.extension.registry.PatternRegistry;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.pattern.Patterns;
-import com.sk89q.worldedit.internal.InternalEditSessionFactory;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -74,7 +73,7 @@ public class WorldEdit {
     private final LocalConfiguration config;
     private final CommandsManager<LocalPlayer> commands;
     private final EventBus eventBus = new EventBus();
-    private final EditSessionFactory editSessionFactory = new InternalEditSessionFactory(eventBus);
+    private final EditSessionFactory editSessionFactory = new EditSessionFactory.EditSessionFactoryImpl(eventBus);
     private final SessionManager sessions = new SessionManager(this);
 
     private final BlockRegistry blockRegistry = new BlockRegistry(this);

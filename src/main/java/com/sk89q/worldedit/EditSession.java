@@ -122,6 +122,23 @@ public class EditSession implements Extent {
     private Mask oldMask;
 
     /**
+     * @deprecated use {@link WorldEdit#getEditSessionFactory()} to create {@link EditSession}s
+     */
+    @SuppressWarnings("deprecation")
+    @Deprecated
+    public EditSession(LocalWorld world, int maxBlocks) {
+        this(world, maxBlocks, null);
+    }
+
+    /**
+     * @deprecated use {@link WorldEdit#getEditSessionFactory()} to create {@link EditSession}s
+     */
+    @Deprecated
+    public EditSession(LocalWorld world, int maxBlocks, @Nullable BlockBag blockBag) {
+        this(WorldEdit.getInstance().getEventBus(), world, maxBlocks, blockBag, new EditSessionEvent(world, null, maxBlocks, null));
+    }
+
+    /**
      * Construct the object with a maximum number of blocks and a block bag.
      *
      * @param eventBus the event bus
@@ -130,7 +147,7 @@ public class EditSession implements Extent {
      * @param blockBag an optional {@link BlockBag} to use, otherwise null
      * @param event the event to call with the extent
      */
-    public EditSession(EventBus eventBus, LocalWorld world, int maxBlocks, @Nullable BlockBag blockBag, EditSessionEvent event) {
+    EditSession(EventBus eventBus, LocalWorld world, int maxBlocks, @Nullable BlockBag blockBag, EditSessionEvent event) {
         checkNotNull(eventBus);
         checkNotNull(world);
         checkArgument(maxBlocks >= -1, "maxBlocks >= -1 required");

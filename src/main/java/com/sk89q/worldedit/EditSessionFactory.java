@@ -21,11 +21,18 @@ package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.util.eventbus.EventBus;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * @deprecated To wrap {@link EditSession}s, please hook into {@link EditSessionEvent}
+ * Creates new {@link EditSession}s. To get an instance of this factory,
+ * use {@link WorldEdit#getEditSessionFactory()}.
+ * </p>
+ * It is no longer possible to replace the instance of this in WorldEdit
+ * with a custom one. Use {@link EditSessionEvent} to override
+ * the creation of {@link EditSession}s.
  */
-@Deprecated
 public class EditSessionFactory {
 
     /**
@@ -72,4 +79,42 @@ public class EditSessionFactory {
         throw new IllegalArgumentException("This class is being removed");
     }
 
+    /**
+     * Internal factory for {@link EditSession}s.
+     */
+    static final class EditSessionFactoryImpl extends EditSessionFactory {
+
+        private final EventBus eventBus;
+
+        /**
+         * Create a new factory.
+         *
+         * @param eventBus the event bus
+         */
+        public EditSessionFactoryImpl(EventBus eventBus) {
+            checkNotNull(eventBus);
+            this.eventBus = eventBus;
+        }
+
+        @Override
+        public EditSession getEditSession(LocalWorld world, int maxBlocks) {
+            return new EditSession(eventBus, world, maxBlocks, null, new EditSessionEvent(world, null, maxBlocks, null));
+        }
+
+        @Override
+        public EditSession getEditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
+            return new EditSession(eventBus, world, maxBlocks, null, new EditSessionEvent(world, player, maxBlocks, null));
+        }
+
+        @Override
+        public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag) {
+            return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, null, maxBlocks, null));
+        }
+
+        @Override
+        public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
+            return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, player, maxBlocks, null));
+        }
+
+    }
 }
