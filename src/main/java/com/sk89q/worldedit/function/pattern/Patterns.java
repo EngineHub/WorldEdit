@@ -48,4 +48,25 @@ public final class Patterns {
         };
     }
 
+    /**
+     * Wrap a new-style pattern and return an old-style pattern.
+     *
+     * @param pattern the pattern
+     * @return an old-style pattern
+     */
+    public static com.sk89q.worldedit.patterns.Pattern wrap(final Pattern pattern) {
+        checkNotNull(pattern);
+        return new com.sk89q.worldedit.patterns.Pattern() {
+            @Override
+            public BaseBlock next(Vector position) {
+                return pattern.apply(position);
+            }
+
+            @Override
+            public BaseBlock next(int x, int y, int z) {
+                return next(new Vector(x, y, z));
+            }
+        };
+    }
+
 }

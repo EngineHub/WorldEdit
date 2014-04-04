@@ -17,37 +17,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extent;
+package com.sk89q.worldedit.internal.registry;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.extension.input.InputParseException;
 
 /**
- * A world, portion of a world, clipboard, or other object that can have blocks
- * set or entities placed.
+ * Input parser interface for {@link AbstractRegistry}.
  *
- * @see InputExtent the get____() portion
- * @see OutputExtent the set____() portion
+ * @param <E> the element
  */
-public interface Extent extends InputExtent, OutputExtent {
+@SuppressWarnings("ProtectedField")
+public abstract class InputParser<E> {
 
-    /**
-     * Get the minimum point in the extent.
-     * </p>
-     * If the extent is unbounded, then a large (negative) value may
-     * be returned.
-     *
-     * @return the minimum point
-     */
-    Vector getMinimumPoint();
+    protected final WorldEdit worldEdit;
 
-    /**
-     * Get the maximum point in the extent.
-     * </p>
-     * If the extent is unbounded, then a large (positive) value may
-     * be returned.
-     *
-     * @return the maximum point
-     */
-    Vector getMaximumPoint();
+    protected InputParser(WorldEdit worldEdit) {
+        this.worldEdit = worldEdit;
+    }
+
+    public abstract E parseFromInput(String input, ParserContext context) throws InputParseException;
 
 }

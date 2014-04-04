@@ -17,37 +17,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extent;
+package com.sk89q.worldedit.extension.registry;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.internal.registry.AbstractRegistry;
 
 /**
- * A world, portion of a world, clipboard, or other object that can have blocks
- * set or entities placed.
- *
- * @see InputExtent the get____() portion
- * @see OutputExtent the set____() portion
+ * A registry of known {@link Pattern}s. Provides methods to instantiate
+ * new patterns from input.
+ * </p>
+ * Instances of this class can be taken from
+ * {@link WorldEdit#getPatternRegistry()}.
  */
-public interface Extent extends InputExtent, OutputExtent {
+public final class PatternRegistry extends AbstractRegistry<Pattern> {
 
     /**
-     * Get the minimum point in the extent.
-     * </p>
-     * If the extent is unbounded, then a large (negative) value may
-     * be returned.
+     * Create a new instance.
      *
-     * @return the minimum point
+     * @param worldEdit the WorldEdit instance
      */
-    Vector getMinimumPoint();
+    public PatternRegistry(WorldEdit worldEdit) {
+        super(worldEdit);
 
-    /**
-     * Get the maximum point in the extent.
-     * </p>
-     * If the extent is unbounded, then a large (positive) value may
-     * be returned.
-     *
-     * @return the maximum point
-     */
-    Vector getMaximumPoint();
+        parsers.add(new HashTagPatternParser(worldEdit));
+        parsers.add(new SingleBlockPatternParser(worldEdit));
+        parsers.add(new RandomPatternParser(worldEdit));
+    }
 
 }

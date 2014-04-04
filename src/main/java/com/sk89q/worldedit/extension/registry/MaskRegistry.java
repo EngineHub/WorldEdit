@@ -17,37 +17,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extent;
+package com.sk89q.worldedit.extension.registry;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.internal.registry.AbstractRegistry;
 
 /**
- * A world, portion of a world, clipboard, or other object that can have blocks
- * set or entities placed.
- *
- * @see InputExtent the get____() portion
- * @see OutputExtent the set____() portion
+ * A registry of known {@link Mask}s. Provides methods to instantiate
+ * new masks from input.
+ * </p>
+ * Instances of this class can be taken from
+ * {@link WorldEdit#getMaskRegistry()}.
  */
-public interface Extent extends InputExtent, OutputExtent {
+public final class MaskRegistry extends AbstractRegistry<Mask> {
 
     /**
-     * Get the minimum point in the extent.
-     * </p>
-     * If the extent is unbounded, then a large (negative) value may
-     * be returned.
+     * Create a new mask registry.
      *
-     * @return the minimum point
+     * @param worldEdit the WorldEdit instance
      */
-    Vector getMinimumPoint();
+    public MaskRegistry(WorldEdit worldEdit) {
+        super(worldEdit);
 
-    /**
-     * Get the maximum point in the extent.
-     * </p>
-     * If the extent is unbounded, then a large (positive) value may
-     * be returned.
-     *
-     * @return the maximum point
-     */
-    Vector getMaximumPoint();
+        parsers.add(new DefaultMaskParser(worldEdit));
+    }
 
 }

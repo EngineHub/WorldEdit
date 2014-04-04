@@ -29,6 +29,7 @@ import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.command.tool.brush.Brush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
+import com.sk89q.worldedit.session.request.Request;
 
 /**
  * Builds a shape at the place being looked at.
@@ -177,6 +178,7 @@ public class BrushTool implements TraceTool {
         BlockBag bag = session.getBlockBag(player);
 
         EditSession editSession = session.createEditSession(player);
+        Request.request().setEditSession(editSession);
         if (mask != null) {
             mask.prepare(session, player, target);
             Mask existingMask = editSession.getMask();

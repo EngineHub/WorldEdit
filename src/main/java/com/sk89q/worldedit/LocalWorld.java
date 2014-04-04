@@ -627,8 +627,17 @@ public abstract class LocalWorld implements World, Extent {
     }
 
     @Override
+    public Vector getMaximumPoint() {
+        return new Vector(30000000, 30000000, 30000000);
+    }
+
+    @Override
+    public Vector getMinimumPoint() {
+        return new Vector(-30000000, -30000000, -30000000);
+    }
+
+    @Override
     public @Nullable Operation commit() {
         return null;
     }
-
 }

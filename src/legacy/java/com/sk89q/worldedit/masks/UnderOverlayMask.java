@@ -24,13 +24,16 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.function.mask.MaskIntersection;
+import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.function.mask.OffsetMask;
 
 import java.util.Set;
 
 /**
- *
- * @author 1337
+ * @deprecated Use {@link OffsetMask} with {@link MaskIntersection} and {@link Masks#negate(com.sk89q.worldedit.function.mask.Mask)}
  */
+@Deprecated
 public class UnderOverlayMask extends AbstractMask {
     private final int yMod;
     private Mask mask;

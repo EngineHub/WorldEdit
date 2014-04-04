@@ -250,7 +250,7 @@ public class EditSession implements Extent {
         if (mask == null) {
             maskingExtent.setMask(Masks.alwaysTrue());
         } else {
-            maskingExtent.setMask(Masks.wrap(this, mask));
+            maskingExtent.setMask(Masks.wrap(mask, this));
         }
     }
 
@@ -570,6 +570,16 @@ public class EditSession implements Extent {
         return getBlockChangeCount();
     }
 
+    @Override
+    public Vector getMinimumPoint() {
+        return getWorld().getMinimumPoint();
+    }
+
+    @Override
+    public Vector getMaximumPoint() {
+        return getWorld().getMaximumPoint();
+    }
+
     /**
      * Finish off the queue.
      */
@@ -818,7 +828,7 @@ public class EditSession implements Extent {
         checkNotNull(pattern);
 
         BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
-        RegionMaskingFilter filter = new RegionMaskingFilter(Masks.wrap(this, mask), replace);
+        RegionMaskingFilter filter = new RegionMaskingFilter(Masks.wrap(mask, this), replace);
         RegionVisitor visitor = new RegionVisitor(region, filter);
         Operations.completeLegacy(visitor);
         return visitor.getAffected();

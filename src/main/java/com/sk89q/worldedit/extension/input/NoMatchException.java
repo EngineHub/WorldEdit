@@ -17,37 +17,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extent;
-
-import com.sk89q.worldedit.Vector;
+package com.sk89q.worldedit.extension.input;
 
 /**
- * A world, portion of a world, clipboard, or other object that can have blocks
- * set or entities placed.
- *
- * @see InputExtent the get____() portion
- * @see OutputExtent the set____() portion
+ * Thrown when a match fails when input is parsed.
  */
-public interface Extent extends InputExtent, OutputExtent {
+public class NoMatchException extends InputParseException {
 
     /**
-     * Get the minimum point in the extent.
-     * </p>
-     * If the extent is unbounded, then a large (negative) value may
-     * be returned.
+     * Create with a message.
      *
-     * @return the minimum point
+     * @param message the message
      */
-    Vector getMinimumPoint();
+    public NoMatchException(String message) {
+        super(message);
+    }
 
     /**
-     * Get the maximum point in the extent.
-     * </p>
-     * If the extent is unbounded, then a large (positive) value may
-     * be returned.
+     * Create with a message and a cause.
      *
-     * @return the maximum point
+     * @param message the message
+     * @param cause the cause
      */
-    Vector getMaximumPoint();
+    public NoMatchException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

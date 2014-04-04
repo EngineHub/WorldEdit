@@ -1,7 +1,7 @@
-// $Id$
 /*
- * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com> and contributors
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,21 +15,46 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.worldedit;
 
 /**
- *
- * @author sk89q
+ * Parent for all WorldEdit exceptions.
  */
 public abstract class WorldEditException extends Exception {
-    private static final long serialVersionUID = 3201997990797993987L;
 
+    /**
+     * Create a new exception.
+     */
     protected WorldEditException() {
     }
 
-    protected WorldEditException(String msg) {
-        super(msg);
+    /**
+     * Create a new exception with a message.
+     *
+     * @param message the message
+     */
+    protected WorldEditException(String message) {
+        super(message);
+    }
+
+    /**
+     * Create a new exception with a message and a cause.
+     *
+     * @param message the message
+     * @param cause the cause
+     */
+    protected WorldEditException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Create a new exception with a cause.
+     *
+     * @param cause the cause
+     */
+    protected WorldEditException(Throwable cause) {
+        super(cause);
     }
 }

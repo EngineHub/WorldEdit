@@ -19,9 +19,8 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.session.request.Request;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -95,17 +94,64 @@ public final class Masks {
 
     /**
      * Wrap an old-style mask and convert it to a new mask.
+     * </p>
+     * Note, however, that this is strongly not recommended because
+     * {@link com.sk89q.worldedit.masks.Mask#prepare(LocalSession, LocalPlayer, Vector)}
+     * is not called.
      *
-     * @param editSession the edit session to bind to
      * @param mask the old-style mask
+     * @param editSession the edit session to bind to
      * @return a new-style mask
+     * @deprecated Please avoid if possible
      */
-    public static Mask wrap(final EditSession editSession, final com.sk89q.worldedit.masks.Mask mask) {
+    @Deprecated
+    @SuppressWarnings("deprecation")
+    public static Mask wrap(final com.sk89q.worldedit.masks.Mask mask, final EditSession editSession) {
         checkNotNull(mask);
         return new AbstractMask() {
             @Override
             public boolean test(Vector vector) {
                 return mask.matches(editSession, vector);
+            }
+        };
+    }
+
+    /**
+     * Wrap an old-style mask and convert it to a new mask.
+     * </p>
+     * As an {@link EditSession} is not provided in this case, one will be
+     * taken from the {@link Request}, if possible. If not possible, then the
+     * mask will return false.
+     *
+     * @param mask the old-style mask
+     * @return a new-style mask
+     */
+    @SuppressWarnings("deprecation")
+    public static Mask wrap(final com.sk89q.worldedit.masks.Mask mask) {
+        checkNotNull(mask);
+        return new AbstractMask() {
+            @Override
+            public boolean test(Vector vector) {
+                EditSession editSession = Request.request().getEditSession();
+                return editSession != null && mask.matches(editSession, vector);
+            }
+        };
+    }
+
+    /**
+     * Convert a new-style mask to an old-style mask.
+     *
+     * @param mask the new-style mask
+     * @return an old-style mask
+     */
+    @SuppressWarnings("deprecation")
+    public static com.sk89q.worldedit.masks.Mask wrap(final Mask mask) {
+        checkNotNull(mask);
+        return new com.sk89q.worldedit.masks.AbstractMask() {
+            @Override
+            public boolean matches(EditSession editSession, Vector pos) {
+                Request.request().setEditSession(editSession);
+                return mask.test(pos);
             }
         };
     }

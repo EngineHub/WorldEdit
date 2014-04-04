@@ -70,6 +70,16 @@ public class ExtentDelegate implements Extent {
         return extent.setBlock(location, block);
     }
 
+    @Override
+    public Vector getMinimumPoint() {
+        return extent.getMinimumPoint();
+    }
+
+    @Override
+    public Vector getMaximumPoint() {
+        return extent.getMaximumPoint();
+    }
+
     protected Operation commitBefore() {
         return null;
     }
@@ -88,4 +98,5 @@ public class ExtentDelegate implements Extent {
             return null;
         }
     }
+
 }
