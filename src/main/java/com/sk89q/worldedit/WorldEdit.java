@@ -1,7 +1,7 @@
-// $Id$
 /*
- * WorldEdit
- * Copyright (C) 2010 sk89q <http://www.sk89q.com> and contributors
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,155 +15,78 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.worldedit;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import com.sk89q.minecraft.util.commands.*;
+import com.sk89q.minecraft.util.commands.Console;
+import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.ItemType;
+import com.sk89q.worldedit.command.*;
+import com.sk89q.worldedit.command.tool.*;
+import com.sk89q.worldedit.event.extent.EditSessionEvent;
+import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.extension.registry.BlockRegistry;
+import com.sk89q.worldedit.extension.registry.MaskRegistry;
+import com.sk89q.worldedit.extension.registry.PatternRegistry;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.function.pattern.Patterns;
+import com.sk89q.worldedit.internal.InternalEditSessionFactory;
+import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.regions.selector.RegionSelector;
+import com.sk89q.worldedit.scripting.CraftScriptContext;
+import com.sk89q.worldedit.scripting.CraftScriptEngine;
+import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
+import com.sk89q.worldedit.session.SessionManager;
+import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.LogFormat;
+import com.sk89q.worldedit.util.eventbus.EventBus;
+
+import javax.script.ScriptException;
+import java.io.*;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
-import javax.script.ScriptException;
-
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandPermissionsException;
-import com.sk89q.minecraft.util.commands.CommandUsageException;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.minecraft.util.commands.Console;
-import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
-import com.sk89q.minecraft.util.commands.SimpleInjector;
-import com.sk89q.minecraft.util.commands.UnhandledCommandException;
-import com.sk89q.minecraft.util.commands.WrappedCommandException;
-import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
-import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.blocks.ClothColor;
-import com.sk89q.worldedit.blocks.ItemType;
-import com.sk89q.worldedit.blocks.MobSpawnerBlock;
-import com.sk89q.worldedit.blocks.NoteBlock;
-import com.sk89q.worldedit.blocks.SignBlock;
-import com.sk89q.worldedit.blocks.SkullBlock;
-import com.sk89q.worldedit.commands.BiomeCommands;
-import com.sk89q.worldedit.commands.ChunkCommands;
-import com.sk89q.worldedit.commands.ClipboardCommands;
-import com.sk89q.worldedit.commands.GeneralCommands;
-import com.sk89q.worldedit.commands.GenerationCommands;
-import com.sk89q.worldedit.commands.HistoryCommands;
-import com.sk89q.worldedit.commands.InsufficientArgumentsException;
-import com.sk89q.worldedit.commands.NavigationCommands;
-import com.sk89q.worldedit.commands.RegionCommands;
-import com.sk89q.worldedit.commands.ScriptingCommands;
-import com.sk89q.worldedit.commands.SelectionCommands;
-import com.sk89q.worldedit.commands.SnapshotUtilCommands;
-import com.sk89q.worldedit.commands.ToolCommands;
-import com.sk89q.worldedit.commands.ToolUtilCommands;
-import com.sk89q.worldedit.commands.UtilityCommands;
-import com.sk89q.worldedit.masks.BiomeTypeMask;
-import com.sk89q.worldedit.masks.BlockMask;
-import com.sk89q.worldedit.masks.CombinedMask;
-import com.sk89q.worldedit.masks.DynamicRegionMask;
-import com.sk89q.worldedit.masks.ExistingBlockMask;
-import com.sk89q.worldedit.masks.InvertedMask;
-import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.masks.RandomMask;
-import com.sk89q.worldedit.masks.RegionMask;
-import com.sk89q.worldedit.masks.SolidBlockMask;
-import com.sk89q.worldedit.masks.UnderOverlayMask;
-import com.sk89q.worldedit.patterns.BlockChance;
-import com.sk89q.worldedit.patterns.ClipboardPattern;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.RandomFillPattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
-import com.sk89q.worldedit.regions.RegionSelector;
-import com.sk89q.worldedit.scripting.CraftScriptContext;
-import com.sk89q.worldedit.scripting.CraftScriptEngine;
-import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
-import com.sk89q.worldedit.tools.BlockTool;
-import com.sk89q.worldedit.tools.DoubleActionBlockTool;
-import com.sk89q.worldedit.tools.DoubleActionTraceTool;
-import com.sk89q.worldedit.tools.Tool;
-import com.sk89q.worldedit.tools.TraceTool;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This class is the main entry point for WorldEdit. All events are routed
- * to an instance of this controller for processing by WorldEdit. For
- * integrating WorldEdit in other platforms, an instance of this class
- * should be created and events should be redirected to it.
- *
- * @author sk89q
+ * The current instance of WorldEdit.
  */
 public class WorldEdit {
-    /**
-     * Logger for debugging.
-     */
+
     public static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     public final Logger commandLogger = Logger.getLogger("Minecraft.WorldEdit.CommandLogger");
 
-    /**
-     * Holds the current instance of this class, for static access
-     */
     private static WorldEdit instance;
-    
-    /**
-     * Holds WorldEdit's version.
-     */
     private static String version;
 
-    /**
-     * Interface to the server.
-     */
     private final ServerInterface server;
-
-    /**
-     * Configuration. This is a subclass.
-     */
     private final LocalConfiguration config;
-
-    /**
-     * List of commands.
-     */
     private final CommandsManager<LocalPlayer> commands;
-    
-    /**
-     * Holds the factory responsible for the creation of edit sessions
-     */
-    private EditSessionFactory editSessionFactory = new EditSessionFactory();
+    private final EventBus eventBus = new EventBus();
+    private final EditSessionFactory editSessionFactory = new InternalEditSessionFactory(eventBus);
+    private final SessionManager sessions = new SessionManager(this);
 
-    /**
-     * Stores a list of WorldEdit sessions, keyed by players' names. Sessions
-     * persist only for the user's session. On disconnect, the session will be
-     * removed. Sessions are created only when they are needed and those
-     * without any WorldEdit abilities or never use WorldEdit in a session will
-     * not have a session object generated for them.
-     */
-    private final HashMap<String, LocalSession> sessions = new HashMap<String, LocalSession>();
+    private final BlockRegistry blockRegistry = new BlockRegistry(this);
+    private final MaskRegistry maskRegistry = new MaskRegistry(this);
+    private final PatternRegistry patternRegistry = new PatternRegistry(this);
 
-    /**
-     * Initialize statically.
-     */
     static {
         getVersion();
     }
 
     /**
-     * Construct an instance of the plugin
+     * Construct an instance of WorldEdit.
      *
      * @param server
      * @param config
@@ -291,364 +214,129 @@ public class WorldEdit {
     }
 
     /**
-     * Gets the LocalSession for a player name if it exists
+     * Get the event bus for WorldEdit.
      *
-     * @param player
-     * @return The session for the player, if it exists
+     * @return the event bus
      */
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    /**
+     * Get the block registry from which new {@link BaseBlock}s can be
+     * constructed.
+     *
+     * @return the block registry
+     */
+    public BlockRegistry getBlockRegistry() {
+        return blockRegistry;
+    }
+
+    /**
+     * Get the mask registry from which new {@link com.sk89q.worldedit.function.mask.Mask}s
+     * can be constructed.
+     *
+     * @return the mask registry
+     */
+    public MaskRegistry getMaskRegistry() {
+        return maskRegistry;
+    }
+
+    /**
+     * Get the pattern registry from which new {@link com.sk89q.worldedit.function.pattern.Pattern}s
+     * can be constructed.
+     *
+     * @return the pattern registry
+     */
+    public PatternRegistry getPatternRegistry() {
+        return patternRegistry;
+    }
+
+    /**
+     * Return the session manager.
+     *
+     * @return the session manager
+     */
+    public SessionManager getSessionManager() {
+        return sessions;
+    }
+
+    /**
+     * @deprecated Use {@link #getSessionManager()}
+     */
+    @Deprecated
     public LocalSession getSession(String player) {
+        return sessions.findByName(player);
+    }
+
+    /**
+     * @deprecated use {@link #getSessionManager()}
+     */
+    @Deprecated
+    public LocalSession getSession(LocalPlayer player) {
         return sessions.get(player);
     }
 
     /**
-     * Gets the WorldEdit session for a player.
-     *
-     * @param player
-     * @return
+     * @deprecated use {@link #getSessionManager()}
      */
-    public LocalSession getSession(LocalPlayer player) {
-        LocalSession session;
-
-        synchronized (sessions) {
-            if (sessions.containsKey(player.getName())) {
-                session = sessions.get(player.getName());
-            } else {
-                session = new LocalSession(config);
-                session.setBlockChangeLimit(config.defaultChangeLimit);
-                // Remember the session
-                sessions.put(player.getName(), session);
-            }
-
-            // Set the limit on the number of blocks that an operation can
-            // change at once, or don't if the player has an override or there
-            // is no limit. There is also a default limit
-            int currentChangeLimit = session.getBlockChangeLimit();
-            
-            if (!player.hasPermission("worldedit.limit.unrestricted")
-                    && config.maxChangeLimit > -1) {
-
-                // If the default limit is infinite but there is a maximum
-                // limit, make sure to not have it be overridden
-                if (config.defaultChangeLimit < 0) {
-                    if (currentChangeLimit < 0 || currentChangeLimit > config.maxChangeLimit) {
-                        session.setBlockChangeLimit(config.maxChangeLimit);
-                    }
-                } else {
-                    // Bound the change limit
-                    int maxChangeLimit = config.maxChangeLimit;
-                    if (currentChangeLimit == -1 || currentChangeLimit > maxChangeLimit) {
-                        session.setBlockChangeLimit(maxChangeLimit);
-                    }
-                }
-            }
-
-            // Have the session use inventory if it's enabled and the player
-            // doesn't have an override
-            session.setUseInventory(config.useInventory
-                    && !(config.useInventoryOverride
-                            && (player.hasPermission("worldedit.inventory.unrestricted")
-                                || (config.useInventoryCreativeOverride && player.hasCreativeMode()))));
-        }
-
-        return session;
+    @Deprecated
+    public void removeSession(LocalPlayer player) {
+        sessions.remove(player);
     }
 
     /**
-     * Returns true if the player has a session.
-     *
-     * @param player
-     * @return
+     * @deprecated use {@link #getSessionManager()}
      */
-    public boolean hasSession(LocalPlayer player) {
-        // TODO: If this is indeed used in multiple threads, we should use Collections.synchronizedMap here to simplify things and exclude sources of error.
-        synchronized (sessions) {
-            return sessions.containsKey(player.getName());
-        }
+    @Deprecated
+    public void clearSessions() {
+        sessions.clear();
     }
 
-    public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed)
-            throws WorldEditException {
+    /**
+     * @deprecated use {@link #getSessionManager()}
+     */
+    @Deprecated
+    public boolean hasSession(LocalPlayer player) {
+        return sessions.contains(player);
+    }
+
+    /**
+     * @deprecated Use {@link #getBlockRegistry()} and {@link BlockRegistry#parseFromInput(String, ParserContext)}
+     */
+    @Deprecated
+    public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed) throws WorldEditException {
         return getBlock(player, arg, allAllowed, false);
     }
 
     /**
-     * Get an item ID from an item name or an item ID number.
-     *
-     * @param player
-     * @param arg
-     * @param allAllowed true to ignore blacklists
-     * @param allowNoData return -1 for data if no data was given.
-     * @return
-     * @throws UnknownItemException
-     * @throws DisallowedItemException
+     * @deprecated Use {@link #getBlockRegistry()} and {@link BlockRegistry#parseFromInput(String, ParserContext)}
      */
-    public BaseBlock getBlock(LocalPlayer player, String arg,
-                              boolean allAllowed, boolean allowNoData)
-            throws WorldEditException {
-        BlockType blockType;
-        arg = arg.replace("_", " ");
-        arg = arg.replace(";", "|");
-        String[] blockAndExtraData = arg.split("\\|");
-        String[] typeAndData = blockAndExtraData[0].split(":", 2);
-        String testID = typeAndData[0];
-
-        int blockId = -1;
-
-        int data = -1;
-
-        boolean parseDataValue = true;
-        if ("hand".equalsIgnoreCase(testID)) {
-            // Get the block type from the item in the user's hand.
-            final BaseBlock blockInHand = player.getBlockInHand();
-            if (blockInHand.getClass() != BaseBlock.class) {
-                return blockInHand;
-            }
-
-            blockId = blockInHand.getId();
-            blockType = BlockType.fromID(blockId);
-            data = blockInHand.getData();
-        } else if ("pos1".equalsIgnoreCase(testID)) {
-            // Get the block type from the "primary position"
-            final LocalWorld world = player.getWorld();
-            final BlockVector primaryPosition = getSession(player).getRegionSelector(world).getPrimaryPosition();
-            final BaseBlock blockInHand = world.getBlock(primaryPosition);
-            if (blockInHand.getClass() != BaseBlock.class) {
-                return blockInHand;
-            }
-
-            blockId = blockInHand.getId();
-            blockType = BlockType.fromID(blockId);
-            data = blockInHand.getData();
-        } else {
-            // Attempt to parse the item ID or otherwise resolve an item/block
-            // name to its numeric ID
-            try {
-                blockId = Integer.parseInt(testID);
-                blockType = BlockType.fromID(blockId);
-            } catch (NumberFormatException e) {
-                blockType = BlockType.lookup(testID);
-                if (blockType == null) {
-                    int t = server.resolveItem(testID);
-                    if (t > 0) {
-                        blockType = BlockType.fromID(t); // Could be null
-                        blockId = t;
-                    }
-                }
-            }
-
-            if (blockId == -1 && blockType == null) {
-                // Maybe it's a cloth
-                ClothColor col = ClothColor.lookup(testID);
-                if (col == null) {
-                    throw new UnknownItemException(arg);
-                }
-
-                blockType = BlockType.CLOTH;
-                data = col.getID();
-
-                // Prevent overriding the data value
-                parseDataValue = false;
-            }
-
-            // Read block ID
-            if (blockId == -1) {
-                blockId = blockType.getID();
-            }
-
-            if (!player.getWorld().isValidBlockType(blockId)) {
-                throw new UnknownItemException(arg);
-            }
-        }
-
-        if (!allowNoData && data == -1) {
-            // No wildcards allowed => eliminate them.
-            data = 0;
-        }
-
-        if (parseDataValue) { // Block data not yet detected
-            // Parse the block data (optional)
-            try {
-                if (typeAndData.length > 1 && typeAndData[1].length() > 0) {
-                    data = Integer.parseInt(typeAndData[1]);
-                }
-
-                if (data > 15) {
-                    throw new InvalidItemException(arg, "Invalid data value '" + typeAndData[1] + "'");
-                }
-
-                if (data < 0 && !(allAllowed && data == -1)) {
-                    data = 0;
-                }
-            } catch (NumberFormatException e) {
-                if (blockType == null) {
-                    throw new InvalidItemException(arg, "Unknown data value '" + typeAndData[1] + "'");
-                }
-
-                switch (blockType) {
-                    case CLOTH:
-                    case STAINED_CLAY:
-                    case CARPET:
-                        ClothColor col = ClothColor.lookup(typeAndData[1]);
-                        if (col == null) {
-                            throw new InvalidItemException(arg, "Unknown cloth color '" + typeAndData[1] + "'");
-                        }
-
-                        data = col.getID();
-                        break;
-
-                    case STEP:
-                    case DOUBLE_STEP:
-                        BlockType dataType = BlockType.lookup(typeAndData[1]);
-
-                        if (dataType == null) {
-                            throw new InvalidItemException(arg, "Unknown step type '" + typeAndData[1] + "'");
-                        }
-
-                        switch (dataType) {
-                            case STONE:
-                                data = 0;
-                                break;
-                            case SANDSTONE:
-                                data = 1;
-                                break;
-                            case WOOD:
-                                data = 2;
-                                break;
-                            case COBBLESTONE:
-                                data = 3;
-                                break;
-                            case BRICK:
-                                data = 4;
-                                break;
-                            case STONE_BRICK:
-                                data = 5;
-                                break;
-                            case NETHER_BRICK:
-                                data = 6;
-                                break;
-                            case QUARTZ_BLOCK:
-                                data = 7;
-                                break;
-
-                            default:
-                                throw new InvalidItemException(arg, "Invalid step type '" + typeAndData[1] + "'");
-                        }
-                        break;
-
-                    default:
-                        throw new InvalidItemException(arg, "Unknown data value '" + typeAndData[1] + "'");
-                }
-            }
-        }
-
-        // Check if the item is allowed
-        if (!allAllowed && !player.hasPermission("worldedit.anyblock") && config.disallowedBlocks.contains(blockId)) {
-            throw new DisallowedItemException(arg);
-        }
-
-        if (blockType == null) {
-            return new BaseBlock(blockId, data);
-        }
-
-        switch (blockType) {
-            case SIGN_POST:
-            case WALL_SIGN:
-                // Allow special sign text syntax
-                String[] text = new String[4];
-                text[0] = blockAndExtraData.length > 1 ? blockAndExtraData[1] : "";
-                text[1] = blockAndExtraData.length > 2 ? blockAndExtraData[2] : "";
-                text[2] = blockAndExtraData.length > 3 ? blockAndExtraData[3] : "";
-                text[3] = blockAndExtraData.length > 4 ? blockAndExtraData[4] : "";
-                return new SignBlock(blockType.getID(), data, text);
-
-            case MOB_SPAWNER:
-                // Allow setting mob spawn type
-                if (blockAndExtraData.length > 1) {
-                    String mobName = blockAndExtraData[1];
-                    for (MobType mobType : MobType.values()) {
-                        if (mobType.getName().toLowerCase().equals(mobName.toLowerCase())) {
-                            mobName = mobType.getName();
-                            break;
-                        }
-                    }
-                    if (!server.isValidMobType(mobName)) {
-                        throw new InvalidItemException(arg, "Unknown mob type '" + mobName + "'");
-                    }
-                    return new MobSpawnerBlock(data, mobName);
-                } else {
-                    return new MobSpawnerBlock(data, MobType.PIG.getName());
-                }
-
-            case NOTE_BLOCK:
-                // Allow setting note
-                if (blockAndExtraData.length <= 1) {
-                    return new NoteBlock(data, (byte) 0);
-                }
-
-                byte note = Byte.parseByte(blockAndExtraData[1]);
-                if (note < 0 || note > 24) {
-                    throw new InvalidItemException(arg, "Out of range note value: '" + blockAndExtraData[1] + "'");
-                }
-
-                return new NoteBlock(data, note);
-
-            case HEAD:
-                // allow setting type/player/rotation
-                if (blockAndExtraData.length <= 1) {
-                    return new SkullBlock(data);
-                }
-
-                byte rot = 0;
-                String type = "";
-                try {
-                    rot = Byte.parseByte(blockAndExtraData[1]);
-                } catch (NumberFormatException e) {
-                    type = blockAndExtraData[1];
-                    if (blockAndExtraData.length > 2) {
-                        try {
-                            rot = Byte.parseByte(blockAndExtraData[2]);
-                        } catch (NumberFormatException e2) {
-                            throw new InvalidItemException(arg, "Second part of skull metadata should be a number.");
-                        }
-                    }
-                }
-                byte skullType = 0;
-                // type is either the mob type or the player name
-                // sorry for the four minecraft accounts named "skeleton", "wither", "zombie", or "creeper"
-                if (!type.isEmpty()) {
-                    if (type.equalsIgnoreCase("skeleton")) skullType = 0;
-                    else if (type.equalsIgnoreCase("wither")) skullType = 1;
-                    else if (type.equalsIgnoreCase("zombie")) skullType = 2;
-                    else if (type.equalsIgnoreCase("creeper")) skullType = 4;
-                    else skullType = 3;
-                }
-                if (skullType == 3) {
-                    return new SkullBlock(data, rot, type.replace(" ", "_")); // valid MC usernames
-                } else {
-                    return new SkullBlock(data, skullType, rot);
-                }
-
-            default:
-                return new BaseBlock(blockId, data);
-        }
+    @Deprecated
+    public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed, boolean allowNoData) throws WorldEditException {
+        ParserContext context = new ParserContext();
+        context.setPlayer(player);
+        context.setWorld(player.getWorld());
+        context.setSession(getSession(player));
+        context.setRestricted(!allAllowed);
+        context.setPreferringWildcard(allowNoData);
+        return getBlockRegistry().parseFromInput(arg, context);
     }
 
     /**
-     * Get a block.
-     *
-     * @param player
-     * @param id
-     * @return
-     * @throws UnknownItemException
-     * @throws DisallowedItemException
+     * @deprecated Use {@link #getBlockRegistry()} and {@link BlockRegistry#parseFromInput(String, ParserContext)}
      */
-    public BaseBlock getBlock(LocalPlayer player, String id)
-            throws WorldEditException {
+    @Deprecated
+    public BaseBlock getBlock(LocalPlayer player, String id) throws WorldEditException {
         return getBlock(player, id, false);
     }
 
-    public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed, boolean allowNoData)
-            throws WorldEditException {
+    /**
+     * @deprecated Use {@link #getBlockRegistry()} and {@link BlockRegistry#parseFromListInput(String, ParserContext)}
+     */
+    @Deprecated
+    @SuppressWarnings("deprecation")
+    public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed, boolean allowNoData) throws WorldEditException {
         String[] items = list.split(",");
         Set<BaseBlock> blocks = new HashSet<BaseBlock>();
         for (String id : items) {
@@ -657,188 +345,62 @@ public class WorldEdit {
         return blocks;
     }
 
-    public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed)
-            throws WorldEditException {
+    /**
+     * @deprecated Use {@link #getBlockRegistry()} and {@link BlockRegistry#parseFromInput(String, ParserContext)}
+     */
+    @Deprecated
+    @SuppressWarnings("deprecation")
+    public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed) throws WorldEditException {
         return getBlocks(player, list, allAllowed, false);
     }
 
-    public Set<BaseBlock> getBlocks(LocalPlayer player, String list)
-            throws WorldEditException {
+    /**
+     * @deprecated Use {@link #getBlockRegistry()} and {@link BlockRegistry#parseFromListInput(String, ParserContext)}
+     */
+    @Deprecated
+    @SuppressWarnings("deprecation")
+    public Set<BaseBlock> getBlocks(LocalPlayer player, String list) throws WorldEditException {
         return getBlocks(player, list, false);
     }
 
     /**
-     * Returns a Pattern corresponding to the specified pattern string,
-     * as given by the player on the command line.
-     *
-     * @param player
-     * @param patternString
-     * @return pattern
-     * @throws UnknownItemException
-     * @throws DisallowedItemException
+     * @deprecated Use {@link #getBlockRegistry()} and {@link BlockRegistry#parseFromListInput(String, ParserContext)}
      */
-    public Pattern getBlockPattern(LocalPlayer player, String patternString)
-            throws WorldEditException {
-
-        String[] items = patternString.split(",");
-
-        // Handle special block pattern types
-        if (patternString.charAt(0) == '#') {
-            if (!patternString.equals("#clipboard") && !patternString.equals("#copy")) {
-                throw new UnknownItemException(patternString);
-            }
-
-            LocalSession session = getSession(player);
-
-            try {
-                return new ClipboardPattern(session.getClipboard());
-            } catch (EmptyClipboardException e) {
-                player.printError("Copy a selection first with //copy.");
-                throw new UnknownItemException("#clipboard");
-            }
-        }
-
-        // If it's only one block, then just return that single one
-        if (items.length == 1) {
-            return new SingleBlockPattern(getBlock(player, items[0]));
-        }
-
-        List<BlockChance> blockChances = new ArrayList<BlockChance>();
-
-        for (String s : items) {
-            BaseBlock block;
-
-            double chance;
-
-            // Parse special percentage syntax
-            if (s.matches("[0-9]+(\\.[0-9]*)?%.*")) {
-                String[] p = s.split("%");
-                if (p.length < 2) {
-                    throw new UnknownItemException(s);
-                } else {
-                    chance = Double.parseDouble(p[0]);
-                    block = getBlock(player, p[1]);
-                }
-            } else {
-                chance = 1;
-                block = getBlock(player, s);
-            }
-
-            blockChances.add(new BlockChance(block, chance));
-        }
-
-        return new RandomFillPattern(blockChances);
-    }
-
-    /**
-     * Get a block mask. Block masks are used to determine which
-     * blocks to include when replacing.
-     *
-     * @param player
-     * @param session
-     * @param maskString
-     * @return
-     * @throws WorldEditException
-     */
-    public Mask getBlockMask(LocalPlayer player, LocalSession session,
-            String maskString) throws WorldEditException {
-        List<Mask> masks = new ArrayList<Mask>();
-
-        for (String component : maskString.split(" ")) {
-            if (component.length() == 0) {
-                continue;
-            }
-
-            Mask current = getBlockMaskComponent(player, session, masks, component);
-
-            masks.add(current);
-        }
-
-        switch (masks.size()) {
-        case 0:
-            return null;
-
-        case 1:
-            return masks.get(0);
-
-        default:
-            return new CombinedMask(masks);
-        }
-    }
-
-    private Mask getBlockMaskComponent(LocalPlayer player, LocalSession session, List<Mask> masks, String component) throws WorldEditException {
-        final char firstChar = component.charAt(0);
-        switch (firstChar) {
-        case '#':
-            if (component.equalsIgnoreCase("#existing")) {
-                return new ExistingBlockMask();
-            } else if (component.equalsIgnoreCase("#solid")) {
-                return new SolidBlockMask();
-            } else if (component.equalsIgnoreCase("#dregion")
-                    || component.equalsIgnoreCase("#dselection")
-                    || component.equalsIgnoreCase("#dsel")) {
-                return new DynamicRegionMask();
-            } else if (component.equalsIgnoreCase("#selection")
-                    || component.equalsIgnoreCase("#region")
-                    || component.equalsIgnoreCase("#sel")) {
-                return new RegionMask(session.getSelection(player.getWorld()));
-            } else {
-                throw new UnknownItemException(component);
-            }
-
-        case '>':
-        case '<':
-            Mask submask;
-            if (component.length() > 1) {
-                submask = getBlockMaskComponent(player, session, masks, component.substring(1));
-            } else {
-                submask = new ExistingBlockMask();
-            }
-            return new UnderOverlayMask(submask, firstChar == '>');
-
-        case '$':
-            Set<BiomeType> biomes = new HashSet<BiomeType>();
-            String[] biomesList = component.substring(1).split(",");
-            for (String biomeName : biomesList) {
-                BiomeType biome = server.getBiomes().get(biomeName);
-                biomes.add(biome);
-            }
-            return new BiomeTypeMask(biomes);
-
-        case '%':
-            int i = Integer.parseInt(component.substring(1));
-            return new RandomMask(((double) i) / 100);
-
-        case '!':
-            if (component.length() > 1) {
-                return new InvertedMask(getBlockMaskComponent(player, session, masks, component.substring(1)));
-            }
-
-        default:
-            return new BlockMask(getBlocks(player, component, true, true));
-        }
-    }
-
-    /**
-     * Get a list of blocks as a set.
-     *
-     * @param player
-     * @param list
-     * @param allBlocksAllowed
-     * @return set
-     * @throws UnknownItemException
-     * @throws DisallowedItemException
-     */
-    public Set<Integer> getBlockIDs(LocalPlayer player,
-            String list, boolean allBlocksAllowed)
-            throws WorldEditException {
-
+    @Deprecated
+    @SuppressWarnings("deprecation")
+    public Set<Integer> getBlockIDs(LocalPlayer player, String list, boolean allBlocksAllowed) throws WorldEditException {
         String[] items = list.split(",");
         Set<Integer> blocks = new HashSet<Integer>();
         for (String s : items) {
             blocks.add(getBlock(player, s, allBlocksAllowed).getType());
         }
         return blocks;
+    }
+
+    /**
+     * @deprecated Use {@link #getPatternRegistry()} and {@link BlockRegistry#parseFromInput(String, ParserContext)}
+     */
+    @Deprecated
+    @SuppressWarnings("deprecation")
+    public Pattern getBlockPattern(LocalPlayer player, String input) throws WorldEditException {
+        ParserContext context = new ParserContext();
+        context.setPlayer(player);
+        context.setWorld(player.getWorld());
+        context.setSession(getSession(player));
+        return Patterns.wrap(getPatternRegistry().parseFromInput(input, context));
+    }
+
+    /**
+     * @deprecated Use {@link #getMaskRegistry()} ()} and {@link MaskRegistry#parseFromInput(String, ParserContext)}
+     */
+    @Deprecated
+    @SuppressWarnings("deprecation")
+    public Mask getBlockMask(LocalPlayer player, LocalSession session, String input) throws WorldEditException {
+        ParserContext context = new ParserContext();
+        context.setPlayer(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        return Masks.wrap(getMaskRegistry().parseFromInput(input, context));
     }
 
     /**
@@ -1154,26 +716,6 @@ public class WorldEdit {
     }
 
     /**
-     * Remove a session.
-     *
-     * @param player
-     */
-    public void removeSession(LocalPlayer player) {
-        synchronized (sessions) {
-            sessions.remove(player.getName());
-        }
-    }
-
-    /**
-     * Remove all sessions.
-     */
-    public void clearSessions() {
-        synchronized (sessions) {
-            sessions.clear();
-        }
-    }
-
-    /**
      * Flush a block bag's changes to a player.
      *
      * @param player
@@ -1231,8 +773,9 @@ public class WorldEdit {
     }
 
     /**
+     * Handle a disconnection.
      *
-     * @param player
+     * @param player the player
      */
     @Deprecated
     public void handleDisconnect(LocalPlayer player) {
@@ -1240,42 +783,28 @@ public class WorldEdit {
     }
 
     /**
+     * Mark for expiration of the session.
      *
-     * @param player
+     * @param player the player
      */
     public void markExpire(LocalPlayer player) {
-        synchronized (sessions) {
-            LocalSession session = sessions.get(player.getName());
-            if (session != null) {
-                session.update();
-            }
-        }
+        sessions.markforExpiration(player);
     }
 
     /**
      * Forget a player.
      *
-     * @param player
+     * @param player the player
      */
     public void forgetPlayer(LocalPlayer player) {
-        removeSession(player);
+        sessions.remove(player);
     }
 
     /*
      * Flush expired sessions.
      */
     public void flushExpiredSessions(SessionCheck checker) {
-        synchronized (sessions) {
-            Iterator<Map.Entry<String, LocalSession>> it = sessions.entrySet().iterator();
-
-            while (it.hasNext()) {
-                Map.Entry<String, LocalSession> entry = it.next();
-                if (entry.getValue().hasExpired()
-                        && !checker.isOnlinePlayer(entry.getKey())) {
-                    it.remove();
-                }
-            }
-        }
+        sessions.removeExpired(checker);
     }
 
     /**
@@ -1444,6 +973,8 @@ public class WorldEdit {
      * @return whether the command was processed
      */
     public boolean handleCommand(LocalPlayer player, String[] split) {
+        Request.reset();
+
         try {
             split = commandDetection(split);
 
@@ -1547,6 +1078,8 @@ public class WorldEdit {
     }
 
     public String[] commandDetection(String[] split) {
+        Request.reset();
+
         split[0] = split[0].substring(1);
 
         // Quick script shortcut
@@ -1579,8 +1112,9 @@ public class WorldEdit {
      * @param args
      * @throws WorldEditException
      */
-    public void runScript(LocalPlayer player, File f, String[] args)
-            throws WorldEditException {
+    public void runScript(LocalPlayer player, File f, String[] args) throws WorldEditException {
+        Request.reset();
+
         String filename = f.getPath();
         int index = filename.lastIndexOf(".");
         String ext = filename.substring(index + 1, filename.length());
@@ -1679,25 +1213,24 @@ public class WorldEdit {
     }
 
     /**
-     * Get the edit session factory
-     * 
-     * @return
+     * Get a factory for {@link EditSession}s.
      */
     public EditSessionFactory getEditSessionFactory() {
-        return this.editSessionFactory;
+        return editSessionFactory;
     }
 
     /**
-     * Set the edit session factory
-     * 
-     * @param factory
+     * @deprecated EditSessionFactories are no longer used. Please register an {@link EditSessionEvent} event
+     *             with the event bus in order to override or catch changes to the world
      */
+    @Deprecated
     public void setEditSessionFactory(EditSessionFactory factory) {
-        if (factory == null) {
-            throw new IllegalArgumentException("New EditSessionFactory may not be null");
-        }
-        logger.info("Accepted EditSessionFactory of type " + factory.getClass().getName() + " from " + factory.getClass().getPackage().getName());
-        this.editSessionFactory = factory;
+        checkNotNull(factory);
+        logger.severe("Got request to set EditSessionFactory of type " +
+                factory.getClass().getName() + " from " + factory.getClass().getPackage().getName() +
+                " but EditSessionFactories have been removed in favor of extending EditSession's extents.\n\n" +
+                "This may mean that any block logger / intercepters addons/plugins/mods that you have installed will not " +
+                "intercept WorldEdit's changes! Please notify the maintainer of the other addon about this.");
     }
 
     /**

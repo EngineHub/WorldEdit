@@ -26,8 +26,8 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.cui.CUIEvent;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.internal.cui.CUIEvent;
 
 import org.spout.api.Client;
 import org.spout.api.chat.style.ChatStyle;

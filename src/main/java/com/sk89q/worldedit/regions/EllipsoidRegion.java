@@ -24,7 +24,7 @@ import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.data.ChunkStore;
+import com.sk89q.worldedit.world.storage.ChunkStore;
 import java.util.Set;
 import java.util.HashSet;
 

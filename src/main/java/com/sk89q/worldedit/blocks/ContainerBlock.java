@@ -30,7 +30,7 @@ import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTUtils;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.world.DataException;
 
 /**
  * Represents a block that stores items.

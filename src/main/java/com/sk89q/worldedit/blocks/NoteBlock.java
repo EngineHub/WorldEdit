@@ -26,7 +26,7 @@ import com.sk89q.jnbt.ByteTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.world.DataException;
 
 /**
  * A note block.

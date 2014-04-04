@@ -19,31 +19,26 @@
 
 package com.sk89q.worldedit;
 
-import java.util.PriorityQueue;
-import java.util.Random;
-
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.blocks.ChestBlock;
-import com.sk89q.worldedit.blocks.DispenserBlock;
-import com.sk89q.worldedit.blocks.FurnaceBlock;
-import com.sk89q.worldedit.blocks.MobSpawnerBlock;
-import com.sk89q.worldedit.blocks.NoteBlock;
-import com.sk89q.worldedit.blocks.SignBlock;
-import com.sk89q.worldedit.blocks.SkullBlock;
-import com.sk89q.worldedit.foundation.Block;
-import com.sk89q.worldedit.foundation.World;
+import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.function.mask.BlockMask;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
+
+import javax.annotation.Nullable;
+import java.util.PriorityQueue;
+import java.util.Random;
 
 /**
  * Represents a world.
  *
  * @author sk89q
  */
-public abstract class LocalWorld implements World {
+public abstract class LocalWorld implements World, Extent {
+
     /**
      * Named flags to use as parameters to {@link LocalWorld#killMobs(Vector, double, int)}
      */
@@ -97,6 +92,7 @@ public abstract class LocalWorld implements World {
      * @param pt
      * @return
      */
+    @Deprecated
     public abstract int getBlockType(Vector pt);
 
     /**
@@ -166,6 +162,7 @@ public abstract class LocalWorld implements World {
      * @param pt
      * @return
      */
+    @Deprecated
     public abstract int getBlockData(Vector pt);
 
     /**
@@ -528,9 +525,14 @@ public abstract class LocalWorld implements World {
     public int killEntities(LocalEntity... entities) {
         return 0;
     }
+
+    @Override
+    public boolean setBlock(Vector pt, BaseBlock block) {
+        return setBlock(pt, block, true);
+    }
     
     @Override
-    public boolean setBlock(Vector pt, Block block, boolean notifyAdjacent) {
+    public boolean setBlock(Vector pt, BaseBlock block, boolean notifyAdjacent) {
         boolean successful;
         
         // Default implementation will call the old deprecated methods
@@ -545,6 +547,11 @@ public abstract class LocalWorld implements World {
         }
         
         return successful;
+    }
+
+    @Override
+    public BaseBlock getLazyBlock(Vector position) {
+        return getBlock(position);
     }
 
     @Override
@@ -602,5 +609,35 @@ public abstract class LocalWorld implements World {
         default:
             return new BaseBlock(type, data);
         }
+    }
+
+    /**
+     * Create a mask that matches all liquids.
+     * </p>
+     * Implementations should override this so that custom liquids are supported.
+     *
+     * @return a mask
+     */
+    public Mask createLiquidMask() {
+        return new BlockMask(this,
+                new BaseBlock(BlockID.STATIONARY_LAVA, -1),
+                new BaseBlock(BlockID.LAVA, -1),
+                new BaseBlock(BlockID.STATIONARY_WATER, -1),
+                new BaseBlock(BlockID.WATER, -1));
+    }
+
+    @Override
+    public Vector getMaximumPoint() {
+        return new Vector(30000000, 30000000, 30000000);
+    }
+
+    @Override
+    public Vector getMinimumPoint() {
+        return new Vector(-30000000, -30000000, -30000000);
+    }
+
+    @Override
+    public @Nullable Operation commit() {
+        return null;
     }
 }

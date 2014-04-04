@@ -19,14 +19,13 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.regions.iterator.FlatRegion3DIterator;
+import com.sk89q.worldedit.regions.iterator.FlatRegionIterator;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
 
 /**
  * Represents a cylindrical region.

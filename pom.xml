@@ -1,17 +1,27 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sk89q</groupId>
   <artifactId>worldedit</artifactId>
-  <version>5.7-SNAPSHOT</version>
+  <version>6.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  
-  <!-- Project information -->
+
+  <!-- Fix encoding warnings -->
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <!--
+  =====================================
+    Project Information
+  =====================================
+  -->
+
   <name>WorldEdit</name>
   <inceptionYear>2010</inceptionYear>
   <url>http://wiki.sk89q.com/wiki/WorldEdit</url>
-  <description>A voxel map editor for Minecraft with tools for adventure map designers,
-    server administrators, and anyone who enjoys building massive structures.</description>
-    
+  <description>An in-game voxel map editor for Minecraft.</description>
+
   <licenses>
     <license>
       <name>GNU General Public License 2.0</name>
@@ -26,36 +36,44 @@
       <comments>License on all new contributions</comments>
     </license>
   </licenses>
-  
+
   <issueManagement>
     <system>YouTrack</system>
     <url>http://youtrack.sk89q.com</url>
   </issueManagement>
-  
+
   <ciManagement>
-    <system>Jenkins</system>
-    <url>http://build.sk89q.com</url>
+    <system>TeamCity</system>
+    <url>http://builds.enginehub.org</url>
   </ciManagement>
-  
+
   <scm>
     <connection>scm:git:git://github.com/sk89q/worldedit.git</connection>
     <developerConnection>scm:git:git@github.com:sk89q/worldedit.git</developerConnection>
     <url>https://github.com/sk89q/worldedit</url>
     <tag>master</tag>
   </scm>
-  
+
   <mailingLists>
     <mailingList>
       <name>Developer Discussion</name>
       <archive>https://groups.google.com/d/forum/sk-dev-discuss</archive>
     </mailingList>
   </mailingLists>
-  
+
+  <!--
+  =====================================
+    Distribution Management
+  =====================================
+  -->
+
   <distributionManagement>
     <site>
       <id>sk89q-docs-upload</id>
       <url>ftp://sk89q-maven-deploy/worldedit/</url>
     </site>
+
+    <!-- The CI server uses these -->
     <repository>
       <id>maven.sk89q.com</id>
       <url>http://maven.sk89q.com/artifactory/libs-release-local</url>
@@ -65,91 +83,89 @@
       <url>http://maven.sk89q.com/artifactory/libs-snapshot-local</url>
     </snapshotRepository>
   </distributionManagement>
-  
-  <properties> <!-- Fix encoding warnings -->
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  
+
+  <!--
+  =====================================
+    Dependencies
+  =====================================
+  -->
+
   <repositories>
     <repository>
-      <id>sk89q-repo</id>
+      <id>maven.sk89q.com</id>
       <url>http://maven.sk89q.com/repo/</url>
     </repository>
-    <repository>
-      <id>bukkit-repo</id>
-      <url>http://repo.bukkit.org/content/groups/public</url>
-    </repository>
   </repositories>
-  
+
   <dependencies>
-    <dependency> <!-- Used for snapshots -->
+    <!-- Used for snapshots -->
+    <dependency>
       <groupId>de.schlichtherle</groupId>
       <artifactId>truezip</artifactId>
       <version>6.8.3</version>
-      <scope>compile</scope>
+      <scope>compile</scope> <!-- optional runtime dependency -->
       <type>jar</type>
     </dependency>
-    
-    <dependency> <!-- Used for CraftScripts -->
+
+    <!-- Used for scripting -->
+    <dependency>
       <groupId>rhino</groupId>
       <artifactId>js</artifactId>
       <version>1.7R2</version>
-      <scope>compile</scope>
+      <scope>compile</scope> <!-- optional runtime dependency -->
       <type>jar</type>
-    </dependency>
-    
-    <dependency> <!-- Time format detection -->
-      <groupId>com.sk89q</groupId>
-      <artifactId>jchronic</artifactId> <!-- not original library -->
-      <version>0.2.4a</version>
-      <scope>compile</scope>
-      <type>jar</type>
-    </dependency>
-    
-    <!-- Used for Permissions support (this version has both the legacy API
-      and the new Permissions API to compile against -->
-    <dependency>
-      <groupId>com.sk89q</groupId>
-      <artifactId>dummypermscompat</artifactId>
-      <version>1.7</version>
-      <scope>compile</scope>
-      <type>jar</type>
-      <optional>true</optional> <!-- Don't export -->
     </dependency>
 
-    <dependency> <!-- Bukkit implementation -->
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>1.7.2-R0.2</version>
-      <scope>compile</scope>
+    <!-- YAML processing -->
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.9</version>
       <type>jar</type>
+      <scope>compile</scope> <!-- optional runtime dependency -->
       <optional>true</optional>
     </dependency>
-    
-    <dependency> <!-- NMS blocks -->
-      <groupId>org.bukkit</groupId>
-      <artifactId>craftbukkit</artifactId>
-      <version>1.7.5-R0.1-SNAPSHOT</version>
-      <scope>compile</scope>
+
+    <!-- It's Guava -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>10.0.1</version> <!-- Bukkit only bundles 10.0.1 -->
+      <scope>compile</scope> <!-- required runtime dependency -->
       <type>jar</type>
-      <optional>true</optional>
     </dependency>
-    
-    <dependency> <!-- Unit tests -->
+
+    <!-- Used for time operations -->
+    <dependency>
+      <groupId>com.sk89q</groupId>
+      <artifactId>jchronic</artifactId> <!-- not the original library -->
+      <version>0.2.4a</version>
+      <scope>compile</scope> <!-- shaded -->
+      <type>jar</type>
+    </dependency>
+
+    <!-- Unit tests -->
+    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <version>1.9.0-rc1</version>
       <scope>test</scope>
       <type>jar</type>
     </dependency>
-
   </dependencies>
-  
+
+  <!--
+  =====================================
+    Build
+  =====================================
+  -->
+
   <build>
     <defaultGoal>install</defaultGoal>
     <sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
 
-    <extensions> <!-- Used for uploading the docs -->
+    <!-- Used for uploading the docs -->
+    <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
          <artifactId>wagon-ftp</artifactId>
@@ -157,34 +173,29 @@
       </extension>
     </extensions>
 
-    <resources>
-      <resource>
-        <targetPath>.</targetPath>
-        <filtering>true</filtering>
-        <directory>${basedir}/src/main/resources/</directory>
-        <includes>
-          <include>plugin.yml</include>
-        </includes>
-      </resource>
-      <resource>
-        <targetPath>defaults/</targetPath>
-        <filtering>true</filtering>
-        <directory>${basedir}/src/main/resources/</directory>
-        <includes>
-          <include>config.yml</include>
-        </includes>
-      </resource>
-      <resource> <!-- NMS support in Bukkit -->
-        <targetPath>nmsblocks/</targetPath>
-        <filtering>false</filtering>
-        <directory>${basedir}/src/main/resources/nmsblocks/</directory>
-        <includes>
-          <include>*.class</include>
-        </includes>
-      </resource>
-    </resources>
-
     <plugins>
+      <!-- Add source folder -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${basedir}/src/legacy/java/</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Compiler -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -195,6 +206,7 @@
         </configuration>
       </plugin>
 
+      <!-- JAR plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -216,6 +228,7 @@
         </configuration>
       </plugin>
 
+      <!-- Assembly builds .zip, etc. -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.2-beta-2</version>
@@ -233,6 +246,7 @@
         </executions>
       </plugin>
 
+      <!-- Shades -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -254,6 +268,7 @@
         </executions>
       </plugin>
 
+      <!-- Release plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
@@ -265,6 +280,7 @@
         </configuration>
       </plugin>
 
+      <!-- Test runner -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -276,12 +292,14 @@
         </configuration>
       </plugin>
 
+      <!-- Site builder -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <version>3.1</version>
         <configuration>
           <reportPlugins>
+            <!-- Project information -->
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-project-info-reports-plugin</artifactId>
@@ -295,7 +313,8 @@
                 </reportSet>
               </reportSets>
             </plugin>
-            
+
+            <!-- Javadocs -->
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-javadoc-plugin</artifactId>
@@ -306,9 +325,141 @@
       </plugin>
     </plugins>
   </build>
-  
+
+  <!--
+  =====================================
+    Profiles
+  =====================================
+  -->
+
   <profiles>
-    <!-- Build WorldEdit for MC-Forge -->
+    <!--
+    =====================================
+      Bukkit
+    =====================================
+    -->
+    <profile>
+      <id>bukkit</id>
+
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+
+      <repositories>
+        <repository>
+          <id>bukkit-repo</id>
+          <url>http://repo.bukkit.org/content/groups/public</url>
+        </repository>
+      </repositories>
+
+      <dependencies>
+        <!-- Used for Permissions support (this version has both the legacy API
+          and the new Permissions API to compile against -->
+        <dependency>
+          <groupId>com.sk89q</groupId>
+          <artifactId>dummypermscompat</artifactId>
+          <version>1.7</version>
+          <scope>compile</scope>
+          <type>jar</type>
+          <optional>true</optional>
+        </dependency>
+
+        <!-- Bukkit implementation -->
+        <dependency>
+          <groupId>org.bukkit</groupId>
+          <artifactId>bukkit</artifactId>
+          <version>1.7.2-R0.2</version>
+          <scope>compile</scope>
+          <type>jar</type>
+          <optional>true</optional>
+        </dependency>
+
+        <!-- NMS blocks -->
+        <dependency>
+          <groupId>org.bukkit</groupId>
+          <artifactId>craftbukkit</artifactId>
+          <version>1.7.5-R0.1-SNAPSHOT</version>
+          <scope>compile</scope>
+          <type>jar</type>
+          <optional>true</optional>
+        </dependency>
+      </dependencies>
+
+      <build>
+        <resources>
+          <!-- Bukkit plugin.yml -->
+          <resource>
+            <targetPath>.</targetPath>
+            <filtering>true</filtering>
+            <directory>${basedir}/src/bukkit/resources/</directory>
+            <includes>
+              <include>plugin.yml</include>
+            </includes>
+          </resource>
+
+          <!-- Default files -->
+          <resource>
+            <targetPath>defaults/</targetPath>
+            <filtering>true</filtering>
+            <directory>${basedir}/src/bukkit/resources/</directory>
+            <includes>
+              <include>config.yml</include>
+            </includes>
+          </resource>
+
+          <!-- NMS support in Bukkit -->
+          <resource>
+            <targetPath>nmsblocks/</targetPath>
+            <filtering>false</filtering>
+            <directory>${basedir}/src/bukkit/resources/nmsblocks/</directory>
+            <includes>
+              <include>*.class</include>
+            </includes>
+          </resource>
+        </resources>
+
+        <plugins>
+          <!-- Add source folder -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>1.7</version>
+            <executions>
+              <execution>
+                <id>add-bukkit-sources</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>add-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>${basedir}/src/bukkit/java/</source>
+                  </sources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>add-bukkit-test-sources</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>add-test-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>${basedir}/src/bukkit-test/java/</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!--
+    =====================================
+      Forge
+    =====================================
+    -->
     <profile>
       <id>forge</id>
       <build>
@@ -341,10 +492,14 @@
       </build>
     </profile>
 
-    <!-- Attach javadocs and source .jars -->
+    <!--
+    =====================================
+      Attach docs and source
+    =====================================
+    -->
     <profile>
       <id>attach-docs</id>
-      
+
       <build>
         <plugins>
           <plugin>
@@ -360,7 +515,7 @@
               </execution>
             </executions>
           </plugin>
-          
+
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
@@ -377,18 +532,22 @@
         </plugins>
       </build>
     </profile>
-    
-    <!-- Build Spout, disabled by default because it always breaks -->
+
+    <!--
+    =====================================
+      Spout (BROKEN)
+    =====================================
+    -->
     <profile>
       <id>spout</id>
-      
+
       <repositories>
         <repository> <!-- WARNING: This breaks all the time -->
           <id>spout-repo</id>
           <url>http://nexus.spout.org/content/groups/public/</url>
         </repository>
       </repositories>
-      
+
       <dependencies>
         <dependency>
           <groupId>org.spout</groupId>
@@ -422,7 +581,7 @@
             <version>1.5</version>
             <executions>
               <execution>
-                <id>add-sources</id>
+                <id>add-spout-sources</id>
                 <phase>generate-sources</phase>
                 <goals>
                   <goal>add-source</goal>

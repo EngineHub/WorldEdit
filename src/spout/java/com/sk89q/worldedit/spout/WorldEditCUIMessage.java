@@ -19,7 +19,7 @@
 package com.sk89q.worldedit.spout;
 
 import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.cui.CUIEvent;
+import com.sk89q.worldedit.internal.cui.CUIEvent;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;

@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.blocks;
 
-import com.sk89q.worldedit.foundation.NbtValued;
+import com.sk89q.worldedit.world.NbtValued;
 
 /**
  * Indicates a block that contains extra data identified as an NBT structure. Compared

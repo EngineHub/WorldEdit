@@ -29,7 +29,7 @@ import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTUtils;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.world.DataException;
 
 /**
  * Represents a chest block.

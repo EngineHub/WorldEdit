@@ -19,16 +19,10 @@
 
 package com.sk89q.worldedit.blocks;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.PlayerDirection;
-import com.sk89q.worldedit.foundation.Block;
+
+import java.util.*;
 
 /**
  * Block types.
@@ -552,7 +546,7 @@ public enum BlockType {
      * @param block
      * @return
      */
-    public static boolean canPassThrough(Block block) {
+    public static boolean canPassThrough(BaseBlock block) {
         return canPassThrough(block.getId(), block.getData());
     }
 
@@ -649,7 +643,7 @@ public enum BlockType {
      * @param block
      * @return
      */
-    public static double centralTopLimit(Block block) {
+    public static double centralTopLimit(BaseBlock block) {
         return centralTopLimit(block.getId(), block.getData());
     }
 
@@ -1053,7 +1047,7 @@ public enum BlockType {
      * @param block The block
      * @return true if the block type is naturally occuring
      */
-    public static boolean isNaturalTerrainBlock(Block block) {
+    public static boolean isNaturalTerrainBlock(BaseBlock block) {
         return isNaturalTerrainBlock(block.getId(), block.getData());
     }
 

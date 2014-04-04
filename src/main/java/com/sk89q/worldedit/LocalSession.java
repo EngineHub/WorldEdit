@@ -19,28 +19,26 @@
 
 package com.sk89q.worldedit;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TimeZone;
 import com.sk89q.jchronic.Chronic;
 import com.sk89q.jchronic.Options;
 import com.sk89q.jchronic.utils.Span;
 import com.sk89q.jchronic.utils.Time;
-import com.sk89q.worldedit.snapshots.Snapshot;
-import com.sk89q.worldedit.tools.BrushTool;
-import com.sk89q.worldedit.tools.SinglePickaxe;
-import com.sk89q.worldedit.tools.BlockTool;
-import com.sk89q.worldedit.tools.Tool;
-import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.cui.CUIRegion;
-import com.sk89q.worldedit.cui.CUIEvent;
-import com.sk89q.worldedit.cui.SelectionShapeEvent;
+import com.sk89q.worldedit.command.tool.BlockTool;
+import com.sk89q.worldedit.command.tool.BrushTool;
+import com.sk89q.worldedit.command.tool.SinglePickaxe;
+import com.sk89q.worldedit.command.tool.Tool;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.internal.cui.CUIRegion;
+import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.regions.CuboidRegionSelector;
+import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.regions.selector.RegionSelector;
+import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.world.snapshot.Snapshot;
+
+import java.util.*;
 
 /**
  * An instance of this represents the WorldEdit session of a user. A session
@@ -704,6 +702,7 @@ public class LocalSession {
                 .getEditSession(player.isPlayer() ? player.getWorld() : null,
                         getBlockChangeLimit(), blockBag, player);
         editSession.setFastMode(fastMode);
+        Request.request().setEditSession(editSession);
         if (mask != null) {
             mask.prepare(this, player, null);
         }

@@ -35,7 +35,7 @@ import com.sk89q.worldedit.UnknownItemException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.commands.InsufficientArgumentsException;
+import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.patterns.Pattern;
 
 /**
