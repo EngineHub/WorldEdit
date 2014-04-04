@@ -30,7 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Stores changes to a {@link ChangeSet}.
  */
-public class ChangeSetExtent extends ExtentDelegate {
+public class ChangeSetExtent extends AbstractDelegateExtent {
 
     private final ChangeSet changeSet;
 

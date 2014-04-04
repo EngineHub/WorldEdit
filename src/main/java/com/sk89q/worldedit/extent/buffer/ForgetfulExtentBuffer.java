@@ -24,8 +24,8 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.extent.ExtentDelegate;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.pattern.Pattern;
@@ -46,7 +46,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * This buffer will not attempt to return results from the buffer when
  * accessor methods (such as {@link #getBlock(Vector)}) are called.
  */
-public class ForgetfulExtentBuffer extends ExtentDelegate implements Pattern {
+public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pattern {
 
     private static final BaseBlock AIR = new BaseBlock(BlockID.AIR);
 

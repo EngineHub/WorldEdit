@@ -23,15 +23,15 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.extent.ExtentDelegate;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Validates set data to prevent creating invalid blocks and such.
  */
-public class DataValidatorExtent extends ExtentDelegate {
+public class DataValidatorExtent extends AbstractDelegateExtent {
 
     private final LocalWorld world;
 

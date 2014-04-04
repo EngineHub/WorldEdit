@@ -23,8 +23,8 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.extent.ExtentDelegate;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -32,7 +32,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * Limits the number of blocks that can be changed before a
  * {@link MaxChangedBlocksException} is thrown.
  */
-public class BlockChangeLimiter extends ExtentDelegate {
+public class BlockChangeLimiter extends AbstractDelegateExtent {
 
     private int limit;
     private int count = 0;

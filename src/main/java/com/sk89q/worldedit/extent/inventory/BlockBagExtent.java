@@ -22,11 +22,8 @@ package com.sk89q.worldedit.extent.inventory;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.extent.ExtentDelegate;
-import com.sk89q.worldedit.extent.inventory.BlockBag;
-import com.sk89q.worldedit.extent.inventory.BlockBagException;
-import com.sk89q.worldedit.extent.inventory.UnplaceableBlockException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 import javax.annotation.Nullable;
@@ -38,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Applies a {@link BlockBag} to operations.
  */
-public class BlockBagExtent extends ExtentDelegate {
+public class BlockBagExtent extends AbstractDelegateExtent {
 
     private final LocalWorld world;
     private Map<Integer, Integer> missingBlocks = new HashMap<Integer, Integer>();

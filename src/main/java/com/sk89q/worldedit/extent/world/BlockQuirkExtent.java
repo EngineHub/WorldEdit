@@ -25,8 +25,8 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.extent.ExtentDelegate;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Handles various quirks when setting blocks, such as ice turning
  * into water or containers dropping their contents.
  */
-public class BlockQuirkExtent extends ExtentDelegate {
+public class BlockQuirkExtent extends AbstractDelegateExtent {
 
     private final LocalWorld world;
 

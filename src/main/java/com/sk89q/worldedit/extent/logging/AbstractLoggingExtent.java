@@ -22,13 +22,13 @@ package com.sk89q.worldedit.extent.logging;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.extent.ExtentDelegate;
 
 /**
  * An abstract class to implement block loggers and so on with.
  */
-public abstract class AbstractLoggingExtent extends ExtentDelegate {
+public abstract class AbstractLoggingExtent extends AbstractDelegateExtent {
 
     /**
      * Create a new instance.

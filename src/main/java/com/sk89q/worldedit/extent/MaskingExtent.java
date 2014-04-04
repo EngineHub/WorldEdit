@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Requires that all mutating methods pass a given {@link Mask}.
  */
-public class MaskingExtent extends ExtentDelegate {
+public class MaskingExtent extends AbstractDelegateExtent {
 
     private Mask mask;
 

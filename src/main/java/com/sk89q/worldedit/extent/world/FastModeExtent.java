@@ -24,7 +24,7 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.extent.ExtentDelegate;
+import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 
@@ -36,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Implements "fast mode" which may skip physics, lighting, etc.
  */
-public class FastModeExtent extends ExtentDelegate {
+public class FastModeExtent extends AbstractDelegateExtent {
 
     private final LocalWorld world;
     private final Set<BlockVector2D> dirtyChunks = new HashSet<BlockVector2D>();

@@ -22,14 +22,14 @@ package com.sk89q.worldedit.extent.cache;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.extent.ExtentDelegate;
 
 /**
  * Returns the same cached {@link BaseBlock} for repeated calls to
  * {@link #getLazyBlock(Vector)} with the same position.
  */
-public class LastAccessExtentCache extends ExtentDelegate {
+public class LastAccessExtentCache extends AbstractDelegateExtent {
 
     private CachedBlock lastBlock;
 
