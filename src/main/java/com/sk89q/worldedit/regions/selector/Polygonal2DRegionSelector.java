@@ -34,6 +34,7 @@ import com.sk89q.worldedit.internal.cui.SelectionPoint2DEvent;
 import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionSelector;
 
 /**
  * Selector for polygonal regions.

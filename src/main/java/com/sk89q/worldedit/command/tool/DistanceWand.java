@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.command.tool;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.regions.selector.RegionSelector;
+import com.sk89q.worldedit.regions.RegionSelector;
 
 /**
  * A wand that can be used at a distance.

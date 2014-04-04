@@ -17,10 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.regions.selector;
+package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.regions.Region;
 
 import java.util.List;
 

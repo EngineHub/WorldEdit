@@ -8,7 +8,7 @@ import com.sk89q.worldedit.Location;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.forge.WorldEditMod;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.selector.RegionSelector;
+import com.sk89q.worldedit.regions.RegionSelector;
 
 public abstract class RegionSelection implements Selection {
     private WeakReference<World> world;

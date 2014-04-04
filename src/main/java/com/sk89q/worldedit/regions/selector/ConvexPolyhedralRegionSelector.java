@@ -38,6 +38,7 @@ import com.sk89q.worldedit.internal.cui.SelectionPolygonEvent;
 import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.polyhedron.Triangle;
 
 public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion {

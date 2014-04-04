@@ -21,7 +21,7 @@ package com.sk89q.worldedit.bukkit.selections;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.selector.RegionSelector;
+import com.sk89q.worldedit.regions.RegionSelector;
 import org.bukkit.Location;
 import org.bukkit.World;
 

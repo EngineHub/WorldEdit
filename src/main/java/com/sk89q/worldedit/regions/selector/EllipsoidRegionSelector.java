@@ -32,6 +32,7 @@ import com.sk89q.worldedit.internal.cui.SelectionEllipsoidPointEvent;
 import com.sk89q.worldedit.internal.cui.SelectionPointEvent;
 import com.sk89q.worldedit.regions.EllipsoidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionSelector;
 
 /**
  * Selector for ellipsoids.

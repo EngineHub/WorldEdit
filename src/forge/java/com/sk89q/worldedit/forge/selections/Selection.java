@@ -4,7 +4,7 @@ import net.minecraft.world.World;
 
 import com.sk89q.worldedit.Location;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.regions.selector.RegionSelector;
+import com.sk89q.worldedit.regions.RegionSelector;
 
 public abstract interface Selection {
     public abstract Location getMinimumPoint();

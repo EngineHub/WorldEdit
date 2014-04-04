@@ -39,7 +39,7 @@ import com.sk89q.worldedit.function.pattern.Patterns;
 import com.sk89q.worldedit.internal.InternalEditSessionFactory;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.regions.selector.RegionSelector;
+import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.scripting.CraftScriptContext;
 import com.sk89q.worldedit.scripting.CraftScriptEngine;
 import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;

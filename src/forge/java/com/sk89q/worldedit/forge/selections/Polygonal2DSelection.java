@@ -9,7 +9,7 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.forge.WorldEditMod;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.selector.Polygonal2DRegionSelector;
-import com.sk89q.worldedit.regions.selector.RegionSelector;
+import com.sk89q.worldedit.regions.RegionSelector;
 
 public class Polygonal2DSelection extends RegionSelection {
     protected Polygonal2DRegion poly2d;
