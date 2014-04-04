@@ -195,6 +195,33 @@
         </executions>
       </plugin>
 
+      <!-- Check style -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.12</version>
+        <executions>
+          <execution>
+            <id>verify-style</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <sourceDirectory>${basedir}/src</sourceDirectory>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
+          <logViolationsToConsole>true</logViolationsToConsole>
+          <checkstyleRules>
+            <module name="Checker">
+              <module name="FileTabCharacter"/>
+            </module>
+          </checkstyleRules>
+        </configuration>
+      </plugin>
+
       <!-- Compiler -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
