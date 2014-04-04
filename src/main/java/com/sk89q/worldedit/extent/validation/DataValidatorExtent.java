@@ -60,10 +60,16 @@ public class DataValidatorExtent extends AbstractDelegateExtent {
             return false;
         }
 
-        if (type == 0) {
-            block.setData(0);
+        if (block.getData() < 0) {
+            throw new SevereValidationException("Cannot set a data value that is less than 0");
         }
 
         return super.setBlock(location, block);
+    }
+
+    private static class SevereValidationException extends WorldEditException {
+        private SevereValidationException(String message) {
+            super(message);
+        }
     }
 }
