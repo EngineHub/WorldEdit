@@ -58,4 +58,17 @@ public class BlockWorldVector2D extends WorldVector2D {
                 && (int) other.getZ() == (int) this.z;
 
     }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        long temp;
+        result = 31 * result + world.hashCode();
+        temp = Double.doubleToLongBits(x);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(z);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
 }

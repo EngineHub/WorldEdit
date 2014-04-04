@@ -212,4 +212,9 @@ public class Snapshot implements Comparable<Snapshot> {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return file.hashCode();
+    }
 }
