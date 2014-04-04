@@ -22,39 +22,63 @@ package com.sk89q.worldedit.event.extent;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.extent.Extent;
 
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.EditSession.Stage;
 
 /**
- * Raised when a new {@link EditSession} is being instantiated.
+ * Raised (several times) when a new {@link EditSession} is being instantiated.
  * </p>
  * Block loggers, as well as block set interceptors, can use this event to wrap
  * the given {@link Extent} with their own, which would allow them to intercept
- * all changes made to the world.
+ * all changes made to the world. For example, the code below would wrap the
+ * existing extent with a custom one, and the custom extent would receive
+ * all method calls <strong>before</strong> the extent fetched from
+ * {@link #getExtent()} would.
+ * <pre>
+ * event.setExtent(new MyExtent(event.getExtent())
+ * </pre>
+ * This event is fired several times during the creation of a single
+ * {@link EditSession}, but {@link #getStage()} will differ each time.
+ * The stage determines at which point {@link Extent}s added to this event
+ * will be called. For example, if you inject an extent when the stage
+ * is set to {@link Stage#BEFORE_HISTORY}, then you can drop (or log) changes
+ * before the change has reached the history, reordering, and actual change
+ * extents, <em>but</em> that means that any changes made with
+ * {@link EditSession#rawSetBlock(Vector, BaseBlock)} will skip your
+ * custom {@link Extent} because that method bypasses history (and reorder).
+ * It is thus recommended that loggers intercept at {@link Stage#BEFORE_CHANGE}
+ * and block interceptors intercept at BOTH {@link Stage#BEFORE_CHANGE} and
+ * {@link Stage#BEFORE_HISTORY}.
  */
 public class EditSessionEvent extends Event {
 
     private final LocalWorld world;
     private final LocalPlayer player;
     private final int maxBlocks;
+    private final Stage stage;
     private Extent extent;
 
     /**
      * Create a new event.
      *
-     * @param player the player, or null if not available
      * @param world the world
+     * @param player the player, or null if not available
      * @param maxBlocks the maximum number of block changes
+     * @param stage the stage
      */
-    public EditSessionEvent(LocalWorld world, LocalPlayer player, int maxBlocks) {
+    public EditSessionEvent(LocalWorld world, LocalPlayer player, int maxBlocks, Stage stage) {
         checkNotNull(world);
         this.world = world;
         this.player = player;
         this.maxBlocks = maxBlocks;
+        this.stage = stage;
     }
 
     /**
@@ -94,6 +118,15 @@ public class EditSessionEvent extends Event {
     }
 
     /**
+     * Get the stage that is being wrapped.
+     *
+     * @return the stage
+     */
+    public Stage getStage() {
+        return stage;
+    }
+
+    /**
      * Set a new extent that should be used. It should wrap the extent
      * returned from {@link #getExtent()}.
      *
@@ -103,4 +136,15 @@ public class EditSessionEvent extends Event {
         checkNotNull(extent);
         this.extent = extent;
     }
+
+    /**
+     * Create a clone of this event with the given stage.
+     *
+     * @param stage the stage
+     * @return a new event
+     */
+    public EditSessionEvent clone(Stage stage) {
+        return new EditSessionEvent(world, player, maxBlocks, stage);
+    }
+
 }

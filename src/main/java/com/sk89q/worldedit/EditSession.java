@@ -90,13 +90,13 @@ import static com.sk89q.worldedit.regions.Regions.*;
 public class EditSession implements Extent {
 
     /**
-     * Used by {@link #setBlock(Vector, BaseBlock, Level)} to
+     * Used by {@link #setBlock(Vector, BaseBlock, Stage)} to
      * determine which {@link Extent}s should be bypassed.
      */
-    public enum Level {
-        NORMAL,
-        NO_HISTORY_REORDER,
-        NO_HISTORY
+    public enum Stage {
+        BEFORE_HISTORY,
+        BEFORE_REORDER,
+        BEFORE_CHANGE
     }
 
     @SuppressWarnings("ProtectedField")
@@ -138,32 +138,37 @@ public class EditSession implements Extent {
 
         this.world = world;
 
-        // This extents are ALWAYS used
-        fastModeExtent = new FastModeExtent(world, false);
-        chunkLoadingExtent = new ChunkLoadingExtent(fastModeExtent, world);
-        cacheExtent = new LastAccessExtentCache(chunkLoadingExtent);
-
-        // Call the event a plugin can wrap the extent
-        event.setExtent(cacheExtent);
-        eventBus.post(event);
-        Extent wrappedExtent = event.getExtent();
+        Extent extent;
 
         // This extents are ALWAYS used
-        quirkExtent = new BlockQuirkExtent(wrappedExtent, world);
-        validator = new DataValidatorExtent(quirkExtent, world);
-        blockBagExtent = new BlockBagExtent(validator, world, blockBag);
+        extent = fastModeExtent = new FastModeExtent(world, false);
+        extent = chunkLoadingExtent = new ChunkLoadingExtent(extent, world);
+        extent = cacheExtent = new LastAccessExtentCache(extent);
+        extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_CHANGE);
+        extent = quirkExtent = new BlockQuirkExtent(extent, world);
+        extent = validator = new DataValidatorExtent(extent, world);
+        extent = blockBagExtent = new BlockBagExtent(extent, world, blockBag);
 
         // This extent can be skipped by calling rawSetBlock()
-        reorderExtent = new MultiStageReorder(blockBagExtent, false);
+        extent = reorderExtent = new MultiStageReorder(extent, false);
+        extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_REORDER);
 
         // These extents can be skipped by calling smartSetBlock()
-        changeSetExtent = new ChangeSetExtent(reorderExtent, changeSet);
-        maskingExtent = new MaskingExtent(changeSetExtent, Masks.alwaysTrue());
-        changeLimiter = new BlockChangeLimiter(maskingExtent, maxBlocks);
+        extent = changeSetExtent = new ChangeSetExtent(extent, changeSet);
+        extent = maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue());
+        extent = changeLimiter = new BlockChangeLimiter(extent, maxBlocks);
+        extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_HISTORY);
 
         this.bypassReorderHistory = blockBagExtent;
         this.bypassHistory = reorderExtent;
-        this.bypassNone = changeLimiter;
+        this.bypassNone = extent;
+    }
+
+    private Extent wrapExtent(Extent extent, EventBus eventBus, EditSessionEvent event, Stage stage) {
+        event = event.clone(stage);
+        event.setExtent(extent);
+        eventBus.post(event);
+        return event.getExtent();
     }
 
     /**
@@ -402,16 +407,16 @@ public class EditSession implements Extent {
      *
      * @param position the position to set the block at
      * @param block the block
-     * @param level the level
+     * @param stage the level
      * @return whether the block changed
      */
-    public boolean setBlock(Vector position, BaseBlock block, Level level) throws WorldEditException {
-        switch (level) {
-            case NORMAL:
+    public boolean setBlock(Vector position, BaseBlock block, Stage stage) throws WorldEditException {
+        switch (stage) {
+            case BEFORE_HISTORY:
                 return bypassNone.setBlock(position, block);
-            case NO_HISTORY_REORDER:
+            case BEFORE_CHANGE:
                 return bypassHistory.setBlock(position, block);
-            case NO_HISTORY:
+            case BEFORE_REORDER:
                 return bypassReorderHistory.setBlock(position, block);
         }
 
@@ -424,12 +429,10 @@ public class EditSession implements Extent {
      * @param position the position to set the block at
      * @param block the block
      * @return whether the block changed
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock, Level)}
      */
-    @Deprecated
     public boolean rawSetBlock(Vector position, BaseBlock block) {
         try {
-            return setBlock(position, block, Level.NO_HISTORY_REORDER);
+            return setBlock(position, block, Stage.BEFORE_CHANGE);
         } catch (WorldEditException e) {
             throw new RuntimeException("Unexpected exception", e);
         }
@@ -441,12 +444,10 @@ public class EditSession implements Extent {
      * @param position the position to set the block at
      * @param block the block
      * @return whether the block changed
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock, Level)}
      */
-    @Deprecated
     public boolean smartSetBlock(Vector position, BaseBlock block) {
         try {
-            return setBlock(position, block, Level.NO_HISTORY);
+            return setBlock(position, block, Stage.BEFORE_REORDER);
         } catch (WorldEditException e) {
             throw new RuntimeException("Unexpected exception", e);
         }
@@ -455,7 +456,7 @@ public class EditSession implements Extent {
     @Override
     public boolean setBlock(Vector position, BaseBlock block) throws MaxChangedBlocksException {
         try {
-            return setBlock(position, block, Level.NORMAL);
+            return setBlock(position, block, Stage.BEFORE_HISTORY);
         } catch (MaxChangedBlocksException e) {
             throw e;
         } catch (WorldEditException e) {

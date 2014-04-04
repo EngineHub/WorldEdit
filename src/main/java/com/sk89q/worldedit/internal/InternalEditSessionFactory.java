@@ -49,22 +49,22 @@ public final class InternalEditSessionFactory extends EditSessionFactory {
 
     @Override
     public EditSession getEditSession(LocalWorld world, int maxBlocks) {
-        return new EditSession(eventBus, world, maxBlocks, null, new EditSessionEvent(world, null, maxBlocks));
+        return new EditSession(eventBus, world, maxBlocks, null, new EditSessionEvent(world, null, maxBlocks, null));
     }
 
     @Override
     public EditSession getEditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
-        return new EditSession(eventBus, world, maxBlocks, null, new EditSessionEvent(world, player, maxBlocks));
+        return new EditSession(eventBus, world, maxBlocks, null, new EditSessionEvent(world, player, maxBlocks, null));
     }
 
     @Override
     public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag) {
-        return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, null, maxBlocks));
+        return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, null, maxBlocks, null));
     }
 
     @Override
     public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
-        return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, player, maxBlocks));
+        return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, player, maxBlocks, null));
     }
 
 }

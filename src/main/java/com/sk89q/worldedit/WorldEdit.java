@@ -33,6 +33,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.registry.BlockRegistry;
 import com.sk89q.worldedit.extension.registry.MaskRegistry;
 import com.sk89q.worldedit.extension.registry.PatternRegistry;
+import com.sk89q.worldedit.extent.ExtentDelegate;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.pattern.Patterns;
@@ -46,6 +47,7 @@ import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.LogFormat;
 import com.sk89q.worldedit.util.eventbus.EventBus;
+import com.sk89q.worldedit.util.eventbus.Subscribe;
 
 import javax.script.ScriptException;
 import java.io.*;
