@@ -60,6 +60,10 @@ public class DataValidatorExtent extends AbstractDelegateExtent {
             return false;
         }
 
+        if (type == 0) {
+            block.setData(0);
+        }
+
         return super.setBlock(location, block);
     }
 }
