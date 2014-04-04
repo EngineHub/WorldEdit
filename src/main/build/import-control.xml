@@ -1,0 +1,51 @@
+<!DOCTYPE import-control PUBLIC
+    "-//Puppy Crawl//DTD Import Control 1.1//EN"
+    "http://www.puppycrawl.com/dtds/import_control_1_1.dtd">
+
+<import-control pkg="com.sk89q">
+  <allow pkg="java"/>
+  <allow pkg="javax"/>
+  <allow pkg="org.junit"/>
+  <allow pkg="org.mockito"/>
+  <allow pkg="com.sk89q"/>
+  <allow pkg="com.google.common"/>
+
+  <subpackage name="util.yaml">
+    <allow pkg="org.yaml.snakeyaml"/>
+  </subpackage>
+
+  <subpackage name="bukkit">
+    <allow pkg="org.bukkit"/>
+  </subpackage>
+
+  <subpackage name="wepif">
+    <allow pkg="org.bukkit"/>
+    <allow pkg="de.bananaco"/>
+    <allow pkg="org.anjocaido"/>
+    <allow pkg="com.nijiko"/>
+    <allow pkg="com.nijikokun"/>
+    <allow pkg="ru.tehkode"/>
+  </subpackage>
+
+  <subpackage name="worldedit">
+    <allow pkg="org.mozilla.javascript"/>
+    <allow pkg="de.schlichtherle"/>
+
+    <subpackage name="bukkit">
+      <allow pkg="org.bukkit"/>
+      <allow pkg="net.minecraft.server"/>
+    </subpackage>
+
+    <subpackage name="spout">
+      <allow pkg="org.spout"/>
+      <allow pkg="org.jboss.netty"/>
+      <allow pkg="org.apache"/>
+    </subpackage>
+
+    <subpackage name="forge">
+      <allow pkg="cpw"/>
+      <allow pkg="net.minecraft"/>
+      <allow pkg="net.minecraftforge"/>
+    </subpackage>
+  </subpackage>
+</import-control>
