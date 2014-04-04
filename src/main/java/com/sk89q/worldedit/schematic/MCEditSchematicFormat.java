@@ -18,34 +18,21 @@
 
 package com.sk89q.worldedit.schematic;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.sk89q.jnbt.*;
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.CuboidClipboard;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.TileEntityBlock;
+import com.sk89q.worldedit.data.DataException;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
-
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.NBTConstants;
-import com.sk89q.jnbt.NBTInputStream;
-import com.sk89q.jnbt.NBTOutputStream;
-import com.sk89q.jnbt.ShortTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.CuboidClipboard;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.TileEntityBlock;
-import com.sk89q.worldedit.world.DataException;
 
 /**
  * @author zml2008
@@ -184,7 +171,11 @@ public class MCEditSchematicFormat extends SchematicFormat {
                     BaseBlock block = getBlockForId(blocks[index], blockData[index]);
 
                     if (block instanceof TileEntityBlock && tileEntitiesMap.containsKey(pt)) {
-                        ((TileEntityBlock) block).setNbtData(new CompoundTag("", tileEntitiesMap.get(pt)));
+                        try {
+                            ((TileEntityBlock) block).setNbtData(new CompoundTag("", tileEntitiesMap.get(pt)));
+                        } catch (com.sk89q.worldedit.world.DataException e) {
+                            throw new DataException(e.getMessage());
+                        }
                     }
                     clipboard.setBlock(pt, block);
                 }

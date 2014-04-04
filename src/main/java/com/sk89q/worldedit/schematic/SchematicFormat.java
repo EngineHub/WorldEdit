@@ -18,19 +18,13 @@
 
 package com.sk89q.worldedit.schematic;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.data.DataException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Represents a format that a schematic can be stored as
