@@ -43,6 +43,7 @@ import com.sk89q.worldedit.regions.selector.RegionSelector;
 import com.sk89q.worldedit.scripting.CraftScriptContext;
 import com.sk89q.worldedit.scripting.CraftScriptEngine;
 import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
+import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.LogFormat;
 import com.sk89q.worldedit.util.eventbus.EventBus;
@@ -74,7 +75,7 @@ public class WorldEdit {
     private final CommandsManager<LocalPlayer> commands;
     private final EventBus eventBus = new EventBus();
     private final EditSessionFactory editSessionFactory = new InternalEditSessionFactory(eventBus);
-    private final HashMap<String, LocalSession> sessions = new HashMap<String, LocalSession>();
+    private final SessionManager sessions = new SessionManager(this);
 
     private final BlockRegistry blockRegistry = new BlockRegistry(this);
     private final MaskRegistry maskRegistry = new MaskRegistry(this);
@@ -252,79 +253,52 @@ public class WorldEdit {
     }
 
     /**
-     * Gets the LocalSession for a player name if it exists
+     * Return the session manager.
      *
-     * @param player
-     * @return The session for the player, if it exists
+     * @return the session manager
      */
+    public SessionManager getSessionManager() {
+        return sessions;
+    }
+
+    /**
+     * @deprecated Use {@link #getSessionManager()}
+     */
+    @Deprecated
     public LocalSession getSession(String player) {
+        return sessions.findByName(player);
+    }
+
+    /**
+     * @deprecated use {@link #getSessionManager()}
+     */
+    @Deprecated
+    public LocalSession getSession(LocalPlayer player) {
         return sessions.get(player);
     }
 
     /**
-     * Gets the WorldEdit session for a player.
-     *
-     * @param player
-     * @return
+     * @deprecated use {@link #getSessionManager()}
      */
-    public LocalSession getSession(LocalPlayer player) {
-        LocalSession session;
-
-        synchronized (sessions) {
-            if (sessions.containsKey(player.getName())) {
-                session = sessions.get(player.getName());
-            } else {
-                session = new LocalSession(config);
-                session.setBlockChangeLimit(config.defaultChangeLimit);
-                // Remember the session
-                sessions.put(player.getName(), session);
-            }
-
-            // Set the limit on the number of blocks that an operation can
-            // change at once, or don't if the player has an override or there
-            // is no limit. There is also a default limit
-            int currentChangeLimit = session.getBlockChangeLimit();
-            
-            if (!player.hasPermission("worldedit.limit.unrestricted")
-                    && config.maxChangeLimit > -1) {
-
-                // If the default limit is infinite but there is a maximum
-                // limit, make sure to not have it be overridden
-                if (config.defaultChangeLimit < 0) {
-                    if (currentChangeLimit < 0 || currentChangeLimit > config.maxChangeLimit) {
-                        session.setBlockChangeLimit(config.maxChangeLimit);
-                    }
-                } else {
-                    // Bound the change limit
-                    int maxChangeLimit = config.maxChangeLimit;
-                    if (currentChangeLimit == -1 || currentChangeLimit > maxChangeLimit) {
-                        session.setBlockChangeLimit(maxChangeLimit);
-                    }
-                }
-            }
-
-            // Have the session use inventory if it's enabled and the player
-            // doesn't have an override
-            session.setUseInventory(config.useInventory
-                    && !(config.useInventoryOverride
-                            && (player.hasPermission("worldedit.inventory.unrestricted")
-                                || (config.useInventoryCreativeOverride && player.hasCreativeMode()))));
-        }
-
-        return session;
+    @Deprecated
+    public void removeSession(LocalPlayer player) {
+        sessions.remove(player);
     }
 
     /**
-     * Returns true if the player has a session.
-     *
-     * @param player
-     * @return
+     * @deprecated use {@link #getSessionManager()}
      */
+    @Deprecated
+    public void clearSessions() {
+        sessions.clear();
+    }
+
+    /**
+     * @deprecated use {@link #getSessionManager()}
+     */
+    @Deprecated
     public boolean hasSession(LocalPlayer player) {
-        // TODO: If this is indeed used in multiple threads, we should use Collections.synchronizedMap here to simplify things and exclude sources of error.
-        synchronized (sessions) {
-            return sessions.containsKey(player.getName());
-        }
+        return sessions.contains(player);
     }
 
     /**
@@ -742,26 +716,6 @@ public class WorldEdit {
     }
 
     /**
-     * Remove a session.
-     *
-     * @param player
-     */
-    public void removeSession(LocalPlayer player) {
-        synchronized (sessions) {
-            sessions.remove(player.getName());
-        }
-    }
-
-    /**
-     * Remove all sessions.
-     */
-    public void clearSessions() {
-        synchronized (sessions) {
-            sessions.clear();
-        }
-    }
-
-    /**
      * Flush a block bag's changes to a player.
      *
      * @param player
@@ -819,8 +773,9 @@ public class WorldEdit {
     }
 
     /**
+     * Handle a disconnection.
      *
-     * @param player
+     * @param player the player
      */
     @Deprecated
     public void handleDisconnect(LocalPlayer player) {
@@ -828,42 +783,28 @@ public class WorldEdit {
     }
 
     /**
+     * Mark for expiration of the session.
      *
-     * @param player
+     * @param player the player
      */
     public void markExpire(LocalPlayer player) {
-        synchronized (sessions) {
-            LocalSession session = sessions.get(player.getName());
-            if (session != null) {
-                session.update();
-            }
-        }
+        sessions.markforExpiration(player);
     }
 
     /**
      * Forget a player.
      *
-     * @param player
+     * @param player the player
      */
     public void forgetPlayer(LocalPlayer player) {
-        removeSession(player);
+        sessions.remove(player);
     }
 
     /*
      * Flush expired sessions.
      */
     public void flushExpiredSessions(SessionCheck checker) {
-        synchronized (sessions) {
-            Iterator<Map.Entry<String, LocalSession>> it = sessions.entrySet().iterator();
-
-            while (it.hasNext()) {
-                Map.Entry<String, LocalSession> entry = it.next();
-                if (entry.getValue().hasExpired()
-                        && !checker.isOnlinePlayer(entry.getKey())) {
-                    it.remove();
-                }
-            }
-        }
+        sessions.removeExpired(checker);
     }
 
     /**
