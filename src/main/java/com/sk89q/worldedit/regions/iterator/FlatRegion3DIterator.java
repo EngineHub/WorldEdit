@@ -1,10 +1,11 @@
-package com.sk89q.worldedit.regions;
+package com.sk89q.worldedit.regions.iterator;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.regions.FlatRegion;
 
 public class FlatRegion3DIterator implements Iterator<BlockVector> {
 

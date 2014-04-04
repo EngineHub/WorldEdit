@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.bukkit.selections;
 
+import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
+import com.sk89q.worldedit.regions.selector.RegionSelector;
 import org.bukkit.Location;
 import org.bukkit.World;
 import com.sk89q.worldedit.Vector;

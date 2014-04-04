@@ -44,16 +44,16 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.world.storage.ChunkStore;
-import com.sk89q.worldedit.regions.ConvexPolyhedralRegionSelector;
-import com.sk89q.worldedit.regions.CuboidRegionSelector;
-import com.sk89q.worldedit.regions.CylinderRegionSelector;
-import com.sk89q.worldedit.regions.EllipsoidRegionSelector;
-import com.sk89q.worldedit.regions.ExtendingCuboidRegionSelector;
-import com.sk89q.worldedit.regions.Polygonal2DRegionSelector;
+import com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector;
+import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
+import com.sk89q.worldedit.regions.selector.CylinderRegionSelector;
+import com.sk89q.worldedit.regions.selector.EllipsoidRegionSelector;
+import com.sk89q.worldedit.regions.selector.ExtendingCuboidRegionSelector;
+import com.sk89q.worldedit.regions.selector.Polygonal2DRegionSelector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
-import com.sk89q.worldedit.regions.RegionSelector;
-import com.sk89q.worldedit.regions.SphereRegionSelector;
+import com.sk89q.worldedit.regions.selector.RegionSelector;
+import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 
 /**
  * Selection commands.

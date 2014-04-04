@@ -27,7 +27,7 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.regions.selector.RegionSelector;
 import com.sk89q.worldedit.spout.selections.CuboidSelection;
 import com.sk89q.worldedit.spout.selections.Polygonal2DSelection;
 import com.sk89q.worldedit.spout.selections.Selection;

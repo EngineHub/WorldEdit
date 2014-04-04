@@ -17,60 +17,54 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit.regions;
+package com.sk89q.worldedit.regions.iterator;
 
 import java.util.Iterator;
 
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.regions.Region;
 
-public class FlatRegionIterator implements Iterator<Vector2D>  {
-
-    private Region region;
-    private int y;
-    private int minX;
+public class RegionIterator implements Iterator<BlockVector> {
+    private final Region region;
+    private final int maxX;
+    private final int maxY;
+    private final int maxZ;
+    private final Vector min;
     private int nextX;
+    private int nextY;
     private int nextZ;
-    private int maxX;
-    private int maxZ;
 
-    public FlatRegionIterator(Region region) {
+    public RegionIterator(Region region) {
         this.region = region;
 
-        Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
-
-        this.y = min.getBlockY();
-
-        this.minX = min.getBlockX();
-
-        this.nextX = minX;
-        this.nextZ = min.getBlockZ();
-
         this.maxX = max.getBlockX();
+        this.maxY = max.getBlockY();
         this.maxZ = max.getBlockZ();
+
+        this.min = region.getMinimumPoint();
+        this.nextX = min.getBlockX();
+        this.nextY = min.getBlockY();
+        this.nextZ = min.getBlockZ();
 
         forward();
     }
 
-    @Override
     public boolean hasNext() {
         return nextX != Integer.MIN_VALUE;
     }
 
     private void forward() {
-        while (hasNext() && !region.contains(new Vector(nextX, y, nextZ))) {
+        while (hasNext() && !region.contains(new BlockVector(nextX, nextY, nextZ))) {
             forwardOne();
         }
     }
 
-    @Override
-    public Vector2D next() {
-        if (!hasNext()) {
-            throw new java.util.NoSuchElementException();
-        }
+    public BlockVector next() {
+        if (!hasNext()) throw new java.util.NoSuchElementException();
 
-        Vector2D answer = new Vector2D(nextX, nextZ);
+        BlockVector answer = new BlockVector(nextX, nextY, nextZ);
 
         forwardOne();
         forward();
@@ -82,7 +76,12 @@ public class FlatRegionIterator implements Iterator<Vector2D>  {
         if (++nextX <= maxX) {
             return;
         }
-        nextX = minX;
+        nextX = min.getBlockX();
+
+        if (++nextY <= maxY) {
+            return;
+        }
+        nextY = min.getBlockY();
 
         if (++nextZ <= maxZ) {
             return;
@@ -90,7 +89,6 @@ public class FlatRegionIterator implements Iterator<Vector2D>  {
         nextX = Integer.MIN_VALUE;
     }
 
-    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }

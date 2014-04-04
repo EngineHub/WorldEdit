@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.regions.selector.Polygonal2DRegionSelector;
+import com.sk89q.worldedit.regions.selector.RegionSelector;
 import org.bukkit.World;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
