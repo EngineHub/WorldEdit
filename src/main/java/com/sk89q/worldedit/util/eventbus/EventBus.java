@@ -20,16 +20,14 @@
 package com.sk89q.worldedit.util.eventbus;
 
 import com.google.common.base.Supplier;
-import com.google.common.base.Throwables;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.collect.*;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 import com.google.common.eventbus.DeadEvent;
+import com.sk89q.worldedit.util.annotation.RequiresNewerGuava;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,35 +64,8 @@ public class EventBus {
      */
     private final SubscriberFindingStrategy finder = new AnnotatedSubscriberFinder();
 
-    /**
-     * A thread-safe cache for flattenHierarchy(). The Class class is immutable.
-     */
-    private Cache<Class<?>, Set<Class<?>>> flattenHierarchyCache =
-            CacheBuilder.newBuilder()
-                    .weakKeys()
-                    .build(new CacheLoader<Class<?>, Set<Class<?>>>() {
-                        @Override
-                        public Set<Class<?>> load(Class<?> concreteClass) throws Exception {
-                            List<Class<?>> parents = Lists.newLinkedList();
-                            Set<Class<?>> classes = Sets.newHashSet();
-
-                            parents.add(concreteClass);
-
-                            while (!parents.isEmpty()) {
-                                Class<?> clazz = parents.remove(0);
-                                classes.add(clazz);
-
-                                Class<?> parent = clazz.getSuperclass();
-                                if (parent != null) {
-                                    parents.add(parent);
-                                }
-
-                                Collections.addAll(parents, clazz.getInterfaces());
-                            }
-
-                            return classes;
-                        }
-                    });
+    @RequiresNewerGuava
+    private HierarchyCache flattenHierarchyCache = new HierarchyCache();
 
     /**
      * Registers the given handler for the given class to receive events.
@@ -251,11 +222,7 @@ public class EventBus {
      * @return {@code clazz}'s complete type hierarchy, flattened and uniqued.
      */
     Set<Class<?>> flattenHierarchy(Class<?> concreteClass) {
-        try {
-            return flattenHierarchyCache.get(concreteClass);
-        } catch (ExecutionException e) {
-            throw Throwables.propagate(e.getCause());
-        }
+        return flattenHierarchyCache.get(concreteClass);
     }
 
 }
