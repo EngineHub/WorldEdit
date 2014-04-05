@@ -30,6 +30,9 @@ import java.util.List;
 
 /**
  * Represents a platform that WorldEdit has been implemented for.
+ * </p>
+ * It is strongly recommended that implementations extend from
+ * {@link AbstractPlatform}.
  */
 public interface Platform {
 

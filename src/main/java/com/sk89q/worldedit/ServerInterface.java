@@ -19,38 +19,15 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.worldedit.extension.platform.AbstractPlatform;
 import com.sk89q.worldedit.extension.platform.Platform;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
+ * A legacy abstract class that is to be replaced with {@link Platform}.
+ * Extend {@link AbstractPlatform} instead.
  *
- * @author sk89q
+ * @deprecated Use {@link Platform} wherever possible
  */
-public abstract class ServerInterface implements Platform {
-
-    @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return -1;
-    }
-
-    @Override
-    public List<LocalWorld> getWorlds() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    @Deprecated
-    public void onCommandRegistration(List<Command> commands) {
-        // Do nothing :)
-    }
-
-    @Override
-    public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
-        onCommandRegistration(commands);
-    }
-
+@Deprecated
+public abstract class ServerInterface extends AbstractPlatform {
 }
