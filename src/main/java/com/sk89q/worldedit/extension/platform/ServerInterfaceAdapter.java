@@ -17,40 +17,77 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.*;
 
-import java.util.Collections;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- *
- * @author sk89q
+ * Adapts {@link Platform}s into the legacy {@link ServerInterface}.
  */
-public abstract class ServerInterface implements Platform {
+class ServerInterfaceAdapter extends ServerInterface {
+
+    private final Platform platform;
+
+    /**
+     * Create a new adapter.
+     *
+     * @param platform the platform
+     */
+    ServerInterfaceAdapter(Platform platform) {
+        checkNotNull(platform);
+        this.platform = platform;
+    }
+
+    @Override
+    public int resolveItem(String name) {
+        return platform.resolveItem(name);
+    }
+
+    @Override
+    public boolean isValidMobType(String type) {
+        return platform.isValidMobType(type);
+    }
+
+    @Override
+    public void reload() {
+        platform.reload();
+    }
+
+    @Override
+    public BiomeTypes getBiomes() {
+        return platform.getBiomes();
+    }
 
     @Override
     public int schedule(long delay, long period, Runnable task) {
-        return -1;
+        return platform.schedule(delay, period, task);
     }
 
     @Override
     public List<LocalWorld> getWorlds() {
-        return Collections.emptyList();
+        return platform.getWorlds();
     }
 
     @Override
     @Deprecated
     public void onCommandRegistration(List<Command> commands) {
-        // Do nothing :)
+        platform.onCommandRegistration(commands);
     }
 
     @Override
     public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
-        onCommandRegistration(commands);
+        platform.onCommandRegistration(commands, manager);
+    }
+
+    @Override
+    public LocalConfiguration getConfiguration() {
+        return platform.getConfiguration();
     }
 
 }

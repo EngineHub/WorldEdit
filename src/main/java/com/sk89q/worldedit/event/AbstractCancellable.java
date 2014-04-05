@@ -17,40 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
-
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.worldedit.extension.platform.Platform;
-
-import java.util.Collections;
-import java.util.List;
+package com.sk89q.worldedit.event;
 
 /**
- *
- * @author sk89q
+ * An abstract implementation of {@link Cancellable} that has all
+ * of {@link Cancellable}'s methods implemented.
  */
-public abstract class ServerInterface implements Platform {
+public abstract class AbstractCancellable implements Cancellable {
+
+    private boolean cancelled;
 
     @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return -1;
+    public boolean isCancelled() {
+        return cancelled;
     }
 
     @Override
-    public List<LocalWorld> getWorlds() {
-        return Collections.emptyList();
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
     }
-
-    @Override
-    @Deprecated
-    public void onCommandRegistration(List<Command> commands) {
-        // Do nothing :)
-    }
-
-    @Override
-    public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
-        onCommandRegistration(commands);
-    }
-
 }

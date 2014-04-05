@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.sk89q.worldedit.LocalConfiguration;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.ServerCommandManager;
@@ -40,10 +41,12 @@ import com.sk89q.worldedit.ServerInterface;
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public class ForgeServerInterface extends ServerInterface {
-    private MinecraftServer server;
-    private ForgeBiomeTypes biomes;
+    private final WorldEditMod mod;
+    private final MinecraftServer server;
+    private final ForgeBiomeTypes biomes;
 
-    public ForgeServerInterface() {
+    public ForgeServerInterface(WorldEditMod mod) {
+        this.mod = mod;
         this.server = FMLCommonHandler.instance().getMinecraftServerInstance();
         this.biomes = new ForgeBiomeTypes();
     }
@@ -113,5 +116,10 @@ public class ForgeServerInterface extends ServerInterface {
                 }
             });
         }
+    }
+
+    @Override
+    public LocalConfiguration getConfiguration() {
+        return mod.getConfig();
     }
 }

@@ -17,40 +17,43 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.util.logging;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.worldedit.extension.platform.Platform;
-
-import java.util.Collections;
-import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
- *
- * @author sk89q
+ * Adds a WorldEdit prefix to WorldEdit's logger messages using a handler.
  */
-public abstract class ServerInterface implements Platform {
+public final class WorldEditPrefixHandler extends Handler {
 
-    @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return -1;
+    private WorldEditPrefixHandler() {
     }
 
     @Override
-    public List<LocalWorld> getWorlds() {
-        return Collections.emptyList();
+    public void publish(LogRecord record) {
+        String message = record.getMessage();
+        if (!message.startsWith("WorldEdit: ") && !message.startsWith("[WorldEdit] ")) {
+            record.setMessage("[WorldEdit] " + message);
+        }
     }
 
     @Override
-    @Deprecated
-    public void onCommandRegistration(List<Command> commands) {
-        // Do nothing :)
+    public void flush() {
     }
 
     @Override
-    public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
-        onCommandRegistration(commands);
+    public void close() throws SecurityException {
+    }
+
+    /**
+     * Add the handler to the following logger name.
+     *
+     * @param name the logger name
+     */
+    public static void register(String name) {
+        Logger.getLogger(name).addHandler(new WorldEditPrefixHandler());
     }
 
 }

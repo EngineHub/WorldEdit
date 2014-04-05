@@ -17,40 +17,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
-
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.worldedit.extension.platform.Platform;
-
-import java.util.Collections;
-import java.util.List;
+package com.sk89q.worldedit.event;
 
 /**
- *
- * @author sk89q
+ * Marks an event that has a cancellable state. The meaning of cancellation
+ * depends on the event.
  */
-public abstract class ServerInterface implements Platform {
+public interface Cancellable {
 
-    @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return -1;
-    }
+    /**
+     * Returns whether the event has been cancelled.
+     *
+     * @return true if cancelled
+     */
+    boolean isCancelled();
 
-    @Override
-    public List<LocalWorld> getWorlds() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    @Deprecated
-    public void onCommandRegistration(List<Command> commands) {
-        // Do nothing :)
-    }
-
-    @Override
-    public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
-        onCommandRegistration(commands);
-    }
+    /**
+     * Set whether the event has been cancelled.
+     *
+     * @param cancelled true if cancelled
+     */
+    void setCancelled(boolean cancelled);
 
 }

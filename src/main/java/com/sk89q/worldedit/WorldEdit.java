@@ -19,17 +19,16 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.minecraft.util.commands.*;
-import com.sk89q.minecraft.util.commands.Console;
-import com.sk89q.util.StringUtil;
+import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.blocks.ItemType;
-import com.sk89q.worldedit.command.*;
 import com.sk89q.worldedit.command.tool.*;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
+import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.extension.registry.BlockRegistry;
 import com.sk89q.worldedit.extension.registry.MaskRegistry;
 import com.sk89q.worldedit.extension.registry.PatternRegistry;
@@ -44,35 +43,41 @@ import com.sk89q.worldedit.scripting.CraftScriptEngine;
 import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.session.request.Request;
-import com.sk89q.worldedit.util.LogFormat;
 import com.sk89q.worldedit.util.eventbus.EventBus;
+import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
 
 import javax.script.ScriptException;
 import java.io.*;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * The current instance of WorldEdit.
+ * The entry point and container for a working implementation of WorldEdit.
+ * </p>
+ * An instance handles event handling; block, mask, pattern, etc. registration;
+ * the management of sessions; the creation of {@link EditSession}s; and more.
+ * In order to use WorldEdit, at least one {@link Platform} must be registered
+ * with WorldEdit using {@link PlatformManager#register(Platform)} on the
+ * manager retrieved using {@link WorldEdit#getPlatformManager()}.
+ * </p>
+ * An instance of WorldEdit can be retrieved using the static
+ * method {@link WorldEdit#getInstance()}, which is shared among all
+ * platforms within the same classloader hierarchy.
  */
 public class WorldEdit {
 
-    public static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
-    public final Logger commandLogger = Logger.getLogger("Minecraft.WorldEdit.CommandLogger");
+    public static final Logger logger = Logger.getLogger(WorldEdit.class.getCanonicalName());
 
-    private static WorldEdit instance;
+    private final static WorldEdit instance = new WorldEdit();
     private static String version;
 
-    private final ServerInterface server;
-    private final LocalConfiguration config;
-    private final CommandsManager<LocalPlayer> commands;
     private final EventBus eventBus = new EventBus();
+    private final PlatformManager platformManager = new PlatformManager(this);
     private final EditSessionFactory editSessionFactory = new EditSessionFactory.EditSessionFactoryImpl(eventBus);
     private final SessionManager sessions = new SessionManager(this);
 
@@ -81,139 +86,41 @@ public class WorldEdit {
     private final PatternRegistry patternRegistry = new PatternRegistry(this);
 
     static {
+        WorldEditPrefixHandler.register("com.sk89q.worldedit");
         getVersion();
     }
 
+    private WorldEdit() {
+    }
+
     /**
-     * Construct an instance of WorldEdit.
+     * Gets the current instance of this class.
+     * </p>
+     * An instance will always be available, but no platform may yet be
+     * registered with WorldEdit, meaning that a number of operations
+     * may fail. However, event handlers can be registered.
      *
-     * @param server
-     * @param config
-     */
-    public WorldEdit(ServerInterface server, final LocalConfiguration config) {
-        instance = this;
-        this.server = server;
-        this.config = config;
-
-        if (!config.logFile.equals("")) {
-            try {
-                FileHandler logFileHandler;
-                logFileHandler = new FileHandler(new File(config.getWorkingDirectory(),
-                        config.logFile).getAbsolutePath(), true);
-                logFileHandler.setFormatter(new LogFormat());
-                commandLogger.addHandler(logFileHandler);
-            } catch (IOException e) {
-                logger.log(Level.WARNING, "Could not use command log file " + config.logFile + ": "
-                        + e.getMessage());
-            }
-        }
-
-        commands = new CommandsManager<LocalPlayer>() {
-            @Override
-            protected void checkPermission(LocalPlayer player, Method method) throws CommandException {
-                if (!player.isPlayer() && !method.isAnnotationPresent(Console.class)) {
-                    throw new UnhandledCommandException();
-                }
-
-                super.checkPermission(player, method);
-            }
-
-            @Override
-            public boolean hasPermission(LocalPlayer player, String perm) {
-                return player.hasPermission(perm);
-            }
-
-            @Override
-            public void invokeMethod(Method parent, String[] args,
-                    LocalPlayer player, Method method, Object instance,
-                    Object[] methodArgs, int level) throws CommandException {
-                if (config.logCommands) {
-                    final Logging loggingAnnotation = method.getAnnotation(Logging.class);
-
-                    final Logging.LogMode logMode;
-                    if (loggingAnnotation == null) {
-                        logMode = null;
-                    } else {
-                        logMode = loggingAnnotation.value();
-                    }
-
-                    String msg = "WorldEdit: " + player.getName();
-                    if (player.isPlayer()) {
-                        msg += " (in \"" + player.getWorld().getName() + "\")";
-                    }
-                    msg += ": " + StringUtil.joinString(args, " ");
-                    if (logMode != null && player.isPlayer()) {
-                        Vector position = player.getPosition();
-                        final LocalSession session = getSession(player);
-                        switch (logMode) {
-                        case PLACEMENT:
-                            try {
-                                position = session.getPlacementPosition(player);
-                            } catch (IncompleteRegionException e) {
-                                break;
-                            }
-                            /* FALL-THROUGH */
-
-                        case POSITION:
-                            msg += " - Position: " + position;
-                            break;
-
-                        case ALL:
-                            msg += " - Position: " + position;
-                            /* FALL-THROUGH */
-
-                        case ORIENTATION_REGION:
-                            msg += " - Orientation: " + player.getCardinalDirection().name();
-                            /* FALL-THROUGH */
-
-                        case REGION:
-                            try {
-                                msg += " - Region: " + session.getSelection(player.getWorld());
-                            } catch (IncompleteRegionException e) {
-                                break;
-                            }
-                            break;
-                        }
-                    }
-                    commandLogger.info(msg);
-                }
-                super.invokeMethod(parent, args, player, method, instance, methodArgs, level);
-            }
-        };
-
-        commands.setInjector(new SimpleInjector(this));
-
-        reg(BiomeCommands.class);
-        reg(ChunkCommands.class);
-        reg(ClipboardCommands.class);
-        reg(GeneralCommands.class);
-        reg(GenerationCommands.class);
-        reg(HistoryCommands.class);
-        reg(NavigationCommands.class);
-        reg(RegionCommands.class);
-        reg(ScriptingCommands.class);
-        reg(SelectionCommands.class);
-        reg(SnapshotUtilCommands.class);
-        reg(ToolUtilCommands.class);
-        reg(ToolCommands.class);
-        reg(UtilityCommands.class);
-    }
-
-    private void reg(Class<?> clazz) {
-        server.onCommandRegistration(commands.registerAndReturn(clazz), commands);
-    }
-
-    /**
-     * Gets the current instance of this class
-     * 
-     * @return
+     * @return an instance of WorldEdit.
      */
     public static WorldEdit getInstance() {
         return instance;
     }
 
     /**
+     * Get the platform manager, where platforms (that implement WorldEdit)
+     * can be registered and information about registered platforms can
+     * be queried.
+     *
+     * @return the platform manager
+     */
+    public PlatformManager getPlatformManager() {
+        return platformManager;
+    }
+
+    /**
      * Get the event bus for WorldEdit.
+     * </p>
+     * Event handlers can be registered on the event bus.
      *
      * @return the event bus
      */
@@ -487,7 +394,7 @@ public class WorldEdit {
             String filePath = f.getCanonicalPath();
             String dirPath = dir.getCanonicalPath();
 
-            if (!filePath.substring(0, dirPath.length()).equals(dirPath) && !config.allowSymlinks) {
+            if (!filePath.substring(0, dirPath.length()).equals(dirPath) && !getConfiguration().allowSymlinks) {
                 throw new FilenameResolutionException(filename,
                         "Path is outside allowable root");
             }
@@ -500,27 +407,27 @@ public class WorldEdit {
     }
 
     public int getMaximumPolygonalPoints(LocalPlayer player) {
-        if (player.hasPermission("worldedit.limit.unrestricted") || config.maxPolygonalPoints < 0) {
-            return config.defaultMaxPolygonalPoints;
+        if (player.hasPermission("worldedit.limit.unrestricted") || getConfiguration().maxPolygonalPoints < 0) {
+            return getConfiguration().defaultMaxPolygonalPoints;
         }
 
-        if (config.defaultMaxPolygonalPoints < 0) {
-            return config.maxPolygonalPoints;
+        if (getConfiguration().defaultMaxPolygonalPoints < 0) {
+            return getConfiguration().maxPolygonalPoints;
         }
 
-        return Math.min(config.defaultMaxPolygonalPoints, config.maxPolygonalPoints);
+        return Math.min(getConfiguration().defaultMaxPolygonalPoints, getConfiguration().maxPolygonalPoints);
     }
 
     public int getMaximumPolyhedronPoints(LocalPlayer player) {
-        if (player.hasPermission("worldedit.limit.unrestricted") || config.maxPolyhedronPoints < 0) {
-            return config.defaultMaxPolyhedronPoints;
+        if (player.hasPermission("worldedit.limit.unrestricted") || getConfiguration().maxPolyhedronPoints < 0) {
+            return getConfiguration().defaultMaxPolyhedronPoints;
         }
 
-        if (config.defaultMaxPolyhedronPoints < 0) {
-            return config.maxPolyhedronPoints;
+        if (getConfiguration().defaultMaxPolyhedronPoints < 0) {
+            return getConfiguration().maxPolyhedronPoints;
         }
 
-        return Math.min(config.defaultMaxPolyhedronPoints, config.maxPolyhedronPoints);
+        return Math.min(getConfiguration().defaultMaxPolyhedronPoints, getConfiguration().maxPolyhedronPoints);
     }
 
     /**
@@ -530,7 +437,7 @@ public class WorldEdit {
      * @throws MaxRadiusException
      */
     public void checkMaxRadius(double radius) throws MaxRadiusException {
-        if (config.maxRadius > 0 && radius > config.maxRadius) {
+        if (getConfiguration().maxRadius > 0 && radius > getConfiguration().maxRadius) {
             throw new MaxRadiusException();
         }
     }
@@ -542,7 +449,7 @@ public class WorldEdit {
      * @throws MaxBrushRadiusException
      */
     public void checkMaxBrushRadius(double radius) throws MaxBrushRadiusException {
-        if (config.maxBrushRadius > 0 && radius > config.maxBrushRadius) {
+        if (getConfiguration().maxBrushRadius > 0 && radius > getConfiguration().maxBrushRadius) {
             throw new MaxBrushRadiusException();
         }
     }
@@ -560,7 +467,7 @@ public class WorldEdit {
             return f;
         }
 
-        return new File(config.getWorkingDirectory(), path);
+        return new File(getConfiguration().getWorkingDirectory(), path);
     }
 
     /**
@@ -761,14 +668,14 @@ public class WorldEdit {
      * @return the commands
      */
     public Map<String, String> getCommands() {
-        return commands.getCommands();
+        return getCommandsManager().getCommands();
     }
 
     /**
      * @return the commands
      */
     public CommandsManager<LocalPlayer> getCommandsManager() {
-        return commands;
+        return getPlatformManager().getCommandManager().getCommands();
     }
 
     /**
@@ -813,8 +720,8 @@ public class WorldEdit {
      * @return
      */
     public boolean handleArmSwing(LocalPlayer player) {
-        if (player.getItemInHand() == config.navigationWand) {
-            if (config.navigationWandMaxDistance <= 0) {
+        if (player.getItemInHand() == getConfiguration().navigationWand) {
+            if (getConfiguration().navigationWandMaxDistance <= 0) {
                 return false;
             }
 
@@ -822,7 +729,7 @@ public class WorldEdit {
                 return false;
             }
 
-            WorldVector pos = player.getSolidBlockTrace(config.navigationWandMaxDistance);
+            WorldVector pos = player.getSolidBlockTrace(getConfiguration().navigationWandMaxDistance);
             if (pos != null) {
                 player.findFreePosition(pos);
             } else {
@@ -836,7 +743,7 @@ public class WorldEdit {
         Tool tool = session.getTool(player.getItemInHand());
         if (tool != null && tool instanceof DoubleActionTraceTool) {
             if (tool.canUse(player)) {
-                ((DoubleActionTraceTool) tool).actSecondary(server, config, player, session);
+                ((DoubleActionTraceTool) tool).actSecondary(getServer(), getConfiguration(), player, session);
                 return true;
             }
         }
@@ -851,8 +758,8 @@ public class WorldEdit {
      * @return
      */
     public boolean handleRightClick(LocalPlayer player) {
-        if (player.getItemInHand() == config.navigationWand) {
-            if (config.navigationWandMaxDistance <= 0) {
+        if (player.getItemInHand() == getConfiguration().navigationWand) {
+            if (getConfiguration().navigationWandMaxDistance <= 0) {
                 return false;
             }
 
@@ -872,7 +779,7 @@ public class WorldEdit {
         Tool tool = session.getTool(player.getItemInHand());
         if (tool != null && tool instanceof TraceTool) {
             if (tool.canUse(player)) {
-                ((TraceTool) tool).actPrimary(server, config, player, session);
+                ((TraceTool) tool).actPrimary(getServer(), getConfiguration(), player, session);
                 return true;
             }
         }
@@ -890,7 +797,7 @@ public class WorldEdit {
     public boolean handleBlockRightClick(LocalPlayer player, WorldVector clicked) {
         LocalSession session = getSession(player);
 
-        if (player.getItemInHand() == config.wandItem) {
+        if (player.getItemInHand() == getConfiguration().wandItem) {
             if (!session.isToolControlEnabled()) {
                 return false;
             }
@@ -910,7 +817,7 @@ public class WorldEdit {
         Tool tool = session.getTool(player.getItemInHand());
         if (tool != null && tool instanceof BlockTool) {
             if (tool.canUse(player)) {
-                ((BlockTool) tool).actPrimary(server, config, player, session, clicked);
+                ((BlockTool) tool).actPrimary(getServer(), getConfiguration(), player, session, clicked);
                 return true;
             }
         }
@@ -928,7 +835,7 @@ public class WorldEdit {
     public boolean handleBlockLeftClick(LocalPlayer player, WorldVector clicked) {
         LocalSession session = getSession(player);
 
-        if (player.getItemInHand() == config.wandItem) {
+        if (player.getItemInHand() == getConfiguration().wandItem) {
             if (!session.isToolControlEnabled()) {
                 return false;
             }
@@ -948,22 +855,20 @@ public class WorldEdit {
         if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
             final BlockTool superPickaxe = session.getSuperPickaxe();
             if (superPickaxe != null && superPickaxe.canUse(player)) {
-                return superPickaxe.actPrimary(server, config, player, session, clicked);
+                return superPickaxe.actPrimary(getServer(), getConfiguration(), player, session, clicked);
             }
         }
 
         Tool tool = session.getTool(player.getItemInHand());
         if (tool != null && tool instanceof DoubleActionBlockTool) {
             if (tool.canUse(player)) {
-                ((DoubleActionBlockTool) tool).actSecondary(server, config, player, session, clicked);
+                ((DoubleActionBlockTool) tool).actSecondary(getServer(), getConfiguration(), player, session, clicked);
                 return true;
             }
         }
 
         return false;
     }
-
-    private static final java.util.regex.Pattern numberFormatExceptionPattern = java.util.regex.Pattern.compile("^For input string: \"(.*)\"$");
 
     /**
      *
@@ -972,135 +877,13 @@ public class WorldEdit {
      * @return whether the command was processed
      */
     public boolean handleCommand(LocalPlayer player, String[] split) {
-        Request.reset();
-
-        try {
-            split = commandDetection(split);
-
-            // No command found!
-            if (!commands.hasCommand(split[0])) {
-                return false;
-            }
-
-            LocalSession session = getSession(player);
-            EditSession editSession = session.createEditSession(player);
-            editSession.enableQueue();
-
-            session.tellVersion(player);
-
-            long start = System.currentTimeMillis();
-
-            try {
-                commands.execute(split, player, session, player, editSession);
-            } catch (CommandPermissionsException e) {
-                player.printError("You don't have permission to do this.");
-            } catch (MissingNestedCommandException e) {
-                player.printError(e.getUsage());
-            } catch (CommandUsageException e) {
-                player.printError(e.getMessage());
-                player.printError(e.getUsage());
-            } catch (PlayerNeededException e) {
-                player.printError(e.getMessage());
-            } catch (WrappedCommandException e) {
-                throw e.getCause();
-            } catch (UnhandledCommandException e) {
-                player.printError("Command could not be handled; invalid sender!");
-                return false;
-            } finally {
-                session.remember(editSession);
-                editSession.flushQueue();
-
-                if (config.profile) {
-                    long time = System.currentTimeMillis() - start;
-                    int changed = editSession.getBlockChangeCount();
-                    if (time > 0) {
-                        double throughput = changed / (time / 1000.0);
-                        player.printDebug((time / 1000.0) + "s elapsed (history: "
-                                + changed + " changed; "
-                                + Math.round(throughput) + " blocks/sec).");
-                    } else {
-                        player.printDebug((time / 1000.0) + "s elapsed.");
-                    }
-                }
-
-                flushBlockBag(player, editSession);
-            }
-        } catch (NumberFormatException e) {
-            final Matcher matcher = numberFormatExceptionPattern.matcher(e.getMessage());
-
-            if (matcher.matches()) {
-                player.printError("Number expected; string \"" + matcher.group(1) + "\" given.");
-            } else {
-                player.printError("Number expected; string given.");
-            }
-        } catch (IncompleteRegionException e) {
-            player.printError("Make a region selection first.");
-        } catch (UnknownItemException e) {
-            player.printError("Block name '" + e.getID() + "' was not recognized.");
-        } catch (InvalidItemException e) {
-            player.printError(e.getMessage());
-        } catch (DisallowedItemException e) {
-            player.printError("Block '" + e.getID() + "' not allowed (see WorldEdit configuration).");
-        } catch (MaxChangedBlocksException e) {
-            player.printError("Max blocks changed in an operation reached ("
-                    + e.getBlockLimit() + ").");
-        } catch (MaxBrushRadiusException e) {
-            player.printError("Maximum allowed brush size: " + config.maxBrushRadius);
-        } catch (MaxRadiusException e) {
-            player.printError("Maximum allowed size: " + config.maxRadius);
-        } catch (UnknownDirectionException e) {
-            player.printError("Unknown direction: " + e.getDirection());
-        } catch (InsufficientArgumentsException e) {
-            player.printError(e.getMessage());
-        } catch (EmptyClipboardException e) {
-            player.printError("Your clipboard is empty. Use //copy first.");
-        } catch (InvalidFilenameException e) {
-            player.printError("Filename '" + e.getFilename() + "' invalid: "
-                    + e.getMessage());
-        } catch (FilenameResolutionException e) {
-            player.printError("File '" + e.getFilename() + "' resolution error: "
-                    + e.getMessage());
-        } catch (InvalidToolBindException e) {
-            player.printError("Can't bind tool to "
-                    + ItemType.toHeldName(e.getItemId()) + ": " + e.getMessage());
-        } catch (FileSelectionAbortedException e) {
-            player.printError("File selection aborted.");
-        } catch (WorldEditException e) {
-            player.printError(e.getMessage());
-        } catch (Throwable excp) {
-            player.printError("Please report this error: [See console]");
-            player.printRaw(excp.getClass().getName() + ": " + excp.getMessage());
-            excp.printStackTrace();
-        }
-
-        return true;
+        CommandEvent event = new CommandEvent(player, split);
+        getEventBus().post(event);
+        return event.isCancelled();
     }
 
     public String[] commandDetection(String[] split) {
-        Request.reset();
-
-        split[0] = split[0].substring(1);
-
-        // Quick script shortcut
-        if (split[0].matches("^[^/].*\\.js$")) {
-            String[] newSplit = new String[split.length + 1];
-            System.arraycopy(split, 0, newSplit, 1, split.length);
-            newSplit[0] = "cs";
-            newSplit[1] = newSplit[1];
-            split = newSplit;
-        }
-
-        String searchCmd = split[0].toLowerCase();
-
-        // Try to detect the command
-        if (commands.hasCommand(searchCmd)) {
-        } else if (config.noDoubleSlash && commands.hasCommand("/" + searchCmd)) {
-            split[0] = "/" + split[0];
-        } else if (split[0].length() >= 2 && split[0].charAt(0) == '/'
-                && commands.hasCommand(searchCmd.substring(1))) {
-            split[0] = split[0].substring(1);
-        }
-        return split;
+        return getPlatformManager().getCommandManager().commandDetection(split);
     }
 
     /**
@@ -1152,7 +935,7 @@ public class WorldEdit {
 
         LocalSession session = getSession(player);
         CraftScriptContext scriptContext =
-                new CraftScriptContext(this, server, config, session, player, args);
+                new CraftScriptContext(this, getServer(), getConfiguration(), session, player, args);
 
         CraftScriptEngine engine = null;
 
@@ -1164,7 +947,7 @@ public class WorldEdit {
             return;
         }
 
-        engine.setTimeLimit(config.scriptTimeout);
+        engine.setTimeLimit(getConfiguration().scriptTimeout);
 
         Map<String, Object> vars = new HashMap<String, Object>();
         vars.put("argv", args);
@@ -1196,19 +979,19 @@ public class WorldEdit {
     /**
      * Get Worldedit's configuration.
      *
-     * @return
+     * @return a configuration
      */
     public LocalConfiguration getConfiguration() {
-        return config;
+        return getPlatformManager().getConfiguration();
     }
 
     /**
      * Get the server interface.
      *
-     * @return
+     * @return the server interface
      */
     public ServerInterface getServer() {
-        return server;
+        return getPlatformManager().getServerInterface();
     }
 
     /**

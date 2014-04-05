@@ -28,6 +28,7 @@ import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
+import com.sk89q.worldedit.extension.platform.PlatformRejectionException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -92,8 +93,13 @@ public class WorldEditMod {
 
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
-        this.server = new ForgeServerInterface();
-        this.controller = new WorldEdit(this.server, this.config);
+        this.server = new ForgeServerInterface(this);
+        this.controller = WorldEdit.getInstance();
+        try {
+            controller.getPlatformManager().register(server);
+        } catch (PlatformRejectionException e) {
+            throw new RuntimeException("Failed to register with WorldEdit", e);
+        }
     }
 
     public ForgeConfiguration getConfig() {

@@ -25,12 +25,12 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Polygonal2DSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldedit.extension.platform.PlatformRejectionException;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -40,7 +40,6 @@ import java.io.*;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Handler;
 import java.util.zip.ZipEntry;
 
 /**
@@ -104,16 +103,22 @@ public class WorldEditPlugin extends JavaPlugin {
 
         // Setup interfaces
         server = new BukkitServerInterface(this, getServer());
-        controller = new WorldEdit(server, config);
-        WorldEdit.logger.setParent(Bukkit.getLogger());
-        api = new WorldEditAPI(this);
-        getServer().getMessenger().registerIncomingPluginChannel(this, CUI_PLUGIN_CHANNEL, new CUIChannelListener(this));
-        getServer().getMessenger().registerOutgoingPluginChannel(this, CUI_PLUGIN_CHANNEL);
-        // Now we can register events!
-        getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
+        controller = WorldEdit.getInstance();
+        try {
+            controller.getPlatformManager().register(server);
+            api = new WorldEditAPI(this);
+            getServer().getMessenger().registerIncomingPluginChannel(this, CUI_PLUGIN_CHANNEL, new CUIChannelListener(this));
+            getServer().getMessenger().registerOutgoingPluginChannel(this, CUI_PLUGIN_CHANNEL);
+            // Now we can register events!
+            getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
 
-        getServer().getScheduler().runTaskTimerAsynchronously(this,
-                new SessionTimer(controller, getServer()), 120, 120);
+            getServer().getScheduler().runTaskTimerAsynchronously(this,
+                    new SessionTimer(controller, getServer()), 120, 120);
+        } catch (PlatformRejectionException e) {
+            throw new RuntimeException(
+                    "WorldEdit rejected the Bukkit implementation of WorldEdit! This is strange and should " +
+                            "not have happened. Please report this error.", e);
+        }
     }
 
     private void copyNmsBlockClasses(File target) {
@@ -149,9 +154,7 @@ public class WorldEditPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         controller.clearSessions();
-        for (Handler h : controller.commandLogger.getHandlers()) {
-            h.close();
-        }
+        controller.getPlatformManager().unregister(server);
         config.unload();
         server.unregisterCommands();
         this.getServer().getScheduler().cancelTasks(this);

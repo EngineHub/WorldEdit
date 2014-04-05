@@ -17,40 +17,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.worldedit.extension.platform.Platform;
-
-import java.util.Collections;
-import java.util.List;
+import com.sk89q.worldedit.WorldEditException;
 
 /**
- *
- * @author sk89q
+ * Thrown when a platform registration request is rejected, which may
+ * be because another platform is already registered.
  */
-public abstract class ServerInterface implements Platform {
+public class PlatformRejectionException extends WorldEditException {
 
-    @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return -1;
+    /**
+     * Create with a message.
+     *
+     * @param message the message
+     */
+    public PlatformRejectionException(String message) {
+        super(message);
     }
 
-    @Override
-    public List<LocalWorld> getWorlds() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    @Deprecated
-    public void onCommandRegistration(List<Command> commands) {
-        // Do nothing :)
-    }
-
-    @Override
-    public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
-        onCommandRegistration(commands);
+    /**
+     * Create with a message and a cause.
+     *
+     * @param message the message
+     * @param cause the cause
+     */
+    public PlatformRejectionException(String message, Throwable cause) {
+        super(message, cause);
     }
 
 }

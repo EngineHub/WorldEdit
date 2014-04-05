@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util;
+package com.sk89q.worldedit.util.logging;
 
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
@@ -26,9 +26,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * Used for formatting.
- *
- * @author sk89q
+ * A standard logging format for WorldEdit.
  */
 public class LogFormat extends Formatter {
     @Override

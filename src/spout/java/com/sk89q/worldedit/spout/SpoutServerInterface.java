@@ -22,6 +22,7 @@ package com.sk89q.worldedit.spout;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
@@ -101,5 +102,10 @@ public class SpoutServerInterface extends ServerInterface {
             }
             spoutCommand.closeSubCommand();
         }
+    }
+
+    @Override
+    public LocalConfiguration getConfiguration() {
+        return plugin.getLocalConfiguration();
     }
 }

@@ -21,6 +21,7 @@ package com.sk89q.worldedit.spout;
 
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extension.platform.PlatformRejectionException;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
@@ -99,7 +100,12 @@ public class WorldEditPlugin extends CommonPlugin {
 
         // Setup interfaces
         server = new SpoutServerInterface(this, getEngine());
-        controller = new WorldEdit(server, config);
+        controller = WorldEdit.getInstance();
+        try {
+            controller.getPlatformManager().register(server);
+        } catch (PlatformRejectionException e) {
+            throw new RuntimeException("Failed to register with WorldEdit", e);
+        }
 
         // Now we can register events!
         registerEvents();
