@@ -19,10 +19,7 @@
 
 package com.sk89q.worldedit.entity;
 
-import com.sk89q.worldedit.PlayerDirection;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.WorldVectorFace;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.extent.Extent;
 
 /**
@@ -35,7 +32,7 @@ import com.sk89q.worldedit.extent.Extent;
  * can then be used to spawn new instances of that particular entity
  * description.
  */
-public interface Entity extends Player {
+public interface Entity {
 
     /**
      * Find a position for the actor to stand that is not inside a block.
@@ -214,5 +211,12 @@ public interface Entity extends Player {
      * @param pos Where to move them
      */
     void setPosition(Vector pos);
+
+    /**
+     * Get the world that this entity is on.
+     *
+     * @return the world
+     */
+    LocalWorld getWorld();
 
 }

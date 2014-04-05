@@ -26,6 +26,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVectorFace;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.entity.Entity;
 
 /**
  * This class uses an inefficient method to figure out what block a player
@@ -58,12 +59,23 @@ public class TargetBlock {
 
     /**
      * Constructor requiring a player, max distance and a checking distance
-     * 
+     *
      * @param player LocalPlayer to work with
      * @param maxDistance how far it checks for blocks
      * @param checkDistance how often to check for blocks, the smaller the more precise
      */
     public TargetBlock(LocalPlayer player, int maxDistance, double checkDistance) {
+        this((Entity) player, maxDistance, checkDistance);
+    }
+
+    /**
+     * Constructor requiring a player, max distance and a checking distance
+     *
+     * @param player LocalPlayer to work with
+     * @param maxDistance how far it checks for blocks
+     * @param checkDistance how often to check for blocks, the smaller the more precise
+     */
+    public TargetBlock(Entity player, int maxDistance, double checkDistance) {
         this.world = player.getWorld();
         this.setValues(player.getPosition(), player.getYaw(), player.getPitch(),
                 maxDistance, 1.65, checkDistance);
@@ -76,7 +88,7 @@ public class TargetBlock {
      * @param xRotation
      * @param yRotation
      * @param maxDistance how far it checks for blocks
-     * @param viewPos where the view is positioned in y-axis
+     * @param viewHeight where the view is positioned in y-axis
      * @param checkDistance how often to check for blocks, the smaller the more precise
      */
     private void setValues(Vector loc, double xRotation, double yRotation,

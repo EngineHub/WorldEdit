@@ -27,7 +27,7 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 /**
  * A player.
  */
-public interface Player {
+public interface Player extends Entity {
 
     /**
      * Returns true if the entity is holding a pick axe.
