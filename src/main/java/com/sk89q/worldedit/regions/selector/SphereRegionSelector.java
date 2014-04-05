@@ -23,7 +23,9 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 
@@ -32,12 +34,17 @@ import javax.annotation.Nullable;
  */
 public class SphereRegionSelector extends EllipsoidRegionSelector {
 
+    @Deprecated
+    public SphereRegionSelector(@Nullable LocalWorld world) {
+        this((World) world);
+    }
+
     /**
      * Create a new selector.
      *
      * @param world the world
      */
-    public SphereRegionSelector(@Nullable LocalWorld world) {
+    public SphereRegionSelector(@Nullable World world) {
         super(world);
     }
 
@@ -80,7 +87,7 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
     }
 
     @Override
-    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
+    public void explainSecondarySelection(Actor player, LocalSession session, Vector pos) {
         if (isDefined()) {
             player.print("Radius set to " + region.getRadius().getX() + " (" + region.getArea() + ").");
         } else {
@@ -93,6 +100,21 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
     @Override
     public String getTypeName() {
         return "sphere";
+    }
+
+    @Override
+    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainPrimarySelection((Actor) player, session, position);
+    }
+
+    @Override
+    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainSecondarySelection((Actor) player, session, position);
+    }
+
+    @Override
+    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
+        explainRegionAdjust((Actor) player, session);
     }
 
 }

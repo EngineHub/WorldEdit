@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.WorldEditPermissionException;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.world.World;
 
 import java.io.File;
 
@@ -42,7 +42,7 @@ public interface Actor {
      *
      * @return the world
      */
-    LocalWorld getWorld();
+    World getWorld();
 
     /**
      * Print a message.

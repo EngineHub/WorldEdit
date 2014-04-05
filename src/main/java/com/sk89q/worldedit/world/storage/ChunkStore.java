@@ -19,15 +19,19 @@
 
 package com.sk89q.worldedit.world.storage;
 
-import java.io.IOException;
-import java.util.Map;
-
-import com.sk89q.jnbt.*;
-import com.sk89q.worldedit.*;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.BlockVector2D;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.chunk.AnvilChunk;
 import com.sk89q.worldedit.world.chunk.Chunk;
 import com.sk89q.worldedit.world.chunk.OldChunk;
+
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Represents chunk storage mechanisms.
@@ -61,7 +65,7 @@ public abstract class ChunkStore {
      * @throws DataException
      * @throws IOException
      */
-    public abstract CompoundTag getChunkTag(Vector2D pos, LocalWorld world)
+    public abstract CompoundTag getChunkTag(Vector2D pos, World world)
             throws DataException, IOException;
 
     /**
@@ -73,8 +77,7 @@ public abstract class ChunkStore {
      * @throws IOException
      * @throws DataException
      */
-    public Chunk getChunk(Vector2D pos, LocalWorld world)
-            throws DataException, IOException {
+    public Chunk getChunk(Vector2D pos, World world) throws DataException, IOException {
 
         CompoundTag tag = getChunkTag(pos, world);
         Map<String, Tag> tags = tag.getValue();

@@ -19,14 +19,11 @@
 
 package com.sk89q.worldedit.util;
 
-import com.sk89q.worldedit.BlockWorldVector;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldVectorFace;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.internal.LocalWorldAdapter;
 
 /**
  * This class uses an inefficient method to figure out what block a player
@@ -52,7 +49,7 @@ public class TargetBlock {
      * @param player player to work with
      */
     public TargetBlock(LocalPlayer player) {
-        this.world = player.getWorld();
+        this.world = LocalWorldAdapter.wrap(player.getWorld());
         this.setValues(player.getPosition(), player.getYaw(), player.getPitch(),
                 300, 1.65, 0.2);
     }
@@ -76,7 +73,7 @@ public class TargetBlock {
      * @param checkDistance how often to check for blocks, the smaller the more precise
      */
     public TargetBlock(Entity player, int maxDistance, double checkDistance) {
-        this.world = player.getWorld();
+        this.world = LocalWorldAdapter.wrap(player.getWorld());
         this.setValues(player.getPosition(), player.getYaw(), player.getPitch(),
                 maxDistance, 1.65, checkDistance);
     }

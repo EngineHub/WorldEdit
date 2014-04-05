@@ -20,11 +20,13 @@
 package com.sk89q.worldedit.regions.selector;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionPointEvent;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -45,7 +47,12 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
      * Create a new region selector with no world.
      */
     public CuboidRegionSelector() {
-        this((LocalWorld) null);
+        this((World) null);
+    }
+
+    @Deprecated
+    public CuboidRegionSelector(@Nullable LocalWorld world) {
+        this((World) world);
     }
 
     /**
@@ -53,7 +60,7 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
      *
      * @param world the world
      */
-    public CuboidRegionSelector(@Nullable LocalWorld world) {
+    public CuboidRegionSelector(@Nullable World world) {
         region = new CuboidRegion(world, new Vector(), new Vector());
     }
 
@@ -85,6 +92,11 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
         region.setPos2(pos2);
     }
 
+    @Deprecated
+    public CuboidRegionSelector(@Nullable LocalWorld world, Vector pos1, Vector pos2) {
+        this((World) world, pos1, pos2);
+    }
+
     /**
      * Create a new region selector with the given two positions.
      *
@@ -92,7 +104,7 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
      * @param pos1 position 1
      * @param pos2 position 2
      */
-    public CuboidRegionSelector(@Nullable LocalWorld world, Vector pos1, Vector pos2) {
+    public CuboidRegionSelector(@Nullable World world, Vector pos1, Vector pos2) {
         this(world);
         checkNotNull(world);
         checkNotNull(pos1);
@@ -126,7 +138,7 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
     }
 
     @Override
-    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector pos) {
+    public void explainPrimarySelection(Actor player, LocalSession session, Vector pos) {
         if (pos1 != null && pos2 != null) {
             player.print("First position set to " + pos1 + " (" + region.getArea() + ").");
         } else {
@@ -137,7 +149,7 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
     }
 
     @Override
-    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
+    public void explainSecondarySelection(Actor player, LocalSession session, Vector pos) {
         if (pos1 != null && pos2 != null) {
             player.print("Second position set to " + pos2 + " (" + region.getArea() + ").");
         } else {
@@ -148,7 +160,7 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
     }
 
     @Override
-    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
+    public void explainRegionAdjust(Actor player, LocalSession session) {
         if (pos1 != null) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos1, getArea()));
         }
@@ -232,7 +244,7 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
     }
 
     @Override
-    public void describeCUI(LocalSession session, LocalPlayer player) {
+    public void describeCUI(LocalSession session, Actor player) {
         if (pos1 != null) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos1, getArea()));
         }
@@ -243,7 +255,7 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
     }
 
     @Override
-    public void describeLegacyCUI(LocalSession session, LocalPlayer player) {
+    public void describeLegacyCUI(LocalSession session, Actor player) {
         describeCUI(session, player);
     }
 
@@ -262,5 +274,19 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
         return "cuboid";
     }
 
+    @Override
+    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainPrimarySelection((Actor) player, session, position);
+    }
+
+    @Override
+    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainSecondarySelection((Actor) player, session, position);
+    }
+
+    @Override
+    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
+        explainRegionAdjust((Actor) player, session);
+    }
     
 }

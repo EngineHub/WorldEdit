@@ -22,6 +22,7 @@ package com.sk89q.worldedit.extension.platform;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.world.World;
 
 import java.util.List;
 
@@ -70,7 +71,7 @@ class ServerInterfaceAdapter extends ServerInterface {
     }
 
     @Override
-    public List<LocalWorld> getWorlds() {
+    public List<? extends World> getWorlds() {
         return platform.getWorlds();
     }
 

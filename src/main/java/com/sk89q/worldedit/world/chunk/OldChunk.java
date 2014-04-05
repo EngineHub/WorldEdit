@@ -21,11 +21,11 @@ package com.sk89q.worldedit.world.chunk;
 
 import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
 import java.util.HashMap;
@@ -46,7 +46,7 @@ public class OldChunk implements Chunk {
 
     private Map<BlockVector, Map<String,Tag>> tileEntities;
     @SuppressWarnings("unused")
-    private LocalWorld world; // TODO: remove if stays unused.
+    private World world; // TODO: remove if stays unused.
 
     /**
      * Construct the chunk with a compound tag.
@@ -54,7 +54,7 @@ public class OldChunk implements Chunk {
      * @param tag
      * @throws DataException
      */
-    public OldChunk(LocalWorld world, CompoundTag tag) throws DataException {
+    public OldChunk(World world, CompoundTag tag) throws DataException {
         rootTag = tag;
         this.world = world;
 

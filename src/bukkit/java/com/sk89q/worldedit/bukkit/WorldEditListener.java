@@ -21,6 +21,12 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.internal.LocalWorldAdapter;
+import com.sk89q.worldedit.world.World;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event.Result;
@@ -32,12 +38,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldVector;
 
 /**
  * Handles all events thrown in relation to a Player
@@ -119,14 +119,13 @@ public class WorldEditListener implements Listener {
         }
 
         final LocalPlayer player = plugin.wrapPlayer(event.getPlayer());
-        final LocalWorld world = player.getWorld();
+        final World world = player.getWorld();
         final WorldEdit we = plugin.getWorldEdit();
 
         Action action = event.getAction();
         if (action == Action.LEFT_CLICK_BLOCK) {
             final Block clickedBlock = event.getClickedBlock();
-            final WorldVector pos = new WorldVector(world, clickedBlock.getX(),
-                    clickedBlock.getY(), clickedBlock.getZ());
+            final WorldVector pos = new WorldVector(LocalWorldAdapter.wrap(world), clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
 
             if (we.handleBlockLeftClick(player, pos)) {
                 event.setCancelled(true);
@@ -160,7 +159,7 @@ public class WorldEditListener implements Listener {
 
         } else if (action == Action.RIGHT_CLICK_BLOCK) {
             final Block clickedBlock = event.getClickedBlock();
-            final WorldVector pos = new WorldVector(world, clickedBlock.getX(),
+            final WorldVector pos = new WorldVector(LocalWorldAdapter.wrap(world), clickedBlock.getX(),
                     clickedBlock.getY(), clickedBlock.getZ());
 
             if (we.handleBlockRightClick(player, pos)) {

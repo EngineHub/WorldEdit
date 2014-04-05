@@ -30,6 +30,7 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.polyhedron.Edge;
 import com.sk89q.worldedit.regions.polyhedron.Triangle;
+import com.sk89q.worldedit.world.World;
 
 public class ConvexPolyhedralRegion extends AbstractRegion {
     /**
@@ -72,6 +73,11 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
      *
      * @param world
      */
+    public ConvexPolyhedralRegion(World world) {
+        super(world);
+    }
+
+    @Deprecated
     public ConvexPolyhedralRegion(LocalWorld world) {
         super(world);
     }
@@ -79,7 +85,7 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
     /**
      * Constructs an independent copy of the given region.
      *
-     * @param world
+     * @param region the region to copy
      */
     public ConvexPolyhedralRegion(ConvexPolyhedralRegion region) {
         this(region.world);

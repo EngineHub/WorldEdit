@@ -22,6 +22,7 @@ package com.sk89q.worldedit.regions;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.iterator.RegionIterator;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
 import java.util.*;
@@ -30,9 +31,9 @@ public abstract class AbstractRegion implements Region {
     /**
      * Stores the world.
      */
-    protected LocalWorld world;
+    protected World world;
 
-    public AbstractRegion(LocalWorld world) {
+    public AbstractRegion(World world) {
         this.world = world;
     }
 
@@ -46,23 +47,33 @@ public abstract class AbstractRegion implements Region {
      *
      * @return iterator of points inside the region
      */
+    @Override
     public Iterator<BlockVector> iterator() {
         return new RegionIterator(this);
     }
 
-    public LocalWorld getWorld() {
+    @Override
+    public World getWorld() {
         return world;
     }
 
+    @Override
     public void setWorld(LocalWorld world) {
+        setWorld((World) world);
+    }
+
+    @Override
+    public void setWorld(World world) {
         this.world = world;
     }
 
+    @Override
     public void shift(Vector change) throws RegionOperationException {
         expand(change);
         contract(change);
     }
 
+    @Override
     public AbstractRegion clone() {
         try {
             return (AbstractRegion) super.clone();
@@ -95,6 +106,7 @@ public abstract class AbstractRegion implements Region {
      *
      * @return number of blocks
      */
+    @Override
     public int getArea() {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -109,6 +121,7 @@ public abstract class AbstractRegion implements Region {
      *
      * @return width
      */
+    @Override
     public int getWidth() {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -121,6 +134,7 @@ public abstract class AbstractRegion implements Region {
      *
      * @return height
      */
+    @Override
     public int getHeight() {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -133,6 +147,7 @@ public abstract class AbstractRegion implements Region {
      *
      * @return length
      */
+    @Override
     public int getLength() {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -145,6 +160,7 @@ public abstract class AbstractRegion implements Region {
      *
      * @return
      */
+    @Override
     public Set<Vector2D> getChunks() {
         final Set<Vector2D> chunks = new HashSet<Vector2D>();
 

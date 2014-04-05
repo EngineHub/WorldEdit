@@ -24,6 +24,7 @@ import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.World;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,8 +79,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
      * @throws IOException
      */
     @Override
-    public CompoundTag getChunkTag(Vector2D pos, LocalWorld world)
-            throws DataException, IOException {
+    public CompoundTag getChunkTag(Vector2D pos, World world) throws DataException, IOException {
         int x = pos.getBlockX();
         int z = pos.getBlockZ();
 

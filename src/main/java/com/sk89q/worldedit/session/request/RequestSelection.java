@@ -23,6 +23,7 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.regions.NullRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.world.World;
 
 import java.util.Iterator;
 import java.util.List;
@@ -45,7 +46,7 @@ public class RequestSelection implements Region {
      */
     protected Region getRegion() {
         LocalSession session = Request.request().getSession();
-        LocalWorld world = Request.request().getWorld();
+        World world = Request.request().getWorld();
 
         if (session != null && world != null) {
             try {
@@ -123,12 +124,17 @@ public class RequestSelection implements Region {
     }
 
     @Override
-    public LocalWorld getWorld() {
+    public World getWorld() {
         return getRegion().getWorld();
     }
 
     @Override
     public void setWorld(LocalWorld world) {
+        setWorld((World) world);
+    }
+
+    @Override
+    public void setWorld(World world) {
         getRegion().setWorld(world);
     }
 

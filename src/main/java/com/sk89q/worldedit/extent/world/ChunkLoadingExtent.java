@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.extent.world;
 
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.world.World;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ChunkLoadingExtent extends AbstractDelegateExtent {
 
-    private final LocalWorld world;
+    private final World world;
     private boolean enabled;
 
     /**
@@ -43,7 +43,7 @@ public class ChunkLoadingExtent extends AbstractDelegateExtent {
      * @param world the world
      * @param enabled true to enable
      */
-    public ChunkLoadingExtent(Extent extent, LocalWorld world, boolean enabled) {
+    public ChunkLoadingExtent(Extent extent, World world, boolean enabled) {
         super(extent);
         checkNotNull(world);
         this.enabled = enabled;
@@ -56,7 +56,7 @@ public class ChunkLoadingExtent extends AbstractDelegateExtent {
      * @param extent the extent
      * @param world the world
      */
-    public ChunkLoadingExtent(Extent extent, LocalWorld world) {
+    public ChunkLoadingExtent(Extent extent, World world) {
         this(extent, world, true);
     }
 

@@ -20,13 +20,13 @@
 package com.sk89q.worldedit.extent.world;
 
 import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.world.World;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -38,7 +38,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class FastModeExtent extends AbstractDelegateExtent {
 
-    private final LocalWorld world;
+    private final World world;
     private final Set<BlockVector2D> dirtyChunks = new HashSet<BlockVector2D>();
     private boolean enabled = true;
 
@@ -47,7 +47,7 @@ public class FastModeExtent extends AbstractDelegateExtent {
      *
      * @param world the world
      */
-    public FastModeExtent(LocalWorld world) {
+    public FastModeExtent(World world) {
         this(world, true);
     }
 
@@ -57,7 +57,7 @@ public class FastModeExtent extends AbstractDelegateExtent {
      * @param world the world
      * @param enabled true to enable fast mode
      */
-    public FastModeExtent(LocalWorld world, boolean enabled) {
+    public FastModeExtent(World world, boolean enabled) {
         super(world);
         checkNotNull(world);
         this.world = world;

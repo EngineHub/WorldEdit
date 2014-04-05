@@ -27,6 +27,7 @@ import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.util.TargetBlock;
+import com.sk89q.worldedit.world.World;
 
 import java.io.File;
 
@@ -94,7 +95,7 @@ public abstract class AbstractPlayerActor implements Actor, Player {
 
     @Override
     public void findFreePosition(WorldVector searchPos) {
-        LocalWorld world = searchPos.getWorld();
+        World world = searchPos.getWorld();
         int x = searchPos.getBlockX();
         int y = Math.max(0, searchPos.getBlockY());
         int origY = y;
@@ -126,7 +127,7 @@ public abstract class AbstractPlayerActor implements Actor, Player {
 
     @Override
     public void setOnGround(WorldVector searchPos) {
-        LocalWorld world = searchPos.getWorld();
+        World world = searchPos.getWorld();
         int x = searchPos.getBlockX();
         int y = Math.max(0, searchPos.getBlockY());
         int z = searchPos.getBlockZ();
@@ -155,7 +156,7 @@ public abstract class AbstractPlayerActor implements Actor, Player {
         final int x = pos.getBlockX();
         int y = Math.max(0, pos.getBlockY());
         final int z = pos.getBlockZ();
-        final LocalWorld world = pos.getWorld();
+        final World world = pos.getWorld();
 
         byte free = 0;
         byte spots = 0;
@@ -196,7 +197,7 @@ public abstract class AbstractPlayerActor implements Actor, Player {
         final int x = pos.getBlockX();
         int y = Math.max(0, pos.getBlockY() - 1);
         final int z = pos.getBlockZ();
-        final LocalWorld world = pos.getWorld();
+        final World world = pos.getWorld();
 
         byte free = 0;
 
@@ -247,7 +248,7 @@ public abstract class AbstractPlayerActor implements Actor, Player {
         int initialY = Math.max(0, pos.getBlockY());
         int y = Math.max(0, pos.getBlockY() + 2);
         int z = pos.getBlockZ();
-        LocalWorld world = getPosition().getWorld();
+        World world = getPosition().getWorld();
 
         // No free space above
         if (world.getBlockType(new Vector(x, y, z)) != 0) {
@@ -281,7 +282,7 @@ public abstract class AbstractPlayerActor implements Actor, Player {
         int y = Math.max(0, pos.getBlockY() + 1);
         final int z = pos.getBlockZ();
         final int maxY = Math.min(getWorld().getMaxY() + 1, initialY + distance);
-        final LocalWorld world = getPosition().getWorld();
+        final World world = getPosition().getWorld();
 
         while (y <= world.getMaxY() + 2) {
             if (!BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
@@ -383,7 +384,7 @@ public abstract class AbstractPlayerActor implements Actor, Player {
     public boolean passThroughForwardWall(int range) {
         int searchDist = 0;
         TargetBlock hitBlox = new TargetBlock(this, range, 0.2);
-        LocalWorld world = getPosition().getWorld();
+        World world = getPosition().getWorld();
         BlockWorldVector block;
         boolean firstBlock = true;
         int freeToFind = 2;

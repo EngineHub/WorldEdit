@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.extent.validation;
 
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.world.World;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class DataValidatorExtent extends AbstractDelegateExtent {
 
-    private final LocalWorld world;
+    private final World world;
 
     /**
      * Create a new instance.
@@ -41,7 +41,7 @@ public class DataValidatorExtent extends AbstractDelegateExtent {
      * @param extent the extent
      * @param world the world
      */
-    public DataValidatorExtent(Extent extent, LocalWorld world) {
+    public DataValidatorExtent(Extent extent, World world) {
         super(extent);
         checkNotNull(world);
         this.world = world;

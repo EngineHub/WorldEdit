@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.extent.inventory;
 
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -37,7 +37,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class BlockBagExtent extends AbstractDelegateExtent {
 
-    private final LocalWorld world;
     private Map<Integer, Integer> missingBlocks = new HashMap<Integer, Integer>();
     private BlockBag blockBag;
 
@@ -48,10 +47,8 @@ public class BlockBagExtent extends AbstractDelegateExtent {
      * @param world the world
      * @param blockBag the block bag
      */
-    public BlockBagExtent(Extent extent, LocalWorld world, @Nullable BlockBag blockBag) {
+    public BlockBagExtent(Extent extent, @Nullable BlockBag blockBag) {
         super(extent);
-        checkNotNull(world);
-        this.world = world;
         this.blockBag = blockBag;
     }
 

@@ -20,12 +20,12 @@
 package com.sk89q.worldedit.event.extent;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 
@@ -59,7 +59,7 @@ import static com.sk89q.worldedit.EditSession.Stage;
  */
 public class EditSessionEvent extends Event {
 
-    private final LocalWorld world;
+    private final World world;
     private final Actor actor;
     private final int maxBlocks;
     private final Stage stage;
@@ -73,7 +73,7 @@ public class EditSessionEvent extends Event {
      * @param maxBlocks the maximum number of block changes
      * @param stage the stage
      */
-    public EditSessionEvent(LocalWorld world, Actor actor, int maxBlocks, Stage stage) {
+    public EditSessionEvent(World world, Actor actor, int maxBlocks, Stage stage) {
         checkNotNull(world);
         this.world = world;
         this.actor = actor;
@@ -95,7 +95,7 @@ public class EditSessionEvent extends Event {
      *
      * @return the world
      */
-    public LocalWorld getWorld() {
+    public World getWorld() {
         return world;
     }
 

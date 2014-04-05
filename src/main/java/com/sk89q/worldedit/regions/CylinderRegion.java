@@ -22,6 +22,7 @@ package com.sk89q.worldedit.regions;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.regions.iterator.FlatRegion3DIterator;
 import com.sk89q.worldedit.regions.iterator.FlatRegionIterator;
+import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -43,17 +44,26 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      * Construct the region
      */
     public CylinderRegion() {
-        this((LocalWorld) null);
+        this((World) null);
     }
 
+    @Deprecated
+    public CylinderRegion(LocalWorld world) {
+        this((World) world);
+    }
     /**
      * Construct the region.
      *
      * @param world
      */
-    public CylinderRegion(LocalWorld world) {
+    public CylinderRegion(World world) {
         this(world, new Vector(), new Vector2D(), 0, 0);
         hasY = false;
+    }
+
+    @Deprecated
+    public CylinderRegion(LocalWorld world, Vector center, Vector2D radius, int minY, int maxY) {
+        this((World) world, center, radius, minY, maxY);
     }
 
     /**
@@ -65,7 +75,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      * @param minY
      * @param maxY
      */
-    public CylinderRegion(LocalWorld world, Vector center, Vector2D radius, int minY, int maxY) {
+    public CylinderRegion(World world, Vector center, Vector2D radius, int minY, int maxY) {
         super(world);
         setCenter(center.toVector2D());
         setRadius(radius);

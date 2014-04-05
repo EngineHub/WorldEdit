@@ -21,6 +21,7 @@ package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.world.World;
 
 import java.util.*;
 
@@ -29,7 +30,7 @@ import java.util.*;
  */
 public class NullRegion implements Region {
 
-    private LocalWorld world;
+    private World world;
 
     @Override
     public Vector getMinimumPoint() {
@@ -97,13 +98,18 @@ public class NullRegion implements Region {
     }
 
     @Override
-    public LocalWorld getWorld() {
+    public World getWorld() {
         return world;
     }
 
     @Override
-    public void setWorld(LocalWorld world) {
+    public void setWorld(World world) {
         this.world = world;
+    }
+
+    @Override
+    public void setWorld(LocalWorld world) {
+        setWorld((World) world);
     }
 
     @Override

@@ -19,15 +19,16 @@
 
 package com.sk89q.worldedit.world.storage;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.World;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 public abstract class McRegionChunkStore extends ChunkStore {
     protected String curFilename = null;
@@ -67,8 +68,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
     }
 
     @Override
-    public CompoundTag getChunkTag(Vector2D pos, LocalWorld world) throws DataException,
-            IOException {
+    public CompoundTag getChunkTag(Vector2D pos, World world) throws DataException, IOException {
         
         McRegionReader reader = getReader(pos, world.getName());
 

@@ -22,7 +22,7 @@ package com.sk89q.worldedit.extension.platform;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.world.World;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +38,7 @@ public abstract class AbstractPlatform implements Platform {
     }
 
     @Override
-    public List<LocalWorld> getWorlds() {
+    public List<? extends World> getWorlds() {
         return Collections.emptyList();
     }
 

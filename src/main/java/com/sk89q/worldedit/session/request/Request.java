@@ -21,7 +21,7 @@ package com.sk89q.worldedit.session.request;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 
@@ -37,7 +37,7 @@ public final class Request {
                 }
             };
 
-    private @Nullable LocalWorld world;
+    private @Nullable World world;
     private @Nullable LocalSession session;
     private @Nullable EditSession editSession;
 
@@ -49,7 +49,7 @@ public final class Request {
      *
      * @return the world, which may be null
      */
-    public @Nullable LocalWorld getWorld() {
+    public @Nullable World getWorld() {
         return world;
     }
 
@@ -58,7 +58,7 @@ public final class Request {
      *
      * @param world the world, which may be null
      */
-    public void setWorld(@Nullable LocalWorld world) {
+    public void setWorld(@Nullable World world) {
         this.world = world;
     }
 

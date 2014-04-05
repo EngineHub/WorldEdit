@@ -27,6 +27,7 @@ import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.World;
 
 import java.util.Comparator;
 import java.util.Set;
@@ -176,7 +177,7 @@ public class UtilityCommands {
         
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
-        LocalWorld world = player.getWorld();
+        World world = player.getWorld();
         int height = args.argsLength() > 1 ? Math.min((world.getMaxY() + 1), args.getInteger(1) + 2) : (world.getMaxY() + 1);
 
         int affected = editSession.removeAbove(
@@ -198,7 +199,7 @@ public class UtilityCommands {
 
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
-        LocalWorld world = player.getWorld();
+        World world = player.getWorld();
         int height = args.argsLength() > 1 ? Math.min((world.getMaxY() + 1), args.getInteger(1) + 2) : (world.getMaxY() + 1);
 
         int affected = editSession.removeBelow(session.getPlacementPosition(player), size, height);
@@ -398,7 +399,7 @@ public class UtilityCommands {
             killed = player.getWorld().killMobs(session.getPlacementPosition(player), radius, flags.flags);
         } else {
             killed = 0;
-            for (LocalWorld world : we.getServer().getWorlds()) {
+            for (World world : we.getServer().getWorlds()) {
                 killed += world.killMobs(new Vector(), radius, flags.flags);
             }
         }
@@ -486,7 +487,7 @@ public class UtilityCommands {
             Vector origin = session.getPlacementPosition(player);
             removed = player.getWorld().removeEntities(type, origin, radius);
         } else {
-            for (LocalWorld world : we.getServer().getWorlds()) {
+            for (World world : we.getServer().getWorlds()) {
                 removed += world.removeEntities(type, new Vector(), radius);
             }
         }

@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
 import java.util.HashSet;
@@ -47,6 +48,11 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         this(null, pos1, pos2);
     }
 
+    @Deprecated
+    public CuboidRegion(LocalWorld world, Vector pos1, Vector pos2) {
+        this((World) world, pos1, pos2);
+    }
+
     /**
      * Construct a new instance of this cuboid using two corners of the cuboid.
      *
@@ -54,7 +60,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
      * @param pos1  the first position
      * @param pos2  the second position
      */
-    public CuboidRegion(LocalWorld world, Vector pos1, Vector pos2) {
+    public CuboidRegion(World world, Vector pos1, Vector pos2) {
         super(world);
         checkNotNull(pos1);
         checkNotNull(pos2);

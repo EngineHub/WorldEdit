@@ -22,6 +22,7 @@ package com.sk89q.worldedit;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.util.eventbus.EventBus;
+import com.sk89q.worldedit.world.World;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -35,14 +36,24 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class EditSessionFactory {
 
-    /**
-     * Construct an edit session with a maximum number of blocks.
-     *
-     * @param world the world
-     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
-     */
+    @Deprecated
     public EditSession getEditSession(LocalWorld world, int maxBlocks) {
+        return getEditSession((World) world, maxBlocks);
+    }
+
+    /**
+     * Construct an edit session with a maximum number of blocks.
+     *
+     * @param world the world
+     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
+     */
+    public EditSession getEditSession(World world, int maxBlocks) {
         throw new IllegalArgumentException("This class is being removed");
+    }
+
+    @Deprecated
+    public EditSession getEditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
+        return getEditSession((World) world, maxBlocks, player);
     }
 
     /**
@@ -52,8 +63,13 @@ public class EditSessionFactory {
      * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
      * @param player the player that the {@link EditSession} is for
      */
-    public EditSession getEditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
+    public EditSession getEditSession(World world, int maxBlocks, LocalPlayer player) {
         throw new IllegalArgumentException("This class is being removed");
+    }
+
+    @Deprecated
+    public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag) {
+        return getEditSession((World) world, maxBlocks, blockBag);
     }
 
     /**
@@ -63,8 +79,13 @@ public class EditSessionFactory {
      * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
      * @param blockBag an optional {@link BlockBag} to use, otherwise null
      */
-    public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag) {
+    public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag) {
         throw new IllegalArgumentException("This class is being removed");
+    }
+
+    @Deprecated
+    public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
+        return getEditSession((World) world, maxBlocks, blockBag, player);
     }
 
     /**
@@ -75,7 +96,7 @@ public class EditSessionFactory {
      * @param blockBag an optional {@link BlockBag} to use, otherwise null
      * @param player the player that the {@link EditSession} is for
      */
-    public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
+    public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
         throw new IllegalArgumentException("This class is being removed");
     }
 
@@ -97,22 +118,22 @@ public class EditSessionFactory {
         }
 
         @Override
-        public EditSession getEditSession(LocalWorld world, int maxBlocks) {
+        public EditSession getEditSession(World world, int maxBlocks) {
             return new EditSession(eventBus, world, maxBlocks, null, new EditSessionEvent(world, null, maxBlocks, null));
         }
 
         @Override
-        public EditSession getEditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
+        public EditSession getEditSession(World world, int maxBlocks, LocalPlayer player) {
             return new EditSession(eventBus, world, maxBlocks, null, new EditSessionEvent(world, player, maxBlocks, null));
         }
 
         @Override
-        public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag) {
+        public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag) {
             return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, null, maxBlocks, null));
         }
 
         @Override
-        public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
+        public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
             return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, player, maxBlocks, null));
         }
 

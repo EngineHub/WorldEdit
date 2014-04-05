@@ -36,13 +36,13 @@ import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 import com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
@@ -215,7 +215,7 @@ public class SelectionCommands {
 
         final Vector min;
         final Vector max;
-        final LocalWorld world = player.getWorld();
+        final World world = player.getWorld();
         if (args.hasFlag('s')) {
             Region region = session.getSelection(world);
 
@@ -733,7 +733,7 @@ public class SelectionCommands {
     public void select(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
 
-        final LocalWorld world = player.getWorld();
+        final World world = player.getWorld();
         if (args.argsLength() == 0) {
             session.getRegionSelector(world).clear();
             session.dispatchCUISelection(player);

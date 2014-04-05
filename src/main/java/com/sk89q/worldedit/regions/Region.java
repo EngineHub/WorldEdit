@@ -24,6 +24,7 @@ import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.world.World;
 
 import java.util.List;
 import java.util.Set;
@@ -135,13 +136,21 @@ public interface Region extends Iterable<BlockVector>, Cloneable {
      *
      * @return
      */
-    public LocalWorld getWorld();
+    public World getWorld();
 
     /**
      * Sets the world the selection is in
      *
      * @return
      */
+    public void setWorld(World world);
+
+    /**
+     * Sets the world the selection is in
+     *
+     * @return
+     */
+    @Deprecated
     public void setWorld(LocalWorld world);
 
     public Region clone();

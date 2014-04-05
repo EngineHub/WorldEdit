@@ -19,12 +19,11 @@
 
 package com.sk89q.worldedit.extension.input;
 
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.registry.MaskRegistry;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 
@@ -38,7 +37,7 @@ public class ParserContext {
 
     private @Nullable Extent extent;
     private @Nullable LocalSession session;
-    private @Nullable LocalWorld world;
+    private @Nullable World world;
     private @Nullable Actor actor;
     private boolean restricted = true;
     private boolean preferringWildcard;
@@ -80,11 +79,11 @@ public class ParserContext {
     }
 
     /**
-     * Get the {@link LocalWorld} set on this context.
+     * Get the {@link World} set on this context.
      *
      * @return a world
      */
-    public @Nullable LocalWorld getWorld() {
+    public @Nullable World getWorld() {
         return world;
     }
 
@@ -93,7 +92,7 @@ public class ParserContext {
      *
      * @param world a world, or null if none is available
      */
-    public void setWorld(@Nullable LocalWorld world) {
+    public void setWorld(@Nullable World world) {
         this.world = world;
     }
 
@@ -144,13 +143,13 @@ public class ParserContext {
     }
 
     /**
-     * Get the {@link LocalWorld} set on this context.
+     * Get the {@link World} set on this context.
      *
      * @return a world
-     * @throws InputParseException thrown if no {@link LocalWorld} is set
+     * @throws InputParseException thrown if no {@link World} is set
      */
-    public LocalWorld requireWorld() throws InputParseException {
-        LocalWorld world = getWorld();
+    public World requireWorld() throws InputParseException {
+        World world = getWorld();
         if (world == null) {
             throw new InputParseException("No world is known");
         }
@@ -161,7 +160,7 @@ public class ParserContext {
      * Get the {@link Actor} set on this context.
      *
      * @return an actor
-     * @throws InputParseException thrown if no {@link LocalPlayer} is set
+     * @throws InputParseException thrown if no {@link Actor} is set
      */
     public Actor requireActor() throws InputParseException {
         Actor actor = getActor();

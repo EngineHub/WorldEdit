@@ -27,6 +27,7 @@ import com.sk89q.worldedit.command.tool.BlockTool;
 import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.SinglePickaxe;
 import com.sk89q.worldedit.command.tool.Tool;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
@@ -36,6 +37,7 @@ import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
 
 import java.util.*;
@@ -175,6 +177,11 @@ public class LocalSession {
         return null;
     }
 
+    @Deprecated
+    public RegionSelector getRegionSelector(LocalWorld world) {
+        return getRegionSelector((World) world);
+    }
+
     /**
      * Get the region selector for defining the selection. If the selection
      * was defined for a different world, the old selection will be discarded.
@@ -182,7 +189,7 @@ public class LocalSession {
      * @param world
      * @return position
      */
-    public RegionSelector getRegionSelector(LocalWorld world) {
+    public RegionSelector getRegionSelector(World world) {
         if (selector.getIncompleteRegion().getWorld() == null) {
             selector = new CuboidRegionSelector(world);
         } else if (!selector.getIncompleteRegion().getWorld().equals(world)) {
@@ -203,13 +210,18 @@ public class LocalSession {
         return selector;
     }
 
+    @Deprecated
+    public void setRegionSelector(LocalWorld world, RegionSelector selector) {
+        setRegionSelector((World) world, selector);
+    }
+
     /**
      * Set the region selector.
      *
      * @param world
      * @param selector
      */
-    public void setRegionSelector(LocalWorld world, RegionSelector selector) {
+    public void setRegionSelector(World world, RegionSelector selector) {
         selector.getIncompleteRegion().setWorld(world);
         this.selector = selector;
     }
@@ -224,13 +236,18 @@ public class LocalSession {
         return selector.isDefined();
     }
 
+    @Deprecated
+    public boolean isSelectionDefined(LocalWorld world) {
+        return isSelectionDefined((World) world);
+    }
+
     /**
      * Returns true if the region is fully defined for the specified world.
      *
      * @param world
      * @return
      */
-    public boolean isSelectionDefined(LocalWorld world) {
+    public boolean isSelectionDefined(World world) {
         if (selector.getIncompleteRegion().getWorld() == null || !selector.getIncompleteRegion().getWorld().equals(world)) {
             return false;
         }
@@ -248,6 +265,11 @@ public class LocalSession {
         return selector.getRegion();
     }
 
+    @Deprecated
+    public Region getSelection(LocalWorld world) throws IncompleteRegionException {
+        return getSelection((World) world);
+    }
+
     /**
      * Get the selection region. If you change the region, you should
      * call learnRegionChanges().  If the selection is defined in
@@ -258,7 +280,7 @@ public class LocalSession {
      * @return region
      * @throws IncompleteRegionException
      */
-    public Region getSelection(LocalWorld world) throws IncompleteRegionException {
+    public Region getSelection(World world) throws IncompleteRegionException {
         if (selector.getIncompleteRegion().getWorld() == null || !selector.getIncompleteRegion().getWorld().equals(world)) {
             throw new IncompleteRegionException();
         }
@@ -270,7 +292,7 @@ public class LocalSession {
      *
      * @return
      */
-    public LocalWorld getSelectionWorld() {
+    public World getSelectionWorld() {
         return selector.getIncompleteRegion().getWorld();
     }
 
@@ -544,7 +566,7 @@ public class LocalSession {
      * @param player
      * @param event
      */
-    public void dispatchCUIEvent(LocalPlayer player, CUIEvent event) {
+    public void dispatchCUIEvent(Actor player, CUIEvent event) {
         if (hasCUISupport) {
             player.dispatchCUIEvent(event);
         }
@@ -585,7 +607,7 @@ public class LocalSession {
         }
     }
 
-    public void describeCUI(LocalPlayer player) {
+    public void describeCUI(Actor player) {
         if (!hasCUISupport) {
             return;
         }

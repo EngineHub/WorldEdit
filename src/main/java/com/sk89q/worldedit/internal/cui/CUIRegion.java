@@ -21,6 +21,7 @@ package com.sk89q.worldedit.internal.cui;
 
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.extension.platform.Actor;
 
 public interface CUIRegion {
     
@@ -30,7 +31,7 @@ public interface CUIRegion {
      * value supplied by getProtocolVersion().
      * 
      */
-    public void describeCUI(LocalSession session, LocalPlayer player);
+    public void describeCUI(LocalSession session, Actor player);
     
     /**
      * Sends CUI events describing the region for
@@ -38,7 +39,7 @@ public interface CUIRegion {
      * supplied by getProtocolVersion().
      * 
      */
-    public void describeLegacyCUI(LocalSession session, LocalPlayer player);
+    public void describeLegacyCUI(LocalSession session, Actor player);
     
     /**
      * Returns the CUI version that is required to send

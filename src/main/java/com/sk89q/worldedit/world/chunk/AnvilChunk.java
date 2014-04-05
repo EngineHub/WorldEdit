@@ -19,24 +19,18 @@
 
 package com.sk89q.worldedit.world.chunk;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.ByteTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.NBTUtils;
-import com.sk89q.jnbt.Tag;
+import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AnvilChunk implements Chunk {
 
@@ -49,7 +43,7 @@ public class AnvilChunk implements Chunk {
 
     private Map<BlockVector, Map<String,Tag>> tileEntities;
     @SuppressWarnings("unused")
-    private LocalWorld world; // TODO: remove if stays unused.
+    private World world; // TODO: remove if stays unused.
 
     /**
      * Construct the chunk with a compound tag.
@@ -58,7 +52,7 @@ public class AnvilChunk implements Chunk {
      * @param tag the tag to read
      * @throws DataException on a data error
      */
-    public AnvilChunk(LocalWorld world, CompoundTag tag) throws DataException {
+    public AnvilChunk(World world, CompoundTag tag) throws DataException {
         rootTag = tag;
         this.world = world;
 

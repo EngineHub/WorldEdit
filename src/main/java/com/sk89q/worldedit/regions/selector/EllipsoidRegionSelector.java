@@ -20,12 +20,14 @@
 package com.sk89q.worldedit.regions.selector;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionEllipsoidPointEvent;
 import com.sk89q.worldedit.internal.cui.SelectionPointEvent;
 import com.sk89q.worldedit.regions.EllipsoidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -42,18 +44,23 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
 
     /**
      * Create a new selector.
-     *
-     * @param world the world
      */
+    public EllipsoidRegionSelector() {
+        this((World) null);
+    }
+
+    @Deprecated
     public EllipsoidRegionSelector(@Nullable LocalWorld world) {
-        region = new EllipsoidRegion(world, new Vector(), new Vector());
+        this((World) world);
     }
 
     /**
      * Create a new selector.
+     *
+     * @param world the world
      */
-    public EllipsoidRegionSelector() {
-        this((LocalWorld) null);
+    public EllipsoidRegionSelector(@Nullable World world) {
+        region = new EllipsoidRegion(world, new Vector(), new Vector());
     }
 
     /**
@@ -118,7 +125,7 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
     }
 
     @Override
-    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector pos) {
+    public void explainPrimarySelection(Actor player, LocalSession session, Vector pos) {
         if (isDefined()) {
             player.print("Center position set to " + region.getCenter() + " (" + region.getArea() + ").");
         } else {
@@ -129,7 +136,7 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
     }
 
     @Override
-    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
+    public void explainSecondarySelection(Actor player, LocalSession session, Vector pos) {
         if (isDefined()) {
             player.print("Radius set to " + region.getRadius() + " (" + region.getArea() + ").");
         } else {
@@ -140,7 +147,7 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
     }
 
     @Override
-    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
+    public void explainRegionAdjust(Actor player, LocalSession session) {
         session.describeCUI(player);
     }
 
@@ -201,13 +208,13 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
     }
 
     @Override
-    public void describeCUI(LocalSession session, LocalPlayer player) {
+    public void describeCUI(LocalSession session, Actor player) {
         session.dispatchCUIEvent(player, new SelectionEllipsoidPointEvent(0, region.getCenter()));
         session.dispatchCUIEvent(player, new SelectionEllipsoidPointEvent(1, region.getRadius()));
     }
 
     @Override
-    public void describeLegacyCUI(LocalSession session, LocalPlayer player) {
+    public void describeLegacyCUI(LocalSession session, Actor player) {
         session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getMinimumPoint(), getArea()));
         session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getMaximumPoint(), getArea()));
     }
@@ -230,6 +237,21 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
     @Override
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
         return region.getCenter().toBlockVector();
+    }
+
+    @Override
+    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainPrimarySelection((Actor) player, session, position);
+    }
+
+    @Override
+    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainSecondarySelection((Actor) player, session, position);
+    }
+
+    @Override
+    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
+        explainRegionAdjust((Actor) player, session);
     }
 
 }

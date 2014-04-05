@@ -30,6 +30,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.regions.iterator.FlatRegion3DIterator;
 import com.sk89q.worldedit.regions.iterator.FlatRegionIterator;
+import com.sk89q.worldedit.world.World;
 
 /**
  * Represents a 2D polygonal region.
@@ -48,7 +49,12 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      * Construct the region
      */
     public Polygonal2DRegion() {
-        this((LocalWorld) null);
+        this((World) null);
+    }
+
+    @Deprecated
+    public Polygonal2DRegion(LocalWorld world) {
+        this((World) world);
     }
 
     /**
@@ -56,9 +62,14 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      *
      * @param world
      */
-    public Polygonal2DRegion(LocalWorld world) {
+    public Polygonal2DRegion(World world) {
         this(world, Collections.<BlockVector2D>emptyList(), 0, 0);
         hasY = false;
+    }
+
+    @Deprecated
+    public Polygonal2DRegion(LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
+        this((World) world, points, minY, maxY);
     }
 
     /**
@@ -69,7 +80,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      * @param minY
      * @param maxY
      */
-    public Polygonal2DRegion(LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
+    public Polygonal2DRegion(World world, List<BlockVector2D> points, int minY, int maxY) {
         super(world);
         this.points = new ArrayList<BlockVector2D>(points);
         this.minY = minY;

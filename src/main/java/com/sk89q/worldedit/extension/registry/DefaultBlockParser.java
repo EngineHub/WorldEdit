@@ -28,6 +28,7 @@ import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.registry.InputParser;
+import com.sk89q.worldedit.world.World;
 
 /**
  * Parses block input strings.
@@ -79,7 +80,7 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
             data = blockInHand.getData();
         } else if ("pos1".equalsIgnoreCase(testID)) {
             // Get the block type from the "primary position"
-            final LocalWorld world = context.requireWorld();
+            final World world = context.requireWorld();
             final BlockVector primaryPosition;
             try {
                 primaryPosition = context.requireSession().getRegionSelector(world).getPrimaryPosition();

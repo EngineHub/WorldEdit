@@ -24,7 +24,7 @@ import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.world.World;
 
 import java.util.List;
 
@@ -75,7 +75,7 @@ public interface Platform {
      */
     int schedule(long delay, long period, Runnable task);
 
-    List<LocalWorld> getWorlds();
+    List<? extends World> getWorlds();
 
     @Deprecated
     void onCommandRegistration(List<Command> commands);

@@ -20,8 +20,10 @@
 package com.sk89q.worldedit.regions.selector;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 
@@ -31,12 +33,17 @@ import javax.annotation.Nullable;
  */
 public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
 
+    @Deprecated
+    public ExtendingCuboidRegionSelector(@Nullable LocalWorld world) {
+        this((World) world);
+    }
+
     /**
      * Create a new selector.
      *
      * @param world the world
      */
-    public ExtendingCuboidRegionSelector(@Nullable LocalWorld world) {
+    public ExtendingCuboidRegionSelector(@Nullable World world) {
         super(world);
     }
 
@@ -118,17 +125,32 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
     }
 
     @Override
-    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector pos) {
+    public void explainPrimarySelection(Actor player, LocalSession session, Vector pos) {
         player.print("Started selection at " + pos + " (" + region.getArea() + ").");
 
         explainRegionAdjust(player, session);
     }
 
     @Override
-    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
+    public void explainSecondarySelection(Actor player, LocalSession session, Vector pos) {
         player.print("Extended selection to encompass " + pos + " (" + region.getArea() + ").");
 
         explainRegionAdjust(player, session);
+    }
+
+    @Override
+    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainPrimarySelection((Actor) player, session, position);
+    }
+
+    @Override
+    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainSecondarySelection((Actor) player, session, position);
+    }
+
+    @Override
+    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
+        explainRegionAdjust((Actor) player, session);
     }
 
 }

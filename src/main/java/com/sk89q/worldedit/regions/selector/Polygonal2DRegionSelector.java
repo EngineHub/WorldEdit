@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.regions.selector;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionMinMaxEvent;
 import com.sk89q.worldedit.internal.cui.SelectionPoint2DEvent;
@@ -27,6 +28,7 @@ import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -51,13 +53,18 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
         this(world, 50);
     }
 
+    @Deprecated
+    public Polygonal2DRegionSelector(@Nullable LocalWorld world, int maxPoints) {
+        this((World) world, maxPoints);
+    }
+
     /**
      * Create a new selector.
      *
      * @param world the world
      * @param maxPoints the maximum number of points
      */
-    public Polygonal2DRegionSelector(@Nullable LocalWorld world, int maxPoints) {
+    public Polygonal2DRegionSelector(@Nullable World world, int maxPoints) {
         this.maxPoints = maxPoints;
         region = new Polygonal2DRegion(world);
     }
@@ -101,6 +108,11 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
         }
     }
 
+    @Deprecated
+    public Polygonal2DRegionSelector(@Nullable LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
+        this((World) world, points, minY, maxY);
+    }
+
     /**
      * Create a new selector.
      *
@@ -109,7 +121,7 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
      * @param minY the minimum Y
      * @param maxY the maximum Y
      */
-    public Polygonal2DRegionSelector(@Nullable LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
+    public Polygonal2DRegionSelector(@Nullable World world, List<BlockVector2D> points, int minY, int maxY) {
         checkNotNull(points);
         
         final BlockVector2D pos2D = points.get(0);
@@ -153,7 +165,7 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
     }
 
     @Override
-    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector pos) {
+    public void explainPrimarySelection(Actor player, LocalSession session, Vector pos) {
         player.print("Starting a new polygon at " + pos + ".");
 
         session.dispatchCUIEvent(player, new SelectionShapeEvent(getTypeID()));
@@ -162,7 +174,7 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
     }
 
     @Override
-    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
+    public void explainSecondarySelection(Actor player, LocalSession session, Vector pos) {
         player.print("Added point #" + region.size() + " at " + pos + ".");
 
         session.dispatchCUIEvent(player, new SelectionPoint2DEvent(region.size() - 1, pos, getArea()));
@@ -170,7 +182,7 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
     }
 
     @Override
-    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
+    public void explainRegionAdjust(Actor player, LocalSession session) {
         session.dispatchCUIEvent(player, new SelectionShapeEvent(getTypeID()));
         describeCUI(session, player);
     }
@@ -241,7 +253,7 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
     }
 
     @Override
-    public void describeCUI(LocalSession session, LocalPlayer player) {
+    public void describeCUI(LocalSession session, Actor player) {
         final List<BlockVector2D> points = region.getPoints();
         for (int id = 0; id < points.size(); id++) {
             session.dispatchCUIEvent(player, new SelectionPoint2DEvent(id, points.get(id), getArea()));
@@ -251,7 +263,7 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
     }
 
     @Override
-    public void describeLegacyCUI(LocalSession session, LocalPlayer player) {
+    public void describeLegacyCUI(LocalSession session, Actor player) {
         describeCUI(session, player);
     }
 
@@ -268,6 +280,21 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
     @Override
     public String getLegacyTypeID() {
         return "polygon2d";
+    }
+
+    @Override
+    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainPrimarySelection((Actor) player, session, position);
+    }
+
+    @Override
+    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainSecondarySelection((Actor) player, session, position);
+    }
+
+    @Override
+    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
+        explainRegionAdjust((Actor) player, session);
     }
 
 }

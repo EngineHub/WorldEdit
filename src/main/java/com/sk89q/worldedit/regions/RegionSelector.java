@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extension.platform.Actor;
 
 import java.util.List;
 
@@ -49,28 +50,37 @@ public interface RegionSelector {
     /**
      * Tell the player information about his/her primary selection.
      * 
-     * @param player the player
+     * @param actor the actor
      * @param session the session
      * @param position position
      */
+    public void explainPrimarySelection(Actor actor, LocalSession session, Vector position);
+
+    @Deprecated
     public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position);
 
     /**
      * Tell the player information about his/her secondary selection.
      *
-     * @param player the player
+     * @param actor the actor
      * @param session the session
      * @param position position
      */
+    public void explainSecondarySelection(Actor actor, LocalSession session, Vector position);
+
+    @Deprecated
     public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position);
 
     /**
      * The the player information about the region's changes. This may resend
      * all the defining region information if needed.
      *
-     * @param player the player
+     * @param actor the actor
      * @param session the session
      */
+    public void explainRegionAdjust(Actor actor, LocalSession session);
+
+    @Deprecated
     public void explainRegionAdjust(LocalPlayer player, LocalSession session);
 
     /**

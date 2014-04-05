@@ -24,6 +24,7 @@ import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 import java.util.Set;
 import java.util.HashSet;
@@ -38,7 +39,7 @@ public class EllipsoidRegion extends AbstractRegion {
      */
     private Vector center;
     /**
-     * Stores the radiuses plus 0.5 on each axis.
+     * Stores the radii plus 0.5 on each axis.
      */
     private Vector radius;
     /**
@@ -51,6 +52,11 @@ public class EllipsoidRegion extends AbstractRegion {
         this(null, pos1, pos2);
     }
 
+    @Deprecated
+    public EllipsoidRegion(LocalWorld world, Vector center, Vector radius) {
+        this((World) world, center, radius);
+    }
+
     /**
      * Construct a new instance of this ellipsoid region.
      *
@@ -58,7 +64,7 @@ public class EllipsoidRegion extends AbstractRegion {
      * @param center
      * @param radius
      */
-    public EllipsoidRegion(LocalWorld world, Vector center, Vector radius) {
+    public EllipsoidRegion(World world, Vector center, Vector radius) {
         super(world);
         this.center = center;
         setRadius(radius);

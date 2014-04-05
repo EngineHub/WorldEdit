@@ -20,10 +20,12 @@
 package com.sk89q.worldedit.regions.selector;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.*;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 import java.text.NumberFormat;
@@ -45,12 +47,17 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
         format.setMaximumFractionDigits(3);
     }
 
+    @Deprecated
+    public CylinderRegionSelector(@Nullable LocalWorld world) {
+        this((World) world);
+    }
+
     /**
      * Create a new region selector.
      *
      * @param world the world
      */
-    public CylinderRegionSelector(@Nullable LocalWorld world) {
+    public CylinderRegionSelector(@Nullable World world) {
         region = new CylinderRegion(world);
     }
 
@@ -134,14 +141,14 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
     }
 
     @Override
-    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector pos) {
+    public void explainPrimarySelection(Actor player, LocalSession session, Vector pos) {
         player.print("Starting a new cylindrical selection at " + pos + ".");
 
         session.describeCUI(player);
     }
 
     @Override
-    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector pos) {
+    public void explainSecondarySelection(Actor player, LocalSession session, Vector pos) {
         Vector center = region.getCenter();
         if (!center.equals(Vector.ZERO)) {
             player.print("Radius set to " + format.format(region.getRadius().getX()) + "/" + format.format(region.getRadius().getZ()) + " blocks. (" + region.getArea() + ").");
@@ -154,7 +161,7 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
     }
 
     @Override
-    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
+    public void explainRegionAdjust(Actor player, LocalSession session) {
         session.describeCUI(player);
     }
 
@@ -220,13 +227,13 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
     }
 
     @Override
-    public void describeCUI(LocalSession session, LocalPlayer player) {
+    public void describeCUI(LocalSession session, Actor player) {
         session.dispatchCUIEvent(player, new SelectionCylinderEvent(region.getCenter(), region.getRadius()));
         session.dispatchCUIEvent(player, new SelectionMinMaxEvent(region.getMinimumY(), region.getMaximumY()));
     }
 
     @Override
-    public void describeLegacyCUI(LocalSession session, LocalPlayer player) {
+    public void describeLegacyCUI(LocalSession session, Actor player) {
         if (isDefined()) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getMinimumPoint(), getArea()));
             session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getMaximumPoint(), getArea()));
@@ -248,6 +255,21 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
     @Override
     public String getLegacyTypeID() {
         return "cuboid";
+    }
+
+    @Override
+    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainPrimarySelection((Actor) player, session, position);
+    }
+
+    @Override
+    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainSecondarySelection((Actor) player, session, position);
+    }
+
+    @Override
+    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
+        explainRegionAdjust((Actor) player, session);
     }
 
 }

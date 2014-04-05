@@ -70,6 +70,7 @@ import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -100,7 +101,7 @@ public class EditSession implements Extent {
     }
 
     @SuppressWarnings("ProtectedField")
-    protected final LocalWorld world;
+    protected final World world;
     private final ChangeSet changeSet = new BlockOptimizedHistory();
 
     private final FastModeExtent fastModeExtent;
@@ -147,7 +148,7 @@ public class EditSession implements Extent {
      * @param blockBag an optional {@link BlockBag} to use, otherwise null
      * @param event the event to call with the extent
      */
-    EditSession(EventBus eventBus, LocalWorld world, int maxBlocks, @Nullable BlockBag blockBag, EditSessionEvent event) {
+    EditSession(EventBus eventBus, World world, int maxBlocks, @Nullable BlockBag blockBag, EditSessionEvent event) {
         checkNotNull(eventBus);
         checkNotNull(world);
         checkArgument(maxBlocks >= -1, "maxBlocks >= -1 required");
@@ -164,7 +165,7 @@ public class EditSession implements Extent {
         extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_CHANGE);
         extent = quirkExtent = new BlockQuirkExtent(extent, world);
         extent = validator = new DataValidatorExtent(extent, world);
-        extent = blockBagExtent = new BlockBagExtent(extent, world, blockBag);
+        extent = blockBagExtent = new BlockBagExtent(extent, blockBag);
 
         // This extent can be skipped by calling rawSetBlock()
         extent = reorderExtent = new MultiStageReorder(extent, false);
@@ -193,7 +194,7 @@ public class EditSession implements Extent {
      *
      * @return the world
      */
-    public LocalWorld getWorld() {
+    public World getWorld() {
         return world;
     }
 

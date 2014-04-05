@@ -19,19 +19,17 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Logging;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
-
-import com.sk89q.minecraft.util.commands.NestedCommand;
+import com.sk89q.minecraft.util.commands.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
+import com.sk89q.worldedit.world.World;
+
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 /**
  * Clipboard commands.
@@ -103,7 +101,7 @@ public class ClipboardCommands {
             EditSession editSession) throws WorldEditException {
 
         BaseBlock block = new BaseBlock(BlockID.AIR);
-        LocalWorld world = player.getWorld();
+        World world = player.getWorld();
 
         if (args.argsLength() > 0) {
             block = we.getBlock(player, args.getString(0));
@@ -176,7 +174,7 @@ public class ClipboardCommands {
         }
 
         if (args.hasFlag('s')) {
-            LocalWorld world = player.getWorld();
+            World world = player.getWorld();
             Vector pos2 = pos.add(clipboard.getSize().subtract(1, 1, 1));
             if (!atOrigin) {
                 pos2 = pos2.add(clipboard.getOffset());

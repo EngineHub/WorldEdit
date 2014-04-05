@@ -19,30 +19,23 @@
 
 package com.sk89q.worldedit.command;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.BiomeType;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.masks.BiomeTypeMask;
 import com.sk89q.worldedit.masks.InvertedMask;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.World;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 public class BiomeCommands {
 
@@ -116,7 +109,7 @@ public class BiomeCommands {
             BiomeType biome = player.getWorld().getBiome(player.getPosition().toVector2D());
             player.print("Biome: " + biome.getName());
         } else {
-            LocalWorld world = player.getWorld();
+            World world = player.getWorld();
             Region region = session.getSelection(world);
             Set<BiomeType> biomes = new HashSet<BiomeType>();
 
@@ -180,7 +173,7 @@ public class BiomeCommands {
             }
         } else {
             int affected = 0;
-            LocalWorld world = player.getWorld();
+            World world = player.getWorld();
             Region region = session.getSelection(world);
 
             if (region instanceof FlatRegion) {
