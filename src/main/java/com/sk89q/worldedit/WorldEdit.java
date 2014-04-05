@@ -210,6 +210,7 @@ public class WorldEdit {
     /**
      * @deprecated Use {@link #getBlockRegistry()} and {@link BlockRegistry#parseFromInput(String, ParserContext)}
      */
+    @SuppressWarnings("deprecation")
     @Deprecated
     public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed) throws WorldEditException {
         return getBlock(player, arg, allAllowed, false);
@@ -218,6 +219,7 @@ public class WorldEdit {
     /**
      * @deprecated Use {@link #getBlockRegistry()} and {@link BlockRegistry#parseFromInput(String, ParserContext)}
      */
+    @SuppressWarnings("deprecation")
     @Deprecated
     public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed, boolean allowNoData) throws WorldEditException {
         ParserContext context = new ParserContext();
@@ -232,6 +234,7 @@ public class WorldEdit {
     /**
      * @deprecated Use {@link #getBlockRegistry()} and {@link BlockRegistry#parseFromInput(String, ParserContext)}
      */
+    @SuppressWarnings("deprecation")
     @Deprecated
     public BaseBlock getBlock(LocalPlayer player, String id) throws WorldEditException {
         return getBlock(player, id, false);
@@ -313,18 +316,17 @@ public class WorldEdit {
      * Gets the path to a file. This method will check to see if the filename
      * has valid characters and has an extension. It also prevents directory
      * traversal exploits by checking the root directory and the file directory.
-     * On success, a <code>java.io.File</code> object will be returned.
+     * On success, a {@code java.io.File} object will be returned.
      *
-     * @param player
+     * @param player the player
      * @param dir sub-directory to look in
      * @param filename filename (user-submitted)
      * @param defaultExt append an extension if missing one, null to not use
      * @param extensions list of extensions, null for any
-     * @return
-     * @throws FilenameException
+     * @return a file
+     * @throws FilenameException thrown if the filename is invalid
      */
-    public File getSafeSaveFile(LocalPlayer player, File dir, String filename,
-            String defaultExt, String... extensions)
+    public File getSafeSaveFile(LocalPlayer player, File dir, String filename, String defaultExt, String... extensions)
             throws FilenameException {
         return getSafeFile(player, dir, filename, defaultExt, extensions, true);
     }
@@ -333,18 +335,17 @@ public class WorldEdit {
      * Gets the path to a file. This method will check to see if the filename
      * has valid characters and has an extension. It also prevents directory
      * traversal exploits by checking the root directory and the file directory.
-     * On success, a <code>java.io.File</code> object will be returned.
+     * On success, a {@code java.io.File} object will be returned.
      *
-     * @param player
+     * @param player the player
      * @param dir sub-directory to look in
      * @param filename filename (user-submitted)
      * @param defaultExt append an extension if missing one, null to not use
      * @param extensions list of extensions, null for any
-     * @return
-     * @throws FilenameException
+     * @return a file
+     * @throws FilenameException thrown if the filename is invalid
      */
-    public File getSafeOpenFile(LocalPlayer player, File dir, String filename,
-            String defaultExt, String... extensions)
+    public File getSafeOpenFile(LocalPlayer player, File dir, String filename, String defaultExt, String... extensions)
             throws FilenameException {
         return getSafeFile(player, dir, filename, defaultExt, extensions, false);
     }
@@ -352,14 +353,14 @@ public class WorldEdit {
     /**
      * Get a safe path to a file.
      *
-     * @param player
-     * @param dir
-     * @param filename
-     * @param defaultExt
-     * @param extensions
-     * @param isSave
-     * @return
-     * @throws FilenameException
+     * @param player the player
+     * @param dir sub-directory to look in
+     * @param filename filename (user-submitted)
+     * @param defaultExt append an extension if missing one, null to not use
+     * @param extensions list of extensions, null for any
+     * @param isSave true if the purpose is for saving
+     * @return a file
+     * @throws FilenameException thrown if the filename is invalid
      */
     private File getSafeFile(LocalPlayer player, File dir, String filename,
             String defaultExt, String[] extensions, boolean isSave)
@@ -433,7 +434,7 @@ public class WorldEdit {
     /**
      * Checks to see if the specified radius is within bounds.
      *
-     * @param radius
+     * @param radius the radius
      * @throws MaxRadiusException
      */
     public void checkMaxRadius(double radius) throws MaxRadiusException {
@@ -445,7 +446,7 @@ public class WorldEdit {
     /**
      * Checks to see if the specified brush radius is within bounds.
      *
-     * @param radius
+     * @param radius the radius
      * @throws MaxBrushRadiusException
      */
     public void checkMaxBrushRadius(double radius) throws MaxBrushRadiusException {
@@ -458,8 +459,8 @@ public class WorldEdit {
      * Get a file relative to the defined working directory. If the specified
      * path is absolute, then the working directory is not used.
      *
-     * @param path
-     * @return
+     * @param path the subpath under the working directory
+     * @return a working directory
      */
     public File getWorkingDirectoryFile(String path) {
         File f = new File(path);
@@ -471,28 +472,15 @@ public class WorldEdit {
     }
 
     /**
-     * Modulus, divisor-style.
-     *
-     * @param a
-     * @param n
-     * @return
-     */
-    public static int divisorMod(int a, int n) {
-        return (int) (a - n * Math.floor(Math.floor(a) / n));
-    }
-
-    /**
      * Get the direction vector for a player's direction. May return
      * null if a direction could not be found.
      *
-     * @param player
-     * @param dirStr
-     * @return
-     * @throws UnknownDirectionException
+     * @param player the player
+     * @param dirStr the direction string
+     * @return a direction vector
+     * @throws UnknownDirectionException thrown if the direction is not known
      */
-    public Vector getDirection(LocalPlayer player, String dirStr)
-            throws UnknownDirectionException {
-
+    public Vector getDirection(LocalPlayer player, String dirStr) throws UnknownDirectionException {
         dirStr = dirStr.toLowerCase();
 
         final PlayerDirection dir = getPlayerDirection(player, dirStr);
@@ -511,6 +499,15 @@ public class WorldEdit {
         }
     }
 
+    /**
+     * Get the direction vector for a player's direction. May return
+     * null if a direction could not be found.
+     *
+     * @param player the player
+     * @param dirStr the direction string
+     * @return a direction enum value
+     * @throws UnknownDirectionException thrown if the direction is not known
+     */
     private PlayerDirection getPlayerDirection(LocalPlayer player, String dirStr) throws UnknownDirectionException {
         final PlayerDirection dir;
 
@@ -580,10 +577,10 @@ public class WorldEdit {
      * Get diagonal direction vector for a player's direction. May return
      * null if a direction could not be found.
      *
-     * @param player
-     * @param dirStr
-     * @return
-     * @throws UnknownDirectionException
+     * @param player the player
+     * @param dirStr the direction string
+     * @return a direction vector
+     * @throws UnknownDirectionException thrown if the direction is not known
      */
     public Vector getDiagonalDirection(LocalPlayer player, String dirStr)
             throws UnknownDirectionException {
@@ -594,13 +591,12 @@ public class WorldEdit {
     /**
      * Get the flip direction for a player's direction.
      *
-     * @param player
-     * @param dirStr
-     * @return
-     * @throws UnknownDirectionException
+     * @param player the player
+     * @param dirStr the direction string
+     * @return a direction vector
+     * @throws UnknownDirectionException thrown if the direction is not known
      */
-    public FlipDirection getFlipDirection(LocalPlayer player, String dirStr)
-            throws UnknownDirectionException {
+    public FlipDirection getFlipDirection(LocalPlayer player, String dirStr) throws UnknownDirectionException {
 
         final PlayerDirection dir = getPlayerDirection(player, dirStr);
         switch (dir) {
@@ -624,12 +620,10 @@ public class WorldEdit {
     /**
      * Flush a block bag's changes to a player.
      *
-     * @param player
-     * @param editSession
+     * @param player the player
+     * @param editSession the edit session
      */
-    public void flushBlockBag(LocalPlayer player,
-            EditSession editSession) {
-
+    public void flushBlockBag(LocalPlayer player, EditSession editSession) {
         BlockBag blockBag = editSession.getBlockBag();
 
         if (blockBag != null) {
@@ -651,7 +645,7 @@ public class WorldEdit {
                         ? type.getName() + " (" + id + ")"
                         : id.toString());
 
-                str.append(" [Amt: " + missingBlocks.get(id) + "]");
+                str.append(" [Amt: ").append(missingBlocks.get(id)).append("]");
 
                 ++i;
 
@@ -665,6 +659,8 @@ public class WorldEdit {
     }
 
     /**
+     * Get the map of commands (internal usage only).
+     *
      * @return the commands
      */
     public Map<String, String> getCommands() {
@@ -672,6 +668,8 @@ public class WorldEdit {
     }
 
     /**
+     * Get the commands manager (internal usage only).
+     *
      * @return the commands
      */
     public CommandsManager<LocalPlayer> getCommandsManager() {
@@ -716,8 +714,8 @@ public class WorldEdit {
     /**
      * Called on arm swing.
      *
-     * @param player
-     * @return
+     * @param player the player
+     * @return true if the swing was handled
      */
     public boolean handleArmSwing(LocalPlayer player) {
         if (player.getItemInHand() == getConfiguration().navigationWand) {
@@ -754,8 +752,8 @@ public class WorldEdit {
     /**
      * Called on right click (not on a block).
      *
-     * @param player
-     * @return
+     * @param player the player
+     * @return true if the right click was handled
      */
     public boolean handleRightClick(LocalPlayer player) {
         if (player.getItemInHand() == getConfiguration().navigationWand) {
@@ -790,8 +788,8 @@ public class WorldEdit {
     /**
      * Called on right click.
      *
-     * @param player
-     * @param clicked
+     * @param player the player
+     * @param clicked the clicked block
      * @return false if you want the action to go through
      */
     public boolean handleBlockRightClick(LocalPlayer player, WorldVector clicked) {
@@ -828,8 +826,8 @@ public class WorldEdit {
     /**
      * Called on left click.
      *
-     * @param player
-     * @param clicked
+     * @param player the player
+     * @param clicked the clicked block
      * @return false if you want the action to go through
      */
     public boolean handleBlockLeftClick(LocalPlayer player, WorldVector clicked) {
@@ -889,9 +887,9 @@ public class WorldEdit {
     /**
      * Executes a WorldEdit script.
      *
-     * @param player
-     * @param f
-     * @param args
+     * @param player the player
+     * @param f the script file to execute
+     * @param args arguments for the script
      * @throws WorldEditException
      */
     public void runScript(LocalPlayer player, File f, String[] args) throws WorldEditException {
@@ -912,8 +910,7 @@ public class WorldEdit {
             InputStream file;
 
             if (!f.exists()) {
-                file = WorldEdit.class.getResourceAsStream(
-                        "craftscripts/" + filename);
+                file = WorldEdit.class.getResourceAsStream("craftscripts/" + filename);
 
                 if (file == null) {
                     player.printError("Script does not exist: " + filename);
@@ -1018,7 +1015,7 @@ public class WorldEdit {
     /**
      * Get the version.
      *
-     * @return
+     * @return the version of WorldEdit
      */
     public static String getVersion() {
         if (version != null) {
@@ -1044,7 +1041,13 @@ public class WorldEdit {
         return version;
     }
 
+    /**
+     * Set the version of WorldEdit.
+     *
+     * @param version the version
+     */
     public static void setVersion(String version) {
         WorldEdit.version = version;
     }
+
 }

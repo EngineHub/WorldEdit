@@ -19,18 +19,21 @@
 
 package com.sk89q.worldedit.command;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.Set;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.math.MathUtils;
 import com.sk89q.worldedit.world.storage.LegacyChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionChunkStore;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.Set;
+
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 /**
  * Chunk tools.
@@ -59,8 +62,8 @@ public class ChunkCommands {
         int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
         int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
 
-        String folder1 = Integer.toString(WorldEdit.divisorMod(chunkX, 64), 36);
-        String folder2 = Integer.toString(WorldEdit.divisorMod(chunkZ, 64), 36);
+        String folder1 = Integer.toString(MathUtils.divisorMod(chunkX, 64), 36);
+        String folder2 = Integer.toString(MathUtils.divisorMod(chunkZ, 64), 36);
         String filename = "c." + Integer.toString(chunkX, 36)
                 + "." + Integer.toString(chunkZ, 36) + ".dat";
 
