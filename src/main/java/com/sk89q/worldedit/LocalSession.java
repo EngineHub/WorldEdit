@@ -648,7 +648,7 @@ public class LocalSession {
     /**
      * Sets the client's CUI protocol version
      *
-     * @param CUIVersion
+     * @param cuiVersion
      */
     public void setCUIVersion(int cuiVersion) {
         this.cuiVersion = cuiVersion;
