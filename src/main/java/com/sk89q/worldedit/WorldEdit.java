@@ -314,7 +314,7 @@ public class WorldEdit {
     @Deprecated
     public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed, boolean allowNoData) throws WorldEditException {
         ParserContext context = new ParserContext();
-        context.setPlayer(player);
+        context.setActor(player);
         context.setWorld(player.getWorld());
         context.setSession(getSession(player));
         context.setRestricted(!allAllowed);
@@ -383,7 +383,7 @@ public class WorldEdit {
     @SuppressWarnings("deprecation")
     public Pattern getBlockPattern(LocalPlayer player, String input) throws WorldEditException {
         ParserContext context = new ParserContext();
-        context.setPlayer(player);
+        context.setActor(player);
         context.setWorld(player.getWorld());
         context.setSession(getSession(player));
         return Patterns.wrap(getPatternRegistry().parseFromInput(input, context));
@@ -396,7 +396,7 @@ public class WorldEdit {
     @SuppressWarnings("deprecation")
     public Mask getBlockMask(LocalPlayer player, LocalSession session, String input) throws WorldEditException {
         ParserContext context = new ParserContext();
-        context.setPlayer(player);
+        context.setActor(player);
         context.setWorld(player.getWorld());
         context.setSession(session);
         return Masks.wrap(getMaskRegistry().parseFromInput(input, context));

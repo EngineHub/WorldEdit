@@ -21,10 +21,12 @@ package com.sk89q.worldedit.extension.registry;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.DisallowedUsageException;
-import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.NoMatchException;
+import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.registry.InputParser;
 
 /**
@@ -36,13 +38,17 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
         super(worldEdit);
     }
 
-    private static BaseBlock getBlockInHand(LocalPlayer player) throws InputParseException {
-        try {
-            return player.getBlockInHand();
-        } catch (NotABlockException e) {
-            throw new InputParseException("You're not holding a block!");
-        } catch (WorldEditException e) {
-            throw new InputParseException("Unknown error occurred: " + e.getMessage(), e);
+    private static BaseBlock getBlockInHand(Actor actor) throws InputParseException {
+        if (actor instanceof Player) {
+            try {
+                return ((Player) actor).getBlockInHand();
+            } catch (NotABlockException e) {
+                throw new InputParseException("You're not holding a block!");
+            } catch (WorldEditException e) {
+                throw new InputParseException("Unknown error occurred: " + e.getMessage(), e);
+            }
+        } else {
+            throw new InputParseException("The user is not a player!");
         }
     }
 
@@ -63,7 +69,7 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
 
         if ("hand".equalsIgnoreCase(testID)) {
             // Get the block type from the item in the user's hand.
-            final BaseBlock blockInHand = getBlockInHand(context.requirePlayer());
+            final BaseBlock blockInHand = getBlockInHand(context.requireActor());
             if (blockInHand.getClass() != BaseBlock.class) {
                 return blockInHand;
             }
@@ -211,8 +217,8 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
         }
 
         // Check if the item is allowed
-        LocalPlayer player = context.requirePlayer();
-        if (context.isRestricted() && player != null && !player.hasPermission("worldedit.anyblock")
+        Actor actor = context.requireActor();
+        if (context.isRestricted() && actor != null && !actor.hasPermission("worldedit.anyblock")
                 && worldEdit.getConfiguration().disallowedBlocks.contains(blockId)) {
             throw new DisallowedUsageException("You are not allowed to use '" + input + "'");
         }

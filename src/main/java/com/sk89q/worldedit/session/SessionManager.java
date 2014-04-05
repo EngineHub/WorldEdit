@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.session;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -50,34 +52,34 @@ public class SessionManager {
     }
 
     /**
-     * Get whether a session exists for the given player.
+     * Get whether a session exists for the given actor.
      *
-     * @param player the player
+     * @param actor the actor
      * @return true if a session exists
      */
-    public synchronized boolean contains(LocalPlayer player) {
-        checkNotNull(player);
-        return sessions.containsKey(getKey(player));
+    public synchronized boolean contains(Actor actor) {
+        checkNotNull(actor);
+        return sessions.containsKey(getKey(actor));
     }
 
     /**
-     * Gets the session for a player and return it if it exists, otherwise
+     * Gets the session for an actor and return it if it exists, otherwise
      * return <code>null</code>.
      *
-     * @param player the player
-     * @return the session for the player, if it exists
+     * @param actor the actor
+     * @return the session for the actor, if it exists
      */
-    public synchronized @Nullable LocalSession find(LocalPlayer player) {
-        checkNotNull(player);
-        return sessions.get(getKey(player));
+    public synchronized @Nullable LocalSession find(Actor actor) {
+        checkNotNull(actor);
+        return sessions.get(getKey(actor));
     }
 
     /**
      * Gets the session for someone named by the given name and return it if
      * it exists, otherwise return <code>null</code>.
      *
-     * @param name the player's name
-     * @return the session for the player, if it exists
+     * @param name the actor's name
+     * @return the session for the actor, if it exists
      */
     public synchronized @Nullable LocalSession findByName(String name) {
         checkNotNull(name);
@@ -85,32 +87,32 @@ public class SessionManager {
     }
 
     /**
-     * Get the session for a player and create one if one doesn't exist.
+     * Get the session for an actor and create one if one doesn't exist.
      *
-     * @param player the player
+     * @param actor the actor
      * @return a session
      */
-    public synchronized LocalSession get(LocalPlayer player) {
-        checkNotNull(player);
+    public synchronized LocalSession get(Actor actor) {
+        checkNotNull(actor);
 
         LocalSession session;
         LocalConfiguration config = worldEdit.getConfiguration();
 
-        if (sessions.containsKey(player.getName())) {
-            session = sessions.get(player.getName());
+        if (sessions.containsKey(actor.getName())) {
+            session = sessions.get(actor.getName());
         } else {
             session = new LocalSession(config);
             session.setBlockChangeLimit(config.defaultChangeLimit);
             // Remember the session
-            sessions.put(player.getName(), session);
+            sessions.put(actor.getName(), session);
         }
 
         // Set the limit on the number of blocks that an operation can
-        // change at once, or don't if the player has an override or there
+        // change at once, or don't if the actor has an override or there
         // is no limit. There is also a default limit
         int currentChangeLimit = session.getBlockChangeLimit();
 
-        if (!player.hasPermission("worldedit.limit.unrestricted")
+        if (!actor.hasPermission("worldedit.limit.unrestricted")
                 && config.maxChangeLimit > -1) {
 
             // If the default limit is infinite but there is a maximum
@@ -128,47 +130,47 @@ public class SessionManager {
             }
         }
 
-        // Have the session use inventory if it's enabled and the player
+        // Have the session use inventory if it's enabled and the actor
         // doesn't have an override
         session.setUseInventory(config.useInventory
                 && !(config.useInventoryOverride
-                && (player.hasPermission("worldedit.inventory.unrestricted")
-                || (config.useInventoryCreativeOverride && player.hasCreativeMode()))));
+                && (actor.hasPermission("worldedit.inventory.unrestricted")
+                || (config.useInventoryCreativeOverride && (!(actor instanceof Player) || ((Player) actor).hasCreativeMode())))));
 
         return session;
     }
 
     /**
-     * Get the key to use in the map for a player.
+     * Get the key to use in the map for an actor.
      *
-     * @param player the player
+     * @param actor the actor
      * @return the key object
      */
-    protected String getKey(LocalPlayer player) {
-        return player.getName();
+    protected String getKey(Actor actor) {
+        return actor.getName();
     }
 
     /**
      * Mark for expiration.
      *
-     * @param player the player
+     * @param actor the actor
      */
-    public synchronized void markforExpiration(LocalPlayer player) {
-        checkNotNull(player);
-        LocalSession session = find(player);
+    public synchronized void markforExpiration(Actor actor) {
+        checkNotNull(actor);
+        LocalSession session = find(actor);
         if (session != null) {
             session.update();
         }
     }
 
     /**
-     * Remove the session for the given player if one exists.
+     * Remove the session for the given actor if one exists.
      *
-     * @param player the player
+     * @param actor the actor
      */
-    public synchronized void remove(LocalPlayer player) {
-        checkNotNull(player);
-        sessions.remove(player.getName());
+    public synchronized void remove(Actor actor) {
+        checkNotNull(actor);
+        sessions.remove(actor.getName());
     }
 
     /**

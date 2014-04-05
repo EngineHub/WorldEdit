@@ -22,6 +22,7 @@ package com.sk89q.worldedit.extension.input;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.registry.MaskRegistry;
 import com.sk89q.worldedit.extent.Extent;
 
@@ -38,7 +39,7 @@ public class ParserContext {
     private @Nullable Extent extent;
     private @Nullable LocalSession session;
     private @Nullable LocalWorld world;
-    private @Nullable LocalPlayer player;
+    private @Nullable Actor actor;
     private boolean restricted = true;
     private boolean preferringWildcard;
 
@@ -97,21 +98,21 @@ public class ParserContext {
     }
 
     /**
-     * Get the {@link LocalPlayer} set on this context.
+     * Get the {@link Actor} set on this context.
      *
-     * @return a player
+     * @return an actor, or null
      */
-    public @Nullable LocalPlayer getPlayer() {
-        return player;
+    public @Nullable Actor getActor() {
+        return actor;
     }
 
     /**
-     * Set the player.
+     * Set the actor.
      *
-     * @param player a player, or null if none is available
+     * @param actor an actor, or null if none is available
      */
-    public void setPlayer(@Nullable LocalPlayer player) {
-        this.player = player;
+    public void setActor(@Nullable Actor actor) {
+        this.actor = actor;
     }
 
     /**
@@ -157,17 +158,17 @@ public class ParserContext {
     }
 
     /**
-     * Get the {@link LocalPlayer} set on this context.
+     * Get the {@link Actor} set on this context.
      *
-     * @return a player
+     * @return an actor
      * @throws InputParseException thrown if no {@link LocalPlayer} is set
      */
-    public LocalPlayer requirePlayer() throws InputParseException {
-        LocalPlayer player = getPlayer();
-        if (player == null) {
-            throw new InputParseException("No player is known");
+    public Actor requireActor() throws InputParseException {
+        Actor actor = getActor();
+        if (actor == null) {
+            throw new InputParseException("No actor is known");
         }
-        return player;
+        return actor;
     }
 
     /**

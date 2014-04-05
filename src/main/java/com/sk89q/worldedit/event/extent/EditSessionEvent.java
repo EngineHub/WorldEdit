@@ -20,11 +20,11 @@
 package com.sk89q.worldedit.event.extent;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.event.Event;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
 
 import javax.annotation.Nullable;
@@ -60,7 +60,7 @@ import static com.sk89q.worldedit.EditSession.Stage;
 public class EditSessionEvent extends Event {
 
     private final LocalWorld world;
-    private final LocalPlayer player;
+    private final Actor actor;
     private final int maxBlocks;
     private final Stage stage;
     private Extent extent;
@@ -69,25 +69,25 @@ public class EditSessionEvent extends Event {
      * Create a new event.
      *
      * @param world the world
-     * @param player the player, or null if not available
+     * @param actor the actor, or null if there is no actor specified
      * @param maxBlocks the maximum number of block changes
      * @param stage the stage
      */
-    public EditSessionEvent(LocalWorld world, LocalPlayer player, int maxBlocks, Stage stage) {
+    public EditSessionEvent(LocalWorld world, Actor actor, int maxBlocks, Stage stage) {
         checkNotNull(world);
         this.world = world;
-        this.player = player;
+        this.actor = actor;
         this.maxBlocks = maxBlocks;
         this.stage = stage;
     }
 
     /**
-     * Get the player for this event.
+     * Get the actor for this event.
      *
-     * @return the player, which may be null if unavailable
+     * @return the actor, which may be null if unavailable
      */
-    public @Nullable LocalPlayer getPlayer() {
-        return player;
+    public @Nullable Actor getActor() {
+        return actor;
     }
 
     /**
@@ -144,7 +144,7 @@ public class EditSessionEvent extends Event {
      * @return a new event
      */
     public EditSessionEvent clone(Stage stage) {
-        return new EditSessionEvent(world, player, maxBlocks, stage);
+        return new EditSessionEvent(world, actor, maxBlocks, stage);
     }
 
 }
