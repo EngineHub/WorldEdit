@@ -5,8 +5,6 @@ before_install: chmod +x gradlew
 install: true
 matrix:
   include:
-  - jdk: oraclejdk6
-    script: mvn clean package
   - jdk: oraclejdk7
     script: mvn clean package
   - jdk: oraclejdk7
