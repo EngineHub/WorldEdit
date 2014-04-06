@@ -25,7 +25,7 @@ import com.sk89q.worldedit.util.PropertiesConfiguration;
 
 public class ForgeConfiguration extends PropertiesConfiguration {
 
-    public ForgeConfiguration(WorldEditMod mod) {
+    public ForgeConfiguration(ForgeWorldEdit mod) {
         super(new File(mod.getWorkingDir() + File.separator + "worldedit.properties"));
     }
 
@@ -35,6 +35,6 @@ public class ForgeConfiguration extends PropertiesConfiguration {
     }
 
     public File getWorkingDirectory() {
-        return WorldEditMod.inst.getWorkingDir();
+        return ForgeWorldEdit.inst.getWorkingDir();
     }
 }

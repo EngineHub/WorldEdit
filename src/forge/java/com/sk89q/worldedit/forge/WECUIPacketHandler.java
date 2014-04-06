@@ -35,7 +35,7 @@ public class WECUIPacketHandler implements IPacketHandler {
 
     public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
         if (player instanceof EntityPlayerMP) {
-            LocalSession session = WorldEditMod.inst.getSession((EntityPlayerMP) player);
+            LocalSession session = ForgeWorldEdit.inst.getSession((EntityPlayerMP) player);
 
             if (session.hasCUISupport()) {
                 return;

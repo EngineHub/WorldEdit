@@ -19,24 +19,20 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.internal.cui.CUIEvent;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.util.ChatMessageComponent;
 
-import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.extent.inventory.BlockBag;
-import com.sk89q.worldedit.internal.cui.CUIEvent;
-
 public class ForgePlayer extends LocalPlayer {
     private EntityPlayerMP player;
 
     protected ForgePlayer(EntityPlayerMP player) {
-        super(WorldEditMod.inst.getServerInterface());
+        super((ServerInterface) ForgeWorldEdit.inst.getPlatform());
         this.player = player;
     }
 
@@ -50,11 +46,11 @@ public class ForgePlayer extends LocalPlayer {
     }
 
     public WorldVector getPosition() {
-        return new WorldVector(WorldEditMod.inst.getWorld(this.player.worldObj), this.player.posX, this.player.posY, this.player.posZ);
+        return new WorldVector(ForgeWorldEdit.inst.getWorld(this.player.worldObj), this.player.posX, this.player.posY, this.player.posZ);
     }
 
     public LocalWorld getWorld() {
-        return WorldEditMod.inst.getWorld(this.player.worldObj);
+        return ForgeWorldEdit.inst.getWorld(this.player.worldObj);
     }
 
     public double getPitch() {
@@ -75,7 +71,7 @@ public class ForgePlayer extends LocalPlayer {
         if (params.length > 0) {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
-        Packet250CustomPayload packet = new Packet250CustomPayload(WorldEditMod.CUI_PLUGIN_CHANNEL, send.getBytes(WECUIPacketHandler.UTF_8_CHARSET));
+        Packet250CustomPayload packet = new Packet250CustomPayload(ForgeWorldEdit.CUI_PLUGIN_CHANNEL, send.getBytes(WECUIPacketHandler.UTF_8_CHARSET));
         this.player.playerNetServerHandler.sendPacketToPlayer(packet);
     }
 

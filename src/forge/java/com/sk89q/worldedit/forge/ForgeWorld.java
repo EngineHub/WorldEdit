@@ -52,7 +52,7 @@ import java.util.Set;
 public class ForgeWorld extends LocalWorld {
     private WeakReference<World> world;
     
-    public ForgeWorld(World world) {
+    ForgeWorld(World world) {
         this.world = new WeakReference<World>(world);
     }
 
