@@ -5,3 +5,6 @@ jdk:
   - openjdk6
 notifications:
   email: false
+script:
+  - mvn clean package
+  - gradle build
