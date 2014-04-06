@@ -53,7 +53,7 @@ files.
 ### Other Variations
 
 * `mvn clean package -P !bukkit` for just the API
-* `mvn clean package -P !bukkit -Pspout` for the Spout version
+* `mvn clean package -P !bukkit -P spout` for the Spout version
 
 Gradle
 ------
@@ -79,4 +79,4 @@ Once complete, you will find the release .jar in the folder *build/libs*.
 ### Other Tasks
 
 * `gradle setupDecompWorkspace idea` will generate an [IntelliJ IDEA](http://www.jetbrains.com/idea/) workspace
-* `gradle setupDecompWorkspace eclipse` will generate an [https://www.eclipse.org/downloads/](Eclipse) workspace
+* `gradle setupDecompWorkspace eclipse` will generate an [Eclipse](https://www.eclipse.org/downloads/) workspace
