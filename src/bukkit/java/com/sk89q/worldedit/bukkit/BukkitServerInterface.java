@@ -119,6 +119,21 @@ public class BukkitServerInterface extends ServerInterface {
         return plugin.getLocalConfiguration();
     }
 
+    @Override
+    public String getVersion() {
+        return plugin.getDescription().getVersion();
+    }
+
+    @Override
+    public String getPlatformName() {
+        return "Bukkit-Official";
+    }
+
+    @Override
+    public String getPlatformVersion() {
+        return plugin.getDescription().getVersion();
+    }
+
     public void unregisterCommands() {
         dynamicCommands.unregisterCommands();
     }

@@ -62,7 +62,7 @@ public class WorldEditMod {
         logger.setParent(FMLLog.getLogger());
         Logger.getLogger("com.sk89q").setParent(FMLLog.getLogger());
 
-        String modVersion = WorldEditMod.class.getAnnotation(Mod.class).version();
+        String modVersion = getInternalVersion();
         String manifestVersion = WorldEdit.getVersion();
         if (!manifestVersion.equalsIgnoreCase(modVersion) && !modVersion.equals("%VERSION%")) {
             WorldEdit.setVersion(manifestVersion + " (" + modVersion + ")");
@@ -176,4 +176,9 @@ public class WorldEditMod {
             }
         }
     }
+
+    String getInternalVersion() {
+        return WorldEditMod.class.getAnnotation(Mod.class).version();
+    }
+
 }

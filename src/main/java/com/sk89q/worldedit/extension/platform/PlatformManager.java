@@ -64,11 +64,30 @@ public class PlatformManager {
      */
     public synchronized void register(Platform platform) throws PlatformRejectionException {
         checkNotNull(platform);
-        logger.log(Level.INFO, "Got request to register " + platform.getClass() + " with WorldEdit [" + super.toString() + "]");
+        logger.log(Level.FINE, "Got request to register " + platform.getClass() + " with WorldEdit [" + super.toString() + "]");
         platforms.add(platform);
+
+        // Register primary platform
         if (this.primary == null) {
             commandManager.register(platform);
             this.primary = platform;
+        } else {
+            // Make sure that versions are in sync
+            if (!primary.getVersion().equals(platform.getVersion())) {
+                logger.log(Level.WARNING,
+                        "\n**********************************************\n" +
+                        "** There is a mismatch in available WorldEdit platforms!\n" +
+                        "**\n" +
+                        "** {0} v{1} is trying to register WE version v{2}\n" +
+                        "** but the primary platform, {3} v{4}, uses WE version v{5}\n" +
+                        "**\n" +
+                        "** Things may break! Please make sure that your WE versions are in sync.\n" +
+                        "**********************************************\n",
+                        new Object[]{
+                                platform.getClass(), platform.getPlatformVersion(), platform.getVersion(),
+                                primary.getClass(), primary.getPlatformVersion(), primary.getVersion()
+                        });
+            }
         }
     }
 
@@ -89,6 +108,26 @@ public class PlatformManager {
             }
         }
         return removed;
+    }
+
+    /**
+     * Get a list of loaded platforms.
+     * </p>
+     * The returned list is a copy of the original and is mutable.
+     *
+     * @return a list of platforms
+     */
+    public synchronized List<Platform> getPlatforms() {
+        return new ArrayList<Platform>(platforms);
+    }
+
+    /**
+     * Get the primary platform.
+     *
+     * @return the primary platform (may be null)
+     */
+    public @Nullable Platform getPrimaryPlatform() {
+        return primary;
     }
 
     /**

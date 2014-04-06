@@ -91,4 +91,19 @@ class ServerInterfaceAdapter extends ServerInterface {
         return platform.getConfiguration();
     }
 
+    @Override
+    public String getVersion() {
+        return platform.getVersion();
+    }
+
+    @Override
+    public String getPlatformName() {
+        return platform.getPlatformName();
+    }
+
+    @Override
+    public String getPlatformVersion() {
+        return platform.getPlatformVersion();
+    }
+
 }

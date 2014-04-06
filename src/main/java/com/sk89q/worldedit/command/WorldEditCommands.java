@@ -19,19 +19,18 @@
 
 package com.sk89q.worldedit.command;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.TimeZone;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Console;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.extension.platform.PlatformManager;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 public class WorldEditCommands {
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
@@ -54,7 +53,23 @@ public class WorldEditCommands {
             EditSession editSession) throws WorldEditException {
 
         player.print("WorldEdit version " + WorldEdit.getVersion());
-        player.print("http://www.sk89q.com/projects/worldedit/");
+        player.print("https://github.com/sk89q/worldedit/");
+
+        PlatformManager pm = we.getPlatformManager();
+        Platform primary = pm.getPrimaryPlatform();
+
+        player.printDebug("");
+        player.printDebug("Platforms:");
+        for (Platform platform : pm.getPlatforms()) {
+            String prefix = "";
+
+            if (primary != null && primary.equals(platform)) {
+                prefix = "[PRIMARY] ";
+            }
+
+            player.printDebug(String.format("- %s%s v%s (WE v%s)",
+                    prefix, platform.getPlatformName(), platform.getPlatformVersion(), platform.getVersion()));
+        }
     }
 
     @Command(

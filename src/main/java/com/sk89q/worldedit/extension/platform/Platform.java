@@ -89,4 +89,31 @@ public interface Platform {
      */
     LocalConfiguration getConfiguration();
 
+    /**
+     * Get the version of WorldEdit that this platform provides.
+     * </p>
+     * This version should match WorldEdit releases because it may be
+     * checked to match.
+     *
+     * @return the version
+     */
+    String getVersion();
+
+    /**
+     * Get a friendly name of the platform.
+     * </p>
+     * The name can be anything (reasonable). An example name may be
+     * "Bukkit" or "Forge".
+     *
+     * @return the platform name
+     */
+    String getPlatformName();
+
+    /**
+     * Get the version of the platform, which can be anything.
+     *
+     * @return the platform version
+     */
+    String getPlatformVersion();
+
 }

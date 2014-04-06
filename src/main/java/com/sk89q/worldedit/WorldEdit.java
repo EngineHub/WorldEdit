@@ -1042,12 +1042,10 @@ public class WorldEdit {
     }
 
     /**
-     * Set the version of WorldEdit.
-     *
-     * @param version the version
+     * @deprecated Declare your platform version with {@link Platform#getPlatformVersion()}
      */
+    @Deprecated
     public static void setVersion(String version) {
-        WorldEdit.version = version;
     }
 
 }

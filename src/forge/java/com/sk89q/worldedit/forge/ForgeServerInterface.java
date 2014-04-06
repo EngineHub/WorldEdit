@@ -130,4 +130,19 @@ public class ForgeServerInterface extends ServerInterface {
     public LocalConfiguration getConfiguration() {
         return mod.getConfig();
     }
+
+    @Override
+    public String getVersion() {
+        return mod.getInternalVersion();
+    }
+
+    @Override
+    public String getPlatformName() {
+        return "Forge-Official";
+    }
+
+    @Override
+    public String getPlatformVersion() {
+        return mod.getInternalVersion();
+    }
 }

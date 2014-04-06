@@ -61,6 +61,9 @@ sourceSets {
 minecraft {
     version = "1.6.4-9.11.1.964"
     forgeVersion = "9.11.1.964"
+
+    replaceIn "com/sk89q/worldedit/forge/WorldEditMod.java"
+    replace "%VERSION%", project.version
 }
 
 processResources {
