@@ -73,8 +73,7 @@ public class EditSessionEvent extends Event {
      * @param maxBlocks the maximum number of block changes
      * @param stage the stage
      */
-    public EditSessionEvent(World world, Actor actor, int maxBlocks, Stage stage) {
-        checkNotNull(world);
+    public EditSessionEvent(@Nullable World world, Actor actor, int maxBlocks, Stage stage) {
         this.world = world;
         this.actor = actor;
         this.maxBlocks = maxBlocks;
@@ -95,7 +94,7 @@ public class EditSessionEvent extends Event {
      *
      * @return the world
      */
-    public World getWorld() {
+    public @Nullable World getWorld() {
         return world;
     }
 
