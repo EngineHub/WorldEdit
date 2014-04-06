@@ -19,36 +19,23 @@
 
 package com.sk89q.worldedit.forge;
 
-import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.foundation.Block;
+import com.sk89q.worldedit.regions.Region;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IProjectile;
-import net.minecraft.entity.item.EntityBoat;
-import net.minecraft.entity.item.EntityEnderEye;
-import net.minecraft.entity.item.EntityFallingSand;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityItemFrame;
-import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.entity.item.EntityPainting;
-import net.minecraft.entity.item.EntityTNTPrimed;
-import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.item.*;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.passive.EntityAmbientCreature;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.tileentity.TileEntityNote;
-import net.minecraft.tileentity.TileEntitySign;
-import net.minecraft.tileentity.TileEntitySkull;
+import net.minecraft.tileentity.*;
 import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
@@ -56,21 +43,11 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
 
-import com.sk89q.worldedit.BiomeType;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EntityType;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.MobSpawnerBlock;
-import com.sk89q.worldedit.blocks.NoteBlock;
-import com.sk89q.worldedit.blocks.SignBlock;
-import com.sk89q.worldedit.blocks.SkullBlock;
-import com.sk89q.worldedit.blocks.TileEntityBlock;
-import com.sk89q.worldedit.foundation.Block;
-import com.sk89q.worldedit.regions.Region;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class ForgeWorld extends LocalWorld {
     private WeakReference<World> world;
@@ -255,8 +232,6 @@ public class ForgeWorld extends LocalWorld {
         TileEntity tile = this.world.get().getBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         if (tile != null) {
             TileEntityBaseBlock block = new TileEntityBaseBlock(type, data, tile);
-            copyFromWorld(pt, block);
-
             return block;
         }
         return new BaseBlock(type, data);
@@ -266,7 +241,7 @@ public class ForgeWorld extends LocalWorld {
         return copyToWorld(pt, block, true);
     }
 
-    public boolean copyToWorld(Vector pt, BaseBlock block, boolean hardcopy) {
+    public boolean copyToWorld(Vector pt, BaseBlock block, boolean copyData) {
         if (!(block instanceof TileEntityBlock)) {
             return false;
         }
@@ -303,19 +278,17 @@ public class ForgeWorld extends LocalWorld {
             return true;
         }
 
-        if (block instanceof TileEntityBaseBlock) {
-            TileEntityBaseBlock.set(this.world.get(), pt, (TileEntityBaseBlock) block, hardcopy);
+        CompoundTag tag = block.getNbtData();
+        if (tag != null) {
+            TileEntityUtils.setTileEntity(this.world.get(), pt, NBTConverter.toNative(tag));
             return true;
         }
+
         return false;
     }
 
     public boolean copyFromWorld(Vector pt, BaseBlock block) {
-        if (!(block instanceof TileEntityBaseBlock)) {
-            return false;
-        }
-        ((TileEntityBaseBlock) block).setTile(this.world.get().getBlockTileEntity(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()));
-        return true;
+        return false;
     }
 
     public boolean clearContainerBlockContents(Vector pt) {
