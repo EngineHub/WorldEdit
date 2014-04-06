@@ -64,7 +64,7 @@ public class PlatformManager {
      */
     public synchronized void register(Platform platform) throws PlatformRejectionException {
         checkNotNull(platform);
-        logger.log(Level.FINE, "Got request to register " + platform.getClass().getCanonicalName() + " with WorldEdit");
+        logger.log(Level.INFO, "Got request to register " + platform.getClass() + " with WorldEdit [" + super.toString() + "]");
         platforms.add(platform);
         if (this.primary == null) {
             commandManager.register(platform);
