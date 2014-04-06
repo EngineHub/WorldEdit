@@ -104,14 +104,14 @@ public class EditSession implements Extent {
     protected final World world;
     private final ChangeSet changeSet = new BlockOptimizedHistory();
 
-    private final FastModeExtent fastModeExtent;
-    private final ChunkLoadingExtent chunkLoadingExtent;
-    private final LastAccessExtentCache cacheExtent;
-    private final BlockQuirkExtent quirkExtent;
-    private final DataValidatorExtent validator;
+    private @Nullable FastModeExtent fastModeExtent;
+    private @Nullable ChunkLoadingExtent chunkLoadingExtent;
+    private @Nullable LastAccessExtentCache cacheExtent;
+    private @Nullable BlockQuirkExtent quirkExtent;
+    private @Nullable DataValidatorExtent validator;
     private final BlockBagExtent blockBagExtent;
     private final MultiStageReorder reorderExtent;
-    private final ChangeSetExtent changeSetExtent;
+    private @Nullable ChangeSetExtent changeSetExtent;
     private final MaskingExtent maskingExtent;
     private final BlockChangeLimiter changeLimiter;
 
@@ -150,36 +150,46 @@ public class EditSession implements Extent {
      */
     EditSession(EventBus eventBus, World world, int maxBlocks, @Nullable BlockBag blockBag, EditSessionEvent event) {
         checkNotNull(eventBus);
-        checkNotNull(world);
         checkArgument(maxBlocks >= -1, "maxBlocks >= -1 required");
         checkNotNull(event);
 
         this.world = world;
 
-        Extent extent;
+        if (world != null) {
+            Extent extent;
 
-        // This extents are ALWAYS used
-        extent = fastModeExtent = new FastModeExtent(world, false);
-        extent = chunkLoadingExtent = new ChunkLoadingExtent(extent, world);
-        extent = cacheExtent = new LastAccessExtentCache(extent);
-        extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_CHANGE);
-        extent = quirkExtent = new BlockQuirkExtent(extent, world);
-        extent = validator = new DataValidatorExtent(extent, world);
-        extent = blockBagExtent = new BlockBagExtent(extent, blockBag);
+            // This extents are ALWAYS used
+            extent = fastModeExtent = new FastModeExtent(world, false);
+            extent = chunkLoadingExtent = new ChunkLoadingExtent(extent, world);
+            extent = cacheExtent = new LastAccessExtentCache(extent);
+            extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_CHANGE);
+            extent = quirkExtent = new BlockQuirkExtent(extent, world);
+            extent = validator = new DataValidatorExtent(extent, world);
+            extent = blockBagExtent = new BlockBagExtent(extent, blockBag);
 
-        // This extent can be skipped by calling rawSetBlock()
-        extent = reorderExtent = new MultiStageReorder(extent, false);
-        extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_REORDER);
+            // This extent can be skipped by calling rawSetBlock()
+            extent = reorderExtent = new MultiStageReorder(extent, false);
+            extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_REORDER);
 
-        // These extents can be skipped by calling smartSetBlock()
-        extent = changeSetExtent = new ChangeSetExtent(extent, changeSet);
-        extent = maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue());
-        extent = changeLimiter = new BlockChangeLimiter(extent, maxBlocks);
-        extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_HISTORY);
+            // These extents can be skipped by calling smartSetBlock()
+            extent = changeSetExtent = new ChangeSetExtent(extent, changeSet);
+            extent = maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue());
+            extent = changeLimiter = new BlockChangeLimiter(extent, maxBlocks);
+            extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_HISTORY);
 
-        this.bypassReorderHistory = blockBagExtent;
-        this.bypassHistory = reorderExtent;
-        this.bypassNone = extent;
+            this.bypassReorderHistory = blockBagExtent;
+            this.bypassHistory = reorderExtent;
+            this.bypassNone = extent;
+        } else {
+            Extent extent = new NullExtent();
+            extent = blockBagExtent = new BlockBagExtent(extent, blockBag);
+            extent = reorderExtent = new MultiStageReorder(extent, false);
+            extent = maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue());
+            extent = changeLimiter = new BlockChangeLimiter(extent, maxBlocks);
+            this.bypassReorderHistory = extent;
+            this.bypassHistory = extent;
+            this.bypassNone = extent;
+        }
     }
 
     private Extent wrapExtent(Extent extent, EventBus eventBus, EditSessionEvent event, Stage stage) {
@@ -285,7 +295,9 @@ public class EditSession implements Extent {
      * @param enabled true to enable
      */
     public void setFastMode(boolean enabled) {
-        fastModeExtent.setEnabled(enabled);
+        if (fastModeExtent != null) {
+            fastModeExtent.setEnabled(enabled);
+        }
     }
 
     /**
@@ -296,7 +308,7 @@ public class EditSession implements Extent {
      * @return true if enabled
      */
     public boolean hasFastMode() {
-        return fastModeExtent.isEnabled();
+        return fastModeExtent != null ? fastModeExtent.isEnabled() : false;
     }
 
     /**
