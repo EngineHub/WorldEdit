@@ -1,10 +1,11 @@
 language: java
-jdk:
-  - oraclejdk7
-  - openjdk7
-  - openjdk6
 notifications:
   email: false
-script:
-  - mvn clean package
-  - gradle build
+matrix:
+  include:
+  - jdk: oraclejdk6
+    script: mvn clean package
+  - jdk: oraclejdk7
+    script: mvn clean package
+  - jdk: oraclejdk7
+    script: gradle build
