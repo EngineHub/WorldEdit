@@ -19,25 +19,11 @@
 
 package com.sk89q.worldedit.forge;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.jar.JarFile;
-import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-
-import com.sk89q.worldedit.extension.platform.PlatformRejectionException;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.WorldEdit;
-
+import com.sk89q.worldedit.extension.platform.PlatformRejectionException;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -47,6 +33,14 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+
+import java.io.*;
+import java.util.jar.JarFile;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
 
 @Mod(modid = "WorldEdit", name = "WorldEdit", version = "%VERSION%")
 @NetworkMod(channels="WECUI", packetHandler=WECUIPacketHandler.class)
@@ -66,9 +60,11 @@ public class WorldEditMod {
     public void preInit(FMLPreInitializationEvent event) {
         logger = Logger.getLogger(getClass().getAnnotation(Mod.class).modid());
         logger.setParent(FMLLog.getLogger());
+        Logger.getLogger("com.sk89q").setParent(FMLLog.getLogger());
+
         String modVersion = WorldEditMod.class.getAnnotation(Mod.class).version();
         String manifestVersion = WorldEdit.getVersion();
-        if (!manifestVersion.equalsIgnoreCase(modVersion)) {
+        if (!manifestVersion.equalsIgnoreCase(modVersion) && !modVersion.equals("%VERSION%")) {
             WorldEdit.setVersion(manifestVersion + " (" + modVersion + ")");
         }
 
