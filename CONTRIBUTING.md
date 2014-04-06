@@ -13,7 +13,7 @@ ask that you make note of the following guidelines.
   methods of interfaces (Java 6+).
 * **Use only spaces for indentation.** Our indents are 4-spaces long, and tabs
   are unacceptable.
-* **Wrap code to a 89 column limit.** We do this to make side by side diffs
+* **Wrap code to a 120 column limit.** We do this to make side by side diffs
   and other such tasks easier. Ignore this guideline if it makes the code
   too unreadable.
 * **Write complete Javadocs.** Do so only for public methods, and make sure

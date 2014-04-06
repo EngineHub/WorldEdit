@@ -1,8 +1,8 @@
 ![WorldEdit](http://static.sk89q.com/readme/worldedit.png)
 =========
 
-WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both single 
-player and multiplayer, that lets you:
+WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both
+single player and multiplayer, that lets you:
 
 * Change thousands of blocks in an area at once by selecting regions.
 * Use over 100 functions to modify the world or remove problems.
@@ -10,24 +10,25 @@ player and multiplayer, that lets you:
 * Sculpt the world and build mountains with brushes.
 * Fix annoyances such as broken water, missing snow, raging fires, and more.
 
-WorldEdit is open source and is available under the GNU General Public License v3.
+WorldEdit is open source and is available under the GNU Lesser General Public
+License v3.
 
 Compiling
 ---------
 
-The project is written for Java 6 and our build process makes use of [Maven](http://maven.apache.org). Detailed compilation information [can be found on the wiki](http://wiki.sk89q.com/wiki/WorldEdit/Development#Compiling).
-
-Dependencies are automatically handled by Maven.
+See [COMPILING.md](COMPILING.md) for a guide on compiling WorldEdit.
 
 Contributing
 ------------
 
-We happily accept contributions, especially through pull requests on GitHub. Submissions 
-must be licensed under the GNU Lesser General Public License v3.
+We happily accept contributions, especially through pull requests on GitHub.
+Submissions must be licensed under the GNU Lesser General Public License v3.
 
 Please read CONTRIBUTING.md for important guidelines to follow.
 
-We recommend following our [mailing list](https://groups.google.com/d/forum/sk-dev-discuss), especially if you have some big ideas that you want to implement.
+We recommend following our
+[mailing list](https://groups.google.com/d/forum/sk-dev-discuss), especially if
+you have some big ideas that you want to implement.
 
 Links
 -----

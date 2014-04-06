@@ -135,6 +135,13 @@
       <type>jar</type>
     </dependency>
 
+    <!-- @Nullable etc. -->
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>1.3.9</version>
+    </dependency>
+
     <!-- Used for time operations -->
     <dependency>
       <groupId>com.sk89q</groupId>
@@ -532,43 +539,6 @@
                     <source>${basedir}/src/bukkit-test/java/</source>
                   </sources>
                 </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <!--
-    =====================================
-      Forge
-    =====================================
-    -->
-    <profile>
-      <id>forge</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.7</version>
-            <executions>
-              <execution>
-                <phase>compile</phase>
-                <configuration>
-                  <target>
-                    <property name="maven.build.directory" value="${project.build.directory}" />
-                    <property name="jchronic.path" value="${maven.dependency.com.sk89q.jchronic.jar.path}" />
-                    <property name="truezip.path" value="${maven.dependency.de.schlichtherle.truezip.jar.path}" />
-                    <property name="rhino.path" value="${maven.dependency.rhino.js.jar.path}" />
-                    <property name="snakeyaml.path" value="${maven.dependency.org.yaml.snakeyaml.jar.path}" />
-                    <property name="we.version" value="${project.version}" />
-                    <ant antfile="src/forge/ant/build.xml" />
-                  </target>
-                </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
               </execution>
             </executions>
           </plugin>

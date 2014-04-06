@@ -19,12 +19,14 @@
 
 package com.sk89q.worldedit.forge;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.ServerInterface;
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.entity.EntityList;
@@ -33,12 +35,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.worldedit.BiomeTypes;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.ServerInterface;
-
-import cpw.mods.fml.common.FMLCommonHandler;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ForgeServerInterface extends ServerInterface {
     private final WorldEditMod mod;
@@ -113,6 +112,15 @@ public class ForgeServerInterface extends ServerInterface {
                 @Override
                 public String getCommandUsage(ICommandSender icommandsender) {
                     return "/" + cmd.aliases()[0] + " " + cmd.usage();
+                }
+
+                @Override
+                public int compareTo(Object o) {
+                    if (o instanceof ICommand) {
+                        return super.compareTo((ICommand) o);
+                    } else {
+                        return -1;
+                    }
                 }
             });
         }
