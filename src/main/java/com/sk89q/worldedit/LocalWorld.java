@@ -135,7 +135,7 @@ public abstract class LocalWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean setBlock(Vector pt, BaseBlock block, boolean notifyAdjacent) {
+    public boolean setBlock(Vector pt, BaseBlock block, boolean notifyAdjacent) throws WorldEditException {
         boolean successful;
 
         // Default implementation will call the old deprecated methods
@@ -164,7 +164,7 @@ public abstract class LocalWorld extends AbstractWorld {
     public abstract boolean copyToWorld(Vector position, BaseBlock block);
 
     @Override
-    public boolean setBlock(Vector pt, BaseBlock block) {
+    public boolean setBlock(Vector pt, BaseBlock block) throws WorldEditException {
         return setBlock(pt, block, true);
     }
 

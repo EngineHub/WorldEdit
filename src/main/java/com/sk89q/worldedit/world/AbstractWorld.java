@@ -44,7 +44,7 @@ public abstract class AbstractWorld implements World {
 
     @Override
     public int getMaxY() {
-        return 255;
+        return getMaximumPoint().getBlockY();
     }
 
     @Override
@@ -65,6 +65,44 @@ public abstract class AbstractWorld implements World {
                 new BaseBlock(BlockID.LAVA, -1),
                 new BaseBlock(BlockID.STATIONARY_WATER, -1),
                 new BaseBlock(BlockID.WATER, -1));
+    }
+
+    @Override
+    public int getBlockType(Vector pt) {
+        return getLazyBlock(pt).getType();
+    }
+
+    @Override
+    public int getBlockData(Vector pt) {
+        return getLazyBlock(pt).getData();
+    }
+
+    @Override
+    public boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
+        return setBlock(position, block, true);
+    }
+
+    @Override
+    public boolean setBlockType(Vector position, int type) {
+        try {
+            return setBlock(position, new BaseBlock(type));
+        } catch (WorldEditException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void setBlockData(Vector position, int data) {
+        try {
+            setBlock(position, new BaseBlock(getLazyBlock(position).getId(), data));
+        } catch (WorldEditException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void setBlockDataFast(Vector position, int data) {
+        setBlockData(position, data);
     }
 
     @SuppressWarnings("deprecation")
@@ -130,11 +168,6 @@ public abstract class AbstractWorld implements World {
     @Override
     public int killMobs(Vector origin, int radius, boolean killPets) {
         return killMobs(origin, radius, killPets ? KillFlags.PETS : 0);
-    }
-
-    @Override
-    public int killMobs(Vector origin, double radius, int flags) {
-        return killMobs(origin, (int) radius, (flags & KillFlags.PETS) != 0);
     }
 
     @Override
@@ -212,7 +245,7 @@ public abstract class AbstractWorld implements World {
 
     @Override
     public Vector getMaximumPoint() {
-        return new Vector(30000000, getMaxY(), 30000000);
+        return new Vector(30000000, 255, 30000000);
     }
 
     @Override

@@ -20,8 +20,12 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -46,10 +50,10 @@ public class ForgePlayer extends LocalPlayer {
     }
 
     public WorldVector getPosition() {
-        return new WorldVector(ForgeWorldEdit.inst.getWorld(this.player.worldObj), this.player.posX, this.player.posY, this.player.posZ);
+        return new WorldVector(LocalWorldAdapter.wrap(ForgeWorldEdit.inst.getWorld(this.player.worldObj)), this.player.posX, this.player.posY, this.player.posZ);
     }
 
-    public LocalWorld getWorld() {
+    public com.sk89q.worldedit.world.World getWorld() {
         return ForgeWorldEdit.inst.getWorld(this.player.worldObj);
     }
 

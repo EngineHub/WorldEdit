@@ -82,7 +82,7 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) {
+    public boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException {
         return world.setBlock(position, block, notifyAndLight);
     }
 

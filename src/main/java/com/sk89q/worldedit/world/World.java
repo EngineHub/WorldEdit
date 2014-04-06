@@ -103,7 +103,7 @@ public interface World extends Extent {
      * @param notifyAndLight true to to notify and light
      * @return true if the block was successfully set (return value may not be accurate)
      */
-    boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight);
+    boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException;
 
     /**
      * @deprecated Use {@link #setBlock(Vector, BaseBlock)}

@@ -22,7 +22,6 @@ package com.sk89q.worldedit.forge;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.CommandBase;
@@ -81,9 +80,9 @@ class ForgePlatform extends ServerInterface {
         return -1;
     }
 
-    public List<LocalWorld> getWorlds() {
+    public List<? extends com.sk89q.worldedit.world.World> getWorlds() {
         List<WorldServer> worlds = Arrays.asList(DimensionManager.getWorlds());
-        List<LocalWorld> ret = new ArrayList<LocalWorld>(worlds.size());
+        List<com.sk89q.worldedit.world.World> ret = new ArrayList<com.sk89q.worldedit.world.World>(worlds.size());
         for (WorldServer world : worlds) {
             ret.add(new ForgeWorld(world));
         }

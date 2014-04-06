@@ -26,6 +26,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformRejectionException;
+import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -136,7 +137,7 @@ public class ForgeWorldEdit {
         Action action = event.action;
         switch (action) {
             case LEFT_CLICK_BLOCK: {
-                WorldVector pos = new WorldVector(world, event.x, event.y, event.z);
+                WorldVector pos = new WorldVector(LocalWorldAdapter.wrap(world), event.x, event.y, event.z);
 
                 if (we.handleBlockLeftClick(player, pos)) {
                     event.setCanceled(true);
@@ -147,7 +148,7 @@ public class ForgeWorldEdit {
                 }
             }
             case RIGHT_CLICK_BLOCK: {
-                WorldVector pos = new WorldVector(world, event.x, event.y, event.z);
+                WorldVector pos = new WorldVector(LocalWorldAdapter.wrap(world), event.x, event.y, event.z);
 
                 if (we.handleBlockRightClick(player, pos)) {
                     event.setCanceled(true);
