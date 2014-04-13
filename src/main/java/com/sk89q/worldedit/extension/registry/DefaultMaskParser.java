@@ -132,7 +132,7 @@ class DefaultMaskParser extends InputParser<Mask> {
                 }
 
             default:
-                return new BlockMask(extent, worldEdit.getBlockRegistry().parseFromInput(component, context));
+                return new BlockMask(extent, worldEdit.getBlockRegistry().parseFromListInput(component, context));
         }
     }
 
