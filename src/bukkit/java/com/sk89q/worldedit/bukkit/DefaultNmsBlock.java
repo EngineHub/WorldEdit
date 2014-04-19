@@ -25,9 +25,9 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.foundation.Block;
-import net.minecraft.server.v1_7_R2.*;
+import net.minecraft.server.v1_7_R3.*;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -51,7 +51,7 @@ public class DefaultNmsBlock extends NmsBlock {
     static {
         Field field;
         try {
-            field = net.minecraft.server.v1_7_R2.Block.class.getDeclaredField("isTileEntity");
+            field = net.minecraft.server.v1_7_R3.Block.class.getDeclaredField("isTileEntity");
             field.setAccessible(true);
         } catch (NoSuchFieldException e) {
             // logger.severe("Could not find NMS block tile entity field!");
@@ -239,7 +239,7 @@ public class DefaultNmsBlock extends NmsBlock {
     }
 
     public static boolean hasTileEntity(int type) {
-        net.minecraft.server.v1_7_R2.Block nmsBlock = getNmsBlock(type);
+        net.minecraft.server.v1_7_R3.Block nmsBlock = getNmsBlock(type);
         if (nmsBlock == null) {
             return false;
         }
@@ -251,8 +251,8 @@ public class DefaultNmsBlock extends NmsBlock {
         }
     }
 
-    public static net.minecraft.server.v1_7_R2.Block getNmsBlock(int type) {
-        return net.minecraft.server.v1_7_R2.Block.e(type);
+    public static net.minecraft.server.v1_7_R3.Block getNmsBlock(int type) {
+        return net.minecraft.server.v1_7_R3.Block.e(type);
     }
 
     /**
@@ -265,7 +265,42 @@ public class DefaultNmsBlock extends NmsBlock {
     private static Tag toNative(NBTBase foreign) {
         // temporary fix since mojang removed names from tags
         // our nbt spec will need to be updated to theirs
-        return toNative(NBTBase.getTagName(foreign.getTypeId()), foreign);
+        return toNative(getTagName(foreign.getTypeId()), foreign);
+    }
+
+    // seriously these two methods are hacky - our jnbt spec needs updating
+    // copied from NMS 1.7.5- code, since it was removed in 1.7.8
+    private static String getTagName(int i) {
+        switch (i) {
+        case 0:
+            return "TAG_End";
+        case 1:
+            return "TAG_Byte";
+        case 2:
+            return "TAG_Short";
+        case 3:
+            return "TAG_Int";
+        case 4:
+            return "TAG_Long";
+        case 5:
+            return "TAG_Float";
+        case 6:
+            return "TAG_Double";
+        case 7:
+            return "TAG_Byte_Array";
+        case 8:
+            return "TAG_String";
+        case 9:
+            return "TAG_List";
+        case 10:
+            return "TAG_Compound";
+        case 11:
+            return "TAG_Int_Array";
+        case 99:
+            return "Any Numeric Tag";
+        default:
+            return "UNKNOWN";
+        }
     }
 
     /**
@@ -431,7 +466,7 @@ public class DefaultNmsBlock extends NmsBlock {
     }
 
     public static boolean isValidBlockType(int type) throws NoClassDefFoundError {
-        return type == 0 || (type >= 1 && net.minecraft.server.v1_7_R2.Block.e(type) != null);
+        return type == 0 || (type >= 1 && net.minecraft.server.v1_7_R3.Block.e(type) != null);
     }
 
 }
