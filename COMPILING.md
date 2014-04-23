@@ -6,35 +6,25 @@ You can (most easily) compile WorldEdit using one of the build scripts.
 * **Maven** is for compiling **API**, **Bukkit**, and **Spout** versions
 * **Gradle** is for the **Forge** version
 
-The Java Development Kit is required.
+WorldEdit is written and targetted for Java 6, but you can use newer
+versions of Java to compile WorldEdit, though the compiler will give
+you warnings. However, if you plan on compiling for Forge, you have
+no choice in the matter and you **must** use Java 7 (make sure that it
+is set as your 'default' Java too, if you have multiple versions).
 
-* [Get JDK 7 and 8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html)
-* [Get JDK 6](http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html)
+The Java Development Kit is required, so install the latest version
+either from Oracle's website or, if you're a Linux/BSD user, you
+can also try using OpenJDK.
 
-WorldEdit is written and targetted for Java 6, though you can use newer
-versions (with warnings). If you plan on compiling for Forge, you **need**
-at least Java 7 to be your "default" Java. (You can install several versions
-of the JDK.)
+* [Get Oracle JDK 7 and 8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html)
+* [Get Oracle JDK 6](http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html)
 
 Dependencies
 ------------
 
-Both build scripts will download dependencies automatically. If, for some
+WorldEdit requires several other dependencies, but thankfully, the build
+scripts provided will automatically download these for you. If, for some
 reason, compilation fails due to a missing dependency, please notify us.
-
-Folder Structure
-----------------
-
-Two source directories are required for compilation:
-
-* The main source files are *src/main/java*
-* Files marked for deprecation and future removal are in *src/legacy/java*
-
-Otheriwse, files for each platform are available in different folders:
-
-* The Bukkit implementation is located in *src/bukkit/java*
-* The Spout implementation is located in *src/spout/java*
-* The Forge implementation is located in *src/forge/java*
 
 Maven
 -----
@@ -51,6 +41,9 @@ Once done, the *target/* folder will contain a .jar file and release .zip
 files.
 
 ### Other Variations
+
+By default, the *Bukkit* profile is enabled, but you can disable it
+and enable other profiles.
 
 * `mvn clean package -P !bukkit` for just the API
 * `mvn clean package -P !bukkit -P spout` for the Spout version
