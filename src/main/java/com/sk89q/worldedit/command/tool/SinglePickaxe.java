@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.command.tool;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 
 /**
@@ -43,11 +44,16 @@ public class SinglePickaxe implements BlockTool {
             return true;
         }
 
-        if (config.superPickaxeDrop) {
-            world.simulateBlockMine(clicked);
-        }
+        EditSession editSession = session.createEditSession(player);
+        editSession.getSurvivalExtent().setToolUse(config.superPickaxeDrop);
 
-        world.setBlockType(clicked, BlockID.AIR);
+        try {
+            editSession.setBlock(clicked, new BaseBlock(BlockID.AIR));
+        } catch (MaxChangedBlocksException e) {
+            player.printError("Max blocks change limit reached.");
+        } finally {
+            editSession.flushQueue();
+        }
 
         world.playEffect(clicked, 2001, blockType);
 

@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A pickaxe mode that recursively finds adjacent blocks within range of
@@ -59,14 +59,15 @@ public class RecursivePickaxe implements BlockTool {
         }
 
         EditSession editSession = session.createEditSession(player);
+        editSession.getSurvivalExtent().setToolUse(config.superPickaxeManyDrop);
 
         try {
             recurse(server, editSession, world, clicked.toBlockVector(),
-                    clicked, range, initialType, new HashSet<BlockVector>(),
-                    config.superPickaxeManyDrop);
+                    clicked, range, initialType, new HashSet<BlockVector>());
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {
+            editSession.flushQueue();
             session.remember(editSession);
         }
 
@@ -77,7 +78,6 @@ public class RecursivePickaxe implements BlockTool {
      * Helper method.
      * 
      * @param server
-     * @param superPickaxeManyDrop
      * @param world
      * @param pos
      * @param origin
@@ -88,7 +88,7 @@ public class RecursivePickaxe implements BlockTool {
     private static void recurse(ServerInterface server, EditSession editSession,
             LocalWorld world, BlockVector pos,
             Vector origin, double size, int initialType,
-            Set<BlockVector> visited, boolean drop)
+            Set<BlockVector> visited)
             throws MaxChangedBlocksException {
 
         final double distanceSq = origin.distanceSq(pos);
@@ -102,26 +102,22 @@ public class RecursivePickaxe implements BlockTool {
             return;
         }
 
-        if (drop) {
-            world.simulateBlockMine(pos);
-        }
-
         world.queueBlockBreakEffect(server, pos, initialType, distanceSq);
 
         editSession.setBlock(pos, air);
 
         recurse(server, editSession, world, pos.add(1, 0, 0).toBlockVector(),
-                origin, size, initialType, visited, drop);
+                origin, size, initialType, visited);
         recurse(server, editSession, world, pos.add(-1, 0, 0).toBlockVector(),
-                origin, size, initialType, visited, drop);
+                origin, size, initialType, visited);
         recurse(server, editSession, world, pos.add(0, 0, 1).toBlockVector(),
-                origin, size, initialType, visited, drop);
+                origin, size, initialType, visited);
         recurse(server, editSession, world, pos.add(0, 0, -1).toBlockVector(),
-                origin, size, initialType, visited, drop);
+                origin, size, initialType, visited);
         recurse(server, editSession, world, pos.add(0, 1, 0).toBlockVector(),
-                origin, size, initialType, visited, drop);
+                origin, size, initialType, visited);
         recurse(server, editSession, world, pos.add(0, -1, 0).toBlockVector(),
-                origin, size, initialType, visited, drop);
+                origin, size, initialType, visited);
     }
 
 }

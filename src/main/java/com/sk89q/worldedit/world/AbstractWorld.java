@@ -138,15 +138,20 @@ public abstract class AbstractWorld implements World {
     public void simulateBlockMine(Vector pt) {
         BaseBlock block = getLazyBlock(pt);
         BaseItemStack stack = BlockType.getBlockDrop(block.getId(), (short) block.getData());
-        if (stack == null) {
-            return;
+
+        if (stack != null) {
+            final int amount = stack.getAmount();
+            if (amount > 1) {
+                dropItem(pt, new BaseItemStack(stack.getType(), 1, stack.getData()), amount);
+            } else {
+                dropItem(pt, stack, amount);
+            }
         }
 
-        final int amount = stack.getAmount();
-        if (amount > 1) {
-            dropItem(pt, new BaseItemStack(stack.getType(), 1, stack.getData()), amount);
-        } else {
-            dropItem(pt, stack, amount);
+        try {
+            setBlock(pt, new BaseBlock(BlockID.AIR));
+        } catch (WorldEditException e) {
+            throw new RuntimeException(e);
         }
     }
 

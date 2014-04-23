@@ -19,17 +19,17 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.extent.buffer.ForgetfulExtentBuffer;
-import com.sk89q.worldedit.extent.cache.LastAccessExtentCache;
-import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
-import com.sk89q.worldedit.internal.expression.Expression;
-import com.sk89q.worldedit.internal.expression.ExpressionException;
-import com.sk89q.worldedit.internal.expression.runtime.RValue;
-import com.sk89q.worldedit.extent.*;
+import com.sk89q.worldedit.extent.ChangeSetExtent;
+import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.MaskingExtent;
+import com.sk89q.worldedit.extent.NullExtent;
+import com.sk89q.worldedit.extent.buffer.ForgetfulExtentBuffer;
+import com.sk89q.worldedit.extent.cache.LastAccessExtentCache;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.extent.inventory.BlockBagExtent;
 import com.sk89q.worldedit.extent.reorder.MultiStageReorder;
 import com.sk89q.worldedit.extent.validation.BlockChangeLimiter;
@@ -37,10 +37,11 @@ import com.sk89q.worldedit.extent.validation.DataValidatorExtent;
 import com.sk89q.worldedit.extent.world.BlockQuirkExtent;
 import com.sk89q.worldedit.extent.world.ChunkLoadingExtent;
 import com.sk89q.worldedit.extent.world.FastModeExtent;
+import com.sk89q.worldedit.extent.world.SurvivalModeExtent;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
-import com.sk89q.worldedit.function.block.Counter;
 import com.sk89q.worldedit.function.block.BlockReplace;
+import com.sk89q.worldedit.function.block.Counter;
 import com.sk89q.worldedit.function.block.Naturalizer;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
 import com.sk89q.worldedit.function.mask.*;
@@ -53,6 +54,9 @@ import com.sk89q.worldedit.history.UndoContext;
 import com.sk89q.worldedit.history.change.BlockChange;
 import com.sk89q.worldedit.history.changeset.BlockOptimizedHistory;
 import com.sk89q.worldedit.history.changeset.ChangeSet;
+import com.sk89q.worldedit.internal.expression.Expression;
+import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.internal.expression.runtime.RValue;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.math.interpolation.Interpolation;
 import com.sk89q.worldedit.math.interpolation.KochanekBartelsInterpolation;
@@ -70,6 +74,7 @@ import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
+import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
@@ -105,6 +110,7 @@ public class EditSession implements Extent {
     private final ChangeSet changeSet = new BlockOptimizedHistory();
 
     private @Nullable FastModeExtent fastModeExtent;
+    private final SurvivalModeExtent survivalExtent;
     private @Nullable ChunkLoadingExtent chunkLoadingExtent;
     private @Nullable LastAccessExtentCache cacheExtent;
     private @Nullable BlockQuirkExtent quirkExtent;
@@ -160,6 +166,7 @@ public class EditSession implements Extent {
 
             // This extents are ALWAYS used
             extent = fastModeExtent = new FastModeExtent(world, false);
+            extent = survivalExtent = new SurvivalModeExtent(extent, world);
             extent = quirkExtent = new BlockQuirkExtent(extent, world);
             extent = chunkLoadingExtent = new ChunkLoadingExtent(extent, world);
             extent = cacheExtent = new LastAccessExtentCache(extent);
@@ -182,6 +189,7 @@ public class EditSession implements Extent {
             this.bypassNone = extent;
         } else {
             Extent extent = new NullExtent();
+            extent = survivalExtent = new SurvivalModeExtent(extent, new NullWorld());
             extent = blockBagExtent = new BlockBagExtent(extent, blockBag);
             extent = reorderExtent = new MultiStageReorder(extent, false);
             extent = maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue());
@@ -285,6 +293,15 @@ public class EditSession implements Extent {
         } else {
             maskingExtent.setMask(Masks.wrap(mask, this));
         }
+    }
+
+    /**
+     * Get the {@link SurvivalModeExtent}.
+     *
+     * @return the survival simulation extent
+     */
+    public SurvivalModeExtent getSurvivalExtent() {
+        return survivalExtent;
     }
 
     /**
