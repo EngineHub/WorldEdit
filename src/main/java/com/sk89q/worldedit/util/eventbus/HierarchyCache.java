@@ -21,7 +21,7 @@ package com.sk89q.worldedit.util.eventbus;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.sk89q.worldedit.util.annotation.RequiresNewerGuava;
+import com.sk89q.worldedit.internal.annotation.RequiresNewerGuava;
 
 import java.util.*;
 
