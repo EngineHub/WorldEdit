@@ -19,6 +19,7 @@
 package com.sk89q.worldedit.commands;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -220,7 +221,15 @@ public class SchematicCommands {
     public void list(CommandContext args, LocalSession session, LocalPlayer player,
                         EditSession editSession) throws WorldEditException {
         File dir = we.getWorkingDirectoryFile(we.getConfiguration().saveDir);
-        File[] files = dir.listFiles();
+        File[] files = dir.listFiles(new FileFilter(){
+            @Override
+            public boolean accept(File file) {
+                // sort out directories from the schematic list
+                // if WE supports sub-directories in the future,
+                // this will have to be changed
+                return file.isFile();
+            }
+        });
         if (files == null) {
             throw new FilenameResolutionException(dir.getPath(), "Schematics directory invalid or not found.");
         }
@@ -231,7 +240,10 @@ public class SchematicCommands {
         Arrays.sort(files, new Comparator<File>(){
             @Override
             public int compare(File f1, File f2) {
-                if (!f1.isFile() || !f2.isFile()) return -1; // don't care, will get removed
+                // this should no longer happen, as directory-ness is checked before
+                // however, if a directory slips through, this will break the contract
+                // of comparator transitivity
+                if (!f1.isFile() || !f2.isFile()) return -1;
                 // http://stackoverflow.com/questions/203030/best-way-to-list-files-in-java-sorted-by-date-modified
                 int result = sortType == 0 ? f1.getName().compareToIgnoreCase(f2.getName()) : // use name by default
                     Long.valueOf(f1.lastModified()).compareTo(f2.lastModified()); // use date if there is a flag
@@ -241,9 +253,6 @@ public class SchematicCommands {
         });
 
         for (File file : files) {
-            if (!file.isFile()) {
-                continue;
-            }
             build.append("\n\u00a79");
             SchematicFormat format = SchematicFormat.getFormat(file);
             build.append(file.getName()).append(": ").append(format == null ? "Unknown" : format.getName());
