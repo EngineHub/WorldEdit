@@ -289,7 +289,7 @@ public final class StringUtil {
             return null;
         }
 
-        int minDist = Integer.MAX_VALUE;
+        int minDist = -1;
 
         for (Map.Entry<String, T> entry : lookup.entrySet()) {
             final String key = entry.getKey();
@@ -299,14 +299,10 @@ public final class StringUtil {
 
             int dist = getLevenshteinDistance(key, testName);
 
-            if (dist >= minDist) {
+            if ((dist < minDist || minDist == -1) && dist < 2) {
                 minDist = dist;
                 type = entry.getValue();
             }
-        }
-
-        if (minDist > 1) {
-            return null;
         }
 
         return type;
