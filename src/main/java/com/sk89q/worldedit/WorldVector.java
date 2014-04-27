@@ -20,10 +20,9 @@
 package com.sk89q.worldedit;
 
 /**
- * A vector with a world component.
- * 
- * @author sk89q
+ * @deprecated Use {@link com.sk89q.worldedit.util.Location} wherever possible
  */
+@Deprecated
 public class WorldVector extends Vector {
     /**
      * Represents the world.

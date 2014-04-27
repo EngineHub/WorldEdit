@@ -27,6 +27,8 @@ import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.Vectors;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -47,6 +49,13 @@ public class ForgePlayer extends LocalPlayer {
 
     public String getName() {
         return this.player.username;
+    }
+
+    @Override
+    public Location getLocation() {
+        Vector position = new Vector(this.player.posX, this.player.posY, this.player.posZ);
+        Vector direction = Vectors.fromEulerDeg(this.player.cameraYaw, this.player.cameraPitch);
+        return new Location(ForgeWorldEdit.inst.getWorld(this.player.worldObj), position, direction);
     }
 
     public WorldVector getPosition() {

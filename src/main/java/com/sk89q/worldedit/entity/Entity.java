@@ -19,8 +19,12 @@
 
 package com.sk89q.worldedit.entity;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.PlayerDirection;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.WorldVectorFace;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 
 /**
@@ -165,6 +169,13 @@ public interface Entity {
      * @return the direction
      */
     PlayerDirection getCardinalDirection();
+
+    /**
+     * Get the location of this entity.
+     *
+     * @return the location of the entity
+     */
+    Location getLocation();
 
     /**
      * Get the actor's position.

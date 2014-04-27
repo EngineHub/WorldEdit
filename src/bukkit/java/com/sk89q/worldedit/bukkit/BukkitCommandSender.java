@@ -19,16 +19,11 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.util.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.PlayerNeededException;
-import com.sk89q.worldedit.ServerInterface;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.extent.inventory.BlockBag;
 
 public class BukkitCommandSender extends LocalPlayer {
     private CommandSender sender;
@@ -94,6 +89,11 @@ public class BukkitCommandSender extends LocalPlayer {
 
     @Override
     public int getItemInHand() {
+        throw new PlayerNeededException();
+    }
+
+    @Override
+    public Location getLocation() {
         throw new PlayerNeededException();
     }
 
