@@ -24,9 +24,12 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
+import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
+import com.sk89q.worldedit.world.mapping.NullResolver;
+import com.sk89q.worldedit.world.mapping.Resolver;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityHanging;
@@ -48,6 +51,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
 
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -467,6 +471,34 @@ public class ForgeWorld extends AbstractWorld {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Resolver<BaseBlock> getBlockMapping() {
+        return new NullResolver<BaseBlock>();
+    }
+
+    @Override
+    public Resolver<BaseEntity> getEntityMapping() {
+        return new NullResolver<BaseEntity>();
+    }
+
+    @Nullable
+    @Override
+    public <T> T getMetaData(BaseBlock block, Class<T> metaDataClass) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getMetaData(com.sk89q.worldedit.entity.Entity entity, Class<T> metaDataClass) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getMetaData(BaseEntity entity, Class<T> metaDataClass) {
+        return null;
     }
 
     /**

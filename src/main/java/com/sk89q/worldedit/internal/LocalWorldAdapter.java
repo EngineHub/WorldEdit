@@ -22,11 +22,14 @@ package com.sk89q.worldedit.internal;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.mapping.Resolver;
 
 import javax.annotation.Nullable;
 
@@ -307,6 +310,33 @@ public class LocalWorldAdapter extends LocalWorld {
     @Nullable
     public Operation commit() {
         return world.commit();
+    }
+    @Override
+    public Resolver<BaseBlock> getBlockMapping() {
+        return world.getBlockMapping();
+    }
+
+    @Override
+    public Resolver<BaseEntity> getEntityMapping() {
+        return world.getEntityMapping();
+    }
+
+    @Override
+    @Nullable
+    public <T> T getMetaData(BaseBlock block, Class<T> metaDataClass) {
+        return world.getMetaData(block, metaDataClass);
+    }
+
+    @Override
+    @Nullable
+    public <T> T getMetaData(Entity entity, Class<T> metaDataClass) {
+        return world.getMetaData(entity, metaDataClass);
+    }
+
+    @Override
+    @Nullable
+    public <T> T getMetaData(BaseEntity entity, Class<T> metaDataClass) {
+        return world.getMetaData(entity, metaDataClass);
     }
 
     public static LocalWorldAdapter wrap(World world) {

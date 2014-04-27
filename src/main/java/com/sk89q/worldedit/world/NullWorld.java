@@ -23,8 +23,14 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.world.mapping.NullResolver;
+import com.sk89q.worldedit.world.mapping.Resolver;
+
+import javax.annotation.Nullable;
 
 /**
  * A null implementation of {@link World} that drops all changes and
@@ -95,4 +101,31 @@ public class NullWorld extends AbstractWorld {
         return new BaseBlock(BlockID.AIR);
     }
 
+    @Override
+    public Resolver<BaseBlock> getBlockMapping() {
+        return new NullResolver<BaseBlock>();
+    }
+
+    @Override
+    public Resolver<BaseEntity> getEntityMapping() {
+        return new NullResolver<BaseEntity>();
+    }
+
+    @Nullable
+    @Override
+    public <T> T getMetaData(BaseBlock block, Class<T> metaDataClass) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getMetaData(Entity entity, Class<T> metaDataClass) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getMetaData(BaseEntity entity, Class<T> metaDataClass) {
+        return null;
+    }
 }

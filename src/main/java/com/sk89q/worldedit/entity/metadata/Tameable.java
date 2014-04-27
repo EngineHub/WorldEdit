@@ -17,36 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.entity;
-
-import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.World;
+package com.sk89q.worldedit.entity.metadata;
 
 /**
- * A reference to an instance of an entity that exists in an {@link Extent}
- * and thus would have position and similar details.
- * </p>
- * This object cannot be directly cloned because it represents a particular
- * instance of an entity, but a {@link BaseEntity} can be created from
- * this entity (or at least, it will be possible in the future), which
- * can then be used to spawn new instances of that particular entity
- * description.
+ * Indicates a creature that can be tamed.
  */
-public interface Entity {
+public interface Tameable {
 
     /**
-     * Get the location of this entity.
+     * Returns whether the creature is tamed.
      *
-     * @return the location of the entity
+     * @return true if the creature is tamed
      */
-    Location getLocation();
-
-    /**
-     * Get the world that this entity is on.
-     *
-     * @return the world
-     */
-    World getWorld();
+    boolean isTamed();
 
 }

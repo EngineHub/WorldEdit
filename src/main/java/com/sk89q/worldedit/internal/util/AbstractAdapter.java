@@ -17,36 +17,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.entity;
+package com.sk89q.worldedit.internal.util;
 
-import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.World;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A reference to an instance of an entity that exists in an {@link Extent}
- * and thus would have position and similar details.
- * </p>
- * This object cannot be directly cloned because it represents a particular
- * instance of an entity, but a {@link BaseEntity} can be created from
- * this entity (or at least, it will be possible in the future), which
- * can then be used to spawn new instances of that particular entity
- * description.
+ * Abstract class for adapters.
+ *
+ * @param <E> class of adapted objects
  */
-public interface Entity {
+public abstract class AbstractAdapter<E> {
+
+    private final E object;
 
     /**
-     * Get the location of this entity.
+     * Create a new instance.
      *
-     * @return the location of the entity
+     * @param object the object to adapt
      */
-    Location getLocation();
+    public AbstractAdapter(E object) {
+        checkNotNull(object);
+        this.object = object;
+    }
 
     /**
-     * Get the world that this entity is on.
+     * Get the object.
      *
-     * @return the world
+     * @return the object
      */
-    World getWorld();
+    public E getHandle() {
+        return object;
+    }
 
 }

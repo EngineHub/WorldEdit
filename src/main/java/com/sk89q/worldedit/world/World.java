@@ -27,11 +27,12 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.world.mapping.Mapping;
 
 /**
  * Represents a world (dimension).
  */
-public interface World extends Extent {
+public interface World extends Extent, Mapping {
 
     /**
      * Get the name of the world.

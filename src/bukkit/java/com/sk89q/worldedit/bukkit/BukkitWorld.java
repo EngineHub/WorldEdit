@@ -26,8 +26,11 @@ import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.blocks.ContainerBlock;
 import com.sk89q.worldedit.blocks.NoteBlock;
 import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
+import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.world.mapping.NullResolver;
+import com.sk89q.worldedit.world.mapping.Resolver;
 import org.bukkit.*;
 import org.bukkit.Location;
 import org.bukkit.block.*;
@@ -38,6 +41,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -1248,4 +1252,37 @@ public class BukkitWorld extends LocalWorld {
 
         return super.setBlock(pt, block, notifyAdjacent);
     }
+
+    @Override
+    public Resolver<BaseBlock> getBlockMapping() {
+        return new NullResolver<BaseBlock>();
+    }
+
+    @Override
+    public Resolver<BaseEntity> getEntityMapping() {
+        return new NullResolver<BaseEntity>();
+    }
+
+    @Nullable
+    @Override
+    public <T> T getMetaData(BaseBlock block, Class<T> metaDataClass) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getMetaData(com.sk89q.worldedit.entity.Entity entity, Class<T> metaDataClass) {
+        if (entity instanceof com.sk89q.worldedit.bukkit.BukkitEntity) {
+            return ((com.sk89q.worldedit.bukkit.BukkitEntity) entity).getMetaData(metaDataClass);
+        }
+
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getMetaData(BaseEntity entity, Class<T> metaDataClass) {
+        return null;
+    }
+
 }
