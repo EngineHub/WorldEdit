@@ -19,8 +19,79 @@
 
 package com.sk89q.worldedit.entity;
 
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.NbtValued;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * A snapshot of an entity that can be reused and passed around.
  */
-public class BaseEntity {
+public class BaseEntity implements NbtValued {
+
+    private CompoundTag nbtData;
+
+    /**
+     * Create a new entity with the given entity ID.
+     *
+     * @param id the ID of the entity, which determines its type
+     */
+    public BaseEntity(String id) {
+        checkNotNull(id);
+        Map<String, Tag> map = new HashMap<String, Tag>();
+        map.put("id", new StringTag("id", id));
+        this.nbtData = new CompoundTag("", map);
+    }
+
+    /**
+     * Create a new entity with the given NBT data.
+     *
+     * @param nbtData the NBT data
+     */
+    public BaseEntity(CompoundTag nbtData) {
+        checkNotNull(nbtData);
+        this.nbtData = nbtData;
+    }
+
+    /**
+     * Get the ID of the entity, which determines the type of entity.
+     * An example of an entity ID would be "CaveSpider".
+     *
+     * @return the entity ID, which may be an empty string
+     */
+    public String getEntityId() {
+        CompoundTag nbtData = getNbtData();
+        if (nbtData == null) {
+            return "";
+        }
+        Tag idTag = nbtData.getValue().get("id");
+        if (idTag != null && idTag instanceof StringTag) {
+            return ((StringTag) idTag).getValue();
+        } else {
+            return "";
+        }
+    }
+
+    @Override
+    public boolean hasNbtData() {
+        return getNbtData() != null;
+    }
+
+    @Override
+    public CompoundTag getNbtData() {
+        return nbtData;
+    }
+
+    @Override
+    public void setNbtData(CompoundTag nbtData) throws DataException {
+        checkNotNull(nbtData);
+        this.nbtData = nbtData;
+    }
+
 }
