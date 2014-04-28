@@ -24,6 +24,7 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
@@ -49,6 +50,11 @@ public class ForgePlayer extends LocalPlayer {
 
     public String getName() {
         return this.player.username;
+    }
+
+    @Override
+    public BaseEntity getState() {
+        throw new UnsupportedOperationException("Cannot create a state from this object");
     }
 
     @Override

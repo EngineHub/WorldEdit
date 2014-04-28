@@ -17,13 +17,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.entity;
+package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.world.NbtValued;
+import com.sk89q.worldedit.entity.AbstractBaseEntity;
+import com.sk89q.worldedit.entity.BaseEntity;
+import org.bukkit.entity.EntityType;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A snapshot of an entity that can be reused and passed around.
+ * An implementation of a {@link BaseEntity} for Bukkit.
  */
-public interface BaseEntity extends NbtValued {
+public class BukkitBaseEntity extends AbstractBaseEntity {
+
+    private final EntityType type;
+
+    public BukkitBaseEntity(EntityType type) {
+        checkNotNull(type);
+        this.type = type;
+    }
+
+    public EntityType getBukkitType() {
+        return type;
+    }
 
 }

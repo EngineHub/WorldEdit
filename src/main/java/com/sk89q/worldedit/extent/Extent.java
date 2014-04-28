@@ -20,6 +20,12 @@
 package com.sk89q.worldedit.extent;
 
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.util.Location;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * A world, portion of a world, clipboard, or other object that can have blocks
@@ -49,5 +55,25 @@ public interface Extent extends InputExtent, OutputExtent {
      * @return the maximum point
      */
     Vector getMaximumPoint();
+
+    /**
+     * Get a list of all entities.
+     * </p>
+     * If the extent is not wholly loaded (i.e. a world being simulated in the
+     * game will not have every chunk loaded), then this list may not be
+     * incomplete.
+     *
+     * @return a list of entities
+     */
+    List<Entity> getEntities();
+
+    /**
+     * Create an entity at the given location.
+     *
+     * @param entity the entity
+     * @param location the location
+     * @return a reference to the created entity, or null if the entity could not be created
+     */
+    @Nullable Entity createEntity(Location location, BaseEntity entity);
 
 }

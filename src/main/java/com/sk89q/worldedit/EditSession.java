@@ -22,6 +22,8 @@ package com.sk89q.worldedit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.extent.ChangeSetExtent;
 import com.sk89q.worldedit.extent.Extent;
@@ -70,8 +72,7 @@ import com.sk89q.worldedit.regions.shape.ArbitraryBiomeShape;
 import com.sk89q.worldedit.regions.shape.ArbitraryShape;
 import com.sk89q.worldedit.regions.shape.RegionShape;
 import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
-import com.sk89q.worldedit.util.Countable;
-import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.*;
 import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.NullWorld;
@@ -570,6 +571,17 @@ public class EditSession implements Extent {
     @Deprecated
     public boolean setBlockIfAir(Vector position, BaseBlock block) throws MaxChangedBlocksException {
         return getBlock(position).isAir() && setBlock(position, block);
+    }
+
+    @Override
+    public List<Entity> getEntities() {
+        return world.getEntities();
+    }
+
+    @Override
+    @Nullable
+    public Entity createEntity(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
+        return world.createEntity(location, entity);
     }
 
     /**

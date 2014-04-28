@@ -19,16 +19,20 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.metadata.Tameable;
-import com.sk89q.worldedit.internal.util.AbstractAdapter;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An adapter to adapt a Bukkit entity into a WorldEdit one.
  */
-class BukkitEntity extends AbstractAdapter<org.bukkit.entity.Entity> implements Entity {
+class BukkitEntity implements Entity {
+
+    private final org.bukkit.entity.Entity entity;
 
     /**
      * Create a new instance.
@@ -36,13 +40,23 @@ class BukkitEntity extends AbstractAdapter<org.bukkit.entity.Entity> implements 
      * @param entity the entity
      */
     BukkitEntity(org.bukkit.entity.Entity entity) {
-        super(entity);
+        checkNotNull(entity);
+        this.entity = entity;
+    }
+
+    /**
+     * Get the underlying Bukkit entity.
+     *
+     * @return the Bukkit entity
+     */
+    protected org.bukkit.entity.Entity getEntity() {
+        return entity;
     }
 
     @SuppressWarnings("unchecked")
     <T> T getMetaData(Class<T> metaDataClass) {
-        if (metaDataClass == Tameable.class && getHandle() instanceof org.bukkit.entity.Tameable) {
-            return (T) new TameableAdapter((org.bukkit.entity.Tameable) getHandle());
+            if (metaDataClass == Tameable.class && getEntity() instanceof org.bukkit.entity.Tameable) {
+            return (T) new TameableAdapter((org.bukkit.entity.Tameable) getEntity());
         } else {
             return null;
         }
@@ -50,11 +64,17 @@ class BukkitEntity extends AbstractAdapter<org.bukkit.entity.Entity> implements 
 
     @Override
     public World getWorld() {
-        return BukkitAdapter.adapt(getHandle().getWorld());
+        return BukkitAdapter.adapt(getEntity().getWorld());
     }
 
     @Override
     public Location getLocation() {
-        return BukkitAdapter.adapt(getHandle().getLocation());
+        return BukkitAdapter.adapt(getEntity().getLocation());
     }
+
+    @Override
+    public BaseEntity getState() {
+        return new BukkitBaseEntity(getEntity().getType());
+    }
+
 }

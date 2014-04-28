@@ -21,6 +21,7 @@ package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.util.Vectors;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -168,6 +169,11 @@ public class BukkitPlayer extends LocalPlayer {
 
         setPosition(new Vector(x + 0.5, y, z + 0.5));
         player.setFlying(true);
+    }
+
+    @Override
+    public BaseEntity getState() {
+        throw new UnsupportedOperationException("Cannot create a state from this object");
     }
 
     @Override

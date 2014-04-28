@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.util.Location;
 import org.bukkit.command.CommandSender;
@@ -90,6 +91,11 @@ public class BukkitCommandSender extends LocalPlayer {
     @Override
     public int getItemInHand() {
         throw new PlayerNeededException();
+    }
+
+    @Override
+    public BaseEntity getState() {
+        throw new UnsupportedOperationException("Cannot create a state from this object");
     }
 
     @Override

@@ -26,6 +26,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.mapping.NullResolver;
@@ -54,6 +55,7 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -498,6 +500,17 @@ public class ForgeWorld extends AbstractWorld {
     @Nullable
     @Override
     public <T> T getMetaData(BaseEntity entity, Class<T> metaDataClass) {
+        return null;
+    }
+
+    @Override
+    public List<com.sk89q.worldedit.entity.Entity> getEntities() {
+        return Collections.emptyList();
+    }
+
+    @Nullable
+    @Override
+    public com.sk89q.worldedit.entity.Entity createEntity(Location location, BaseEntity entity) {
         return null;
     }
 

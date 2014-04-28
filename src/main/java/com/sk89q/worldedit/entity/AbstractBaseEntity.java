@@ -19,11 +19,33 @@
 
 package com.sk89q.worldedit.entity;
 
-import com.sk89q.worldedit.world.NbtValued;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.world.DataException;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A snapshot of an entity that can be reused and passed around.
+ * An abstract implementation of {@link BaseEntity} that implementations can
+ * subclass to simplify implementation.
  */
-public interface BaseEntity extends NbtValued {
+public abstract class AbstractBaseEntity implements BaseEntity {
+
+    private CompoundTag nbtData;
+
+    @Override
+    public boolean hasNbtData() {
+        return getNbtData() != null;
+    }
+
+    @Override
+    public CompoundTag getNbtData() {
+        return nbtData;
+    }
+
+    @Override
+    public void setNbtData(CompoundTag nbtData) throws DataException {
+        checkNotNull(nbtData);
+        this.nbtData = nbtData;
+    }
 
 }

@@ -26,11 +26,14 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.mapping.NullResolver;
 import com.sk89q.worldedit.world.mapping.Resolver;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A null implementation of {@link World} that drops all changes and
@@ -126,6 +129,17 @@ public class NullWorld extends AbstractWorld {
     @Nullable
     @Override
     public <T> T getMetaData(BaseEntity entity, Class<T> metaDataClass) {
+        return null;
+    }
+
+    @Override
+    public List<Entity> getEntities() {
+        return Collections.emptyList();
+    }
+
+    @Nullable
+    @Override
+    public Entity createEntity(Location location, BaseEntity entity) {
         return null;
     }
 }

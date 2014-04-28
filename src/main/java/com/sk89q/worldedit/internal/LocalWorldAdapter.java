@@ -32,6 +32,7 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.mapping.Resolver;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -337,6 +338,17 @@ public class LocalWorldAdapter extends LocalWorld {
     @Nullable
     public <T> T getMetaData(BaseEntity entity, Class<T> metaDataClass) {
         return world.getMetaData(entity, metaDataClass);
+    }
+
+    @Override
+    @Nullable
+    public Entity createEntity(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
+        return world.createEntity(location, entity);
+    }
+
+    @Override
+    public List<Entity> getEntities() {
+        return world.getEntities();
     }
 
     public static LocalWorldAdapter wrap(World world) {

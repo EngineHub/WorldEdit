@@ -26,7 +26,7 @@ import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.blocks.ContainerBlock;
 import com.sk89q.worldedit.blocks.NoteBlock;
 import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
-import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.entity.*;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.mapping.NullResolver;
@@ -36,6 +36,7 @@ import org.bukkit.Location;
 import org.bukkit.block.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -168,6 +169,27 @@ public class BukkitWorld extends LocalWorld {
             logger.warning("[WorldEdit] Unable to load NmsBlock classes, make sure they are installed correctly.");
             e.printStackTrace();
             skipNmsAccess = true; skipNmsSafeSet = true; skipNmsValidBlockCheck = true;
+        }
+    }
+
+    @Override
+    public List<com.sk89q.worldedit.entity.Entity> getEntities() {
+        List<com.sk89q.worldedit.entity.Entity> list = new ArrayList<com.sk89q.worldedit.entity.Entity>();
+        for (Entity entity : getWorld().getEntities()) {
+            list.add(BukkitAdapter.adapt(entity));
+        }
+        return list;
+    }
+
+    @Nullable
+    @Override
+    public com.sk89q.worldedit.entity.Entity createEntity(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
+        if (entity instanceof BukkitBaseEntity) {
+            BukkitBaseEntity bukkitBaseEntity = (BukkitBaseEntity) entity;
+            Entity nativeEntity = getWorld().spawnEntity(BukkitAdapter.adapt(location), bukkitBaseEntity.getBukkitType());
+            return BukkitAdapter.adapt(nativeEntity);
+        } else {
+            return null;
         }
     }
 

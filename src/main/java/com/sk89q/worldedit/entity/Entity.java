@@ -36,6 +36,13 @@ import com.sk89q.worldedit.world.World;
 public interface Entity {
 
     /**
+     * Get a copy of the entity's state.
+     *
+     * @return the entity's state
+     */
+    BaseEntity getState();
+
+    /**
      * Get the location of this entity.
      *
      * @return the location of the entity

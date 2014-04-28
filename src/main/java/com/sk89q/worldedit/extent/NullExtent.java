@@ -22,9 +22,14 @@ package com.sk89q.worldedit.extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.util.Location;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * An extent that returns air blocks for all blocks and does not
@@ -42,6 +47,17 @@ public class NullExtent implements Extent {
     @Override
     public Vector getMaximumPoint() {
         return nullPoint;
+    }
+
+    @Override
+    public List<Entity> getEntities() {
+        return Collections.emptyList();
+    }
+
+    @Nullable
+    @Override
+    public Entity createEntity(Location location, BaseEntity entity) {
+        return null;
     }
 
     @Override
