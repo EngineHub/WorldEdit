@@ -45,9 +45,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
         super("MCEdit", "mcedit", "mce");
     }
 
-    @Override
-    public CuboidClipboard load(File file) throws IOException, DataException {
-        FileInputStream stream = new FileInputStream(file);
+    public CuboidClipboard load(InputStream stream) throws IOException, DataException {
         NBTInputStream nbtStream = new NBTInputStream(
                 new GZIPInputStream(stream));
 
@@ -184,6 +182,11 @@ public class MCEditSchematicFormat extends SchematicFormat {
         }
 
         return clipboard;
+    }
+
+    @Override
+    public CuboidClipboard load(File file) throws IOException, DataException {
+        return load(new FileInputStream(file));
     }
 
     @Override
