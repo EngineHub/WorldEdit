@@ -297,8 +297,8 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
 
-        for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
-            for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
+        for (int x = min.getBlockX(); x <= max.getBlockX(); x += 16) {
+            for (int z = min.getBlockZ(); z <= max.getBlockZ(); z += 16) {
                 chunks.add(new BlockVector2D(x >> ChunkStore.CHUNK_SHIFTS,
                         z >> ChunkStore.CHUNK_SHIFTS));
             }
@@ -314,9 +314,9 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
 
-        for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
-            for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
-                for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
+        for (int x = min.getBlockX(); x <= max.getBlockX(); x += 16) {
+            for (int y = min.getBlockY(); y <= max.getBlockY(); y += 16) {
+                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z += 16) {
                     chunks.add(new BlockVector(x >> ChunkStore.CHUNK_SHIFTS,
                             y >> ChunkStore.CHUNK_SHIFTS, z >> ChunkStore.CHUNK_SHIFTS));
                 }
