@@ -19,26 +19,16 @@
 
 package com.sk89q.worldedit.command;
 
+import com.sk89q.minecraft.util.commands.*;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.schematic.SchematicFormat;
+import com.sk89q.worldedit.world.DataException;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
-
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Console;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.FilenameResolutionException;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.world.DataException;
-import com.sk89q.worldedit.schematic.SchematicFormat;
 
 /**
  * Commands related to schematics
@@ -179,6 +169,37 @@ public class SchematicCommands {
         } catch (IOException e) {
             player.printError("Schematic could not written: " + e.getMessage());
         }
+    }
+
+    @Command(
+            aliases = { "delete", "d" },
+            usage = "<filename>",
+            desc = "Delete a schematic from the schematic list",
+            help = "Delete a schematic from the schematic list",
+            min = 1,
+            max = 1
+    )
+    @CommandPermissions("worldedit.schematic.delete")
+    public void delete(CommandContext args, LocalSession session, LocalPlayer player,
+                     EditSession editSession) throws WorldEditException {
+
+        LocalConfiguration config = we.getConfiguration();
+        String filename = args.getString(0);
+
+        File dir = we.getWorkingDirectoryFile(config.saveDir);
+        File f = we.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
+
+        if (!f.exists()) {
+            player.printError("Schematic " + filename + " does not exist!");
+            return;
+        }
+
+        if (!f.delete()) {
+            player.printError("Deletion of " + filename + " failed! Maybe it is read-only.");
+            return;
+        }
+
+        player.print(filename + " has been deleted.");
     }
 
     @Command(
