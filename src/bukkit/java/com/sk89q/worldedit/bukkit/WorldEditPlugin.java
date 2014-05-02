@@ -23,11 +23,13 @@ import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.wepif.PermissionsResolverManager;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
+import com.sk89q.worldedit.bukkit.selections.CylinderSelection;
 import com.sk89q.worldedit.bukkit.selections.Polygonal2DSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldedit.extension.platform.PlatformRejectionException;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -389,6 +391,8 @@ public class WorldEditPlugin extends JavaPlugin {
                 return new CuboidSelection(world, selector, (CuboidRegion) region);
             } else if (region instanceof Polygonal2DRegion) {
                 return new Polygonal2DSelection(world, selector, (Polygonal2DRegion) region);
+            } else if (region instanceof CylinderRegion) {
+                return new CylinderSelection(world, selector, (CylinderRegion) region);
             } else {
                 return null;
             }

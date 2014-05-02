@@ -20,14 +20,76 @@
 importPackage(Packages.com.sk89q.worldedit);
 importPackage(Packages.com.sk89q.worldedit.blocks);
 
-context.checkArgs(1, -1, "<block> [width] [length]");
+usage = "<block> [width] [length] [height] [size] [thickness] flags\n";
+usage += "\n";
+usage += "Maze Flags:\n";
+usage += "• i adds an entry and an exit\n";
+usage += "• y places the entry and the exit randomly\n";
+usage += "• f adds a floor\n";
+usage += "• c adds a ceiling\n";
+usage += "• e places air blocks\n";
+usage += "• a places air blocks only\n";
+usage += "• v creates a vertical maze\n";
+usage += "\n";
+usage += "Solver Flags:\n";
+usage += "• s enables the maze solver\n";
+usage += "• g places glass if wrong or unvisited\n";
+usage += "• r places red wool if wrong\n";
+usage += "• b places blue wool if unvisited";
 
-var sess = context.remember();
+context.checkArgs(1, -1, usage);
+
+sess = context.remember();
+origin = player.getBlockIn();
 
 // This may throw an exception that is caught by the script processor
-var block = context.getBlock(argv[1]);
-var w = argv.length > 2 ? parseInt(argv[2]) : 5;
-var h = argv.length > 3 ? parseInt(argv[3]) : 5;
+block = context.getBlock(argv[1]);
+
+if (argv.length > 7) flags = String(argv[7]);
+else flags = false;
+
+if (argv.length > 6) {
+    if (parseInt(argv[6], 10)) wa = parseInt(argv[6], 10);
+    else flags = String(argv[6]), wa = 1;
+} else wa = 1;
+
+if (argv.length > 5) {
+    if (parseInt(argv[5], 10)) s = parseInt(argv[5], 10);
+    else flags = String(argv[5]), s = 1, wa = 1;
+} else s = 1;
+
+if (argv.length > 4) {
+    if (parseInt(argv[4], 10)) h = parseInt(argv[4], 10);
+    else flags = String(argv[4]), h = 2, s = 1, wa = 1;
+} else h = 2;
+
+if (argv.length > 3) {
+    if (parseInt(argv[3], 10)) l = parseInt(argv[3], 10);
+    else flags = String(argv[3]), l = 5, h = 2, s = 1, wa = 1;
+} else l = 5;
+
+if (argv.length > 2) {
+    if (parseInt(argv[2], 10)) w = parseInt(argv[2], 10);
+    else flags = String(argv[2]), w = 5, l = 5, h = 2, s = 1, wa = 1;
+} else w = 5;
+
+if (flags) {
+    ee = flags.search("i") != -1 ? true : false;
+    r = flags.search("y") != -1 ? true : false;
+    if (r) ee = true;
+    f = flags.search("f") != -1 ? true : false;
+    c = flags.search("c") != -1 ? true : false;
+    e = flags.search("e") != -1 ? true : false;
+    ao = flags.search("a") != -1 ? true : false;
+    if (ao) f = c = false, e = true;
+    v = flags.search("v") != -1 ? true : false;
+    so = flags.search("s") != -1 ? true : false;
+    if (so) ee = true;
+    g = flags.search("g") != -1 ? true : false;
+    re = flags.search("r") != -1 ? true : false;
+    bl = flags.search("b") != -1 ? true : false;
+    if (g || re || bl) so = ee = true;
+} else ee = r = f = c = e = ao = v = so = g = re = bl = false;
 
 function id(x, y) {
     return y * (w + 1) + x;
@@ -42,91 +104,276 @@ function $y(i) {
 }
 
 function shuffle(arr) {
-    var i = arr.length;
-    if (i == 0) return false;
+    i = arr.length;
+    if (i === 0) return false;
     while (--i) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var tempi = arr[i];
-        var tempj = arr[j];
+        j = Math.floor(Math.random() * (i + 1));
+        tempi = arr[i];
+        tempj = arr[j];
         arr[i] = tempj;
         arr[j] = tempi;
     }
 }
 
-var stack = [];
-var visited = {};
-var noWallLeft = new Array(w * h);
-var noWallAbove = new Array(w * h);
-var current = 0;
+if (f || c) {
+    for (z = 1; z <= wa; z++) for (y = -wa; y <= l * (s + wa) - 1; y++) for (x = -wa; x <= w * (s + wa) - 1; x++) {
+        if (f) {
+            if (!v) sess.setBlock(origin.add(x, -z, y), block);
+            else sess.setBlock(origin.add(x, y, +z), block);
+        }
 
-stack.push(id(0, 0))
+        if (c) {
+            if (!v) sess.setBlock(origin.add(x, z - 1 + h, y), block);
+            else sess.setBlock(origin.add(x, y, -z + 1 - h), block);
+        }
+    }
+}
+
+stack = [];
+visited = [];
+noWallLeft = [];
+noWallAbove = [];
+
+stack.push(id(Math.floor(Math.random() * w), Math.floor(Math.random() * l)));
 
 while (stack.length > 0) {
-    var cell = stack.pop();
-    var x = $x(cell), y = $y(cell);
+    cell = stack.pop();
+    x = $x(cell);
+    y = $y(cell);
     visited[cell] = true;
-    
-    var neighbors = []
-    
+    neighbors = [];
+
     if (x > 0) neighbors.push(id(x - 1, y));
     if (x < w - 1) neighbors.push(id(x + 1, y));
     if (y > 0) neighbors.push(id(x, y - 1));
-    if (y < h - 1) neighbors.push(id(x, y + 1));
-    
+    if (y < l - 1) neighbors.push(id(x, y + 1));
+
     shuffle(neighbors);
-    
+
     while (neighbors.length > 0) {
-        var neighbor = neighbors.pop();
-        var nx = $x(neighbor), ny = $y(neighbor);
-        
-        if (visited[neighbor] != true) {
+        neighbor = neighbors.pop();
+        nx = $x(neighbor);
+        ny = $y(neighbor);
+
+        if (!visited[neighbor]) {
             stack.push(cell);
-            
+
             if (y == ny) {
-                if (nx < x) {
-                    noWallLeft[cell] = true;
-                } else {
-                    noWallLeft[neighbor] = true;
-                }
+                if (nx < x) noWallLeft[cell] = true;
+                else noWallLeft[neighbor] = true;
             } else {
-                if (ny < y) {
-                    noWallAbove[cell] = true;
-                } else {
-                    noWallAbove[neighbor] = true;
-                }
+                if (ny < y) noWallAbove[cell] = true;
+                else noWallAbove[neighbor] = true;
             }
-            
+
             stack.push(neighbor);
             break;
         }
     }
 }
 
-/*for (var y = -1; y < h; y++) {
-    var line = "";
-    for (var x = 0; x <= w; x++) {
-        var cell = id(x, y)
-        var l = y >= 0 ? (noWallLeft[cell] ? "_" : "|") : "_";
-        var b = x < w ? (noWallAbove[id(x, y + 1)] ? "  " : "_") : "";
-        line += l + b;
+if (!r) {
+    start = id(0, 0);
+    end = id(w - 1, l - 1);
+} else {
+    start = id(0, Math.floor(Math.random() * l));
+    end = id(w - 1, Math.floor(Math.random() * l));
+}
+
+if (ee) {
+    noWallLeft[start] = true;
+    noWallLeft[end + 1] = true;
+}
+
+/*for (y = -1; y < l; y++) {
+    line = "";
+    for (x = 0; x <= w; x++) {
+        cell = id(x, y);
+        a = y >= 0 ? (noWallLeft[cell] ? "_" : "|") : "_";
+        b = x < w ? (noWallAbove[id(x, y + 1)] ? "  " : "_") : "";
+        line += a + b;
     }
     context.print(line);
 }*/
 
-var origin = player.getBlockIn();
+for (y = 0; y <= l; y++) for (x = 0; x <= w; x++) {
+    cell = id(x, y);
 
-for (var y = 0; y <= h; y++) {
-    for (var x = 0; x <= w; x++) {
-        var cell = id(x, y)
-        if (!noWallLeft[cell] && y < h) {
-            sess.setBlock(origin.add(x * 2 - 1, 0, y * 2), block);
-            sess.setBlock(origin.add(x * 2 - 1, 1, y * 2), block);
+    if (!noWallLeft[cell] && cell != id(x, l)) {
+        if (!ao) {
+            for (z = 0; z < h; z++) for (yi = 0; yi < s; yi++) for (xi = 1; xi <= wa; xi++) {
+                if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), block);
+                else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, -z), block);
+            }
         }
-        if (!noWallAbove[cell] && x < w) {
-            sess.setBlock(origin.add(x * 2, 0, y * 2 - 1), block);
-            sess.setBlock(origin.add(x * 2, 1, y * 2 - 1), block);
+    } else if (e && cell != id(x, l)) {
+        for (z = 0; z < h; z++) for (yi = 0; yi < s; yi++) for (xi = 1; xi <= wa; xi++) {
+            if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), BaseBlock(0));
+            else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, -z), BaseBlock(0));
         }
-        sess.setBlock(origin.add(x * 2 - 1, 0, y * 2 - 1), block);
-        sess.setBlock(origin.add(x * 2 - 1, 1, y * 2 - 1), block);
+    }
+
+    if (!noWallAbove[cell] && cell != id(w, y)) {
+        if (!ao) {
+            for (z = 0; z < h; z++) for (yi = 1; yi <= wa; yi++) for (xi = 0; xi < s; xi++) {
+                if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), block);
+                else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, -z), block);
+            }
+        }
+    } else if (e && cell != id(w, y)) {
+        for (z = 0; z < h; z++) for (yi = 1; yi <= wa; yi++) for (xi = 0; xi < s; xi++) {
+            if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), BaseBlock(0));
+            else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, -z), BaseBlock(0));
+        }
+    }
+
+    if (!ao) {
+        for (z = 0; z < h; z++) for (yi = 1; yi <= wa; yi++) for (xi = 1; xi <= wa; xi++) {
+            if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) - yi), block);
+            else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) - yi, -z), block);
+        }
+    }
+
+    if (e && cell != id(x, l) && cell != id(w, y)) {
+        for (z = 0; z < h; z++) for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++) {
+            if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) + yi), BaseBlock(0));
+            else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, -z), BaseBlock(0));
+        }
+    }
+}
+
+if (so) {
+    stack = [];
+    visited = [];
+    wrong = [];
+
+    stack.push(start);
+
+    while (cell != end) {
+        if (visited[stack[stack.length - 1]]) wrong[cell] = true;
+
+        cell = stack.pop();
+        x = $x(cell);
+        y = $y(cell);
+        visited[cell] = true;
+        neighbors = [];
+
+        if (noWallLeft[cell] && cell != start) neighbors.push(id(x - 1, y));
+        if (noWallLeft[id(x + 1, y)]) neighbors.push(id(x + 1, y));
+        if (noWallAbove[cell]) neighbors.push(id(x, y - 1));
+        if (noWallAbove[id(x, y + 1)]) neighbors.push(id(x, y + 1));
+
+        shuffle(neighbors);
+
+        while (neighbors.length > 0) {
+            neighbor = neighbors.pop();
+
+            if (!visited[neighbor]) {
+                stack.push(cell);
+                stack.push(neighbor);
+                break;
+            }
+        }
+    }
+
+    for (y = 0; y <= l; y++) for (x = 0; x <= w; x++) {
+        cell = id(x, y);
+
+        if (visited[cell] && !wrong[cell]) {
+            for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++) {
+                if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), BaseBlock(35, 5));
+                else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, +1), BaseBlock(35, 5));
+            }
+        }
+
+        if ((visited[cell] && !wrong[cell] && visited[id(x - 1, y)] && !wrong[id(x - 1, y)] && noWallLeft[cell]) || cell == start || id(x - 1, y) == end) {
+            for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++) {
+                if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), BaseBlock(35, 5));
+                else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, +1), BaseBlock(35, 5));
+            }
+        }
+
+        if (visited[cell] && !wrong[cell] && visited[id(x, y - 1)] && !wrong[id(x, y - 1)] && noWallAbove[cell]) {
+            for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++) {
+                if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), BaseBlock(35, 5));
+                else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, +1), BaseBlock(35, 5));
+            }
+        }
+
+        if (g) {
+            if (visited[cell] && !wrong[cell] && (!visited[id(x - 1, y)] || wrong[id(x - 1, y)]) && noWallLeft[cell] && cell != start) {
+                for (z = 0; z < h; z++) for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++) {
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), BaseBlock(20));
+                    else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, -z), BaseBlock(20));
+                }
+            }
+
+            if ((!visited[cell] || wrong[cell]) && visited[id(x - 1, y)] && !wrong[id(x - 1, y)] && noWallLeft[cell] && id(x - 1, y) != end) {
+                for (z = 0; z < h; z++) for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++) {
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), BaseBlock(20));
+                    else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, -z), BaseBlock(20));
+                }
+            }
+
+            if (visited[cell] && !wrong[cell] && (!visited[id(x, y - 1)] || wrong[id(x, y - 1)]) && noWallAbove[cell]) {
+                for (z = 0; z < h; z++) for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++) {
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), BaseBlock(20));
+                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, -z), BaseBlock(20));
+                }
+            }
+
+            if ((!visited[cell] || wrong[cell]) && visited[id(x, y - 1)] && !wrong[id(x, y - 1)] && noWallAbove[cell]) {
+                for (z = 0; z < h; z++) for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++) {
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), BaseBlock(20));
+                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, -z), BaseBlock(20));
+                }
+            }
+        }
+
+        if (re) {
+            if (wrong[cell]) {
+                for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++) {
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), BaseBlock(35, 14));
+                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, +1), BaseBlock(35, 14));
+                }
+            }
+
+            if ((wrong[cell] || wrong[id(x - 1, y)]) && noWallLeft[cell]) {
+                for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++) {
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), BaseBlock(35, 14));
+                    else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, +1), BaseBlock(35, 14));
+                }
+            }
+
+            if ((wrong[cell] || wrong[id(x, y - 1)]) && noWallAbove[cell]) {
+                for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++) {
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), BaseBlock(35, 14));
+                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, +1), BaseBlock(35, 14));
+                }
+            }
+        }
+
+        if (bl) {
+            if (!visited[cell] && y < l && x < w) {
+                for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++) {
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), BaseBlock(35, 11));
+                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, +1), BaseBlock(35, 11));
+                }
+            }
+
+            if ((!visited[cell] || !visited[id(x - 1, y)]) && noWallLeft[cell] && x > 0 && x < w) {
+                for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++) {
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), BaseBlock(35, 11));
+                    else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, +1), BaseBlock(35, 11));
+                }
+            }
+
+            if ((!visited[cell] || !visited[id(x, y - 1)]) && noWallAbove[cell]) {
+                for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++) {
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), BaseBlock(35, 11));
+                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, +1), BaseBlock(35, 11));
+                }
+            }
+        }
     }
 }

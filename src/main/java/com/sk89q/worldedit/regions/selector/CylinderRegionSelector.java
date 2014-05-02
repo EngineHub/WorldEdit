@@ -237,8 +237,6 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
         if (isDefined()) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getMinimumPoint(), getArea()));
             session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getMaximumPoint(), getArea()));
-        } else {
-            session.dispatchCUIEvent(player, new SelectionShapeEvent(getLegacyTypeID()));
         }
     }
 

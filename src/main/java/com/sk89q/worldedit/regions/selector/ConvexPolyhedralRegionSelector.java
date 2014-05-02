@@ -206,8 +206,6 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
         Collection<Vector> vertices = region.getVertices();
         Collection<Triangle> triangles = region.getTriangles();
 
-        player.dispatchCUIEvent(new SelectionShapeEvent(getTypeID()));
-
         Map<Vector, Integer> vertexIds = new HashMap<Vector, Integer>(vertices.size());
         int lastVertexId = -1;
         for (Vector vertex : vertices) {
@@ -234,8 +232,6 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
         if (isDefined()) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getMinimumPoint(), getArea()));
             session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getMaximumPoint(), getArea()));
-        } else {
-            session.dispatchCUIEvent(player, new SelectionShapeEvent(getLegacyTypeID()));
         }
     }
 
