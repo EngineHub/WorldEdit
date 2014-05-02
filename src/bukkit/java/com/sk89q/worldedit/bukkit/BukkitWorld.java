@@ -791,6 +791,7 @@ public class BukkitWorld extends LocalWorld {
         boolean withLightning = (flags & KillFlags.WITH_LIGHTNING) != 0;
         boolean killGolems = (flags & KillFlags.GOLEMS) != 0;
         boolean killAmbient = (flags & KillFlags.AMBIENT) != 0;
+        boolean killTagged = (flags & KillFlags.TAGGED) != 0;
 
         int num = 0;
         double radiusSq = radius * radius;
@@ -822,6 +823,10 @@ public class BukkitWorld extends LocalWorld {
                 continue;
             }
 
+            if (!killTagged && isTagged(ent)) {
+                continue;
+            }
+
             if (radius < 0 || bukkitOrigin.distanceSquared(ent.getLocation()) <= radiusSq) {
                 if (withLightning) {
                     world.strikeLightningEffect(ent.getLocation());
@@ -832,6 +837,10 @@ public class BukkitWorld extends LocalWorld {
         }
 
         return num;
+    }
+
+    private static boolean isTagged(LivingEntity ent) {
+        return ent.getCustomName() != null;
     }
 
     /**

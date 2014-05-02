@@ -281,6 +281,7 @@ public class BrushCommands {
             flags.or(KillFlags.GOLEMS        , flagString.contains("g"), "worldedit.butcher.golems");
             flags.or(KillFlags.ANIMALS       , flagString.contains("a"), "worldedit.butcher.animals");
             flags.or(KillFlags.AMBIENT       , flagString.contains("b"), "worldedit.butcher.ambient");
+            flags.or(KillFlags.TAGGED        , flagString.contains("t"), "worldedit.butcher.tagged");
             flags.or(KillFlags.WITH_LIGHTNING, flagString.contains("l"), "worldedit.butcher.lightning");
         }
         BrushTool tool = session.getBrushTool(player.getItemInHand());
