@@ -27,8 +27,10 @@ import com.sk89q.worldedit.world.DataException;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Commands related to schematics
@@ -232,7 +234,9 @@ public class SchematicCommands {
     @Command(
             aliases = {"list", "all", "ls"},
             desc = "List available schematics",
-            max = 0,
+            usage = "[page]",
+            min = 0,
+            max = 1,
             flags = "dn",
             help = "List all schematics in the schematics directory\n" +
                     " -d sorts by date, oldest first\n" +
@@ -273,13 +277,41 @@ public class SchematicCommands {
             }
         });
 
-        player.print("Available schematics (Filename (Format)):");
-        player.print(listFiles("", files));
+        List<String> schematics = listFiles("", files);
+        if (schematics.isEmpty()) {
+            player.print("No schematics found.");
+        } else {
+            Integer page = 1;
+            Integer offset = 0;
+            final Integer schematicsPerPage = 10;
+
+            if (args.argsLength() == 1) {
+                final String reqPage = args.getString(0);
+                if (isInt(reqPage) && page > 0) {
+                    page = Math.abs(Integer.parseInt(reqPage));
+                    offset = offset + ((page - 1) * schematicsPerPage);
+                } else {
+                    page = 1;
+                }
+            }
+
+            Integer pageCount = Math.abs(schematics.size() / schematicsPerPage) + 1;
+            player.print("Available schematics [Page " + page + "/" + pageCount + "] :");
+            StringBuilder build = new StringBuilder();
+            for (int i = offset; i < offset + schematicsPerPage; i++) {
+                if (i < schematics.size()) {
+                    build.append(schematics.get(i));
+                }
+            }
+
+            player.print(build.toString());
+        }
     }
 
-    private String listFiles(String prefix, File[] files) {
-        StringBuilder build = new StringBuilder();
+    private List<String> listFiles(String prefix, File[] files) {
+        List<String> result = new ArrayList<String>();
         for (File file : files) {
+            StringBuilder build = new StringBuilder();
             if (file.isDirectory()) {
                 build.append(listFiles(prefix + file.getName() + "/", file.listFiles()));
                 continue;
@@ -293,7 +325,18 @@ public class SchematicCommands {
             SchematicFormat format = SchematicFormat.getFormat(file);
             build.append(prefix).append(file.getName())
                .append(": ").append(format == null ? "Unknown" : format.getName());
+
+            result.add(build.toString());
         }
-        return build.toString();
+        return result;
+    }
+    
+    private boolean isInt(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch(Exception e) {
+            return false;
+        }
     }
 }
