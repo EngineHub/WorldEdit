@@ -137,7 +137,7 @@ public class ForgeWorldEdit {
         Action action = event.action;
         switch (action) {
             case LEFT_CLICK_BLOCK: {
-                WorldVector pos = new WorldVector(LocalWorldAdapter.wrap(world), event.x, event.y, event.z);
+                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), event.x, event.y, event.z);
 
                 if (we.handleBlockLeftClick(player, pos)) {
                     event.setCanceled(true);
@@ -148,7 +148,7 @@ public class ForgeWorldEdit {
                 }
             }
             case RIGHT_CLICK_BLOCK: {
-                WorldVector pos = new WorldVector(LocalWorldAdapter.wrap(world), event.x, event.y, event.z);
+                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), event.x, event.y, event.z);
 
                 if (we.handleBlockRightClick(player, pos)) {
                     event.setCanceled(true);

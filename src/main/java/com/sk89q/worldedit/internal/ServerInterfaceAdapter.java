@@ -17,11 +17,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.platform;
+package com.sk89q.worldedit.internal;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.world.World;
 
 import java.util.List;
@@ -31,7 +32,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Adapts {@link Platform}s into the legacy {@link ServerInterface}.
  */
-class ServerInterfaceAdapter extends ServerInterface {
+public class ServerInterfaceAdapter extends ServerInterface {
 
     private final Platform platform;
 
@@ -40,7 +41,7 @@ class ServerInterfaceAdapter extends ServerInterface {
      *
      * @param platform the platform
      */
-    ServerInterfaceAdapter(Platform platform) {
+    private ServerInterfaceAdapter(Platform platform) {
         checkNotNull(platform);
         this.platform = platform;
     }
@@ -104,6 +105,16 @@ class ServerInterfaceAdapter extends ServerInterface {
     @Override
     public String getPlatformVersion() {
         return platform.getPlatformVersion();
+    }
+
+    /**
+     * Adapt an {@link Platform} instance into a {@link ServerInterface}.
+     *
+     * @param platform the platform
+     * @return the server interface
+     */
+    public static ServerInterface adapt(Platform platform) {
+        return new ServerInterfaceAdapter(platform);
     }
 
 }

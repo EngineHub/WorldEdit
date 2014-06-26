@@ -309,7 +309,7 @@ public class LocalWorldAdapter extends LocalWorld {
         return world.commit();
     }
 
-    public static LocalWorldAdapter wrap(World world) {
+    public static LocalWorldAdapter adapt(World world) {
         return new LocalWorldAdapter(world);
     }
 

@@ -125,7 +125,7 @@ public class WorldEditListener implements Listener {
         Action action = event.getAction();
         if (action == Action.LEFT_CLICK_BLOCK) {
             final Block clickedBlock = event.getClickedBlock();
-            final WorldVector pos = new WorldVector(LocalWorldAdapter.wrap(world), clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
+            final WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
 
             if (we.handleBlockLeftClick(player, pos)) {
                 event.setCancelled(true);
@@ -159,7 +159,7 @@ public class WorldEditListener implements Listener {
 
         } else if (action == Action.RIGHT_CLICK_BLOCK) {
             final Block clickedBlock = event.getClickedBlock();
-            final WorldVector pos = new WorldVector(LocalWorldAdapter.wrap(world), clickedBlock.getX(),
+            final WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), clickedBlock.getX(),
                     clickedBlock.getY(), clickedBlock.getZ());
 
             if (we.handleBlockRightClick(player, pos)) {

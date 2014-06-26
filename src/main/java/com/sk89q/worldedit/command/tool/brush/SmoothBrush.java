@@ -46,7 +46,7 @@ public class SmoothBrush implements Brush {
 
     public void build(EditSession editSession, Vector pos, Pattern mat, double size) throws MaxChangedBlocksException {
         double rad = size;
-        WorldVector min = new WorldVector(LocalWorldAdapter.wrap(editSession.getWorld()), pos.subtract(rad, rad, rad));
+        WorldVector min = new WorldVector(LocalWorldAdapter.adapt(editSession.getWorld()), pos.subtract(rad, rad, rad));
         Vector max = pos.add(rad, rad + 10, rad);
         Region region = new CuboidRegion(editSession.getWorld(), min, max);
         HeightMap heightMap = new HeightMap(editSession, region, naturalOnly);

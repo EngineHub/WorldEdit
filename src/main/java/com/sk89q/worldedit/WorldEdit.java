@@ -24,6 +24,7 @@ import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.command.tool.*;
+import com.sk89q.worldedit.event.actor.BlockInteractEvent;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.extension.input.ParserContext;
@@ -55,6 +56,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.event.actor.InteractionType.PRIMARY_INPUT;
 
 /**
  * The entry point and container for a working implementation of WorldEdit.
@@ -831,41 +833,9 @@ public class WorldEdit {
      * @return false if you want the action to go through
      */
     public boolean handleBlockLeftClick(LocalPlayer player, WorldVector clicked) {
-        LocalSession session = getSession(player);
-
-        if (player.getItemInHand() == getConfiguration().wandItem) {
-            if (!session.isToolControlEnabled()) {
-                return false;
-            }
-
-            if (!player.hasPermission("worldedit.selection.pos")) {
-                return false;
-            }
-
-            RegionSelector selector = session.getRegionSelector(player.getWorld());
-            if (selector.selectPrimary(clicked)) {
-                selector.explainPrimarySelection(player, session, clicked);
-            }
-
-            return true;
-        }
-
-        if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
-            final BlockTool superPickaxe = session.getSuperPickaxe();
-            if (superPickaxe != null && superPickaxe.canUse(player)) {
-                return superPickaxe.actPrimary(getServer(), getConfiguration(), player, session, clicked);
-            }
-        }
-
-        Tool tool = session.getTool(player.getItemInHand());
-        if (tool != null && tool instanceof DoubleActionBlockTool) {
-            if (tool.canUse(player)) {
-                ((DoubleActionBlockTool) tool).actSecondary(getServer(), getConfiguration(), player, session, clicked);
-                return true;
-            }
-        }
-
-        return false;
+        BlockInteractEvent event = new BlockInteractEvent(player, clicked.toLocation(), PRIMARY_INPUT);
+        getEventBus().post(event);
+        return event.isCancelled();
     }
 
     /**

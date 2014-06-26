@@ -59,7 +59,7 @@ public class ForgePlayer extends LocalPlayer {
     }
 
     public WorldVector getPosition() {
-        return new WorldVector(LocalWorldAdapter.wrap(ForgeWorldEdit.inst.getWorld(this.player.worldObj)), this.player.posX, this.player.posY, this.player.posZ);
+        return new WorldVector(LocalWorldAdapter.adapt(ForgeWorldEdit.inst.getWorld(this.player.worldObj)), this.player.posX, this.player.posY, this.player.posZ);
     }
 
     public com.sk89q.worldedit.world.World getWorld() {

@@ -19,9 +19,16 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.ServerInterface;
-import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.command.tool.BlockTool;
+import com.sk89q.worldedit.command.tool.DoubleActionBlockTool;
+import com.sk89q.worldedit.command.tool.Tool;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.event.actor.BlockInteractEvent;
+import com.sk89q.worldedit.internal.ServerInterfaceAdapter;
+import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.eventbus.Subscribe;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -43,6 +50,7 @@ public class PlatformManager {
 
     private final LocalConfiguration defaultConfig = new DefaultConfiguration();
     private final List<Platform> platforms = new ArrayList<Platform>();
+    private final WorldEdit worldEdit;
     private final CommandManager commandManager;
     private @Nullable Platform primary = null;
 
@@ -53,7 +61,11 @@ public class PlatformManager {
      */
     public PlatformManager(WorldEdit worldEdit) {
         checkNotNull(worldEdit);
+        this.worldEdit = worldEdit;
         this.commandManager = new CommandManager(worldEdit);
+
+        // Register this instance for events
+        worldEdit.getEventBus().register(this);
     }
 
     /**
@@ -182,10 +194,63 @@ public class PlatformManager {
             if (platform instanceof ServerInterface) {
                 return (ServerInterface) platform;
             } else {
-                return new ServerInterfaceAdapter(platform);
+                return ServerInterfaceAdapter.adapt(platform);
             }
         } else {
             throw new IllegalStateException("No platform has been registered");
+        }
+    }
+
+    @Subscribe
+    public void handleBlockInteract(BlockInteractEvent event) {
+        Actor actor = event.getCause();
+        Location location = event.getLocation();
+        Vector vector = location.toVector();
+
+        // At this time, only handle interaction from players
+        if (actor instanceof Player) {
+            Player player = (Player) actor;
+            LocalSession session = worldEdit.getSessionManager().get(actor);
+
+            if (player.getItemInHand() == getConfiguration().wandItem) {
+                if (!session.isToolControlEnabled()) {
+                    return;
+                }
+
+                if (!actor.hasPermission("worldedit.selection.pos")) {
+                    return;
+                }
+
+                RegionSelector selector = session.getRegionSelector(player.getWorld());
+
+                if (selector.selectPrimary(location.toVector())) {
+                    selector.explainPrimarySelection(actor, session, vector);
+                }
+
+                event.setCancelled(true);
+                return;
+            }
+
+            if (player instanceof LocalPlayer) { // Temporary workaround
+                LocalPlayer localPlayer = (LocalPlayer) player;
+                WorldVector worldVector = new WorldVector(location);
+
+                if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
+                    final BlockTool superPickaxe = session.getSuperPickaxe();
+                    if (superPickaxe != null && superPickaxe.canUse(localPlayer)) {
+                        event.setCancelled(superPickaxe.actPrimary(getServerInterface(), getConfiguration(), localPlayer, session, worldVector));
+                        return;
+                    }
+                }
+
+                Tool tool = session.getTool(player.getItemInHand());
+                if (tool != null && tool instanceof DoubleActionBlockTool) {
+                    if (tool.canUse(localPlayer)) {
+                        ((DoubleActionBlockTool) tool).actSecondary(getServerInterface(), getConfiguration(), localPlayer, session, worldVector);
+                        event.setCancelled(true);
+                    }
+                }
+            }
         }
     }
 
