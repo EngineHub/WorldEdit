@@ -24,8 +24,8 @@ import com.google.common.io.Closer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.extension.platform.PlatformRejectionException;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -103,16 +103,18 @@ public class ForgeWorldEdit {
         }
 
         this.platform = new ForgePlatform(this);
-        try {
-            WorldEdit.getInstance().getPlatformManager().register(platform);
-        } catch (PlatformRejectionException e) {
-            throw new RuntimeException("Failed to register with WorldEdit", e);
-        }
+
+        WorldEdit.getInstance().getPlatformManager().register(platform);
     }
 
     @EventHandler
     public void serverStopping(FMLServerStoppingEvent event) {
         WorldEdit.getInstance().getPlatformManager().unregister(platform);
+    }
+
+    @EventHandler
+    public void serverStarted(FMLServerStartedEvent event) {
+        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
     }
 
     @ForgeSubscribe
@@ -128,6 +130,8 @@ public class ForgeWorldEdit {
 
     @ForgeSubscribe
     public void onPlayerInteract(PlayerInteractEvent event) {
+        if (!platform.isHookingEvents()) return; // We have to be told to catch these events
+
         if (event.useItem == Result.DENY || event.entity.worldObj.isRemote) return;
 
         WorldEdit we = WorldEdit.getInstance();

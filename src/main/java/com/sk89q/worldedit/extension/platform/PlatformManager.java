@@ -20,10 +20,12 @@
 package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.command.tool.*;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.BlockInteractEvent;
 import com.sk89q.worldedit.event.platform.Interaction;
+import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.event.platform.PlayerInputEvent;
 import com.sk89q.worldedit.internal.ServerInterfaceAdapter;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -31,8 +33,8 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,11 +50,11 @@ public class PlatformManager {
 
     private static final Logger logger = Logger.getLogger(PlatformManager.class.getCanonicalName());
 
-    private final LocalConfiguration defaultConfig = new DefaultConfiguration();
-    private final List<Platform> platforms = new ArrayList<Platform>();
     private final WorldEdit worldEdit;
     private final CommandManager commandManager;
-    private @Nullable Platform primary = null;
+    private final List<Platform> platforms = new ArrayList<Platform>();
+    private final Map<Capability, Platform> preferences = new EnumMap<Capability, Platform>(Capability.class);
+    private @Nullable String firstSeenVersion;
 
     /**
      * Create a new platform manager.
@@ -72,54 +74,126 @@ public class PlatformManager {
      * Register a platform with WorldEdit.
      *
      * @param platform the platform
-     * @throws PlatformRejectionException thrown if the registration is rejected
      */
-    public synchronized void register(Platform platform) throws PlatformRejectionException {
+    public synchronized void register(Platform platform) {
         checkNotNull(platform);
+
         logger.log(Level.FINE, "Got request to register " + platform.getClass() + " with WorldEdit [" + super.toString() + "]");
+
+        // Just add the platform to the list of platforms: we'll pick favorites
+        // once all the platforms have been loaded
         platforms.add(platform);
 
-        // Register primary platform
-        if (this.primary == null) {
-            commandManager.register(platform);
-            this.primary = platform;
-        } else {
-            // Make sure that versions are in sync
-            if (!primary.getVersion().equals(platform.getVersion())) {
+        // Make sure that versions are in sync
+        if (firstSeenVersion != null) {
+            if (!firstSeenVersion.equals(platform.getVersion())) {
                 logger.log(Level.WARNING,
                         "\n**********************************************\n" +
-                        "** There is a mismatch in available WorldEdit platforms!\n" +
+                        "** You have WorldEdit installed for multiple platforms in the same \n" +
+                        "** game/program. This is OK except that you have different WorldEdit versions\n" +
+                        "** installed (i.e. {0} and {1}).\n" +
                         "**\n" +
-                        "** {0} v{1} is trying to register WE version v{2}\n" +
-                        "** but the primary platform, {3} v{4}, uses WE version v{5}\n" +
+                        "** WorldEdit has seen both versions {0} and {1}.\n" +
                         "**\n" +
                         "** Things may break! Please make sure that your WE versions are in sync.\n" +
                         "**********************************************\n",
                         new Object[]{
-                                platform.getClass(), platform.getPlatformVersion(), platform.getVersion(),
-                                primary.getClass(), primary.getPlatformVersion(), primary.getVersion()
+                                firstSeenVersion, platform.getVersion()
                         });
             }
+        } else {
+            firstSeenVersion = platform.getVersion();
         }
     }
 
     /**
      * Unregister a platform from WorldEdit.
+     * </p>
+     * If the platform has been chosen for any capabilities, then a new
+     * platform will be found.
      *
      * @param platform the platform
      */
     public synchronized boolean unregister(Platform platform) {
         checkNotNull(platform);
+
         boolean removed = platforms.remove(platform);
+
         if (removed) {
             logger.log(Level.FINE, "Unregistering " + platform.getClass().getCanonicalName() + " from WorldEdit");
 
-            if (platform == primary) {
-                primary = null;
-                commandManager.unregister();
+            boolean choosePreferred = false;
+
+            // Check whether this platform was chosen to be the preferred one
+            // for any capability and be sure to remove it
+            Iterator<Entry<Capability, Platform>> it = preferences.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<Capability, Platform> entry = it.next();
+                if (entry.getValue().equals(platform)) {
+                    entry.getKey().unload(this, entry.getValue());
+                    it.remove();
+                    choosePreferred = true; // Have to choose new favorites
+                }
+            }
+
+            if (choosePreferred) {
+                choosePreferred();
             }
         }
+
         return removed;
+    }
+
+    /**
+     * Get the preferred platform for handling a certain capability. Returns
+     * null if none is available.
+     *
+     * @param capability the capability
+     * @return the platform
+     * @throws NoCapablePlatformException thrown if no platform is capable
+     */
+    public synchronized Platform queryCapability(Capability capability) throws NoCapablePlatformException {
+        Platform platform = preferences.get(checkNotNull(capability));
+        if (platform != null) {
+            return platform;
+        } else {
+            throw new NoCapablePlatformException("No platform was found supporting " + capability.name());
+        }
+    }
+
+    /**
+     * Choose preferred platforms and perform necessary initialization.
+     */
+    private synchronized void choosePreferred() {
+        for (Capability capability : Capability.values()) {
+            Platform preferred = findMostPreferred(capability);
+            if (preferred != null) {
+                preferences.put(capability, preferred);
+                capability.initialize(this, preferred);
+            }
+        }
+    }
+
+    /**
+     * Find the most preferred platform for a given capability from the list of
+     * platforms. This does not use the map of preferred platforms.
+     *
+     * @param capability the capability
+     * @return the most preferred platform, or null if no platform was found
+     */
+    private synchronized @Nullable Platform findMostPreferred(Capability capability) {
+        Platform preferred = null;
+        Preference highest = null;
+
+        for (Platform platform : platforms) {
+            Preference preference = platform.getCapabilities().get(capability);
+            if (preference != null && (highest == null || preference.isPreferredOver(highest))) {
+                preferred = platform;
+                highest = preference;
+            }
+        }
+
+        return preferred;
     }
 
     /**
@@ -131,15 +205,6 @@ public class PlatformManager {
      */
     public synchronized List<Platform> getPlatforms() {
         return new ArrayList<Platform>(platforms);
-    }
-
-    /**
-     * Get the primary platform.
-     *
-     * @return the primary platform (may be null)
-     */
-    public @Nullable Platform getPrimaryPlatform() {
-        return primary;
     }
 
     /**
@@ -160,26 +225,7 @@ public class PlatformManager {
      * @return the configuration
      */
     public LocalConfiguration getConfiguration() {
-        Platform platform = primary;
-        if (platform != null) {
-            return platform.getConfiguration();
-        } else {
-            return defaultConfig;
-        }
-    }
-    /**
-     * Return a {@link Platform}.
-     *
-     * @return a {@link Platform}
-     * @throws IllegalStateException if no platform has been registered
-     */
-    public Platform getPlatform() throws IllegalStateException {
-        Platform platform = primary;
-        if (platform != null) {
-            return platform;
-        } else {
-            throw new IllegalStateException("No platform has been registered");
-        }
+        return queryCapability(Capability.CONFIGURATION).getConfiguration();
     }
 
     /**
@@ -188,19 +234,17 @@ public class PlatformManager {
      * @return a {@link ServerInterface}
      * @throws IllegalStateException if no platform has been registered
      */
+    @SuppressWarnings("deprecation")
     public ServerInterface getServerInterface() throws IllegalStateException {
-        Platform platform = primary;
-        if (platform != null) {
-            if (platform instanceof ServerInterface) {
-                return (ServerInterface) platform;
-            } else {
-                return ServerInterfaceAdapter.adapt(platform);
-            }
-        } else {
-            throw new IllegalStateException("No platform has been registered");
-        }
+        return ServerInterfaceAdapter.adapt(queryCapability(Capability.USER_COMMANDS));
     }
 
+    @Subscribe
+    public void handlePlatformReady(PlatformReadyEvent event) {
+        choosePreferred();
+    }
+
+    @SuppressWarnings("deprecation")
     @Subscribe
     public void handleBlockInteract(BlockInteractEvent event) {
         Actor actor = event.getCause();
@@ -288,6 +332,7 @@ public class PlatformManager {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Subscribe
     public void handlePlayerInput(PlayerInputEvent event) {
         Player player = event.getPlayer();
@@ -370,13 +415,5 @@ public class PlatformManager {
         }
     }
 
-    /**
-     * A default configuration for when none is set.
-     */
-    private static class DefaultConfiguration extends LocalConfiguration {
-        @Override
-        public void load() {
-        }
-    }
 
 }

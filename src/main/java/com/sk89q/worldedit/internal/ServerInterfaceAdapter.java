@@ -21,11 +21,17 @@ package com.sk89q.worldedit.internal;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BiomeTypes;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.world.World;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -88,6 +94,10 @@ public class ServerInterfaceAdapter extends ServerInterface {
     }
 
     @Override
+    public void registerGameHooks() {
+    }
+
+    @Override
     public LocalConfiguration getConfiguration() {
         return platform.getConfiguration();
     }
@@ -105,6 +115,11 @@ public class ServerInterfaceAdapter extends ServerInterface {
     @Override
     public String getPlatformVersion() {
         return platform.getPlatformVersion();
+    }
+
+    @Override
+    public Map<Capability, Preference> getCapabilities() {
+        return platform.getCapabilities();
     }
 
     /**

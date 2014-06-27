@@ -25,6 +25,8 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Preference;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -32,22 +34,24 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BukkitServerInterface extends ServerInterface {
     public Server server;
     public WorldEditPlugin plugin;
     private CommandRegistration dynamicCommands;
     private BukkitBiomeTypes biomes;
+    private boolean hookingEvents;
 
     public BukkitServerInterface(WorldEditPlugin plugin, Server server) {
         this.plugin = plugin;
         this.server = server;
         this.biomes = new BukkitBiomeTypes();
         dynamicCommands = new CommandRegistration(plugin);
+    }
+
+    boolean isHookingEvents() {
+        return hookingEvents;
     }
 
     @Override
@@ -115,6 +119,11 @@ public class BukkitServerInterface extends ServerInterface {
     }
 
     @Override
+    public void registerGameHooks() {
+        hookingEvents = true;
+    }
+
+    @Override
     public LocalConfiguration getConfiguration() {
         return plugin.getLocalConfiguration();
     }
@@ -132,6 +141,17 @@ public class BukkitServerInterface extends ServerInterface {
     @Override
     public String getPlatformVersion() {
         return plugin.getDescription().getVersion();
+    }
+
+    @Override
+    public Map<Capability, Preference> getCapabilities() {
+        Map<Capability, Preference> capabilities = new EnumMap<Capability, Preference>(Capability.class);
+        capabilities.put(Capability.CONFIGURATION, Preference.NORMAL);
+        capabilities.put(Capability.GAME_HOOKS, Preference.PREFERRED);
+        capabilities.put(Capability.PERMISSIONS, Preference.PREFERRED);
+        capabilities.put(Capability.USER_COMMANDS, Preference.PREFERRED);
+        capabilities.put(Capability.WORLD_EDITING, Preference.PREFER_OTHERS);
+        return capabilities;
     }
 
     public void unregisterCommands() {

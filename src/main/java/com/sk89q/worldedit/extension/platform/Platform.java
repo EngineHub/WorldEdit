@@ -27,6 +27,7 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.world.World;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a platform that WorldEdit has been implemented for.
@@ -83,6 +84,11 @@ public interface Platform {
     void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager);
 
     /**
+     * Register game hooks.
+     */
+    void registerGameHooks();
+
+    /**
      * Get the configuration from this platform.
      *
      * @return the configuration
@@ -115,5 +121,14 @@ public interface Platform {
      * @return the platform version
      */
     String getPlatformVersion();
+
+    /**
+     * Get a map of advertised capabilities of this platform, where each key
+     * in the given map is a supported capability and the respective value
+     * indicates the preference for this platform for that given capability.
+     *
+     * @return a map of capabilities
+     */
+    Map<Capability, Preference> getCapabilities();
 
 }

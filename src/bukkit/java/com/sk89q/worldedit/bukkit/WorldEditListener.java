@@ -69,11 +69,19 @@ public class WorldEditListener implements Listener {
      */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        if (!plugin.getInternalPlatform().isHookingEvents()) {
+            return;
+        }
+
         plugin.getWorldEdit().markExpire(plugin.wrapPlayer(event.getPlayer()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onGamemode(PlayerGameModeChangeEvent event) {
+        if (!plugin.getInternalPlatform().isHookingEvents()) {
+            return;
+        }
+
         // this will automatically refresh their sesssion, we don't have to do anything
         WorldEdit.getInstance().getSession(plugin.wrapPlayer(event.getPlayer()));
     }
@@ -114,6 +122,10 @@ public class WorldEditListener implements Listener {
      */
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
+        if (!plugin.getInternalPlatform().isHookingEvents()) {
+            return;
+        }
+
         if (event.useItemInHand() == Result.DENY) {
             return;
         }

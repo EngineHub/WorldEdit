@@ -56,19 +56,11 @@ public class WorldEditCommands {
         player.print("https://github.com/sk89q/worldedit/");
 
         PlatformManager pm = we.getPlatformManager();
-        Platform primary = pm.getPrimaryPlatform();
 
         player.printDebug("");
         player.printDebug("Platforms:");
         for (Platform platform : pm.getPlatforms()) {
-            String prefix = "";
-
-            if (primary != null && primary.equals(platform)) {
-                prefix = "[PRIMARY] ";
-            }
-
-            player.printDebug(String.format("- %s%s v%s (WE v%s)",
-                    prefix, platform.getPlatformName(), platform.getPlatformVersion(), platform.getVersion()));
+            player.printDebug(String.format("- %s v%s (WE v%s)", platform.getPlatformName(), platform.getPlatformVersion(), platform.getVersion()));
         }
     }
 

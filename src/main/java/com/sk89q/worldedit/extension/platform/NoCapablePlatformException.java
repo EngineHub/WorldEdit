@@ -19,31 +19,24 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.worldedit.WorldEditException;
-
 /**
- * Thrown when a platform registration request is rejected, which may
- * be because another platform is already registered.
+ * Thrown when no capable platform is found.
  */
-public class PlatformRejectionException extends WorldEditException {
+public class NoCapablePlatformException extends RuntimeException {
 
-    /**
-     * Create with a message.
-     *
-     * @param message the message
-     */
-    public PlatformRejectionException(String message) {
+    public NoCapablePlatformException() {
+    }
+
+    public NoCapablePlatformException(String message) {
         super(message);
     }
 
-    /**
-     * Create with a message and a cause.
-     *
-     * @param message the message
-     * @param cause the cause
-     */
-    public PlatformRejectionException(String message, Throwable cause) {
+    public NoCapablePlatformException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public NoCapablePlatformException(Throwable cause) {
+        super(cause);
     }
 
 }

@@ -23,6 +23,8 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Preference;
 import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
@@ -34,21 +36,26 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 class ForgePlatform extends ServerInterface {
+
     private final ForgeWorldEdit mod;
     private final MinecraftServer server;
     private final ForgeBiomeTypes biomes;
+    private boolean hookingEvents = false;
 
-    public ForgePlatform(ForgeWorldEdit mod) {
+    ForgePlatform(ForgeWorldEdit mod) {
         this.mod = mod;
         this.server = FMLCommonHandler.instance().getMinecraftServerInstance();
         this.biomes = new ForgeBiomeTypes();
     }
 
+    boolean isHookingEvents() {
+        return hookingEvents;
+    }
+
+    @Override
     public int resolveItem(String name) {
         if (name == null) return 0;
         for (Item item : Item.itemsList) {
@@ -65,21 +72,26 @@ class ForgePlatform extends ServerInterface {
         return 0;
     }
 
+    @Override
     public boolean isValidMobType(String type) {
         return EntityList.stringToClassMapping.containsKey(type);
     }
 
+    @Override
     public void reload() {
     }
 
+    @Override
     public BiomeTypes getBiomes() {
         return this.biomes;
     }
 
+    @Override
     public int schedule(long delay, long period, Runnable task) {
         return -1;
     }
 
+    @Override
     public List<? extends com.sk89q.worldedit.world.World> getWorlds() {
         List<WorldServer> worlds = Arrays.asList(DimensionManager.getWorlds());
         List<com.sk89q.worldedit.world.World> ret = new ArrayList<com.sk89q.worldedit.world.World>(worlds.size());
@@ -126,6 +138,12 @@ class ForgePlatform extends ServerInterface {
     }
 
     @Override
+    public void registerGameHooks() {
+        // We registered the events already anyway, so we just 'turn them on'
+        hookingEvents = true;
+    }
+
+    @Override
     public LocalConfiguration getConfiguration() {
         return mod.getConfig();
     }
@@ -144,4 +162,16 @@ class ForgePlatform extends ServerInterface {
     public String getPlatformVersion() {
         return mod.getInternalVersion();
     }
+
+    @Override
+    public Map<Capability, Preference> getCapabilities() {
+        Map<Capability, Preference> capabilities = new EnumMap<Capability, Preference>(Capability.class);
+        capabilities.put(Capability.CONFIGURATION, Preference.PREFER_OTHERS);
+        capabilities.put(Capability.GAME_HOOKS, Preference.NORMAL);
+        capabilities.put(Capability.PERMISSIONS, Preference.PREFER_OTHERS);
+        capabilities.put(Capability.USER_COMMANDS, Preference.NORMAL);
+        capabilities.put(Capability.WORLD_EDITING, Preference.PREFERRED);
+        return capabilities;
+    }
+
 }
