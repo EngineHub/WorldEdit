@@ -339,7 +339,7 @@ public class WorldEditPlugin extends JavaPlugin {
             return wrapPlayer((Player) sender);
         }
 
-        return new BukkitCommandSender(this, this.server, sender);
+        return new BukkitCommandSender(this, sender);
     }
 
     /**

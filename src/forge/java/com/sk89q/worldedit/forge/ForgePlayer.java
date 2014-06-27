@@ -38,7 +38,6 @@ public class ForgePlayer extends LocalPlayer {
     private EntityPlayerMP player;
 
     protected ForgePlayer(EntityPlayerMP player) {
-        super((ServerInterface) ForgeWorldEdit.inst.getPlatform());
         this.player = player;
     }
 

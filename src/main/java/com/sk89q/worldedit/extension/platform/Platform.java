@@ -24,8 +24,10 @@ import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -77,6 +79,26 @@ public interface Platform {
     int schedule(long delay, long period, Runnable task);
 
     List<? extends World> getWorlds();
+
+    /**
+     * Create a duplicate of the given player.
+     * </p>
+     * The given player may have been provided by a different platform.
+     *
+     * @param player the player to match
+     * @return a matched player, otherwise null
+     */
+    @Nullable Player matchPlayer(Player player);
+
+    /**
+     * Create a duplicate of the given world.
+     * </p>
+     * The given world may have been provided by a different platform.
+     *
+     * @param world the world to match
+     * @return a matched world, otherwise null
+     */
+    @Nullable World matchWorld(World world);
 
     @Deprecated
     void onCommandRegistration(List<Command> commands);

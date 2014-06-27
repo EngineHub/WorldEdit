@@ -25,11 +25,13 @@ import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -80,6 +82,18 @@ public class ServerInterfaceAdapter extends ServerInterface {
     @Override
     public List<? extends World> getWorlds() {
         return platform.getWorlds();
+    }
+
+    @Nullable
+    @Override
+    public Player matchPlayer(Player player) {
+        return platform.matchPlayer(player);
+    }
+
+    @Nullable
+    @Override
+    public World matchWorld(World world) {
+        return platform.matchWorld(world);
     }
 
     @Override

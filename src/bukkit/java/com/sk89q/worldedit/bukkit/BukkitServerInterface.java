@@ -25,6 +25,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Preference;
 import org.bukkit.Bukkit;
@@ -33,6 +34,7 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -91,6 +93,28 @@ public class BukkitServerInterface extends ServerInterface {
         }
 
         return ret;
+    }
+
+    @Nullable
+    @Override
+    public Player matchPlayer(Player player) {
+        if (player instanceof BukkitPlayer) {
+            return player;
+        } else {
+            org.bukkit.entity.Player bukkitPlayer = server.getPlayerExact(player.getName());
+            return bukkitPlayer != null ? new BukkitPlayer(plugin, this, bukkitPlayer) : null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public com.sk89q.worldedit.world.World matchWorld(com.sk89q.worldedit.world.World world) {
+        if (world instanceof BukkitWorld) {
+            return world;
+        } else {
+            World bukkitWorld = server.getWorld(world.getName());
+            return bukkitWorld != null ? new BukkitWorld(bukkitWorld) : null;
+        }
     }
 
     @Override

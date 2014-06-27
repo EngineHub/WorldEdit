@@ -23,19 +23,23 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.world.World;
 import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 class ForgePlatform extends ServerInterface {
@@ -99,6 +103,33 @@ class ForgePlatform extends ServerInterface {
             ret.add(new ForgeWorld(world));
         }
         return ret;
+    }
+
+    @Nullable
+    @Override
+    public Player matchPlayer(Player player) {
+        if (player instanceof ForgePlayer) {
+            return player;
+        } else {
+            EntityPlayerMP entity = server.getConfigurationManager().getPlayerForUsername(player.getName());
+            return entity != null ? new ForgePlayer(entity) : null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public World matchWorld(World world) {
+        if (world instanceof ForgeWorld) {
+            return world;
+        } else {
+            for (WorldServer ws : DimensionManager.getWorlds()) {
+                if (ws.getWorldInfo().getWorldName().equals(world.getName())) {
+                    return new ForgeWorld(ws);
+                }
+            }
+
+            return null;
+        }
     }
 
     @Override

@@ -31,6 +31,7 @@ import com.sk89q.worldedit.internal.ServerInterfaceAdapter;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -208,6 +209,44 @@ public class PlatformManager {
     }
 
     /**
+     * Given a world, possibly return the same world but using a different
+     * platform preferred for world editing operations.
+     *
+     * @param base the world to match
+     * @return the preferred world, if one was found, otherwise the given world
+     */
+    public World getWorldForEditing(World base) {
+        checkNotNull(base);
+        World match = queryCapability(Capability.WORLD_EDITING).matchWorld(base);
+        return match != null ? match : base;
+    }
+
+    /**
+     * Given an actor, return a new one that may use a different platform
+     * for permissions and world editing.
+     *
+     * @param base the base actor to match
+     * @return a new delegate actor
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Actor> T createProxyActor(T base) {
+        checkNotNull(base);
+
+        if (base instanceof Player) {
+            Player player = (Player) base;
+
+            Player permActor = queryCapability(Capability.PERMISSIONS).matchPlayer(player);
+            if (permActor == null) {
+                permActor = player;
+            }
+
+            return (T) new PlayerProxy(player, permActor, getWorldForEditing(base.getWorld()));
+        } else {
+            return base;
+        }
+    }
+
+    /**
      * Get the command manager.
      *
      * @return the command manager
@@ -247,7 +286,10 @@ public class PlatformManager {
     @SuppressWarnings("deprecation")
     @Subscribe
     public void handleBlockInteract(BlockInteractEvent event) {
-        Actor actor = event.getCause();
+        // Create a proxy actor with a potentially different world for
+        // making changes to the world
+        Actor actor = createProxyActor(event.getCause());
+
         Location location = event.getLocation();
         Vector vector = location.toVector();
 
@@ -335,7 +377,9 @@ public class PlatformManager {
     @SuppressWarnings("deprecation")
     @Subscribe
     public void handlePlayerInput(PlayerInputEvent event) {
-        Player player = event.getPlayer();
+        // Create a proxy actor with a potentially different world for
+        // making changes to the world
+        Player player = createProxyActor(event.getPlayer());
 
         switch (event.getInputType()) {
             case PRIMARY: {

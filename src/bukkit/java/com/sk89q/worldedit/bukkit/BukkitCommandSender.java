@@ -29,8 +29,7 @@ public class BukkitCommandSender extends LocalPlayer {
     private CommandSender sender;
     private WorldEditPlugin plugin;
 
-    public BukkitCommandSender(WorldEditPlugin plugin, ServerInterface server, CommandSender sender) {
-        super(server);
+    public BukkitCommandSender(WorldEditPlugin plugin, CommandSender sender) {
         this.plugin = plugin;
         this.sender = sender;
     }

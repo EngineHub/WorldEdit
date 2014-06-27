@@ -40,19 +40,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public abstract class AbstractPlayerActor implements Actor, Player {
 
-    private final Platform platform;
-
-    /**
-     * Create a new instance.
-     *
-     * @param platform the platform
-     */
-    protected AbstractPlayerActor(Platform platform) {
-        checkNotNull(platform);
-
-        this.platform = platform;
-    }
-
     /**
      * Returns direction according to rotation. May return null.
      *
