@@ -146,6 +146,8 @@ public class ForgeWorldEdit {
                 if (we.handleArmSwing(player)) {
                     event.setCanceled(true);
                 }
+
+                break;
             }
             case RIGHT_CLICK_BLOCK: {
                 WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), event.x, event.y, event.z);
@@ -157,11 +159,15 @@ public class ForgeWorldEdit {
                 if (we.handleRightClick(player)) {
                     event.setCanceled(true);
                 }
+
+                break;
             }
             case RIGHT_CLICK_AIR: {
                 if (we.handleRightClick(player)) {
                     event.setCanceled(true);
                 }
+
+                break;
             }
         }
     }
