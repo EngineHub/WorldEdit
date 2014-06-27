@@ -23,7 +23,9 @@ import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.command.tool.*;
+import com.sk89q.worldedit.command.tool.DoubleActionTraceTool;
+import com.sk89q.worldedit.command.tool.Tool;
+import com.sk89q.worldedit.command.tool.TraceTool;
 import com.sk89q.worldedit.event.actor.BlockInteractEvent;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.event.platform.CommandEvent;
@@ -38,7 +40,6 @@ import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.pattern.Patterns;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.scripting.CraftScriptContext;
 import com.sk89q.worldedit.scripting.CraftScriptEngine;
 import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
@@ -57,6 +58,7 @@ import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.event.actor.InteractionType.PRIMARY_INPUT;
+import static com.sk89q.worldedit.event.actor.InteractionType.SECONDARY_INPUT;
 
 /**
  * The entry point and container for a working implementation of WorldEdit.
@@ -795,34 +797,9 @@ public class WorldEdit {
      * @return false if you want the action to go through
      */
     public boolean handleBlockRightClick(LocalPlayer player, WorldVector clicked) {
-        LocalSession session = getSession(player);
-
-        if (player.getItemInHand() == getConfiguration().wandItem) {
-            if (!session.isToolControlEnabled()) {
-                return false;
-            }
-
-            if (!player.hasPermission("worldedit.selection.pos")) {
-                return false;
-            }
-
-            RegionSelector selector = session.getRegionSelector(player.getWorld());
-            if (selector.selectSecondary(clicked)) {
-                selector.explainSecondarySelection(player, session, clicked);
-            }
-
-            return true;
-        }
-
-        Tool tool = session.getTool(player.getItemInHand());
-        if (tool != null && tool instanceof BlockTool) {
-            if (tool.canUse(player)) {
-                ((BlockTool) tool).actPrimary(getServer(), getConfiguration(), player, session, clicked);
-                return true;
-            }
-        }
-
-        return false;
+        BlockInteractEvent event = new BlockInteractEvent(player, clicked.toLocation(), SECONDARY_INPUT);
+        getEventBus().post(event);
+        return event.isCancelled();
     }
 
     /**

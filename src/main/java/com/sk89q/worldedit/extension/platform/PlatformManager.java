@@ -210,10 +210,10 @@ public class PlatformManager {
 
         // At this time, only handle interaction from players
         if (actor instanceof Player) {
-            if (event.getType() == InteractionType.PRIMARY_INPUT) {
-                Player player = (Player) actor;
-                LocalSession session = worldEdit.getSessionManager().get(actor);
+            Player player = (Player) actor;
+            LocalSession session = worldEdit.getSessionManager().get(actor);
 
+            if (event.getType() == InteractionType.PRIMARY_INPUT) {
                 if (player.getItemInHand() == getConfiguration().wandItem) {
                     if (!session.isToolControlEnabled()) {
                         return;
@@ -249,6 +249,38 @@ public class PlatformManager {
                     if (tool != null && tool instanceof DoubleActionBlockTool) {
                         if (tool.canUse(localPlayer)) {
                             ((DoubleActionBlockTool) tool).actSecondary(getServerInterface(), getConfiguration(), localPlayer, session, worldVector);
+                            event.setCancelled(true);
+                        }
+                    }
+                }
+
+            } else if (event.getType() == InteractionType.SECONDARY_INPUT) {
+                if (player.getItemInHand() == getConfiguration().wandItem) {
+                    if (!session.isToolControlEnabled()) {
+                        return;
+                    }
+
+                    if (!actor.hasPermission("worldedit.selection.pos")) {
+                        return;
+                    }
+
+                    RegionSelector selector = session.getRegionSelector(player.getWorld());
+                    if (selector.selectSecondary(vector)) {
+                        selector.explainSecondarySelection(actor, session, vector);
+                    }
+
+                    event.setCancelled(true);
+                    return;
+                }
+
+                if (player instanceof LocalPlayer) { // Temporary workaround
+                    LocalPlayer localPlayer = (LocalPlayer) player;
+                    WorldVector worldVector = new WorldVector(location);
+
+                    Tool tool = session.getTool(player.getItemInHand());
+                    if (tool != null && tool instanceof BlockTool) {
+                        if (tool.canUse(localPlayer)) {
+                            ((BlockTool) tool).actPrimary(getServerInterface(), getConfiguration(), localPlayer, session, worldVector);
                             event.setCancelled(true);
                         }
                     }
