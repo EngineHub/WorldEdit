@@ -57,19 +57,23 @@ public class GeneralCommands {
             EditSession editSession) throws WorldEditException {
         
         LocalConfiguration config = we.getConfiguration();
+        boolean mayDisable = player.hasPermission("worldedit.limit.unrestricted");
 
         int limit = Math.max(-1, args.getInteger(0));
-        if (!player.hasPermission("worldedit.limit.unrestricted")
-                && config.maxChangeLimit > -1) {
+        if (!mayDisable && config.maxChangeLimit > -1) {
             if (limit > config.maxChangeLimit) {
-                player.printError("Your maximum allowable limit is "
-                        + config.maxChangeLimit + ".");
+                player.printError("Your maximum allowable limit is " + config.maxChangeLimit + ".");
                 return;
             }
         }
 
         session.setBlockChangeLimit(limit);
-        player.print("Block change limit set to " + limit + ".");
+
+        if (limit != -1) {
+            player.print("Block change limit set to " + limit + ". (Use //limit -1 to go back to the default.)");
+        } else {
+            player.print("Block change limit set to " + limit + ".");
+        }
     }
 
     @Command(
