@@ -17,66 +17,52 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.event.actor;
+package com.sk89q.worldedit.event.platform;
 
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.Cancellable;
 import com.sk89q.worldedit.event.Event;
-import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.Location;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Called when a block is interacted with.
+ * Raised whenever a player sends input.
  */
-public class BlockInteractEvent extends Event implements Cancellable {
+public class PlayerInputEvent extends Event implements Cancellable {
 
-    private final Actor cause;
-    private final Location location;
-    private final InteractionType type;
+    private final Player player;
+    private final InputType inputType;
     private boolean cancelled;
 
     /**
      * Create a new event.
      *
-     * @param cause the causing actor
-     * @param location the location of the block
-     * @param type the type of interaction
+     * @param player the player
+     * @param inputType the input type
      */
-    public BlockInteractEvent(Actor cause, Location location, InteractionType type) {
-        checkNotNull(cause);
-        checkNotNull(location);
-        checkNotNull(type);
-        this.cause = cause;
-        this.location = location;
-        this.type = type;
+    public PlayerInputEvent(Player player, InputType inputType) {
+        checkNotNull(player);
+        checkNotNull(inputType);
+        this.player = player;
+        this.inputType = inputType;
     }
 
     /**
-     * Get the cause of this event.
+     * Get the player that sent the input.
      *
-     * @return the cause
+     * @return the player
      */
-    public Actor getCause() {
-        return cause;
+    public Player getPlayer() {
+        return player;
     }
 
     /**
-     * Get the location of the block that was interacted with.
+     * Get the type of input sent.
      *
-     * @return the location
+     * @return the input sent
      */
-    public Location getLocation() {
-        return location;
-    }
-
-    /**
-     * Get the type of interaction.
-     *
-     * @return the type of interaction
-     */
-    public InteractionType getType() {
-        return type;
+    public InputType getInputType() {
+        return inputType;
     }
 
     @Override
@@ -88,4 +74,5 @@ public class BlockInteractEvent extends Event implements Cancellable {
     public void setCancelled(boolean cancelled) {
         this.cancelled = cancelled;
     }
+
 }

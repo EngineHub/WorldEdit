@@ -20,12 +20,11 @@
 package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.command.tool.BlockTool;
-import com.sk89q.worldedit.command.tool.DoubleActionBlockTool;
-import com.sk89q.worldedit.command.tool.Tool;
+import com.sk89q.worldedit.command.tool.*;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.event.actor.BlockInteractEvent;
-import com.sk89q.worldedit.event.actor.InteractionType;
+import com.sk89q.worldedit.event.platform.BlockInteractEvent;
+import com.sk89q.worldedit.event.platform.Interaction;
+import com.sk89q.worldedit.event.platform.PlayerInputEvent;
 import com.sk89q.worldedit.internal.ServerInterfaceAdapter;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.util.Location;
@@ -213,7 +212,7 @@ public class PlatformManager {
             Player player = (Player) actor;
             LocalSession session = worldEdit.getSessionManager().get(actor);
 
-            if (event.getType() == InteractionType.PRIMARY_INPUT) {
+            if (event.getType() == Interaction.HIT) {
                 if (player.getItemInHand() == getConfiguration().wandItem) {
                     if (!session.isToolControlEnabled()) {
                         return;
@@ -254,7 +253,7 @@ public class PlatformManager {
                     }
                 }
 
-            } else if (event.getType() == InteractionType.SECONDARY_INPUT) {
+            } else if (event.getType() == Interaction.OPEN) {
                 if (player.getItemInHand() == getConfiguration().wandItem) {
                     if (!session.isToolControlEnabled()) {
                         return;
@@ -285,6 +284,88 @@ public class PlatformManager {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @Subscribe
+    public void handlePlayerInput(PlayerInputEvent event) {
+        Player player = event.getPlayer();
+
+        switch (event.getInputType()) {
+            case PRIMARY: {
+                if (player.getItemInHand() == getConfiguration().navigationWand) {
+                    if (getConfiguration().navigationWandMaxDistance <= 0) {
+                        return;
+                    }
+
+                    if (!player.hasPermission("worldedit.navigation.jumpto.tool")) {
+                        return;
+                    }
+
+                    WorldVector pos = player.getSolidBlockTrace(getConfiguration().navigationWandMaxDistance);
+                    if (pos != null) {
+                        player.findFreePosition(pos);
+                    } else {
+                        player.printError("No block in sight (or too far)!");
+                    }
+
+                    event.setCancelled(true);
+                    return;
+                }
+
+                LocalSession session = worldEdit.getSessionManager().get(player);
+
+                if (player instanceof LocalPlayer) { // Temporary workaround
+                    LocalPlayer localPlayer = (LocalPlayer) player;
+
+                    Tool tool = session.getTool(player.getItemInHand());
+                    if (tool != null && tool instanceof DoubleActionTraceTool) {
+                        if (tool.canUse(localPlayer)) {
+                            ((DoubleActionTraceTool) tool).actSecondary(getServerInterface(), getConfiguration(), localPlayer, session);
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
+                }
+
+                break;
+            }
+
+            case SECONDARY: {
+                if (player.getItemInHand() == getConfiguration().navigationWand) {
+                    if (getConfiguration().navigationWandMaxDistance <= 0) {
+                        return;
+                    }
+
+                    if (!player.hasPermission("worldedit.navigation.thru.tool")) {
+                        return;
+                    }
+
+                    if (!player.passThroughForwardWall(40)) {
+                        player.printError("Nothing to pass through!");
+                    }
+
+                    event.setCancelled(true);
+                    return;
+                }
+
+                LocalSession session = worldEdit.getSessionManager().get(player);
+
+                if (player instanceof LocalPlayer) { // Temporary workaround
+                    LocalPlayer localPlayer = (LocalPlayer) player;
+
+                    Tool tool = session.getTool(player.getItemInHand());
+                    if (tool != null && tool instanceof TraceTool) {
+                        if (tool.canUse(localPlayer)) {
+                            ((TraceTool) tool).actPrimary(getServerInterface(), getConfiguration(), localPlayer, session);
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
+                }
+
+                break;
             }
         }
     }

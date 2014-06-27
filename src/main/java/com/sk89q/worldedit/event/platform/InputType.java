@@ -17,20 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.event.actor;
+package com.sk89q.worldedit.event.platform;
 
 /**
- * The type of interaction.
+ * The type of input sent.
  */
-public enum InteractionType {
+public enum InputType {
 
     /**
-     * Refers to primary input usage (left click).
+     * Left click.
      */
-    PRIMARY_INPUT,
+    PRIMARY,
 
     /**
-     * Refers to secondary input usage (right click).
+     * Right click.
      */
-    SECONDARY_INPUT
+    SECONDARY
+
 }

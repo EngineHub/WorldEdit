@@ -23,12 +23,11 @@ import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.command.tool.DoubleActionTraceTool;
-import com.sk89q.worldedit.command.tool.Tool;
-import com.sk89q.worldedit.command.tool.TraceTool;
-import com.sk89q.worldedit.event.actor.BlockInteractEvent;
+import com.sk89q.worldedit.event.platform.BlockInteractEvent;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.event.platform.CommandEvent;
+import com.sk89q.worldedit.event.platform.InputType;
+import com.sk89q.worldedit.event.platform.PlayerInputEvent;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
@@ -57,8 +56,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.event.actor.InteractionType.PRIMARY_INPUT;
-import static com.sk89q.worldedit.event.actor.InteractionType.SECONDARY_INPUT;
+import static com.sk89q.worldedit.event.platform.Interaction.HIT;
+import static com.sk89q.worldedit.event.platform.Interaction.OPEN;
 
 /**
  * The entry point and container for a working implementation of WorldEdit.
@@ -722,35 +721,9 @@ public class WorldEdit {
      * @return true if the swing was handled
      */
     public boolean handleArmSwing(LocalPlayer player) {
-        if (player.getItemInHand() == getConfiguration().navigationWand) {
-            if (getConfiguration().navigationWandMaxDistance <= 0) {
-                return false;
-            }
-
-            if (!player.hasPermission("worldedit.navigation.jumpto.tool")) {
-                return false;
-            }
-
-            WorldVector pos = player.getSolidBlockTrace(getConfiguration().navigationWandMaxDistance);
-            if (pos != null) {
-                player.findFreePosition(pos);
-            } else {
-                player.printError("No block in sight (or too far)!");
-            }
-            return true;
-        }
-
-        LocalSession session = getSession(player);
-
-        Tool tool = session.getTool(player.getItemInHand());
-        if (tool != null && tool instanceof DoubleActionTraceTool) {
-            if (tool.canUse(player)) {
-                ((DoubleActionTraceTool) tool).actSecondary(getServer(), getConfiguration(), player, session);
-                return true;
-            }
-        }
-
-        return false;
+        PlayerInputEvent event = new PlayerInputEvent(player, InputType.PRIMARY);
+        getEventBus().post(event);
+        return event.isCancelled();
     }
 
     /**
@@ -760,33 +733,9 @@ public class WorldEdit {
      * @return true if the right click was handled
      */
     public boolean handleRightClick(LocalPlayer player) {
-        if (player.getItemInHand() == getConfiguration().navigationWand) {
-            if (getConfiguration().navigationWandMaxDistance <= 0) {
-                return false;
-            }
-
-            if (!player.hasPermission("worldedit.navigation.thru.tool")) {
-                return false;
-            }
-
-            if (!player.passThroughForwardWall(40)) {
-                player.printError("Nothing to pass through!");
-            }
-
-            return true;
-        }
-
-        LocalSession session = getSession(player);
-
-        Tool tool = session.getTool(player.getItemInHand());
-        if (tool != null && tool instanceof TraceTool) {
-            if (tool.canUse(player)) {
-                ((TraceTool) tool).actPrimary(getServer(), getConfiguration(), player, session);
-                return true;
-            }
-        }
-
-        return false;
+        PlayerInputEvent event = new PlayerInputEvent(player, InputType.SECONDARY);
+        getEventBus().post(event);
+        return event.isCancelled();
     }
 
     /**
@@ -797,7 +746,7 @@ public class WorldEdit {
      * @return false if you want the action to go through
      */
     public boolean handleBlockRightClick(LocalPlayer player, WorldVector clicked) {
-        BlockInteractEvent event = new BlockInteractEvent(player, clicked.toLocation(), SECONDARY_INPUT);
+        BlockInteractEvent event = new BlockInteractEvent(player, clicked.toLocation(), OPEN);
         getEventBus().post(event);
         return event.isCancelled();
     }
@@ -810,7 +759,7 @@ public class WorldEdit {
      * @return false if you want the action to go through
      */
     public boolean handleBlockLeftClick(LocalPlayer player, WorldVector clicked) {
-        BlockInteractEvent event = new BlockInteractEvent(player, clicked.toLocation(), PRIMARY_INPUT);
+        BlockInteractEvent event = new BlockInteractEvent(player, clicked.toLocation(), HIT);
         getEventBus().post(event);
         return event.isCancelled();
     }
