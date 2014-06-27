@@ -24,6 +24,7 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Console;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 
@@ -57,10 +58,15 @@ public class WorldEditCommands {
 
         PlatformManager pm = we.getPlatformManager();
 
-        player.printDebug("");
-        player.printDebug("Platforms:");
+        player.printDebug("----------- Platforms -----------");
         for (Platform platform : pm.getPlatforms()) {
-            player.printDebug(String.format("- %s v%s (WE v%s)", platform.getPlatformName(), platform.getPlatformVersion(), platform.getVersion()));
+            player.printDebug(String.format("* %s (%s)", platform.getPlatformName(), platform.getPlatformVersion()));
+        }
+
+        player.printDebug("----------- Capabilities -----------");
+        for (Capability capability : Capability.values()) {
+            Platform platform = pm.queryCapability(capability);
+            player.printDebug(String.format("%s: %s", capability.name(), platform != null ? platform.getPlatformName() : "NONE"));
         }
     }
 
