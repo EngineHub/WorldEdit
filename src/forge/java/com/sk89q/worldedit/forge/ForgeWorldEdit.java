@@ -242,7 +242,7 @@ public class ForgeWorldEdit {
         checkNotNull(jar);
         checkNotNull(name);
 
-        String path = "defaults/" + name;
+        String path = "/defaults/" + name;
         File targetFile = new File(getWorkingDir(), name);
         Closer closer = Closer.create();
 
