@@ -21,13 +21,16 @@ package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BiomeTypes;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.util.command.CommandMapping;
+import com.sk89q.worldedit.util.command.Description;
+import com.sk89q.worldedit.util.command.Dispatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -35,8 +38,10 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 public class BukkitServerInterface extends ServerInterface {
     public Server server;
@@ -118,25 +123,17 @@ public class BukkitServerInterface extends ServerInterface {
     }
 
     @Override
-    public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
+    public void registerCommands(Dispatcher dispatcher) {
         List<CommandInfo> toRegister = new ArrayList<CommandInfo>();
-        for (Command command : commands) {
-            List<String> permissions = null;
-            Method cmdMethod = manager.getMethods().get(null).get(command.aliases()[0]);
-            Map<String, Method> childMethods = manager.getMethods().get(cmdMethod);
+        for (CommandMapping command : dispatcher.getCommands()) {
+            Description description = command.getDescription();
+            List<String> permissions = description.getPermissions();
+            String[] permissionsArray = new String[permissions.size()];
+            permissions.toArray(permissionsArray);
 
-            if (cmdMethod != null && cmdMethod.isAnnotationPresent(CommandPermissions.class)) {
-                permissions = Arrays.asList(cmdMethod.getAnnotation(CommandPermissions.class).value());
-            } else if (cmdMethod != null && childMethods != null && childMethods.size() > 0) {
-                permissions = new ArrayList<String>();
-                for (Method m : childMethods.values()) {
-                    if (m.isAnnotationPresent(CommandPermissions.class)) {
-                        permissions.addAll(Arrays.asList(m.getAnnotation(CommandPermissions.class).value()));
-                    }
-                }
-            }
-
-            toRegister.add(new CommandInfo(command.usage(), command.desc(), command.aliases(), commands, permissions == null ? null : permissions.toArray(new String[permissions.size()])));
+            toRegister.add(new CommandInfo(
+                    description.getUsage(), description.getDescription(),
+                    command.getAllAliases(), dispatcher, permissionsArray));
         }
 
         dynamicCommands.register(toRegister);

@@ -152,15 +152,6 @@ public class ToolCommands {
     }
 
     @Command(
-        aliases = { "brush", "br" },
-        desc = "Brush tool"
-    )
-    @NestedCommand(BrushCommands.class)
-    public void brush(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-    }
-
-    @Command(
             aliases = { "deltree" },
             usage = "",
             desc = "Floating tree remover tool",

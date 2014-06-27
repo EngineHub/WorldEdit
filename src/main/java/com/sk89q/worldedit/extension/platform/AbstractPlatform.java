@@ -42,15 +42,4 @@ public abstract class AbstractPlatform implements Platform {
         return Collections.emptyList();
     }
 
-    @Override
-    @Deprecated
-    public void onCommandRegistration(List<Command> commands) {
-        // Do nothing :)
-    }
-
-    @Override
-    public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
-        onCommandRegistration(commands);
-    }
-
 }

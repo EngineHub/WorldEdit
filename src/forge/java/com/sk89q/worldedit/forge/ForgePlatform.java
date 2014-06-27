@@ -19,13 +19,15 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.util.command.CommandMapping;
+import com.sk89q.worldedit.util.command.Description;
+import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.CommandBase;
@@ -133,19 +135,22 @@ class ForgePlatform extends ServerInterface {
     }
 
     @Override
-    public void onCommandRegistration(List<Command> commands) {
+    public void registerCommands(Dispatcher dispatcher) {
         if (server == null) return;
         ServerCommandManager mcMan = (ServerCommandManager) server.getCommandManager();
-        for (final Command cmd : commands) {
+
+        for (final CommandMapping command : dispatcher.getCommands()) {
+            final Description description = command.getDescription();
+
             mcMan.registerCommand(new CommandBase() {
                 @Override
                 public String getCommandName() {
-                    return cmd.aliases()[0];
+                    return command.getPrimaryAlias();
                 }
 
                 @Override
                 public List<String> getCommandAliases() {
-                    return Arrays.asList(cmd.aliases());
+                    return Arrays.asList(command.getAllAliases());
                 }
 
                 @Override
@@ -153,12 +158,14 @@ class ForgePlatform extends ServerInterface {
 
                 @Override
                 public String getCommandUsage(ICommandSender icommandsender) {
-                    return "/" + cmd.aliases()[0] + " " + cmd.usage();
+                    return "/" + command.getPrimaryAlias() + " " + description.getUsage();
                 }
 
                 @Override
-                public int compareTo(Object o) {
-                    if (o instanceof ICommand) {
+                public int compareTo(@Nullable Object o) {
+                    if (o == null) {
+                        return -1;
+                    } else if (o instanceof ICommand) {
                         return super.compareTo((ICommand) o);
                     } else {
                         return -1;

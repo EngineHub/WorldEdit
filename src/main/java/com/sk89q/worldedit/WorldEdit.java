@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.event.platform.BlockInteractEvent;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
+import com.sk89q.worldedit.event.platform.BlockInteractEvent;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.InputType;
 import com.sk89q.worldedit.event.platform.PlayerInputEvent;
@@ -483,7 +483,7 @@ public class WorldEdit {
      * @return a direction vector
      * @throws UnknownDirectionException thrown if the direction is not known
      */
-    public Vector getDirection(LocalPlayer player, String dirStr) throws UnknownDirectionException {
+    public Vector getDirection(Player player, String dirStr) throws UnknownDirectionException {
         dirStr = dirStr.toLowerCase();
 
         final PlayerDirection dir = getPlayerDirection(player, dirStr);
@@ -511,7 +511,7 @@ public class WorldEdit {
      * @return a direction enum value
      * @throws UnknownDirectionException thrown if the direction is not known
      */
-    private PlayerDirection getPlayerDirection(LocalPlayer player, String dirStr) throws UnknownDirectionException {
+    private PlayerDirection getPlayerDirection(Player player, String dirStr) throws UnknownDirectionException {
         final PlayerDirection dir;
 
         switch (dirStr.charAt(0)) {
@@ -659,24 +659,6 @@ public class WorldEdit {
 
             player.printError(str.toString());
         }
-    }
-
-    /**
-     * Get the map of commands (internal usage only).
-     *
-     * @return the commands
-     */
-    public Map<String, String> getCommands() {
-        return getCommandsManager().getCommands();
-    }
-
-    /**
-     * Get the commands manager (internal usage only).
-     *
-     * @return the commands
-     */
-    public CommandsManager<LocalPlayer> getCommandsManager() {
-        return getPlatformManager().getCommandManager().getCommands();
     }
 
     /**

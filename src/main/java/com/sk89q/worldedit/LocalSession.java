@@ -27,6 +27,7 @@ import com.sk89q.worldedit.command.tool.BlockTool;
 import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.SinglePickaxe;
 import com.sk89q.worldedit.command.tool.Tool;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
@@ -419,7 +420,7 @@ public class LocalSession {
      * @param player
      * @return
      */
-    public BlockBag getBlockBag(LocalPlayer player) {
+    public BlockBag getBlockBag(Player player) {
         if (!useInventory) {
             return null;
         }
@@ -550,7 +551,7 @@ public class LocalSession {
      *
      * @param player
      */
-    public void tellVersion(LocalPlayer player) {
+    public void tellVersion(Actor player) {
         if (config.showFirstUseVersion) {
             if (!beenToldVersion) {
                 player.printRaw("\u00A78WorldEdit ver. " + WorldEdit.getVersion()
@@ -713,6 +714,17 @@ public class LocalSession {
      * @return
      */
     public EditSession createEditSession(LocalPlayer player) {
+        return createEditSession((Player) player);
+    }
+
+    /**
+     * Construct a new edit session.
+     *
+     * @param player
+     * @return
+     */
+    @SuppressWarnings("deprecation")
+    public EditSession createEditSession(Player player) {
         BlockBag blockBag = getBlockBag(player);
 
         // Create an edit session
@@ -721,8 +733,8 @@ public class LocalSession {
                         getBlockChangeLimit(), blockBag, player);
         editSession.setFastMode(fastMode);
         Request.request().setEditSession(editSession);
-        if (mask != null) {
-            mask.prepare(this, player, null);
+        if (mask != null && player instanceof LocalPlayer) {
+            mask.prepare(this, (LocalPlayer) player, null);
         }
         editSession.setMask(mask);
 

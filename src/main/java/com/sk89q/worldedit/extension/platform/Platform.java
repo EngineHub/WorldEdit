@@ -19,12 +19,10 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
@@ -100,10 +98,12 @@ public interface Platform {
      */
     @Nullable World matchWorld(World world);
 
-    @Deprecated
-    void onCommandRegistration(List<Command> commands);
-
-    void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager);
+    /**
+     * Register the commands contained within the given command dispatcher.
+     *
+     * @param dispatcher the dispatcher
+     */
+    void registerCommands(Dispatcher dispatcher);
 
     /**
      * Register game hooks.

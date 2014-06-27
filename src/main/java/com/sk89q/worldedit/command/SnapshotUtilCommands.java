@@ -55,15 +55,6 @@ public class SnapshotUtilCommands {
     }
 
     @Command(
-            aliases = { "snapshot", "snap" },
-            desc = "Snapshot commands"
-    )
-    @NestedCommand(SnapshotCommands.class)
-    public void snapshot(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-    }
-
-    @Command(
             aliases = { "restore", "/restore" },
             usage = "[snapshot]",
             desc = "Restore the selection from a snapshot",

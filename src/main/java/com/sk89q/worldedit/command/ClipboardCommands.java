@@ -261,13 +261,6 @@ public class ClipboardCommands {
     }
 
     @Command(
-            aliases = { "/schematic", "/schem"},
-            desc = "Schematic-related commands"
-    )
-    @NestedCommand(SchematicCommands.class)
-    public void schematic() {}
-
-    @Command(
         aliases = { "clearclipboard" },
         usage = "",
         desc = "Clear your clipboard",

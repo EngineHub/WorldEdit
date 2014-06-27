@@ -19,16 +19,14 @@
 
 package com.sk89q.worldedit.internal;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
@@ -97,14 +95,8 @@ public class ServerInterfaceAdapter extends ServerInterface {
     }
 
     @Override
-    @Deprecated
-    public void onCommandRegistration(List<Command> commands) {
-        platform.onCommandRegistration(commands);
-    }
-
-    @Override
-    public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
-        platform.onCommandRegistration(commands, manager);
+    public void registerCommands(Dispatcher dispatcher) {
+        platform.registerCommands(dispatcher);
     }
 
     @Override

@@ -27,6 +27,9 @@ import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.command.CommandMapping;
+import com.sk89q.worldedit.util.command.Description;
+import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 
 import java.util.Comparator;
@@ -512,7 +515,7 @@ public class UtilityCommands {
     }
 
     public static void help(CommandContext args, WorldEdit we, LocalSession session, LocalPlayer player, EditSession editSession) {
-        final CommandsManager<LocalPlayer> commandsManager = we.getCommandsManager();
+        final Dispatcher dispatcher = we.getPlatformManager().getCommandManager().getDispatcher();
 
         if (args.argsLength() == 0) {
             SortedSet<String> commands = new TreeSet<String>(new Comparator<String>() {
@@ -525,7 +528,7 @@ public class UtilityCommands {
                     return ret;
                 }
             });
-            commands.addAll(commandsManager.getCommands().keySet());
+            commands.addAll(dispatcher.getPrimaryAliases());
 
             StringBuilder sb = new StringBuilder();
             boolean first = true;
@@ -544,14 +547,26 @@ public class UtilityCommands {
             return;
         }
 
-        String command = args.getJoinedStrings(0).toLowerCase().replaceAll("/", "");
+        String command = args.getJoinedStrings(0).toLowerCase().replaceAll("^/", "");
+        CommandMapping mapping = dispatcher.get(command);
 
-        String helpMessage = commandsManager.getHelpMessages().get(command);
-        if (helpMessage == null) {
+        if (mapping == null) {
             player.printError("Unknown command '" + command + "'.");
             return;
         }
 
-        player.print(helpMessage);
+        Description description = mapping.getDescription();
+
+        if (description.getUsage() != null) {
+            player.printDebug("Usage: " + description.getUsage());
+        }
+
+        if (description.getHelp() != null) {
+            player.print(description.getHelp());
+        } else if (description.getDescription() != null) {
+            player.print(description.getDescription());
+        } else {
+            player.print("No further help is available.");
+        }
     }
 }
