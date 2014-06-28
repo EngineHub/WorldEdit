@@ -84,7 +84,7 @@ public class LegacyCommandsHandler extends AbstractInvokeListener implements Inv
             for (ParameterData parameter : parameters) {
                 if (parameter.getBinding().getBehavior(parameter) != BindingBehavior.PROVIDES) {
                     hasUserParameters = true;
-                    return;
+                    break;
                 }
             }
             
