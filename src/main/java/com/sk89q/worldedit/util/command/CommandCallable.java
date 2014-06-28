@@ -56,10 +56,11 @@ public interface CommandCallable {
      * Get a list of suggestions based on input.
      *
      * @param arguments the arguments entered up to this point
+     * @param locals the locals
      * @return a list of suggestions
      * @throws CommandException thrown if there was a parsing error
      */
-    List<String> getSuggestions(String arguments) throws CommandException;
+    List<String> getSuggestions(String arguments, CommandLocals locals) throws CommandException;
     
     /**
      * Get an object describing this command.

@@ -21,6 +21,7 @@ package com.sk89q.worldedit.util.command;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Executes a command based on user input.
@@ -36,13 +37,14 @@ public interface Dispatcher extends CommandCallable {
     void registerCommand(CommandCallable callable, String... alias);
     
     /**
-     * Get a list of command registrations.
+     * Get a list of commands. Each command, regardless of how many aliases
+     * it may have, will only appear once in the returned set.
      * 
      * <p>The returned collection cannot be modified.</p>
      * 
      * @return a list of registrations
      */
-    Collection<CommandMapping> getCommands();
+    Set<CommandMapping> getCommands();
 
     /**
      * Get a list of primary aliases.

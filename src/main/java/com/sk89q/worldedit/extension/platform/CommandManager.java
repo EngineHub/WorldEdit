@@ -258,7 +258,9 @@ public final class CommandManager {
     @Subscribe
     public void handleCommandSuggestion(CommandSuggestionEvent event) {
         try {
-            event.setSuggestions(dispatcher.getSuggestions(event.getArguments()));
+            CommandLocals locals = new CommandLocals();
+            locals.put(Actor.class, event.getActor());
+            event.setSuggestions(dispatcher.getSuggestions(event.getArguments(), locals));
         } catch (CommandException e) {
             event.getActor().printError(e.getMessage());
         }

@@ -252,7 +252,7 @@ class ParametricCallable implements CommandCallable {
     }
 
     @Override
-    public List<String> getSuggestions(String stringArguments) throws CommandException {
+    public List<String> getSuggestions(String stringArguments, CommandLocals locals) throws CommandException {
         String[] split = CommandContext.split(stringArguments);
         CommandContext context = new CommandContext(split, getValueFlags());
 

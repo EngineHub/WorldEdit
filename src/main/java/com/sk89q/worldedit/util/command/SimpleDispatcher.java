@@ -20,10 +20,7 @@
 package com.sk89q.worldedit.util.command;
 
 import com.google.common.base.Joiner;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.minecraft.util.commands.WrappedCommandException;
+import com.sk89q.minecraft.util.commands.*;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -56,8 +53,8 @@ public class SimpleDispatcher implements Dispatcher {
     }
 
     @Override
-    public Collection<CommandMapping> getCommands() {
-        return Collections.unmodifiableCollection(commands.values());
+    public Set<CommandMapping> getCommands() {
+        return Collections.unmodifiableSet(new HashSet<CommandMapping>(commands.values()));
     }
     
     @Override
@@ -91,6 +88,11 @@ public class SimpleDispatcher implements Dispatcher {
 
     @Override
     public boolean call(@Nullable String alias, String arguments, CommandLocals locals) throws CommandException {
+        // We have permission for this command if we have permissions for subcommands
+        if (!testPermission(locals)) {
+            throw new CommandPermissionsException();
+        }
+
         String[] split = CommandContext.split(arguments);
         Set<String> aliases = getPrimaryAliases();
 
@@ -116,37 +118,37 @@ public class SimpleDispatcher implements Dispatcher {
 
         }
 
-        throw new InvalidUsageException(getSubcommandList(), getDescription());
+        throw new InvalidUsageException(getSubcommandList(locals), getDescription());
     }
 
     @Override
-    public List<String> getSuggestions(String arguments) throws CommandException {
+    public List<String> getSuggestions(String arguments, CommandLocals locals) throws CommandException {
         String[] split = CommandContext.split(arguments);
 
-        if (split.length == 0) {
-            return new ArrayList<String>(getAliases());
-        } else if (split.length == 1) {
-            String prefix = split[0];
-            if (!prefix.isEmpty()) {
-                List<String> suggestions = new ArrayList<String>();
+        if (split.length <= 1) {
+            String prefix = split.length > 0 ? split[0] : "";
 
-                for (String alias : getAliases()) {
-                    if (alias.startsWith(prefix)) {
-                        suggestions.add(alias);
+            List<String> suggestions = new ArrayList<String>();
+
+            for (CommandMapping mapping : getCommands()) {
+                if (mapping.getCallable().testPermission(locals)) {
+                    for (String alias : mapping.getAllAliases()) {
+                        if (prefix.isEmpty() || alias.startsWith(arguments)) {
+                            suggestions.add(mapping.getPrimaryAlias());
+                            break;
+                        }
                     }
                 }
-
-                return suggestions;
-            } else {
-                return new ArrayList<String>(getAliases());
             }
+
+            return suggestions;
         } else {
             String subCommand = split[0];
             CommandMapping mapping = get(subCommand);
             String passedArguments = Joiner.on(" ").join(Arrays.copyOfRange(split, 1, split.length));
 
             if (mapping != null) {
-                return mapping.getCallable().getSuggestions(passedArguments);
+                return mapping.getCallable().getSuggestions(passedArguments, locals);
             } else {
                 return Collections.emptyList();
             }
@@ -174,16 +176,17 @@ public class SimpleDispatcher implements Dispatcher {
      *
      * @return a string
      */
-    private String getSubcommandList() {
+    private String getSubcommandList(CommandLocals locals) {
         Set<String> aliases = getPrimaryAliases();
 
         StringBuilder builder = new StringBuilder("Subcommands: ");
-        for (String alias : getPrimaryAliases()) {
-            builder.append("\n- ").append(alias);
-        }
 
-        if (aliases.size() == 1) {
-            builder.append(" (there is only one)");
+        for (CommandMapping mapping : getCommands()) {
+            if (mapping.getCallable().testPermission(locals)) {
+                for (String alias : mapping.getAllAliases()) {
+                    builder.append("\n- ").append(alias);
+                }
+            }
         }
 
         return builder.toString();

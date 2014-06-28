@@ -126,6 +126,7 @@ public class BukkitServerInterface extends ServerInterface {
     public void registerCommands(Dispatcher dispatcher) {
         List<CommandInfo> toRegister = new ArrayList<CommandInfo>();
         BukkitCommandInspector inspector = new BukkitCommandInspector(plugin, dispatcher);
+        
         for (CommandMapping command : dispatcher.getCommands()) {
             Description description = command.getDescription();
             List<String> permissions = description.getPermissions();
