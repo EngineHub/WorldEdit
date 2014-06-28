@@ -25,7 +25,6 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.event.platform.BlockInteractEvent;
-import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.InputType;
 import com.sk89q.worldedit.event.platform.PlayerInputEvent;
 import com.sk89q.worldedit.extension.input.ParserContext;
@@ -738,22 +737,6 @@ public class WorldEdit {
         BlockInteractEvent event = new BlockInteractEvent(player, clicked.toLocation(), HIT);
         getEventBus().post(event);
         return event.isCancelled();
-    }
-
-    /**
-     *
-     * @param player
-     * @param split
-     * @return whether the command was processed
-     */
-    public boolean handleCommand(Player player, String[] split) {
-        CommandEvent event = new CommandEvent(player, split);
-        getEventBus().post(event);
-        return event.isCancelled();
-    }
-
-    public String[] commandDetection(String[] split) {
-        return getPlatformManager().getCommandManager().commandDetection(split);
     }
 
     /**

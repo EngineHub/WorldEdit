@@ -24,6 +24,8 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.worldedit.util.auth.Authorizer;
+import com.sk89q.worldedit.util.auth.NullAuthorizer;
 import com.sk89q.worldedit.util.command.CommandCallable;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.binding.PrimitiveBindings;
@@ -39,6 +41,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Creates commands using annotations placed on methods and individual parameters of
  * such methods.
@@ -52,6 +56,7 @@ public class ParametricBuilder {
     private final Paranamer paranamer = new CachingParanamer();
     private final List<InvokeListener> invokeListeners = new ArrayList<InvokeListener>();
     private final List<ExceptionConverter> exceptionConverters = new ArrayList<ExceptionConverter>();
+    private Authorizer authorizer = new NullAuthorizer();
     
     /**
      * Create a new builder.
@@ -115,7 +120,7 @@ public class ParametricBuilder {
      * @param listener the listener
      * @see InvokeHandler the handler
      */
-    public void attach(InvokeListener listener) {
+    public void addInvokeListener(InvokeListener listener) {
         invokeListeners.add(listener);
     }
     
@@ -128,7 +133,7 @@ public class ParametricBuilder {
      * @param converter the converter
      * @see ExceptionConverter for an explanation
      */
-    public void attach(ExceptionConverter converter) {
+    public void addExceptionConverter(ExceptionConverter converter) {
         exceptionConverters.add(converter);
     }
 
@@ -141,7 +146,7 @@ public class ParametricBuilder {
      * @param object the object contain the methods
      * @throws ParametricException thrown if the commands cannot be registered
      */
-    public void register(Dispatcher dispatcher, Object object) throws ParametricException {
+    public void registerMethodsAsCommands(Dispatcher dispatcher, Object object) throws ParametricException {
         for (Method method : object.getClass().getDeclaredMethods()) {
             Command definition = method.getAnnotation(Command.class);
             if (definition != null) {
@@ -201,5 +206,23 @@ public class ParametricBuilder {
     List<ExceptionConverter> getExceptionConverters() {
         return exceptionConverters;
     }
-    
+
+    /**
+     * Get the authorizer.
+     *
+     * @return the authorizer
+     */
+    public Authorizer getAuthorizer() {
+        return authorizer;
+    }
+
+    /**
+     * Set the authorizer.
+     *
+     * @param authorizer the authorizer
+     */
+    public void setAuthorizer(Authorizer authorizer) {
+        checkNotNull(authorizer);
+        this.authorizer = authorizer;
+    }
 }

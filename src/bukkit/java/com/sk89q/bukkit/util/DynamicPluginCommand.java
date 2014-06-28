@@ -26,9 +26,12 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
 * An implementation of a dynamically registered {@link org.bukkit.command.Command} attached to a plugin
@@ -76,6 +79,15 @@ public class DynamicPluginCommand extends org.bukkit.command.Command implements 
         return owningPlugin;
     }
 
+    @Override
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+        if (owner instanceof TabCompleter) {
+            return ((TabCompleter) owner).onTabComplete(sender, this, alias, args);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public boolean testPermissionSilent(CommandSender sender) {
@@ -83,7 +95,10 @@ public class DynamicPluginCommand extends org.bukkit.command.Command implements 
             return true;
         }
 
-        if (registeredWith instanceof CommandsManager<?>) {
+        if (registeredWith instanceof CommandInspector) {
+            CommandInspector resolver = (CommandInspector) registeredWith;
+            return resolver.testPermission(sender, this);
+        } else if (registeredWith instanceof CommandsManager<?>) {
             try {
                 for (String permission : permissions) {
                     if (((CommandsManager<CommandSender>) registeredWith).hasPermission(sender, permission)) {

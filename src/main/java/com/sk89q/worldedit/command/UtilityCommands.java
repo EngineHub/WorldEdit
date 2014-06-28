@@ -546,8 +546,8 @@ public class UtilityCommands {
 
         if (description.getHelp() != null) {
             actor.print(description.getHelp());
-        } else if (description.getDescription() != null) {
-            actor.print(description.getDescription());
+        } else if (description.getShortDescription() != null) {
+            actor.print(description.getShortDescription());
         } else {
             actor.print("No further help is available.");
         }

@@ -79,14 +79,14 @@ public class DispatcherNode {
      * 
      * @param object the object provided to the {@link ParametricBuilder}
      * @return this object
-     * @see ParametricBuilder#register(com.sk89q.worldedit.util.command.Dispatcher, Object)
+     * @see ParametricBuilder#registerMethodsAsCommands(com.sk89q.worldedit.util.command.Dispatcher, Object)
      */
     public DispatcherNode build(Object object) {
         ParametricBuilder builder = graph.getBuilder();
         if (builder == null) {
             throw new RuntimeException("No ParametricBuilder set");
         }
-        builder.register(getDispatcher(), object);
+        builder.registerMethodsAsCommands(getDispatcher(), object);
         return this;
     }
     

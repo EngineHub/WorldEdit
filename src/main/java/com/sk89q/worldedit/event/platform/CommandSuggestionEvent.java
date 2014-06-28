@@ -19,18 +19,22 @@
 
 package com.sk89q.worldedit.event.platform;
 
-import com.sk89q.worldedit.event.AbstractCancellable;
+import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.extension.platform.Actor;
+
+import java.util.Collections;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This class is currently only for internal use. Do not post or catch this event.
+ * Posted when suggestions for auto-completion are requested for command input.
  */
-public class CommandEvent extends AbstractCancellable {
+public class CommandSuggestionEvent extends Event {
 
     private final Actor actor;
     private final String arguments;
+    private List<String> suggestions = Collections.emptyList();
 
     /**
      * Create a new instance.
@@ -38,7 +42,7 @@ public class CommandEvent extends AbstractCancellable {
      * @param actor the player
      * @param arguments the arguments
      */
-    public CommandEvent(Actor actor, String arguments) {
+    public CommandSuggestionEvent(Actor actor, String arguments) {
         checkNotNull(actor);
         checkNotNull(arguments);
 
@@ -62,6 +66,25 @@ public class CommandEvent extends AbstractCancellable {
      */
     public String getArguments() {
         return arguments;
+    }
+
+    /**
+     * Get the list of suggestions that are to be presented.
+     *
+     * @return the list of suggestions
+     */
+    public List<String> getSuggestions() {
+        return suggestions;
+    }
+
+    /**
+     * Set the list of suggestions that are to be presented.
+     *
+     * @param suggestions the list of suggestions
+     */
+    public void setSuggestions(List<String> suggestions) {
+        checkNotNull(suggestions);
+        this.suggestions = suggestions;
     }
 
 }

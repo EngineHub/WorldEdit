@@ -23,6 +23,7 @@ import com.sk89q.minecraft.util.commands.*;
 import com.sk89q.worldedit.util.command.*;
 import com.sk89q.worldedit.util.command.binding.Switch;
 
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,6 +41,7 @@ class ParametricCallable implements CommandCallable {
     private final ParameterData[] parameters;
     private final Set<Character> valueFlags = new HashSet<Character>();
     private final SimpleDescription description = new SimpleDescription();
+    private final CommandPermissions commandPermissions;
 
     /**
      * Create a new instance.
@@ -50,11 +52,7 @@ class ParametricCallable implements CommandCallable {
      * @param definition the command definition annotation
      * @throws ParametricException thrown on an error
      */
-    ParametricCallable(
-            ParametricBuilder builder, 
-            Object object, Method method, 
-            Command definition) throws ParametricException {
-
+    ParametricCallable(ParametricBuilder builder, Object object, Method method, Command definition) throws ParametricException {
         this.builder = builder;
         this.object = object;
         this.method = method;
@@ -101,8 +99,7 @@ class ParametricCallable implements CommandCallable {
                 }
             }
 
-            parameter.setName(names.length > 0 ? 
-                    names[i] : generateName(type, parameter.getClassifier(), i));
+            parameter.setName(names.length > 0 ? names[i] : generateName(type, parameter.getClassifier(), i));
 
             // Track all value flags
             if (parameter.isValueFlag()) {
@@ -115,9 +112,7 @@ class ParametricCallable implements CommandCallable {
 
                 // Don't know how to parse for this type of value
                 if (parameter.getBinding() == null) {
-                    throw new ParametricException(
-                            "Don't know how to handle the parameter type '" + type + "' in\n" +
-                            method.toGenericString());
+                    throw new ParametricException("Don't know how to handle the parameter type '" + type + "' in\n" + method.toGenericString());
                 }
             }
             
@@ -159,11 +154,19 @@ class ParametricCallable implements CommandCallable {
         
         // Set parameters
         description.setParameters(userParameters);
+
+        // Get permissions annotation
+        commandPermissions = method.getAnnotation(CommandPermissions.class);
     }
 
     @Override
-    public boolean call(String stringArguments, CommandLocals locals) throws CommandException {
-        String[] split = CommandContext.split(stringArguments);
+    public boolean call(@Nullable String alias, String stringArguments, CommandLocals locals) throws CommandException {
+        // Test permission
+        if (!testPermission(locals)) {
+            throw new CommandPermissionsException();
+        }
+
+        String[] split = CommandContext.split(alias + " " + stringArguments);
         CommandContext context = new CommandContext(split, getValueFlags(), false, locals);
 
         Object[] args = new Object[parameters.length];
@@ -218,12 +221,9 @@ class ParametricCallable implements CommandCallable {
                 handler.postInvoke(handler, method, parameters, args, context);
             }
         } catch (MissingParameterException e) {
-            throw new InvalidUsageException(
-                    "Too few parameters!", getDescription());
+            throw new InvalidUsageException("Too few parameters!", getDescription());
         } catch (UnconsumedParameterException e) {
-            throw new InvalidUsageException(
-                    "Too many parameters! Unused parameters: "
-                            + e.getUnconsumed(), getDescription());
+            throw new InvalidUsageException("Too many parameters! Unused parameters: " + e.getUnconsumed(), getDescription());
         } catch (ParameterException e) {
             if (e.getCause() != null) {
                 for (ExceptionConverter converter : builder.getExceptionConverters()) {
@@ -231,10 +231,10 @@ class ParametricCallable implements CommandCallable {
                 }
             }
 
+            assert parameter != null;
             String name = parameter.getName();
 
-            throw new InvalidUsageException("For parameter '" + name + "': "
-                    + e.getMessage(), getDescription());
+            throw new InvalidUsageException("For parameter '" + name + "': " + e.getMessage(), getDescription());
         } catch (InvocationTargetException e) {
             for (ExceptionConverter converter : builder.getExceptionConverters()) {
                 converter.convert(e.getCause());
@@ -252,7 +252,7 @@ class ParametricCallable implements CommandCallable {
     }
 
     @Override
-    public Collection<String> getSuggestions(String stringArguments) throws CommandException {
+    public List<String> getSuggestions(String stringArguments) throws CommandException {
         String[] split = CommandContext.split(stringArguments);
         CommandContext context = new CommandContext(split, getValueFlags());
 
@@ -281,13 +281,11 @@ class ParametricCallable implements CommandCallable {
         ParameterData lastConsumer = null;
         String lastConsumed = null;
 
-        for (int i = 0; i < parameters.length; i++) {
-            ParameterData parameter = parameters[i];
-            
+        for (ParameterData parameter : parameters) {
             if (parameter.getFlag() != null) {
                 continue; // We already handled flags
             }
-            
+
             try {
                 scoped.mark();
                 parameter.getBinding().bind(parameter, scoped, true);
@@ -306,8 +304,8 @@ class ParametricCallable implements CommandCallable {
                     if (lastConsumer != null) {
                         return lastConsumer.getBinding()
                                 .getSuggestions(lastConsumer, lastConsumed);
-                    // For /command| value1 value2
-                    // This should never occur
+                        // For /command| value1 value2
+                        // This should never occur
                     } else {
                         throw new RuntimeException("Invalid suggestion context");
                     }
@@ -352,7 +350,22 @@ class ParametricCallable implements CommandCallable {
     public SimpleDescription getDescription() {
         return description;
     }
-    
+
+    @Override
+    public boolean testPermission(CommandLocals locals) {
+        if (commandPermissions != null) {
+            for (String perm : commandPermissions.value()) {
+                if (builder.getAuthorizer().testPermission(locals, perm)) {
+                    return true;
+                }
+            }
+
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /**
      * Get the right {@link ArgumentStack}.
      * 

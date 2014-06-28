@@ -22,7 +22,8 @@ package com.sk89q.worldedit.util.command;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 
-import java.util.Collection;
+import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -39,13 +40,17 @@ public interface CommandCallable {
 
     /**
      * Execute the correct command based on the input.
+     * </p>
+     * The implementing class must perform the necessary permission checks.
      *
+     * @param alias the alias that was used to invoke this command,
+     *              which may be null if this is a "root" command
      * @param arguments the arguments
      * @param locals the locals
      * @return the called command, or null if there was no command found
      * @throws CommandException thrown on a command error
      */
-    boolean call(String arguments, CommandLocals locals) throws CommandException;
+    boolean call(@Nullable String alias, String arguments, CommandLocals locals) throws CommandException;
 
     /**
      * Get a list of suggestions based on input.
@@ -54,7 +59,7 @@ public interface CommandCallable {
      * @return a list of suggestions
      * @throws CommandException thrown if there was a parsing error
      */
-    Collection<String> getSuggestions(String arguments) throws CommandException;
+    List<String> getSuggestions(String arguments) throws CommandException;
     
     /**
      * Get an object describing this command.
@@ -62,5 +67,13 @@ public interface CommandCallable {
      * @return the command description
      */
     Description getDescription();
+
+    /**
+     * Test whether this command can be executed with the given context.
+     *
+     * @param locals the locals
+     * @return true if execution is permitted
+     */
+    boolean testPermission(CommandLocals locals);
 
 }

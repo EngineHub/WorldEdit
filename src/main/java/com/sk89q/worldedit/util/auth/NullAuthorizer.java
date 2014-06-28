@@ -17,25 +17,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.command;
+package com.sk89q.worldedit.util.auth;
 
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.command.parametric.PermissionsHandler;
+import com.sk89q.minecraft.util.commands.CommandLocals;
 
-public class CommandPermissionsHandler extends PermissionsHandler {
-
-    public CommandPermissionsHandler() {
-    }
+/**
+ * An implementation of {@link Authorizer} that always returns false for
+ * tests of permissions.
+ */
+public class NullAuthorizer implements Authorizer {
 
     @Override
-    protected boolean hasPermission(CommandContext context, String permission) {
-        Actor sender = context.getLocals().get(Actor.class);
-        if (sender == null) {
-            throw new RuntimeException("Uh oh! No 'Actor' specified so that we can check permissions");
-        } else {
-            return sender.hasPermission(permission);
-        }
+    public boolean testPermission(CommandLocals locals, String permission) {
+        return false;
     }
 
 }

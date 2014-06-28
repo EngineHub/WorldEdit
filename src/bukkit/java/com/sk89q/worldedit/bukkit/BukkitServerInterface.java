@@ -125,15 +125,14 @@ public class BukkitServerInterface extends ServerInterface {
     @Override
     public void registerCommands(Dispatcher dispatcher) {
         List<CommandInfo> toRegister = new ArrayList<CommandInfo>();
+        BukkitCommandInspector inspector = new BukkitCommandInspector(plugin, dispatcher);
         for (CommandMapping command : dispatcher.getCommands()) {
             Description description = command.getDescription();
             List<String> permissions = description.getPermissions();
             String[] permissionsArray = new String[permissions.size()];
             permissions.toArray(permissionsArray);
 
-            toRegister.add(new CommandInfo(
-                    description.getUsage(), description.getDescription(),
-                    command.getAllAliases(), dispatcher, permissionsArray));
+            toRegister.add(new CommandInfo(description.getUsage(), description.getShortDescription(), command.getAllAliases(), inspector, permissionsArray));
         }
 
         dynamicCommands.register(toRegister);

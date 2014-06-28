@@ -25,6 +25,7 @@ import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.minecraft.util.commands.WrappedCommandException;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -89,20 +90,20 @@ public class SimpleDispatcher implements Dispatcher {
     }
 
     @Override
-    public boolean call(String arguments, CommandLocals locals) throws CommandException {
+    public boolean call(@Nullable String alias, String arguments, CommandLocals locals) throws CommandException {
         String[] split = CommandContext.split(arguments);
         Set<String> aliases = getPrimaryAliases();
 
         if (aliases.isEmpty()) {
             throw new InvalidUsageException("This command has no sub-commands.", getDescription());
-        } else if (split.length != 0) {
+        } else if (split.length > 0) {
             String subCommand = split[0];
+            String subArguments = Joiner.on(" ").join(Arrays.copyOfRange(split, 1, split.length));
             CommandMapping mapping = get(subCommand);
-            String passedArguments = Joiner.on(" ").join(Arrays.copyOfRange(split, 1, split.length));
 
             if (mapping != null) {
                 try {
-                    mapping.getCallable().call(passedArguments, locals);
+                    mapping.getCallable().call(subCommand, subArguments, locals);
                 } catch (CommandException e) {
                     e.prependStack(subCommand);
                     throw e;
@@ -119,22 +120,26 @@ public class SimpleDispatcher implements Dispatcher {
     }
 
     @Override
-    public Collection<String> getSuggestions(String arguments) throws CommandException {
+    public List<String> getSuggestions(String arguments) throws CommandException {
         String[] split = CommandContext.split(arguments);
 
         if (split.length == 0) {
-            return getAllAliases();
+            return new ArrayList<String>(getAllAliases());
         } else if (split.length == 1) {
             String prefix = split[0];
-            List<String> suggestions = new ArrayList<String>();
+            if (!prefix.isEmpty()) {
+                List<String> suggestions = new ArrayList<String>();
 
-            for (String alias : getAllAliases()) {
-                if (alias.startsWith(prefix)) {
-                    suggestions.add(alias);
+                for (String alias : getAllAliases()) {
+                    if (alias.startsWith(prefix)) {
+                        suggestions.add(alias);
+                    }
                 }
-            }
 
-            return suggestions;
+                return suggestions;
+            } else {
+                return new ArrayList<String>(getAllAliases());
+            }
         } else {
             String subCommand = split[0];
             CommandMapping mapping = get(subCommand);
@@ -151,6 +156,17 @@ public class SimpleDispatcher implements Dispatcher {
     @Override
     public SimpleDescription getDescription() {
         return description;
+    }
+
+    @Override
+    public boolean testPermission(CommandLocals locals) {
+        for (CommandMapping mapping : getCommands()) {
+            if (mapping.getCallable().testPermission(locals)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

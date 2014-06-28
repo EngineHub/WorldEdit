@@ -30,8 +30,9 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.*;
 import com.sk89q.worldedit.event.platform.CommandEvent;
+import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
+import com.sk89q.worldedit.internal.command.ActorAuthorizer;
 import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
-import com.sk89q.worldedit.internal.command.CommandPermissionsHandler;
 import com.sk89q.worldedit.internal.command.WorldEditBinding;
 import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
 import com.sk89q.worldedit.session.request.Request;
@@ -87,11 +88,11 @@ public final class CommandManager {
 
         // Set up the commands manager
         ParametricBuilder builder = new ParametricBuilder();
+        builder.setAuthorizer(new ActorAuthorizer());
         builder.addBinding(new WorldEditBinding(worldEdit));
-        builder.attach(new CommandPermissionsHandler());
-        builder.attach(new WorldEditExceptionConverter(worldEdit));
-        builder.attach(new LegacyCommandsHandler());
-        builder.attach(new CommandLoggingHandler(worldEdit, logger));
+        builder.addExceptionConverter(new WorldEditExceptionConverter(worldEdit));
+        builder.addInvokeListener(new LegacyCommandsHandler());
+        builder.addInvokeListener(new CommandLoggingHandler(worldEdit, logger));
 
         dispatcher = new CommandGraph()
                 .builder(builder)
@@ -171,8 +172,6 @@ public final class CommandManager {
     }
 
     public String[] commandDetection(String[] split) {
-        split[0] = split[0].substring(1);
-
         // Quick script shortcut
         if (split[0].matches("^[^/].*\\.js$")) {
             String[] newSplit = new String[split.length + 1];
@@ -185,13 +184,14 @@ public final class CommandManager {
         String searchCmd = split[0].toLowerCase();
 
         // Try to detect the command
-        if (dispatcher.contains(searchCmd)) {
-        } else if (worldEdit.getConfiguration().noDoubleSlash && dispatcher.contains("/" + searchCmd)) {
-            split[0] = "/" + split[0];
-        } else if (split[0].length() >= 2 && split[0].charAt(0) == '/'
-                && dispatcher.contains(searchCmd.substring(1))) {
-            split[0] = split[0].substring(1);
+        if (!dispatcher.contains(searchCmd)) {
+            if (worldEdit.getConfiguration().noDoubleSlash && dispatcher.contains("/" + searchCmd)) {
+                split[0] = "/" + split[0];
+            } else if (searchCmd.length() >= 2 && searchCmd.charAt(0) == '/' && dispatcher.contains(searchCmd.substring(1))) {
+                split[0] = split[0].substring(1);
+            }
         }
+
         return split;
     }
 
@@ -200,7 +200,7 @@ public final class CommandManager {
         Request.reset();
 
         Actor actor = platformManager.createProxyActor(event.getActor());
-        String split[] = commandDetection(event.getArguments());
+        String split[] = commandDetection(event.getArguments().split(" "));
 
         // No command found!
         if (!dispatcher.contains(split[0])) {
@@ -216,7 +216,7 @@ public final class CommandManager {
         long start = System.currentTimeMillis();
 
         try {
-            dispatcher.call(Joiner.on(" ").join(split), locals);
+            dispatcher.call(null, Joiner.on(" ").join(split), locals);
         } catch (CommandPermissionsException e) {
             actor.printError("You don't have permission to do this.");
         } catch (InvalidUsageException e) {
@@ -253,6 +253,15 @@ public final class CommandManager {
         }
 
         event.setCancelled(true);
+    }
+
+    @Subscribe
+    public void handleCommandSuggestion(CommandSuggestionEvent event) {
+        try {
+            event.setSuggestions(dispatcher.getSuggestions(event.getArguments()));
+        } catch (CommandException e) {
+            event.getActor().printError(e.getMessage());
+        }
     }
 
     /**

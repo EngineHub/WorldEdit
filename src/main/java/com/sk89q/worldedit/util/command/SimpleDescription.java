@@ -49,7 +49,7 @@ public class SimpleDescription implements Description {
     }
 
     @Override
-    public String getDescription() {
+    public String getShortDescription() {
         return description;
     }
     
@@ -57,7 +57,7 @@ public class SimpleDescription implements Description {
      * Set the description of the command.
      * 
      * @param description the description
-     * @see #getDescription()
+     * @see #getShortDescription()
      */
     public void setDescription(String description) {
         this.description = description;
