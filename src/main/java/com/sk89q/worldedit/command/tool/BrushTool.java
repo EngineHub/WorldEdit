@@ -20,28 +20,30 @@
 package com.sk89q.worldedit.command.tool;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.masks.CombinedMask;
-import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.command.tool.brush.Brush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.MaskIntersection;
+import com.sk89q.worldedit.function.pattern.BlockPattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.session.request.Request;
 
 /**
  * Builds a shape at the place being looked at.
- * 
- * @author sk89q
  */
 public class BrushTool implements TraceTool {
+
     protected static int MAX_RANGE = 500;
     protected int range = -1;
     private Mask mask = null;
     private Brush brush = new SphereBrush();
-    private Pattern material = new SingleBlockPattern(new BaseBlock(BlockID.COBBLESTONE));
+    private Pattern material = new BlockPattern(new BaseBlock(BlockID.COBBLESTONE));
     private double size = 1;
     private String permission;
 
@@ -54,14 +56,8 @@ public class BrushTool implements TraceTool {
         this.permission = permission;
     }
 
-    /**
-     * Checks to see if the player can still be using this tool (considering
-     * permissions and such).
-     * 
-     * @param player
-     * @return
-     */
-    public boolean canUse(LocalPlayer player) {
+    @Override
+    public boolean canUse(Actor player) {
         return player.hasPermission(permission);
     }
 
@@ -151,22 +147,14 @@ public class BrushTool implements TraceTool {
     /**
      * Set the set brush range.
      * 
-     * @param size
+     * @param range
      */
     public void setRange(int range) {
         this.range = range;
     }
 
-    /**
-     * Perform the action. Should return true to deny the default
-     * action.
-     * 
-     * @param player
-     * @param session
-     * @return true to deny
-     */
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session) {
+    @Override
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
         WorldVector target = null;
         target = player.getBlockTrace(getRange(), true);
 
@@ -180,14 +168,14 @@ public class BrushTool implements TraceTool {
         EditSession editSession = session.createEditSession(player);
         Request.request().setEditSession(editSession);
         if (mask != null) {
-            mask.prepare(session, player, target);
             Mask existingMask = editSession.getMask();
+
             if (existingMask == null) {
                 editSession.setMask(mask);
-            } else if (existingMask instanceof CombinedMask) {
-                ((CombinedMask) existingMask).add(mask);
+            } else if (existingMask instanceof MaskIntersection) {
+                ((MaskIntersection) existingMask).add(mask);
             } else {
-                CombinedMask newMask = new CombinedMask(existingMask);
+                MaskIntersection newMask = new MaskIntersection(existingMask);
                 newMask.add(mask);
                 editSession.setMask(newMask);
             }

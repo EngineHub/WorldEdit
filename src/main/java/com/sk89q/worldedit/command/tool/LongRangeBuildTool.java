@@ -22,11 +22,12 @@ package com.sk89q.worldedit.command.tool;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Platform;
 
 /**
  * A tool that can place (or remove) blocks at a distance.
- *
- * @author wizjany
  */
 public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTool {
 
@@ -40,13 +41,12 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
     }
 
     @Override
-    public boolean canUse(LocalPlayer player) {
+    public boolean canUse(Actor player) {
         return player.hasPermission("worldedit.tool.lrbuild");
     }
 
-    public boolean actSecondary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session) {
-
+    @Override
+    public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
         WorldVectorFace pos = getTargetFace(player);
         if (pos == null) return false;
         EditSession eS = session.createEditSession(player);
@@ -65,9 +65,7 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
     }
 
     @Override
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session) {
-
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
         WorldVectorFace pos = getTargetFace(player);
         if (pos == null) return false;
         EditSession eS = session.createEditSession(player);
@@ -84,7 +82,7 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
         return false;
     }
 
-    public WorldVectorFace getTargetFace(LocalPlayer player) {
+    public WorldVectorFace getTargetFace(Player player) {
         WorldVectorFace target = null;
         target = player.getBlockTraceFace(getRange(), true);
 
@@ -95,4 +93,5 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
 
         return target;
     }
+
 }

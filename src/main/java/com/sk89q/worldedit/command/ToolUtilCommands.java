@@ -23,13 +23,13 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.util.command.parametric.Optional;
 
 /**
  * Tool commands.
- * 
- * @author sk89q
  */
 public class ToolUtilCommands {
     private final WorldEdit we;
@@ -77,13 +77,11 @@ public class ToolUtilCommands {
         max = -1
     )
     @CommandPermissions("worldedit.brush.options.mask")
-    public void mask(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-        if (args.argsLength() == 0) {
+    public void mask(Player player, LocalSession session, EditSession editSession, @Optional Mask mask) throws WorldEditException {
+        if (mask == null) {
             session.getBrushTool(player.getItemInHand()).setMask(null);
             player.print("Brush mask disabled.");
         } else {
-            Mask mask = we.getBlockMask(player, session, args.getJoinedStrings(0));
             session.getBrushTool(player.getItemInHand()).setMask(mask);
             player.print("Brush mask set.");
         }
@@ -97,9 +95,7 @@ public class ToolUtilCommands {
         max = 1
     )
     @CommandPermissions("worldedit.brush.options.material")
-    public void material(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+    public void material(Player player, LocalSession session, EditSession editSession, Pattern pattern) throws WorldEditException {
         session.getBrushTool(player.getItemInHand()).setFill(pattern);
         player.print("Brush material set.");
     }

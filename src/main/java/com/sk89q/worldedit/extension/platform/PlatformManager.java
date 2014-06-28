@@ -318,24 +318,19 @@ public class PlatformManager {
                     return;
                 }
 
-                if (player instanceof LocalPlayer) { // Temporary workaround
-                    LocalPlayer localPlayer = (LocalPlayer) player;
-                    WorldVector worldVector = new WorldVector(location);
-
-                    if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
-                        final BlockTool superPickaxe = session.getSuperPickaxe();
-                        if (superPickaxe != null && superPickaxe.canUse(localPlayer)) {
-                            event.setCancelled(superPickaxe.actPrimary(getServerInterface(), getConfiguration(), localPlayer, session, worldVector));
-                            return;
-                        }
+                if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
+                    final BlockTool superPickaxe = session.getSuperPickaxe();
+                    if (superPickaxe != null && superPickaxe.canUse(player)) {
+                        event.setCancelled(superPickaxe.actPrimary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session, location));
+                        return;
                     }
+                }
 
-                    Tool tool = session.getTool(player.getItemInHand());
-                    if (tool != null && tool instanceof DoubleActionBlockTool) {
-                        if (tool.canUse(localPlayer)) {
-                            ((DoubleActionBlockTool) tool).actSecondary(getServerInterface(), getConfiguration(), localPlayer, session, worldVector);
-                            event.setCancelled(true);
-                        }
+                Tool tool = session.getTool(player.getItemInHand());
+                if (tool != null && tool instanceof DoubleActionBlockTool) {
+                    if (tool.canUse(player)) {
+                        ((DoubleActionBlockTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session, location);
+                        event.setCancelled(true);
                     }
                 }
 
@@ -358,16 +353,11 @@ public class PlatformManager {
                     return;
                 }
 
-                if (player instanceof LocalPlayer) { // Temporary workaround
-                    LocalPlayer localPlayer = (LocalPlayer) player;
-                    WorldVector worldVector = new WorldVector(location);
-
-                    Tool tool = session.getTool(player.getItemInHand());
-                    if (tool != null && tool instanceof BlockTool) {
-                        if (tool.canUse(localPlayer)) {
-                            ((BlockTool) tool).actPrimary(getServerInterface(), getConfiguration(), localPlayer, session, worldVector);
-                            event.setCancelled(true);
-                        }
+                Tool tool = session.getTool(player.getItemInHand());
+                if (tool != null && tool instanceof BlockTool) {
+                    if (tool.canUse(player)) {
+                        ((BlockTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session, location);
+                        event.setCancelled(true);
                     }
                 }
             }
@@ -380,6 +370,7 @@ public class PlatformManager {
         // Create a proxy actor with a potentially different world for
         // making changes to the world
         Player player = createProxyActor(event.getPlayer());
+        World world = player.getWorld();
 
         switch (event.getInputType()) {
             case PRIMARY: {
@@ -405,16 +396,12 @@ public class PlatformManager {
 
                 LocalSession session = worldEdit.getSessionManager().get(player);
 
-                if (player instanceof LocalPlayer) { // Temporary workaround
-                    LocalPlayer localPlayer = (LocalPlayer) player;
-
-                    Tool tool = session.getTool(player.getItemInHand());
-                    if (tool != null && tool instanceof DoubleActionTraceTool) {
-                        if (tool.canUse(localPlayer)) {
-                            ((DoubleActionTraceTool) tool).actSecondary(getServerInterface(), getConfiguration(), localPlayer, session);
-                            event.setCancelled(true);
-                            return;
-                        }
+                Tool tool = session.getTool(player.getItemInHand());
+                if (tool != null && tool instanceof DoubleActionTraceTool) {
+                    if (tool.canUse(player)) {
+                        ((DoubleActionTraceTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session);
+                        event.setCancelled(true);
+                        return;
                     }
                 }
 
@@ -441,16 +428,12 @@ public class PlatformManager {
 
                 LocalSession session = worldEdit.getSessionManager().get(player);
 
-                if (player instanceof LocalPlayer) { // Temporary workaround
-                    LocalPlayer localPlayer = (LocalPlayer) player;
-
-                    Tool tool = session.getTool(player.getItemInHand());
-                    if (tool != null && tool instanceof TraceTool) {
-                        if (tool.canUse(localPlayer)) {
-                            ((TraceTool) tool).actPrimary(getServerInterface(), getConfiguration(), localPlayer, session);
-                            event.setCancelled(true);
-                            return;
-                        }
+                Tool tool = session.getTool(player.getItemInHand());
+                if (tool != null && tool instanceof TraceTool) {
+                    if (tool.canUse(player)) {
+                        ((TraceTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session);
+                        event.setCancelled(true);
+                        return;
                     }
                 }
 

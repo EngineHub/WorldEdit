@@ -22,9 +22,10 @@ package com.sk89q.worldedit.command.tool.brush;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
 
 public class ButcherBrush implements Brush {
+
     private int flags;
 
     public ButcherBrush(int flags) {
@@ -32,8 +33,7 @@ public class ButcherBrush implements Brush {
     }
 
     @Override
-    public void build(EditSession editSession, Vector pos, Pattern mat, double size)
-            throws MaxChangedBlocksException {
+    public void build(EditSession editSession, Vector pos, Pattern mat, double size) throws MaxChangedBlocksException {
         editSession.getWorld().killMobs(pos, size, flags);
     }
 

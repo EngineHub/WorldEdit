@@ -19,26 +19,31 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.world.World;
 
 /**
  * A super pickaxe mode that removes one block.
- * 
- * @author sk89q
  */
 public class SinglePickaxe implements BlockTool {
 
-    public boolean canUse(LocalPlayer player) {
+    @Override
+    public boolean canUse(Actor player) {
         return player.hasPermission("worldedit.superpickaxe");
     }
 
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, WorldVector clicked) {
-        LocalWorld world = clicked.getWorld();
-
-        final int blockType = world.getBlockType(clicked);
+    @Override
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
+        World world = clicked.getWorld();
+        final int blockType = world.getBlockType(clicked.toVector());
         if (blockType == BlockID.BEDROCK
                 && !player.canDestroyBedrock()) {
             return true;
@@ -48,14 +53,14 @@ public class SinglePickaxe implements BlockTool {
         editSession.getSurvivalExtent().setToolUse(config.superPickaxeDrop);
 
         try {
-            editSession.setBlock(clicked, new BaseBlock(BlockID.AIR));
+            editSession.setBlock(clicked.toVector(), new BaseBlock(BlockID.AIR));
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {
             editSession.flushQueue();
         }
 
-        world.playEffect(clicked, 2001, blockType);
+        world.playEffect(clicked.toVector(), 2001, blockType);
 
         return true;
     }
