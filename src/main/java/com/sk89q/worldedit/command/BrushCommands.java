@@ -160,7 +160,9 @@ public class BrushCommands {
     )
     @CommandPermissions("worldedit.brush.smooth")
     public void smoothBrush(Player player, LocalSession session, EditSession editSession,
-                            @Optional("2") double radius, @Optional("4") int iterations, @Switch('n') boolean naturalBlocksOnly) throws WorldEditException {
+                            @Optional("2") double radius, @Optional("4") int iterations, @Switch('n')
+                            boolean naturalBlocksOnly) throws WorldEditException {
+
         worldEdit.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
@@ -227,8 +229,7 @@ public class BrushCommands {
             max = 2
     )
     @CommandPermissions("worldedit.brush.butcher")
-    public void butcherBrush(CommandContext args, LocalSession session, Player player, EditSession editSession) throws WorldEditException {
-
+    public void butcherBrush(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         double radius = args.argsLength() > 0 ? args.getDouble(0) : 5;

@@ -63,8 +63,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.fill")
     @Logging(PLACEMENT)
-    public void fill(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void fill(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         double radius = Math.max(1, args.getDouble(1));
@@ -92,8 +91,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.fill.recursive")
     @Logging(PLACEMENT)
-    public void fillr(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void fillr(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         double radius = Math.max(1, args.getDouble(1));
@@ -121,8 +119,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.drain")
     @Logging(PLACEMENT)
-    public void drain(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void drain(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
@@ -140,8 +137,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.fixlava")
     @Logging(PLACEMENT)
-    public void fixLava(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void fixLava(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
@@ -159,8 +155,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.fixwater")
     @Logging(PLACEMENT)
-    public void fixWater(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void fixWater(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
@@ -178,8 +173,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.removeabove")
     @Logging(PLACEMENT)
-    public void removeAbove(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void removeAbove(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
@@ -200,8 +194,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.removebelow")
     @Logging(PLACEMENT)
-    public void removeBelow(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void removeBelow(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
@@ -221,8 +214,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.removenear")
     @Logging(PLACEMENT)
-    public void removeNear(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void removeNear(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         BaseBlock block = we.getBlock(player, args.getString(0), true);
         int size = Math.max(1, args.getInteger(1, 50));
@@ -242,8 +234,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.replacenear")
     @Logging(PLACEMENT)
-    public void replaceNear(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void replaceNear(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         int size = Math.max(1, args.getInteger(0));
         int affected;
@@ -279,8 +270,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.snow")
     @Logging(PLACEMENT)
-    public void snow(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void snow(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
 
@@ -297,8 +287,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.thaw")
     @Logging(PLACEMENT)
-    public void thaw(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void thaw(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
 
@@ -316,8 +305,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.green")
     @Logging(PLACEMENT)
-    public void green(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void green(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         final double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
         final boolean onlyNormalDirt = !args.hasFlag('f');
@@ -335,8 +323,7 @@ public class UtilityCommands {
         )
     @CommandPermissions("worldedit.extinguish")
     @Logging(PLACEMENT)
-    public void extinguish(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void extinguish(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 

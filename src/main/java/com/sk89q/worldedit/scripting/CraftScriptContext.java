@@ -19,24 +19,18 @@
 
 package com.sk89q.worldedit.scripting;
 
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.command.InsufficientArgumentsException;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.patterns.Pattern;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import com.sk89q.worldedit.DisallowedItemException;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.FilenameException;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.ServerInterface;
-import com.sk89q.worldedit.UnknownItemException;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.command.InsufficientArgumentsException;
-import com.sk89q.worldedit.patterns.Pattern;
 
 /**
  * The context given to scripts.
@@ -48,8 +42,8 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     private String[] args;
 
     public CraftScriptContext(WorldEdit controller,
-            ServerInterface server, LocalConfiguration config,
-            LocalSession session, LocalPlayer player, String[] args) {
+            Platform server, LocalConfiguration config,
+            LocalSession session, Player player, String[] args) {
         super(controller, server, config, session, player);
         this.args = args;
     }
@@ -74,7 +68,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * 
      * @return
      */
-    public LocalPlayer getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 

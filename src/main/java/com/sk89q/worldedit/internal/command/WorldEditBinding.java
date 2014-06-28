@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.internal.command;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.ParserContext;
@@ -29,7 +30,11 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.command.parametric.*;
+
+import java.util.Arrays;
 
 /**
  * Binds standard WorldEdit classes such as {@link Player} and {@link LocalSession}.
@@ -137,22 +142,25 @@ public class WorldEditBinding extends BindingHelper {
     }
 
     /**
-     * Gets an {@link Player} from a {@link ArgumentStack}.
+     * Gets an {@link BaseBlock} from a {@link ArgumentStack}.
      *
      * @param context the context
-     * @return a local player
+     * @return a pattern
      * @throws ParameterException on error
+     * @throws WorldEditException on error
      */
-    @SuppressWarnings("deprecation")
-    @BindingMatch(type = LocalPlayer.class,
-                  behavior = BindingBehavior.PROVIDES)
-    public Player getLocalPlayer(ArgumentStack context) throws ParameterException {
-        Player player = getPlayer(context);
-        if (player instanceof LocalPlayer) {
-            return (LocalPlayer) player;
-        } else {
-            throw new ParameterException("This command/function needs to be updated to take 'Player' rather than 'LocalPlayer'");
+    @BindingMatch(type = BaseBlock.class,
+                  behavior = BindingBehavior.CONSUMES,
+                  consumedCount = 1)
+    public BaseBlock getBaseBlock(ArgumentStack context) throws ParameterException, WorldEditException {
+        Actor actor = context.getContext().getLocals().get(Actor.class);
+        ParserContext parserContext = new ParserContext();
+        parserContext.setActor(context.getContext().getLocals().get(Actor.class));
+        if (actor instanceof Entity) {
+            parserContext.setWorld(((Entity) actor).getWorld());
         }
+        parserContext.setSession(worldEdit.getSessionManager().get(actor));
+        return worldEdit.getBlockRegistry().parseFromInput(context.next(), parserContext);
     }
 
     /**
@@ -216,6 +224,60 @@ public class WorldEditBinding extends BindingHelper {
             throws ParameterException, UnknownDirectionException {
         Player sender = getPlayer(context);
         return worldEdit.getDirection(sender, context.next());
+    }
+
+    /**
+     * Gets an {@link TreeType} from a {@link ArgumentStack}.
+     *
+     * @param context the context
+     * @return a pattern
+     * @throws ParameterException on error
+     * @throws WorldEditException on error
+     */
+    @BindingMatch(type = TreeType.class,
+            behavior = BindingBehavior.CONSUMES,
+            consumedCount = 1)
+    public TreeType getTreeType(ArgumentStack context) throws ParameterException, WorldEditException {
+        String input = context.next();
+        if (input != null) {
+            TreeType type = TreeGenerator.lookup(input);
+            if (type != null) {
+                return type;
+            } else {
+                throw new ParameterException(
+                        String.format("Can't recognize tree type '%s' -- choose from: %s", input, Arrays.toString(TreeType.values())));
+            }
+        } else {
+            return TreeType.TREE;
+        }
+    }
+
+    /**
+     * Gets an {@link BiomeType} from a {@link ArgumentStack}.
+     *
+     * @param context the context
+     * @return a pattern
+     * @throws ParameterException on error
+     * @throws WorldEditException on error
+     */
+    @BindingMatch(type = BiomeType.class,
+                  behavior = BindingBehavior.CONSUMES,
+                  consumedCount = 1)
+    public BiomeType getBiomeType(ArgumentStack context) throws ParameterException, WorldEditException {
+        String input = context.next();
+        if (input != null) {
+            BiomeType type = worldEdit.getServer().getBiomes().get(input);
+            if (type != null) {
+                return type;
+            } else {
+                throw new ParameterException(
+                        String.format("Can't recognize biome type '%s' -- use //biomelist to list available types", input));
+            }
+        } else {
+            throw new ParameterException(
+                    "This command takes a 'default' biome if one is not set, except there is no particular " +
+                            "biome that should be 'default', so the command should not be taking a default biome");
+        }
     }
 
 }

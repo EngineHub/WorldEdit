@@ -46,8 +46,7 @@ public class ToolUtilCommands {
         max = 1
     )
     @CommandPermissions("worldedit.superpickaxe")
-    public void togglePickaxe(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void togglePickaxe(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         String newState = args.getString(0, null);
         if (session.hasSuperPickAxe()) {
@@ -108,8 +107,7 @@ public class ToolUtilCommands {
             max = 1
         )
     @CommandPermissions("worldedit.brush.options.range")
-    public void range(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void range(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         int range = args.getInteger(0);
         session.getBrushTool(player.getItemInHand()).setRange(range);
         player.print("Brush range set.");
@@ -123,8 +121,7 @@ public class ToolUtilCommands {
         max = 1
     )
     @CommandPermissions("worldedit.brush.options.size")
-    public void size(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void size(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         int radius = args.getInteger(0);
         we.checkMaxBrushRadius(radius);

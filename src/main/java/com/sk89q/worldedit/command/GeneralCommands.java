@@ -24,19 +24,28 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.ItemType;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.util.command.parametric.Optional;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * General WorldEdit commands.
- * 
- * @author sk89q
  */
 public class GeneralCommands {
-    private final WorldEdit we;
 
-    public GeneralCommands(WorldEdit we) {
-        this.we = we;
+    private final WorldEdit worldEdit;
+
+    /**
+     * Create a new instance.
+     *
+     * @param worldEdit reference to WorldEdit
+     */
+    public GeneralCommands(WorldEdit worldEdit) {
+        checkNotNull(worldEdit);
+        this.worldEdit = worldEdit;
     }
 
     @Command(
@@ -47,10 +56,9 @@ public class GeneralCommands {
         max = 1
     )
     @CommandPermissions("worldedit.limit")
-    public void limit(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void limit(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
-        LocalConfiguration config = we.getConfiguration();
+        LocalConfiguration config = worldEdit.getConfiguration();
         boolean mayDisable = player.hasPermission("worldedit.limit.unrestricted");
 
         int limit = Math.max(-1, args.getInteger(0));
@@ -78,8 +86,7 @@ public class GeneralCommands {
         max = 1
     )
     @CommandPermissions("worldedit.fast")
-    public void fast(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void fast(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         String newState = args.getString(0, null);
         if (session.hasFastMode()) {
@@ -109,13 +116,11 @@ public class GeneralCommands {
         max = -1
     )
     @CommandPermissions("worldedit.global-mask")
-    public void gmask(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-        if (args.argsLength() == 0) {
-            session.setMask(null);
+    public void gmask(Player player, LocalSession session, EditSession editSession, @Optional Mask mask) throws WorldEditException {
+        if (mask == null) {
+            session.setMask((Mask) null);
             player.print("Global mask disabled.");
         } else {
-            Mask mask = we.getBlockMask(player, session, args.getJoinedStrings(0));
             session.setMask(mask);
             player.print("Global mask set.");
         }
@@ -128,8 +133,7 @@ public class GeneralCommands {
         min = 0,
         max = 0
     )
-    public void togglePlace(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void togglePlace(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         if (session.togglePlacementPosition()) {
             player.print("Now placing at pos #1.");

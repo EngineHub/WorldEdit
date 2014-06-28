@@ -23,17 +23,25 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Player;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * History little commands.
- * 
- * @author sk89q
+ * Commands to undo, redo, and clear history.
  */
 public class HistoryCommands {
-    private final WorldEdit we;
-    
-    public HistoryCommands(WorldEdit we) {
-        this.we = we;
+
+    private final WorldEdit worldEdit;
+
+    /**
+     * Create a new instance.
+     *
+     * @param worldEdit reference to WorldEdit
+     */
+    public HistoryCommands(WorldEdit worldEdit) {
+        checkNotNull(worldEdit);
+        this.worldEdit = worldEdit;
     }
 
     @Command(
@@ -44,9 +52,7 @@ public class HistoryCommands {
         max = 2
     )
     @CommandPermissions("worldedit.history.undo")
-    public void undo(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-        
+    public void undo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         int times = Math.max(1, args.getInteger(0, 1));
         for (int i = 0; i < times; ++i) {
             EditSession undone;
@@ -54,7 +60,7 @@ public class HistoryCommands {
                 undone = session.undo(session.getBlockBag(player), player);
             } else {
                 player.checkPermission("worldedit.history.undo.other");
-                LocalSession sess = we.getSession(args.getString(1));
+                LocalSession sess = worldEdit.getSession(args.getString(1));
                 if (sess == null) {
                     player.printError("Unable to find session for " + args.getString(1));
                     break;
@@ -63,7 +69,7 @@ public class HistoryCommands {
             }
             if (undone != null) {
                 player.print("Undo successful.");
-                we.flushBlockBag(player, undone);
+                worldEdit.flushBlockBag(player, undone);
             } else {
                 player.printError("Nothing left to undo.");
                 break;
@@ -79,8 +85,7 @@ public class HistoryCommands {
         max = 2
     )
     @CommandPermissions("worldedit.history.redo")
-    public void redo(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void redo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         int times = Math.max(1, args.getInteger(0, 1));
 
@@ -90,7 +95,7 @@ public class HistoryCommands {
                 redone = session.redo(session.getBlockBag(player), player);
             } else {
                 player.checkPermission("worldedit.history.redo.other");
-                LocalSession sess = we.getSession(args.getString(1));
+                LocalSession sess = worldEdit.getSession(args.getString(1));
                 if (sess == null) {
                     player.printError("Unable to find session for " + args.getString(1));
                     break;
@@ -99,7 +104,7 @@ public class HistoryCommands {
             }
             if (redone != null) {
                 player.print("Redo successful.");
-                we.flushBlockBag(player, redone);
+                worldEdit.flushBlockBag(player, redone);
             } else {
                 player.printError("Nothing left to redo.");
             }
@@ -114,10 +119,9 @@ public class HistoryCommands {
         max = 0
     )
     @CommandPermissions("worldedit.history.clear")
-    public void clearHistory(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
+    public void clearHistory(Player player, LocalSession session, EditSession editSession) throws WorldEditException {
         session.clearHistory();
         player.print("History cleared.");
     }
+
 }

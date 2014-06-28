@@ -22,15 +22,11 @@ package com.sk89q.worldedit.command;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.command.tool.AreaPickaxe;
 import com.sk89q.worldedit.command.tool.RecursivePickaxe;
 import com.sk89q.worldedit.command.tool.SinglePickaxe;
+import com.sk89q.worldedit.entity.Player;
 
 public class SuperPickaxeCommands {
     private final WorldEdit we;
@@ -47,8 +43,7 @@ public class SuperPickaxeCommands {
         max = 0
     )
     @CommandPermissions("worldedit.superpickaxe")
-    public void single(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void single(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         session.setSuperPickaxe(new SinglePickaxe());
         session.enableSuperPickAxe();
@@ -63,8 +58,7 @@ public class SuperPickaxeCommands {
         max = 1
     )
     @CommandPermissions("worldedit.superpickaxe.area")
-    public void area(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void area(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
         int range = args.getInteger(0);
@@ -87,8 +81,7 @@ public class SuperPickaxeCommands {
         max = 1
     )
     @CommandPermissions("worldedit.superpickaxe.recursive")
-    public void recursive(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void recursive(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
         double range = args.getDouble(0);

@@ -19,41 +19,46 @@
 
 package com.sk89q.worldedit.command;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.ALL;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
-
 import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.BiomeType;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.function.pattern.Patterns;
+import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
-import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.command.binding.Range;
+import com.sk89q.worldedit.util.command.binding.Switch;
+import com.sk89q.worldedit.util.command.binding.Text;
+import com.sk89q.worldedit.util.command.parametric.Optional;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 
 /**
- * Generation commands.
- * 
- * @author sk89q
+ * Commands for the generation of shapes and other objects.
  */
 public class GenerationCommands {
-    private final WorldEdit we;
-    
-    public GenerationCommands(WorldEdit we) {
-        this.we = we;
+
+    private final WorldEdit worldEdit;
+
+    /**
+     * Create a new instance.
+     *
+     * @param worldEdit reference to WorldEdit
+     */
+    public GenerationCommands(WorldEdit worldEdit) {
+        checkNotNull(worldEdit);
+        this.worldEdit = worldEdit;
     }
 
     @Command(
         aliases = { "/hcyl" },
-        usage = "<block> <radius>[,<radius>] [height]",
+        usage = "<pattern> <radius>[,<radius>] [height]",
         desc = "Generates a hollow cylinder.",
         help =
             "Generates a hollow cylinder.\n" +
@@ -65,40 +70,14 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
-    public void hcyl(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        Pattern block = we.getBlockPattern(player, args.getString(0));
-        String[] radiuses = args.getString(1).split(",");
-        final double radiusX, radiusZ;
-        switch (radiuses.length) {
-        case 1:
-            radiusX = radiusZ = Math.max(1, Double.parseDouble(radiuses[0]));
-            break;
-
-        case 2:
-            radiusX = Math.max(1, Double.parseDouble(radiuses[0]));
-            radiusZ = Math.max(1, Double.parseDouble(radiuses[1]));
-            break;
-
-        default:
-            player.printError("You must either specify 1 or 2 radius values.");
-            return;
-        }
-        int height = args.argsLength() > 2 ? args.getInteger(2) : 1;
-
-        we.checkMaxRadius(radiusX);
-        we.checkMaxRadius(radiusZ);
-        we.checkMaxRadius(height);
-
-        Vector pos = session.getPlacementPosition(player);
-        int affected = editSession.makeCylinder(pos, block, radiusX, radiusZ, height, false);
-        player.print(affected + " block(s) have been created.");
+    public void hcyl(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("1") int height) throws WorldEditException {
+        cyl(player, session, editSession, pattern, radiusString, height, true);
     }
 
     @Command(
         aliases = { "/cyl" },
         usage = "<block> <radius>[,<radius>] [height]",
+        flags = "h",
         desc = "Generates a cylinder.",
         help =
             "Generates a cylinder.\n" +
@@ -110,34 +89,30 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
-    public void cyl(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        Pattern block = we.getBlockPattern(player, args.getString(0));
-        String[] radiuses = args.getString(1).split(",");
+    public void cyl(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("1") int height, @Switch('h') boolean hollow) throws WorldEditException {
+        String[] radii = radiusString.split(",");
         final double radiusX, radiusZ;
-        switch (radiuses.length) {
+        switch (radii.length) {
         case 1:
-            radiusX = radiusZ = Math.max(1, Double.parseDouble(radiuses[0]));
+            radiusX = radiusZ = Math.max(1, Double.parseDouble(radii[0]));
             break;
 
         case 2:
-            radiusX = Math.max(1, Double.parseDouble(radiuses[0]));
-            radiusZ = Math.max(1, Double.parseDouble(radiuses[1]));
+            radiusX = Math.max(1, Double.parseDouble(radii[0]));
+            radiusZ = Math.max(1, Double.parseDouble(radii[1]));
             break;
 
         default:
             player.printError("You must either specify 1 or 2 radius values.");
             return;
         }
-        int height = args.argsLength() > 2 ? args.getInteger(2) : 1;
 
-        we.checkMaxRadius(radiusX);
-        we.checkMaxRadius(radiusZ);
-        we.checkMaxRadius(height);
+        worldEdit.checkMaxRadius(radiusX);
+        worldEdit.checkMaxRadius(radiusZ);
+        worldEdit.checkMaxRadius(height);
 
         Vector pos = session.getPlacementPosition(player);
-        int affected = editSession.makeCylinder(pos, block, radiusX, radiusZ, height, true);
+        int affected = editSession.makeCylinder(pos, Patterns.wrap(pattern), radiusX, radiusZ, height, !hollow);
         player.print(affected + " block(s) have been created.");
     }
 
@@ -155,52 +130,14 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
-    public void hsphere(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        final Pattern block = we.getBlockPattern(player, args.getString(0));
-        String[] radiuses = args.getString(1).split(",");
-        final double radiusX, radiusY, radiusZ;
-        switch (radiuses.length) {
-        case 1:
-            radiusX = radiusY = radiusZ = Math.max(1, Double.parseDouble(radiuses[0]));
-            break;
-
-        case 3:
-            radiusX = Math.max(1, Double.parseDouble(radiuses[0]));
-            radiusY = Math.max(1, Double.parseDouble(radiuses[1]));
-            radiusZ = Math.max(1, Double.parseDouble(radiuses[2]));
-            break;
-
-        default:
-            player.printError("You must either specify 1 or 3 radius values.");
-            return;
-        }
-
-        we.checkMaxRadius(radiusX);
-        we.checkMaxRadius(radiusY);
-        we.checkMaxRadius(radiusZ);
-
-        final boolean raised;
-        if (args.argsLength() > 2) {
-            raised = args.getString(2).equalsIgnoreCase("true") || args.getString(2).equalsIgnoreCase("yes");
-        } else {
-            raised = false;
-        }
-
-        Vector pos = session.getPlacementPosition(player);
-        if (raised) {
-            pos = pos.add(0, radiusY, 0);
-        }
-
-        int affected = editSession.makeSphere(pos, block, radiusX, radiusY, radiusZ, false);
-        player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
+    public void hsphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised) throws WorldEditException {
+        sphere(player, session, editSession, pattern, radiusString, raised, true);
     }
 
     @Command(
         aliases = { "/sphere" },
         usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
+        flags = "h",
         desc = "Generates a filled sphere.",
         help =
             "Generates a filled sphere.\n" +
@@ -212,21 +149,18 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
-    public void sphere(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        Pattern block = we.getBlockPattern(player, args.getString(0));
-        String[] radiuses = args.getString(1).split(",");
+    public void sphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
+        String[] radii = radiusString.split(",");
         final double radiusX, radiusY, radiusZ;
-        switch (radiuses.length) {
+        switch (radii.length) {
         case 1:
-            radiusX = radiusY = radiusZ = Math.max(1, Double.parseDouble(radiuses[0]));
+            radiusX = radiusY = radiusZ = Math.max(1, Double.parseDouble(radii[0]));
             break;
 
         case 3:
-            radiusX = Math.max(1, Double.parseDouble(radiuses[0]));
-            radiusY = Math.max(1, Double.parseDouble(radiuses[1]));
-            radiusZ = Math.max(1, Double.parseDouble(radiuses[2]));
+            radiusX = Math.max(1, Double.parseDouble(radii[0]));
+            radiusY = Math.max(1, Double.parseDouble(radii[1]));
+            radiusZ = Math.max(1, Double.parseDouble(radii[2]));
             break;
 
         default:
@@ -234,23 +168,16 @@ public class GenerationCommands {
             return;
         }
 
-        we.checkMaxRadius(radiusX);
-        we.checkMaxRadius(radiusY);
-        we.checkMaxRadius(radiusZ);
-
-        final boolean raised;
-        if (args.argsLength() > 2) {
-            raised = args.getString(2).equalsIgnoreCase("true") || args.getString(2).equalsIgnoreCase("yes");
-        } else {
-            raised = false;
-        }
+        worldEdit.checkMaxRadius(radiusX);
+        worldEdit.checkMaxRadius(radiusY);
+        worldEdit.checkMaxRadius(radiusZ);
 
         Vector pos = session.getPlacementPosition(player);
         if (raised) {
             pos = pos.add(0, radiusY, 0);
         }
 
-        int affected = editSession.makeSphere(pos, block, radiusX, radiusY, radiusZ, true);
+        int affected = editSession.makeSphere(pos, Patterns.wrap(pattern), radiusX, radiusY, radiusZ, !hollow);
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }
@@ -265,22 +192,9 @@ public class GenerationCommands {
     @CommandPermissions("worldedit.generation.forest")
     @Logging(POSITION)
     @SuppressWarnings("deprecation")
-    public void forestGen(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-        
-        int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 10;
-        TreeGenerator.TreeType type = args.argsLength() > 1 ?
-                TreeGenerator.lookup(args.getString(1))
-                : TreeGenerator.TreeType.TREE;
-        double density = args.argsLength() > 2 ? args.getDouble(2) / 100 : 0.05;
-
-        if (type == null) {
-            player.printError("Tree type '" + args.getString(1) + "' is unknown.");
-            return;
-        }
-
-        int affected = editSession.makeForest(session.getPlacementPosition(player),
-                size, density, new TreeGenerator(type));
+    public void forestGen(Player player, LocalSession session, EditSession editSession, @Optional("10") int size, @Optional("tree") TreeType type, @Optional("5") double density) throws WorldEditException {
+        density = density / 100;
+        int affected = editSession.makeForest(session.getPlacementPosition(player), size, density, new TreeGenerator(type));
         player.print(affected + " trees created.");
     }
 
@@ -293,59 +207,38 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.pumpkins")
     @Logging(POSITION)
-    public void pumpkins(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 10;
-
-        int affected = editSession.makePumpkinPatches(session.getPlacementPosition(player), size);
+    public void pumpkins(Player player, LocalSession session, EditSession editSession, @Optional("10") int apothem) throws WorldEditException {
+        int affected = editSession.makePumpkinPatches(session.getPlacementPosition(player), apothem);
         player.print(affected + " pumpkin patches created.");
+    }
+
+    @Command(
+            aliases = { "/hpyramid" },
+            usage = "<block> <size>",
+            desc = "Generate a hollow pyramid",
+            min = 2,
+            max = 2
+    )
+    @CommandPermissions("worldedit.generation.pyramid")
+    @Logging(PLACEMENT)
+    public void hollowPyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size) throws WorldEditException {
+        pyramid(player, session, editSession, pattern, size, true);
     }
 
     @Command(
         aliases = { "/pyramid" },
         usage = "<block> <size>",
+        flags = "h",
         desc = "Generate a filled pyramid",
         min = 2,
         max = 2
     )
     @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
-    public void pyramid(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        Pattern block = we.getBlockPattern(player, args.getString(0));
-        int size = Math.max(1, args.getInteger(1));
+    public void pyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, @Switch('h') boolean hollow) throws WorldEditException {
         Vector pos = session.getPlacementPosition(player);
-
-        we.checkMaxRadius(size);
-
-        int affected = editSession.makePyramid(pos, block, size, true);
-
-        player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
-    }
-
-    @Command(
-        aliases = { "/hpyramid" },
-        usage = "<block> <size>",
-        desc = "Generate a hollow pyramid",
-        min = 2,
-        max = 2
-    )
-    @CommandPermissions("worldedit.generation.pyramid")
-    @Logging(PLACEMENT)
-    public void hpyramid(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        Pattern block = we.getBlockPattern(player, args.getString(0));
-        int size = Math.max(1, args.getInteger(1));
-        Vector pos = session.getPlacementPosition(player);
-
-        we.checkMaxRadius(size);
-
-        int affected = editSession.makePyramid(pos, block, size, false);
-
+        worldEdit.checkMaxRadius(size);
+        int affected = editSession.makePyramid(pos, Patterns.wrap(pattern), size, !hollow);
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }
@@ -371,26 +264,25 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.shape")
     @Logging(ALL)
-    public void generate(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        final Pattern pattern = we.getBlockPattern(player, args.getString(0));
-        final Region region = session.getSelection(player.getWorld());
-
-        final boolean hollow = args.hasFlag('h');
-
-        final String expression = args.getJoinedStrings(1);
+    public void generate(Player player, LocalSession session, EditSession editSession,
+                         @Selection Region region,
+                         Pattern pattern,
+                         @Text String expression,
+                         @Switch('h') boolean hollow,
+                         @Switch('r') boolean useRawCoords,
+                         @Switch('o') boolean offset,
+                         @Switch('c') boolean offsetCenter) throws WorldEditException {
 
         final Vector zero;
         Vector unit;
 
-        if (args.hasFlag('r')) {
+        if (useRawCoords) {
             zero = Vector.ZERO;
             unit = Vector.ONE;
-        } else if (args.hasFlag('o')) {
+        } else if (offset) {
             zero = session.getPlacementPosition(player);
             unit = Vector.ONE;
-        } else if (args.hasFlag('c')) {
+        } else if (offsetCenter) {
             final Vector min = region.getMinimumPoint();
             final Vector max = region.getMaximumPoint();
 
@@ -409,7 +301,7 @@ public class GenerationCommands {
         }
 
         try {
-            final int affected = editSession.makeShape(region, zero, unit, pattern, expression, hollow);
+            final int affected = editSession.makeShape(region, zero, unit, Patterns.wrap(pattern), expression, hollow);
             player.findFreePosition();
             player.print(affected + " block(s) have been created.");
         } catch (ExpressionException e) {
@@ -438,26 +330,24 @@ public class GenerationCommands {
     )
     @CommandPermissions({"worldedit.generation.shape", "worldedit.biome.set"})
     @Logging(ALL)
-    public void generateBiome(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        final BiomeType target = we.getServer().getBiomes().get(args.getString(0));
-        final Region region = session.getSelection(player.getWorld());
-
-        final boolean hollow = args.hasFlag('h');
-
-        final String expression = args.getJoinedStrings(1);
-
+    public void generateBiome(Player player, LocalSession session, EditSession editSession,
+                              @Selection Region region,
+                              BiomeType target,
+                              @Text String expression,
+                              @Switch('h') boolean hollow,
+                              @Switch('r') boolean useRawCoords,
+                              @Switch('o') boolean offset,
+                              @Switch('c') boolean offsetCenter) throws WorldEditException {
         final Vector zero;
         Vector unit;
 
-        if (args.hasFlag('r')) {
+        if (useRawCoords) {
             zero = Vector.ZERO;
             unit = Vector.ONE;
-        } else if (args.hasFlag('o')) {
+        } else if (offset) {
             zero = session.getPlacementPosition(player);
             unit = Vector.ONE;
-        } else if (args.hasFlag('c')) {
+        } else if (offsetCenter) {
             final Vector min = region.getMinimumPoint();
             final Vector max = region.getMaximumPoint();
 
@@ -483,4 +373,5 @@ public class GenerationCommands {
             player.printError(e.getMessage());
         }
     }
+
 }

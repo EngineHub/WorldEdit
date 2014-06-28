@@ -30,13 +30,14 @@ import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
-import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
@@ -141,6 +142,17 @@ public class LocalSession {
      * @return whether anything was undone
      */
     public EditSession undo(BlockBag newBlockBag, LocalPlayer player) {
+        return undo(newBlockBag, (Player) player);
+    }
+
+    /**
+     * Performs an undo.
+     *
+     * @param newBlockBag
+     * @param player
+     * @return whether anything was undone
+     */
+    public EditSession undo(BlockBag newBlockBag, Player player) {
         --historyPointer;
         if (historyPointer >= 0) {
             EditSession editSession = history.get(historyPointer);
@@ -164,6 +176,17 @@ public class LocalSession {
      * @return whether anything was redone
      */
     public EditSession redo(BlockBag newBlockBag, LocalPlayer player) {
+        return redo(newBlockBag, (Player) player);
+    }
+
+    /**
+     * Performs a redo
+     *
+     * @param newBlockBag
+     * @param player
+     * @return whether anything was redone
+     */
+    public EditSession redo(BlockBag newBlockBag, Player player) {
         if (historyPointer < history.size()) {
             EditSession editSession = history.get(historyPointer);
             EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
@@ -577,7 +600,7 @@ public class LocalSession {
      *
      * @param player
      */
-    public void dispatchCUISetup(LocalPlayer player) {
+    public void dispatchCUISetup(Player player) {
         if (selector != null) {
             dispatchCUISelection(player);
         }
@@ -588,7 +611,7 @@ public class LocalSession {
      *
      * @param player
      */
-    public void dispatchCUISelection(LocalPlayer player) {
+    public void dispatchCUISelection(Player player) {
         if (!hasCUISupport) {
             return;
         }
@@ -732,9 +755,6 @@ public class LocalSession {
                         getBlockChangeLimit(), blockBag, player);
         editSession.setFastMode(fastMode);
         Request.request().setEditSession(editSession);
-        if (mask != null && player instanceof LocalPlayer) {
-            mask.prepare(this, (LocalPlayer) player, null);
-        }
         editSession.setMask(mask);
 
         return editSession;
@@ -775,4 +795,15 @@ public class LocalSession {
     public void setMask(Mask mask) {
         this.mask = mask;
     }
+
+    /**
+     * Set a mask.
+     *
+     * @param mask mask or null
+     */
+    @SuppressWarnings("deprecation")
+    public void setMask(com.sk89q.worldedit.masks.Mask mask) {
+        setMask(mask != null ? Masks.wrap(mask) : null);
+    }
+
 }

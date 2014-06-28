@@ -19,30 +19,25 @@
 
 package com.sk89q.worldedit.command;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Logging;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
+import com.sk89q.worldedit.world.snapshot.Snapshot;
+import com.sk89q.worldedit.world.snapshot.SnapshotRestore;
+import com.sk89q.worldedit.world.storage.ChunkStore;
+import com.sk89q.worldedit.world.storage.MissingWorldException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.minecraft.util.commands.NestedCommand;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.world.storage.ChunkStore;
-import com.sk89q.worldedit.world.DataException;
-import com.sk89q.worldedit.world.storage.MissingWorldException;
-import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
-import com.sk89q.worldedit.world.snapshot.Snapshot;
-import com.sk89q.worldedit.world.snapshot.SnapshotRestore;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 public class SnapshotUtilCommands {
 
@@ -63,8 +58,7 @@ public class SnapshotUtilCommands {
     )
     @Logging(REGION)
     @CommandPermissions("worldedit.snapshots.restore")
-    public void restore(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void restore(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
