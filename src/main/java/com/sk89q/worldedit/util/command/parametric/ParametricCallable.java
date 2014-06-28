@@ -19,31 +19,15 @@
 
 package com.sk89q.worldedit.util.command.parametric;
 
+import com.sk89q.minecraft.util.commands.*;
+import com.sk89q.worldedit.util.command.*;
+import com.sk89q.worldedit.util.command.binding.Switch;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.SuggestionContext;
-import com.sk89q.minecraft.util.commands.WrappedCommandException;
-import com.sk89q.worldedit.util.command.CommandCallable;
-import com.sk89q.worldedit.util.command.InvalidUsageException;
-import com.sk89q.worldedit.util.command.MissingParameterException;
-import com.sk89q.worldedit.util.command.Parameter;
-import com.sk89q.worldedit.util.command.SimpleDescription;
-import com.sk89q.worldedit.util.command.UnconsumedParameterException;
-import com.sk89q.worldedit.util.command.binding.Switch;
+import java.util.*;
 
 /**
  * The implementation of a {@link CommandCallable} for the {@link ParametricBuilder}.
@@ -103,8 +87,6 @@ class ParametricCallable implements CommandCallable {
             for (Annotation annotation : annotations[i]) {
                 if (annotation instanceof Switch) {
                     parameter.setFlag(((Switch) annotation).value(), type != boolean.class);
-                } else if (annotation instanceof Nullable) {
-                    parameter.setOptional(true);
                 } else if (annotation instanceof Optional) {
                     parameter.setOptional(true);
                     String[] value = ((Optional) annotation).value();
@@ -481,14 +463,14 @@ class ParametricCallable implements CommandCallable {
      * Get any unused flag arguments.
      * 
      * @param context the command context
-     * @param parameters the list of parameters
      */
     private String getUnusedFlags(CommandContext context) {
         Set<Character> unusedFlags = null;
         for (char flag : context.getFlags()) {
             boolean found = false;
-            for (int i = 0; i < parameters.length; i++) {
-                Character paramFlag = parameters[i].getFlag();
+
+            for (ParameterData parameter : parameters) {
+                Character paramFlag = parameter.getFlag();
                 if (paramFlag != null && flag == paramFlag) {
                     found = true;
                     break;
