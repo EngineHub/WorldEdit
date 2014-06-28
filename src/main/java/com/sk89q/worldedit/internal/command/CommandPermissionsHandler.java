@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.internal.command;
 
 import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.command.parametric.PermissionsHandler;
-import com.sk89q.worldedit.LocalPlayer;
 
 public class CommandPermissionsHandler extends PermissionsHandler {
 
@@ -30,9 +30,9 @@ public class CommandPermissionsHandler extends PermissionsHandler {
 
     @Override
     protected boolean hasPermission(CommandContext context, String permission) {
-        LocalPlayer sender = context.getLocals().get(LocalPlayer.class);
+        Actor sender = context.getLocals().get(Actor.class);
         if (sender == null) {
-            return true;
+            throw new RuntimeException("Uh oh! No 'Actor' specified so that we can check permissions");
         } else {
             return sender.hasPermission(permission);
         }
