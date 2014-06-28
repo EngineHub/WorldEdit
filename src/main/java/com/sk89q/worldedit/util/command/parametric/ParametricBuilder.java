@@ -151,7 +151,7 @@ public class ParametricBuilder {
             Command definition = method.getAnnotation(Command.class);
             if (definition != null) {
                 CommandCallable callable = build(object, method, definition);
-                dispatcher.register(callable, definition.aliases());
+                dispatcher.registerCommand(callable, definition.aliases());
             }
         }
     }

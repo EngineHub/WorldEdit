@@ -62,7 +62,7 @@ public class CommandGraph {
 
     /**
      * Set the {@link ParametricBuilder} used for calls to 
-     * {@link DispatcherNode#build(Object)}.
+     * {@link DispatcherNode#registerMethods(Object)}.
      * 
      * @param builder the builder, or null
      * @return this object

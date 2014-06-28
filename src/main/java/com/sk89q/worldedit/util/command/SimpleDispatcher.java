@@ -37,7 +37,7 @@ public class SimpleDispatcher implements Dispatcher {
     private final SimpleDescription description = new SimpleDescription();
 
     @Override
-    public void register(CommandCallable callable, String... alias) {
+    public void registerCommand(CommandCallable callable, String... alias) {
         CommandMapping mapping = new CommandMapping(callable, alias);
         
         // Check for replacements
@@ -61,7 +61,7 @@ public class SimpleDispatcher implements Dispatcher {
     }
     
     @Override
-    public Set<String> getAllAliases() {
+    public Set<String> getAliases() {
         return Collections.unmodifiableSet(commands.keySet());
     }
     
@@ -124,13 +124,13 @@ public class SimpleDispatcher implements Dispatcher {
         String[] split = CommandContext.split(arguments);
 
         if (split.length == 0) {
-            return new ArrayList<String>(getAllAliases());
+            return new ArrayList<String>(getAliases());
         } else if (split.length == 1) {
             String prefix = split[0];
             if (!prefix.isEmpty()) {
                 List<String> suggestions = new ArrayList<String>();
 
-                for (String alias : getAllAliases()) {
+                for (String alias : getAliases()) {
                     if (alias.startsWith(prefix)) {
                         suggestions.add(alias);
                     }
@@ -138,7 +138,7 @@ public class SimpleDispatcher implements Dispatcher {
 
                 return suggestions;
             } else {
-                return new ArrayList<String>(getAllAliases());
+                return new ArrayList<String>(getAliases());
             }
         } else {
             String subCommand = split[0];

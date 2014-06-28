@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.command;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -32,7 +33,7 @@ public interface Dispatcher extends CommandCallable {
      * @param callable the command executor
      * @param alias a list of aliases, where the first alias is the primary name
      */
-    void register(CommandCallable callable, String... alias);
+    void registerCommand(CommandCallable callable, String... alias);
     
     /**
      * Get a list of command registrations.
@@ -53,22 +54,23 @@ public interface Dispatcher extends CommandCallable {
     Collection<String> getPrimaryAliases();
 
     /**
-     * Get a list of all the command aliases.
+     * Get a list of all the command aliases, which includes the primary alias.
      * 
      * <p>A command may have more than one alias assigned to it. The returned 
      * collection cannot be modified.</p>
      * 
      * @return a list of aliases
      */
-    Collection<String> getAllAliases();
+    Collection<String> getAliases();
 
     /**
-     * Get the {@link CommandCallable} associated with an alias.
+     * Get the {@link CommandCallable} associated with an alias. Returns
+     * null if no command is named by the given alias.
      * 
      * @param alias the alias
-     * @return the command mapping
+     * @return the command mapping (null if not found)
      */
-    CommandMapping get(String alias);
+    @Nullable CommandMapping get(String alias);
 
     /**
      * Returns whether the dispatcher contains a registered command for the given alias.

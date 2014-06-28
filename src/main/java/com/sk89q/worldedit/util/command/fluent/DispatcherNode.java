@@ -56,10 +56,8 @@ public class DispatcherNode {
      * @param description the description
      * @return this object
      */
-    public DispatcherNode describe(String description) {
-        if (dispatcher instanceof SimpleDispatcher) {
-            ((SimpleDispatcher) dispatcher).getDescription().setDescription(description);
-        }
+    public DispatcherNode describeAs(String description) {
+        dispatcher.getDescription().setDescription(description);
         return this;
     }
 
@@ -70,7 +68,7 @@ public class DispatcherNode {
      * @param alias the list of aliases, where the first alias is the primary one
      */
     public void register(CommandCallable callable, String... alias) {
-        dispatcher.register(callable, alias);
+        dispatcher.registerCommand(callable, alias);
     }
 
     /**
@@ -81,7 +79,7 @@ public class DispatcherNode {
      * @return this object
      * @see ParametricBuilder#registerMethodsAsCommands(com.sk89q.worldedit.util.command.Dispatcher, Object)
      */
-    public DispatcherNode build(Object object) {
+    public DispatcherNode registerMethods(Object object) {
         ParametricBuilder builder = graph.getBuilder();
         if (builder == null) {
             throw new RuntimeException("No ParametricBuilder set");
@@ -101,7 +99,7 @@ public class DispatcherNode {
      */
     public DispatcherNode group(String... alias) {
         SimpleDispatcher command = new SimpleDispatcher();
-        getDispatcher().register(command, alias);
+        getDispatcher().registerCommand(command, alias);
         return new DispatcherNode(graph, this, command);
     }
     
