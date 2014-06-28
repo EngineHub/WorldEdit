@@ -117,9 +117,4 @@ class BukkitCommandSender implements Actor {
     public void dispatchCUIEvent(CUIEvent event) {
     }
 
-    @Override
-    public LocalWorld getWorld() {
-        throw new PlayerNeededException();
-    }
-
 }

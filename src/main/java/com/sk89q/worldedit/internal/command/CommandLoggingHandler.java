@@ -89,7 +89,7 @@ public class CommandLoggingHandler extends AbstractInvokeListener implements Inv
 
         builder.append("WorldEdit: ").append(sender.getName());
         if (sender.isPlayer()) {
-            builder.append(" (in \"" + sender.getWorld().getName() + "\")");
+            builder.append(" (in \"" + player.getWorld().getName() + "\")");
         }
 
         builder.append(": ").append(context.getCommand());
@@ -126,7 +126,7 @@ public class CommandLoggingHandler extends AbstractInvokeListener implements Inv
             case REGION:
                 try {
                     builder.append(" - Region: ")
-                            .append(session.getSelection(sender.getWorld()));
+                            .append(session.getSelection(player.getWorld()));
                 } catch (IncompleteRegionException e) {
                     break;
                 }

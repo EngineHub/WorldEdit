@@ -240,7 +240,7 @@ public class PlatformManager {
                 permActor = player;
             }
 
-            return (T) new PlayerProxy(player, permActor, getWorldForEditing(base.getWorld()));
+            return (T) new PlayerProxy(player, permActor, getWorldForEditing(player.getWorld()));
         } else {
             return base;
         }

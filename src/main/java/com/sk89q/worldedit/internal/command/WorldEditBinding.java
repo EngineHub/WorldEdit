@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.internal.command;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -169,7 +170,9 @@ public class WorldEditBinding extends BindingHelper {
         Actor actor = context.getContext().getLocals().get(Actor.class);
         ParserContext parserContext = new ParserContext();
         parserContext.setActor(context.getContext().getLocals().get(Actor.class));
-        parserContext.setWorld(actor.getWorld());
+        if (actor instanceof Entity) {
+            parserContext.setWorld(((Entity) actor).getWorld());
+        }
         parserContext.setSession(worldEdit.getSessionManager().get(actor));
         return worldEdit.getPatternRegistry().parseFromInput(context.next(), parserContext);
     }
@@ -189,7 +192,9 @@ public class WorldEditBinding extends BindingHelper {
         Actor actor = context.getContext().getLocals().get(Actor.class);
         ParserContext parserContext = new ParserContext();
         parserContext.setActor(context.getContext().getLocals().get(Actor.class));
-        parserContext.setWorld(actor.getWorld());
+        if (actor instanceof Entity) {
+            parserContext.setWorld(((Entity) actor).getWorld());
+        }
         parserContext.setSession(worldEdit.getSessionManager().get(actor));
         return worldEdit.getMaskRegistry().parseFromInput(context.next(), parserContext);
     }
