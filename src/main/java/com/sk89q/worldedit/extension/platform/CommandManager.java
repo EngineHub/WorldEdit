@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import com.google.common.base.Joiner;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.minecraft.util.commands.CommandPermissionsException;
@@ -29,11 +30,11 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.*;
 import com.sk89q.worldedit.event.platform.CommandEvent;
-import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
 import com.sk89q.worldedit.internal.command.CommandPermissionsHandler;
 import com.sk89q.worldedit.internal.command.WorldEditBinding;
 import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
+import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.InvalidUsageException;
 import com.sk89q.worldedit.util.command.fluent.CommandGraph;
@@ -215,7 +216,7 @@ public final class CommandManager {
         long start = System.currentTimeMillis();
 
         try {
-            dispatcher.call(split, locals);
+            dispatcher.call(Joiner.on(" ").join(split), locals);
         } catch (CommandPermissionsException e) {
             actor.printError("You don't have permission to do this.");
         } catch (InvalidUsageException e) {

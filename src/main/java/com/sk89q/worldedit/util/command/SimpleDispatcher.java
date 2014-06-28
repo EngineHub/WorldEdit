@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.command;
 
+import com.google.common.base.Joiner;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
@@ -32,6 +33,7 @@ import java.util.*;
 public class SimpleDispatcher implements Dispatcher {
 
     private final Map<String, CommandMapping> commands = new HashMap<String, CommandMapping>();
+    private final SimpleDescription description = new SimpleDescription();
 
     @Override
     public void register(CommandCallable callable, String... alias) {
@@ -82,41 +84,93 @@ public class SimpleDispatcher implements Dispatcher {
     }
 
     @Override
-    public CommandMapping call(String arguments, CommandLocals locals) throws CommandException {
-        return call(CommandContext.split(arguments), locals);
+    public Set<Character> getValueFlags() {
+        return Collections.emptySet();
     }
 
     @Override
-    public CommandMapping call(String[] arguments, CommandLocals locals) throws CommandException {
-        CommandContext dummyContext = new CommandContext(arguments);
-        CommandMapping mapping = get(dummyContext.getCommand());
-        if (mapping != null) {
-            CommandCallable c = mapping.getCallable();
-            CommandContext context = 
-                    new CommandContext(arguments, c.getValueFlags(), false, locals);
-            try {
-                c.call(context);
-            } catch (CommandException e) {
-                e.prependStack(context.getCommand());
-                throw e;
-            } catch (Throwable t) {
-                throw new WrappedCommandException(t);
+    public boolean call(String arguments, CommandLocals locals) throws CommandException {
+        String[] split = CommandContext.split(arguments);
+        Set<String> aliases = getPrimaryAliases();
+
+        if (aliases.isEmpty()) {
+            throw new InvalidUsageException("This command has no sub-commands.", getDescription());
+        } else if (split.length != 0) {
+            String subCommand = split[0];
+            CommandMapping mapping = get(subCommand);
+            String passedArguments = Joiner.on(" ").join(Arrays.copyOfRange(split, 1, split.length));
+
+            if (mapping != null) {
+                try {
+                    mapping.getCallable().call(passedArguments, locals);
+                } catch (CommandException e) {
+                    e.prependStack(subCommand);
+                    throw e;
+                } catch (Throwable t) {
+                    throw new WrappedCommandException(t);
+                }
+
+                return true;
             }
+
         }
-        return mapping;
+
+        throw new InvalidUsageException(getSubcommandList(), getDescription());
     }
 
     @Override
     public Collection<String> getSuggestions(String arguments) throws CommandException {
-        CommandContext dummyContext = new CommandContext(arguments);
-        CommandMapping mapping = get(dummyContext.getCommand());
-        if (mapping != null) {
-            CommandCallable c = mapping.getCallable();
-            CommandContext context = 
-                    new CommandContext(arguments, c.getValueFlags(), true);
-            return c.getSuggestions(context);
+        String[] split = CommandContext.split(arguments);
+
+        if (split.length == 0) {
+            return getAllAliases();
+        } else if (split.length == 1) {
+            String prefix = split[0];
+            List<String> suggestions = new ArrayList<String>();
+
+            for (String alias : getAllAliases()) {
+                if (alias.startsWith(prefix)) {
+                    suggestions.add(alias);
+                }
+            }
+
+            return suggestions;
+        } else {
+            String subCommand = split[0];
+            CommandMapping mapping = get(subCommand);
+            String passedArguments = Joiner.on(" ").join(Arrays.copyOfRange(split, 1, split.length));
+
+            if (mapping != null) {
+                return mapping.getCallable().getSuggestions(passedArguments);
+            } else {
+                return Collections.emptyList();
+            }
         }
-        return new ArrayList<String>();
+    }
+
+    @Override
+    public SimpleDescription getDescription() {
+        return description;
+    }
+
+    /**
+     * Get a list of subcommands for display.
+     *
+     * @return a string
+     */
+    private String getSubcommandList() {
+        Set<String> aliases = getPrimaryAliases();
+
+        StringBuilder builder = new StringBuilder("Subcommands: ");
+        for (String alias : getPrimaryAliases()) {
+            builder.append("\n- ").append(alias);
+        }
+
+        if (aliases.size() == 1) {
+            builder.append(" (there is only one)");
+        }
+
+        return builder.toString();
     }
 
 }

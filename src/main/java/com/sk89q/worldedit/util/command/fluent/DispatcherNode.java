@@ -22,7 +22,6 @@ package com.sk89q.worldedit.util.command.fluent;
 import com.sk89q.worldedit.util.command.CommandCallable;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.SimpleDispatcher;
-import com.sk89q.worldedit.util.command.SimpleDispatcherCommand;
 import com.sk89q.worldedit.util.command.parametric.ParametricBuilder;
 
 /**
@@ -58,9 +57,8 @@ public class DispatcherNode {
      * @return this object
      */
     public DispatcherNode describe(String description) {
-        if (dispatcher instanceof SimpleDispatcherCommand) {
-            ((SimpleDispatcherCommand) dispatcher).getDescription()
-                    .setDescription(description);
+        if (dispatcher instanceof SimpleDispatcher) {
+            ((SimpleDispatcher) dispatcher).getDescription().setDescription(description);
         }
         return this;
     }
@@ -102,7 +100,7 @@ public class DispatcherNode {
      * @return an object to place sub-commands
      */
     public DispatcherNode group(String... alias) {
-        SimpleDispatcherCommand command = new SimpleDispatcherCommand();
+        SimpleDispatcher command = new SimpleDispatcher();
         getDispatcher().register(command, alias);
         return new DispatcherNode(graph, this, command);
     }

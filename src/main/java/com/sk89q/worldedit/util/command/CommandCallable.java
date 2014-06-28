@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.util.command;
 
-import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandLocals;
 
 import java.util.Collection;
 import java.util.Set;
@@ -38,21 +38,23 @@ public interface CommandCallable {
     Set<Character> getValueFlags();
 
     /**
-     * Execute the command.
-     * 
-     * @param context the user input
-     * @throws CommandException thrown on any sort of command exception
+     * Execute the correct command based on the input.
+     *
+     * @param arguments the arguments
+     * @param locals the locals
+     * @return the called command, or null if there was no command found
+     * @throws CommandException thrown on a command error
      */
-    void call(CommandContext context) throws CommandException;
+    boolean call(String arguments, CommandLocals locals) throws CommandException;
 
     /**
-     * Get a list of suggestions.
-     * 
-     * @param context the user input
+     * Get a list of suggestions based on input.
+     *
+     * @param arguments the arguments entered up to this point
      * @return a list of suggestions
-     * @throws CommandException
+     * @throws CommandException thrown if there was a parsing error
      */
-    Collection<String> getSuggestions(CommandContext context) throws CommandException;
+    Collection<String> getSuggestions(String arguments) throws CommandException;
     
     /**
      * Get an object describing this command.

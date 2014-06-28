@@ -19,15 +19,12 @@
 
 package com.sk89q.worldedit.util.command;
 
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandLocals;
-
 import java.util.Collection;
 
 /**
  * Executes a command based on user input.
  */
-public interface Dispatcher {
+public interface Dispatcher extends CommandCallable {
 
     /**
      * Register a command with this dispatcher.
@@ -80,34 +77,5 @@ public interface Dispatcher {
      * @return true if a registered command exists
      */
     boolean contains(String alias);
-
-    /**
-     * Execute the correct command based on the input.
-     * 
-     * @param arguments the arguments
-     * @param locals the locals
-     * @return the called command, or null if there was no command found
-     * @throws CommandException thrown on a command error
-     */
-    CommandMapping call(String arguments, CommandLocals locals) throws CommandException;
-
-    /**
-     * Execute the correct command based on the input.
-     * 
-     * @param arguments the arguments
-     * @param locals the locals
-     * @return the called command, or null if there was no command found
-     * @throws CommandException thrown on a command error
-     */
-    CommandMapping call(String[] arguments, CommandLocals locals) throws CommandException;
-
-    /**
-     * Get a list of suggestions based on input.
-     * 
-     * @param arguments the arguments entered up to this point
-     * @return a list of suggestions
-     * @throws CommandException thrown if there was a parsing error
-     */
-    Collection<String> getSuggestions(String arguments) throws CommandException;
 
 }

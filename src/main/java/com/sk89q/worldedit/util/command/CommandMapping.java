@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.command;
 
+import java.util.Arrays;
 
 /**
  * Tracks a command registration.
@@ -74,6 +75,14 @@ public class CommandMapping {
      */
     public Description getDescription() {
         return getCallable().getDescription();
+    }
+
+    @Override
+    public String toString() {
+        return "CommandMapping{" +
+                "aliases=" + Arrays.toString(aliases) +
+                ", callable=" + callable +
+                '}';
     }
 
 }

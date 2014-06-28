@@ -162,7 +162,10 @@ class ParametricCallable implements CommandCallable {
     }
 
     @Override
-    public void call(CommandContext context) throws CommandException {
+    public boolean call(String stringArguments, CommandLocals locals) throws CommandException {
+        String[] split = CommandContext.split(stringArguments);
+        CommandContext context = new CommandContext(split, getValueFlags(), false, locals);
+
         Object[] args = new Object[parameters.length];
         ContextArgumentStack arguments = new ContextArgumentStack(context);
         ParameterData parameter = null;
@@ -175,15 +178,15 @@ class ParametricCallable implements CommandCallable {
                 handlers.add(handler);
                 handler.preProcess(object, method, parameters, context);
             }
-            
+
             // Collect parameters
             for (int i = 0; i < parameters.length; i++) {
                 parameter = parameters[i];
-                
+
                 if (mayConsumeArguments(i, arguments)) {
                     // Parse the user input into a method argument
                     ArgumentStack usedArguments = getScopedContext(parameter, arguments);
-                    
+
                     try {
                         args[i] = parameter.getBinding().bind(parameter, usedArguments, false);
                     } catch (MissingParameterException e) {
@@ -198,7 +201,7 @@ class ParametricCallable implements CommandCallable {
                     args[i] = getDefaultValue(i, arguments);
                 }
             }
-            
+
             // Check for unused arguments
             checkUnconsumed(arguments);
 
@@ -206,7 +209,7 @@ class ParametricCallable implements CommandCallable {
             for (InvokeHandler handler : handlers) {
                 handler.preInvoke(object, method, parameters, args, context);
             }
-            
+
             // Execute!
             method.invoke(object, args);
 
@@ -227,7 +230,7 @@ class ParametricCallable implements CommandCallable {
                     converter.convert(e.getCause());
                 }
             }
-            
+
             String name = parameter.getName();
 
             throw new InvalidUsageException("For parameter '" + name + "': "
@@ -244,25 +247,28 @@ class ParametricCallable implements CommandCallable {
         } catch (Throwable e) {
             throw new WrappedCommandException(e);
         }
+
+        return true;
     }
 
     @Override
-    public List<String> getSuggestions(CommandContext context) throws CommandException {
+    public Collection<String> getSuggestions(String stringArguments) throws CommandException {
+        String[] split = CommandContext.split(stringArguments);
+        CommandContext context = new CommandContext(split, getValueFlags());
+
         ContextArgumentStack scoped = new ContextArgumentStack(context);
         SuggestionContext suggestable = context.getSuggestionContext();
 
         // For /command -f |
         // For /command -f flag|
         if (suggestable.forFlag()) {
-            for (int i = 0; i < parameters.length; i++) {
-                ParameterData parameter = parameters[i];
-                
+            for (ParameterData parameter : parameters) {
                 if (parameter.getFlag() == suggestable.getFlag()) {
                     String prefix = context.getFlag(parameter.getFlag());
                     if (prefix == null) {
                         prefix = "";
                     }
-                    
+
                     return parameter.getBinding().getSuggestions(parameter, prefix);
                 }
             }
