@@ -41,9 +41,9 @@ public class SimpleDispatcherCommand extends SimpleDispatcher implements Command
 
     @Override
     public void call(CommandContext context) throws CommandException {
-        if (context.argsLength() >= 1) {
-            super.call(context.getRemainingString(0), context.getLocals());
-        } else {
+        boolean success = context.argsLength() >= 1 && super.call(context.getRemainingString(0), context.getLocals()) != null;
+        
+        if (!success) {
             Set<String> aliases = getPrimaryAliases();
             
             if (aliases.size() == 0) {
