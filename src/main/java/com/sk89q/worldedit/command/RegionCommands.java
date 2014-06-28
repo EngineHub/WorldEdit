@@ -327,7 +327,7 @@ public class RegionCommands {
                       @Switch('a') boolean ignoreAirBlocks) throws WorldEditException {
         int affected = editSession.stackCuboidRegion(region, direction, count, !ignoreAirBlocks);
 
-        if (ignoreAirBlocks) {
+        if (moveSelection) {
             try {
                 final Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint());
 
