@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util;
+package com.sk89q.worldedit.internal.command;
 
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.worldedit.util.command.parametric.PermissionsHandler;
