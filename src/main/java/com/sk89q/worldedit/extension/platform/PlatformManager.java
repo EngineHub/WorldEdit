@@ -65,7 +65,7 @@ public class PlatformManager {
     public PlatformManager(WorldEdit worldEdit) {
         checkNotNull(worldEdit);
         this.worldEdit = worldEdit;
-        this.commandManager = new CommandManager(worldEdit);
+        this.commandManager = new CommandManager(worldEdit, this);
 
         // Register this instance for events
         worldEdit.getEventBus().register(this);

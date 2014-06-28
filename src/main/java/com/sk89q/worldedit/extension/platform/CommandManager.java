@@ -62,6 +62,7 @@ public final class CommandManager {
     private static final java.util.regex.Pattern numberFormatExceptionPattern = java.util.regex.Pattern.compile("^For input string: \"(.*)\"$");
 
     private final WorldEdit worldEdit;
+    private final PlatformManager platformManager;
     private final Dispatcher dispatcher;
     private final DynamicStreamHandler dynamicHandler = new DynamicStreamHandler();
 
@@ -70,9 +71,11 @@ public final class CommandManager {
      *
      * @param worldEdit the WorldEdit instance
      */
-    CommandManager(final WorldEdit worldEdit) {
+    CommandManager(final WorldEdit worldEdit, PlatformManager platformManager) {
         checkNotNull(worldEdit);
+        checkNotNull(platformManager);
         this.worldEdit = worldEdit;
+        this.platformManager = platformManager;
 
         // Register this instance for command events
         worldEdit.getEventBus().register(this);
@@ -195,7 +198,7 @@ public final class CommandManager {
     public void handleCommand(CommandEvent event) {
         Request.reset();
 
-        Actor actor = event.getActor();
+        Actor actor = platformManager.createProxyActor(event.getActor());
         String split[] = commandDetection(event.getArguments());
 
         // No command found!
