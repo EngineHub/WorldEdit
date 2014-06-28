@@ -23,6 +23,8 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.command.parametric.AbstractInvokeListener;
 import com.sk89q.worldedit.util.command.parametric.InvokeHandler;
 import com.sk89q.worldedit.util.command.parametric.ParameterData;
@@ -72,8 +74,16 @@ public class CommandLoggingHandler extends AbstractInvokeListener implements Inv
             logMode = loggingAnnotation.value();
         }
 
-        LocalPlayer sender = context.getLocals().get(LocalPlayer.class);
+        Actor sender = context.getLocals().get(Actor.class);
+        Player player;
+
         if (sender == null) {
+            return;
+        }
+
+        if (sender instanceof Player) {
+            player = (Player) sender;
+        } else {
             return;
         }
 
@@ -89,13 +99,13 @@ public class CommandLoggingHandler extends AbstractInvokeListener implements Inv
         }
         
         if (logMode != null && sender.isPlayer()) {
-            Vector position = sender.getPosition();
-            LocalSession session = worldEdit.getSession(sender);
+            Vector position = player.getPosition();
+            LocalSession session = worldEdit.getSessionManager().get(player);
             
             switch (logMode) {
             case PLACEMENT:
                 try {
-                    position = session.getPlacementPosition(sender);
+                    position = session.getPlacementPosition(player);
                 } catch (IncompleteRegionException e) {
                     break;
                 }
@@ -110,8 +120,7 @@ public class CommandLoggingHandler extends AbstractInvokeListener implements Inv
                 /* FALL-THROUGH */
 
             case ORIENTATION_REGION:
-                builder.append(" - Orientation: "
-                        + sender.getCardinalDirection().name());
+                builder.append(" - Orientation: " + player.getCardinalDirection().name());
                 /* FALL-THROUGH */
 
             case REGION:

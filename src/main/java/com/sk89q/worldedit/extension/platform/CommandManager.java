@@ -144,8 +144,11 @@ public final class CommandManager {
         // Register log
         if (!logging || path.isEmpty()) {
             dynamicHandler.setHandler(null);
+            logger.setLevel(Level.OFF);
         } else {
             File file = new File(config.getWorkingDirectory(), path);
+
+            logger.setLevel(Level.ALL);
 
             logger.log(Level.INFO, "Logging WorldEdit commands to " + file.getAbsolutePath());
 
