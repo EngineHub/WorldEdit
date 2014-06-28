@@ -29,6 +29,7 @@ import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.InputType;
 import com.sk89q.worldedit.event.platform.PlayerInputEvent;
 import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.extension.registry.BlockRegistry;
@@ -626,7 +627,7 @@ public class WorldEdit {
      * @param player the player
      * @param editSession the edit session
      */
-    public void flushBlockBag(LocalPlayer player, EditSession editSession) {
+    public void flushBlockBag(Actor actor, EditSession editSession) {
         BlockBag blockBag = editSession.getBlockBag();
 
         if (blockBag != null) {
@@ -635,7 +636,7 @@ public class WorldEdit {
 
         Map<Integer, Integer> missingBlocks = editSession.popMissingBlocks();
 
-        if (missingBlocks.size() > 0) {
+        if (!missingBlocks.isEmpty()) {
             StringBuilder str = new StringBuilder();
             str.append("Missing these blocks: ");
             int size = missingBlocks.size();
@@ -657,7 +658,7 @@ public class WorldEdit {
                 }
             }
 
-            player.printError(str.toString());
+            actor.printError(str.toString());
         }
     }
 

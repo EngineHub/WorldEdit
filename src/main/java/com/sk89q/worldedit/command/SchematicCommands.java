@@ -21,6 +21,7 @@ package com.sk89q.worldedit.command;
 
 import com.sk89q.minecraft.util.commands.*;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.schematic.SchematicFormat;
 import com.sk89q.worldedit.world.DataException;
 
@@ -207,11 +208,9 @@ public class SchematicCommands {
             desc = "List available schematic formats",
             max = 0
     )
-    @Console
     @CommandPermissions("worldedit.schematic.formats")
-    public void formats(CommandContext args, LocalSession session, LocalPlayer player,
-                     EditSession editSession) throws WorldEditException {
-        player.print("Available schematic formats (Name: Lookup names)");
+    public void formats(Actor actor) throws WorldEditException {
+        actor.print("Available schematic formats (Name: Lookup names)");
         StringBuilder builder;
         boolean first = true;
         for (SchematicFormat format : SchematicFormat.getFormats()) {
@@ -225,7 +224,7 @@ public class SchematicCommands {
                 first = false;
             }
             first = true;
-            player.print(builder.toString());
+            actor.print(builder.toString());
         }
     }
 
@@ -238,10 +237,8 @@ public class SchematicCommands {
                     " -d sorts by date, oldest first\n" +
                     " -n sorts by date, newest first\n"
     )
-    @Console
     @CommandPermissions("worldedit.schematic.list")
-    public void list(CommandContext args, LocalSession session, LocalPlayer player,
-                        EditSession editSession) throws WorldEditException {
+    public void list(Actor actor, CommandContext args) throws WorldEditException {
         File dir = we.getWorkingDirectoryFile(we.getConfiguration().saveDir);
         File[] files = dir.listFiles(new FileFilter(){
             @Override
@@ -273,8 +270,8 @@ public class SchematicCommands {
             }
         });
 
-        player.print("Available schematics (Filename (Format)):");
-        player.print(listFiles("", files));
+        actor.print("Available schematics (Filename (Format)):");
+        actor.print(listFiles("", files));
     }
 
     private String listFiles(String prefix, File[] files) {

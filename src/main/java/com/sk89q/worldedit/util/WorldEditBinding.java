@@ -98,6 +98,24 @@ public class WorldEditBinding extends BindingHelper {
     }
 
     /**
+     * Gets an {@link Actor} from a {@link ArgumentStack}.
+     *
+     * @param context the context
+     * @return a local player
+     * @throws ParameterException on error
+     */
+    @BindingMatch(type = Actor.class,
+            behavior = BindingBehavior.PROVIDES)
+    public Actor getActor(ArgumentStack context) throws ParameterException {
+        Actor sender = context.getContext().getLocals().get(Actor.class);
+        if (sender == null) {
+            throw new ParameterException("Missing 'Actor'");
+        } else {
+            return sender;
+        }
+    }
+
+    /**
      * Gets an {@link Player} from a {@link ArgumentStack}.
      *
      * @param context the context

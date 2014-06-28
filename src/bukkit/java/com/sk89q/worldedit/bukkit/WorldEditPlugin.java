@@ -26,7 +26,9 @@ import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.CylinderSelection;
 import com.sk89q.worldedit.bukkit.selections.Polygonal2DSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.regions.*;
 import org.bukkit.World;
@@ -214,20 +216,16 @@ public class WorldEditPlugin extends JavaPlugin {
         }
     }
 
-    /**
-     * Called on WorldEdit command.
-     */
     @Override
-    public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd,
-            String commandLabel, String[] args) {
-
+    public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String commandLabel, String[] args) {
         // Add the command to the array because the underlying command handling
         // code of WorldEdit expects it
         String[] split = new String[args.length + 1];
         System.arraycopy(args, 0, split, 1, args.length);
         split[0] = "/" + cmd.getName();
 
-        controller.handleCommand(wrapCommandSender(sender), split);
+        CommandEvent event = new CommandEvent(wrapCommandSender(sender), split);
+        getWorldEdit().getEventBus().post(event);
 
         return true;
     }
@@ -334,7 +332,7 @@ public class WorldEditPlugin extends JavaPlugin {
         return new BukkitPlayer(this, this.server, player);
     }
 
-    public LocalPlayer wrapCommandSender(CommandSender sender) {
+    public Actor wrapCommandSender(CommandSender sender) {
         if (sender instanceof Player) {
             return wrapPlayer((Player) sender);
         }

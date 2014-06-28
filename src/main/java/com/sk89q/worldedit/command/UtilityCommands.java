@@ -23,6 +23,8 @@ import com.sk89q.minecraft.util.commands.*;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.LocalWorld.KillFlags;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -30,6 +32,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Description;
 import com.sk89q.worldedit.util.command.Dispatcher;
+import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.world.World;
 
 import java.util.Comparator;
@@ -367,9 +370,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.butcher")
     @Logging(PLACEMENT)
-    @Console
-    public void butcher(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void butcher(Actor actor, @Optional Player player, @Optional LocalSession session, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
@@ -388,7 +389,7 @@ public class UtilityCommands {
             }
         }
 
-        FlagContainer flags = new FlagContainer(player);
+        FlagContainer flags = new FlagContainer(actor);
         flags.or(KillFlags.FRIENDLY      , args.hasFlag('f')); // No permission check here. Flags will instead be filtered by the subsequent calls.
         flags.or(KillFlags.PETS          , args.hasFlag('p'), "worldedit.butcher.pets");
         flags.or(KillFlags.NPCS          , args.hasFlag('n'), "worldedit.butcher.npcs");
@@ -400,7 +401,7 @@ public class UtilityCommands {
         // If you add flags here, please add them to com.sk89q.worldedit.commands.BrushCommands.butcherBrush() as well
 
         int killed;
-        if (player.isPlayer()) {
+        if (player != null) {
             killed = player.getWorld().killMobs(session.getPlacementPosition(player), radius, flags.flags);
         } else {
             killed = 0;
@@ -410,16 +411,16 @@ public class UtilityCommands {
         }
 
         if (radius < 0) {
-            player.print("Killed " + killed + " mobs.");
+            actor.print("Killed " + killed + " mobs.");
         } else {
-            player.print("Killed " + killed + " mobs in a radius of " + radius + ".");
+            actor.print("Killed " + killed + " mobs in a radius of " + radius + ".");
         }
     }
 
     public static class FlagContainer {
-        private final LocalPlayer player;
+        private final Actor player;
         public int flags = 0;
-        public FlagContainer(LocalPlayer player) {
+        public FlagContainer(Actor player) {
             this.player = player;
         }
 
@@ -445,15 +446,13 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.remove")
     @Logging(PLACEMENT)
-    @Console
-    public void remove(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void remove(Actor actor, @Optional Player player, @Optional LocalSession session, CommandContext args) throws WorldEditException {
 
         String typeStr = args.getString(0);
         int radius = args.getInteger(1);
 
         if (radius < -1) {
-            player.printError("Use -1 to remove all entities in loaded chunks");
+            actor.printError("Use -1 to remove all entities in loaded chunks");
             return;
         }
 
@@ -483,12 +482,12 @@ public class UtilityCommands {
         } else if (typeStr.matches("xp")) {
             type = EntityType.XP_ORBS;
         } else {
-            player.printError("Acceptable types: projectiles, items, paintings, itemframes, boats, minecarts, tnt, xp, or all");
+            actor.printError("Acceptable types: projectiles, items, paintings, itemframes, boats, minecarts, tnt, xp, or all");
             return;
         }
 
         int removed = 0;
-        if (player.isPlayer()) {
+        if (player != null) {
             Vector origin = session.getPlacementPosition(player);
             removed = player.getWorld().removeEntities(type, origin, radius);
         } else {
@@ -506,15 +505,12 @@ public class UtilityCommands {
         min = 0,
         max = -1
     )
-    @Console
     @CommandPermissions("worldedit.help")
-    public void help(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        help(args, we, session, player, editSession);
+    public void help(Actor actor, CommandContext args) throws WorldEditException {
+        help(args, we, actor);
     }
 
-    public static void help(CommandContext args, WorldEdit we, LocalSession session, LocalPlayer player, EditSession editSession) {
+    public static void help(CommandContext args, WorldEdit we, Actor actor) {
         final Dispatcher dispatcher = we.getPlatformManager().getCommandManager().getDispatcher();
 
         if (args.argsLength() == 0) {
@@ -542,7 +538,7 @@ public class UtilityCommands {
                 first = false;
             }
 
-            player.print(sb.toString());
+            actor.print(sb.toString());
 
             return;
         }
@@ -551,22 +547,22 @@ public class UtilityCommands {
         CommandMapping mapping = dispatcher.get(command);
 
         if (mapping == null) {
-            player.printError("Unknown command '" + command + "'.");
+            actor.printError("Unknown command '" + command + "'.");
             return;
         }
 
         Description description = mapping.getDescription();
 
         if (description.getUsage() != null) {
-            player.printDebug("Usage: " + description.getUsage());
+            actor.printDebug("Usage: " + description.getUsage());
         }
 
         if (description.getHelp() != null) {
-            player.print(description.getHelp());
+            actor.print(description.getHelp());
         } else if (description.getDescription() != null) {
-            player.print(description.getDescription());
+            actor.print(description.getDescription());
         } else {
-            player.print("No further help is available.");
+            actor.print("No further help is available.");
         }
     }
 }

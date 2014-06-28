@@ -192,7 +192,7 @@ public final class CommandManager {
     public void handleCommand(CommandEvent event) {
         Request.reset();
 
-        Actor actor = event.getPlayer();
+        Actor actor = event.getActor();
         String split[] = commandDetection(event.getArguments());
 
         // No command found!
@@ -241,7 +241,7 @@ public final class CommandManager {
                     }
                 }
 
-                worldEdit.flushBlockBag(event.getPlayer(), editSession);
+                worldEdit.flushBlockBag(actor, editSession);
             }
         }
 

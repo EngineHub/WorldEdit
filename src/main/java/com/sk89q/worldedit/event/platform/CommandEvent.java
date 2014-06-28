@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.event.platform;
 
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.event.AbstractCancellable;
+import com.sk89q.worldedit.extension.platform.Actor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -29,30 +29,30 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class CommandEvent extends AbstractCancellable {
 
-    private final LocalPlayer player;
+    private final Actor actor;
     private final String[] args;
 
     /**
      * Create a new instance.
      *
-     * @param player the player
+     * @param actor the player
      * @param args the arguments
      */
-    public CommandEvent(LocalPlayer player, String[] args) {
-        checkNotNull(player);
+    public CommandEvent(Actor actor, String[] args) {
+        checkNotNull(actor);
         checkNotNull(args);
 
-        this.player = player;
+        this.actor = actor;
         this.args = args;
     }
 
     /**
-     * Get the player.
+     * Get the actor that issued the command.
      *
-     * @return the player
+     * @return the actor that issued the command
      */
-    public LocalPlayer getPlayer() {
-        return player;
+    public Actor getActor() {
+        return actor;
     }
 
     /**

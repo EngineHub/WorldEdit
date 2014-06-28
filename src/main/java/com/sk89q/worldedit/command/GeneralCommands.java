@@ -22,9 +22,9 @@ package com.sk89q.worldedit.command;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Console;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.ItemType;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.masks.Mask;
 
 /**
@@ -151,9 +151,7 @@ public class GeneralCommands {
         min = 1,
         max = 1
     )
-    @Console
-    public void searchItem(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void searchItem(Actor actor, CommandContext args) throws WorldEditException {
         
         String query = args.getString(0).trim().toLowerCase();
         boolean blocksOnly = args.hasFlag('b');
@@ -165,9 +163,9 @@ public class GeneralCommands {
             ItemType type = ItemType.fromID(id);
 
             if (type != null) {
-                player.print("#" + type.getID() + " (" + type.getName() + ")");
+                actor.print("#" + type.getID() + " (" + type.getName() + ")");
             } else {
-                player.printError("No item found by ID " + id);
+                actor.printError("No item found by ID " + id);
             }
 
             return;
@@ -175,26 +173,26 @@ public class GeneralCommands {
         }
 
         if (query.length() <= 2) {
-            player.printError("Enter a longer search string (len > 2).");
+            actor.printError("Enter a longer search string (len > 2).");
             return;
         }
 
         if (!blocksOnly && !itemsOnly) {
-            player.print("Searching for: " + query);
+            actor.print("Searching for: " + query);
         } else if (blocksOnly && itemsOnly) {
-            player.printError("You cannot use both the 'b' and 'i' flags simultaneously.");
+            actor.printError("You cannot use both the 'b' and 'i' flags simultaneously.");
             return;
         } else if (blocksOnly) {
-            player.print("Searching for blocks: " + query);
+            actor.print("Searching for blocks: " + query);
         } else {
-            player.print("Searching for items: " + query);
+            actor.print("Searching for items: " + query);
         }
 
         int found = 0;
 
         for (ItemType type : ItemType.values()) {
             if (found >= 15) {
-                player.print("Too many results!");
+                actor.print("Too many results!");
                 break;
             }
 
@@ -208,7 +206,7 @@ public class GeneralCommands {
 
             for (String alias : type.getAliases()) {
                 if (alias.contains(query)) {
-                    player.print("#" + type.getID() + " (" + type.getName() + ")");
+                    actor.print("#" + type.getID() + " (" + type.getName() + ")");
                     ++found;
                     break;
                 }
@@ -216,7 +214,7 @@ public class GeneralCommands {
         }
 
         if (found == 0) {
-            player.printError("No items found.");
+            actor.printError("No items found.");
         }
     }
 
