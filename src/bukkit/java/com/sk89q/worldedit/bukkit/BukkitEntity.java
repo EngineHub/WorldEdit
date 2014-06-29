@@ -22,8 +22,8 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.metadata.Tameable;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.World;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -63,7 +63,7 @@ class BukkitEntity implements Entity {
     }
 
     @Override
-    public World getWorld() {
+    public Extent getExtent() {
         return BukkitAdapter.adapt(getEntity().getWorld());
     }
 
@@ -74,7 +74,12 @@ class BukkitEntity implements Entity {
 
     @Override
     public BaseEntity getState() {
-        return new BukkitBaseEntity(getEntity().getType());
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public boolean remove() {
+        return false;
     }
 
 }

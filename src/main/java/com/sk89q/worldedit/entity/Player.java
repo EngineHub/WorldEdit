@@ -19,15 +19,27 @@
 
 package com.sk89q.worldedit.entity;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.PlayerDirection;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.WorldVectorFace;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.world.World;
 
 /**
  * A player.
  */
 public interface Player extends Entity, Actor {
+
+    /**
+     * Return the world that the player is on.
+     *
+     * @return the world
+     */
+    World getWorld();
 
     /**
      * Returns true if the entity is holding a pick axe.

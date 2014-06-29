@@ -19,11 +19,74 @@
 
 package com.sk89q.worldedit.entity;
 
+import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.world.NbtValued;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A snapshot of an entity that can be reused and passed around.
  */
-public interface BaseEntity extends NbtValued {
+public class BaseEntity implements NbtValued {
+
+    private String id;
+    private CompoundTag nbtData;
+
+    /**
+     * Create a new base entity.
+     *
+     * @param id the entity type ID
+     * @param nbtData NBT data
+     */
+    public BaseEntity(String id, CompoundTag nbtData) {
+        setTypeId(id);
+        setNbtData(nbtData);
+    }
+
+    /**
+     * Make a clone of a {@link BaseEntity}.
+     *
+     * @param other the object to clone
+     */
+    public BaseEntity(BaseEntity other) {
+        checkNotNull(other);
+        setTypeId(other.getTypeId());
+        setNbtData(other.getNbtData());
+    }
+
+    @Override
+    public boolean hasNbtData() {
+        return true;
+    }
+
+    @Override
+    public CompoundTag getNbtData() {
+        return nbtData;
+    }
+
+    @Override
+    public void setNbtData(CompoundTag nbtData) {
+        checkNotNull(nbtData);
+        this.nbtData = nbtData;
+    }
+
+    /**
+     * Get the entity that determines the type of entity.
+     *
+     * @return the entity ID
+     */
+    public String getTypeId() {
+        return id;
+    }
+
+    /**
+     * Set the entity ID that determines the type of entity.
+     *
+     * @param id the id
+     */
+    public void setTypeId(String id) {
+        checkNotNull(id);
+        this.id = id;
+    }
 
 }

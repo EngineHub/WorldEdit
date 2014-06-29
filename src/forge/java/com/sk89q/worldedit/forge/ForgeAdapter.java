@@ -17,28 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit;
+package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.entity.AbstractBaseEntity;
-import com.sk89q.worldedit.entity.BaseEntity;
-import org.bukkit.entity.EntityType;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.world.World;
+import net.minecraft.util.Vec3;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+final class ForgeAdapter {
 
-/**
- * An implementation of a {@link BaseEntity} for Bukkit.
- */
-public class BukkitBaseEntity extends AbstractBaseEntity {
-
-    private final EntityType type;
-
-    public BukkitBaseEntity(EntityType type) {
-        checkNotNull(type);
-        this.type = type;
+    private ForgeAdapter() {
     }
 
-    public EntityType getBukkitType() {
-        return type;
+    public static World adapt(net.minecraft.world.World world) {
+        return new ForgeWorld(world);
+    }
+
+    public static Vector adapt(Vec3 vector) {
+        return new Vector(vector.xCoord, vector.yCoord, vector.zCoord);
     }
 
 }

@@ -20,6 +20,7 @@
 package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
+import com.sk89q.worldedit.world.World;
 
 /**
  * @deprecated Use {@link com.sk89q.worldedit.util.Location} wherever possible
@@ -97,7 +98,7 @@ public class WorldVector extends Vector {
      * @param location the location
      */
     public WorldVector(com.sk89q.worldedit.util.Location location) {
-        this(LocalWorldAdapter.adapt(location.getWorld()), location.getX(), location.getY(), location.getZ());
+        this(LocalWorldAdapter.adapt((World) location.getExtent()), location.getX(), location.getY(), location.getZ());
     }
 
     /**

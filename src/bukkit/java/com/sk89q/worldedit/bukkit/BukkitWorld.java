@@ -184,13 +184,7 @@ public class BukkitWorld extends LocalWorld {
     @Nullable
     @Override
     public com.sk89q.worldedit.entity.Entity createEntity(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
-        if (entity instanceof BukkitBaseEntity) {
-            BukkitBaseEntity bukkitBaseEntity = (BukkitBaseEntity) entity;
-            Entity nativeEntity = getWorld().spawnEntity(BukkitAdapter.adapt(location), bukkitBaseEntity.getBukkitType());
-            return BukkitAdapter.adapt(nativeEntity);
-        } else {
-            return null;
-        }
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     private class NmsBlockClassLoader extends ClassLoader {

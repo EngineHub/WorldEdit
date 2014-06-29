@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.PlayerNeededException;
 import com.sk89q.worldedit.WorldEditPermissionException;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;

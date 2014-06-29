@@ -25,6 +25,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
@@ -32,8 +33,8 @@ import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.mapping.NullResolver;
 import com.sk89q.worldedit.world.mapping.Resolver;
 import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityHanging;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.item.*;
@@ -55,7 +56,7 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -227,7 +228,7 @@ public class ForgeWorld extends AbstractWorld {
         int num = 0;
         double radiusSq = radius * radius;
 
-        for (Entity obj : (Iterable<Entity>) getWorld().loadedEntityList) {
+        for (net.minecraft.entity.Entity obj : (Iterable<net.minecraft.entity.Entity>) getWorld().loadedEntityList) {
             if ((obj instanceof EntityLiving)) {
                 EntityLiving ent = (EntityLiving) obj;
 
@@ -270,7 +271,7 @@ public class ForgeWorld extends AbstractWorld {
         int num = 0;
         double radiusSq = Math.pow(radius, 2.0D);
 
-        for (Entity ent : (Iterable<Entity>) getWorld().loadedEntityList) {
+        for (net.minecraft.entity.Entity ent : (Iterable<net.minecraft.entity.Entity>) getWorld().loadedEntityList) {
             if ((radius != -1) && (origin.distanceSq(new Vector(ent.posX, ent.posY, ent.posZ)) > radiusSq)) {
                 continue;
             }
@@ -497,7 +498,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Nullable
     @Override
-    public <T> T getMetaData(com.sk89q.worldedit.entity.Entity entity, Class<T> metaDataClass) {
+    public <T> T getMetaData(Entity entity, Class<T> metaDataClass) {
         return null;
     }
 
@@ -508,14 +509,29 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public List<com.sk89q.worldedit.entity.Entity> getEntities() {
-        return Collections.emptyList();
+    public List<Entity> getEntities() {
+        List<Entity> entities = new ArrayList<Entity>();
+        for (Object entity : getWorld().getLoadedEntityList()) {
+            entities.add(new ForgeEntity((net.minecraft.entity.Entity) entity));
+        }
+        return entities;
     }
 
     @Nullable
     @Override
-    public com.sk89q.worldedit.entity.Entity createEntity(Location location, BaseEntity entity) {
-        return null;
+    public Entity createEntity(Location location, BaseEntity entity) {
+        World world = getWorld();
+        net.minecraft.entity.Entity createdEntity = EntityList.createEntityByName(entity.getTypeId(), world);
+        if (createdEntity != null) {
+            CompoundTag tag = entity.getNbtData();
+            if (tag != null) {
+                createdEntity.readFromNBT(NBTConverter.toNative(entity.getNbtData()));
+            }
+            world.spawnEntityInWorld(createdEntity);
+            return new ForgeEntity(createdEntity);
+        } else {
+            return null;
+        }
     }
 
     /**

@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.util;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.extent.Extent;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -36,92 +36,92 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class Location {
 
-    private final World world;
+    private final Extent extent;
     private final Vector position;
     private final Vector direction;
 
     /**
-     * Create a new instance in the given world at 0, 0, 0 with a
+     * Create a new instance in the given extent at 0, 0, 0 with a
      * direction vector of 0, 0, 0.
      *
-     * @param world the world
+     * @param extent the extent
      */
-    public Location(World world) {
-        this(world, new Vector(), new Vector());
+    public Location(Extent extent) {
+        this(extent, new Vector(), new Vector());
     }
 
     /**
-     * Create a new instance in the given world with the given coordinates
+     * Create a new instance in the given extent with the given coordinates
      * with a direction vector of 0, 0, 0.
      *
-     * @param world the world
+     * @param extent the extent
      * @param x the X coordinate
      * @param y the Y coordinate
      * @param z the Z coordinate
      */
-    public Location(World world, double x, double y, double z) {
-        this(world, new Vector(x, y, z), new Vector());
+    public Location(Extent extent, double x, double y, double z) {
+        this(extent, new Vector(x, y, z), new Vector());
     }
 
     /**
-     * Create a new instance in the given world with the given position
+     * Create a new instance in the given extent with the given position
      * vector and a direction vector of 0, 0, 0.
      *
-     * @param world the world
+     * @param extent the extent
      * @param position the position vector
      */
-    public Location(World world, Vector position) {
-        this(world, position, new Vector());
+    public Location(Extent extent, Vector position) {
+        this(extent, position, new Vector());
     }
 
     /**
-     * Create a new instance in the given world with the given coordinates
+     * Create a new instance in the given extent with the given coordinates
      * and the given direction vector.
      *
-     * @param world the world
+     * @param extent the extent
      * @param x the X coordinate
      * @param y the Y coordinate
      * @param z the Z coordinate
      * @param direction the direction vector
      */
-    public Location(World world, double x, double y, double z, Vector direction) {
-        this(world, new Vector(x, y, z), direction);
+    public Location(Extent extent, double x, double y, double z, Vector direction) {
+        this(extent, new Vector(x, y, z), direction);
     }
 
     /**
-     * Create a new instance in the given world with the given position vector
+     * Create a new instance in the given extent with the given position vector
      * and the given direction vector.
      *
-     * @param world the world
+     * @param extent the extent
      * @param position the position vector
      * @param direction the direction vector
      */
-    public Location(World world, Vector position, Vector direction) {
-        checkNotNull(world);
+    public Location(Extent extent, Vector position, Vector direction) {
+        checkNotNull(extent);
         checkNotNull(position);
         checkNotNull(direction);
-        this.world = world;
+        this.extent = extent;
         this.position = position;
         this.direction = direction;
     }
 
     /**
-     * Get the world.
+     * Get the extent.
      *
-     * @return the world
+     * @return the extent
      */
-    public World getWorld() {
-        return world;
+    public Extent getExtent() {
+        return extent;
     }
 
     /**
-     * Create a clone of this object with the given world.
+     * Create a clone of this object with the given extent.
      *
-     * @param world the new world
+     * @param extent the new extent
      * @return the new instance
      */
-    public Location setWorld(World world) {
-        return new Location(world, position, getDirection());
+    public Location setExtent(Extent extent) {
+        return new Location(extent, position, getDirection());
     }
 
     /**
@@ -143,7 +143,7 @@ public class Location {
      * @return the new instance
      */
     public Location setDirection(Vector direction) {
-        return new Location(world, position, direction);
+        return new Location(extent, position, direction);
     }
 
     /**
@@ -181,7 +181,7 @@ public class Location {
      * @return a new immutable instance
      */
     public Location setX(double x) {
-        return new Location(world, position.setX(x), direction);
+        return new Location(extent, position.setX(x), direction);
     }
 
     /**
@@ -192,7 +192,7 @@ public class Location {
      * @return a new immutable instance
      */
     public Location setX(int x) {
-        return new Location(world, position.setX(x), direction);
+        return new Location(extent, position.setX(x), direction);
     }
 
     /**
@@ -221,7 +221,7 @@ public class Location {
      * @return a new immutable instance
      */
     public Location setY(double y) {
-        return new Location(world, position.setY(y), direction);
+        return new Location(extent, position.setY(y), direction);
     }
 
     /**
@@ -232,7 +232,7 @@ public class Location {
      * @return a new immutable instance
      */
     public Location setY(int y) {
-        return new Location(world, position.setY(y), direction);
+        return new Location(extent, position.setY(y), direction);
     }
 
     /**
@@ -261,7 +261,7 @@ public class Location {
      * @return a new immutable instance
      */
     public Location setZ(double z) {
-        return new Location(world, position.setZ(z), direction);
+        return new Location(extent, position.setZ(z), direction);
     }
 
     /**
@@ -272,7 +272,7 @@ public class Location {
      * @return a new immutable instance
      */
     public Location setZ(int z) {
-        return new Location(world, position.setZ(z), direction);
+        return new Location(extent, position.setZ(z), direction);
     }
 
     @Override
@@ -284,14 +284,14 @@ public class Location {
 
         if (!direction.equals(location.direction)) return false;
         if (!position.equals(location.position)) return false;
-        if (!world.equals(location.world)) return false;
+        if (!extent.equals(location.extent)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = world.hashCode();
+        int result = extent.hashCode();
         result = 31 * result + position.hashCode();
         result = 31 * result + direction.hashCode();
         return result;

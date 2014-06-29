@@ -21,7 +21,6 @@ package com.sk89q.worldedit.entity;
 
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.World;
 
 /**
  * A reference to an instance of an entity that exists in an {@link Extent}
@@ -50,10 +49,17 @@ public interface Entity {
     Location getLocation();
 
     /**
-     * Get the world that this entity is on.
+     * Get the extent that this entity is on.
      *
-     * @return the world
+     * @return the extent
      */
-    World getWorld();
+    Extent getExtent();
+
+    /**
+     * Remove this entity from it container.
+     *
+     * @return true if removal was successful
+     */
+    boolean remove();
 
 }

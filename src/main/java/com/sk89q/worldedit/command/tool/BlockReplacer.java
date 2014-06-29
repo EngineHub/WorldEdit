@@ -48,7 +48,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
 BlockBag bag = session.getBlockBag(player);
 
-        World world = clicked.getWorld();
+        World world = (World) clicked.getExtent();
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1, bag, player);
 
         try {
@@ -67,7 +67,7 @@ BlockBag bag = session.getBlockBag(player);
 
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
-        World world = clicked.getWorld();
+        World world = (World) clicked.getExtent();
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1, player);
         targetBlock = (editSession).getBlock(clicked.toVector());
         BlockType type = BlockType.fromID(targetBlock.getType());

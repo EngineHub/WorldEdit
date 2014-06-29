@@ -19,13 +19,21 @@
 
 package com.sk89q.worldedit.internal.command;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BiomeType;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.UnknownDirectionException;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.annotation.Direction;
@@ -33,7 +41,12 @@ import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
-import com.sk89q.worldedit.util.command.parametric.*;
+import com.sk89q.worldedit.util.command.parametric.ArgumentStack;
+import com.sk89q.worldedit.util.command.parametric.BindingBehavior;
+import com.sk89q.worldedit.util.command.parametric.BindingHelper;
+import com.sk89q.worldedit.util.command.parametric.BindingMatch;
+import com.sk89q.worldedit.util.command.parametric.ParameterException;
+import com.sk89q.worldedit.world.World;
 
 import java.util.Arrays;
 
@@ -158,7 +171,10 @@ public class WorldEditBinding extends BindingHelper {
         ParserContext parserContext = new ParserContext();
         parserContext.setActor(context.getContext().getLocals().get(Actor.class));
         if (actor instanceof Entity) {
-            parserContext.setWorld(((Entity) actor).getWorld());
+            Extent extent = ((Entity) actor).getExtent();
+            if (extent instanceof World) {
+                parserContext.setWorld((World) extent);
+            }
         }
         parserContext.setSession(worldEdit.getSessionManager().get(actor));
         try {
@@ -184,7 +200,10 @@ public class WorldEditBinding extends BindingHelper {
         ParserContext parserContext = new ParserContext();
         parserContext.setActor(context.getContext().getLocals().get(Actor.class));
         if (actor instanceof Entity) {
-            parserContext.setWorld(((Entity) actor).getWorld());
+            Extent extent = ((Entity) actor).getExtent();
+            if (extent instanceof World) {
+                parserContext.setWorld((World) extent);
+            }
         }
         parserContext.setSession(worldEdit.getSessionManager().get(actor));
         try {
@@ -210,7 +229,10 @@ public class WorldEditBinding extends BindingHelper {
         ParserContext parserContext = new ParserContext();
         parserContext.setActor(context.getContext().getLocals().get(Actor.class));
         if (actor instanceof Entity) {
-            parserContext.setWorld(((Entity) actor).getWorld());
+            Extent extent = ((Entity) actor).getExtent();
+            if (extent instanceof World) {
+                parserContext.setWorld((World) extent);
+            }
         }
         parserContext.setSession(worldEdit.getSessionManager().get(actor));
         try {
