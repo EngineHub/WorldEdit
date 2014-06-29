@@ -19,18 +19,29 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.extent.inventory.BlockBag;
-import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.PlayerNeededException;
+import com.sk89q.worldedit.WorldEditPermissionException;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.internal.cui.CUIEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class BukkitCommandSender extends LocalPlayer {
+import java.io.File;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+class BukkitCommandSender implements Actor {
+
     private CommandSender sender;
     private WorldEditPlugin plugin;
 
-    public BukkitCommandSender(WorldEditPlugin plugin, ServerInterface server, CommandSender sender) {
-        super(server);
+    BukkitCommandSender(WorldEditPlugin plugin, CommandSender sender) {
+        checkNotNull(plugin);
+        checkNotNull(sender);
+        checkArgument(!(sender instanceof Player), "Cannot wrap a player");
+
         this.plugin = plugin;
         this.sender = sender;
     }
@@ -69,66 +80,41 @@ public class BukkitCommandSender extends LocalPlayer {
     }
 
     @Override
+    public boolean canDestroyBedrock() {
+        return true;
+    }
+
+    @Override
     public String[] getGroups() {
         return new String[0];
     }
 
     @Override
     public boolean hasPermission(String perm) {
-        if (!plugin.getLocalConfiguration().noOpPermissions && sender.isOp()) {
-            return true;
-        }
+        return true;
+    }
 
-        return plugin.getPermissionsResolver().hasPermission(null, sender.getName(), perm);
+    @Override
+    public void checkPermission(String permission) throws WorldEditPermissionException {
     }
 
     @Override
     public boolean isPlayer() {
-        return sender instanceof Player;
+        return false;
     }
 
     @Override
-    public int getItemInHand() {
-        throw new PlayerNeededException();
+    public File openFileOpenDialog(String[] extensions) {
+        return null;
     }
 
     @Override
-    public Location getLocation() {
-        throw new PlayerNeededException();
+    public File openFileSaveDialog(String[] extensions) {
+        return null;
     }
 
     @Override
-    public WorldVector getPosition() {
-        throw new PlayerNeededException();
+    public void dispatchCUIEvent(CUIEvent event) {
     }
 
-    @Override
-    public LocalWorld getWorld() {
-        throw new PlayerNeededException();
-    }
-
-    @Override
-    public double getPitch() {
-        throw new PlayerNeededException();
-    }
-
-    @Override
-    public double getYaw() {
-        throw new PlayerNeededException();
-    }
-
-    @Override
-    public void giveItem(int type, int amt) {
-        throw new PlayerNeededException();
-    }
-
-    @Override
-    public void setPosition(Vector pos, float pitch, float yaw) {
-        throw new PlayerNeededException();
-    }
-
-    @Override
-    public BlockBag getInventoryBlockBag() {
-        throw new PlayerNeededException();
-    }
 }

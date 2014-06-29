@@ -19,13 +19,14 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.google.common.base.Joiner;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.extension.platform.PlatformRejectionException;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -103,16 +104,18 @@ public class ForgeWorldEdit {
         }
 
         this.platform = new ForgePlatform(this);
-        try {
-            WorldEdit.getInstance().getPlatformManager().register(platform);
-        } catch (PlatformRejectionException e) {
-            throw new RuntimeException("Failed to register with WorldEdit", e);
-        }
+
+        WorldEdit.getInstance().getPlatformManager().register(platform);
     }
 
     @EventHandler
     public void serverStopping(FMLServerStoppingEvent event) {
         WorldEdit.getInstance().getPlatformManager().unregister(platform);
+    }
+
+    @EventHandler
+    public void serverStarted(FMLServerStartedEvent event) {
+        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
     }
 
     @ForgeSubscribe
@@ -121,13 +124,17 @@ public class ForgeWorldEdit {
             if (((EntityPlayerMP) event.sender).worldObj.isRemote) return;
             String[] split = new String[event.parameters.length + 1];
             System.arraycopy(event.parameters, 0, split, 1, event.parameters.length);
-            split[0] = ("/" + event.command.getCommandName());
-            WorldEdit.getInstance().handleCommand(wrap((EntityPlayerMP) event.sender), split);
+            split[0] = event.command.getCommandName();
+            com.sk89q.worldedit.event.platform.CommandEvent weEvent =
+                    new com.sk89q.worldedit.event.platform.CommandEvent(wrap((EntityPlayerMP) event.sender), Joiner.on(" ").join(split));
+            WorldEdit.getInstance().getEventBus().post(weEvent);
         }
     }
 
     @ForgeSubscribe
     public void onPlayerInteract(PlayerInteractEvent event) {
+        if (!platform.isHookingEvents()) return; // We have to be told to catch these events
+
         if (event.useItem == Result.DENY || event.entity.worldObj.isRemote) return;
 
         WorldEdit we = WorldEdit.getInstance();

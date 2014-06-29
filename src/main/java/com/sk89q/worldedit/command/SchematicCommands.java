@@ -21,6 +21,8 @@ package com.sk89q.worldedit.command;
 
 import com.sk89q.minecraft.util.commands.*;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.schematic.SchematicFormat;
 import com.sk89q.worldedit.world.DataException;
 
@@ -30,16 +32,23 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * Commands related to schematics
- *
- * @see com.sk89q.worldedit.command.ClipboardCommands#schematic()
+ * Commands that work with schematic files.
  */
 public class SchematicCommands {
-    private final WorldEdit we;
 
-    public SchematicCommands(WorldEdit we) {
-        this.we = we;
+    private final WorldEdit worldEdit;
+
+    /**
+     * Create a new instance.
+     *
+     * @param worldEdit reference to WorldEdit
+     */
+    public SchematicCommands(WorldEdit worldEdit) {
+        checkNotNull(worldEdit);
+        this.worldEdit = worldEdit;
     }
 
     @Command(
@@ -55,10 +64,9 @@ public class SchematicCommands {
             max = 2
     )
     @CommandPermissions({"worldedit.clipboard.load", "worldedit.schematic.load"}) // TODO: Remove 'clipboard' perm
-    public void load(CommandContext args, LocalSession session, LocalPlayer player,
-                     EditSession editSession) throws WorldEditException {
+    public void load(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        LocalConfiguration config = we.getConfiguration();
+        LocalConfiguration config = worldEdit.getConfiguration();
         String fileName;
         String formatName;
 
@@ -69,8 +77,8 @@ public class SchematicCommands {
             formatName = args.getString(0);
             fileName = args.getString(1);
         }
-        File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = we.getSafeOpenFile(player, dir, fileName, "schematic", "schematic");
+        File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
+        File f = worldEdit.getSafeOpenFile(player, dir, fileName, "schematic", "schematic");
 
         if (!f.exists()) {
             player.printError("Schematic " + fileName + " does not exist!");
@@ -120,10 +128,9 @@ public class SchematicCommands {
             max = 2
     )
     @CommandPermissions({"worldedit.clipboard.save", "worldedit.schematic.save"}) // TODO: Remove 'clipboard' perm
-    public void save(CommandContext args, LocalSession session, LocalPlayer player,
-                     EditSession editSession) throws WorldEditException, CommandException {
+    public void save(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException, CommandException {
 
-        LocalConfiguration config = we.getConfiguration();
+        LocalConfiguration config = worldEdit.getConfiguration();
         SchematicFormat format;
         if (args.argsLength() == 1) {
             if (SchematicFormat.getFormats().size() == 1) {
@@ -142,8 +149,8 @@ public class SchematicCommands {
 
         String filename = args.getString(args.argsLength() - 1);
 
-        File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = we.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
+        File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
+        File f = worldEdit.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
 
         if (!dir.exists()) {
             if (!dir.mkdir()) {
@@ -180,14 +187,13 @@ public class SchematicCommands {
             max = 1
     )
     @CommandPermissions("worldedit.schematic.delete")
-    public void delete(CommandContext args, LocalSession session, LocalPlayer player,
-                     EditSession editSession) throws WorldEditException {
+    public void delete(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        LocalConfiguration config = we.getConfiguration();
+        LocalConfiguration config = worldEdit.getConfiguration();
         String filename = args.getString(0);
 
-        File dir = we.getWorkingDirectoryFile(config.saveDir);
-        File f = we.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
+        File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
+        File f = worldEdit.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
 
         if (!f.exists()) {
             player.printError("Schematic " + filename + " does not exist!");
@@ -207,11 +213,9 @@ public class SchematicCommands {
             desc = "List available schematic formats",
             max = 0
     )
-    @Console
     @CommandPermissions("worldedit.schematic.formats")
-    public void formats(CommandContext args, LocalSession session, LocalPlayer player,
-                     EditSession editSession) throws WorldEditException {
-        player.print("Available schematic formats (Name: Lookup names)");
+    public void formats(Actor actor) throws WorldEditException {
+        actor.print("Available schematic formats (Name: Lookup names)");
         StringBuilder builder;
         boolean first = true;
         for (SchematicFormat format : SchematicFormat.getFormats()) {
@@ -225,7 +229,7 @@ public class SchematicCommands {
                 first = false;
             }
             first = true;
-            player.print(builder.toString());
+            actor.print(builder.toString());
         }
     }
 
@@ -238,11 +242,9 @@ public class SchematicCommands {
                     " -d sorts by date, oldest first\n" +
                     " -n sorts by date, newest first\n"
     )
-    @Console
     @CommandPermissions("worldedit.schematic.list")
-    public void list(CommandContext args, LocalSession session, LocalPlayer player,
-                        EditSession editSession) throws WorldEditException {
-        File dir = we.getWorkingDirectoryFile(we.getConfiguration().saveDir);
+    public void list(Actor actor, CommandContext args) throws WorldEditException {
+        File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().saveDir);
         File[] files = dir.listFiles(new FileFilter(){
             @Override
             public boolean accept(File file) {
@@ -273,8 +275,8 @@ public class SchematicCommands {
             }
         });
 
-        player.print("Available schematics (Filename (Format)):");
-        player.print(listFiles("", files));
+        actor.print("Available schematics (Filename (Format)):");
+        actor.print(listFiles("", files));
     }
 
     private String listFiles(String prefix, File[] files) {

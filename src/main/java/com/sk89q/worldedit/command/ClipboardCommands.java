@@ -19,28 +19,40 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.*;
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
+import com.sk89q.worldedit.util.command.binding.Switch;
+import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.world.World;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 /**
  * Clipboard commands.
- *
- * @author sk89q
  */
 public class ClipboardCommands {
-    private final WorldEdit we;
 
-    public ClipboardCommands(WorldEdit we) {
-        this.we = we;
+    private final WorldEdit worldEdit;
+
+    /**
+     * Create a new instance.
+     *
+     * @param worldEdit reference to WorldEdit
+     */
+    public ClipboardCommands(WorldEdit worldEdit) {
+        checkNotNull(worldEdit);
+        this.worldEdit = worldEdit;
     }
 
     @Command(
@@ -55,9 +67,7 @@ public class ClipboardCommands {
         max = 0
     )
     @CommandPermissions("worldedit.clipboard.copy")
-    public void copy(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
+    public void copy(Player player, LocalSession session, EditSession editSession, @Switch('e') boolean copyEntities) throws WorldEditException {
         Region region = session.getSelection(player.getWorld());
         Vector min = region.getMinimumPoint();
         Vector max = region.getMaximumPoint();
@@ -73,11 +83,12 @@ public class ClipboardCommands {
             clipboard.copy(editSession, region);
         }
 
-        if (args.hasFlag('e')) {
+        if (copyEntities) {
             for (LocalEntity entity : player.getWorld().getEntities(region)) {
                 clipboard.storeEntity(entity);
             }
         }
+
         session.setClipboard(clipboard);
 
         player.print("Block(s) copied.");
@@ -97,15 +108,8 @@ public class ClipboardCommands {
     )
     @CommandPermissions("worldedit.clipboard.cut")
     @Logging(REGION)
-    public void cut(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        BaseBlock block = new BaseBlock(BlockID.AIR);
+    public void cut(Player player, LocalSession session, EditSession editSession, @Optional("air") BaseBlock block, @Switch('e') boolean copyEntities) throws WorldEditException {
         World world = player.getWorld();
-
-        if (args.argsLength() > 0) {
-            block = we.getBlock(player, args.getString(0));
-        }
 
         Region region = session.getSelection(world);
         Vector min = region.getMinimumPoint();
@@ -122,13 +126,14 @@ public class ClipboardCommands {
             clipboard.copy(editSession, region);
         }
 
-        if (args.hasFlag('e')) {
+        if (copyEntities) {
             LocalEntity[] entities = world.getEntities(region);
             for (LocalEntity entity : entities) {
                 clipboard.storeEntity(entity);
             }
             world.killEntities(entities);
         }
+
         session.setClipboard(clipboard);
 
         editSession.setBlocks(region, block);
@@ -151,8 +156,7 @@ public class ClipboardCommands {
     )
     @CommandPermissions("worldedit.clipboard.paste")
     @Logging(PLACEMENT)
-    public void paste(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void paste(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         boolean atOrigin = args.hasFlag('o');
         boolean pasteNoAir = args.hasFlag('a');
@@ -194,8 +198,7 @@ public class ClipboardCommands {
         max = 1
     )
     @CommandPermissions("worldedit.clipboard.rotate")
-    public void rotate(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void rotate(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         int angle = args.getInteger(0);
 
@@ -221,12 +224,8 @@ public class ClipboardCommands {
         max = 1
     )
     @CommandPermissions("worldedit.clipboard.flip")
-    public void flip(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        CuboidClipboard.FlipDirection dir = we.getFlipDirection(player,
-                args.argsLength() > 0 ? args.getString(0).toLowerCase() : "me");
-
+    public void flip(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+        CuboidClipboard.FlipDirection dir = worldEdit.getFlipDirection(player, args.argsLength() > 0 ? args.getString(0).toLowerCase() : "me");
         CuboidClipboard clipboard = session.getClipboard();
         clipboard.flip(dir, args.hasFlag('p'));
         player.print("Clipboard flipped.");
@@ -241,9 +240,8 @@ public class ClipboardCommands {
     )
     @Deprecated
     @CommandPermissions("worldedit.clipboard.load")
-    public void load(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-        player.printError("This command is no longer used. See //schematic load.");
+    public void load(Actor actor) {
+        actor.printError("This command is no longer used. See //schematic load.");
     }
 
     @Command(
@@ -255,17 +253,9 @@ public class ClipboardCommands {
     )
     @Deprecated
     @CommandPermissions("worldedit.clipboard.save")
-    public void save(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-        player.printError("This command is no longer used. See //schematic save.");
+    public void save(Actor actor) {
+        actor.printError("This command is no longer used. See //schematic save.");
     }
-
-    @Command(
-            aliases = { "/schematic", "/schem"},
-            desc = "Schematic-related commands"
-    )
-    @NestedCommand(SchematicCommands.class)
-    public void schematic() {}
 
     @Command(
         aliases = { "clearclipboard" },
@@ -275,9 +265,7 @@ public class ClipboardCommands {
         max = 0
     )
     @CommandPermissions("worldedit.clipboard.clear")
-    public void clearClipboard(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
+    public void clearClipboard(Player player, LocalSession session, EditSession editSession) throws WorldEditException {
         session.setClipboard(null);
         player.print("Clipboard cleared.");
     }

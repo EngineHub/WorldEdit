@@ -20,26 +20,30 @@
 package com.sk89q.worldedit.command.tool;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.util.*;
+import com.sk89q.worldedit.util.Location;
 
 /**
  * Plants a tree.
- * 
- * @author sk89q
  */
 public class TreePlanter implements BlockTool {
+
     private TreeGenerator gen;
 
     public TreePlanter(TreeGenerator gen) {
         this.gen = gen;
     }
 
-    public boolean canUse(LocalPlayer player) {
+    @Override
+    public boolean canUse(Actor player) {
         return player.hasPermission("worldedit.tool.tree");
     }
 
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, WorldVector clicked) {
+    @Override
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
 
         EditSession editSession = session.createEditSession(player);
 
@@ -47,7 +51,7 @@ public class TreePlanter implements BlockTool {
             boolean successful = false;
             
             for (int i = 0; i < 10; i++) {
-                if (gen.generate(editSession, clicked.add(0, 1, 0))) {
+                if (gen.generate(editSession, clicked.toVector().add(0, 1, 0))) {
                     successful = true;
                     break;
                 }

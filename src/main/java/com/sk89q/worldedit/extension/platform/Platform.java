@@ -19,14 +19,15 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a platform that WorldEdit has been implemented for.
@@ -77,10 +78,37 @@ public interface Platform {
 
     List<? extends World> getWorlds();
 
-    @Deprecated
-    void onCommandRegistration(List<Command> commands);
+    /**
+     * Create a duplicate of the given player.
+     * </p>
+     * The given player may have been provided by a different platform.
+     *
+     * @param player the player to match
+     * @return a matched player, otherwise null
+     */
+    @Nullable Player matchPlayer(Player player);
 
-    void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager);
+    /**
+     * Create a duplicate of the given world.
+     * </p>
+     * The given world may have been provided by a different platform.
+     *
+     * @param world the world to match
+     * @return a matched world, otherwise null
+     */
+    @Nullable World matchWorld(World world);
+
+    /**
+     * Register the commands contained within the given command dispatcher.
+     *
+     * @param dispatcher the dispatcher
+     */
+    void registerCommands(Dispatcher dispatcher);
+
+    /**
+     * Register game hooks.
+     */
+    void registerGameHooks();
 
     /**
      * Get the configuration from this platform.
@@ -115,5 +143,14 @@ public interface Platform {
      * @return the platform version
      */
     String getPlatformVersion();
+
+    /**
+     * Get a map of advertised capabilities of this platform, where each key
+     * in the given map is a supported capability and the respective value
+     * indicates the preference for this platform for that given capability.
+     *
+     * @return a map of capabilities
+     */
+    Map<Capability, Preference> getCapabilities();
 
 }

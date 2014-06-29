@@ -19,29 +19,34 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.World;
 
 /**
  * A mode that cycles the data values of supported blocks.
- * 
- * @author sk89q
  */
 public class BlockDataCyler implements DoubleActionBlockTool {
 
-    public boolean canUse(LocalPlayer player) {
+    @Override
+    public boolean canUse(Actor player) {
         return player.hasPermission("worldedit.tool.data-cycler");
     }
 
-    private boolean handleCycle(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, WorldVector clicked, boolean forward) {
+    private boolean handleCycle(Platform server, LocalConfiguration config,
+            Player player, LocalSession session, Location clicked, boolean forward) {
 
-        LocalWorld world = clicked.getWorld();
+        World world = clicked.getWorld();
 
-        int type = world.getBlockType(clicked);
-        int data = world.getBlockData(clicked);
+        int type = world.getBlockType(clicked.toVector());
+        int data = world.getBlockData(clicked.toVector());
 
-        if (config.allowedDataCycleBlocks.size() > 0
+        if (!config.allowedDataCycleBlocks.isEmpty()
                 && !player.hasPermission("worldedit.override.data-cycler")
                 && !config.allowedDataCycleBlocks.contains(type)) {
             player.printError("You are not permitted to cycle the data value of that block.");
@@ -54,20 +59,19 @@ public class BlockDataCyler implements DoubleActionBlockTool {
         if (data < 0) {
             player.printError("That block's data cannot be cycled!");
         } else {
-            world.setBlockData(clicked, data);
+            world.setBlockData(clicked.toVector(), data);
         }
 
         return true;
     }
 
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, WorldVector clicked) {
+    @Override
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
         return handleCycle(server, config, player, session, clicked, true);
     }
 
-    public boolean actSecondary(ServerInterface server,
-            LocalConfiguration config, LocalPlayer player,
-            LocalSession session, WorldVector clicked) {
+    @Override
+    public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
         return handleCycle(server, config, player, session, clicked, false);
     }
 

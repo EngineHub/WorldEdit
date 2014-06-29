@@ -22,8 +22,10 @@ package com.sk89q.worldedit.command;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Console;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 
@@ -48,55 +50,45 @@ public class WorldEditCommands {
         min = 0,
         max = 0
     )
-    @Console
-    public void version(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        player.print("WorldEdit version " + WorldEdit.getVersion());
-        player.print("https://github.com/sk89q/worldedit/");
+    public void version(Actor actor) throws WorldEditException {
+        actor.print("WorldEdit version " + WorldEdit.getVersion());
+        actor.print("https://github.com/sk89q/worldedit/");
 
         PlatformManager pm = we.getPlatformManager();
-        Platform primary = pm.getPrimaryPlatform();
 
-        player.printDebug("");
-        player.printDebug("Platforms:");
+        actor.printDebug("----------- Platforms -----------");
         for (Platform platform : pm.getPlatforms()) {
-            String prefix = "";
+            actor.printDebug(String.format("* %s (%s)", platform.getPlatformName(), platform.getPlatformVersion()));
+        }
 
-            if (primary != null && primary.equals(platform)) {
-                prefix = "[PRIMARY] ";
-            }
-
-            player.printDebug(String.format("- %s%s v%s (WE v%s)",
-                    prefix, platform.getPlatformName(), platform.getPlatformVersion(), platform.getVersion()));
+        actor.printDebug("----------- Capabilities -----------");
+        for (Capability capability : Capability.values()) {
+            Platform platform = pm.queryCapability(capability);
+            actor.printDebug(String.format("%s: %s", capability.name(), platform != null ? platform.getPlatformName() : "NONE"));
         }
     }
 
     @Command(
         aliases = { "reload" },
         usage = "",
-        desc = "Reload WorldEdit",
+        desc = "Reload configuration",
         min = 0,
         max = 0
     )
     @CommandPermissions("worldedit.reload")
-    @Console
-    public void reload(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
+    public void reload(Actor actor) throws WorldEditException {
         we.getServer().reload();
-        player.print("Configuration reloaded!");
+        actor.print("Configuration reloaded!");
     }
 
     @Command(
         aliases = { "cui" },
         usage = "",
-        desc = "Complete CUI handshake",
+        desc = "Complete CUI handshake (internal usage)",
         min = 0,
         max = 0
     )
-    public void cui(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void cui(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         session.setCUISupport(true);
         session.dispatchCUISetup(player);
     }
@@ -104,13 +96,11 @@ public class WorldEditCommands {
     @Command(
         aliases = { "tz" },
         usage = "[timezone]",
-        desc = "Set your timezone",
+        desc = "Set your timezone for snapshots",
         min = 1,
         max = 1
     )
-    @Console
-    public void tz(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void tz(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         TimeZone tz = TimeZone.getTimeZone(args.getString(0));
         session.setTimezone(tz);
         player.print("Timezone set for this session to: " + tz.getDisplayName());
@@ -121,15 +111,12 @@ public class WorldEditCommands {
     @Command(
         aliases = { "help" },
         usage = "[<command>]",
-        desc = "Displays help for the given command or lists all commands.",
+            desc = "Displays help for WorldEdit commands",
         min = 0,
         max = -1
     )
     @CommandPermissions("worldedit.help")
-    @Console
-    public void help(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
-        UtilityCommands.help(args, we, session, player, editSession);
+    public void help(Actor actor, CommandContext args) throws WorldEditException {
+        UtilityCommands.help(args, we, actor);
     }
 }

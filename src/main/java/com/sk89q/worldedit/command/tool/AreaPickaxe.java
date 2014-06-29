@@ -22,13 +22,15 @@ package com.sk89q.worldedit.command.tool;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Platform;
 
 /**
  * A super pickaxe mode that will remove blocks in an area.
- * 
- * @author sk89q
  */
 public class AreaPickaxe implements BlockTool {
+
     private static final BaseBlock air = new BaseBlock(0);
     private int range;
 
@@ -36,17 +38,17 @@ public class AreaPickaxe implements BlockTool {
         this.range = range;
     }
 
-    public boolean canUse(LocalPlayer player) {
+    @Override
+    public boolean canUse(Actor player) {
         return player.hasPermission("worldedit.superpickaxe.area");
     }
 
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, WorldVector clicked) {
-        LocalWorld world = clicked.getWorld();
+    @Override
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
         int ox = clicked.getBlockX();
         int oy = clicked.getBlockY();
         int oz = clicked.getBlockZ();
-        int initialType = world.getBlockType(clicked);
+        int initialType = clicked.getWorld().getBlockType(clicked.toVector());
 
         if (initialType == 0) {
             return true;
@@ -68,7 +70,7 @@ public class AreaPickaxe implements BlockTool {
                             continue;
                         }
 
-                        world.queueBlockBreakEffect(server, pos, initialType, clicked.distanceSq(pos));
+                        clicked.getWorld().queueBlockBreakEffect(server, pos, initialType, clicked.toVector().distanceSq(pos));
 
                         editSession.setBlock(pos, air);
                     }
@@ -83,4 +85,5 @@ public class AreaPickaxe implements BlockTool {
 
         return true;
     }
+
 }

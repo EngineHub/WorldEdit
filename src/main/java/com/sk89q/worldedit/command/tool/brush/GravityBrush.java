@@ -24,14 +24,12 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
 
 import java.util.*;
 
-/**
- * @author zml2008
- */
 public class GravityBrush implements Brush {
+
     private final boolean fullHeight;
     
     public GravityBrush(boolean fullHeight) {
@@ -65,4 +63,5 @@ public class GravityBrush implements Brush {
             }
         }
     }
+
 }

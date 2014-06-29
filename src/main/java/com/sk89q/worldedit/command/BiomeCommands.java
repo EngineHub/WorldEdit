@@ -24,9 +24,11 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.masks.BiomeTypeMask;
 import com.sk89q.worldedit.masks.InvertedMask;
-import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.World;
@@ -35,14 +37,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
+/**
+ * Implements biome-related commands such as "/biomelist".
+ */
 public class BiomeCommands {
 
-    private WorldEdit we;
+    private final WorldEdit worldEdit;
 
-    public BiomeCommands(WorldEdit we) {
-        this.we = we;
+    /**
+     * Create a new instance.
+     *
+     * @param worldEdit reference to WorldEdit
+     */
+    public BiomeCommands(WorldEdit worldEdit) {
+        checkNotNull(worldEdit);
+        this.worldEdit = worldEdit;
     }
 
     @Command(
@@ -52,9 +64,7 @@ public class BiomeCommands {
         max = 1
     )
     @CommandPermissions("worldedit.biome.list")
-    public void biomeList(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
+    public void biomeList(Actor actor, CommandContext args) throws WorldEditException {
         int page;
         int offset;
         int count = 0;
@@ -66,14 +76,14 @@ public class BiomeCommands {
             offset = (page - 1) * 19;
         }
 
-        List<BiomeType> biomes = we.getServer().getBiomes().all();
+        List<BiomeType> biomes = worldEdit.getServer().getBiomes().all();
         int totalPages = biomes.size() / 19 + 1;
-        player.print("Available Biomes (page " + page + "/" + totalPages + ") :");
+        actor.print("Available Biomes (page " + page + "/" + totalPages + ") :");
         for (BiomeType biome : biomes) {
             if (offset > 0) {
                 offset--;
             } else {
-                player.print(" " + biome.getName());
+                actor.print(" " + biome.getName());
                 if (++count == 19) {
                     break;
                 }
@@ -93,9 +103,7 @@ public class BiomeCommands {
         max = 0
     )
     @CommandPermissions("worldedit.biome.info")
-    public void biomeInfo(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
+    public void biomeInfo(CommandContext args, Player player, LocalSession session) throws WorldEditException {
         if (args.hasFlag('t')) {
             Vector blockPosition = player.getBlockTrace(300);
             if (blockPosition == null) {
@@ -144,10 +152,8 @@ public class BiomeCommands {
     )
     @Logging(REGION)
     @CommandPermissions("worldedit.biome.set")
-    public void setBiome(CommandContext args, LocalSession session, LocalPlayer player,
-                          EditSession editSession) throws WorldEditException {
-
-        final BiomeType target = we.getServer().getBiomes().get(args.getString(0));
+    public void setBiome(CommandContext args, Player player, LocalSession session, EditSession editSession) throws WorldEditException {
+        final BiomeType target = worldEdit.getServer().getBiomes().get(args.getString(0));
         if (target == null) {
             player.printError("Biome '" + args.getString(0) + "' does not exist!");
             return;
@@ -199,4 +205,5 @@ public class BiomeCommands {
             player.print("Biome changed to " + target.getName() + ". " + affected + " columns affected.");
         }
     }
+
 }

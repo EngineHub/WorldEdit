@@ -31,6 +31,7 @@ import com.sk89q.minecraft.util.commands.CommandAlias;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
@@ -76,8 +77,7 @@ public class SelectionCommands {
     )
     @Logging(POSITION)
     @CommandPermissions("worldedit.selection.pos")
-    public void pos1(CommandContext args, LocalSession session,  LocalPlayer player,
-                     EditSession editSession) throws WorldEditException {
+    public void pos1(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         Vector pos;
 
@@ -111,8 +111,7 @@ public class SelectionCommands {
     )
     @Logging(POSITION)
     @CommandPermissions("worldedit.selection.pos")
-    public void pos2(CommandContext args, LocalSession session, LocalPlayer player,
-                     EditSession editSession) throws WorldEditException {
+    public void pos2(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         Vector pos;
         if (args.argsLength() == 1) {
@@ -146,8 +145,7 @@ public class SelectionCommands {
         max = 0
     )
     @CommandPermissions("worldedit.selection.hpos")
-    public void hpos1(CommandContext args, LocalSession session, LocalPlayer player,
-                      EditSession editSession) throws WorldEditException {
+    public void hpos1(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         Vector pos = player.getBlockTrace(300);
 
@@ -173,8 +171,7 @@ public class SelectionCommands {
         max = 0
     )
     @CommandPermissions("worldedit.selection.hpos")
-    public void hpos2(CommandContext args, LocalSession session, LocalPlayer player,
-                      EditSession editSession) throws WorldEditException {
+    public void hpos2(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         Vector pos = player.getBlockTrace(300);
 
@@ -210,8 +207,7 @@ public class SelectionCommands {
     )
     @Logging(POSITION)
     @CommandPermissions("worldedit.selection.chunk")
-    public void chunk(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void chunk(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         final Vector min;
         final Vector max;
@@ -274,8 +270,7 @@ public class SelectionCommands {
         max = 0
     )
     @CommandPermissions("worldedit.wand")
-    public void wand(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void wand(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         player.giveItem(we.getConfiguration().wandItem, 1);
         player.print("Left click: select pos #1; Right click: select pos #2");
@@ -289,8 +284,7 @@ public class SelectionCommands {
         max = 0
     )
     @CommandPermissions("worldedit.wand.toggle")
-    public void toggleWand(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void toggleWand(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         session.setToolControl(!session.isToolControlEnabled());
 
@@ -310,8 +304,7 @@ public class SelectionCommands {
     )
     @Logging(REGION)
     @CommandPermissions("worldedit.selection.expand")
-    public void expand(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void expand(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         // Special syntax (//expand vert) to expand the selection between
         // sky and bedrock.
@@ -406,8 +399,7 @@ public class SelectionCommands {
     )
     @Logging(REGION)
     @CommandPermissions("worldedit.selection.contract")
-    public void contract(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void contract(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         List<Vector> dirs = new ArrayList<Vector>();
         int change = args.getInteger(0);
@@ -482,8 +474,7 @@ public class SelectionCommands {
     )
     @Logging(REGION)
     @CommandPermissions("worldedit.selection.shift")
-    public void shift(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void shift(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         List<Vector> dirs = new ArrayList<Vector>();
         int change = args.getInteger(0);
@@ -531,8 +522,7 @@ public class SelectionCommands {
     )
     @Logging(REGION)
     @CommandPermissions("worldedit.selection.outset")
-    public void outset(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void outset(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         Region region = session.getSelection(player.getWorld());
         region.expand(getChangesForEachDir(args));
         session.getRegionSelector(player.getWorld()).learnChanges();
@@ -555,8 +545,7 @@ public class SelectionCommands {
     )
     @Logging(REGION)
     @CommandPermissions("worldedit.selection.inset")
-    public void inset(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void inset(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         Region region = session.getSelection(player.getWorld());
         region.contract(getChangesForEachDir(args));
         session.getRegionSelector(player.getWorld()).learnChanges();
@@ -592,8 +581,7 @@ public class SelectionCommands {
         max = 0
     )
     @CommandPermissions("worldedit.selection.size")
-    public void size(CommandContext args, LocalSession session, LocalPlayer player, 
-            EditSession editSession) throws WorldEditException {
+    public void size(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         if (args.hasFlag('c')) {
             CuboidClipboard clipboard = session.getClipboard();
@@ -637,8 +625,7 @@ public class SelectionCommands {
         max = 1
     )
     @CommandPermissions("worldedit.analysis.count")
-    public void count(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void count(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         boolean useData = args.hasFlag('d');
         if (args.getString(0).contains(":")) {
@@ -668,8 +655,7 @@ public class SelectionCommands {
         max = 0
     )
     @CommandPermissions("worldedit.analysis.distr")
-    public void distr(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void distr(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         int size;
         boolean useData = args.hasFlag('d');
@@ -730,8 +716,7 @@ public class SelectionCommands {
         min = 0,
         max = 1
     )
-    public void select(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void select(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         final World world = player.getWorld();
         if (args.argsLength() == 0) {

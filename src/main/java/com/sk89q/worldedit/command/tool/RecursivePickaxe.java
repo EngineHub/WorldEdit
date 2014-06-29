@@ -22,6 +22,10 @@ package com.sk89q.worldedit.command.tool;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.world.World;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,10 +33,9 @@ import java.util.Set;
 /**
  * A pickaxe mode that recursively finds adjacent blocks within range of
  * an initial block and of the same type.
- * 
- * @author sk89q
  */
 public class RecursivePickaxe implements BlockTool {
+
     private static final BaseBlock air = new BaseBlock(0);
     private double range;
 
@@ -40,15 +43,16 @@ public class RecursivePickaxe implements BlockTool {
         this.range = range;
     }
 
-    public boolean canUse(LocalPlayer player) {
+    @Override
+    public boolean canUse(Actor player) {
         return player.hasPermission("worldedit.superpickaxe.recursive");
     }
 
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, WorldVector clicked) {
-        LocalWorld world = clicked.getWorld();
+    @Override
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
+        World world = clicked.getWorld();
 
-        int initialType = world.getBlockType(clicked);
+        int initialType = world.getBlockType(clicked.toVector());
 
         if (initialType == BlockID.AIR) {
             return true;
@@ -62,8 +66,8 @@ public class RecursivePickaxe implements BlockTool {
         editSession.getSurvivalExtent().setToolUse(config.superPickaxeManyDrop);
 
         try {
-            recurse(server, editSession, world, clicked.toBlockVector(),
-                    clicked, range, initialType, new HashSet<BlockVector>());
+            recurse(server, editSession, world, clicked.toVector().toBlockVector(),
+                    clicked.toVector(), range, initialType, new HashSet<BlockVector>());
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {
@@ -74,22 +78,8 @@ public class RecursivePickaxe implements BlockTool {
         return true;
     }
 
-    /**
-     * Helper method.
-     * 
-     * @param server
-     * @param world
-     * @param pos
-     * @param origin
-     * @param size
-     * @param initialType
-     * @param visited
-     */
-    private static void recurse(ServerInterface server, EditSession editSession,
-            LocalWorld world, BlockVector pos,
-            Vector origin, double size, int initialType,
-            Set<BlockVector> visited)
-            throws MaxChangedBlocksException {
+    private static void recurse(Platform server, EditSession editSession, World world, BlockVector pos,
+            Vector origin, double size, int initialType, Set<BlockVector> visited) throws MaxChangedBlocksException {
 
         final double distanceSq = origin.distanceSq(pos);
         if (distanceSq > size*size || visited.contains(pos)) {

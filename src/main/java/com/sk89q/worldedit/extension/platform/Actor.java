@@ -38,13 +38,6 @@ public interface Actor {
     String getName();
 
     /**
-     * Get the actor's world.
-     *
-     * @return the world
-     */
-    World getWorld();
-
-    /**
      * Print a message.
      *
      * @param msg The message text

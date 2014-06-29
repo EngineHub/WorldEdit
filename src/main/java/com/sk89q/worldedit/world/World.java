@@ -22,6 +22,7 @@ package com.sk89q.worldedit.world;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.regions.Region;
@@ -342,7 +343,7 @@ public interface World extends Extent {
      * @param priority the priority
      * @return true if the effect was played
      */
-    boolean queueBlockBreakEffect(ServerInterface server, Vector position, int blockId, double priority);
+    boolean queueBlockBreakEffect(Platform server, Vector position, int blockId, double priority);
 
     @Override
     boolean equals(Object other);

@@ -25,6 +25,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -219,7 +220,7 @@ public abstract class AbstractWorld implements World {
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean queueBlockBreakEffect(ServerInterface server, Vector position, int blockId, double priority) {
+    public boolean queueBlockBreakEffect(Platform server, Vector position, int blockId, double priority) {
         if (taskId == -1) {
             taskId = server.schedule(0, 1, new Runnable() {
                 @Override

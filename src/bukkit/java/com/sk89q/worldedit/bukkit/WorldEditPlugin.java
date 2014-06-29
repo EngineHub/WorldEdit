@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.google.common.base.Joiner;
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.wepif.PermissionsResolverManager;
 import com.sk89q.worldedit.*;
@@ -26,20 +27,22 @@ import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.CylinderSelection;
 import com.sk89q.worldedit.bukkit.selections.Polygonal2DSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
-import com.sk89q.worldedit.extension.platform.PlatformRejectionException;
+import com.sk89q.worldedit.event.platform.CommandEvent;
+import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
+import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.CylinderRegion;
-import com.sk89q.worldedit.regions.Polygonal2DRegion;
-import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.regions.*;
 import org.bukkit.World;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -49,7 +52,7 @@ import java.util.zip.ZipEntry;
  *
  * @author sk89q
  */
-public class WorldEditPlugin extends JavaPlugin {
+public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     /**
      * The name of the CUI's plugin channel registration
@@ -106,21 +109,19 @@ public class WorldEditPlugin extends JavaPlugin {
         // Setup interfaces
         server = new BukkitServerInterface(this, getServer());
         controller = WorldEdit.getInstance();
-        try {
-            controller.getPlatformManager().register(server);
-            api = new WorldEditAPI(this);
-            getServer().getMessenger().registerIncomingPluginChannel(this, CUI_PLUGIN_CHANNEL, new CUIChannelListener(this));
-            getServer().getMessenger().registerOutgoingPluginChannel(this, CUI_PLUGIN_CHANNEL);
-            // Now we can register events!
-            getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
+        controller.getPlatformManager().register(server);
+        api = new WorldEditAPI(this);
+        getServer().getMessenger().registerIncomingPluginChannel(this, CUI_PLUGIN_CHANNEL, new CUIChannelListener(this));
+        getServer().getMessenger().registerOutgoingPluginChannel(this, CUI_PLUGIN_CHANNEL);
+        // Now we can register events!
+        getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
 
-            getServer().getScheduler().runTaskTimerAsynchronously(this,
-                    new SessionTimer(controller, getServer()), 120, 120);
-        } catch (PlatformRejectionException e) {
-            throw new RuntimeException(
-                    "WorldEdit rejected the Bukkit implementation of WorldEdit! This is strange and should " +
-                            "not have happened. Please report this error.", e);
-        }
+        getServer().getScheduler().runTaskTimerAsynchronously(this, new SessionTimer(controller, getServer()), 120, 120);
+
+        // If we are on MCPC+/Cauldron, then Forge will have already loaded
+        // Forge WorldEdit and there's (probably) not going to be any other
+        // platforms to be worried about... at the current time of writing
+        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
     }
 
     private void copyNmsBlockClasses(File target) {
@@ -220,22 +221,31 @@ public class WorldEditPlugin extends JavaPlugin {
         }
     }
 
-    /**
-     * Called on WorldEdit command.
-     */
     @Override
-    public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd,
-            String commandLabel, String[] args) {
-
+    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         // Add the command to the array because the underlying command handling
         // code of WorldEdit expects it
         String[] split = new String[args.length + 1];
         System.arraycopy(args, 0, split, 1, args.length);
-        split[0] = "/" + cmd.getName();
+        split[0] = cmd.getName();
 
-        controller.handleCommand(wrapCommandSender(sender), split);
+        CommandEvent event = new CommandEvent(wrapCommandSender(sender), Joiner.on(" ").join(split));
+        getWorldEdit().getEventBus().post(event);
 
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        // Add the command to the array because the underlying command handling
+        // code of WorldEdit expects it
+        String[] split = new String[args.length + 1];
+        System.arraycopy(args, 0, split, 1, args.length);
+        split[0] = cmd.getName();
+
+        CommandSuggestionEvent event = new CommandSuggestionEvent(wrapCommandSender(sender), Joiner.on(" ").join(split));
+        getWorldEdit().getEventBus().post(event);
+        return event.getSuggestions();
     }
 
     /**
@@ -340,12 +350,12 @@ public class WorldEditPlugin extends JavaPlugin {
         return new BukkitPlayer(this, this.server, player);
     }
 
-    public LocalPlayer wrapCommandSender(CommandSender sender) {
+    public Actor wrapCommandSender(CommandSender sender) {
         if (sender instanceof Player) {
             return wrapPlayer((Player) sender);
         }
 
-        return new BukkitCommandSender(this, this.server, sender);
+        return new BukkitCommandSender(this, sender);
     }
 
     /**
@@ -354,6 +364,10 @@ public class WorldEditPlugin extends JavaPlugin {
      * @return
      */
     public ServerInterface getServerInterface() {
+        return server;
+    }
+
+    BukkitServerInterface getInternalPlatform() {
         return server;
     }
 

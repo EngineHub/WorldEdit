@@ -20,24 +20,15 @@
 package com.sk89q.worldedit.command.tool;
 
 import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Platform;
 
 /**
  * Represents a trace tool that also has a secondary/primary function.
  */
 public interface DoubleActionTraceTool extends TraceTool {
-    /**
-     * Perform the secondary action. Should return true to deny the default
-     * action.
-     * 
-     * @param server 
-     * @param config 
-     * @param player
-     * @param session
-     * @return true to deny
-     */
-    public boolean actSecondary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session);
+
+    public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session);
+
 }

@@ -20,24 +20,25 @@
 package com.sk89q.worldedit.scripting;
 
 import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Platform;
 
 public abstract class CraftScriptEnvironment {
+
     protected WorldEdit controller;
-    protected LocalPlayer player;
+    protected Player player;
     protected LocalConfiguration config;
     protected LocalSession session;
-    protected ServerInterface server;
+    protected Platform server;
 
-    public CraftScriptEnvironment(WorldEdit controller, ServerInterface server,
-            LocalConfiguration config, LocalSession session, LocalPlayer player) {
+    public CraftScriptEnvironment(WorldEdit controller, Platform server, LocalConfiguration config, LocalSession session, Player player) {
         this.controller = controller;
         this.player = player;
         this.config = config;
         this.server = server;
         this.session = session;
     }
+
 }

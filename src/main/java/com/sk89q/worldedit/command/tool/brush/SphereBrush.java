@@ -22,14 +22,13 @@ package com.sk89q.worldedit.command.tool.brush;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.function.pattern.Patterns;
 
 public class SphereBrush implements Brush {
-    public SphereBrush() {
-    }
 
-    public void build(EditSession editSession, Vector pos, Pattern mat, double size)
-            throws MaxChangedBlocksException {
-        editSession.makeSphere(pos, mat, size, size, size, true);
+    @Override
+    public void build(EditSession editSession, Vector pos, Pattern mat, double size) throws MaxChangedBlocksException {
+        editSession.makeSphere(pos, Patterns.wrap(mat), size, size, size, true);
     }
 }

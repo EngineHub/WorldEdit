@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.command.tool.brush;
 
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.math.convolution.HeightMap;
 import com.sk89q.worldedit.MaxChangedBlocksException;
@@ -27,11 +28,11 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.math.convolution.GaussianKernel;
 import com.sk89q.worldedit.math.convolution.HeightMapFilter;
-import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 
 public class SmoothBrush implements Brush {
+
     private int iterations;
     private boolean naturalOnly;
 
@@ -53,4 +54,5 @@ public class SmoothBrush implements Brush {
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         heightMap.applyFilter(filter, iterations);
     }
+
 }
