@@ -22,7 +22,6 @@ package com.sk89q.worldedit.util.command;
 import com.google.common.base.Joiner;
 import com.sk89q.minecraft.util.commands.*;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -87,7 +86,7 @@ public class SimpleDispatcher implements Dispatcher {
     }
 
     @Override
-    public boolean call(@Nullable String alias, String arguments, CommandLocals locals) throws CommandException {
+    public boolean call(String arguments, CommandLocals locals, String[] parentCommands) throws CommandException {
         // We have permission for this command if we have permissions for subcommands
         if (!testPermission(locals)) {
             throw new CommandPermissionsException();
@@ -101,11 +100,13 @@ public class SimpleDispatcher implements Dispatcher {
         } else if (split.length > 0) {
             String subCommand = split[0];
             String subArguments = Joiner.on(" ").join(Arrays.copyOfRange(split, 1, split.length));
+            String[] subParents = Arrays.copyOf(parentCommands, parentCommands.length + 1);
+            subParents[parentCommands.length] = subCommand;
             CommandMapping mapping = get(subCommand);
 
             if (mapping != null) {
                 try {
-                    mapping.getCallable().call(subCommand, subArguments, locals);
+                    mapping.getCallable().call(subArguments, locals, subParents);
                 } catch (CommandException e) {
                     e.prependStack(subCommand);
                     throw e;

@@ -23,7 +23,6 @@ import com.sk89q.minecraft.util.commands.*;
 import com.sk89q.worldedit.util.command.*;
 import com.sk89q.worldedit.util.command.binding.Switch;
 
-import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -160,13 +159,14 @@ class ParametricCallable implements CommandCallable {
     }
 
     @Override
-    public boolean call(@Nullable String alias, String stringArguments, CommandLocals locals) throws CommandException {
+    public boolean call(String stringArguments, CommandLocals locals, String[] parentCommands) throws CommandException {
         // Test permission
         if (!testPermission(locals)) {
             throw new CommandPermissionsException();
         }
 
-        String[] split = CommandContext.split(alias + " " + stringArguments);
+        String calledCommand = parentCommands.length > 0 ? parentCommands[parentCommands.length - 1] : "_";
+        String[] split = CommandContext.split(calledCommand + " " + stringArguments);
         CommandContext context = new CommandContext(split, getValueFlags(), false, locals);
 
         Object[] args = new Object[parameters.length];

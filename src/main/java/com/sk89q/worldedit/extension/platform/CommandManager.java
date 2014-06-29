@@ -216,7 +216,7 @@ public final class CommandManager {
         long start = System.currentTimeMillis();
 
         try {
-            dispatcher.call(null, Joiner.on(" ").join(split), locals);
+            dispatcher.call(Joiner.on(" ").join(split), locals, new String[0]);
         } catch (CommandPermissionsException e) {
             actor.printError("You don't have permission to do this.");
         } catch (InvalidUsageException e) {
