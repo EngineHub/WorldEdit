@@ -23,6 +23,7 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -160,7 +161,11 @@ public class WorldEditBinding extends BindingHelper {
             parserContext.setWorld(((Entity) actor).getWorld());
         }
         parserContext.setSession(worldEdit.getSessionManager().get(actor));
-        return worldEdit.getBlockRegistry().parseFromInput(context.next(), parserContext);
+        try {
+            return worldEdit.getBlockRegistry().parseFromInput(context.next(), parserContext);
+        } catch (NoMatchException e) {
+            throw new ParameterException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -182,7 +187,11 @@ public class WorldEditBinding extends BindingHelper {
             parserContext.setWorld(((Entity) actor).getWorld());
         }
         parserContext.setSession(worldEdit.getSessionManager().get(actor));
-        return worldEdit.getPatternRegistry().parseFromInput(context.next(), parserContext);
+        try {
+            return worldEdit.getPatternRegistry().parseFromInput(context.next(), parserContext);
+        } catch (NoMatchException e) {
+            throw new ParameterException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -204,7 +213,11 @@ public class WorldEditBinding extends BindingHelper {
             parserContext.setWorld(((Entity) actor).getWorld());
         }
         parserContext.setSession(worldEdit.getSessionManager().get(actor));
-        return worldEdit.getMaskRegistry().parseFromInput(context.next(), parserContext);
+        try {
+            return worldEdit.getMaskRegistry().parseFromInput(context.next(), parserContext);
+        } catch (NoMatchException e) {
+            throw new ParameterException(e.getMessage(), e);
+        }
     }
 
     /**
