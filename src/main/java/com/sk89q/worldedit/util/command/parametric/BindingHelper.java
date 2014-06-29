@@ -178,7 +178,7 @@ public class BindingHelper implements Binding {
             } else if (e.getCause() instanceof CommandException) {
                 throw (CommandException) e.getCause();
             }
-            throw new ParameterException(e.getCause());
+            throw new RuntimeException(e.getCause());
         }
     }
 
