@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.command;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,8 +28,8 @@ import java.util.List;
  */
 public class SimpleDescription implements Description {
     
-    private List<Parameter> parameters = Collections.emptyList();
-    private List<String> permissions = Collections.emptyList();
+    private List<Parameter> parameters = new ArrayList<Parameter>();
+    private List<String> permissions = new ArrayList<String>();
     private String description;
     private String help;
     private String overrideUsage;
