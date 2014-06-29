@@ -21,6 +21,9 @@ package com.sk89q.worldedit.util.command;
 
 import com.google.common.base.Joiner;
 import com.sk89q.minecraft.util.commands.*;
+import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
+import com.sk89q.worldedit.util.formatting.CommandListBox;
+import com.sk89q.worldedit.util.formatting.StyledFragment;
 
 import java.util.*;
 
@@ -31,6 +34,16 @@ public class SimpleDispatcher implements Dispatcher {
 
     private final Map<String, CommandMapping> commands = new HashMap<String, CommandMapping>();
     private final SimpleDescription description = new SimpleDescription();
+
+    /**
+     * Create a new instance.
+     */
+    public SimpleDispatcher() {
+        description.getParameters().add(new SimpleParameter("subcommand"));
+        SimpleParameter extraArgs = new SimpleParameter("...");
+        extraArgs.setOptional(true);
+        description.getParameters().add(extraArgs);
+    }
 
     @Override
     public void registerCommand(CommandCallable callable, String... alias) {
@@ -119,7 +132,7 @@ public class SimpleDispatcher implements Dispatcher {
 
         }
 
-        throw new InvalidUsageException(getSubcommandList(locals), getDescription());
+        throw new InvalidUsageException(ColorCodeBuilder.asColorCodes(getSubcommandList(locals, parentCommands)), getDescription());
     }
 
     @Override
@@ -172,25 +185,16 @@ public class SimpleDispatcher implements Dispatcher {
         return false;
     }
 
-    /**
-     * Get a list of subcommands for display.
-     *
-     * @return a string
-     */
-    private String getSubcommandList(CommandLocals locals) {
-        Set<String> aliases = getPrimaryAliases();
-
-        StringBuilder builder = new StringBuilder("Subcommands: ");
-
+    private StyledFragment getSubcommandList(CommandLocals locals, String[] parentCommands) {
+        CommandListBox box = new CommandListBox("Subcommands");
+        String prefix = parentCommands.length > 0 ? "/" + Joiner.on(" ").join(parentCommands) + " " : "";
         for (CommandMapping mapping : getCommands()) {
             if (mapping.getCallable().testPermission(locals)) {
-                for (String alias : mapping.getAllAliases()) {
-                    builder.append("\n- ").append(alias);
-                }
+                box.appendCommand(prefix + mapping.getPrimaryAlias(), mapping.getDescription().getShortDescription());
             }
         }
 
-        return builder.toString();
+        return box;
     }
 
 }
