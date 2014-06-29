@@ -488,7 +488,7 @@ public class UtilityCommands {
     @Command(
         aliases = { "/help" },
         usage = "[<command>]",
-        desc = "Displays help for the given command or lists all commands.",
+        desc = "Displays help for WorldEdit commands",
         min = 0,
         max = -1
     )

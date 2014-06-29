@@ -71,7 +71,7 @@ public class WorldEditCommands {
     @Command(
         aliases = { "reload" },
         usage = "",
-        desc = "Reload WorldEdit",
+        desc = "Reload configuration",
         min = 0,
         max = 0
     )
@@ -84,7 +84,7 @@ public class WorldEditCommands {
     @Command(
         aliases = { "cui" },
         usage = "",
-        desc = "Complete CUI handshake",
+        desc = "Complete CUI handshake (internal usage)",
         min = 0,
         max = 0
     )
@@ -96,7 +96,7 @@ public class WorldEditCommands {
     @Command(
         aliases = { "tz" },
         usage = "[timezone]",
-        desc = "Set your timezone",
+        desc = "Set your timezone for snapshots",
         min = 1,
         max = 1
     )
@@ -111,7 +111,7 @@ public class WorldEditCommands {
     @Command(
         aliases = { "help" },
         usage = "[<command>]",
-        desc = "Displays help for the given command or lists all commands.",
+            desc = "Displays help for WorldEdit commands",
         min = 0,
         max = -1
     )
