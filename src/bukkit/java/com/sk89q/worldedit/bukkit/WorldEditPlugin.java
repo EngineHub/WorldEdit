@@ -156,10 +156,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      */
     @Override
     public void onDisable() {
-        controller.clearSessions();
-        controller.getPlatformManager().unregister(server);
-        config.unload();
-        server.unregisterCommands();
+        if (controller != null) {
+            controller.clearSessions();
+            controller.getPlatformManager().unregister(server);
+            config.unload();
+            server.unregisterCommands();
+        }
         this.getServer().getScheduler().cancelTasks(this);
     }
 
