@@ -20,10 +20,12 @@
 package com.sk89q.worldedit.util.formatting;
 
 import com.google.common.collect.Maps;
-import org.apache.commons.lang.Validate;
 
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * All supported color values for chat.
@@ -194,8 +196,8 @@ public enum Style {
      * @return Associative {@link org.bukkit.ChatColor} with the given code, or null if it doesn't exist
      */
     public static Style getByChar(String code) {
-        Validate.notNull(code, "Code cannot be null");
-        Validate.isTrue(code.length() > 0, "Code must have at least one char");
+        checkNotNull(code);
+        checkArgument(!code.isEmpty(), "Code must have at least one character");
 
         return BY_CHAR.get(code.charAt(0));
     }
