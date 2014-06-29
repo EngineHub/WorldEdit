@@ -91,8 +91,13 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     }
 
     @ExceptionMatch
+    public void convert(MaxBrushRadiusException e) throws CommandException {
+        throw new CommandException("Maximum brush radius (in configuration): " + worldEdit.getConfiguration().maxBrushRadius);
+    }
+
+    @ExceptionMatch
     public void convert(MaxRadiusException e) throws CommandException {
-        throw new CommandException("Maximum radius: " + worldEdit.getConfiguration().maxRadius);
+        throw new CommandException("Maximum radius (in configuration): " + worldEdit.getConfiguration().maxRadius);
     }
 
     @ExceptionMatch
