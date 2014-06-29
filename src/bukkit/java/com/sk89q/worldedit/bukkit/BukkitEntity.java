@@ -55,7 +55,7 @@ class BukkitEntity implements Entity {
 
     @SuppressWarnings("unchecked")
     <T> T getMetaData(Class<T> metaDataClass) {
-            if (metaDataClass == Tameable.class && getEntity() instanceof org.bukkit.entity.Tameable) {
+        if (metaDataClass == Tameable.class && getEntity() instanceof org.bukkit.entity.Tameable) {
             return (T) new TameableAdapter((org.bukkit.entity.Tameable) getEntity());
         } else {
             return null;
