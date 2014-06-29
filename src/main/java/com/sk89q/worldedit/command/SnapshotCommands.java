@@ -21,6 +21,15 @@
 
 package com.sk89q.worldedit.command;
 
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
+import com.sk89q.worldedit.world.snapshot.Snapshot;
+import com.sk89q.worldedit.world.storage.MissingWorldException;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -28,13 +37,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.world.storage.MissingWorldException;
-import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
-import com.sk89q.worldedit.world.snapshot.Snapshot;
 
 /**
  * Snapshot commands.
@@ -59,8 +61,7 @@ public class SnapshotCommands {
             max = 1
     )
     @CommandPermissions("worldedit.snapshots.list")
-    public void list(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void list(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
@@ -110,8 +111,7 @@ public class SnapshotCommands {
             max = 1
     )
     @CommandPermissions("worldedit.snapshots.restore")
-    public void use(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void use(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
@@ -154,8 +154,7 @@ public class SnapshotCommands {
             max = 1
     )
     @CommandPermissions("worldedit.snapshots.restore")
-    public void sel(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void sel(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         LocalConfiguration config = we.getConfiguration();
 
         if (config.snapshotRepo == null) {
@@ -202,8 +201,7 @@ public class SnapshotCommands {
             max = -1
     )
     @CommandPermissions("worldedit.snapshots.restore")
-    public void before(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void before(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
@@ -242,8 +240,7 @@ public class SnapshotCommands {
             max = -1
     )
     @CommandPermissions("worldedit.snapshots.restore")
-    public void after(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void after(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 

@@ -7,16 +7,19 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url = "http://files.minecraftforge.net/maven" }
+        jcenter()
     }
 
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:1.0-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'forge'
+apply plugin: 'shadow'
 
 group = 'com.sk89q'
 version = '6.0.0-SNAPSHOT'
@@ -41,6 +44,7 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version:'10.0.1'
     compile group: 'com.sk89q', name: 'jchronic', version:'0.2.4a'
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '1.3.9'
+    compile group: 'com.thoughtworks.paranamer', name: 'paranamer', version: '2.6'
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
 }
 
@@ -77,3 +81,35 @@ processResources {
         exclude 'mcmod.info'
     }
 }
+
+// shade needed runtime dependencies
+shadow {
+    //artifactAttached false
+    destinationDir "${buildDir}/libs/"
+    artifactSet {
+        include '*:jchronic:jar:'
+        include '*:paranamer:jar:'
+    }
+}
+
+task deleteOrig(type: Delete) {
+    delete "${project.tasks.jar.getArchivePath().getPath()}"
+}
+
+task renameShaded(type: Copy) {
+    from file("${buildDir}/libs")
+    into file("${buildDir}/libs")
+    rename { String fileName ->
+        fileName.replace('-shadow', '')
+    }
+}
+
+task deleteShaded(type: Delete) {
+    delete "${project.tasks.jar.getArchivePath().getPath().replace('.jar', '-shadow.jar')}"
+}
+
+// follow all the steps
+build.dependsOn(deleteShaded)
+deleteShaded.dependsOn(renameShaded)
+renameShaded.dependsOn(deleteOrig)
+deleteOrig.dependsOn(shadowJar)

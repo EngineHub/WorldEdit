@@ -19,18 +19,23 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import java.util.HashSet;
-import java.util.Set;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.World;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A tool that flood fills blocks.
- * 
- * @author sk89q
  */
 public class FloodFillTool implements BlockTool {
+
     private int range;
     private Pattern pattern;
 
@@ -39,15 +44,16 @@ public class FloodFillTool implements BlockTool {
         this.pattern = pattern;
     }
 
-    public boolean canUse(LocalPlayer player) {
+    @Override
+    public boolean canUse(Actor player) {
         return player.hasPermission("worldedit.tool.flood-fill");
     }
 
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, WorldVector clicked) {
-        LocalWorld world = clicked.getWorld();
+    @Override
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
+        World world = clicked.getWorld();
 
-        int initialType = world.getBlockType(clicked);
+        int initialType = world.getBlockType(clicked.toVector());
 
         if (initialType == BlockID.AIR) {
             return true;
@@ -60,8 +66,8 @@ public class FloodFillTool implements BlockTool {
         EditSession editSession = session.createEditSession(player);
 
         try {
-            recurse(server, editSession, world, clicked.toBlockVector(),
-                    clicked, range, initialType, new HashSet<BlockVector>());
+            recurse(server, editSession, world, clicked.toVector().toBlockVector(),
+                    clicked.toVector(), range, initialType, new HashSet<BlockVector>());
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {
@@ -71,23 +77,8 @@ public class FloodFillTool implements BlockTool {
         return true;
     }
 
-    /**
-     * Helper method.
-     * 
-     * @param server
-     * @param superPickaxeManyDrop
-     * @param world
-     * @param pos
-     * @param origin
-     * @param size
-     * @param initialType
-     * @param visited
-     */
-    private void recurse(ServerInterface server, EditSession editSession,
-            LocalWorld world, BlockVector pos,
-            Vector origin, int size, int initialType,
-            Set<BlockVector> visited)
-            throws MaxChangedBlocksException {
+    private void recurse(Platform server, EditSession editSession, World world, BlockVector pos, Vector origin, int size, int initialType,
+            Set<BlockVector> visited) throws MaxChangedBlocksException {
 
         if (origin.distance(pos) > size || visited.contains(pos)) {
             return;

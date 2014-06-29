@@ -19,22 +19,37 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.minecraft.util.commands.*;
-import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.ItemType;
+import com.google.common.base.Joiner;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandLocals;
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
+import com.sk89q.minecraft.util.commands.WrappedCommandException;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.*;
 import com.sk89q.worldedit.event.platform.CommandEvent;
+import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
+import com.sk89q.worldedit.internal.command.ActorAuthorizer;
+import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
+import com.sk89q.worldedit.internal.command.WorldEditBinding;
+import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
 import com.sk89q.worldedit.session.request.Request;
-import com.sk89q.worldedit.util.logging.LogFormat;
+import com.sk89q.worldedit.util.command.Dispatcher;
+import com.sk89q.worldedit.util.command.InvalidUsageException;
+import com.sk89q.worldedit.util.command.fluent.CommandGraph;
+import com.sk89q.worldedit.util.command.parametric.LegacyCommandsHandler;
+import com.sk89q.worldedit.util.command.parametric.ParametricBuilder;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
+import com.sk89q.worldedit.util.logging.LogFormat;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.logging.*;
-import java.util.regex.Matcher;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -49,7 +64,8 @@ public final class CommandManager {
     private static final java.util.regex.Pattern numberFormatExceptionPattern = java.util.regex.Pattern.compile("^For input string: \"(.*)\"$");
 
     private final WorldEdit worldEdit;
-    private final CommandsManager<LocalPlayer> commands;
+    private final PlatformManager platformManager;
+    private final Dispatcher dispatcher;
     private final DynamicStreamHandler dynamicHandler = new DynamicStreamHandler();
 
     /**
@@ -57,9 +73,11 @@ public final class CommandManager {
      *
      * @param worldEdit the WorldEdit instance
      */
-    CommandManager(final WorldEdit worldEdit) {
+    CommandManager(final WorldEdit worldEdit, PlatformManager platformManager) {
         checkNotNull(worldEdit);
+        checkNotNull(platformManager);
         this.worldEdit = worldEdit;
+        this.platformManager = platformManager;
 
         // Register this instance for command events
         worldEdit.getEventBus().register(this);
@@ -69,8 +87,56 @@ public final class CommandManager {
         dynamicHandler.setFormatter(new LogFormat());
 
         // Set up the commands manager
-        commands = new CommandsManagerImpl();
-        commands.setInjector(new SimpleInjector(worldEdit));
+        ParametricBuilder builder = new ParametricBuilder();
+        builder.setAuthorizer(new ActorAuthorizer());
+        builder.addBinding(new WorldEditBinding(worldEdit));
+        builder.addExceptionConverter(new WorldEditExceptionConverter(worldEdit));
+        builder.addInvokeListener(new LegacyCommandsHandler());
+        builder.addInvokeListener(new CommandLoggingHandler(worldEdit, logger));
+
+        dispatcher = new CommandGraph()
+                .builder(builder)
+                    .commands()
+                        .registerMethods(new BiomeCommands(worldEdit))
+                        .registerMethods(new ChunkCommands(worldEdit))
+                        .registerMethods(new ClipboardCommands(worldEdit))
+                        .registerMethods(new GeneralCommands(worldEdit))
+                        .registerMethods(new GenerationCommands(worldEdit))
+                        .registerMethods(new HistoryCommands(worldEdit))
+                        .registerMethods(new NavigationCommands(worldEdit))
+                        .registerMethods(new RegionCommands(worldEdit))
+                        .registerMethods(new ScriptingCommands(worldEdit))
+                        .registerMethods(new SelectionCommands(worldEdit))
+                        .registerMethods(new SnapshotUtilCommands(worldEdit))
+                        .registerMethods(new ToolUtilCommands(worldEdit))
+                        .registerMethods(new ToolCommands(worldEdit))
+                        .registerMethods(new UtilityCommands(worldEdit))
+                        .group("worldedit", "we")
+                            .describeAs("WorldEdit commands")
+                            .registerMethods(new WorldEditCommands(worldEdit))
+                            .parent()
+                        .group("schematic", "schem", "/schematic", "/schem")
+                            .describeAs("Schematic commands for saving/loading areas")
+                            .registerMethods(new SchematicCommands(worldEdit))
+                            .parent()
+                        .group("snapshot", "snap")
+                            .describeAs("Schematic commands for saving/loading areas")
+                            .registerMethods(new SnapshotCommands(worldEdit))
+                            .parent()
+                        .group("brush", "br")
+                            .describeAs("Brushing commands")
+                            .registerMethods(new BrushCommands(worldEdit))
+                            .parent()
+                        .group("superpickaxe", "pickaxe", "sp")
+                            .describeAs("Super-pickaxe commands")
+                            .registerMethods(new SuperPickaxeCommands(worldEdit))
+                            .parent()
+                        .group("tool")
+                            .describeAs("Bind functions to held items")
+                            .registerMethods(new ToolCommands(worldEdit))
+                            .parent()
+                        .graph()
+                .getDispatcher();
     }
 
     void register(Platform platform) {
@@ -83,8 +149,11 @@ public final class CommandManager {
         // Register log
         if (!logging || path.isEmpty()) {
             dynamicHandler.setHandler(null);
+            logger.setLevel(Level.OFF);
         } else {
             File file = new File(config.getWorkingDirectory(), path);
+
+            logger.setLevel(Level.ALL);
 
             logger.log(Level.INFO, "Logging WorldEdit commands to " + file.getAbsolutePath());
 
@@ -95,39 +164,14 @@ public final class CommandManager {
             }
         }
 
-        register(platform, BiomeCommands.class);
-        register(platform, ChunkCommands.class);
-        register(platform, ClipboardCommands.class);
-        register(platform, GeneralCommands.class);
-        register(platform, GenerationCommands.class);
-        register(platform, HistoryCommands.class);
-        register(platform, NavigationCommands.class);
-        register(platform, RegionCommands.class);
-        register(platform, ScriptingCommands.class);
-        register(platform, SelectionCommands.class);
-        register(platform, SnapshotUtilCommands.class);
-        register(platform, ToolUtilCommands.class);
-        register(platform, ToolCommands.class);
-        register(platform, UtilityCommands.class);
+        platform.registerCommands(dispatcher);
     }
 
     void unregister() {
         dynamicHandler.setHandler(null);
     }
 
-    private void register(Platform platform, Class<?> clazz) {
-        platform.onCommandRegistration(commands.registerAndReturn(clazz), commands);
-    }
-
-    public CommandsManager<LocalPlayer> getCommands() {
-        return commands;
-    }
-
     public String[] commandDetection(String[] split) {
-        Request.reset();
-
-        split[0] = split[0].substring(1);
-
         // Quick script shortcut
         if (split[0].matches("^[^/].*\\.js$")) {
             String[] newSplit = new String[split.length + 1];
@@ -140,12 +184,12 @@ public final class CommandManager {
         String searchCmd = split[0].toLowerCase();
 
         // Try to detect the command
-        if (commands.hasCommand(searchCmd)) {
-        } else if (worldEdit.getConfiguration().noDoubleSlash && commands.hasCommand("/" + searchCmd)) {
-            split[0] = "/" + split[0];
-        } else if (split[0].length() >= 2 && split[0].charAt(0) == '/'
-                && commands.hasCommand(searchCmd.substring(1))) {
-            split[0] = split[0].substring(1);
+        if (!dispatcher.contains(searchCmd)) {
+            if (worldEdit.getConfiguration().noDoubleSlash && dispatcher.contains("/" + searchCmd)) {
+                split[0] = "/" + split[0];
+            } else if (searchCmd.length() >= 2 && searchCmd.charAt(0) == '/' && dispatcher.contains(searchCmd.substring(1))) {
+                split[0] = split[0].substring(1);
+            }
         }
 
         return split;
@@ -155,185 +199,80 @@ public final class CommandManager {
     public void handleCommand(CommandEvent event) {
         Request.reset();
 
-        LocalPlayer player = event.getPlayer();
-        String[] split = event.getArguments();
+        Actor actor = platformManager.createProxyActor(event.getActor());
+        String split[] = commandDetection(event.getArguments().split(" "));
+
+        // No command found!
+        if (!dispatcher.contains(split[0])) {
+            return;
+        }
+
+        LocalSession session = worldEdit.getSessionManager().get(actor);
+        LocalConfiguration config = worldEdit.getConfiguration();
+
+        CommandLocals locals = new CommandLocals();
+        locals.put(Actor.class, actor);
+
+        long start = System.currentTimeMillis();
 
         try {
-            split = commandDetection(split);
+            dispatcher.call(Joiner.on(" ").join(split), locals, new String[0]);
+        } catch (CommandPermissionsException e) {
+            actor.printError("You don't have permission to do this.");
+        } catch (InvalidUsageException e) {
+            actor.printError(e.getMessage() + "\nUsage: " + e.getUsage("/"));
+        } catch (WrappedCommandException e) {
+            Throwable t = e.getCause();
+            actor.printError("Please report this error: [See console]");
+            actor.printRaw(t.getClass().getName() + ": " + t.getMessage());
+            t.printStackTrace();
+        } catch (CommandException e) {
+            actor.printError(e.getMessage());
+        } finally {
+            EditSession editSession = locals.get(EditSession.class);
 
-            // No command found!
-            if (!commands.hasCommand(split[0])) {
-                return;
-            }
-
-            LocalSession session = worldEdit.getSession(player);
-            EditSession editSession = session.createEditSession(player);
-            editSession.enableQueue();
-
-            session.tellVersion(player);
-
-            long start = System.currentTimeMillis();
-
-            try {
-                commands.execute(split, player, session, player, editSession);
-            } catch (CommandPermissionsException e) {
-                player.printError("You don't have permission to do this.");
-            } catch (MissingNestedCommandException e) {
-                player.printError(e.getUsage());
-            } catch (CommandUsageException e) {
-                player.printError(e.getMessage());
-                player.printError(e.getUsage());
-            } catch (PlayerNeededException e) {
-                player.printError(e.getMessage());
-            } catch (WrappedCommandException e) {
-                throw e.getCause();
-            } catch (UnhandledCommandException e) {
-                player.printError("Command could not be handled; invalid sender!");
-                event.setCancelled(true);
-                return;
-            } finally {
+            if (editSession != null) {
                 session.remember(editSession);
                 editSession.flushQueue();
 
-                if (worldEdit.getConfiguration().profile) {
+                if (config.profile) {
                     long time = System.currentTimeMillis() - start;
                     int changed = editSession.getBlockChangeCount();
                     if (time > 0) {
                         double throughput = changed / (time / 1000.0);
-                        player.printDebug((time / 1000.0) + "s elapsed (history: "
+                        actor.printDebug((time / 1000.0) + "s elapsed (history: "
                                 + changed + " changed; "
                                 + Math.round(throughput) + " blocks/sec).");
                     } else {
-                        player.printDebug((time / 1000.0) + "s elapsed.");
+                        actor.printDebug((time / 1000.0) + "s elapsed.");
                     }
                 }
 
-                worldEdit.flushBlockBag(player, editSession);
+                worldEdit.flushBlockBag(actor, editSession);
             }
-        } catch (NumberFormatException e) {
-            final Matcher matcher = numberFormatExceptionPattern.matcher(e.getMessage());
-
-            if (matcher.matches()) {
-                player.printError("Number expected; string \"" + matcher.group(1) + "\" given.");
-            } else {
-                player.printError("Number expected; string given.");
-            }
-        } catch (IncompleteRegionException e) {
-            player.printError("Make a region selection first.");
-        } catch (UnknownItemException e) {
-            player.printError("Block name '" + e.getID() + "' was not recognized.");
-        } catch (InvalidItemException e) {
-            player.printError(e.getMessage());
-        } catch (DisallowedItemException e) {
-            player.printError("Block '" + e.getID() + "' not allowed (see WorldEdit configuration).");
-        } catch (MaxChangedBlocksException e) {
-            player.printError("Max blocks changed in an operation reached ("
-                    + e.getBlockLimit() + ").");
-        } catch (MaxBrushRadiusException e) {
-            player.printError("Maximum allowed brush size: " + worldEdit.getConfiguration().maxBrushRadius);
-        } catch (MaxRadiusException e) {
-            player.printError("Maximum allowed size: " + worldEdit.getConfiguration().maxRadius);
-        } catch (UnknownDirectionException e) {
-            player.printError("Unknown direction: " + e.getDirection());
-        } catch (InsufficientArgumentsException e) {
-            player.printError(e.getMessage());
-        } catch (EmptyClipboardException e) {
-            player.printError("Your clipboard is empty. Use //copy first.");
-        } catch (InvalidFilenameException e) {
-            player.printError("Filename '" + e.getFilename() + "' invalid: "
-                    + e.getMessage());
-        } catch (FilenameResolutionException e) {
-            player.printError("File '" + e.getFilename() + "' resolution error: "
-                    + e.getMessage());
-        } catch (InvalidToolBindException e) {
-            player.printError("Can't bind tool to "
-                    + ItemType.toHeldName(e.getItemId()) + ": " + e.getMessage());
-        } catch (FileSelectionAbortedException e) {
-            player.printError("File selection aborted.");
-        } catch (WorldEditException e) {
-            player.printError(e.getMessage());
-        } catch (Throwable excp) {
-            player.printError("Please report this error: [See console]");
-            player.printRaw(excp.getClass().getName() + ": " + excp.getMessage());
-            excp.printStackTrace();
         }
 
         event.setCancelled(true);
     }
 
-    private class CommandsManagerImpl extends CommandsManager<LocalPlayer> {
-        @Override
-        protected void checkPermission(LocalPlayer player, Method method) throws CommandException {
-            if (!player.isPlayer() && !method.isAnnotationPresent(Console.class)) {
-                throw new UnhandledCommandException();
-            }
-
-            super.checkPermission(player, method);
+    @Subscribe
+    public void handleCommandSuggestion(CommandSuggestionEvent event) {
+        try {
+            CommandLocals locals = new CommandLocals();
+            locals.put(Actor.class, event.getActor());
+            event.setSuggestions(dispatcher.getSuggestions(event.getArguments(), locals));
+        } catch (CommandException e) {
+            event.getActor().printError(e.getMessage());
         }
+    }
 
-        @Override
-        public boolean hasPermission(LocalPlayer player, String perm) {
-            return player.hasPermission(perm);
-        }
-
-        @Override
-        public void invokeMethod(Method parent, String[] args,
-                LocalPlayer player, Method method, Object instance,
-                Object[] methodArgs, int level) throws CommandException {
-            if (worldEdit.getConfiguration().logCommands) {
-                final Logging loggingAnnotation = method.getAnnotation(Logging.class);
-
-                final Logging.LogMode logMode;
-                if (loggingAnnotation == null) {
-                    logMode = null;
-                } else {
-                    logMode = loggingAnnotation.value();
-                }
-
-                String msg = "WorldEdit: " + player.getName();
-                if (player.isPlayer()) {
-                    msg += " (in \"" + player.getWorld().getName() + "\")";
-                }
-                msg += ": " + StringUtil.joinString(args, " ");
-                if (logMode != null && player.isPlayer()) {
-                    Vector position = player.getPosition();
-                    final LocalSession session = worldEdit.getSessionManager().get(player);
-
-                    switch (logMode) {
-                        case PLACEMENT:
-                            try {
-                                position = session.getPlacementPosition(player);
-                            } catch (IncompleteRegionException e) {
-                                break;
-                            }
-                            /* FALL-THROUGH */
-
-                        case POSITION:
-                            msg += " - Position: " + position;
-                            break;
-
-                        case ALL:
-                            msg += " - Position: " + position;
-                            /* FALL-THROUGH */
-
-                        case ORIENTATION_REGION:
-                            msg += " - Orientation: " + player.getCardinalDirection().name();
-                            /* FALL-THROUGH */
-
-                        case REGION:
-                            try {
-                                msg += " - Region: " + session.getSelection(player.getWorld());
-                            } catch (IncompleteRegionException e) {
-                                break;
-                            }
-                            break;
-                    }
-                }
-
-                getLogger().info(msg);
-            }
-            super.invokeMethod(parent, args, player, method, instance, methodArgs, level);
-        }
+    /**
+     * Get the command dispatcher instance.
+     *
+     * @return the command dispatcher
+     */
+    public Dispatcher getDispatcher() {
+        return dispatcher;
     }
 
     public static Logger getLogger() {

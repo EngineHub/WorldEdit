@@ -19,14 +19,16 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.command.tool.*;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
-import com.sk89q.worldedit.event.platform.CommandEvent;
+import com.sk89q.worldedit.event.platform.BlockInteractEvent;
+import com.sk89q.worldedit.event.platform.InputType;
+import com.sk89q.worldedit.event.platform.PlayerInputEvent;
 import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.extension.registry.BlockRegistry;
@@ -37,7 +39,6 @@ import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.pattern.Patterns;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.scripting.CraftScriptContext;
 import com.sk89q.worldedit.scripting.CraftScriptEngine;
 import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
@@ -55,6 +56,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.event.platform.Interaction.HIT;
+import static com.sk89q.worldedit.event.platform.Interaction.OPEN;
 
 /**
  * The entry point and container for a working implementation of WorldEdit.
@@ -179,7 +182,7 @@ public class WorldEdit {
      * @deprecated use {@link #getSessionManager()}
      */
     @Deprecated
-    public LocalSession getSession(LocalPlayer player) {
+    public LocalSession getSession(Player player) {
         return sessions.get(player);
     }
 
@@ -187,7 +190,7 @@ public class WorldEdit {
      * @deprecated use {@link #getSessionManager()}
      */
     @Deprecated
-    public void removeSession(LocalPlayer player) {
+    public void removeSession(Player player) {
         sessions.remove(player);
     }
 
@@ -203,7 +206,7 @@ public class WorldEdit {
      * @deprecated use {@link #getSessionManager()}
      */
     @Deprecated
-    public boolean hasSession(LocalPlayer player) {
+    public boolean hasSession(Player player) {
         return sessions.contains(player);
     }
 
@@ -212,7 +215,7 @@ public class WorldEdit {
      */
     @SuppressWarnings("deprecation")
     @Deprecated
-    public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed) throws WorldEditException {
+    public BaseBlock getBlock(Player player, String arg, boolean allAllowed) throws WorldEditException {
         return getBlock(player, arg, allAllowed, false);
     }
 
@@ -221,7 +224,7 @@ public class WorldEdit {
      */
     @SuppressWarnings("deprecation")
     @Deprecated
-    public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed, boolean allowNoData) throws WorldEditException {
+    public BaseBlock getBlock(Player player, String arg, boolean allAllowed, boolean allowNoData) throws WorldEditException {
         ParserContext context = new ParserContext();
         context.setActor(player);
         context.setWorld(player.getWorld());
@@ -236,7 +239,7 @@ public class WorldEdit {
      */
     @SuppressWarnings("deprecation")
     @Deprecated
-    public BaseBlock getBlock(LocalPlayer player, String id) throws WorldEditException {
+    public BaseBlock getBlock(Player player, String id) throws WorldEditException {
         return getBlock(player, id, false);
     }
 
@@ -245,7 +248,7 @@ public class WorldEdit {
      */
     @Deprecated
     @SuppressWarnings("deprecation")
-    public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed, boolean allowNoData) throws WorldEditException {
+    public Set<BaseBlock> getBlocks(Player player, String list, boolean allAllowed, boolean allowNoData) throws WorldEditException {
         String[] items = list.split(",");
         Set<BaseBlock> blocks = new HashSet<BaseBlock>();
         for (String id : items) {
@@ -259,7 +262,7 @@ public class WorldEdit {
      */
     @Deprecated
     @SuppressWarnings("deprecation")
-    public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed) throws WorldEditException {
+    public Set<BaseBlock> getBlocks(Player player, String list, boolean allAllowed) throws WorldEditException {
         return getBlocks(player, list, allAllowed, false);
     }
 
@@ -268,7 +271,7 @@ public class WorldEdit {
      */
     @Deprecated
     @SuppressWarnings("deprecation")
-    public Set<BaseBlock> getBlocks(LocalPlayer player, String list) throws WorldEditException {
+    public Set<BaseBlock> getBlocks(Player player, String list) throws WorldEditException {
         return getBlocks(player, list, false);
     }
 
@@ -277,7 +280,7 @@ public class WorldEdit {
      */
     @Deprecated
     @SuppressWarnings("deprecation")
-    public Set<Integer> getBlockIDs(LocalPlayer player, String list, boolean allBlocksAllowed) throws WorldEditException {
+    public Set<Integer> getBlockIDs(Player player, String list, boolean allBlocksAllowed) throws WorldEditException {
         String[] items = list.split(",");
         Set<Integer> blocks = new HashSet<Integer>();
         for (String s : items) {
@@ -291,7 +294,7 @@ public class WorldEdit {
      */
     @Deprecated
     @SuppressWarnings("deprecation")
-    public Pattern getBlockPattern(LocalPlayer player, String input) throws WorldEditException {
+    public Pattern getBlockPattern(Player player, String input) throws WorldEditException {
         ParserContext context = new ParserContext();
         context.setActor(player);
         context.setWorld(player.getWorld());
@@ -304,7 +307,7 @@ public class WorldEdit {
      */
     @Deprecated
     @SuppressWarnings("deprecation")
-    public Mask getBlockMask(LocalPlayer player, LocalSession session, String input) throws WorldEditException {
+    public Mask getBlockMask(Player player, LocalSession session, String input) throws WorldEditException {
         ParserContext context = new ParserContext();
         context.setActor(player);
         context.setWorld(player.getWorld());
@@ -326,8 +329,7 @@ public class WorldEdit {
      * @return a file
      * @throws FilenameException thrown if the filename is invalid
      */
-    public File getSafeSaveFile(LocalPlayer player, File dir, String filename, String defaultExt, String... extensions)
-            throws FilenameException {
+    public File getSafeSaveFile(Player player, File dir, String filename, String defaultExt, String... extensions) throws FilenameException {
         return getSafeFile(player, dir, filename, defaultExt, extensions, true);
     }
 
@@ -345,8 +347,7 @@ public class WorldEdit {
      * @return a file
      * @throws FilenameException thrown if the filename is invalid
      */
-    public File getSafeOpenFile(LocalPlayer player, File dir, String filename, String defaultExt, String... extensions)
-            throws FilenameException {
+    public File getSafeOpenFile(Player player, File dir, String filename, String defaultExt, String... extensions) throws FilenameException {
         return getSafeFile(player, dir, filename, defaultExt, extensions, false);
     }
 
@@ -362,9 +363,7 @@ public class WorldEdit {
      * @return a file
      * @throws FilenameException thrown if the filename is invalid
      */
-    private File getSafeFile(LocalPlayer player, File dir, String filename,
-            String defaultExt, String[] extensions, boolean isSave)
-            throws FilenameException {
+    private File getSafeFile(Player player, File dir, String filename, String defaultExt, String[] extensions, boolean isSave) throws FilenameException {
         if (extensions != null && (extensions.length == 1 && extensions[0] == null)) extensions = null;
 
         File f;
@@ -407,7 +406,7 @@ public class WorldEdit {
         }
     }
 
-    public int getMaximumPolygonalPoints(LocalPlayer player) {
+    public int getMaximumPolygonalPoints(Player player) {
         if (player.hasPermission("worldedit.limit.unrestricted") || getConfiguration().maxPolygonalPoints < 0) {
             return getConfiguration().defaultMaxPolygonalPoints;
         }
@@ -419,7 +418,7 @@ public class WorldEdit {
         return Math.min(getConfiguration().defaultMaxPolygonalPoints, getConfiguration().maxPolygonalPoints);
     }
 
-    public int getMaximumPolyhedronPoints(LocalPlayer player) {
+    public int getMaximumPolyhedronPoints(Player player) {
         if (player.hasPermission("worldedit.limit.unrestricted") || getConfiguration().maxPolyhedronPoints < 0) {
             return getConfiguration().defaultMaxPolyhedronPoints;
         }
@@ -480,7 +479,7 @@ public class WorldEdit {
      * @return a direction vector
      * @throws UnknownDirectionException thrown if the direction is not known
      */
-    public Vector getDirection(LocalPlayer player, String dirStr) throws UnknownDirectionException {
+    public Vector getDirection(Player player, String dirStr) throws UnknownDirectionException {
         dirStr = dirStr.toLowerCase();
 
         final PlayerDirection dir = getPlayerDirection(player, dirStr);
@@ -508,7 +507,7 @@ public class WorldEdit {
      * @return a direction enum value
      * @throws UnknownDirectionException thrown if the direction is not known
      */
-    private PlayerDirection getPlayerDirection(LocalPlayer player, String dirStr) throws UnknownDirectionException {
+    private PlayerDirection getPlayerDirection(Player player, String dirStr) throws UnknownDirectionException {
         final PlayerDirection dir;
 
         switch (dirStr.charAt(0)) {
@@ -582,9 +581,7 @@ public class WorldEdit {
      * @return a direction vector
      * @throws UnknownDirectionException thrown if the direction is not known
      */
-    public Vector getDiagonalDirection(LocalPlayer player, String dirStr)
-            throws UnknownDirectionException {
-
+    public Vector getDiagonalDirection(Player player, String dirStr) throws UnknownDirectionException {
         return getPlayerDirection(player, dirStr.toLowerCase()).vector();
     }
 
@@ -596,8 +593,7 @@ public class WorldEdit {
      * @return a direction vector
      * @throws UnknownDirectionException thrown if the direction is not known
      */
-    public FlipDirection getFlipDirection(LocalPlayer player, String dirStr) throws UnknownDirectionException {
-
+    public FlipDirection getFlipDirection(Player player, String dirStr) throws UnknownDirectionException {
         final PlayerDirection dir = getPlayerDirection(player, dirStr);
         switch (dir) {
         case WEST:
@@ -620,10 +616,10 @@ public class WorldEdit {
     /**
      * Flush a block bag's changes to a player.
      *
-     * @param player the player
+     * @param actor the actor
      * @param editSession the edit session
      */
-    public void flushBlockBag(LocalPlayer player, EditSession editSession) {
+    public void flushBlockBag(Actor actor, EditSession editSession) {
         BlockBag blockBag = editSession.getBlockBag();
 
         if (blockBag != null) {
@@ -632,7 +628,7 @@ public class WorldEdit {
 
         Map<Integer, Integer> missingBlocks = editSession.popMissingBlocks();
 
-        if (missingBlocks.size() > 0) {
+        if (!missingBlocks.isEmpty()) {
             StringBuilder str = new StringBuilder();
             str.append("Missing these blocks: ");
             int size = missingBlocks.size();
@@ -654,26 +650,8 @@ public class WorldEdit {
                 }
             }
 
-            player.printError(str.toString());
+            actor.printError(str.toString());
         }
-    }
-
-    /**
-     * Get the map of commands (internal usage only).
-     *
-     * @return the commands
-     */
-    public Map<String, String> getCommands() {
-        return getCommandsManager().getCommands();
-    }
-
-    /**
-     * Get the commands manager (internal usage only).
-     *
-     * @return the commands
-     */
-    public CommandsManager<LocalPlayer> getCommandsManager() {
-        return getPlatformManager().getCommandManager().getCommands();
     }
 
     /**
@@ -682,7 +660,7 @@ public class WorldEdit {
      * @param player the player
      */
     @Deprecated
-    public void handleDisconnect(LocalPlayer player) {
+    public void handleDisconnect(Player player) {
         forgetPlayer(player);
     }
 
@@ -691,7 +669,7 @@ public class WorldEdit {
      *
      * @param player the player
      */
-    public void markExpire(LocalPlayer player) {
+    public void markExpire(Player player) {
         sessions.markforExpiration(player);
     }
 
@@ -700,7 +678,7 @@ public class WorldEdit {
      *
      * @param player the player
      */
-    public void forgetPlayer(LocalPlayer player) {
+    public void forgetPlayer(Player player) {
         sessions.remove(player);
     }
 
@@ -717,36 +695,10 @@ public class WorldEdit {
      * @param player the player
      * @return true if the swing was handled
      */
-    public boolean handleArmSwing(LocalPlayer player) {
-        if (player.getItemInHand() == getConfiguration().navigationWand) {
-            if (getConfiguration().navigationWandMaxDistance <= 0) {
-                return false;
-            }
-
-            if (!player.hasPermission("worldedit.navigation.jumpto.tool")) {
-                return false;
-            }
-
-            WorldVector pos = player.getSolidBlockTrace(getConfiguration().navigationWandMaxDistance);
-            if (pos != null) {
-                player.findFreePosition(pos);
-            } else {
-                player.printError("No block in sight (or too far)!");
-            }
-            return true;
-        }
-
-        LocalSession session = getSession(player);
-
-        Tool tool = session.getTool(player.getItemInHand());
-        if (tool != null && tool instanceof DoubleActionTraceTool) {
-            if (tool.canUse(player)) {
-                ((DoubleActionTraceTool) tool).actSecondary(getServer(), getConfiguration(), player, session);
-                return true;
-            }
-        }
-
-        return false;
+    public boolean handleArmSwing(Player player) {
+        PlayerInputEvent event = new PlayerInputEvent(player, InputType.PRIMARY);
+        getEventBus().post(event);
+        return event.isCancelled();
     }
 
     /**
@@ -755,34 +707,10 @@ public class WorldEdit {
      * @param player the player
      * @return true if the right click was handled
      */
-    public boolean handleRightClick(LocalPlayer player) {
-        if (player.getItemInHand() == getConfiguration().navigationWand) {
-            if (getConfiguration().navigationWandMaxDistance <= 0) {
-                return false;
-            }
-
-            if (!player.hasPermission("worldedit.navigation.thru.tool")) {
-                return false;
-            }
-
-            if (!player.passThroughForwardWall(40)) {
-                player.printError("Nothing to pass through!");
-            }
-
-            return true;
-        }
-
-        LocalSession session = getSession(player);
-
-        Tool tool = session.getTool(player.getItemInHand());
-        if (tool != null && tool instanceof TraceTool) {
-            if (tool.canUse(player)) {
-                ((TraceTool) tool).actPrimary(getServer(), getConfiguration(), player, session);
-                return true;
-            }
-        }
-
-        return false;
+    public boolean handleRightClick(Player player) {
+        PlayerInputEvent event = new PlayerInputEvent(player, InputType.SECONDARY);
+        getEventBus().post(event);
+        return event.isCancelled();
     }
 
     /**
@@ -792,35 +720,10 @@ public class WorldEdit {
      * @param clicked the clicked block
      * @return false if you want the action to go through
      */
-    public boolean handleBlockRightClick(LocalPlayer player, WorldVector clicked) {
-        LocalSession session = getSession(player);
-
-        if (player.getItemInHand() == getConfiguration().wandItem) {
-            if (!session.isToolControlEnabled()) {
-                return false;
-            }
-
-            if (!player.hasPermission("worldedit.selection.pos")) {
-                return false;
-            }
-
-            RegionSelector selector = session.getRegionSelector(player.getWorld());
-            if (selector.selectSecondary(clicked)) {
-                selector.explainSecondarySelection(player, session, clicked);
-            }
-
-            return true;
-        }
-
-        Tool tool = session.getTool(player.getItemInHand());
-        if (tool != null && tool instanceof BlockTool) {
-            if (tool.canUse(player)) {
-                ((BlockTool) tool).actPrimary(getServer(), getConfiguration(), player, session, clicked);
-                return true;
-            }
-        }
-
-        return false;
+    public boolean handleBlockRightClick(Player player, WorldVector clicked) {
+        BlockInteractEvent event = new BlockInteractEvent(player, clicked.toLocation(), OPEN);
+        getEventBus().post(event);
+        return event.isCancelled();
     }
 
     /**
@@ -830,58 +733,10 @@ public class WorldEdit {
      * @param clicked the clicked block
      * @return false if you want the action to go through
      */
-    public boolean handleBlockLeftClick(LocalPlayer player, WorldVector clicked) {
-        LocalSession session = getSession(player);
-
-        if (player.getItemInHand() == getConfiguration().wandItem) {
-            if (!session.isToolControlEnabled()) {
-                return false;
-            }
-
-            if (!player.hasPermission("worldedit.selection.pos")) {
-                return false;
-            }
-
-            RegionSelector selector = session.getRegionSelector(player.getWorld());
-            if (selector.selectPrimary(clicked)) {
-                selector.explainPrimarySelection(player, session, clicked);
-            }
-
-            return true;
-        }
-
-        if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
-            final BlockTool superPickaxe = session.getSuperPickaxe();
-            if (superPickaxe != null && superPickaxe.canUse(player)) {
-                return superPickaxe.actPrimary(getServer(), getConfiguration(), player, session, clicked);
-            }
-        }
-
-        Tool tool = session.getTool(player.getItemInHand());
-        if (tool != null && tool instanceof DoubleActionBlockTool) {
-            if (tool.canUse(player)) {
-                ((DoubleActionBlockTool) tool).actSecondary(getServer(), getConfiguration(), player, session, clicked);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     *
-     * @param player
-     * @param split
-     * @return whether the command was processed
-     */
-    public boolean handleCommand(LocalPlayer player, String[] split) {
-        CommandEvent event = new CommandEvent(player, split);
+    public boolean handleBlockLeftClick(Player player, WorldVector clicked) {
+        BlockInteractEvent event = new BlockInteractEvent(player, clicked.toLocation(), HIT);
         getEventBus().post(event);
         return event.isCancelled();
-    }
-
-    public String[] commandDetection(String[] split) {
-        return getPlatformManager().getCommandManager().commandDetection(split);
     }
 
     /**
@@ -892,7 +747,7 @@ public class WorldEdit {
      * @param args arguments for the script
      * @throws WorldEditException
      */
-    public void runScript(LocalPlayer player, File f, String[] args) throws WorldEditException {
+    public void runScript(Player player, File f, String[] args) throws WorldEditException {
         Request.reset();
 
         String filename = f.getPath();
@@ -930,9 +785,8 @@ public class WorldEdit {
             return;
         }
 
-        LocalSession session = getSession(player);
-        CraftScriptContext scriptContext =
-                new CraftScriptContext(this, getServer(), getConfiguration(), session, player, args);
+        LocalSession session = getSessionManager().get(player);
+        CraftScriptContext scriptContext = new CraftScriptContext(this, getServer(), getConfiguration(), session, player, args);
 
         CraftScriptEngine engine = null;
 

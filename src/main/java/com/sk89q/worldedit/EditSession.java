@@ -59,7 +59,6 @@ import com.sk89q.worldedit.history.changeset.ChangeSet;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.runtime.RValue;
-import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.math.interpolation.Interpolation;
 import com.sk89q.worldedit.math.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.math.interpolation.Node;
@@ -276,7 +275,6 @@ public class EditSession implements Extent {
      *
      * @return mask, may be null
      */
-    @SuppressWarnings("deprecation")
     public Mask getMask() {
         return oldMask;
     }
@@ -286,13 +284,24 @@ public class EditSession implements Extent {
      *
      * @param mask mask or null
      */
-    @SuppressWarnings("deprecation")
     public void setMask(Mask mask) {
         this.oldMask = mask;
         if (mask == null) {
             maskingExtent.setMask(Masks.alwaysTrue());
         } else {
-            maskingExtent.setMask(Masks.wrap(mask, this));
+            maskingExtent.setMask(mask);
+        }
+    }
+
+    /**
+     * @deprecated Use {@link #setMask(Mask)}
+     */
+    @Deprecated
+    public void setMask(com.sk89q.worldedit.masks.Mask mask) {
+        if (mask == null) {
+            setMask((Mask) null);
+        } else {
+            setMask(Masks.wrap(mask));
         }
     }
 
@@ -798,7 +807,7 @@ public class EditSession implements Extent {
         checkNotNull(position);
         checkArgument(apothem >= 1, "apothem >= 1");
 
-        Mask mask = new com.sk89q.worldedit.masks.FuzzyBlockMask(new BaseBlock(blockType, -1));
+        Mask mask = new FuzzyBlockMask(this, new BaseBlock(blockType, -1));
         Vector adjustment = new Vector(1, 1, 1).multiply(apothem - 1);
         Region region = new CuboidRegion(
                 getWorld(), // Causes clamping of Y range
@@ -867,7 +876,7 @@ public class EditSession implements Extent {
      */
     @SuppressWarnings("deprecation")
     public int replaceBlocks(Region region, Set<BaseBlock> filter, Pattern pattern) throws MaxChangedBlocksException {
-        Mask mask = filter == null ? new com.sk89q.worldedit.masks.ExistingBlockMask() : new com.sk89q.worldedit.masks.FuzzyBlockMask(filter);
+        Mask mask = filter == null ? new ExistingBlockMask(this) : new FuzzyBlockMask(this, filter);
         return replaceBlocks(region, mask, pattern);
     }
 
@@ -888,7 +897,7 @@ public class EditSession implements Extent {
         checkNotNull(pattern);
 
         BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
-        RegionMaskingFilter filter = new RegionMaskingFilter(Masks.wrap(mask, this), replace);
+        RegionMaskingFilter filter = new RegionMaskingFilter(mask, replace);
         RegionVisitor visitor = new RegionVisitor(region, filter);
         Operations.completeLegacy(visitor);
         return visitor.getAffected();

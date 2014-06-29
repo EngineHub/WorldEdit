@@ -9,6 +9,7 @@
   <allow pkg="org.mockito"/>
   <allow pkg="com.sk89q"/>
   <allow pkg="com.google.common"/>
+  <allow pkg="com.thoughtworks.paranamer"/>
 
   <subpackage name="util.yaml">
     <allow pkg="org.yaml.snakeyaml"/>

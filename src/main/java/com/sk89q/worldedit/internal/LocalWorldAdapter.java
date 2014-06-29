@@ -24,6 +24,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.regions.Region;
@@ -254,7 +255,7 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
-    public boolean queueBlockBreakEffect(ServerInterface server, Vector position, int blockId, double priority) {
+    public boolean queueBlockBreakEffect(Platform server, Vector position, int blockId, double priority) {
         return world.queueBlockBreakEffect(server, position, blockId, priority);
     }
 
@@ -351,7 +352,7 @@ public class LocalWorldAdapter extends LocalWorld {
         return world.getEntities();
     }
 
-    public static LocalWorldAdapter wrap(World world) {
+    public static LocalWorldAdapter adapt(World world) {
         return new LocalWorldAdapter(world);
     }
 

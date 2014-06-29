@@ -24,6 +24,7 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.MathUtils;
 import com.sk89q.worldedit.world.storage.LegacyChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionChunkStore;
@@ -33,18 +34,19 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 /**
- * Chunk tools.
- * 
- * @author sk89q
+ * Commands for working with chunks.
  */
 public class ChunkCommands {
-    private final WorldEdit we;
+
+    private final WorldEdit worldEdit;
     
-    public ChunkCommands(WorldEdit we) {
-        this.we = we;
+    public ChunkCommands(WorldEdit worldEdit) {
+        checkNotNull(worldEdit);
+        this.worldEdit = worldEdit;
     }
 
     @Command(
@@ -55,9 +57,7 @@ public class ChunkCommands {
         max = 0
     )
     @CommandPermissions("worldedit.chunkinfo")
-    public void chunkInfo(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-        
+    public void chunkInfo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         Vector pos = player.getBlockIn();
         int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
         int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
@@ -81,9 +81,7 @@ public class ChunkCommands {
         max = 0
     )
     @CommandPermissions("worldedit.listchunks")
-    public void listChunks(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
+    public void listChunks(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         Set<Vector2D> chunks = session.getSelection(player.getWorld()).getChunks();
 
         for (Vector2D chunk : chunks) {
@@ -100,11 +98,9 @@ public class ChunkCommands {
     )
     @CommandPermissions("worldedit.delchunks")
     @Logging(REGION)
-    public void deleteChunks(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
+    public void deleteChunks(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         player.print("Note that this command does not yet support the mcregion format.");
-        LocalConfiguration config = we.getConfiguration();
+        LocalConfiguration config = worldEdit.getConfiguration();
 
         Set<Vector2D> chunks = session.getSelection(player.getWorld()).getChunks();
         FileOutputStream out = null;
@@ -139,7 +135,7 @@ public class ChunkCommands {
                 if (out != null) {
                     try {
                         out.close();
-                    } catch (IOException ie) { }
+                    } catch (IOException ignored) { }
                 }
             }
         } else if (config.shellSaveType.equalsIgnoreCase("bash")) {
@@ -171,7 +167,7 @@ public class ChunkCommands {
                 if (out != null) {
                     try {
                         out.close();
-                    } catch (IOException ie) {
+                    } catch (IOException ignored) {
                     }
                 }
             }
@@ -179,4 +175,5 @@ public class ChunkCommands {
             player.printError("Shell script type must be configured: 'bat' or 'bash' expected.");
         }
     }
+
 }

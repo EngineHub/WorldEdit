@@ -1136,13 +1136,15 @@ public class BukkitWorld extends LocalWorld {
 
     @Override
     public boolean equals(Object other) {
-        World world = getWorld();
-
-        if (!(other instanceof BukkitWorld)) {
+        if (other == null) {
+            return false;
+        } else if ((other instanceof BukkitWorld)) {
+            return ((BukkitWorld) other).getWorld().equals(getWorld());
+        } else if (other instanceof com.sk89q.worldedit.world.World) {
+            return ((com.sk89q.worldedit.world.World) other).getName().equals(getName());
+        } else {
             return false;
         }
-
-        return ((BukkitWorld) other).getWorld().equals(world);
     }
 
     @Override

@@ -19,24 +19,36 @@
 
 package com.sk89q.worldedit.command;
 
-import java.io.File;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.entity.Player;
+
+import java.io.File;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.ALL;
 
 /**
- * Scripting commands.
- * 
- * @author sk89q
+ * Commands related to scripting.
  */
 public class ScriptingCommands {
-    private final WorldEdit we;
 
-    public ScriptingCommands(WorldEdit we) {
-        this.we = we;
+    private final WorldEdit worldEdit;
+
+    /**
+     * Create a new instance.
+     *
+     * @param worldEdit reference to WorldEdit
+     */
+    public ScriptingCommands(WorldEdit worldEdit) {
+        checkNotNull(worldEdit);
+        this.worldEdit = worldEdit;
     }
 
     @Command(
@@ -48,8 +60,7 @@ public class ScriptingCommands {
     )
     @CommandPermissions("worldedit.scripting.execute")
     @Logging(ALL)
-    public void execute(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void execute(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         String[] scriptArgs = args.getSlice(1);
         String name = args.getString(0);
@@ -61,10 +72,10 @@ public class ScriptingCommands {
 
         session.setLastScript(name);
 
-        File dir = we.getWorkingDirectoryFile(we.getConfiguration().scriptsDir);
-        File f = we.getSafeOpenFile(player, dir, name, "js", "js");
+        File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().scriptsDir);
+        File f = worldEdit.getSafeOpenFile(player, dir, name, "js", "js");
 
-        we.runScript(player, f, scriptArgs);
+        worldEdit.runScript(player, f, scriptArgs);
     }
 
     @Command(
@@ -76,8 +87,7 @@ public class ScriptingCommands {
     )
     @CommandPermissions("worldedit.scripting.execute")
     @Logging(ALL)
-    public void executeLast(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void executeLast(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         String lastScript = session.getLastScript();
 
@@ -93,9 +103,9 @@ public class ScriptingCommands {
 
         String[] scriptArgs = args.getSlice(0);
 
-        File dir = we.getWorkingDirectoryFile(we.getConfiguration().scriptsDir);
-        File f = we.getSafeOpenFile(player, dir, lastScript, "js", "js");
+        File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().scriptsDir);
+        File f = worldEdit.getSafeOpenFile(player, dir, lastScript, "js", "js");
 
-        we.runScript(player, f, scriptArgs);
+        worldEdit.runScript(player, f, scriptArgs);
     }
 }

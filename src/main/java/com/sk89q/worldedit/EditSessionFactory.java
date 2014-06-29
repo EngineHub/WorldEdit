@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.util.eventbus.EventBus;
@@ -63,7 +64,7 @@ public class EditSessionFactory {
      * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
      * @param player the player that the {@link EditSession} is for
      */
-    public EditSession getEditSession(World world, int maxBlocks, LocalPlayer player) {
+    public EditSession getEditSession(World world, int maxBlocks, Player player) {
         throw new IllegalArgumentException("This class is being removed");
     }
 
@@ -96,7 +97,7 @@ public class EditSessionFactory {
      * @param blockBag an optional {@link BlockBag} to use, otherwise null
      * @param player the player that the {@link EditSession} is for
      */
-    public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
+    public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag, Player player) {
         throw new IllegalArgumentException("This class is being removed");
     }
 
@@ -123,7 +124,7 @@ public class EditSessionFactory {
         }
 
         @Override
-        public EditSession getEditSession(World world, int maxBlocks, LocalPlayer player) {
+        public EditSession getEditSession(World world, int maxBlocks, Player player) {
             return new EditSession(eventBus, world, maxBlocks, null, new EditSessionEvent(world, player, maxBlocks, null));
         }
 
@@ -133,7 +134,7 @@ public class EditSessionFactory {
         }
 
         @Override
-        public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
+        public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag, Player player) {
             return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, player, maxBlocks, null));
         }
 

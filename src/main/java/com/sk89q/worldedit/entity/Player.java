@@ -21,12 +21,13 @@ package com.sk89q.worldedit.entity;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 
 /**
  * A player.
  */
-public interface Player extends Entity {
+public interface Player extends Entity, Actor {
 
     /**
      * Returns true if the entity is holding a pick axe.

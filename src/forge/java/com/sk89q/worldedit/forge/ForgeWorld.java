@@ -113,7 +113,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public String getName() {
-        return getWorld().provider.getDimensionName();
+        return getWorld().getWorldInfo().getWorldName();
     }
 
     @Override
@@ -465,11 +465,15 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean equals(Object o) {
-        if ((o instanceof ForgeWorld)) {
-            ForgeWorld other = ((ForgeWorld) o);
-            World otherWorld = other.worldRef.get();
-            World thisWorld = other.worldRef.get();
-            return otherWorld != null && thisWorld != null && otherWorld.equals(thisWorld);
+        if (o == null) {
+            return false;
+        } else if ((o instanceof ForgeWorld)) {
+                ForgeWorld other = ((ForgeWorld) o);
+                World otherWorld = other.worldRef.get();
+                World thisWorld = other.worldRef.get();
+                return otherWorld != null && thisWorld != null && otherWorld.equals(thisWorld);
+        } else if (o instanceof com.sk89q.worldedit.world.World) {
+            return ((com.sk89q.worldedit.world.World) o).getName().equals(getName());
         } else {
             return false;
         }

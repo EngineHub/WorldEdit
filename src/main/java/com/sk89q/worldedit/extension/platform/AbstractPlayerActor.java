@@ -31,27 +31,12 @@ import com.sk89q.worldedit.world.World;
 
 import java.io.File;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * An abstract implementation of both a {@link Actor} and a {@link Player}
  * that is intended for implementations of WorldEdit to use to wrap
  * players that make use of WorldEdit.
  */
 public abstract class AbstractPlayerActor implements Actor, Player {
-
-    private final Platform platform;
-
-    /**
-     * Create a new instance.
-     *
-     * @param platform the platform
-     */
-    protected AbstractPlayerActor(Platform platform) {
-        checkNotNull(platform);
-
-        this.platform = platform;
-    }
 
     /**
      * Returns direction according to rotation. May return null.

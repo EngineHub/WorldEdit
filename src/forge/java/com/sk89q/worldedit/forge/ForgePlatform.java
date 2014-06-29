@@ -19,36 +19,49 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.util.command.CommandMapping;
+import com.sk89q.worldedit.util.command.Description;
+import com.sk89q.worldedit.util.command.Dispatcher;
+import com.sk89q.worldedit.world.World;
 import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import javax.annotation.Nullable;
+import java.util.*;
 
 class ForgePlatform extends ServerInterface {
+
     private final ForgeWorldEdit mod;
     private final MinecraftServer server;
     private final ForgeBiomeTypes biomes;
+    private boolean hookingEvents = false;
 
-    public ForgePlatform(ForgeWorldEdit mod) {
+    ForgePlatform(ForgeWorldEdit mod) {
         this.mod = mod;
         this.server = FMLCommonHandler.instance().getMinecraftServerInstance();
         this.biomes = new ForgeBiomeTypes();
     }
 
+    boolean isHookingEvents() {
+        return hookingEvents;
+    }
+
+    @Override
     public int resolveItem(String name) {
         if (name == null) return 0;
         for (Item item : Item.itemsList) {
@@ -65,21 +78,26 @@ class ForgePlatform extends ServerInterface {
         return 0;
     }
 
+    @Override
     public boolean isValidMobType(String type) {
         return EntityList.stringToClassMapping.containsKey(type);
     }
 
+    @Override
     public void reload() {
     }
 
+    @Override
     public BiomeTypes getBiomes() {
         return this.biomes;
     }
 
+    @Override
     public int schedule(long delay, long period, Runnable task) {
         return -1;
     }
 
+    @Override
     public List<? extends com.sk89q.worldedit.world.World> getWorlds() {
         List<WorldServer> worlds = Arrays.asList(DimensionManager.getWorlds());
         List<com.sk89q.worldedit.world.World> ret = new ArrayList<com.sk89q.worldedit.world.World>(worlds.size());
@@ -89,20 +107,50 @@ class ForgePlatform extends ServerInterface {
         return ret;
     }
 
+    @Nullable
     @Override
-    public void onCommandRegistration(List<Command> commands) {
+    public Player matchPlayer(Player player) {
+        if (player instanceof ForgePlayer) {
+            return player;
+        } else {
+            EntityPlayerMP entity = server.getConfigurationManager().getPlayerForUsername(player.getName());
+            return entity != null ? new ForgePlayer(entity) : null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public World matchWorld(World world) {
+        if (world instanceof ForgeWorld) {
+            return world;
+        } else {
+            for (WorldServer ws : DimensionManager.getWorlds()) {
+                if (ws.getWorldInfo().getWorldName().equals(world.getName())) {
+                    return new ForgeWorld(ws);
+                }
+            }
+
+            return null;
+        }
+    }
+
+    @Override
+    public void registerCommands(Dispatcher dispatcher) {
         if (server == null) return;
         ServerCommandManager mcMan = (ServerCommandManager) server.getCommandManager();
-        for (final Command cmd : commands) {
+
+        for (final CommandMapping command : dispatcher.getCommands()) {
+            final Description description = command.getDescription();
+
             mcMan.registerCommand(new CommandBase() {
                 @Override
                 public String getCommandName() {
-                    return cmd.aliases()[0];
+                    return command.getPrimaryAlias();
                 }
 
                 @Override
                 public List<String> getCommandAliases() {
-                    return Arrays.asList(cmd.aliases());
+                    return Arrays.asList(command.getAllAliases());
                 }
 
                 @Override
@@ -110,12 +158,14 @@ class ForgePlatform extends ServerInterface {
 
                 @Override
                 public String getCommandUsage(ICommandSender icommandsender) {
-                    return "/" + cmd.aliases()[0] + " " + cmd.usage();
+                    return "/" + command.getPrimaryAlias() + " " + description.getUsage();
                 }
 
                 @Override
-                public int compareTo(Object o) {
-                    if (o instanceof ICommand) {
+                public int compareTo(@Nullable Object o) {
+                    if (o == null) {
+                        return -1;
+                    } else if (o instanceof ICommand) {
                         return super.compareTo((ICommand) o);
                     } else {
                         return -1;
@@ -123,6 +173,12 @@ class ForgePlatform extends ServerInterface {
                 }
             });
         }
+    }
+
+    @Override
+    public void registerGameHooks() {
+        // We registered the events already anyway, so we just 'turn them on'
+        hookingEvents = true;
     }
 
     @Override
@@ -144,4 +200,16 @@ class ForgePlatform extends ServerInterface {
     public String getPlatformVersion() {
         return mod.getInternalVersion();
     }
+
+    @Override
+    public Map<Capability, Preference> getCapabilities() {
+        Map<Capability, Preference> capabilities = new EnumMap<Capability, Preference>(Capability.class);
+        capabilities.put(Capability.CONFIGURATION, Preference.PREFER_OTHERS);
+        capabilities.put(Capability.GAME_HOOKS, Preference.NORMAL);
+        capabilities.put(Capability.PERMISSIONS, Preference.PREFER_OTHERS);
+        capabilities.put(Capability.USER_COMMANDS, Preference.NORMAL);
+        capabilities.put(Capability.WORLD_EDITING, Preference.PREFERRED);
+        return capabilities;
+    }
+
 }

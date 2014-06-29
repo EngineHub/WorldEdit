@@ -17,21 +17,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.platform;
+package com.sk89q.worldedit.internal;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BiomeTypes;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Adapts {@link Platform}s into the legacy {@link ServerInterface}.
  */
-class ServerInterfaceAdapter extends ServerInterface {
+public class ServerInterfaceAdapter extends ServerInterface {
 
     private final Platform platform;
 
@@ -40,7 +47,7 @@ class ServerInterfaceAdapter extends ServerInterface {
      *
      * @param platform the platform
      */
-    ServerInterfaceAdapter(Platform platform) {
+    private ServerInterfaceAdapter(Platform platform) {
         checkNotNull(platform);
         this.platform = platform;
     }
@@ -75,15 +82,25 @@ class ServerInterfaceAdapter extends ServerInterface {
         return platform.getWorlds();
     }
 
+    @Nullable
     @Override
-    @Deprecated
-    public void onCommandRegistration(List<Command> commands) {
-        platform.onCommandRegistration(commands);
+    public Player matchPlayer(Player player) {
+        return platform.matchPlayer(player);
+    }
+
+    @Nullable
+    @Override
+    public World matchWorld(World world) {
+        return platform.matchWorld(world);
     }
 
     @Override
-    public void onCommandRegistration(List<Command> commands, CommandsManager<LocalPlayer> manager) {
-        platform.onCommandRegistration(commands, manager);
+    public void registerCommands(Dispatcher dispatcher) {
+        platform.registerCommands(dispatcher);
+    }
+
+    @Override
+    public void registerGameHooks() {
     }
 
     @Override
@@ -104,6 +121,21 @@ class ServerInterfaceAdapter extends ServerInterface {
     @Override
     public String getPlatformVersion() {
         return platform.getPlatformVersion();
+    }
+
+    @Override
+    public Map<Capability, Preference> getCapabilities() {
+        return platform.getCapabilities();
+    }
+
+    /**
+     * Adapt an {@link Platform} instance into a {@link ServerInterface}.
+     *
+     * @param platform the platform
+     * @return the server interface
+     */
+    public static ServerInterface adapt(Platform platform) {
+        return new ServerInterfaceAdapter(platform);
     }
 
 }

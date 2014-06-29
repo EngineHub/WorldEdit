@@ -17,33 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.platform;
+package com.sk89q.worldedit.util.command.binding;
 
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.util.command.parametric.ArgumentStack;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Thrown when a platform registration request is rejected, which may
- * be because another platform is already registered.
+ * Indicates a {@link String} parameter will call {@link ArgumentStack#remaining()} and
+ * therefore consume all remaining arguments.
+ * 
+ * <p>This should only be used at the end of a list of parameters (of parameters that
+ * need to consume from the stack of arguments), otherwise following parameters will
+ * have no values left to consume.</p>
  */
-public class PlatformRejectionException extends WorldEditException {
-
-    /**
-     * Create with a message.
-     *
-     * @param message the message
-     */
-    public PlatformRejectionException(String message) {
-        super(message);
-    }
-
-    /**
-     * Create with a message and a cause.
-     *
-     * @param message the message
-     * @param cause the cause
-     */
-    public PlatformRejectionException(String message, Throwable cause) {
-        super(message, cause);
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface Text {
 
 }

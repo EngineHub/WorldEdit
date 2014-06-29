@@ -42,7 +42,6 @@ public class BukkitPlayer extends LocalPlayer {
     private WorldEditPlugin plugin;
 
     public BukkitPlayer(WorldEditPlugin plugin, ServerInterface server, Player player) {
-        super(server);
         this.plugin = plugin;
         this.player = player;
     }
@@ -53,6 +52,7 @@ public class BukkitPlayer extends LocalPlayer {
         return itemStack != null ? itemStack.getTypeId() : 0;
     }
 
+    @Override
     public BaseBlock getBlockInHand() throws WorldEditException {
         ItemStack itemStack = player.getItemInHand();
         return BukkitUtil.toBlock(getWorld(), itemStack);

@@ -19,33 +19,39 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.world.World;
 
 /**
- * Plants a tree.
- * 
- * @author sk89q
+ * Looks up information about a block.
  */
 public class QueryTool implements BlockTool {
 
-    public boolean canUse(LocalPlayer player) {
+    @Override
+    public boolean canUse(Actor player) {
         return player.hasPermission("worldedit.tool.info");
     }
 
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, WorldVector clicked) {
+    @Override
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
 
-        LocalWorld world = clicked.getWorld();
+        World world = clicked.getWorld();
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, 0, player);
-        BaseBlock block = (editSession).rawGetBlock(clicked);
+        BaseBlock block = (editSession).rawGetBlock(clicked.toVector());
         BlockType type = BlockType.fromID(block.getType());
 
-        player.print("\u00A79@" + clicked + ": " + "\u00A7e"
+        player.print("\u00A79@" + clicked.toVector() + ": " + "\u00A7e"
                 + "#" + block.getType() + "\u00A77" + " ("
                 + (type == null ? "Unknown" : type.getName()) + ") "
                 + "\u00A7f"
-                + "[" + block.getData() + "]" + " (" + world.getBlockLightLevel(clicked) + "/" + world.getBlockLightLevel(clicked.add(0, 1, 0)) + ")");
+                + "[" + block.getData() + "]" + " (" + world.getBlockLightLevel(clicked.toVector()) + "/" + world.getBlockLightLevel(clicked.toVector().add(0, 1, 0)) + ")");
 
         if (block instanceof MobSpawnerBlock) {
             player.printRaw("\u00A7e" + "Mob Type: "

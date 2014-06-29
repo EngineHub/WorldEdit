@@ -19,18 +19,22 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.World;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * A pickaxe mode that removes floating treetops (logs and leaves not connected
  * to anything else)
- *
- * @author Moo0
  */
 public class FloatingTreeRemover implements BlockTool {
     private static final BaseBlock AIR = new BaseBlock(BlockID.AIR);
@@ -40,16 +44,18 @@ public class FloatingTreeRemover implements BlockTool {
         rangeSq = 100*100;
     }
 
-    public boolean canUse(LocalPlayer player) {
+    @Override
+    public boolean canUse(Actor player) {
         return player.hasPermission("worldedit.tool.deltree");
     }
 
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, WorldVector clicked) {
+    @Override
+    public boolean actPrimary(Platform server, LocalConfiguration config,
+            Player player, LocalSession session, Location clicked) {
 
-        final LocalWorld world = clicked.getWorld();
+        final World world = clicked.getWorld();
 
-        switch (world.getBlockType(clicked)) {
+        switch (world.getBlockType(clicked.toVector())) {
         case BlockID.LOG:
         case BlockID.LOG2:
         case BlockID.LEAVES:
@@ -67,7 +73,7 @@ public class FloatingTreeRemover implements BlockTool {
         final EditSession editSession = session.createEditSession(player);
 
         try {
-            final Set<Vector> blockSet = bfs(world, clicked);
+            final Set<Vector> blockSet = bfs(world, clicked.toVector());
             if (blockSet == null) {
                 player.printError("That's not a floating tree.");
                 return true;
@@ -111,7 +117,7 @@ public class FloatingTreeRemover implements BlockTool {
      * @param origin any point contained in the floating tree
      * @return a set containing all blocks in the tree/shroom or null if this is not a floating tree/shroom.
      */
-    private Set<Vector> bfs(LocalWorld world, Vector origin) throws MaxChangedBlocksException {
+    private Set<Vector> bfs(World world, Vector origin) throws MaxChangedBlocksException {
         final Set<Vector> visited = new HashSet<Vector>();
         final LinkedList<Vector> queue = new LinkedList<Vector>();
 

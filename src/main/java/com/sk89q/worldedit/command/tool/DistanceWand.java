@@ -20,12 +20,13 @@
 package com.sk89q.worldedit.command.tool;
 
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.regions.RegionSelector;
 
 /**
  * A wand that can be used at a distance.
- * 
- * @author wizjany
  */
 public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
 
@@ -34,12 +35,12 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
     }
 
     @Override
-    public boolean canUse(LocalPlayer player) {
+    public boolean canUse(Actor player) {
         return player.hasPermission("worldedit.wand");
     }
 
-    public boolean actSecondary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session) {
+    @Override
+    public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
         if (session.isToolControlEnabled() && player.hasPermission("worldedit.selection.pos")) {
             WorldVector target = getTarget(player);
             if (target == null) return true;
@@ -56,8 +57,7 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
     }
 
     @Override
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session) {
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
         if (session.isToolControlEnabled() && player.hasPermission("worldedit.selection.pos")) {
             WorldVector target = getTarget(player);
             if (target == null) return true;
@@ -72,7 +72,7 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
         return false;
     }
 
-    public WorldVector getTarget(LocalPlayer player) {
+    public WorldVector getTarget(Player player) {
         WorldVector target = null;
         if (this.range > -1) {
             target = player.getBlockTrace(getRange(), true);

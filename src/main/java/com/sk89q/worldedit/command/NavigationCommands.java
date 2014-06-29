@@ -19,31 +19,32 @@
 
 package com.sk89q.worldedit.command;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
-
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.entity.Player;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
 
 /**
- * Navigation commands.
- * 
- * @author sk89q
+ * Commands for moving the player around.
  */
 public class NavigationCommands {
-    @SuppressWarnings("unused")
-    private final WorldEdit we;
 
-    public NavigationCommands(WorldEdit we) {
-        this.we = we;
+    @SuppressWarnings("unused")
+    private final WorldEdit worldEdit;
+
+    /**
+     * Create a new instance.
+     *
+     * @param worldEdit reference to WorldEdit
+     */
+    public NavigationCommands(WorldEdit worldEdit) {
+        checkNotNull(worldEdit);
+        this.worldEdit = worldEdit;
     }
 
     @Command(
@@ -54,9 +55,7 @@ public class NavigationCommands {
         max = 0
     )
     @CommandPermissions("worldedit.navigation.unstuck")
-    public void unstuck(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
-
+    public void unstuck(Player player) throws WorldEditException {
         player.print("There you go!");
         player.findFreePosition();
     }
@@ -69,8 +68,7 @@ public class NavigationCommands {
         max = 1
     )
     @CommandPermissions("worldedit.navigation.ascend")
-    public void ascend(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void ascend(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         int levelsToAscend = 0;
         if (args.argsLength() == 0) {
             levelsToAscend = 1;
@@ -96,8 +94,7 @@ public class NavigationCommands {
         max = 1
     )
     @CommandPermissions("worldedit.navigation.descend")
-    public void descend(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void descend(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         int levelsToDescend = 0;
         if (args.argsLength() == 0) {
             levelsToDescend = 1;
@@ -125,8 +122,7 @@ public class NavigationCommands {
     )
     @CommandPermissions("worldedit.navigation.ceiling")
     @Logging(POSITION)
-    public void ceiling(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void ceiling(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         final int clearance = args.argsLength() > 0 ?
             Math.max(0, args.getInteger(0)) : 0;
@@ -147,8 +143,7 @@ public class NavigationCommands {
         max = 0
     )
     @CommandPermissions("worldedit.navigation.thru.command")
-    public void thru(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void thru(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         if (player.passThroughForwardWall(6)) {
             player.print("Whoosh!");
         } else {
@@ -164,8 +159,7 @@ public class NavigationCommands {
         max = 0
     )
     @CommandPermissions("worldedit.navigation.jumpto.command")
-    public void jumpTo(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void jumpTo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         WorldVector pos = player.getSolidBlockTrace(300);
         if (pos != null) {
@@ -186,8 +180,7 @@ public class NavigationCommands {
     )
     @CommandPermissions("worldedit.navigation.up")
     @Logging(POSITION)
-    public void up(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+    public void up(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         final int distance = args.getInteger(0);
 
@@ -206,7 +199,7 @@ public class NavigationCommands {
      * @return true, if glass should always be put under the player
      */
     private boolean getAlwaysGlass(CommandContext args) {
-        final LocalConfiguration config = we.getConfiguration();
+        final LocalConfiguration config = worldEdit.getConfiguration();
 
         final boolean forceFlight = args.hasFlag('f');
         final boolean forceGlass = args.hasFlag('g');

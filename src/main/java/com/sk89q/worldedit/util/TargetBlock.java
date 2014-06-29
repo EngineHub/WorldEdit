@@ -49,7 +49,7 @@ public class TargetBlock {
      * @param player player to work with
      */
     public TargetBlock(LocalPlayer player) {
-        this.world = LocalWorldAdapter.wrap(player.getWorld());
+        this.world = LocalWorldAdapter.adapt(player.getWorld());
         this.setValues(player.getPosition(), player.getYaw(), player.getPitch(),
                 300, 1.65, 0.2);
     }
@@ -73,9 +73,8 @@ public class TargetBlock {
      * @param checkDistance how often to check for blocks, the smaller the more precise
      */
     public TargetBlock(Player player, int maxDistance, double checkDistance) {
-        this.world = LocalWorldAdapter.wrap(player.getWorld());
-        this.setValues(player.getPosition(), player.getYaw(), player.getPitch(),
-                maxDistance, 1.65, checkDistance);
+        this.world = LocalWorldAdapter.adapt(player.getWorld());
+        this.setValues(player.getPosition(), player.getYaw(), player.getPitch(), maxDistance, 1.65, checkDistance);
     }
 
     /**

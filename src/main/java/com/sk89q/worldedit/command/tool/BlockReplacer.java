@@ -20,37 +20,40 @@
 package com.sk89q.worldedit.command.tool;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.world.World;
 
 /**
  * A mode that replaces one block.
- * 
- * @author sk89q
  */
 public class BlockReplacer implements DoubleActionBlockTool {
+
     private BaseBlock targetBlock;
 
     public BlockReplacer(BaseBlock targetBlock) {
         this.targetBlock = targetBlock;
     }
 
-    public boolean canUse(LocalPlayer player) {
+    @Override
+    public boolean canUse(Actor player) {
         return player.hasPermission("worldedit.tool.replacer");
     }
 
-    public boolean actPrimary(ServerInterface server, LocalConfiguration config,
-            LocalPlayer player, LocalSession session, WorldVector clicked) {
+    @Override
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
+BlockBag bag = session.getBlockBag(player);
 
-        BlockBag bag = session.getBlockBag(player);
-
-        LocalWorld world = clicked.getWorld();
+        World world = clicked.getWorld();
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1, bag, player);
 
         try {
-            editSession.setBlock(clicked, targetBlock);
-        } catch (MaxChangedBlocksException e) {
+            editSession.setBlock(clicked.toVector(), targetBlock);
+        } catch (MaxChangedBlocksException ignored) {
         } finally {
             if (bag != null) {
                 bag.flushChanges();
@@ -61,13 +64,12 @@ public class BlockReplacer implements DoubleActionBlockTool {
         return true;
     }
 
-    public boolean actSecondary(ServerInterface server,
-            LocalConfiguration config, LocalPlayer player,
-            LocalSession session, WorldVector clicked) {
 
-        LocalWorld world = clicked.getWorld();
+    @Override
+    public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
+        World world = clicked.getWorld();
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1, player);
-        targetBlock = (editSession).getBlock(clicked);
+        targetBlock = (editSession).getBlock(clicked.toVector());
         BlockType type = BlockType.fromID(targetBlock.getType());
 
         if (type != null) {

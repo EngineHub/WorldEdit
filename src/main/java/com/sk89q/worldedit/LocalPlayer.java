@@ -31,13 +31,4 @@ import com.sk89q.worldedit.extension.platform.Actor;
 @Deprecated
 public abstract class LocalPlayer extends AbstractPlayerActor {
 
-    /**
-     * Construct the object.
-     *
-     * @param server A reference to the server this player is on
-     */
-    protected LocalPlayer(ServerInterface server) {
-        super(server);
-    }
-
 }

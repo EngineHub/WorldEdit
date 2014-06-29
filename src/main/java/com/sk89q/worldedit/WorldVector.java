@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.worldedit.internal.LocalWorldAdapter;
+
 /**
  * @deprecated Use {@link com.sk89q.worldedit.util.Location} wherever possible
  */
@@ -81,12 +83,21 @@ public class WorldVector extends Vector {
 
     /**
      * Construct the Vector object.
-     * 
-     * @param world 
+     *
+     * @param world
      */
     public WorldVector(LocalWorld world) {
         super();
         this.world = world;
+    }
+
+    /**
+     * Construct the Vector object.
+     *
+     * @param location the location
+     */
+    public WorldVector(com.sk89q.worldedit.util.Location location) {
+        this(LocalWorldAdapter.adapt(location.getWorld()), location.getX(), location.getY(), location.getZ());
     }
 
     /**
@@ -122,4 +133,15 @@ public class WorldVector extends Vector {
     public BlockWorldVector toWorldBlockVector() {
         return new BlockWorldVector(this);
     }
+
+    /**
+     * Return this object as a new preferred <code>Location</code>
+     * object.
+     *
+     * @return a new location object
+     */
+    public com.sk89q.worldedit.util.Location toLocation() {
+        return new com.sk89q.worldedit.util.Location(getWorld(), this);
+    }
+
 }

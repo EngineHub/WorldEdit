@@ -123,7 +123,7 @@ public class SnapshotRestore {
     }
 
     private void checkAndAddBlock(Vector pos) {
-        if (editSession.getMask() != null && !editSession.getMask().matches(editSession, pos))
+        if (editSession.getMask() != null && !editSession.getMask().test(pos))
             return;
 
         BlockVector2D chunkPos = ChunkStore.toChunk(pos);
