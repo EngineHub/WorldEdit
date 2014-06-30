@@ -85,7 +85,7 @@ public class RepeatingExtentPattern extends AbstractPattern {
     @Override
     public BaseBlock apply(Vector position) {
         Vector base = position.add(offset);
-        Vector size = extent.getMaximumPoint().subtract(extent.getMinimumPoint());
+        Vector size = extent.getMaximumPoint().subtract(extent.getMinimumPoint()).add(1, 1, 1);
         int x = base.getBlockX() % size.getBlockX();
         int y = base.getBlockY() % size.getBlockY();
         int z = base.getBlockZ() % size.getBlockZ();
