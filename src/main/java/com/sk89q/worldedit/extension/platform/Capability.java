@@ -66,6 +66,11 @@ public enum Capability {
     PERMISSIONS,
 
     /**
+     * The capability of a platform to properly respond to schedule() calls.
+     */
+    SCHEDULING,
+
+    /**
      * The capability of a platform to perform modifications to a world.
      */
     WORLD_EDITING;

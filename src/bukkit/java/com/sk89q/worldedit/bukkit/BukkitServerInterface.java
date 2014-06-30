@@ -171,6 +171,7 @@ public class BukkitServerInterface extends ServerInterface {
         capabilities.put(Capability.GAME_HOOKS, Preference.PREFERRED);
         capabilities.put(Capability.PERMISSIONS, Preference.PREFERRED);
         capabilities.put(Capability.USER_COMMANDS, Preference.PREFERRED);
+        capabilities.put(Capability.SCHEDULING, Preference.PREFERRED);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFER_OTHERS);
         return capabilities;
     }

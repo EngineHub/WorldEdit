@@ -208,6 +208,7 @@ class ForgePlatform extends ServerInterface {
         capabilities.put(Capability.GAME_HOOKS, Preference.NORMAL);
         capabilities.put(Capability.PERMISSIONS, Preference.PREFER_OTHERS);
         capabilities.put(Capability.USER_COMMANDS, Preference.NORMAL);
+        capabilities.put(Capability.SCHEDULING, Preference.PREFER_OTHERS);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFERRED);
         return capabilities;
     }
