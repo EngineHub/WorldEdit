@@ -20,9 +20,14 @@
 package com.sk89q.worldedit.function.operation;
 
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Platform;
 
-import java.util.concurrent.Future;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Operation helper methods.
@@ -76,6 +81,120 @@ public final class Operations {
                 op = op.resume(new TrueRunContext());
             } catch (WorldEditException e) {
                 throw new RuntimeException(e);
+            }
+        }
+    }
+
+    protected static Platform getSchedulingPlatform() {
+        return WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.SCHEDULING);
+    }
+
+    private static int taskId = -1;
+
+    /**
+     * Completes the given Operation slowly, with a best-effort attempt made
+     * to avoid lagging the server.
+     *
+     * @param op an Operation
+     * @return a Future that will complete with the final Operation that was executed
+     */
+    public static OperationFuture completeSlowly(Operation op) {
+        if (taskId == -1) {
+            // Start the worker task
+            taskId = getSchedulingPlatform().schedule(0, 1, new SlowCompletionWorker());
+
+            if (taskId == -1) {
+                // Platform does not support scheduling
+                // Just do the operation now and return a completed Future
+                OperationFuture future = new OperationFuture(op);
+                try {
+                    Operation innerOp = op;
+                    while (innerOp != null) {
+                        innerOp = innerOp.resume(new TrueRunContext());
+                        future.replaceOperation(innerOp);
+                    }
+                    future.complete();
+                } catch (WorldEditException ex) {
+                    future.throwing(ex);
+                }
+                return future;
+            }
+        }
+
+        return SlowCompletionWorker.queueOperation(op);
+    }
+
+    protected static class SlowCompletionWorker implements Runnable {
+        /**
+         * A deck of the OperationFutures waiting to be processed.
+         *
+         * New Operations are added at the bottom ("last") of the deck, and
+         * operations are processed from the top. However, when an Operation
+         * doesn't fully complete within the allotted 30 milliseconds, it is
+         * placed back on the top of the deck to be processed again next tick.
+         */
+        private static final Deque<OperationFuture> queue = new ArrayDeque<OperationFuture>();
+        private int cancelCounter = 0;
+
+        protected static OperationFuture queueOperation(Operation op) {
+            OperationFuture future = new OperationFuture(op);
+            queue.addLast(future);
+            return future;
+        }
+
+        protected static boolean cancel(OperationFuture future) {
+            return queue.remove(future);
+        }
+
+        @Override
+        public void run() {
+            RunContext run = new TimedRunContext(30, TimeUnit.MILLISECONDS);
+
+            // If no operations are active for 5 seconds, cancel the job
+            if (queue.size() == 0) {
+                cancelCounter++;
+                if (cancelCounter >= 100) {
+                    if (getSchedulingPlatform().cancelScheduled(taskId)) {
+                        taskId = -1;
+                    }
+                }
+                return;
+            }
+
+            OperationFuture future;
+            while (run.shouldContinue() && (future = queue.pollFirst()) != null) {
+                if (future.isDone()) {
+                    // cancelled, or someone else completed it (?)
+                    continue;
+                }
+
+                future.setStarted();
+
+                // Process future
+                Operation operation = future.getOperation();
+                while (run.shouldContinue() && operation != null) {
+                    try {
+                        operation = operation.resume(run);
+                        future.replaceOperation(operation);
+                    } catch (WorldEditException e) {
+                        future.throwing(e);
+                        break;
+                    }
+                }
+
+                if (future.isDone()) {
+                    // Operation threw an exception
+                    continue;
+                } else if (operation == null) {
+                    // Operation completed
+                    future.complete();
+                    continue;
+                } else {
+                    // Run timed out - NOT done!
+                    // Put it back in the queue.
+                    queue.addFirst(future);
+                    return;
+                }
             }
         }
     }
