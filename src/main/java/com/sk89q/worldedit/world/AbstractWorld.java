@@ -25,6 +25,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -222,6 +223,8 @@ public abstract class AbstractWorld implements World {
     @Override
     public boolean queueBlockBreakEffect(Platform server, Vector position, int blockId, double priority) {
         if (taskId == -1) {
+            // Ensure that best scheduling is selected
+            server = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.SCHEDULING);
             taskId = server.schedule(0, 1, new Runnable() {
                 @Override
                 public void run() {

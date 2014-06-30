@@ -32,12 +32,4 @@ public interface RunContext {
      * @return true if the operation should continue running
      */
     boolean shouldContinue();
-
-    /**
-     * Perform some kind of reset on this RunContext (e.g resetting a timer).
-     *
-     * This method should not be called by an Operation, but rather by its
-     * caller.
-     */
-    void reset();
 }

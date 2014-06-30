@@ -98,6 +98,18 @@ class ForgePlatform extends ServerInterface {
     }
 
     @Override
+    public boolean cancelScheduled(int taskId) {
+        return false;
+    }
+
+    @Override
+    public boolean isPrimaryThread() {
+        // XXX this is a HACK - we want a Forge API for this
+        // forge does not store the server thread in a variable like Bukkit does
+        return Thread.currentThread().getName().equals("Server thread");
+    }
+
+    @Override
     public List<? extends com.sk89q.worldedit.world.World> getWorlds() {
         List<WorldServer> worlds = Arrays.asList(DimensionManager.getWorlds());
         List<com.sk89q.worldedit.world.World> ret = new ArrayList<com.sk89q.worldedit.world.World>(worlds.size());
@@ -212,5 +224,4 @@ class ForgePlatform extends ServerInterface {
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFERRED);
         return capabilities;
     }
-
 }

@@ -37,10 +37,4 @@ public class TrueRunContext implements RunContext {
     public boolean shouldContinue() {
         return true;
     }
-
-    /**
-     * Do nothing.
-     */
-    @Override
-    public void reset() { }
 }

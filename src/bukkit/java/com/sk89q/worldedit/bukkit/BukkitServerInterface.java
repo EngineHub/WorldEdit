@@ -36,6 +36,7 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
+import org.bukkit.scheduler.BukkitTask;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -84,8 +85,24 @@ public class BukkitServerInterface extends ServerInterface {
     }
 
     @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay, period);
+    public int schedule(long delay, long period, Runnable run) {
+        BukkitTask task = server.getScheduler().runTaskTimer(plugin, run, delay, period);
+        return task.getTaskId();
+    }
+
+    @Override
+    public boolean cancelScheduled(int taskId) {
+        try {
+            server.getScheduler().cancelTask(taskId);
+            return true;
+        } catch (IllegalStateException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isPrimaryThread() {
+        return server.isPrimaryThread();
     }
 
     @Override
