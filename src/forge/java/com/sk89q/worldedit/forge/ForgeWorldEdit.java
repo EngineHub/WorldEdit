@@ -33,6 +33,7 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
@@ -69,6 +70,7 @@ public class ForgeWorldEdit {
     private ForgePlatform platform;
     private ForgeConfiguration config;
     private File workingDir;
+    private ForgeMiniScheduler scheduler;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -84,6 +86,8 @@ public class ForgeWorldEdit {
 
         config = new ForgeConfiguration(this);
         config.load();
+
+        scheduler = new ForgeMiniScheduler();
     }
 
     @EventHandler
@@ -179,6 +183,13 @@ public class ForgeWorldEdit {
         }
     }
 
+    @ForgeSubscribe
+    public void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            scheduler.heartbeat();
+        }
+    }
+
     /**
      * Get the configuration.
      *
@@ -237,6 +248,10 @@ public class ForgeWorldEdit {
      */
     public File getWorkingDir() {
         return this.workingDir;
+    }
+
+    public ForgeMiniScheduler getScheduler() {
+        return this.scheduler;
     }
 
     /**

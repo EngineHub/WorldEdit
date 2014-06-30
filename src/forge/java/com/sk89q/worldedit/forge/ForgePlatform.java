@@ -94,12 +94,12 @@ class ForgePlatform extends ServerInterface {
 
     @Override
     public int schedule(long delay, long period, Runnable task) {
-        return -1;
+        return mod.getScheduler().schedule(delay, period, task);
     }
 
     @Override
     public boolean cancelScheduled(int taskId) {
-        return false;
+        return mod.getScheduler().cancel(taskId);
     }
 
     @Override
