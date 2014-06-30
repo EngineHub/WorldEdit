@@ -19,17 +19,17 @@
 
 package com.sk89q.worldedit.blocks;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTUtils;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.world.DataException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents dispensers.
@@ -79,27 +79,31 @@ public class DispenserBlock extends ContainerBlock {
     }
 
     @Override
-    public void setNbtData(CompoundTag rootTag) throws DataException {
-        if (rootTag == null) {
-            return;
-        }
-        
-        Map<String, Tag> values = rootTag.getValue();
-
-        Tag t = values.get("id");
-        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Trap")) {
-            throw new DataException("'Trap' tile entity expected");
-        }
-
-        List<CompoundTag> items = new ArrayList<CompoundTag>();
-        for (Tag tag : NBTUtils.getChildTag(values, "Items", ListTag.class).getValue()) {
-            if (!(tag instanceof CompoundTag)) {
-                throw new DataException("CompoundTag expected as child tag of Trap Items");
+    public void setNbtData(CompoundTag rootTag) {
+        try {
+            if (rootTag == null) {
+                return;
             }
 
-            items.add((CompoundTag) tag);
-        }
+            Map<String, Tag> values = rootTag.getValue();
 
-        setItems(deserializeInventory(items));
+            Tag t = values.get("id");
+            if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Trap")) {
+                throw new DataException("'Trap' tile entity expected");
+            }
+
+            List<CompoundTag> items = new ArrayList<CompoundTag>();
+            for (Tag tag : NBTUtils.getChildTag(values, "Items", ListTag.class).getValue()) {
+                if (!(tag instanceof CompoundTag)) {
+                    throw new DataException("CompoundTag expected as child tag of Trap Items");
+                }
+
+                items.add((CompoundTag) tag);
+            }
+
+            setItems(deserializeInventory(items));
+        } catch (DataException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

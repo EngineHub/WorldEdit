@@ -19,17 +19,18 @@
 
 package com.sk89q.worldedit.blocks;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTUtils;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.storage.InvalidFormatException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a chest block.
@@ -78,7 +79,7 @@ public class ChestBlock extends ContainerBlock {
     }
 
     @Override
-    public void setNbtData(CompoundTag rootTag) throws DataException {
+    public void setNbtData(CompoundTag rootTag) {
         if (rootTag == null) {
             return;
         }
@@ -87,19 +88,25 @@ public class ChestBlock extends ContainerBlock {
 
         Tag t = values.get("id");
         if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Chest")) {
-            throw new DataException("'Chest' tile entity expected");
+            throw new RuntimeException("'Chest' tile entity expected");
         }
 
         List<CompoundTag> items = new ArrayList<CompoundTag>();
-        
-        for (Tag tag : NBTUtils.getChildTag(values, "Items", ListTag.class).getValue()) {
-            if (!(tag instanceof CompoundTag)) {
-                throw new DataException("CompoundTag expected as child tag of Chest's Items");
+
+        try {
+            for (Tag tag : NBTUtils.getChildTag(values, "Items", ListTag.class).getValue()) {
+                if (!(tag instanceof CompoundTag)) {
+                    throw new RuntimeException("CompoundTag expected as child tag of Chest's Items");
+                }
+
+                items.add((CompoundTag) tag);
             }
 
-            items.add((CompoundTag) tag);
+            setItems(deserializeInventory(items));
+        } catch (InvalidFormatException e) {
+            throw new RuntimeException(e);
+        } catch (DataException e) {
+            throw new RuntimeException(e);
         }
-
-        setItems(deserializeInventory(items));
     }
 }

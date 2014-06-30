@@ -100,10 +100,19 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @see #setData(int)
      * @see #setNbtData(CompoundTag)
      */
-    public BaseBlock(int id, int data, CompoundTag nbtData) throws DataException {
+    public BaseBlock(int id, int data, CompoundTag nbtData) {
         setId(id);
         setData(data);
         setNbtData(nbtData);
+    }
+
+    /**
+     * Create a clone of another block.
+     *
+     * @param other the other block
+     */
+    public BaseBlock(BaseBlock other) {
+        this(other.getId(), other.getData(), other.getNbtData());
     }
 
     /**
@@ -111,6 +120,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      *
      * @return ID (between 0 and {@link #MAX_ID})
      */
+    @Override
     public int getId() {
         return id;
     }
@@ -138,6 +148,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      *
      * @param id block id (between 0 and {@link #MAX_ID}).
      */
+    @Override
     public void setId(int id) {
         internalSetId(id);
     }
@@ -147,6 +158,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      *
      * @return data value (0-15)
      */
+    @Override
     public int getData() {
         return data;
     }
@@ -175,6 +187,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      *
      * @param data block data value (between 0 and {@link #MAX_DATA}).
      */
+    @Override
     public void setData(int data) {
         internalSetData(data);
     }
@@ -187,6 +200,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @see #setId(int)
      * @see #setData(int)
      */
+    @Override
     public void setIdAndData(int id, int data) {
         setId(id);
         setData(data);
@@ -198,6 +212,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      *
      * @return true if the data value is -1
      */
+    @Override
     public boolean hasWildcardData() {
         return getData() == -1;
     }
@@ -227,7 +242,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
     }
 
     @Override
-    public void setNbtData(CompoundTag nbtData) throws DataException {
+    public void setNbtData(CompoundTag nbtData) {
         this.nbtData = nbtData;
     }
 

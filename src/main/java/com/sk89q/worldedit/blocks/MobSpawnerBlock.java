@@ -19,9 +19,13 @@
 
 package com.sk89q.worldedit.blocks;
 
-import com.sk89q.jnbt.*;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.NBTUtils;
+import com.sk89q.jnbt.ShortTag;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.MobType;
-import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
 import java.util.HashMap;
@@ -153,7 +157,7 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
     }
 
     @Override
-    public void setNbtData(CompoundTag rootTag) throws DataException {
+    public void setNbtData(CompoundTag rootTag) {
         if (rootTag == null) {
             return;
         }
@@ -162,11 +166,18 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
 
         Tag t = values.get("id");
         if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("MobSpawner")) {
-            throw new DataException("'MobSpawner' tile entity expected");
+            throw new RuntimeException("'MobSpawner' tile entity expected");
         }
 
-        StringTag mobTypeTag = NBTUtils.getChildTag(values, "EntityId", StringTag.class);
-        ShortTag delayTag = NBTUtils.getChildTag(values, "Delay", ShortTag.class);
+        StringTag mobTypeTag;
+        ShortTag delayTag;
+
+        try {
+            mobTypeTag = NBTUtils.getChildTag(values, "EntityId", StringTag.class);
+            delayTag = NBTUtils.getChildTag(values, "Delay", ShortTag.class);
+        } catch (InvalidFormatException ignored) {
+            throw new RuntimeException("Invalid mob spawner data: no EntityId and/or no Delay");
+        }
 
         this.mobType = mobTypeTag.getValue();
         this.delay = delayTag.getValue();

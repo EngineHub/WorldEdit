@@ -19,14 +19,13 @@
 
 package com.sk89q.worldedit.blocks;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.sk89q.jnbt.ByteTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.world.DataException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A skull block.
@@ -165,7 +164,7 @@ public class SkullBlock extends BaseBlock implements TileEntityBlock {
     }
 
     @Override
-    public void setNbtData(CompoundTag rootTag) throws DataException {
+    public void setNbtData(CompoundTag rootTag) {
         if (rootTag == null) {
             return;
         }
@@ -175,9 +174,8 @@ public class SkullBlock extends BaseBlock implements TileEntityBlock {
         Tag t;
 
         t = values.get("id");
-        if (!(t instanceof StringTag)
-                || !((StringTag) t).getValue().equals("Skull")) {
-            throw new DataException("'Skull' tile entity expected");
+        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Skull")) {
+            throw new RuntimeException("'Skull' tile entity expected");
         }
 
         t = values.get("SkullType");

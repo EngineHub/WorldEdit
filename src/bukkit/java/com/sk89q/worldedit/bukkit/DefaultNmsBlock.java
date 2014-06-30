@@ -134,7 +134,7 @@ public class DefaultNmsBlock extends NmsBlock {
     }
 
     @Override
-    public void setNbtData(CompoundTag tag) throws DataException {
+    public void setNbtData(CompoundTag tag) {
         if (tag == null) {
             this.nbtData = null;
         }

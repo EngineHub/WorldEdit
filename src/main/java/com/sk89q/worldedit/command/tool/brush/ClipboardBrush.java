@@ -19,24 +19,35 @@
 
 package com.sk89q.worldedit.command.tool.brush;
 
-import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.function.mask.ExistingBlockMask;
+import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
+import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.regions.Region;
 
 public class ClipboardBrush implements Brush {
 
-    private CuboidClipboard clipboard;
+    private Clipboard clipboard;
     private boolean noAir;
 
-    public ClipboardBrush(CuboidClipboard clipboard, boolean noAir) {
+    public ClipboardBrush(Clipboard clipboard, boolean noAir) {
         this.clipboard = clipboard;
         this.noAir = noAir;
     }
 
+    @Override
     public void build(EditSession editSession, Vector pos, Pattern mat, double size) throws MaxChangedBlocksException {
-        clipboard.place(editSession, pos.subtract(clipboard.getSize().divide(2)), noAir);
+        Region region = clipboard.getRegion();
+        Vector centerOffset = region.getCenter().subtract(region.getMinimumPoint());
+        ForwardExtentCopy copy = new ForwardExtentCopy(clipboard, clipboard.getRegion(), editSession, pos.subtract(centerOffset));
+        if (noAir) {
+            copy.setSourceMask(new ExistingBlockMask(clipboard));
+        }
+        Operations.completeLegacy(copy);
     }
 
 }

@@ -21,7 +21,6 @@ package com.sk89q.worldedit.blocks;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.extent.Extent;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -88,17 +87,13 @@ public class LazyBlock extends BaseBlock {
     public CompoundTag getNbtData() {
         if (!loaded) {
             BaseBlock loadedBlock = extent.getBlock(position);
-            try {
-                super.setNbtData(loadedBlock.getNbtData());
-            } catch (DataException e) {
-                throw new RuntimeException(e);
-            }
+            super.setNbtData(loadedBlock.getNbtData());
         }
         return super.getNbtData();
     }
 
     @Override
-    public void setNbtData(CompoundTag nbtData) throws DataException {
+    public void setNbtData(CompoundTag nbtData) {
         throw new UnsupportedOperationException("This object is immutable");
     }
 

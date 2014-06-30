@@ -29,6 +29,7 @@ import com.sk89q.worldedit.command.tool.SinglePickaxe;
 import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
@@ -62,7 +63,7 @@ public class LocalSession {
     private boolean placeAtPos1 = false;
     private LinkedList<EditSession> history = new LinkedList<EditSession>();
     private int historyPointer = 0;
-    private CuboidClipboard clipboard;
+    private Clipboard clipboard;
     private boolean toolControl = true;
     private boolean superPickaxe = false;
     private BlockTool pickaxeMode = new SinglePickaxe();
@@ -326,7 +327,7 @@ public class LocalSession {
      * @return clipboard, may be null
      * @throws EmptyClipboardException
      */
-    public CuboidClipboard getClipboard() throws EmptyClipboardException {
+    public Clipboard getClipboard() throws EmptyClipboardException {
         if (clipboard == null) {
             throw new EmptyClipboardException();
         }
@@ -338,7 +339,7 @@ public class LocalSession {
      *
      * @param clipboard
      */
-    public void setClipboard(CuboidClipboard clipboard) {
+    public void setClipboard(Clipboard clipboard) {
         this.clipboard = clipboard;
     }
 

@@ -22,17 +22,31 @@ package com.sk89q.worldedit.command;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld.KillFlags;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.command.UtilityCommands.FlagContainer;
 import com.sk89q.worldedit.command.tool.BrushTool;
-import com.sk89q.worldedit.command.tool.brush.*;
+import com.sk89q.worldedit.command.tool.brush.ButcherBrush;
+import com.sk89q.worldedit.command.tool.brush.ClipboardBrush;
+import com.sk89q.worldedit.command.tool.brush.CylinderBrush;
+import com.sk89q.worldedit.command.tool.brush.GravityBrush;
+import com.sk89q.worldedit.command.tool.brush.HollowCylinderBrush;
+import com.sk89q.worldedit.command.tool.brush.HollowSphereBrush;
+import com.sk89q.worldedit.command.tool.brush.SmoothBrush;
+import com.sk89q.worldedit.command.tool.brush.SphereBrush;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 
@@ -128,14 +142,15 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.clipboard")
     public void clipboardBrush(Player player, LocalSession session, EditSession editSession, @Switch('a') boolean ignoreAir) throws WorldEditException {
 
-        CuboidClipboard clipboard = session.getClipboard();
+        Clipboard clipboard = session.getClipboard();
 
         if (clipboard == null) {
             player.printError("Copy something first.");
             return;
         }
 
-        Vector size = clipboard.getSize();
+        Region region = clipboard.getRegion();
+        Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint());
 
         worldEdit.checkMaxBrushRadius(size.getBlockX());
         worldEdit.checkMaxBrushRadius(size.getBlockY());

@@ -19,11 +19,6 @@
 
 package com.sk89q.worldedit.blocks;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTUtils;
@@ -31,6 +26,11 @@ import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.world.DataException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a furnace block.
@@ -125,40 +125,43 @@ public class FurnaceBlock extends ContainerBlock {
     }
 
     @Override
-    public void setNbtData(CompoundTag rootTag) throws DataException {
+    public void setNbtData(CompoundTag rootTag) {
         if (rootTag == null) {
             return;
         }
-        
-        Map<String, Tag> values = rootTag.getValue();
 
-        Tag t = values.get("id");
-        if (!(t instanceof StringTag)
-                || !((StringTag) t).getValue().equals("Furnace")) {
-            throw new DataException("'Furnace' tile entity expected");
-        }
+        try {
+            Map<String, Tag> values = rootTag.getValue();
 
-        ListTag items = NBTUtils.getChildTag(values, "Items", ListTag.class);
-
-        List<CompoundTag> compound = new ArrayList<CompoundTag>();
-
-        for (Tag tag : items.getValue()) {
-            if (!(tag instanceof CompoundTag)) {
-                throw new DataException(
-                        "CompoundTag expected as child tag of Furnace Items");
+            Tag t = values.get("id");
+            if (!(t instanceof StringTag)
+                    || !((StringTag) t).getValue().equals("Furnace")) {
+                throw new RuntimeException("'Furnace' tile entity expected");
             }
-            compound.add((CompoundTag) tag);
-        }
-        setItems(deserializeInventory(compound));
 
-        t = values.get("BurnTime");
-        if (t instanceof ShortTag) {
-            burnTime = ((ShortTag) t).getValue();
-        }
+            ListTag items = NBTUtils.getChildTag(values, "Items", ListTag.class);
 
-        t = values.get("CookTime");
-        if (t instanceof ShortTag) {
-            cookTime = ((ShortTag) t).getValue();
+            List<CompoundTag> compound = new ArrayList<CompoundTag>();
+
+            for (Tag tag : items.getValue()) {
+                if (!(tag instanceof CompoundTag)) {
+                    throw new RuntimeException("CompoundTag expected as child tag of Furnace Items");
+                }
+                compound.add((CompoundTag) tag);
+            }
+            setItems(deserializeInventory(compound));
+
+            t = values.get("BurnTime");
+            if (t instanceof ShortTag) {
+                burnTime = ((ShortTag) t).getValue();
+            }
+
+            t = values.get("CookTime");
+            if (t instanceof ShortTag) {
+                cookTime = ((ShortTag) t).getValue();
+            }
+        } catch (DataException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -19,13 +19,12 @@
 
 package com.sk89q.worldedit.blocks;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.world.DataException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents a sign block.
@@ -104,7 +103,7 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
     }
 
     @Override
-    public void setNbtData(CompoundTag rootTag) throws DataException {
+    public void setNbtData(CompoundTag rootTag) {
         if (rootTag == null) {
             return;
         }
@@ -116,9 +115,8 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
         text = new String[] { "", "", "", "" };
 
         t = values.get("id");
-        if (!(t instanceof StringTag)
-                || !((StringTag) t).getValue().equals("Sign")) {
-            throw new DataException("'Sign' tile entity expected");
+        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Sign")) {
+            throw new RuntimeException("'Sign' tile entity expected");
         }
 
         t = values.get("Text1");
