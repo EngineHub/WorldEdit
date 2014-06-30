@@ -22,6 +22,8 @@ package com.sk89q.worldedit.function.operation;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
 
+import java.util.concurrent.Future;
+
 /**
  * Operation helper methods.
  */
@@ -38,7 +40,7 @@ public final class Operations {
      */
     public static void complete(Operation op) throws WorldEditException {
         while (op != null) {
-            op = op.resume(new RunContext());
+            op = op.resume(new TrueRunContext());
         }
     }
 
@@ -52,7 +54,7 @@ public final class Operations {
     public static void completeLegacy(Operation op) throws MaxChangedBlocksException {
         while (op != null) {
             try {
-                op = op.resume(new RunContext());
+                op = op.resume(new TrueRunContext());
             } catch (MaxChangedBlocksException e) {
                 throw e;
             } catch (WorldEditException e) {
@@ -71,11 +73,10 @@ public final class Operations {
     public static void completeBlindly(Operation op) {
         while (op != null) {
             try {
-                op = op.resume(new RunContext());
+                op = op.resume(new TrueRunContext());
             } catch (WorldEditException e) {
                 throw new RuntimeException(e);
             }
         }
     }
-
 }

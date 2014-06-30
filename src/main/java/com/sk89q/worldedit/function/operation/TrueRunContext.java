@@ -20,24 +20,27 @@
 package com.sk89q.worldedit.function.operation;
 
 /**
- * A RunContext is provided to an Operation and should be used to implement
- * time limits on the Operation.
+ * Always returns true - let all Operations run to completion.
  */
-public interface RunContext {
-    /**
-     * Return whether the current operation should still continue running.
-     * </p>
-     * This method can be called frequently.
-     *
-     * @return true if the operation should continue running
-     */
-    boolean shouldContinue();
+public class TrueRunContext implements RunContext {
 
     /**
-     * Perform some kind of reset on this RunContext (e.g resetting a timer).
+     * Always returns true.
      *
-     * This method should not be called by an Operation, but rather by its
-     * caller.
+     * <p>
+     * <b>Documentation inherited from RunContext:</b><br>
+     * {@inheritDoc}
+     *
+     * @return Always true.
      */
-    void reset();
+    @Override
+    public boolean shouldContinue() {
+        return true;
+    }
+
+    /**
+     * Do nothing.
+     */
+    @Override
+    public void reset() { }
 }
