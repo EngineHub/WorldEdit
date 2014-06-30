@@ -70,6 +70,10 @@ public class ChangeSetExecutor implements Operation {
             } else {
                 change.redo(context);
             }
+
+            if (!run.shouldContinue()) {
+                return this;
+            }
         }
 
         return null;

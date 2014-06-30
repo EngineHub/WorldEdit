@@ -166,6 +166,10 @@ public abstract class BreadthFirstSearch implements Operation {
             for (Vector dir : directions) {
                 visit(position, position.add(dir));
             }
+
+            if (!run.shouldContinue()) {
+                return this;
+            }
         }
 
         return null;

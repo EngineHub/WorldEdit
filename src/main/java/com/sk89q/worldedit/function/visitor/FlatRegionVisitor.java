@@ -26,6 +26,8 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.regions.FlatRegion;
 
+import java.util.Iterator;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -33,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class FlatRegionVisitor implements Operation {
 
-    private final FlatRegion flatRegion;
+    private final Iterator<Vector2D> iterator;
     private final FlatRegionFunction function;
     private int affected = 0;
 
@@ -47,8 +49,8 @@ public class FlatRegionVisitor implements Operation {
         checkNotNull(flatRegion);
         checkNotNull(function);
 
-        this.flatRegion = flatRegion;
         this.function = function;
+        this.iterator = flatRegion.asFlatRegion().iterator();
     }
 
     /**
@@ -62,9 +64,13 @@ public class FlatRegionVisitor implements Operation {
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
-        for (Vector2D pt : flatRegion.asFlatRegion()) {
-            if (function.apply(pt)) {
+        while (iterator.hasNext()) {
+            if (function.apply(iterator.next())) {
                 affected++;
+            }
+
+            if (!run.shouldContinue()) {
+                return this;
             }
         }
 
