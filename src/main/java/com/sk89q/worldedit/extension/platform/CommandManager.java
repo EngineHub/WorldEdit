@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -62,6 +63,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class CommandManager {
 
+    public static final Pattern COMMAND_CLEAN_PATTERN = Pattern.compile("^[/]+");
     private static final Logger logger = Logger.getLogger(CommandManager.class.getCanonicalName());
     private static final java.util.regex.Pattern numberFormatExceptionPattern = java.util.regex.Pattern.compile("^For input string: \"(.*)\"$");
 

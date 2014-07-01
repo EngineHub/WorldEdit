@@ -35,6 +35,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.CommandManager;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -44,12 +45,12 @@ import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
 import com.sk89q.worldedit.util.command.parametric.Optional;
-import com.sk89q.worldedit.util.formatting.components.Code;
 import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
-import com.sk89q.worldedit.util.formatting.components.CommandListBox;
-import com.sk89q.worldedit.util.formatting.components.CommandUsageBox;
 import com.sk89q.worldedit.util.formatting.Style;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
+import com.sk89q.worldedit.util.formatting.components.Code;
+import com.sk89q.worldedit.util.formatting.components.CommandListBox;
+import com.sk89q.worldedit.util.formatting.components.CommandUsageBox;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
@@ -606,7 +607,7 @@ public class UtilityCommands {
 
             // Get a list of aliases
             List<CommandMapping> aliases = new ArrayList<CommandMapping>(dispatcher.getCommands());
-            Collections.sort(aliases, PrimaryAliasComparator.INSTANCE);
+            Collections.sort(aliases, new PrimaryAliasComparator(CommandManager.COMMAND_CLEAN_PATTERN));
 
             // Calculate pagination
             int offset = perPage * page;
