@@ -19,56 +19,84 @@
 
 package com.sk89q.worldedit.util.formatting.components;
 
+import com.sk89q.minecraft.util.commands.CommandLocals;
+import com.sk89q.worldedit.util.command.CommandCallable;
+import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Description;
+import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.formatting.Style;
+import com.sk89q.worldedit.util.formatting.StyledFragment;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A box to describe usage of a command.
  */
-public class CommandUsageBox extends MessageBox {
+public class CommandUsageBox extends StyledFragment {
 
     /**
-     * Create a new box.
+     * Create a new usage box.
      *
-     * @param description the command to describe
-     * @param title the title
+     * @param command the command to describe
+     * @param commandString the command that was used, such as "/we" or "/brush sphere"
      */
-    public CommandUsageBox(Description description, String title) {
-        super(title);
-        checkNotNull(description);
-        attachCommandUsage(description);
+    public CommandUsageBox(CommandCallable command, String commandString) {
+        this(command, commandString, null);
     }
 
     /**
-     * Create a new box.
+     * Create a new usage box.
      *
-     * @param description the command to describe
+     * @param command the command to describe
+     * @param commandString the command that was used, such as "/we" or "/brush sphere"
+     * @param locals list of locals to use
      */
-    public CommandUsageBox(Description description) {
-        super("Usage Help");
-        checkNotNull(description);
-        attachCommandUsage(description);
-    }
-
-    private void attachCommandUsage(Description description) {
-        if (description.getUsage() != null) {
-            getContents().append(new Label().append("Usage: "));
-            getContents().append(description.getUsage());
+    public CommandUsageBox(CommandCallable command, String commandString, @Nullable CommandLocals locals) {
+        checkNotNull(command);
+        checkNotNull(commandString);
+        if (command instanceof Dispatcher) {
+            attachDispatcherUsage((Dispatcher) command, commandString, locals);
         } else {
-            getContents().append(new Subtle().append("Usage information is not available."));
+            attachCommandUsage(command.getDescription(), commandString);
+        }
+    }
+
+    private void attachDispatcherUsage(Dispatcher dispatcher, String commandString, @Nullable CommandLocals locals) {
+        CommandListBox box = new CommandListBox("Subcommands");
+        String prefix = !commandString.isEmpty() ? commandString + " " : "";
+        for (CommandMapping mapping : dispatcher.getCommands()) {
+            if (locals == null || mapping.getCallable().testPermission(locals)) {
+                box.appendCommand(prefix + mapping.getPrimaryAlias(), mapping.getDescription().getShortDescription());
+            }
         }
 
-        getContents().newLine();
+        append(box);
+    }
+
+    private void attachCommandUsage(Description description, String commandString) {
+        MessageBox box = new MessageBox("Help for " + commandString);
+        StyledFragment contents = box.getContents();
+
+        if (description.getUsage() != null) {
+            contents.append(new Label().append("Usage: "));
+            contents.append(description.getUsage());
+        } else {
+            contents.append(new Subtle().append("Usage information is not available."));
+        }
+
+        contents.newLine();
 
         if (description.getHelp() != null) {
-            getContents().createFragment(Style.YELLOW_DARK).append(description.getHelp());
+            contents.createFragment(Style.YELLOW_DARK).append(description.getHelp());
         } else if (description.getShortDescription() != null) {
-            getContents().createFragment(Style.YELLOW_DARK).append(description.getShortDescription());
+            contents.append(description.getShortDescription());
         } else {
-            getContents().append(new Subtle().append("No further help is available."));
+            contents.append(new Subtle().append("No further help is available."));
         }
+
+        append(box);
     }
 
 }

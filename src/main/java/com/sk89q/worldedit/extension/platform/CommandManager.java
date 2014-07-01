@@ -42,6 +42,8 @@ import com.sk89q.worldedit.util.command.fluent.CommandGraph;
 import com.sk89q.worldedit.util.command.parametric.LegacyCommandsHandler;
 import com.sk89q.worldedit.util.command.parametric.ParametricBuilder;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
+import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
+import com.sk89q.worldedit.util.formatting.components.CommandUsageBox;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
 
@@ -220,7 +222,17 @@ public final class CommandManager {
         } catch (CommandPermissionsException e) {
             actor.printError("You don't have permission to do this.");
         } catch (InvalidUsageException e) {
-            actor.printError(e.getMessage() + "\nUsage: " + e.getUsage("/"));
+            if (e.isFullUsageSuggested()) {
+                actor.printRaw(ColorCodeBuilder.asColorCodes(new CommandUsageBox(e.getCommand(), e.toStackString("/", ""), locals)));
+                String message = e.getMessage();
+                if (message != null) {
+                    actor.printError(message);
+                }
+            } else {
+                String message = e.getMessage();
+                actor.printError(message != null ? message : "The command was not used properly (no more help available).");
+                actor.printError(e.getUsage("/"));
+            }
         } catch (WrappedCommandException e) {
             Throwable t = e.getCause();
             actor.printError("Please report this error: [See console]");

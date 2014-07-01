@@ -66,7 +66,7 @@ public class CommandException extends Exception {
             }
             builder.append(spacedSuffix);
         }
-        return builder.toString();
+        return builder.toString().trim();
     }
 
 }

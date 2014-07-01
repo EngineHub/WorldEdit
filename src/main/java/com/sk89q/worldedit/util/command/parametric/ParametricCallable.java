@@ -19,15 +19,32 @@
 
 package com.sk89q.worldedit.util.command.parametric;
 
-import com.sk89q.minecraft.util.commands.*;
-import com.sk89q.worldedit.util.command.*;
+import com.google.common.base.Joiner;
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandLocals;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
+import com.sk89q.minecraft.util.commands.WrappedCommandException;
+import com.sk89q.worldedit.util.command.CommandCallable;
+import com.sk89q.worldedit.util.command.InvalidUsageException;
+import com.sk89q.worldedit.util.command.MissingParameterException;
+import com.sk89q.worldedit.util.command.Parameter;
+import com.sk89q.worldedit.util.command.SimpleDescription;
+import com.sk89q.worldedit.util.command.UnconsumedParameterException;
 import com.sk89q.worldedit.util.command.binding.Switch;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The implementation of a {@link CommandCallable} for the {@link ParametricBuilder}.
@@ -169,6 +186,12 @@ class ParametricCallable implements CommandCallable {
         String[] split = CommandContext.split(calledCommand + " " + stringArguments);
         CommandContext context = new CommandContext(split, getValueFlags(), false, locals);
 
+        // Provide help if -? is specified
+        if (context.hasFlag('?')) {
+            String title = Joiner.on(" ").join(parentCommands);
+            throw new InvalidUsageException(null, this, true);
+        }
+
         Object[] args = new Object[parameters.length];
         ContextArgumentStack arguments = new ContextArgumentStack(context);
         ParameterData parameter = null;
@@ -221,14 +244,14 @@ class ParametricCallable implements CommandCallable {
                 handler.postInvoke(handler, method, parameters, args, context);
             }
         } catch (MissingParameterException e) {
-            throw new InvalidUsageException("Too few parameters!", getDescription());
+            throw new InvalidUsageException("Too few parameters!", this);
         } catch (UnconsumedParameterException e) {
-            throw new InvalidUsageException("Too many parameters! Unused parameters: " + e.getUnconsumed(), getDescription());
+            throw new InvalidUsageException("Too many parameters! Unused parameters: " + e.getUnconsumed(), this);
         } catch (ParameterException e) {
             assert parameter != null;
             String name = parameter.getName();
 
-            throw new InvalidUsageException("For parameter '" + name + "': " + e.getMessage(), getDescription());
+            throw new InvalidUsageException("For parameter '" + name + "': " + e.getMessage(), this);
         } catch (InvocationTargetException e) {
             for (ExceptionConverter converter : builder.getExceptionConverters()) {
                 converter.convert(e.getCause());

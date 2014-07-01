@@ -21,29 +21,46 @@ package com.sk89q.worldedit.util.command;
 
 import com.sk89q.minecraft.util.commands.CommandException;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Thrown when a command is not used properly.
  */
 public class InvalidUsageException extends CommandException {
 
     private static final long serialVersionUID = -3222004168669490390L;
-    private final Description description;
+    private final CommandCallable command;
+    private final boolean fullUsageSuggested;
 
-    public InvalidUsageException(Description description) {
-        this.description = description;
+    public InvalidUsageException(CommandCallable command) {
+        this(null, command);
     }
 
-    public InvalidUsageException(String message, Description description) {
+    public InvalidUsageException(String message, CommandCallable command) {
+        this(message, command, false);
+    }
+
+    public InvalidUsageException(String message, CommandCallable command, boolean fullUsageSuggested) {
         super(message);
-        this.description = description;
+        checkNotNull(command);
+        this.command = command;
+        this.fullUsageSuggested = fullUsageSuggested;
     }
 
-    public Description getDescription() {
-        return description;
+    public CommandCallable getCommand() {
+        return command;
     }
 
     public String getUsage(String prefix) {
-        return toStackString(prefix, getDescription().getUsage());
+        return toStackString(prefix, command.getDescription().getUsage());
     }
 
+    /**
+     * Return whether the full usage of the command should be shown.
+     *
+     * @return show full usage
+     */
+    public boolean isFullUsageSuggested() {
+        return fullUsageSuggested;
+    }
 }

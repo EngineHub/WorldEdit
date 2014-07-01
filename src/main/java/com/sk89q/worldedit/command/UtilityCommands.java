@@ -643,8 +643,7 @@ public class UtilityCommands {
 
             actor.printRaw(ColorCodeBuilder.asColorCodes(box));
         } else {
-            String title = String.format("Help: %s", Joiner.on(" ").join(visited));
-            CommandUsageBox box = new CommandUsageBox(callable.getDescription(), title);
+            CommandUsageBox box = new CommandUsageBox(callable, Joiner.on(" ").join(visited));
             actor.printRaw(ColorCodeBuilder.asColorCodes(box));
         }
     }
