@@ -17,21 +17,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.formatting.components;
+package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.worldedit.util.formatting.Style;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
 
-/**
- * Represents a subtle part of the message.
- */
-public class Subtle extends StyledFragment {
+public class CommandListBox extends MessageBox {
+
+    private boolean first = true;
 
     /**
-     * Create a new instance.
+     * Create a new box.
+     *
+     * @param title the title
      */
-    public Subtle() {
-        super(Style.GRAY);
+    public CommandListBox(String title) {
+        super(title);
+    }
+
+    public CommandListBox appendCommand(String alias, String description) {
+        if (!first) {
+            getContents().newLine();
+        }
+        getContents().createFragment(Style.YELLOW_DARK).append(alias).append(": ");
+        getContents().append(description);
+        first = false;
+        return this;
     }
 
 }

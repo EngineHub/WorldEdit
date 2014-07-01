@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.formatting.components;
+package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.extension.platform.CommandManager;

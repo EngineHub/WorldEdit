@@ -17,31 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.formatting.components;
+package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.worldedit.util.formatting.Style;
+import com.sk89q.worldedit.util.formatting.StyledFragment;
 
-public class CommandListBox extends MessageBox {
-
-    private boolean first = true;
+/**
+ * Represents a fragment representing a label.
+ */
+public class Label extends StyledFragment {
 
     /**
-     * Create a new box.
-     *
-     * @param title the title
+     * Create a new instance.
      */
-    public CommandListBox(String title) {
-        super(title);
-    }
-
-    public CommandListBox appendCommand(String alias, String description) {
-        if (!first) {
-            getContents().newLine();
-        }
-        getContents().createFragment(Style.YELLOW_DARK).append(alias).append(": ");
-        getContents().append(description);
-        first = false;
-        return this;
+    public Label() {
+        super(Style.YELLOW);
     }
 
 }

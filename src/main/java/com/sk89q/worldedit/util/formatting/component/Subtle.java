@@ -17,21 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.formatting.components;
+package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.worldedit.util.formatting.Style;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
 
 /**
- * Represents a fragment representing a label.
+ * Represents a subtle part of the message.
  */
-public class Label extends StyledFragment {
+public class Subtle extends StyledFragment {
 
     /**
      * Create a new instance.
      */
-    public Label() {
-        super(Style.YELLOW);
+    public Subtle() {
+        super(Style.GRAY);
     }
 
 }
