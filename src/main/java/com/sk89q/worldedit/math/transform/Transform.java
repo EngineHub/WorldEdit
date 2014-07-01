@@ -28,6 +28,13 @@ import com.sk89q.worldedit.Vector;
 public interface Transform extends Function<Vector, Vector> {
 
     /**
+     * Create a new inverse transform.
+     *
+     * @return a new inverse transform
+     */
+    Transform inverse();
+
+    /**
      * Create a new {@link Transform} that combines this transform with another.
      *
      * @param other the other transform to occur second

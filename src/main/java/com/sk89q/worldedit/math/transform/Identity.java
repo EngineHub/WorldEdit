@@ -32,6 +32,11 @@ public class Identity implements Transform {
     }
 
     @Override
+    public Transform inverse() {
+        return this;
+    }
+
+    @Override
     public Transform combine(Transform other) {
         if (other instanceof Identity) {
             return this;

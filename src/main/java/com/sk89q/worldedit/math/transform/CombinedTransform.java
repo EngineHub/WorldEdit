@@ -21,8 +21,10 @@ package com.sk89q.worldedit.math.transform;
 
 import com.sk89q.worldedit.Vector;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -58,6 +60,15 @@ public class CombinedTransform implements Transform {
             vector = transform.apply(vector);
         }
         return vector;
+    }
+
+    @Override
+    public Transform inverse() {
+        List<Transform> list = new ArrayList<Transform>();
+        for (int i = transforms.length - 1; i >= 0; i--) {
+            list.add(transforms[i].inverse());
+        }
+        return new CombinedTransform(list);
     }
 
     @Override
