@@ -54,8 +54,8 @@ public class SchematicCommands {
     @Command(
             aliases = { "load", "l" },
             usage = "[format] <filename>",
-            desc = "Load a schematic into your clipboard",
-            help = "Load a schematic into your clipboard\n" +
+            desc = "Load a file into your clipboard",
+            help = "Load a schematic file into your clipboard\n" +
                     "Format is a format from \"//schematic formats\"\n" +
                     "If the format is not provided, WorldEdit will\n" +
                     "attempt to automatically detect the format of the schematic",
@@ -121,8 +121,8 @@ public class SchematicCommands {
     @Command(
             aliases = { "save", "s" },
             usage = "[format] <filename>",
-            desc = "Save a schematic into your clipboard",
-            help = "Save a schematic into your clipboard\n" +
+            desc = "Save your clipboard to file",
+            help = "Save your clipboard to file\n" +
                     "Format is a format from \"//schematic formats\"\n",
             min = 1,
             max = 2
@@ -181,7 +181,7 @@ public class SchematicCommands {
     @Command(
             aliases = { "delete", "d" },
             usage = "<filename>",
-            desc = "Delete a schematic from the schematic list",
+            desc = "Delete a saved schematic",
             help = "Delete a schematic from the schematic list",
             min = 1,
             max = 1
@@ -210,7 +210,7 @@ public class SchematicCommands {
 
     @Command(
             aliases = {"formats", "listformats", "f"},
-            desc = "List available schematic formats",
+            desc = "List available formats",
             max = 0
     )
     @CommandPermissions("worldedit.schematic.formats")
@@ -235,7 +235,7 @@ public class SchematicCommands {
 
     @Command(
             aliases = {"list", "all", "ls"},
-            desc = "List available schematics",
+            desc = "List saved schematics",
             max = 0,
             flags = "dn",
             help = "List all schematics in the schematics directory\n" +
