@@ -222,8 +222,8 @@ public final class CommandManager {
         } catch (CommandPermissionsException e) {
             actor.printError("You don't have permission to do this.");
         } catch (InvalidUsageException e) {
-            if (e.isFullUsageSuggested()) {
-                actor.printRaw(ColorCodeBuilder.asColorCodes(new CommandUsageBox(e.getCommand(), e.toStackString("/", ""), locals)));
+            if (e.isFullHelpSuggested()) {
+                actor.printRaw(ColorCodeBuilder.asColorCodes(new CommandUsageBox(e.getCommand(), e.getCommandUsed("/", ""), locals)));
                 String message = e.getMessage();
                 if (message != null) {
                     actor.printError(message);
@@ -231,7 +231,7 @@ public final class CommandManager {
             } else {
                 String message = e.getMessage();
                 actor.printError(message != null ? message : "The command was not used properly (no more help available).");
-                actor.printError(e.getUsage("/"));
+                actor.printError(e.getSimpleUsageString("/"));
             }
         } catch (WrappedCommandException e) {
             Throwable t = e.getCause();
