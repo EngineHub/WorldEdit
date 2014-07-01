@@ -23,19 +23,11 @@ import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * A command that can be executed.
  */
 public interface CommandCallable {
-    
-    /**
-     * Get a list of value flags used by this command.
-     * 
-     * @return a list of value flags
-     */
-    Set<Character> getValueFlags();
 
     /**
      * Execute the correct command based on the input.

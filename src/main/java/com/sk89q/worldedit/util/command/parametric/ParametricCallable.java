@@ -273,7 +273,11 @@ class ParametricCallable implements CommandCallable {
         return Collections.emptyList();
     }
 
-    @Override
+    /**
+     * Get a list of value flags used by this command.
+     *
+     * @return a list of value flags
+     */
     public Set<Character> getValueFlags() {
         return valueFlags;
     }

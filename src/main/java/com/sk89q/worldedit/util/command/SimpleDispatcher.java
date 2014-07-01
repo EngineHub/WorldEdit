@@ -102,11 +102,6 @@ public class SimpleDispatcher implements Dispatcher {
     }
 
     @Override
-    public Set<Character> getValueFlags() {
-        return Collections.emptySet();
-    }
-
-    @Override
     public boolean call(String arguments, CommandLocals locals, String[] parentCommands) throws CommandException {
         // We have permission for this command if we have permissions for subcommands
         if (!testPermission(locals)) {
