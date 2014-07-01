@@ -41,13 +41,13 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.command.CommandCallable;
 import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Description;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
 import com.sk89q.worldedit.util.command.parametric.Optional;
-import com.sk89q.worldedit.util.formatting.Cmd;
+import com.sk89q.worldedit.util.formatting.components.Code;
 import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
-import com.sk89q.worldedit.util.formatting.CommandListBox;
+import com.sk89q.worldedit.util.formatting.components.CommandListBox;
+import com.sk89q.worldedit.util.formatting.components.CommandUsageBox;
 import com.sk89q.worldedit.util.formatting.Style;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
 import com.sk89q.worldedit.world.World;
@@ -623,7 +623,7 @@ public class UtilityCommands {
                 List<CommandMapping> list = aliases.subList(offset, Math.min(offset + perPage, aliases.size()));
 
                 tip.append("Type ");
-                tip.append(new Cmd().append("//help ").append("<command> [<page>]"));
+                tip.append(new Code().append("//help ").append("<command> [<page>]"));
                 tip.append(" for more information.").newLine();
 
                 // Add each command
@@ -643,28 +643,8 @@ public class UtilityCommands {
 
             actor.printRaw(ColorCodeBuilder.asColorCodes(box));
         } else {
-            CommandListBox box = new CommandListBox(String.format("Help: %s", Joiner.on(" ").join(visited)));
-            StyledFragment contents = box.getContents();
-
-            Description description = callable.getDescription();
-
-            if (description.getUsage() != null) {
-                contents.createFragment(Style.YELLOW).append("Usage: ");
-                contents.append(description.getUsage());
-            } else {
-                contents.createFragment(Style.GRAY).append("Usage information is not available.");
-            }
-
-            contents.newLine();
-
-            if (description.getHelp() != null) {
-                contents.createFragment(Style.YELLOW_DARK).append(description.getHelp());
-            } else if (description.getShortDescription() != null) {
-                contents.createFragment(Style.YELLOW_DARK).append(description.getShortDescription());
-            } else {
-                contents.createFragment(Style.GRAY).append("No further help is available.");
-            }
-
+            String title = String.format("Help: %s", Joiner.on(" ").join(visited));
+            CommandUsageBox box = new CommandUsageBox(callable.getDescription(), title);
             actor.printRaw(ColorCodeBuilder.asColorCodes(box));
         }
     }

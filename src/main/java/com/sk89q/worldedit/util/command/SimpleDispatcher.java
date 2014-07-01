@@ -22,7 +22,7 @@ package com.sk89q.worldedit.util.command;
 import com.google.common.base.Joiner;
 import com.sk89q.minecraft.util.commands.*;
 import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
-import com.sk89q.worldedit.util.formatting.CommandListBox;
+import com.sk89q.worldedit.util.formatting.components.CommandListBox;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
 
 import java.util.*;

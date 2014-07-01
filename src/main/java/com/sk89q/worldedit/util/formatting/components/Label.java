@@ -17,18 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.formatting;
+package com.sk89q.worldedit.util.formatting.components;
+
+import com.sk89q.worldedit.util.formatting.Style;
+import com.sk89q.worldedit.util.formatting.StyledFragment;
 
 /**
- * Represents a fragment representing a command that is to be typed.
+ * Represents a fragment representing a label.
  */
-public class Cmd extends StyledFragment {
+public class Label extends StyledFragment {
 
     /**
      * Create a new instance.
      */
-    public Cmd() {
-        super(Style.CYAN);
+    public Label() {
+        super(Style.YELLOW);
     }
 
 }
