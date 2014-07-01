@@ -30,12 +30,12 @@ import java.io.File;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-class BukkitCommandSender implements Actor {
+public class BukkitCommandSender implements Actor {
 
     private CommandSender sender;
     private WorldEditPlugin plugin;
 
-    BukkitCommandSender(WorldEditPlugin plugin, CommandSender sender) {
+    public BukkitCommandSender(WorldEditPlugin plugin, CommandSender sender) {
         checkNotNull(plugin);
         checkNotNull(sender);
         checkArgument(!(sender instanceof Player), "Cannot wrap a player");

@@ -17,7 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.formatting;
+package com.sk89q.worldedit.util.formatting.component;
+
+import com.sk89q.worldedit.util.formatting.Style;
 
 public class CommandListBox extends MessageBox {
 

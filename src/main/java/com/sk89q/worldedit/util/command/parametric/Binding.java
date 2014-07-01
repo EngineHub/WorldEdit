@@ -23,6 +23,7 @@ import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.worldedit.util.command.binding.PrimitiveBindings;
 import com.sk89q.worldedit.util.command.binding.StandardBindings;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -77,8 +78,8 @@ public interface Binding {
      * @throws ParameterException thrown if the parameter could not be formulated
      * @throws CommandException on a command exception
      */
-    Object bind(ParameterData parameter, ArgumentStack scoped, boolean onlyConsume) 
-            throws ParameterException, CommandException;
+    Object bind(ParameterData parameter, ArgumentStack scoped, boolean onlyConsume)
+            throws ParameterException, CommandException, InvocationTargetException;
 
     /**
      * Get a list of suggestions for the given parameter and user arguments.

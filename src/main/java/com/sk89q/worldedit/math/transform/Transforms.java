@@ -19,27 +19,31 @@
 
 package com.sk89q.worldedit.math.transform;
 
-import com.google.common.base.Function;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.util.Location;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Makes a transformation of {@link Vector}s.
+ * Various utility methods related to {@link Transform}s.
  */
-public interface Transform extends Function<Vector, Vector> {
+public final class Transforms {
+
+    private Transforms() {
+    }
 
     /**
-     * Create a new inverse transform.
+     * Transform a location's position with a given transform.
+     * </p>
+     * Direction is unaffected.
      *
-     * @return a new inverse transform
+     * @param location the location
+     * @param transform the transform
+     * @return the transformed location
      */
-    Transform inverse();
-
-    /**
-     * Create a new {@link Transform} that combines this transform with another.
-     *
-     * @param other the other transform to occur second
-     * @return a new transform
-     */
-    Transform combine(Transform other);
+    public static Location transform(Location location, Transform transform) {
+        checkNotNull(location);
+        checkNotNull(transform);
+        return new Location(location.getWorld(), transform.apply(location.toVector()), location.getDirection());
+    }
 
 }

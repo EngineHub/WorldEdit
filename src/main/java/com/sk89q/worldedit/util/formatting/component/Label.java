@@ -17,29 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.math.transform;
+package com.sk89q.worldedit.util.formatting.component;
 
-import com.google.common.base.Function;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.util.formatting.Style;
+import com.sk89q.worldedit.util.formatting.StyledFragment;
 
 /**
- * Makes a transformation of {@link Vector}s.
+ * Represents a fragment representing a label.
  */
-public interface Transform extends Function<Vector, Vector> {
+public class Label extends StyledFragment {
 
     /**
-     * Create a new inverse transform.
-     *
-     * @return a new inverse transform
+     * Create a new instance.
      */
-    Transform inverse();
-
-    /**
-     * Create a new {@link Transform} that combines this transform with another.
-     *
-     * @param other the other transform to occur second
-     * @return a new transform
-     */
-    Transform combine(Transform other);
+    public Label() {
+        super(Style.YELLOW);
+    }
 
 }

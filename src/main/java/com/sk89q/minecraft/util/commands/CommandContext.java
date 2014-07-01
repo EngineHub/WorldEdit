@@ -145,7 +145,7 @@ public class CommandContext {
             suggestionContext = SuggestionContext.hangingValue();
 
             // Not a flag?
-            if (arg.charAt(0) != '-' || arg.length() == 1 || !arg.matches("^-[a-zA-Z]+$")) {
+            if (arg.charAt(0) != '-' || arg.length() == 1 || !arg.matches("^-[a-zA-Z\\?]+$")) {
                 if (!isHanging) {
                     suggestionContext = SuggestionContext.lastValue();
                 }

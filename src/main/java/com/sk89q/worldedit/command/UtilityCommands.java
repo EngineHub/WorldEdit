@@ -19,26 +19,44 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.*;
-import com.sk89q.worldedit.*;
+import com.google.common.base.Joiner;
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.Logging;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.EntityType;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.LocalWorld.KillFlags;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.CommandManager;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.command.CommandCallable;
 import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Description;
 import com.sk89q.worldedit.util.command.Dispatcher;
+import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
 import com.sk89q.worldedit.util.command.parametric.Optional;
+import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
+import com.sk89q.worldedit.util.formatting.Style;
+import com.sk89q.worldedit.util.formatting.StyledFragment;
+import com.sk89q.worldedit.util.formatting.component.Code;
+import com.sk89q.worldedit.util.formatting.component.CommandListBox;
+import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.world.World;
 
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
 
@@ -497,59 +515,137 @@ public class UtilityCommands {
         help(args, we, actor);
     }
 
-    public static void help(CommandContext args, WorldEdit we, Actor actor) {
-        final Dispatcher dispatcher = we.getPlatformManager().getCommandManager().getDispatcher();
+    private static CommandMapping detectCommand(Dispatcher dispatcher, String command, boolean isRootLevel) {
+        CommandMapping mapping;
 
-        if (args.argsLength() == 0) {
-            SortedSet<String> commands = new TreeSet<String>(new Comparator<String>() {
-                @Override
-                public int compare(String o1, String o2) {
-                    final int ret = o1.replaceAll("/", "").compareToIgnoreCase(o2.replaceAll("/", ""));
-                    if (ret == 0) {
-                        return o1.compareToIgnoreCase(o2);
-                    }
-                    return ret;
-                }
-            });
-            commands.addAll(dispatcher.getPrimaryAliases());
+        // First try the command as entered
+        mapping = dispatcher.get(command);
+        if (mapping != null) {
+            return mapping;
+        }
 
-            StringBuilder sb = new StringBuilder();
-            boolean first = true;
-            for (String command : commands) {
-                if (!first) {
-                    sb.append(", ");
-                }
-
-                sb.append('/');
-                sb.append(command);
-                first = false;
+        // Then if we're looking at root commands and the user didn't use
+        // any slashes, let's try double slashes and then single slashes.
+        // However, be aware that there exists different single slash
+        // and double slash commands in WorldEdit
+        if (isRootLevel && !command.contains("/")) {
+            mapping = dispatcher.get("//" + command);
+            if (mapping != null) {
+                return mapping;
             }
 
-            actor.print(sb.toString());
-
-            return;
+            mapping = dispatcher.get("/" + command);
+            if (mapping != null) {
+                return mapping;
+            }
         }
 
-        String command = args.getJoinedStrings(0).toLowerCase().replaceAll("^/", "");
-        CommandMapping mapping = dispatcher.get(command);
+        return null;
+    }
 
-        if (mapping == null) {
-            actor.printError("Unknown command '" + command + "'.");
-            return;
+    public static void help(CommandContext args, WorldEdit we, Actor actor) {
+        CommandCallable callable = we.getPlatformManager().getCommandManager().getDispatcher();
+
+        int page = 0;
+        final int perPage = actor instanceof Player ? 8 : 20; // More pages for console
+        int effectiveLength = args.argsLength();
+
+        // Detect page from args
+        try {
+            if (args.argsLength() > 0) {
+                page = args.getInteger(args.argsLength() - 1);
+                if (page <= 0) {
+                    page = 1;
+                } else {
+                    page--;
+                }
+
+                effectiveLength--;
+            }
+        } catch (NumberFormatException ignored) {
         }
 
-        Description description = mapping.getDescription();
+        boolean isRootLevel = true;
+        List<String> visited = new ArrayList<String>();
 
-        if (description.getUsage() != null) {
-            actor.printDebug("Usage: " + description.getUsage());
+        // Drill down to the command
+        for (int i = 0; i < effectiveLength; i++) {
+            String command = args.getString(i);
+
+            if (callable instanceof Dispatcher) {
+                // Chop off the beginning / if we're are the root level
+                if (isRootLevel && command.length() > 1 && command.charAt(0) == '/') {
+                    command = command.substring(1);
+                }
+
+                CommandMapping mapping = detectCommand((Dispatcher) callable, command, isRootLevel);
+                if (mapping != null) {
+                    callable = mapping.getCallable();
+                } else {
+                    if (isRootLevel) {
+                        actor.printError(String.format("The command '%s' could not be found.", args.getString(i)));
+                        return;
+                    } else {
+                        actor.printError(String.format("The sub-command '%s' under '%s' could not be found.",
+                                command, Joiner.on(" ").join(visited)));
+                        return;
+                    }
+                }
+
+                visited.add(args.getString(i));
+                isRootLevel = false;
+            } else {
+                actor.printError(String.format("'%s' has no sub-commands. (Maybe '%s' is for a parameter?)",
+                        Joiner.on(" ").join(visited), command));
+                return;
+            }
         }
 
-        if (description.getHelp() != null) {
-            actor.print(description.getHelp());
-        } else if (description.getShortDescription() != null) {
-            actor.print(description.getShortDescription());
+        // Create the message
+        if (callable instanceof Dispatcher) {
+            Dispatcher dispatcher = (Dispatcher) callable;
+
+            // Get a list of aliases
+            List<CommandMapping> aliases = new ArrayList<CommandMapping>(dispatcher.getCommands());
+            Collections.sort(aliases, new PrimaryAliasComparator(CommandManager.COMMAND_CLEAN_PATTERN));
+
+            // Calculate pagination
+            int offset = perPage * page;
+            int pageTotal = (int) Math.ceil(aliases.size() / (double) perPage);
+
+            // Box
+            CommandListBox box = new CommandListBox(String.format("Help: page %d/%d ", page + 1, pageTotal));
+            StyledFragment contents = box.getContents();
+            StyledFragment tip = contents.createFragment(Style.GRAY);
+
+            if (offset >= aliases.size()) {
+                tip.createFragment(Style.RED).append(String.format("There is no page %d (total number of pages is %d).", page + 1, pageTotal)).newLine();
+            } else {
+                List<CommandMapping> list = aliases.subList(offset, Math.min(offset + perPage, aliases.size()));
+
+                tip.append("Type ");
+                tip.append(new Code().append("//help ").append("<command> [<page>]"));
+                tip.append(" for more information.").newLine();
+
+                // Add each command
+                for (CommandMapping mapping : list) {
+                    StringBuilder builder = new StringBuilder();
+                    if (isRootLevel) {
+                        builder.append("/");
+                    }
+                    if (!visited.isEmpty()) {
+                        builder.append(Joiner.on(" ").join(visited));
+                        builder.append(" ");
+                    }
+                    builder.append(mapping.getPrimaryAlias());
+                    box.appendCommand(builder.toString(), mapping.getDescription().getShortDescription());
+                }
+            }
+
+            actor.printRaw(ColorCodeBuilder.asColorCodes(box));
         } else {
-            actor.print("No further help is available.");
+            CommandUsageBox box = new CommandUsageBox(callable, Joiner.on(" ").join(visited));
+            actor.printRaw(ColorCodeBuilder.asColorCodes(box));
         }
     }
 }

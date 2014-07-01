@@ -20,12 +20,20 @@
 package com.sk89q.worldedit.util.command;
 
 import com.google.common.base.Joiner;
-import com.sk89q.minecraft.util.commands.*;
-import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
-import com.sk89q.worldedit.util.formatting.CommandListBox;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
+import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandLocals;
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
+import com.sk89q.minecraft.util.commands.WrappedCommandException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A simple implementation of {@link Dispatcher}.
@@ -47,7 +55,7 @@ public class SimpleDispatcher implements Dispatcher {
 
     @Override
     public void registerCommand(CommandCallable callable, String... alias) {
-        CommandMapping mapping = new CommandMapping(callable, alias);
+        CommandMapping mapping = new SimpleCommandMapping(callable, alias);
         
         // Check for replacements
         for (String a : alias) {
@@ -94,11 +102,6 @@ public class SimpleDispatcher implements Dispatcher {
     }
 
     @Override
-    public Set<Character> getValueFlags() {
-        return Collections.emptySet();
-    }
-
-    @Override
     public boolean call(String arguments, CommandLocals locals, String[] parentCommands) throws CommandException {
         // We have permission for this command if we have permissions for subcommands
         if (!testPermission(locals)) {
@@ -109,7 +112,7 @@ public class SimpleDispatcher implements Dispatcher {
         Set<String> aliases = getPrimaryAliases();
 
         if (aliases.isEmpty()) {
-            throw new InvalidUsageException("This command has no sub-commands.", getDescription());
+            throw new InvalidUsageException("This command has no sub-commands.", this);
         } else if (split.length > 0) {
             String subCommand = split[0];
             String subArguments = Joiner.on(" ").join(Arrays.copyOfRange(split, 1, split.length));
@@ -132,7 +135,7 @@ public class SimpleDispatcher implements Dispatcher {
 
         }
 
-        throw new InvalidUsageException(ColorCodeBuilder.asColorCodes(getSubcommandList(locals, parentCommands)), getDescription());
+        throw new InvalidUsageException("Please choose a sub-command.", this, true);
     }
 
     @Override
@@ -183,18 +186,6 @@ public class SimpleDispatcher implements Dispatcher {
         }
 
         return false;
-    }
-
-    private StyledFragment getSubcommandList(CommandLocals locals, String[] parentCommands) {
-        CommandListBox box = new CommandListBox("Subcommands");
-        String prefix = parentCommands.length > 0 ? "/" + Joiner.on(" ").join(parentCommands) + " " : "";
-        for (CommandMapping mapping : getCommands()) {
-            if (mapping.getCallable().testPermission(locals)) {
-                box.appendCommand(prefix + mapping.getPrimaryAlias(), mapping.getDescription().getShortDescription());
-            }
-        }
-
-        return box;
     }
 
 }

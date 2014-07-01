@@ -131,7 +131,7 @@ public class RegionCommands {
             desc = "Draws a spline through selected points",
             help =
                 "Draws a spline through selected points.\n" +
-                "Can only be uesd with convex polyhedral selections.\n" +
+                "Can only be used with convex polyhedral selections.\n" +
                 "Flags:\n" +
                 "  -h generates only a shell",
             flags = "h",

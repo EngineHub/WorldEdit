@@ -42,6 +42,8 @@ import com.sk89q.worldedit.util.command.fluent.CommandGraph;
 import com.sk89q.worldedit.util.command.parametric.LegacyCommandsHandler;
 import com.sk89q.worldedit.util.command.parametric.ParametricBuilder;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
+import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
+import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
 
@@ -50,6 +52,7 @@ import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -60,6 +63,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class CommandManager {
 
+    public static final Pattern COMMAND_CLEAN_PATTERN = Pattern.compile("^[/]+");
     private static final Logger logger = Logger.getLogger(CommandManager.class.getCanonicalName());
     private static final java.util.regex.Pattern numberFormatExceptionPattern = java.util.regex.Pattern.compile("^For input string: \"(.*)\"$");
 
@@ -220,7 +224,17 @@ public final class CommandManager {
         } catch (CommandPermissionsException e) {
             actor.printError("You don't have permission to do this.");
         } catch (InvalidUsageException e) {
-            actor.printError(e.getMessage() + "\nUsage: " + e.getUsage("/"));
+            if (e.isFullHelpSuggested()) {
+                actor.printRaw(ColorCodeBuilder.asColorCodes(new CommandUsageBox(e.getCommand(), e.getCommandUsed("/", ""), locals)));
+                String message = e.getMessage();
+                if (message != null) {
+                    actor.printError(message);
+                }
+            } else {
+                String message = e.getMessage();
+                actor.printError(message != null ? message : "The command was not used properly (no more help available).");
+                actor.printError("Usage: " + e.getSimpleUsageString("/"));
+            }
         } catch (WrappedCommandException e) {
             Throwable t = e.getCause();
             actor.printError("Please report this error: [See console]");
