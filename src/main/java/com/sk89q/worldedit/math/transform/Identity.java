@@ -41,7 +41,7 @@ public class Identity implements Transform {
         if (other instanceof Identity) {
             return this;
         } else {
-            return new CombinedTransform(this, other);
+            return other;
         }
     }
 }
