@@ -89,7 +89,7 @@ public class CommandUsageBox extends StyledFragment {
         contents.newLine();
 
         if (description.getHelp() != null) {
-            contents.createFragment(Style.YELLOW_DARK).append(description.getHelp());
+            contents.append(description.getHelp());
         } else if (description.getShortDescription() != null) {
             contents.append(description.getShortDescription());
         } else {
