@@ -55,7 +55,7 @@ public class SimpleDispatcher implements Dispatcher {
 
     @Override
     public void registerCommand(CommandCallable callable, String... alias) {
-        CommandMapping mapping = new CommandMapping(callable, alias);
+        CommandMapping mapping = new SimpleCommandMapping(callable, alias);
         
         // Check for replacements
         for (String a : alias) {

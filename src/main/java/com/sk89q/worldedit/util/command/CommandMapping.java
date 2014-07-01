@@ -19,70 +19,37 @@
 
 package com.sk89q.worldedit.util.command;
 
-import java.util.Arrays;
-
 /**
- * Tracks a command registration.
+ * Provides information about a mapping between a command and its aliases.
  */
-public class CommandMapping {
-    
-    private final String[] aliases;
-    private final CommandCallable callable;
-    
-    /**
-     * Create a new instance.
-     * 
-     * @param callable the command callable
-     * @param alias a list of all aliases, where the first one is the primary one
-     */
-    public CommandMapping(CommandCallable callable, String... alias) {
-        super();
-        this.aliases = alias;
-        this.callable = callable;
-    }
+public interface CommandMapping {
 
     /**
      * Get the primary alias.
-     * 
+     *
      * @return the primary alias
      */
-    public String getPrimaryAlias() {
-        return aliases[0];
-    }
-    
+    String getPrimaryAlias();
+
     /**
      * Get a list of all aliases.
-     * 
+     *
      * @return aliases
      */
-    public String[] getAllAliases() {
-        return aliases;
-    }
-    
+    String[] getAllAliases();
+
     /**
      * Get the callable
-     * 
+     *
      * @return the callable
      */
-    public CommandCallable getCallable() {
-        return callable;
-    }
+    CommandCallable getCallable();
 
     /**
      * Get the {@link Description} form the callable.
-     * 
+     *
      * @return the description
      */
-    public Description getDescription() {
-        return getCallable().getDescription();
-    }
-
-    @Override
-    public String toString() {
-        return "CommandMapping{" +
-                "aliases=" + Arrays.toString(aliases) +
-                ", callable=" + callable +
-                '}';
-    }
+    Description getDescription();
 
 }
