@@ -48,9 +48,9 @@ import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
 import com.sk89q.worldedit.util.formatting.Style;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
-import com.sk89q.worldedit.util.formatting.components.Code;
-import com.sk89q.worldedit.util.formatting.components.CommandListBox;
-import com.sk89q.worldedit.util.formatting.components.CommandUsageBox;
+import com.sk89q.worldedit.util.formatting.component.Code;
+import com.sk89q.worldedit.util.formatting.component.CommandListBox;
+import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
