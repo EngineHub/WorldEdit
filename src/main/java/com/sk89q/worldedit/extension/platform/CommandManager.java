@@ -231,7 +231,7 @@ public final class CommandManager {
             } else {
                 String message = e.getMessage();
                 actor.printError(message != null ? message : "The command was not used properly (no more help available).");
-                actor.printError(e.getSimpleUsageString("/"));
+                actor.printError("Usage: " + e.getSimpleUsageString("/"));
             }
         } catch (WrappedCommandException e) {
             Throwable t = e.getCause();
