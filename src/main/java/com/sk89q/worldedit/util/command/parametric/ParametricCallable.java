@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.command.parametric;
 
+import com.google.common.primitives.Chars;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
@@ -55,6 +56,8 @@ class ParametricCallable implements CommandCallable {
     private final Method method;
     private final ParameterData[] parameters;
     private final Set<Character> valueFlags = new HashSet<Character>();
+    private final boolean anyFlags;
+    private final Set<Character> legacyFlags = new HashSet<Character>();
     private final SimpleDescription description = new SimpleDescription();
     private final CommandPermissions commandPermissions;
 
@@ -156,6 +159,10 @@ class ParametricCallable implements CommandCallable {
                 userParameters.add(parameter);
             }
         }
+
+        // Gather legacy flags
+        anyFlags = definition.anyFlags();
+        legacyFlags.addAll(Chars.asList(definition.flags().toCharArray()));
 
         // Finish description
         description.setDescription(!definition.desc().isEmpty() ? definition.desc() : null);
@@ -412,35 +419,41 @@ class ParametricCallable implements CommandCallable {
      * @param context the command context
      */
     private String getUnusedFlags(CommandContext context) {
-        Set<Character> unusedFlags = null;
-        for (char flag : context.getFlags()) {
-            boolean found = false;
+        if (!anyFlags) {
+            Set<Character> unusedFlags = null;
+            for (char flag : context.getFlags()) {
+                boolean found = false;
 
-            for (ParameterData parameter : parameters) {
-                Character paramFlag = parameter.getFlag();
-                if (paramFlag != null && flag == paramFlag) {
-                    found = true;
+                if (legacyFlags.contains(flag)) {
                     break;
                 }
-            }
-            
-            if (!found) {
-                if (unusedFlags == null) {
-                    unusedFlags = new HashSet<Character>();
+
+                for (ParameterData parameter : parameters) {
+                    Character paramFlag = parameter.getFlag();
+                    if (paramFlag != null && flag == paramFlag) {
+                        found = true;
+                        break;
+                    }
                 }
-                unusedFlags.add(flag);
+
+                if (!found) {
+                    if (unusedFlags == null) {
+                        unusedFlags = new HashSet<Character>();
+                    }
+                    unusedFlags.add(flag);
+                }
+            }
+
+            if (unusedFlags != null) {
+                StringBuilder builder = new StringBuilder();
+                for (Character flag : unusedFlags) {
+                    builder.append("-").append(flag).append(" ");
+                }
+
+                return builder.toString().trim();
             }
         }
-        
-        if (unusedFlags != null) {
-            StringBuilder builder = new StringBuilder();
-            for (Character flag : unusedFlags) {
-                builder.append("-").append(flag).append(" ");
-            }
-            
-            return builder.toString().trim();
-        }
-        
+
         return null;
     }
     
