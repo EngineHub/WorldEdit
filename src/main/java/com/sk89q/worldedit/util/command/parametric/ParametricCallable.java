@@ -366,8 +366,8 @@ class ParametricCallable implements CommandCallable {
      * @throws ParameterException on an error
      * @throws CommandException on an error
      */
-    private Object getDefaultValue(int i, ContextArgumentStack scoped) 
-            throws ParameterException, CommandException {
+    private Object getDefaultValue(int i, ContextArgumentStack scoped)
+            throws ParameterException, CommandException, InvocationTargetException {
         CommandContext context = scoped.getContext();
         ParameterData parameter = parameters[i];
         

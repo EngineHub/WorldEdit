@@ -143,7 +143,7 @@ public class BindingHelper implements Binding {
 
     @Override
     public Object bind(ParameterData parameter, ArgumentStack scoped,
-            boolean onlyConsume) throws ParameterException, CommandException {
+            boolean onlyConsume) throws ParameterException, CommandException, InvocationTargetException {
         BoundMethod binding = match(parameter);
         List<Object> args = new ArrayList<Object>();
         args.add(scoped);
@@ -178,7 +178,7 @@ public class BindingHelper implements Binding {
             } else if (e.getCause() instanceof CommandException) {
                 throw (CommandException) e.getCause();
             }
-            throw new RuntimeException(e.getCause());
+            throw e;
         }
     }
 
