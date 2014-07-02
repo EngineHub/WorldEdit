@@ -375,9 +375,9 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.butcher")
     @Logging(PLACEMENT)
-    public void butcher(Actor actor, @Optional Player player, @Optional LocalSession session, CommandContext args) throws WorldEditException {
-
+    public void butcher(Actor actor, CommandContext args) throws WorldEditException {
         LocalConfiguration config = we.getConfiguration();
+        Player player = actor instanceof Player ? (Player) actor : null;
 
         // technically the default can be larger than the max, but that's not my problem
         int radius = config.butcherDefaultRadius;
@@ -407,6 +407,7 @@ public class UtilityCommands {
 
         int killed;
         if (player != null) {
+            LocalSession session = we.getSessionManager().get(player);
             killed = player.getWorld().killMobs(session.getPlacementPosition(player), radius, flags.flags);
         } else {
             killed = 0;

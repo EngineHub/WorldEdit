@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.util.command.parametric;
 
-import com.google.common.base.Joiner;
+import com.google.common.primitives.Chars;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
@@ -56,6 +56,8 @@ class ParametricCallable implements CommandCallable {
     private final Method method;
     private final ParameterData[] parameters;
     private final Set<Character> valueFlags = new HashSet<Character>();
+    private final boolean anyFlags;
+    private final Set<Character> legacyFlags = new HashSet<Character>();
     private final SimpleDescription description = new SimpleDescription();
     private final CommandPermissions commandPermissions;
 
@@ -109,8 +111,7 @@ class ParametricCallable implements CommandCallable {
                     }
                 // Special annotation bindings
                 } else if (parameter.getBinding() == null) {
-                    parameter.setBinding(builder.getBindings().get(
-                            annotation.annotationType()));
+                    parameter.setBinding(builder.getBindings().get(annotation.annotationType()));
                     parameter.setClassifier(annotation);
                 }
             }
@@ -159,6 +160,10 @@ class ParametricCallable implements CommandCallable {
             }
         }
 
+        // Gather legacy flags
+        anyFlags = definition.anyFlags();
+        legacyFlags.addAll(Chars.asList(definition.flags().toCharArray()));
+
         // Finish description
         description.setDescription(!definition.desc().isEmpty() ? definition.desc() : null);
         description.setHelp(!definition.help().isEmpty() ? definition.help() : null);
@@ -188,7 +193,6 @@ class ParametricCallable implements CommandCallable {
 
         // Provide help if -? is specified
         if (context.hasFlag('?')) {
-            String title = Joiner.on(" ").join(parentCommands);
             throw new InvalidUsageException(null, this, true);
         }
 
@@ -314,8 +318,7 @@ class ParametricCallable implements CommandCallable {
             CommandContext context = existing.getContext();
             
             if (parameter.isValueFlag()) {
-                return new StringArgumentStack(
-                        context, context.getFlag(parameter.getFlag()), false);
+                return new StringArgumentStack(context, context.getFlag(parameter.getFlag()), false);
             } else {
                 String v = context.hasFlag(parameter.getFlag()) ? "true" : "false";
                 return new StringArgumentStack(context, v, true);
@@ -341,20 +344,24 @@ class ParametricCallable implements CommandCallable {
         // Optional non-flag parameters:
         //     - Before required parameters: Consume if there are 'left over' args
         //     - At the end: Always consumes
-        
-        if (parameter.isOptional() && parameter.getFlag() == null) {
-            int numberFree = context.argsLength() - scoped.position();
-            for (int j = i; j < parameters.length; j++) {
-                if (parameters[j].isNonFlagConsumer() && !parameters[j].isOptional()) {
-                    // We already checked if the consumed count was > -1
-                    // when we created this object
-                    numberFree -= parameters[j].getConsumedCount();
+
+        if (parameter.isOptional()) {
+            if (parameter.getFlag() != null) {
+                return !parameter.isValueFlag() || context.hasFlag(parameter.getFlag());
+            } else {
+                int numberFree = context.argsLength() - scoped.position();
+                for (int j = i; j < parameters.length; j++) {
+                    if (parameters[j].isNonFlagConsumer() && !parameters[j].isOptional()) {
+                        // We already checked if the consumed count was > -1
+                        // when we created this object
+                        numberFree -= parameters[j].getConsumedCount();
+                    }
                 }
-            }
-            
-            // Skip this optional parameter
-            if (numberFree < 1) {
-                return false;
+
+                // Skip this optional parameter
+                if (numberFree < 1) {
+                    return false;
+                }
             }
         }
         
@@ -370,17 +377,14 @@ class ParametricCallable implements CommandCallable {
      * @throws ParameterException on an error
      * @throws CommandException on an error
      */
-    private Object getDefaultValue(int i, ContextArgumentStack scoped)
-            throws ParameterException, CommandException, InvocationTargetException {
+    private Object getDefaultValue(int i, ContextArgumentStack scoped) throws ParameterException, CommandException, InvocationTargetException {
         CommandContext context = scoped.getContext();
         ParameterData parameter = parameters[i];
         
         String[] defaultValue = parameter.getDefaultValue();
         if (defaultValue != null) {
             try {
-                return parameter.getBinding().bind(
-                        parameter, new StringArgumentStack(
-                                context, defaultValue, false), false);
+                return parameter.getBinding().bind(parameter, new StringArgumentStack(context, defaultValue, false), false);
             } catch (MissingParameterException e) {
                 throw new ParametricException(
                         "The default value of the parameter using the binding " + 
@@ -399,8 +403,7 @@ class ParametricCallable implements CommandCallable {
      * @param scoped the argument scope 
      * @throws UnconsumedParameterException thrown if parameters were not consumed
      */
-    private void checkUnconsumed(ContextArgumentStack scoped) 
-            throws UnconsumedParameterException {
+    private void checkUnconsumed(ContextArgumentStack scoped) throws UnconsumedParameterException {
         CommandContext context = scoped.getContext();
         String unconsumed;
         String unconsumedFlags = getUnusedFlags(context);
@@ -420,35 +423,41 @@ class ParametricCallable implements CommandCallable {
      * @param context the command context
      */
     private String getUnusedFlags(CommandContext context) {
-        Set<Character> unusedFlags = null;
-        for (char flag : context.getFlags()) {
-            boolean found = false;
+        if (!anyFlags) {
+            Set<Character> unusedFlags = null;
+            for (char flag : context.getFlags()) {
+                boolean found = false;
 
-            for (ParameterData parameter : parameters) {
-                Character paramFlag = parameter.getFlag();
-                if (paramFlag != null && flag == paramFlag) {
-                    found = true;
+                if (legacyFlags.contains(flag)) {
                     break;
                 }
-            }
-            
-            if (!found) {
-                if (unusedFlags == null) {
-                    unusedFlags = new HashSet<Character>();
+
+                for (ParameterData parameter : parameters) {
+                    Character paramFlag = parameter.getFlag();
+                    if (paramFlag != null && flag == paramFlag) {
+                        found = true;
+                        break;
+                    }
                 }
-                unusedFlags.add(flag);
+
+                if (!found) {
+                    if (unusedFlags == null) {
+                        unusedFlags = new HashSet<Character>();
+                    }
+                    unusedFlags.add(flag);
+                }
+            }
+
+            if (unusedFlags != null) {
+                StringBuilder builder = new StringBuilder();
+                for (Character flag : unusedFlags) {
+                    builder.append("-").append(flag).append(" ");
+                }
+
+                return builder.toString().trim();
             }
         }
-        
-        if (unusedFlags != null) {
-            StringBuilder builder = new StringBuilder();
-            for (Character flag : unusedFlags) {
-                builder.append("-").append(flag).append(" ");
-            }
-            
-            return builder.toString().trim();
-        }
-        
+
         return null;
     }
     

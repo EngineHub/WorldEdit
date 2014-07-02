@@ -124,7 +124,7 @@ public final class BlockData {
             /* FALL-THROUGH */
 
         case BlockID.COCOA_PLANT:
-        case BlockID.TRIPWIRE_HOOK:
+        case BlockID.TRIPWIRE_HOOK: {
             int extra = data & ~0x3;
             int withoutFlags = data & 0x3;
             switch (withoutFlags) {
@@ -134,7 +134,7 @@ public final class BlockData {
             case 3: return 0 | extra;
             }
             break;
-
+        }
         case BlockID.SIGN_POST:
             return (data + 4) % 16;
 
@@ -145,15 +145,17 @@ public final class BlockData {
         case BlockID.BURNING_FURNACE:
         case BlockID.ENDER_CHEST:
         case BlockID.TRAPPED_CHEST:
-        case BlockID.HOPPER:
-            switch (data) {
-            case 2: return 5;
-            case 3: return 4;
-            case 4: return 2;
-            case 5: return 3;
+        case BlockID.HOPPER: {
+            int extra = data & 0x8;
+            int withoutFlags = data & ~0x8;
+            switch (withoutFlags) {
+            case 2: return 5 | extra;
+            case 3: return 4 | extra;
+            case 4: return 2 | extra;
+            case 5: return 3 | extra;
             }
             break;
-
+        }
         case BlockID.DISPENSER:
         case BlockID.DROPPER:
             int dispPower = data & 0x8;
@@ -343,7 +345,7 @@ public final class BlockData {
             /* FALL-THROUGH */
 
         case BlockID.COCOA_PLANT:
-        case BlockID.TRIPWIRE_HOOK:
+        case BlockID.TRIPWIRE_HOOK: {
             int extra = data & ~0x3;
             int withoutFlags = data & 0x3;
             switch (withoutFlags) {
@@ -353,7 +355,7 @@ public final class BlockData {
             case 0: return 3 | extra;
             }
             break;
-
+        }
         case BlockID.SIGN_POST:
             return (data + 12) % 16;
 
@@ -364,15 +366,17 @@ public final class BlockData {
         case BlockID.BURNING_FURNACE:
         case BlockID.ENDER_CHEST:
         case BlockID.TRAPPED_CHEST:
-        case BlockID.HOPPER:
-            switch (data) {
-            case 5: return 2;
-            case 4: return 3;
-            case 2: return 4;
-            case 3: return 5;
+        case BlockID.HOPPER: {
+            int extra = data & 0x8;
+            int withoutFlags = data & ~0x8;
+            switch (withoutFlags) {
+                case 5: return 2 | extra;
+                case 4: return 3 | extra;
+                case 2: return 4 | extra;
+                case 3: return 5 | extra;
             }
             break;
-
+        }
         case BlockID.DISPENSER:
         case BlockID.DROPPER:
             int dispPower = data & 0x8;
@@ -615,13 +619,15 @@ public final class BlockData {
         case BlockID.ENDER_CHEST:
         case BlockID.TRAPPED_CHEST:
         case BlockID.HOPPER:
-            switch (data) {
+            int extra = data & 0x8;
+            int withoutFlags = data & ~0x8;
+            switch (withoutFlags) {
             case 2:
             case 3:
-                return data ^ flipZ;
+                return (data ^ flipZ) | extra;
             case 4:
             case 5:
-                return data ^ flipX;
+                return (data ^ flipX) | extra;
             }
             break;
 
@@ -910,8 +916,10 @@ public final class BlockData {
         case BlockID.ENDER_CHEST:
         case BlockID.TRAPPED_CHEST:
         case BlockID.HOPPER:
-            if (data < 2 || data > 5) return -1;
-            return mod((data - 2 + increment), 4) + 2;
+            int extra = data & 0x8;
+            int withoutFlags = data & ~0x8;
+            if (withoutFlags < 2 || withoutFlags > 5) return -1;
+            return (mod((withoutFlags - 2 + increment), 4) + 2) | extra;
 
         case BlockID.DISPENSER:
         case BlockID.DROPPER:
