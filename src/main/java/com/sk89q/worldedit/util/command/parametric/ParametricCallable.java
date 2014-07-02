@@ -344,20 +344,24 @@ class ParametricCallable implements CommandCallable {
         // Optional non-flag parameters:
         //     - Before required parameters: Consume if there are 'left over' args
         //     - At the end: Always consumes
-        
-        if (parameter.isOptional() && parameter.getFlag() == null) {
-            int numberFree = context.argsLength() - scoped.position();
-            for (int j = i; j < parameters.length; j++) {
-                if (parameters[j].isNonFlagConsumer() && !parameters[j].isOptional()) {
-                    // We already checked if the consumed count was > -1
-                    // when we created this object
-                    numberFree -= parameters[j].getConsumedCount();
+
+        if (parameter.isOptional()) {
+            if (parameter.getFlag() != null) {
+                return !parameter.isValueFlag() || context.hasFlag(parameter.getFlag());
+            } else {
+                int numberFree = context.argsLength() - scoped.position();
+                for (int j = i; j < parameters.length; j++) {
+                    if (parameters[j].isNonFlagConsumer() && !parameters[j].isOptional()) {
+                        // We already checked if the consumed count was > -1
+                        // when we created this object
+                        numberFree -= parameters[j].getConsumedCount();
+                    }
                 }
-            }
-            
-            // Skip this optional parameter
-            if (numberFree < 1) {
-                return false;
+
+                // Skip this optional parameter
+                if (numberFree < 1) {
+                    return false;
+                }
             }
         }
         
