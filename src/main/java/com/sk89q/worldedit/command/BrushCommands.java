@@ -47,6 +47,7 @@ import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 
@@ -141,23 +142,17 @@ public class BrushCommands {
     )
     @CommandPermissions("worldedit.brush.clipboard")
     public void clipboardBrush(Player player, LocalSession session, EditSession editSession, @Switch('a') boolean ignoreAir) throws WorldEditException {
+        ClipboardHolder holder = session.getClipboard();
+        Clipboard clipboard = holder.getClipboard();
 
-        Clipboard clipboard = session.getClipboard();
-
-        if (clipboard == null) {
-            player.printError("Copy something first.");
-            return;
-        }
-
-        Region region = clipboard.getRegion();
-        Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint());
+        Vector size = clipboard.getDimensions();
 
         worldEdit.checkMaxBrushRadius(size.getBlockX());
         worldEdit.checkMaxBrushRadius(size.getBlockY());
         worldEdit.checkMaxBrushRadius(size.getBlockZ());
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
-        tool.setBrush(new ClipboardBrush(clipboard, ignoreAir), "worldedit.brush.clipboard");
+        tool.setBrush(new ClipboardBrush(holder, ignoreAir), "worldedit.brush.clipboard");
 
         player.print("Clipboard brush shape equipped.");
     }

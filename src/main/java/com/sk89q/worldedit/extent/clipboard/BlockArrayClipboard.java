@@ -42,19 +42,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BlockArrayClipboard implements Clipboard {
 
     private final Region region;
-    private Vector offset = new Vector();
+    private Vector origin = new Vector();
     private final BaseBlock[][][] blocks;
     private final List<ClipboardEntity> entities = new ArrayList<ClipboardEntity>();
 
     /**
      * Create a new instance.
+     * <p>
+     * The origin will be placed at the region's lowest minimum point.
      *
      * @param region the bounding region
      */
     public BlockArrayClipboard(Region region) {
         checkNotNull(region);
-        checkNotNull(offset);
         this.region = region.clone();
+        this.origin = region.getMinimumPoint();
 
         Vector dimensions = getDimensions();
         blocks = new BaseBlock[dimensions.getBlockX()][dimensions.getBlockY()][dimensions.getBlockZ()];
@@ -66,22 +68,17 @@ public class BlockArrayClipboard implements Clipboard {
     }
 
     @Override
-    public Vector getOffset() {
-        return offset;
+    public Vector getOrigin() {
+        return origin;
     }
 
     @Override
-    public void setOffset(Vector offset) {
-        checkNotNull(offset);
-        this.offset = offset;
+    public void setOrigin(Vector origin) {
+        this.origin = origin;
     }
 
-    /**
-     * Get the dimensions of the copy, which is at minimum (1, 1, 1).
-     *
-     * @return the dimensions
-     */
-    private Vector getDimensions() {
+    @Override
+    public Vector getDimensions() {
         return region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
     }
 

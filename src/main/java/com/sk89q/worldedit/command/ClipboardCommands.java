@@ -20,8 +20,6 @@
 package com.sk89q.worldedit.command;
 
 import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
@@ -38,10 +36,13 @@ import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.Selection;
+import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 
@@ -82,10 +83,10 @@ public class ClipboardCommands {
                      @Selection Region region, @Switch('e') boolean copyEntities) throws WorldEditException {
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
-        clipboard.setOffset(region.getMinimumPoint().subtract(session.getPlacementPosition(player)));
+        clipboard.setOrigin(session.getPlacementPosition(player));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
         Operations.completeLegacy(copy);
-        session.setClipboard(clipboard);
+        session.replaceClipboard(clipboard);
 
         player.print(region.getArea() + " block(s) were copied.");
     }
@@ -108,11 +109,11 @@ public class ClipboardCommands {
                     @Selection Region region, @Optional("air") Pattern leavePattern, @Switch('e') boolean copyEntities) throws WorldEditException {
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
-        clipboard.setOffset(region.getMinimumPoint().subtract(session.getPlacementPosition(player)));
+        clipboard.setOrigin(session.getPlacementPosition(player));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
         copy.setSourceFunction(new BlockReplace(editSession, leavePattern));
         Operations.completeLegacy(copy);
-        session.setClipboard(clipboard);
+        session.replaceClipboard(clipboard);
 
         player.print(region.getArea() + " block(s) were copied.");
     }
@@ -137,16 +138,19 @@ public class ClipboardCommands {
                       @Switch('a') boolean ignoreAirBlocks, @Switch('o') boolean atOrigin,
                       @Switch('s') boolean selectPasted) throws WorldEditException {
 
-        Clipboard clipboard = session.getClipboard();
-        Vector to = atOrigin ? clipboard.getRegion().getMinimumPoint(): session.getPlacementPosition(player).add(clipboard.getOffset());
-        ForwardExtentCopy copy = new ForwardExtentCopy(clipboard, clipboard.getRegion(), editSession, to);
+        ClipboardHolder holder = session.getClipboard();
+        Clipboard clipboard = holder.getClipboard();
+        Region region = clipboard.getRegion();
+
+        Vector to = atOrigin ? clipboard.getOrigin() : session.getPlacementPosition(player);
+        ForwardExtentCopy copy = new ForwardExtentCopy(clipboard, region, clipboard.getOrigin(), editSession, to);
+        copy.setTransform(holder.getTransform());
         if (ignoreAirBlocks) {
             copy.setSourceMask(new ExistingBlockMask(clipboard));
         }
         Operations.completeLegacy(copy);
 
         if (selectPasted) {
-            Region region = clipboard.getRegion();
             Vector max = to.add(region.getMaximumPoint().subtract(region.getMinimumPoint()));
             RegionSelector selector = new CuboidRegionSelector(player.getWorld(), to, max);
             session.setRegionSelector(player.getWorld(), selector);
@@ -154,38 +158,52 @@ public class ClipboardCommands {
             selector.explainRegionAdjust(player, session);
         }
 
-        player.print("The clipboard has been pasted at " + to.add(clipboard.getRegion().getMinimumPoint()));
+        player.print("The clipboard has been pasted at " + to.add(region.getMinimumPoint()));
     }
 
     @Command(
         aliases = { "/rotate" },
-        usage = "<angle-in-degrees>",
+        usage = "<y-axis> [<x-axis>] [<z-axis>]",
         desc = "Rotate the contents of the clipboard",
-        min = 1,
-        max = 1
+        help = "Non-destructively rotate the contents of the clipboard.\n" +
+               "Angles are provided in degrees and a positive angle will result in a clockwise rotation. " +
+               "Multiple rotations can be stacked. Interpolation is not performed so angles should be a multiple of 90 degrees.\n"
     )
     @CommandPermissions("worldedit.clipboard.rotate")
-    public void rotate(Player player, LocalSession session, EditSession editSession, CommandContext args) throws CommandException {
-        // TODO: Update for new clipboard
-        throw new CommandException("Needs to be re-written again");
+    public void rotate(Player player, LocalSession session, Double yRotate, @Optional Double xRotate, @Optional Double zRotate) throws WorldEditException {
+        if ((yRotate != null && Math.abs(yRotate % 90) > 0.001) ||
+                xRotate != null && Math.abs(xRotate % 90) > 0.001 ||
+                zRotate != null && Math.abs(zRotate % 90) > 0.001) {
+            player.printDebug("Note: Interpolation is not yet supported, so angles that are multiples of 90 is recommended.");
+        }
+
+        ClipboardHolder holder = session.getClipboard();
+        AffineTransform transform = new AffineTransform();
+        transform = transform.rotateY(Math.toRadians(yRotate != null ? yRotate : 0));
+        transform = transform.rotateX(Math.toRadians(xRotate != null ? xRotate : 0));
+        transform = transform.rotateZ(Math.toRadians(zRotate != null ? zRotate : 0));
+        holder.setTransform(holder.getTransform().combine(transform));
+        player.print("The clipboard copy has been rotated.");
     }
 
     @Command(
         aliases = { "/flip" },
-        usage = "[dir]",
-        flags = "p",
-        desc = "Flip the contents of the clipboard.",
+        usage = "[<direction>]",
+        desc = "Flip the contents of the clipboard",
         help =
-            "Flips the contents of the clipboard.\n" +
-            "The -p flag flips the selection around the player,\n" +
-            "instead of the selections center.",
+            "Flips the contents of the clipboard across the point from which the copy was made.\n",
         min = 0,
         max = 1
     )
     @CommandPermissions("worldedit.clipboard.flip")
-    public void flip(Player player, LocalSession session, EditSession editSession, CommandContext args) throws CommandException {
-        // TODO: Update for new clipboard
-        throw new CommandException("Needs to be re-written again");
+    public void flip(Player player, LocalSession session, EditSession editSession,
+                     @Optional(Direction.AIM) @Direction Vector direction) throws WorldEditException {
+        ClipboardHolder holder = session.getClipboard();
+        Clipboard clipboard = holder.getClipboard();
+        AffineTransform transform = new AffineTransform();
+        transform = transform.scale(direction.positive().multiply(-2).add(1, 1, 1));
+        holder.setTransform(holder.getTransform().combine(transform));
+        player.print("The clipboard copy has been flipped.");
     }
 
     @Command(
@@ -223,7 +241,7 @@ public class ClipboardCommands {
     )
     @CommandPermissions("worldedit.clipboard.clear")
     public void clearClipboard(Player player, LocalSession session, EditSession editSession) throws WorldEditException {
-        session.setClipboard(null);
+        session.replaceClipboard(null);
         player.print("Clipboard cleared.");
     }
 }

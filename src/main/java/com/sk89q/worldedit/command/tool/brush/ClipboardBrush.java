@@ -28,22 +28,25 @@ import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.session.ClipboardHolder;
 
 public class ClipboardBrush implements Brush {
 
-    private Clipboard clipboard;
+    private ClipboardHolder holder;
     private boolean noAir;
 
-    public ClipboardBrush(Clipboard clipboard, boolean noAir) {
-        this.clipboard = clipboard;
+    public ClipboardBrush(ClipboardHolder holder, boolean noAir) {
+        this.holder = holder;
         this.noAir = noAir;
     }
 
     @Override
     public void build(EditSession editSession, Vector pos, Pattern mat, double size) throws MaxChangedBlocksException {
+        Clipboard clipboard = holder.getClipboard();
         Region region = clipboard.getRegion();
-        Vector centerOffset = region.getCenter().subtract(region.getMinimumPoint());
-        ForwardExtentCopy copy = new ForwardExtentCopy(clipboard, clipboard.getRegion(), editSession, pos.subtract(centerOffset));
+        Vector centerOffset = region.getCenter().subtract(clipboard.getOrigin());
+        ForwardExtentCopy copy = new ForwardExtentCopy(clipboard, region, clipboard.getOrigin(), editSession, pos.subtract(centerOffset));
+        copy.setTransform(holder.getTransform());
         if (noAir) {
             copy.setSourceMask(new ExistingBlockMask(clipboard));
         }

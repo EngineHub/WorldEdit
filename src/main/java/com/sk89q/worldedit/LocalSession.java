@@ -39,6 +39,7 @@ import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
@@ -63,7 +64,7 @@ public class LocalSession {
     private boolean placeAtPos1 = false;
     private LinkedList<EditSession> history = new LinkedList<EditSession>();
     private int historyPointer = 0;
-    private Clipboard clipboard;
+    private ClipboardHolder clipboard;
     private boolean toolControl = true;
     private boolean superPickaxe = false;
     private BlockTool pickaxeMode = new SinglePickaxe();
@@ -327,7 +328,7 @@ public class LocalSession {
      * @return clipboard, may be null
      * @throws EmptyClipboardException
      */
-    public Clipboard getClipboard() throws EmptyClipboardException {
+    public ClipboardHolder getClipboard() throws EmptyClipboardException {
         if (clipboard == null) {
             throw new EmptyClipboardException();
         }
@@ -339,8 +340,8 @@ public class LocalSession {
      *
      * @param clipboard
      */
-    public void setClipboard(Clipboard clipboard) {
-        this.clipboard = clipboard;
+    public ClipboardHolder replaceClipboard(Clipboard clipboard) {
+        return this.clipboard = new ClipboardHolder(clipboard);
     }
 
     /**

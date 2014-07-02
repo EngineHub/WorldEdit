@@ -23,10 +23,12 @@ import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.pattern.ClipboardPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.extension.input.InputParseException;
+import com.sk89q.worldedit.session.ClipboardHolder;
 
 class HashTagPatternParser extends InputParser<Pattern> {
 
@@ -45,7 +47,9 @@ class HashTagPatternParser extends InputParser<Pattern> {
 
             if (session != null) {
                 try {
-                    return new ClipboardPattern(session.getClipboard());
+                    ClipboardHolder holder = session.getClipboard();
+                    Clipboard clipboard = holder.getClipboard();
+                    return new ClipboardPattern(clipboard);
                 } catch (EmptyClipboardException e) {
                     throw new InputParseException("To use #clipboard, please first copy something to your clipboard");
                 }

@@ -45,6 +45,7 @@ import com.sk89q.worldedit.regions.selector.EllipsoidRegionSelector;
 import com.sk89q.worldedit.regions.selector.ExtendingCuboidRegionSelector;
 import com.sk89q.worldedit.regions.selector.Polygonal2DRegionSelector;
 import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
@@ -584,13 +585,14 @@ public class SelectionCommands {
     public void size(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         if (args.hasFlag('c')) {
-            Clipboard clipboard = session.getClipboard();
+            ClipboardHolder holder = session.getClipboard();
+            Clipboard clipboard = holder.getClipboard();
             Region region = clipboard.getRegion();
             Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint());
-            Vector offset = clipboard.getOffset();
+            Vector origin = clipboard.getOrigin();
 
             player.print("Cuboid dimensions (max - min): " + size);
-            player.print("Offset: " + offset);
+            player.print("Offset: " + origin);
             player.print("Cuboid distance: " + size.distance(Vector.ONE));
             player.print("# of blocks: " + (int) (size.getX() * size.getY() * size.getZ()));
             return;

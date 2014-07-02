@@ -48,6 +48,7 @@ public class ForwardExtentCopy implements Operation {
     private final Extent source;
     private final Extent destination;
     private final Region region;
+    private final Vector from;
     private final Vector to;
     private int repetitions = 1;
     private Mask sourceMask = Masks.alwaysTrue();
@@ -58,21 +59,38 @@ public class ForwardExtentCopy implements Operation {
     private int affected;
 
     /**
-     * Create a new copy.
+     * Create a new copy using the region's lowest minimum point as the
+     * "from" position.
      *
      * @param source the source extent
      * @param region the region to copy
      * @param destination the destination extent
-     * @param to the destination position, starting from the the lowest X, Y, Z
+     * @param to the destination position
+     * @see #ForwardExtentCopy(Extent, Region, Vector, Extent, Vector) the main constructor
      */
     public ForwardExtentCopy(Extent source, Region region, Extent destination, Vector to) {
+        this(source, region, region.getMinimumPoint(), destination, to);
+    }
+
+    /**
+     * Create a new copy.
+     *
+     * @param source the source extent
+     * @param region the region to copy
+     * @param from the source position
+     * @param destination the destination extent
+     * @param to the destination position
+     */
+    public ForwardExtentCopy(Extent source, Region region, Vector from, Extent destination, Vector to) {
         checkNotNull(source);
         checkNotNull(region);
+        checkNotNull(from);
         checkNotNull(destination);
         checkNotNull(to);
         this.source = source;
         this.destination = destination;
         this.region = region;
+        this.from = from;
         this.to = to;
     }
 
@@ -182,7 +200,7 @@ public class ForwardExtentCopy implements Operation {
                 currentTransform = transform;
             }
 
-            ExtentBlockCopy copy = new ExtentBlockCopy(source, region.getMinimumPoint(), destination, to, currentTransform);
+            ExtentBlockCopy copy = new ExtentBlockCopy(source, from, destination, to, currentTransform);
             RegionMaskingFilter filter = new RegionMaskingFilter(sourceMask, copy);
             RegionFunction function = sourceFunction != null ? new CombinedRegionFunction(filter, sourceFunction) : filter;
             RegionVisitor visitor = new RegionVisitor(region, function);

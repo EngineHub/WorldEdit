@@ -38,21 +38,24 @@ public interface Clipboard extends Extent {
     Region getRegion();
 
     /**
-     * Get the offset at which the area was copied from.
-     * </p>
-     * The offset is not utilized by clipboards but it can be used
-     * to store, for example, the relative location from which the copy
-     * was made.
+     * Get the dimensions of the copy, which is at minimum (1, 1, 1).
      *
-     * @return the offset
+     * @return the dimensions
      */
-    Vector getOffset();
+    Vector getDimensions();
 
     /**
-     * Set the offset at which the area was copied from.
+     * Get the origin point from which the copy was made from.
      *
-     * @param offset the offset
+     * @return the origin
      */
-    void setOffset(Vector offset);
+    Vector getOrigin();
+
+    /**
+     * Set the origin point from which the copy was made from.
+     *
+     * @param origin the origin
+     */
+    void setOrigin(Vector origin);
 
 }
