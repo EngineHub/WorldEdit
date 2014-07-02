@@ -280,6 +280,10 @@ public class AffineTransform implements Transform {
         return concatenate(new AffineTransform(sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0));
     }
 
+    public AffineTransform scale(Vector vec) {
+        return scale(vec.getX(), vec.getY(), vec.getZ());
+    }
+
     @Override
     public Vector apply(Vector vector) {
         return new Vector(
@@ -295,5 +299,10 @@ public class AffineTransform implements Transform {
         } else {
             return new CombinedTransform(this, other);
         }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Affine[%g %g %g %g, %g %g %g %g, %g %g %g %g]}", m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23);
     }
 }
