@@ -22,6 +22,7 @@ package com.sk89q.worldedit.command;
 import com.google.common.base.Joiner;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
@@ -36,6 +37,9 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.CommandManager;
+import com.sk89q.worldedit.internal.expression.Expression;
+import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -44,6 +48,7 @@ import com.sk89q.worldedit.util.command.CommandCallable;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
+import com.sk89q.worldedit.util.command.binding.Text;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
 import com.sk89q.worldedit.util.formatting.Style;
@@ -502,6 +507,24 @@ public class UtilityCommands {
             }
         }
         player.print("Marked " + removed + " entit(ies) for removal.");
+    }
+
+    @Command(
+        aliases = { "/calc", "/calculate", "/eval", "/evaluate", "/solve" },
+        usage = "<expression>",
+        desc = "Evaluate a mathematical expression"
+    )
+    public void calc(Actor actor, @Text String input) throws CommandException {
+        try {
+            Expression expression = Expression.compile(input);
+            actor.print("= " + expression.evaluate());
+        } catch (EvaluationException e) {
+            actor.printError(String.format(
+                    "'%s' could not be parsed as a valid expression", input));
+        } catch (ExpressionException e) {
+            actor.printError(String.format(
+                    "'%s' could not be evaluated (error: %s)", input, e.getMessage()));
+        }
     }
 
     @Command(
