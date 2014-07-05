@@ -25,6 +25,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.function.LayerFunction;
+import com.sk89q.worldedit.function.operation.AffectedCounter;
 import com.sk89q.worldedit.masks.BlockMask;
 import com.sk89q.worldedit.masks.Mask;
 
@@ -35,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * only below that for all layers that originally consist of grass, dirt,
  * or smooth stone.
  */
-public class Naturalizer implements LayerFunction {
+public class Naturalizer implements LayerFunction, AffectedCounter {
 
     private final EditSession editSession;
     private final BaseBlock grass = new BaseBlock(BlockID.GRASS);

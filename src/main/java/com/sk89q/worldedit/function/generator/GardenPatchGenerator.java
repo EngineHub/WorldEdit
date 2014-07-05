@@ -26,6 +26,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.operation.AffectedCounter;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
@@ -35,7 +36,7 @@ import java.util.Random;
 /**
  * Generates patches of fruit (i.e. pumpkin patches).
  */
-public class GardenPatchGenerator implements RegionFunction {
+public class GardenPatchGenerator implements RegionFunction, AffectedCounter {
 
     private final Random random = new Random();
     private final EditSession editSession;
@@ -74,6 +75,7 @@ public class GardenPatchGenerator implements RegionFunction {
      *
      * @return affected count
      */
+    @Override
     public int getAffected() {
         return affected;
     }
