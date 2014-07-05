@@ -98,6 +98,11 @@ class ForgePlatform extends ServerInterface {
     }
 
     @Override
+    public int scheduleNext(Runnable task) {
+        return mod.getScheduler().schedule(0, 0, task);
+    }
+
+    @Override
     public boolean cancelScheduled(int taskId) {
         return mod.getScheduler().cancel(taskId);
     }

@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.function.operation;
 
+import com.sk89q.worldedit.function.util.WEConsumer;
+
+import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -32,6 +35,8 @@ public class OperationFuture implements Future<Operation> {
     private final Operation originalOperation;
     private Operation operation;
     private Throwable thrown;
+    private List<WEConsumer<OperationFuture>> completionTasks;
+    private List<WEConsumer<OperationFuture>> firstDelayTasks;
     private boolean started = false;
     private boolean done = false;
     private boolean cancelled = false;
@@ -72,6 +77,58 @@ public class OperationFuture implements Future<Operation> {
      */
     public Throwable getThrown() {
         return thrown;
+    }
+
+    /**
+     * Provide a task to run after the Operation has completed.
+     *
+     * It is guaranteed that {@link #isDone()} will be true when the consumer
+     * is called.
+     *
+     * The order of calling between threads calling {@link #get()} and tasks
+     * scheduled here is undefined.
+     *
+     * <b>Warning!</b> In the case of a platform without a reliable scheduling
+     * interface, the provided callback may be immediately invoked.
+     *
+     * @param task the consumer to run
+     * @return this OperationFuture
+     */
+    public OperationFuture onFinish(final WEConsumer<OperationFuture> task) {
+        if (isDone()) {
+            // Run the task on the next tick
+            int taskId = Operations.getSchedulingPlatform().scheduleNext(new Runnable() {
+                public void run() {
+                    task.accept(OperationFuture.this);
+                }
+            });
+
+            if (taskId == -1) {
+                // No scheduling
+                // Give up and just invoke it now :(
+                // I am aware that this releases Zalgo (http://blog.izs.me/post/59142742143/designing-apis-for-asynchrony)
+                task.accept(this);
+            }
+            return this;
+        }
+        completionTasks.add(task);
+        return this;
+    }
+
+    /**
+     * Provide a task to run the first time that the Operation runs over the
+     * time limit. This should be used to communicate a progress indicator to
+     * the end-user.
+     *
+     * In the case of a platform without a reliable scheduling interface, the
+     * provided callback will never be invoked.
+     *
+     * @param task the consumer to run
+     * @return this OperationFuture
+     */
+    public OperationFuture onFirstContinue(WEConsumer<OperationFuture> task) {
+        firstDelayTasks.add(task);
+        return this;
     }
 
     @Override
@@ -260,6 +317,13 @@ public class OperationFuture implements Future<Operation> {
         }
     }
 
+    protected void delayed() {
+        for (WEConsumer<OperationFuture> consumer : firstDelayTasks) {
+            consumer.accept(this);
+        }
+        firstDelayTasks.clear();
+    }
+
     protected void setStarted() {
         synchronized (LOCK) {
             started = true;
@@ -270,6 +334,12 @@ public class OperationFuture implements Future<Operation> {
     protected void complete() {
         synchronized (LOCK) {
             done = true;
+
+            for (WEConsumer<OperationFuture> consumer : completionTasks) {
+                consumer.accept(this);
+            }
+            completionTasks.clear();
+
             LOCK.notifyAll();
         }
     }

@@ -77,6 +77,14 @@ public interface Platform {
     int schedule(long delay, long period, Runnable task);
 
     /**
+     * Schedules the given Runnable to be invoked at or near the start of the next server tick.
+     *
+     * @param task Task to be executed
+     * @return Task id number (-1 if scheduling failed - e.g. this Platform does not support scheduling)
+     */
+    int scheduleNext(Runnable task);
+
+    /**
      * Attempt to cancel a task previously scheduled with the {@link #schedule(long, long, Runnable)} method.
      *
      * @param taskId task ID returned from schedule()

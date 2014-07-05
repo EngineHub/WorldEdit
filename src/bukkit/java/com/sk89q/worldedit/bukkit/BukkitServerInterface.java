@@ -91,13 +91,15 @@ public class BukkitServerInterface extends ServerInterface {
     }
 
     @Override
+    public int scheduleNext(Runnable run) {
+        BukkitTask task = server.getScheduler().runTask(plugin, run);
+        return task.getTaskId();
+    }
+
+    @Override
     public boolean cancelScheduled(int taskId) {
-        try {
-            server.getScheduler().cancelTask(taskId);
-            return true;
-        } catch (IllegalStateException e) {
-            return false;
-        }
+        server.getScheduler().cancelTask(taskId);
+        return true;
     }
 
     @Override

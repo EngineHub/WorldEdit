@@ -38,6 +38,21 @@ public abstract class AbstractPlatform implements Platform {
     }
 
     @Override
+    public int scheduleNext(Runnable task) {
+        return -1;
+    }
+
+    @Override
+    public boolean cancelScheduled(int taskId) {
+        return false;
+    }
+
+    @Override
+    public boolean isPrimaryThread() {
+        return true;
+    }
+
+    @Override
     public List<? extends World> getWorlds() {
         return Collections.emptyList();
     }
