@@ -44,6 +44,7 @@ public final class Operations {
      *
      * @param op operation to execute
      * @throws WorldEditException WorldEdit exception
+     * @deprecated No longer used in WorldEdit
      */
     public static void complete(Operation op) throws WorldEditException {
         while (op != null) {
@@ -57,7 +58,9 @@ public final class Operations {
      *
      * @param op operation to execute
      * @throws MaxChangedBlocksException thrown when too many blocks have been changed
+     * @deprecated No longer used in WorldEdit
      */
+    @Deprecated
     public static void completeLegacy(Operation op) throws MaxChangedBlocksException {
         while (op != null) {
             try {

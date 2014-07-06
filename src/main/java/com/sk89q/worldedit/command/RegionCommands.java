@@ -467,9 +467,8 @@ public class RegionCommands {
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(editSession), generator);
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
-        Operations.completeLegacy(visitor);
 
-        player.print(ground.getAffected() + " trees created.");
+        CommandFutureUtils.withCountPrinters(player, Operations.completeSlowly(visitor));
     }
 
     @Command(
@@ -487,9 +486,8 @@ public class RegionCommands {
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(editSession), generator);
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
-        Operations.completeLegacy(visitor);
 
-        player.print(ground.getAffected() + " flora created.");
+        CommandFutureUtils.withCountPrinters(player, Operations.completeSlowly(visitor));
     }
 
 }
