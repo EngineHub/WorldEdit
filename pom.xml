@@ -492,11 +492,23 @@
           <optional>true</optional>
         </dependency>
 
+        <!-- Used for running CraftBukkit from within your IDE
+             These are runtime-only dependencies -->
+        <dependency>
+          <groupId>org.sk89q.bukkit</groupId>
+          <artifactId>bukkit-classloader-check</artifactId>
+          <version>1.7.2-R0.3</version>
+          <scope>runtime</scope>
+          <type>jar</type>
+          <optional>true</optional>
+        </dependency>
+        <!-- End runtime only -->
+
         <!-- Bukkit implementation -->
         <dependency>
           <groupId>org.bukkit</groupId>
           <artifactId>bukkit</artifactId>
-          <version>1.7.2-R0.2</version>
+          <version>1.7.2-R0.3</version>
           <scope>compile</scope>
           <type>jar</type>
           <optional>true</optional>
