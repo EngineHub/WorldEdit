@@ -56,6 +56,7 @@ public class While extends Node {
                     ret = body.getValue();
                 } catch (BreakException e) {
                     if (e.doContinue) {
+                        //noinspection UnnecessaryContinue
                         continue;
                     } else {
                         break;

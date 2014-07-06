@@ -34,20 +34,18 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class ChunkLoadingExtent extends AbstractDelegateExtent {
 
     private final World world;
-    private boolean enabled;
 
     /**
      * Create a new instance.
      *
      * @param extent the extent
      * @param world the world
-     * @param enabled true to enable
+     * @param enabled does nothing
+     * @deprecated Removed 'enabled' option
      */
+    @Deprecated
     public ChunkLoadingExtent(Extent extent, World world, boolean enabled) {
-        super(extent);
-        checkNotNull(world);
-        this.enabled = enabled;
-        this.world = world;
+        this(extent, world);
     }
 
     /**
@@ -57,7 +55,9 @@ public class ChunkLoadingExtent extends AbstractDelegateExtent {
      * @param world the world
      */
     public ChunkLoadingExtent(Extent extent, World world) {
-        this(extent, world, true);
+        super(extent);
+        checkNotNull(world);
+        this.world = world;
     }
 
     @Override

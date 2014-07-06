@@ -250,7 +250,6 @@ public class KochanekBartelsInterpolation implements Interpolation {
 
         position *= scaling;
 
-        final int index = (int) Math.floor(position);
-        return index;
+        return (int) Math.floor(position);
     }
 }

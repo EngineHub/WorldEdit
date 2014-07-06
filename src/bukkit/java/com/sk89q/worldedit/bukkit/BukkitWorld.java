@@ -72,7 +72,7 @@ public class BukkitWorld extends LocalWorld {
         for (String val : values) {
             try {
                 return Enum.valueOf(enumType, val);
-            } catch (IllegalArgumentException e) {}
+            } catch (IllegalArgumentException ignored) {}
         }
         return null;
     }

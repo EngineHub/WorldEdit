@@ -33,14 +33,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BukkitCommandSender implements Actor {
 
     private CommandSender sender;
-    private WorldEditPlugin plugin;
 
     public BukkitCommandSender(WorldEditPlugin plugin, CommandSender sender) {
         checkNotNull(plugin);
         checkNotNull(sender);
         checkArgument(!(sender instanceof Player), "Cannot wrap a player");
 
-        this.plugin = plugin;
         this.sender = sender;
     }
 

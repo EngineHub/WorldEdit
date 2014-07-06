@@ -35,7 +35,6 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;

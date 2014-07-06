@@ -118,7 +118,6 @@ public class PermissionsResolverManager implements PermissionsResolver {
             } catch (Throwable e) {
                 logger.warning("Error in factory method for " + resolverClass.getSimpleName() + ": " + e);
                 e.printStackTrace();
-                continue;
             }
         }
         if (permissionResolver == null) {
@@ -207,6 +206,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
             for (Class<?> clazz : availableResolvers) {
                 resolvers.add(clazz.getSimpleName());
             }
+            //noinspection unchecked
             enabledResolvers.addAll(Arrays.asList(availableResolvers));
             config.setProperty("resolvers.enabled", resolvers);
             isUpdated = true;

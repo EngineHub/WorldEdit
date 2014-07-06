@@ -45,8 +45,6 @@ public class OldChunk implements Chunk {
     private int rootZ;
 
     private Map<BlockVector, Map<String,Tag>> tileEntities;
-    @SuppressWarnings("unused")
-    private World world; // TODO: remove if stays unused.
 
     /**
      * Construct the chunk with a compound tag.

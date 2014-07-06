@@ -376,7 +376,8 @@ public class DefaultNmsBlock extends NmsBlock {
             } catch (NoSuchFieldException e) {
             } catch (SecurityException e) {
             } catch (IllegalArgumentException e) {
-            } catch (IllegalAccessException e) {}
+            } catch (IllegalAccessException e) {
+            }
             return new ListTag(name, ByteTag.class, new ArrayList<ByteTag>());
         } else if (foreign instanceof NBTTagLong) {
             return new LongTag(name, ((NBTTagLong) foreign).c()); // getLong

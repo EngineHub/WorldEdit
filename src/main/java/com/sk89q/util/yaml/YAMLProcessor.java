@@ -117,7 +117,7 @@ public class YAMLProcessor extends YAMLNode {
                 if (stream != null) {
                     stream.close();
                 }
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
         }
     }
@@ -205,12 +205,13 @@ public class YAMLProcessor extends YAMLNode {
             }
             return true;
         } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             try {
                 if (stream != null) {
                     stream.close();
                 }
-            } catch (IOException e) {}
+            } catch (IOException ignored) {}
         }
 
         return false;

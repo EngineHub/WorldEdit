@@ -65,16 +65,12 @@ import static com.sk89q.worldedit.regions.Regions.*;
  */
 public class RegionCommands {
 
-    private final WorldEdit worldEdit;
-
     /**
      * Create a new instance.
      *
      * @param worldEdit reference to WorldEdit
      */
     public RegionCommands(WorldEdit worldEdit) {
-        checkNotNull(worldEdit);
-        this.worldEdit = worldEdit;
     }
 
     @Command(

@@ -31,8 +31,6 @@ import com.sk89q.worldedit.world.World;
 
 import java.io.File;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * An abstract implementation of both a {@link Actor} and a {@link Player}
  * that is intended for implementations of WorldEdit to use to wrap

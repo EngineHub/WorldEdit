@@ -139,9 +139,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                 InputStream is = jar.getInputStream(jarEntry);
                 FileOutputStream fos = new FileOutputStream(file);
 
-                fos = new FileOutputStream(file);
                 byte[] buf = new byte[8192];
-                int length = 0;
+                int length;
                 while ((length = is.read(buf)) > 0) {
                     fos.write(buf, 0, length);
                 }
