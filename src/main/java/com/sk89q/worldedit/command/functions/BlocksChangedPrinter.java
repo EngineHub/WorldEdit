@@ -55,25 +55,6 @@ public class BlocksChangedPrinter implements WEConsumer<OperationFuture> {
             return;
         }
 
-//        Operation op = operationFuture.getOriginalOperation();
-//        if (op instanceof AffectedCounter) {
-//            printChanged((AffectedCounter) op);
-//            return;
-//        }
-//
-//        try {
-//            op = operationFuture.get();
-//            if (op instanceof AffectedCounter) {
-//                printChanged((AffectedCounter) op);
-//                return;
-//            }
-//        } catch (InterruptedException impossible) {
-//            // these exceptions are impossible because we only get called after the future is complete
-//            impossible.printStackTrace();
-//        } catch (ExecutionException impossible) {
-//            impossible.printStackTrace();
-//        }
-
         WorldEdit.logger.warning("BlocksChangedPrinter used for an operation that doesn't count blocks!");
         WorldEdit.logger.warning("For operation: " + operationFuture.getOriginalOperation().getClass().getName());
 

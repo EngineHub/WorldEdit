@@ -468,7 +468,9 @@ public class RegionCommands {
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
 
-        CommandFutureUtils.withCountPrinters(player, Operations.completeSlowly(editSession, visitor));
+        OperationFuture future = CommandFutureUtils.withCountPrinters(player,
+                Operations.completeSlowly(editSession, visitor));
+        future.setCountingOperation(ground);
     }
 
     @Command(
@@ -487,7 +489,9 @@ public class RegionCommands {
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
 
-        CommandFutureUtils.withCountPrinters(player, Operations.completeSlowly(editSession, visitor));
+        OperationFuture future = CommandFutureUtils.withCountPrinters(player,
+                Operations.completeSlowly(editSession, visitor));
+        future.setCountingOperation(ground);
     }
 
 }

@@ -175,4 +175,5 @@ public interface Platform {
      * @return a map of capabilities
      */
     Map<Capability, Preference> getCapabilities();
+
 }
