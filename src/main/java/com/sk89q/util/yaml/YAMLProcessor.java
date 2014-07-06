@@ -188,9 +188,7 @@ public class YAMLProcessor extends YAMLNode {
                 yaml.dump(root, writer);
             } else {
                 // Iterate over each root-level property and dump
-                for (Iterator<Map.Entry<String, Object>> i = root.entrySet().iterator(); i.hasNext(); ) {
-                    Map.Entry<String, Object> entry = i.next();
-
+                for (Map.Entry<String, Object> entry : root.entrySet()) {
                     // Output comment, if present
                     String comment = comments.get(entry.getKey());
                     if (comment != null) {

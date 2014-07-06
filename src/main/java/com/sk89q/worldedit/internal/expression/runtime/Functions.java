@@ -346,11 +346,11 @@ public final class Functions {
         double minDistanceSquared = Double.MAX_VALUE;
 
         for (int i = 0; i < count; ++i) {
-            double currentX = getBufferItem(megabuf, index+0) - x;
-            double currentY = getBufferItem(megabuf, index+1) - y;
-            double currentZ = getBufferItem(megabuf, index+2) - z;
+            double currentX = getBufferItem(megabuf, index + 0) - x;
+            double currentY = getBufferItem(megabuf, index + 1) - y;
+            double currentZ = getBufferItem(megabuf, index + 2) - z;
 
-            double currentDistanceSquared = currentX*currentX + currentY*currentY + currentZ*currentZ;
+            double currentDistanceSquared = currentX * currentX + currentY * currentY + currentZ * currentZ;
 
             if (currentDistanceSquared < minDistanceSquared) {
                 minDistanceSquared = currentDistanceSquared;

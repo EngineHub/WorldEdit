@@ -54,8 +54,6 @@ public class OldChunk implements Chunk {
      */
     public OldChunk(World world, CompoundTag tag) throws DataException {
         rootTag = tag;
-        this.world = world;
-
         
         blocks = NBTUtils.getChildTag(rootTag.getValue(), "Blocks", ByteArrayTag.class).getValue();
         data = NBTUtils.getChildTag(rootTag.getValue(), "Data", ByteArrayTag.class).getValue();

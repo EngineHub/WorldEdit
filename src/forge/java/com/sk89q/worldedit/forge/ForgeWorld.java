@@ -197,9 +197,8 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public void dropItem(Vector position, BaseItemStack item) {
         checkNotNull(position);
-        checkNotNull(item);
 
-        if ((item == null) || (item.getType() == 0)) {
+        if (item == null || item.getType() == 0) {
             return;
         }
 

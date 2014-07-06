@@ -83,8 +83,7 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
     }
 
     public WorldVectorFace getTargetFace(Player player) {
-        WorldVectorFace target = null;
-        target = player.getBlockTraceFace(getRange(), true);
+        WorldVectorFace target = player.getBlockTraceFace(getRange(), true);
 
         if (target == null) {
             player.printError("No block in sight!");

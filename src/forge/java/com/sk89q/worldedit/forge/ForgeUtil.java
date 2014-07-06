@@ -41,7 +41,7 @@ public final class ForgeUtil {
     public static ItemStack toForgeItemStack(BaseItemStack item) {
         ItemStack ret = new ItemStack(item.getType(), item.getAmount(), item.getData());
         for (Map.Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
-            ret.addEnchantment(net.minecraft.enchantment.Enchantment.enchantmentsList[((Integer)entry.getKey()).intValue()], ((Integer)entry.getValue()).intValue());
+            ret.addEnchantment(net.minecraft.enchantment.Enchantment.enchantmentsList[entry.getKey()], entry.getValue());
         }
 
         return ret;

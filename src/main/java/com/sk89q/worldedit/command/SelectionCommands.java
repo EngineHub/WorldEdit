@@ -568,7 +568,7 @@ public class SelectionCommands {
             changes.add((new Vector(0, 0, -1)).multiply(change));
         }
 
-        return changes.toArray(new Vector[0]);
+        return changes.toArray(new Vector[changes.size()]);
     }
 
     @Command(

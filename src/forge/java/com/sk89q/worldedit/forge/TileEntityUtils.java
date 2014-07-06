@@ -121,7 +121,7 @@ class TileEntityUtils {
         TileEntity genericTE;
         try {
             // Downcast here for return while retaining the type
-            genericTE = (TileEntity) baseConstructor.newInstance();
+            genericTE = baseConstructor.newInstance();
         } catch (Throwable e) {
             return null;
         }

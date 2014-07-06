@@ -349,9 +349,11 @@ public class DefaultNmsBlock extends NmsBlock {
                 }
             }
 
+            assert foreignKeys != null;
+
             for (Object obj : foreignKeys) {
                 String key = (String) obj;
-                NBTBase base = (NBTBase) ((NBTTagCompound) foreign).get(key);
+                NBTBase base = ((NBTTagCompound) foreign).get(key);
                 values.put(key, toNative(key, base));
             }
             return new CompoundTag(name, values);

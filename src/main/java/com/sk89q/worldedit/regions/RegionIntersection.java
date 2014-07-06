@@ -25,6 +25,7 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -87,9 +88,7 @@ public class RegionIntersection extends AbstractRegion {
         super(world);
         checkNotNull(regions);
         checkArgument(regions.length > 0, "empty region list is not supported");
-        for (Region region : regions) {
-            this.regions.add(region);
-        }
+        Collections.addAll(this.regions, regions);
     }
 
     @Override

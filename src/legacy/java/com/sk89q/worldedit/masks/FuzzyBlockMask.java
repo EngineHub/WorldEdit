@@ -23,6 +23,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,9 +51,7 @@ public class FuzzyBlockMask extends AbstractMask {
      */
     public FuzzyBlockMask(BaseBlock... block) {
         Set<BaseBlock> filter = new HashSet<BaseBlock>();
-        for (BaseBlock b : block) {
-            filter.add(b);
-        }
+        Collections.addAll(filter, block);
         this.filter = filter;
     }
 

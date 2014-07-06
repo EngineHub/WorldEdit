@@ -109,7 +109,7 @@ public class SnapshotUtilCommands {
             }
         }
 
-        ChunkStore chunkStore = null;
+        ChunkStore chunkStore;
 
         // Load chunk store
         try {
