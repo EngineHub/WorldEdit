@@ -55,6 +55,10 @@ scripting:
     timeout: 3000
     dir: craftscripts
 
+gradual:
+    period: 1
+    time-millis: 20
+
 saving:
     dir: schematics
 

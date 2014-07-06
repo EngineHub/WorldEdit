@@ -103,13 +103,14 @@ public final class Operations {
      * Completes the given Operation slowly, with a best-effort attempt made
      * to avoid lagging the server.
      *
+     * @param session The EditSession that the Operation is changing
      * @param op an Operation
      * @return a Future that will complete with the final Operation that was executed
      */
     public static OperationFuture completeSlowly(EditSession session, Operation op) {
         if (taskId == -1) {
             // Start the worker task
-            taskId = getSchedulingPlatform().schedule(0, 1, new SlowCompletionWorker());
+            taskId = getSchedulingPlatform().schedule(0, WorldEdit.getInstance().getConfiguration().slowExecutorPeriod, new SlowCompletionWorker());
 
             if (taskId == -1) {
                 // Platform does not support scheduling
@@ -180,12 +181,12 @@ public final class Operations {
 
         @Override
         public void run() {
-            RunContext run = new TimedRunContext(30, TimeUnit.MILLISECONDS);
+            RunContext run = new TimedRunContext(WorldEdit.getInstance().getConfiguration().slowExecutorMillisPer, TimeUnit.MILLISECONDS);
 
-            // If no operations are active for 5 seconds, cancel the job
+            // If no operations are active for 1 second, cancel the job
             if (queue.size() == 0) {
                 cancelCounter++;
-                if (cancelCounter >= 100) {
+                if (cancelCounter >= 25) {
                     if (getSchedulingPlatform().cancelScheduled(taskId)) {
                         taskId = -1;
                     }
