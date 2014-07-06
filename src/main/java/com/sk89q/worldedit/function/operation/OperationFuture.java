@@ -39,7 +39,7 @@ public class OperationFuture implements Future<Operation> {
      * held. Once the state has been changed, call notifyAll() on the lock to
      * notify any threads calling {@link #get()}.
      */
-    private final Object LOCK = new Object();
+    private final Object _LOCK = new Object();
     private final Operation originalOperation;
     private Operation operation;
     private AffectedCounter counter = null;
@@ -204,7 +204,7 @@ public class OperationFuture implements Future<Operation> {
 
     @Override
     public boolean cancel(boolean mayInterrupt) {
-        synchronized (LOCK) {
+        synchronized (_LOCK) {
             if (started && !mayInterrupt) {
                 return false;
             }
@@ -218,7 +218,7 @@ public class OperationFuture implements Future<Operation> {
             cancelled = true;
             submitToTasks(failureTasks);
 
-            LOCK.notifyAll();
+            _LOCK.notifyAll();
             return true;
         }
     }
@@ -295,7 +295,7 @@ public class OperationFuture implements Future<Operation> {
     public Operation get() throws InterruptedException, ExecutionException {
         // Try the fast-track
         // This bypasses the main-thread check (see javadoc).
-        synchronized (LOCK) {
+        synchronized (_LOCK) {
             if (isDone()) {
                 return getFinalResult();
             }
@@ -306,9 +306,9 @@ public class OperationFuture implements Future<Operation> {
         }
 
         // Wait loop
-        synchronized (LOCK) {
+        synchronized (_LOCK) {
             while (!isDone()) {
-                LOCK.wait();
+                _LOCK.wait();
             }
             return getFinalResult();
         }
@@ -331,7 +331,7 @@ public class OperationFuture implements Future<Operation> {
     public Operation get(long duration, TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException {
         // Try the fast-track
         // This bypasses the main-thread check (see javadoc).
-        synchronized (LOCK) {
+        synchronized (_LOCK) {
             if (isDone()) {
                 return getFinalResult();
             }
@@ -343,13 +343,13 @@ public class OperationFuture implements Future<Operation> {
 
         // Do wait-loop
         long finishTime = System.nanoTime() + timeUnit.toNanos(duration);
-        synchronized (LOCK) {
+        synchronized (_LOCK) {
             while (!isDone()) {
                 long waitTime = finishTime - System.nanoTime();
                 if (waitTime <= 0) {
                     throw new TimeoutException("Timed out waiting for the OperationFuture to complete - waited for " + duration + " " + timeUnit.toString());
                 } else {
-                    LOCK.wait(waitTime / NANOS_MILLIS_FACTOR, (int) (waitTime % NANOS_MILLIS_FACTOR));
+                    _LOCK.wait(waitTime / NANOS_MILLIS_FACTOR, (int) (waitTime % NANOS_MILLIS_FACTOR));
                 }
             }
             return getFinalResult();
@@ -391,36 +391,36 @@ public class OperationFuture implements Future<Operation> {
     }
 
     protected void delayed() {
-        synchronized (LOCK) {
+        synchronized (_LOCK) {
             submitToTasks(firstDelayTasks);
 
-            LOCK.notifyAll();
+            _LOCK.notifyAll();
         }
     }
 
     protected void setStarted() {
-        synchronized (LOCK) {
+        synchronized (_LOCK) {
             started = true;
 
-            LOCK.notifyAll();
+            _LOCK.notifyAll();
         }
     }
 
     protected void complete() {
-        synchronized (LOCK) {
+        synchronized (_LOCK) {
             done = true;
             submitToTasks(completionTasks);
 
-            LOCK.notifyAll();
+            _LOCK.notifyAll();
         }
     }
 
     protected void throwing(Throwable thrown) {
-        synchronized (LOCK) {
+        synchronized (_LOCK) {
             this.thrown = thrown;
             submitToTasks(failureTasks);
 
-            LOCK.notifyAll();
+            _LOCK.notifyAll();
         }
     }
 
