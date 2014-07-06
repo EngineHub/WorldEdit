@@ -34,6 +34,8 @@ import java.util.concurrent.TimeUnit;
  */
 public final class Operations {
 
+    public static final TrueRunContext TRUE_RUN_CONTEXT = new TrueRunContext();
+
     private Operations() {
     }
 
@@ -45,7 +47,7 @@ public final class Operations {
      */
     public static void complete(Operation op) throws WorldEditException {
         while (op != null) {
-            op = op.resume(new TrueRunContext());
+            op = op.resume(TRUE_RUN_CONTEXT);
         }
     }
 
@@ -59,7 +61,7 @@ public final class Operations {
     public static void completeLegacy(Operation op) throws MaxChangedBlocksException {
         while (op != null) {
             try {
-                op = op.resume(new TrueRunContext());
+                op = op.resume(TRUE_RUN_CONTEXT);
             } catch (MaxChangedBlocksException e) {
                 throw e;
             } catch (WorldEditException e) {
@@ -78,7 +80,7 @@ public final class Operations {
     public static void completeBlindly(Operation op) {
         while (op != null) {
             try {
-                op = op.resume(new TrueRunContext());
+                op = op.resume(TRUE_RUN_CONTEXT);
             } catch (WorldEditException e) {
                 throw new RuntimeException(e);
             }
@@ -122,6 +124,22 @@ public final class Operations {
         }
 
         return SlowCompletionWorker.queueOperation(op);
+    }
+
+    public static void completeFutureNow(OperationFuture future) throws WorldEditException {
+        SlowCompletionWorker.cancel(future);
+        Operation op = future.getOperation();
+        future.setStarted();
+        while (op != null) {
+            try {
+                op = op.resume(TRUE_RUN_CONTEXT);
+                future.replaceOperation(op);
+            } catch (WorldEditException e) {
+                future.throwing(e);
+                throw e;
+            }
+        }
+        future.complete();
     }
 
     protected static class SlowCompletionWorker implements Runnable {

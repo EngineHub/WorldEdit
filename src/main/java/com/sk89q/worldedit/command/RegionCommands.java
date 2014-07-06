@@ -24,6 +24,7 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.command.functions.CommandFutureUtils;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.generator.FloraGenerator;
@@ -31,9 +32,11 @@ import com.sk89q.worldedit.function.generator.ForestGenerator;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.NoiseFilter2D;
+import com.sk89q.worldedit.function.operation.OperationFuture;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
+import com.sk89q.worldedit.function.util.WEConsumer;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.Selection;
@@ -87,8 +90,8 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.set")
     @Logging(REGION)
     public void set(Player player, LocalSession session, EditSession editSession, Pattern pattern) throws WorldEditException {
-        int affected = editSession.setBlocks(session.getSelection(player.getWorld()), Patterns.wrap(pattern));
-        player.print(affected + " block(s) have been changed.");
+        CommandFutureUtils.withCountPrinters(player,
+                editSession.setBlocks(session.getSelection(player.getWorld()), Patterns.wrap(pattern)));
     }
 
     @Command(
@@ -172,8 +175,8 @@ public class RegionCommands {
         if (from == null) {
             from = new ExistingBlockMask(editSession);
         }
-        int affected = editSession.replaceBlocks(region, from, Patterns.wrap(to));
-        player.print(affected + " block(s) have been replaced.");
+        CommandFutureUtils.withCountPrinters(player,
+                editSession.replaceBlocks(region, from, Patterns.wrap(to)));
     }
 
     @Command(
@@ -186,8 +189,8 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.overlay")
     @Logging(REGION)
     public void overlay(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        int affected = editSession.overlayCuboidBlocks(region, Patterns.wrap(pattern));
-        player.print(affected + " block(s) have been overlaid.");
+        CommandFutureUtils.withCountPrinters(player,
+                editSession.overlayCuboidBlocks(region, Patterns.wrap(pattern)));
     }
 
     @Command(
@@ -200,8 +203,8 @@ public class RegionCommands {
     @Logging(REGION)
     @CommandPermissions("worldedit.region.center")
     public void center(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        int affected = editSession.center(region, Patterns.wrap(pattern));
-        player.print("Center set ("+ affected + " blocks changed)");
+        CommandFutureUtils.withCountAndPreMessagePrinters(player, "Center set",
+                editSession.center(region, Patterns.wrap(pattern)));
     }
 
     @Command(
@@ -214,8 +217,8 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.naturalize")
     @Logging(REGION)
     public void naturalize(Player player, EditSession editSession, @Selection Region region) throws WorldEditException {
-        int affected = editSession.naturalizeCuboidBlocks(region);
-        player.print(affected + " block(s) have been made to look more natural.");
+        CommandFutureUtils.withCountAndPreMessagePrinters(player, "Naturalized the area",
+                editSession.naturalizeCuboidBlocks(region));
     }
 
     @Command(
@@ -228,8 +231,8 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.walls")
     @Logging(REGION)
     public void walls(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        int affected = editSession.makeCuboidWalls(region, Patterns.wrap(pattern));
-        player.print(affected + " block(s) have been changed.");
+        CommandFutureUtils.withCountPrinters(player,
+                editSession.makeCuboidWalls(region, Patterns.wrap(pattern)));
     }
 
     @Command(
@@ -242,8 +245,8 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.faces")
     @Logging(REGION)
     public void faces(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        int affected = editSession.makeCuboidFaces(region, Patterns.wrap(pattern));
-        player.print(affected + " block(s) have been changed.");
+        CommandFutureUtils.withCountPrinters(player,
+                editSession.makeCuboidFaces(region, Patterns.wrap(pattern)));
     }
 
     @Command(
@@ -281,27 +284,32 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.move")
     @Logging(ORIENTATION_REGION)
-    public void move(Player player, EditSession editSession, LocalSession session,
-                     @Selection Region region,
-                     @Optional("1") @Range(min = 1) int count,
-                     @Optional(Direction.AIM) @Direction Vector direction,
+    public void move(final Player player, EditSession editSession, final LocalSession session,
+                     @Selection final Region region,
+                     @Optional("1") @Range(min = 1) final int count,
+                     @Optional(Direction.AIM) @Direction final Vector direction,
                      @Optional("air") BaseBlock replace,
                      @Switch('s') boolean moveSelection) throws WorldEditException {
 
-        int affected = editSession.moveRegion(region, direction, count, true, replace);
+        OperationFuture future = editSession.moveRegion(region, direction, count, true, replace);
+        CommandFutureUtils.withCountAndPreMessagePrinters(
+                player, "Selection moved", future);
 
         if (moveSelection) {
-            try {
-                region.shift(direction.multiply(count));
+            future.onFinish(new WEConsumer<OperationFuture>() {
+                @Override
+                public void accept(OperationFuture operationFuture) {
+                    try {
+                        region.shift(direction.multiply(count));
 
-                session.getRegionSelector(player.getWorld()).learnChanges();
-                session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
-            } catch (RegionOperationException e) {
-                player.printError(e.getMessage());
-            }
+                        session.getRegionSelector(player.getWorld()).learnChanges();
+                        session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
+                    } catch (RegionOperationException e) {
+                        player.printError(e.getMessage());
+                    }
+                }
+            });
         }
-
-        player.print(affected + " blocks moved.");
     }
 
     @Command(
@@ -319,29 +327,33 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.stack")
     @Logging(ORIENTATION_REGION)
-    public void stack(Player player, EditSession editSession, LocalSession session,
-                      @Selection Region region,
-                      @Optional("1") @Range(min = 1) int count,
-                      @Optional(Direction.AIM) @Direction Vector direction,
+    public void stack(final Player player, EditSession editSession, final LocalSession session,
+                      @Selection final Region region,
+                      @Optional("1") @Range(min = 1) final int count,
+                      @Optional(Direction.AIM) @Direction final Vector direction,
                       @Switch('s') boolean moveSelection,
                       @Switch('a') boolean ignoreAirBlocks) throws WorldEditException {
-        int affected = editSession.stackCuboidRegion(region, direction, count, !ignoreAirBlocks);
+        OperationFuture future = editSession.stackCuboidRegion(region, direction, count, !ignoreAirBlocks);
+        CommandFutureUtils.withCountAndPostMessagePrinters(player, "Undo with //undo", future);
 
         if (moveSelection) {
-            try {
-                final Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint());
+            future.onFinish(new WEConsumer<OperationFuture>() {
+                @Override
+                public void accept(OperationFuture operationFuture) {
+                    try {
+                        final Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint());
 
-                final Vector shiftVector = direction.multiply(count * (Math.abs(direction.dot(size)) + 1));
-                region.shift(shiftVector);
+                        final Vector shiftVector = direction.multiply(count * (Math.abs(direction.dot(size)) + 1));
+                        region.shift(shiftVector);
 
-                session.getRegionSelector(player.getWorld()).learnChanges();
-                session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
-            } catch (RegionOperationException e) {
-                player.printError(e.getMessage());
-            }
+                        session.getRegionSelector(player.getWorld()).learnChanges();
+                        session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
+                    } catch (RegionOperationException e) {
+                        player.printError(e.getMessage());
+                    }
+                }
+            });
         }
-
-        player.print(affected + " blocks changed. Undo with //undo");
     }
 
     @Command(

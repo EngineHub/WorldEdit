@@ -25,8 +25,10 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.command.functions.CommandFutureUtils;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.function.operation.OperationFuture;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
@@ -136,8 +138,8 @@ public class ClipboardCommands {
 
         session.setClipboard(clipboard);
 
-        editSession.setBlocks(region, block);
-        player.print("Block(s) cut.");
+        CommandFutureUtils.withSuccessMessage(player, "Block(s) cut.",
+                editSession.setBlocks(region, block));
     }
 
     @Command(

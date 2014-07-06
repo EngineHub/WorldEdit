@@ -23,6 +23,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.command.functions.CommandFutureUtils;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
@@ -208,8 +209,8 @@ public class GenerationCommands {
     @CommandPermissions("worldedit.generation.pumpkins")
     @Logging(POSITION)
     public void pumpkins(Player player, LocalSession session, EditSession editSession, @Optional("10") int apothem) throws WorldEditException {
-        int affected = editSession.makePumpkinPatches(session.getPlacementPosition(player), apothem);
-        player.print(affected + " pumpkin patches created.");
+        CommandFutureUtils.withCountAndPreMessagePrinters(player, "Pumpkin patches created",
+                editSession.makePumpkinPatches(session.getPlacementPosition(player), apothem));
     }
 
     @Command(

@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command.functions;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.operation.AffectedCounter;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -28,44 +29,77 @@ import com.sk89q.worldedit.function.util.WEConsumer;
 import java.util.concurrent.ExecutionException;
 
 /**
- * An OperationFuture consumer that prints the number of changed blocks.
+ * Prints the number of changed blocks from an operation.
  */
 public class BlocksChangedPrinter implements WEConsumer<OperationFuture> {
-    private Player player;
+    private final Player player;
+    private String extraMessage;
+    private boolean messageAfter;
 
     public BlocksChangedPrinter(Player player) {
         this.player = player;
     }
 
+    public BlocksChangedPrinter(Player player, String message, boolean messageAfter) {
+        this.player = player;
+        this.extraMessage = message;
+        this.messageAfter = messageAfter;
+    }
+
     @Override
     public void accept(OperationFuture operationFuture) {
-        try {
-            Operation op = operationFuture.getOriginalOperation();
-            if (op instanceof AffectedCounter) {
-                printChanged((AffectedCounter) op);
-                return;
-            }
-            op = operationFuture.get();
-            if (op instanceof AffectedCounter) {
-                printChanged((AffectedCounter) op);
-                return;
-            }
-            System.err.println("[WorldEdit] BlocksChangedPrinter used for an operation that doesn't count blocks!");
-        } catch (InterruptedException impossible) {
-            impossible.printStackTrace();
-        } catch (ExecutionException impossible) {
-            impossible.printStackTrace();
+        // Prefer explicit counter, then first, then last
+        AffectedCounter counter = operationFuture.getCountingOperation();
+        if (counter != null) {
+            printChanged(counter);
+            return;
         }
+
+//        Operation op = operationFuture.getOriginalOperation();
+//        if (op instanceof AffectedCounter) {
+//            printChanged((AffectedCounter) op);
+//            return;
+//        }
+//
+//        try {
+//            op = operationFuture.get();
+//            if (op instanceof AffectedCounter) {
+//                printChanged((AffectedCounter) op);
+//                return;
+//            }
+//        } catch (InterruptedException impossible) {
+//            // these exceptions are impossible because we only get called after the future is complete
+//            impossible.printStackTrace();
+//        } catch (ExecutionException impossible) {
+//            impossible.printStackTrace();
+//        }
+
+        WorldEdit.logger.warning("BlocksChangedPrinter used for an operation that doesn't count blocks!");
+        WorldEdit.logger.warning("For operation: " + operationFuture.getOriginalOperation().getClass().getName());
+
+        // Print a backup message
+        player.print("Command complete.");
     }
 
     private void printChanged(AffectedCounter op) {
-        int count = op.getAffected();
-        if (count == 0) {
-            player.print("No blocks were changed.");
-        } else if (count == 1) {
-            player.print("1 block was changed.");
+        if (extraMessage != null) {
+            if (messageAfter) {
+                player.print(getChangedString(op.getAffected()) + " " + extraMessage);
+            } else {
+                player.print(extraMessage + " (" + getChangedString(op.getAffected()) + ")");
+            }
         } else {
-            player.print(count + " blocks have been changed.");
+            player.print(getChangedString(op.getAffected()));
+        }
+    }
+
+    private String getChangedString(int count) {
+        if (count == 0) {
+            return "No blocks were changed.";
+        } else if (count == 1) {
+            return "1 block was changed.";
+        } else {
+            return count + " blocks have been changed.";
         }
     }
 }

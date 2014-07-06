@@ -34,9 +34,11 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.command.functions.CommandFutureUtils;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.CommandManager;
+import com.sk89q.worldedit.function.operation.OperationFuture;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
@@ -94,15 +96,15 @@ public class UtilityCommands {
         int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : 1;
 
         Vector pos = session.getPlacementPosition(player);
-        int affected = 0;
+        OperationFuture future;
         if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.fillXZ(pos,
+            future = editSession.fillXZ(pos,
                     ((SingleBlockPattern) pattern).getBlock(),
                     radius, depth, false);
         } else {
-            affected = editSession.fillXZ(pos, pattern, radius, depth, false);
+            future = editSession.fillXZ(pos, pattern, radius, depth, false);
         }
-        player.print(affected + " block(s) have been created.");
+        CommandFutureUtils.withCountPrinters(player, future);
     }
 
     @Command(
@@ -122,15 +124,15 @@ public class UtilityCommands {
         int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : Integer.MAX_VALUE;
 
         Vector pos = session.getPlacementPosition(player);
-        int affected = 0;
+        OperationFuture future;
         if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.fillXZ(pos,
+            future = editSession.fillXZ(pos,
                     ((SingleBlockPattern) pattern).getBlock(),
                     radius, depth, true);
         } else {
-            affected = editSession.fillXZ(pos, pattern, radius, depth, true);
+            future = editSession.fillXZ(pos, pattern, radius, depth, true);
         }
-        player.print(affected + " block(s) have been created.");
+        CommandFutureUtils.withCountPrinters(player, future);
     }
 
     @Command(
@@ -146,9 +148,9 @@ public class UtilityCommands {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
-        int affected = editSession.drainArea(
-                session.getPlacementPosition(player), radius);
-        player.print(affected + " block(s) have been changed.");
+
+        CommandFutureUtils.withCountPrinters(player,
+                editSession.drainArea(session.getPlacementPosition(player), radius));
     }
 
     @Command(
@@ -164,9 +166,8 @@ public class UtilityCommands {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
-        int affected = editSession.fixLiquid(
-                session.getPlacementPosition(player), radius, 10, 11);
-        player.print(affected + " block(s) have been changed.");
+        CommandFutureUtils.withCountPrinters(player,
+                editSession.fixLiquid(session.getPlacementPosition(player), radius, 10, 11));
     }
 
     @Command(
@@ -182,9 +183,8 @@ public class UtilityCommands {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
-        int affected = editSession.fixLiquid(
-                session.getPlacementPosition(player), radius, 8, 9);
-        player.print(affected + " block(s) have been changed.");
+        CommandFutureUtils.withCountPrinters(player,
+                editSession.fixLiquid(session.getPlacementPosition(player), radius, 8, 9));
     }
 
     @Command(
@@ -203,9 +203,8 @@ public class UtilityCommands {
         World world = player.getWorld();
         int height = args.argsLength() > 1 ? Math.min((world.getMaxY() + 1), args.getInteger(1) + 2) : (world.getMaxY() + 1);
 
-        int affected = editSession.removeAbove(
-                session.getPlacementPosition(player), size, height);
-        player.print(affected + " block(s) have been removed.");
+        CommandFutureUtils.withCountPrinters(player,
+                editSession.removeAbove(session.getPlacementPosition(player), size, height));
     }
 
     @Command(
@@ -224,8 +223,8 @@ public class UtilityCommands {
         World world = player.getWorld();
         int height = args.argsLength() > 1 ? Math.min((world.getMaxY() + 1), args.getInteger(1) + 2) : (world.getMaxY() + 1);
 
-        int affected = editSession.removeBelow(session.getPlacementPosition(player), size, height);
-        player.print(affected + " block(s) have been removed.");
+        CommandFutureUtils.withCountPrinters(player,
+                editSession.removeBelow(session.getPlacementPosition(player), size, height));
     }
 
     @Command(
@@ -243,8 +242,8 @@ public class UtilityCommands {
         int size = Math.max(1, args.getInteger(1, 50));
         we.checkMaxRadius(size);
 
-        int affected = editSession.removeNear(session.getPlacementPosition(player), block.getType(), size);
-        player.print(affected + " block(s) have been removed.");
+        CommandFutureUtils.withCountPrinters(player,
+                editSession.removeNear(session.getPlacementPosition(player), block.getType(), size));
     }
 
     @Command(
@@ -260,7 +259,6 @@ public class UtilityCommands {
     public void replaceNear(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         int size = Math.max(1, args.getInteger(0));
-        int affected;
         Set<BaseBlock> from;
         Pattern to;
         if (args.argsLength() == 2) {
@@ -276,12 +274,13 @@ public class UtilityCommands {
         Vector max = base.add(size, size, size);
         Region region = new CuboidRegion(player.getWorld(), min, max);
 
+        OperationFuture future;
         if (to instanceof SingleBlockPattern) {
-            affected = editSession.replaceBlocks(region, from, ((SingleBlockPattern) to).getBlock());
+            future = editSession.replaceBlocks(region, from, ((SingleBlockPattern) to).getBlock());
         } else {
-            affected = editSession.replaceBlocks(region, from, to);
+            future = editSession.replaceBlocks(region, from, to);
         }
-        player.print(affected + " block(s) have been replaced.");
+        CommandFutureUtils.withCountPrinters(player, future);
     }
 
     @Command(
@@ -355,8 +354,8 @@ public class UtilityCommands {
                 : defaultRadius;
         we.checkMaxRadius(size);
 
-        int affected = editSession.removeNear(session.getPlacementPosition(player), 51, size);
-        player.print(affected + " block(s) have been removed.");
+        CommandFutureUtils.withCountPrinters(player,
+                editSession.removeNear(session.getPlacementPosition(player), 51, size));
     }
 
     @Command(

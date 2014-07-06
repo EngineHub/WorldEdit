@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.function.operation;
 
+import com.google.common.collect.Lists;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.util.WEConsumer;
 
 import java.util.List;
@@ -31,12 +34,19 @@ import java.util.concurrent.TimeoutException;
 public class OperationFuture implements Future<Operation> {
     private static final int NANOS_MILLIS_FACTOR = 1000000;
 
+    /**
+     * All state changes (started, done, cancelled) must occur with this lock
+     * held. Once the state has been changed, call notifyAll() on the lock to
+     * notify any threads calling {@link #get()}.
+     */
     private final Object LOCK = new Object();
     private final Operation originalOperation;
     private Operation operation;
+    private AffectedCounter counter = null;
     private Throwable thrown;
-    private List<WEConsumer<OperationFuture>> completionTasks;
-    private List<WEConsumer<OperationFuture>> firstDelayTasks;
+    private List<WEConsumer<OperationFuture>> completionTasks = Lists.newArrayList();
+    private List<WEConsumer<OperationFuture>> firstDelayTasks = Lists.newArrayList();
+    private List<WEConsumer<OperationFuture>> failureTasks = Lists.newArrayList();
     private boolean started = false;
     private boolean done = false;
     private boolean cancelled = false;
@@ -52,6 +62,29 @@ public class OperationFuture implements Future<Operation> {
      */
     public Operation getOriginalOperation() {
         return originalOperation;
+    }
+
+    public AffectedCounter getCountingOperation() {
+        if (counter != null) {
+            return counter;
+        }
+        if (originalOperation instanceof AffectedCounter) {
+            return (AffectedCounter) originalOperation;
+        }
+        if (done && operation instanceof AffectedCounter) {
+            return (AffectedCounter) operation;
+        }
+        WorldEdit.logger.severe("Unable to determine the counter for an Operation - please set explicitly");
+        return null;
+    }
+
+    /**
+     * Set an explicit AffectedCounter for this OperationFuture.
+     *
+     * @param counter the counting object
+     */
+    public void setCountingOperation(AffectedCounter counter) {
+        this.counter = counter;
     }
 
     /**
@@ -80,6 +113,15 @@ public class OperationFuture implements Future<Operation> {
     }
 
     /**
+     * A proxy method to {@link Operations#completeFutureNow(OperationFuture)}.
+     *
+     * @throws WorldEditException if the Operation generates an exception
+     */
+    public void finishNow() throws WorldEditException {
+        Operations.completeFutureNow(this);
+    }
+
+    /**
      * Provide a task to run after the Operation has completed.
      *
      * It is guaranteed that {@link #isDone()} will be true when the consumer
@@ -96,6 +138,10 @@ public class OperationFuture implements Future<Operation> {
      */
     public OperationFuture onFinish(final WEConsumer<OperationFuture> task) {
         if (isDone()) {
+            // don't bother scheduling it if we won't call it
+            if (!isSuccess()) {
+                return this;
+            }
             // Run the task on the next tick
             int taskId = Operations.getSchedulingPlatform().scheduleNext(new Runnable() {
                 public void run() {
@@ -131,6 +177,31 @@ public class OperationFuture implements Future<Operation> {
         return this;
     }
 
+    public OperationFuture onFailure(final WEConsumer<OperationFuture> task) {
+        if (isDone()) {
+            // don't bother scheduling it if we won't call it
+            if (isSuccess()) {
+                return this;
+            }
+            // Run the task on the next tick
+            int taskId = Operations.getSchedulingPlatform().scheduleNext(new Runnable() {
+                public void run() {
+                    task.accept(OperationFuture.this);
+                }
+            });
+
+            if (taskId == -1) {
+                // No scheduling
+                // Give up and just invoke it now :(
+                // I am aware that this releases Zalgo (http://blog.izs.me/post/59142742143/designing-apis-for-asynchrony)
+                task.accept(this);
+            }
+            return this;
+        }
+        failureTasks.add(task);
+        return this;
+    }
+
     @Override
     public boolean cancel(boolean mayInterrupt) {
         synchronized (LOCK) {
@@ -145,6 +216,8 @@ public class OperationFuture implements Future<Operation> {
             }
 
             cancelled = true;
+            submitToTasks(failureTasks);
+
             LOCK.notifyAll();
             return true;
         }
@@ -318,15 +391,17 @@ public class OperationFuture implements Future<Operation> {
     }
 
     protected void delayed() {
-        for (WEConsumer<OperationFuture> consumer : firstDelayTasks) {
-            consumer.accept(this);
+        synchronized (LOCK) {
+            submitToTasks(firstDelayTasks);
+
+            LOCK.notifyAll();
         }
-        firstDelayTasks.clear();
     }
 
     protected void setStarted() {
         synchronized (LOCK) {
             started = true;
+
             LOCK.notifyAll();
         }
     }
@@ -334,11 +409,7 @@ public class OperationFuture implements Future<Operation> {
     protected void complete() {
         synchronized (LOCK) {
             done = true;
-
-            for (WEConsumer<OperationFuture> consumer : completionTasks) {
-                consumer.accept(this);
-            }
-            completionTasks.clear();
+            submitToTasks(completionTasks);
 
             LOCK.notifyAll();
         }
@@ -347,7 +418,16 @@ public class OperationFuture implements Future<Operation> {
     protected void throwing(Throwable thrown) {
         synchronized (LOCK) {
             this.thrown = thrown;
+            submitToTasks(failureTasks);
+
             LOCK.notifyAll();
         }
+    }
+
+    private void submitToTasks(List<WEConsumer<OperationFuture>> taskList) {
+        for (WEConsumer<OperationFuture> consumer : taskList) {
+            consumer.accept(this);
+        }
+        taskList.clear();
     }
 }
