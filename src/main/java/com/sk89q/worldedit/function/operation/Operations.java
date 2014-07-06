@@ -128,6 +128,7 @@ public final class Operations {
             }
         }
 
+        session.setInLongOperation(true);
         return SlowCompletionWorker.queueOperation(session, op);
     }
 
@@ -166,6 +167,7 @@ public final class Operations {
         }
 
         protected static boolean cancel(OperationFuture future) {
+            future.getOriginalOperation().cancel();
             return queue.remove(future);
         }
 
@@ -213,6 +215,7 @@ public final class Operations {
                 } else if (operation == null) {
                     // Operation completed
                     future.complete();
+                    future.getEditSession().setInLongOperation(false);
                     continue;
                 } else {
                     // Run timed out - NOT done!

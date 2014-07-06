@@ -125,6 +125,8 @@ public class EditSession implements Extent {
     private final Extent bypassHistory;
     private final Extent bypassNone;
 
+    private boolean hasSlowOperation;
+
     @SuppressWarnings("deprecation")
     private Mask oldMask;
 
@@ -242,6 +244,10 @@ public class EditSession implements Extent {
      */
     public void setBlockChangeLimit(int limit) {
         changeLimiter.setLimit(limit);
+    }
+
+    public void setInLongOperation(boolean inOperation) {
+        this.hasSlowOperation = inOperation;
     }
 
     /**
@@ -374,7 +380,11 @@ public class EditSession implements Extent {
      * @return the number of block changes
      */
     public int getBlockChangeCount() {
-        return changeSet.size();
+        int count = changeSet.size();
+        if (count == 0 && hasSlowOperation) {
+            return -1;
+        }
+        return count;
     }
 
     @Override
