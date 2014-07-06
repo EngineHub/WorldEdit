@@ -56,7 +56,6 @@ import com.sk89q.worldedit.util.command.parametric.Optional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 import static com.sk89q.worldedit.regions.Regions.*;
 

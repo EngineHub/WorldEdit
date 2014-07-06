@@ -143,12 +143,14 @@ public abstract class CommandsManager<T> {
                 Object obj = getInjector().getInstance(cls);
                 return registerMethods(cls, parent, obj);
             }
+        } catch (NoSuchMethodException e) {
+            logger.log(Level.SEVERE, "Failed to register command class " + cls.getName(), e);
         } catch (InvocationTargetException e) {
-            logger.log(Level.SEVERE, "Failed to register commands", e);
+            logger.log(Level.SEVERE, "Failed to register command class " + cls.getName(), e);
         } catch (IllegalAccessException e) {
-            logger.log(Level.SEVERE, "Failed to register commands", e);
+            logger.log(Level.SEVERE, "Failed to register command class " + cls.getName(), e);
         } catch (InstantiationException e) {
-            logger.log(Level.SEVERE, "Failed to register commands", e);
+            logger.log(Level.SEVERE, "Failed to register command class " + cls.getName(), e);
         }
         return null;
     }

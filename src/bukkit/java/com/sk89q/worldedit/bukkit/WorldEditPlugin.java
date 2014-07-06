@@ -299,7 +299,9 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      * @param player
      * @param op
      * @throws Throwable
+     * @deprecated Please use {@link com.sk89q.worldedit.function.operation.Operations} instead.
      */
+    @Deprecated
     public void perform(Player player, WorldEditOperation op)
             throws Throwable {
         LocalPlayer wePlayer = wrapPlayer(player);

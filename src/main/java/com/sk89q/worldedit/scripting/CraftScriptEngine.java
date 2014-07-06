@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.scripting;
 
+import com.sk89q.worldedit.WorldEditException;
+
 import java.util.Map;
 import javax.script.ScriptException;
 
@@ -28,5 +30,5 @@ public interface CraftScriptEngine {
     public int getTimeLimit();
 
     public Object evaluate(String script, String filename, Map<String, Object> args)
-            throws ScriptException, Throwable;
+            throws ScriptException, WorldEditException;
 }

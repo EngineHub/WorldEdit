@@ -21,7 +21,6 @@ package com.sk89q.worldedit.forge;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.world.biome.BiomeGenBase;

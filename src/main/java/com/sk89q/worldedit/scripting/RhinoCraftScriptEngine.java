@@ -43,7 +43,7 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
     }
 
     public Object evaluate(String script, String filename, Map<String, Object> args)
-            throws ScriptException, Throwable {
+            throws ScriptException, WorldEditException {
         RhinoContextFactory factory = new RhinoContextFactory(timeLimit);
         Context cx = factory.enterContext();
         ScriptableObject scriptable = new ImporterTopLevel(cx);
@@ -61,7 +61,7 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
             if (e instanceof WrappedException) {
                 Throwable cause = e.getCause();
                 if (cause instanceof WorldEditException) {
-                    throw cause;
+                    throw (WorldEditException) cause;
                 }
             }
 
