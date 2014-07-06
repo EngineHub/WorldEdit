@@ -35,6 +35,6 @@ public class ContinuationNotifier implements WEConsumer<OperationFuture> {
 
     @Override
     public void accept(OperationFuture operationFuture) {
-        player.printDebug("Working...");
+        player.printDebug("Working... (Use //abort to abort)");
     }
 }
