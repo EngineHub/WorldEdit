@@ -126,13 +126,13 @@ public final class Operations {
                 } catch (WorldEditException ex) {
                     future.throwing(ex);
                 }
-                // session.flushQueue();
+                session.flushQueue();
                 return future;
             }
         }
 
         session.setInLongOperation(true);
-        // TODO try running for ~5ms here
+        // TODO try running for ~5ms here?
         return SlowCompletionWorker.queueOperation(session, op);
     }
 
