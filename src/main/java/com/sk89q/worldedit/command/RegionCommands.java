@@ -293,7 +293,7 @@ public class RegionCommands {
 
         OperationFuture future = editSession.moveRegion(region, direction, count, true, replace);
         CommandFutureUtils.withCountAndPreMessagePrinters(
-                player, "Selection moved", future);
+                player, moveSelection ? "Selection moved" : "Blocks moved", future);
 
         if (moveSelection) {
             future.onFinish(new WEConsumer<OperationFuture>() {
