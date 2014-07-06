@@ -3,11 +3,14 @@ package com.sk89q.worldedit.forge;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import cpw.mods.fml.common.ITickHandler;
+import cpw.mods.fml.common.TickType;
+
 /**
  * A small task scheduler implementation providing only synchronous tasks.
  * Loosely based on the Bukkit CraftScheduler.
  */
-public class ForgeMiniScheduler {
+public class ForgeMiniScheduler implements ITickHandler {
     private final AtomicInteger idAssigner = new AtomicInteger(30);
     private final PriorityQueue<Task> pending = new PriorityQueue<Task>(10,
             new Comparator<Task>() {
@@ -104,6 +107,27 @@ public class ForgeMiniScheduler {
     private void moveToPending() {
         pending.addAll(temp);
         temp.clear();
+    }
+
+    // ITickHandler methods
+
+    @Override
+    public void tickStart(EnumSet type, Object... tickData) {
+        heartbeat();
+    }
+
+    @Override
+    public void tickEnd(EnumSet type, Object... tickData) {
+    }
+
+    @Override
+    public EnumSet ticks() {
+        return EnumSet.of(TickType.CLIENT, TickType.SERVER);
+    }
+
+    @Override
+    public String getLabel() {
+        return "WorldEdit Scheduler";
     }
 
     private class Task implements Runnable {
