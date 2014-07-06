@@ -731,7 +731,7 @@ public class EditSession implements Extent {
         visitor.visit(origin);
 
         // Execute
-        return Operations.completeSlowly(visitor);
+        return Operations.completeSlowly(this, visitor);
     }
 
     /**
@@ -833,7 +833,7 @@ public class EditSession implements Extent {
         BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
         RegionVisitor visitor = new RegionVisitor(region, replace);
 
-        return Operations.completeSlowly(visitor);
+        return Operations.completeSlowly(this, visitor);
     }
 
     /**
@@ -886,7 +886,7 @@ public class EditSession implements Extent {
         BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
         RegionMaskingFilter filter = new RegionMaskingFilter(mask, replace);
         RegionVisitor visitor = new RegionVisitor(region, filter);
-        return Operations.completeSlowly(visitor);
+        return Operations.completeSlowly(this, visitor);
     }
 
     /**
@@ -1075,7 +1075,7 @@ public class EditSession implements Extent {
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(this), offset);
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
 
-        OperationFuture future = Operations.completeSlowly(visitor);
+        OperationFuture future = Operations.completeSlowly(this, visitor);
         future.setCountingOperation(ground);
         return future;
     }
@@ -1095,7 +1095,7 @@ public class EditSession implements Extent {
         FlatRegion flatRegion = Regions.asFlatRegion(region);
         LayerVisitor visitor = new LayerVisitor(flatRegion, minimumBlockY(region), maximumBlockY(region), naturalizer);
 
-        OperationFuture future = Operations.completeSlowly(visitor);
+        OperationFuture future = Operations.completeSlowly(this, visitor);
         future.setCountingOperation(naturalizer);
         return future;
     }
@@ -1124,7 +1124,7 @@ public class EditSession implements Extent {
             copy.setSourceMask(new ExistingBlockMask(this));
         }
 
-        return Operations.completeSlowly(copy);
+        return Operations.completeSlowly(this, copy);
     }
 
     /**
@@ -1165,7 +1165,7 @@ public class EditSession implements Extent {
         RegionVisitor visitor = new RegionVisitor(buffer.asRegion(), replace);
 
         OperationQueue operation = new OperationQueue(copy, visitor);
-        OperationFuture future = Operations.completeSlowly(operation);
+        OperationFuture future = Operations.completeSlowly(this, operation);
         future.setCountingOperation(copy);
 
         return future;
@@ -1213,7 +1213,7 @@ public class EditSession implements Extent {
             }
         }
 
-        return Operations.completeSlowly(visitor);
+        return Operations.completeSlowly(this, visitor);
     }
 
     /**
@@ -1259,7 +1259,7 @@ public class EditSession implements Extent {
             }
         }
 
-        return Operations.completeSlowly(visitor);
+        return Operations.completeSlowly(this, visitor);
     }
 
     /**
@@ -1728,7 +1728,7 @@ public class EditSession implements Extent {
         LayerVisitor visitor = new LayerVisitor(region, minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
 
-        OperationFuture future = Operations.completeSlowly(visitor);
+        OperationFuture future = Operations.completeSlowly(this, visitor);
         future.setCountingOperation(ground);
         return future;
     }

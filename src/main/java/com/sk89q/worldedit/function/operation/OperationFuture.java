@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.function.operation;
 
 import com.google.common.collect.Lists;
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.util.WEConsumer;
@@ -42,6 +43,7 @@ public class OperationFuture implements Future<Operation> {
     private final Object _LOCK = new Object();
     private final Operation originalOperation;
     private Operation operation;
+    private EditSession session;
     private AffectedCounter counter = null;
     private Throwable thrown;
     private List<WEConsumer<OperationFuture>> completionTasks = Lists.newArrayList();
@@ -51,7 +53,8 @@ public class OperationFuture implements Future<Operation> {
     private boolean done = false;
     private boolean cancelled = false;
 
-    public OperationFuture(Operation op) {
+    public OperationFuture(EditSession session, Operation op) {
+        this.session = session;
         this.operation = this.originalOperation = op;
     }
 
@@ -262,7 +265,7 @@ public class OperationFuture implements Future<Operation> {
      * Here's an example of how to do this:
      * <pre>
      *  final com.sk89q.worldedit.entity.Player player = ....;
-     *  final OperationFuture future = Operations.completeSlowly(new RegionVisitor(region, func));
+     *  final OperationFuture future = Operations.completeSlowly(editSession, new RegionVisitor(region, func));
      *  Bukkit.getScheduler().runTaskTimer(plugin, new BukkitRunnable() {
      *    public void run() {
      *      if (future.isDone()) {
@@ -382,6 +385,10 @@ public class OperationFuture implements Future<Operation> {
 
     protected Operation getOperation() {
         return operation;
+    }
+
+    protected EditSession getEditSession() {
+        return session;
     }
 
     protected void replaceOperation(Operation replacement) {

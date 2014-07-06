@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.function.operation;
 
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
@@ -103,7 +104,7 @@ public final class Operations {
      * @param op an Operation
      * @return a Future that will complete with the final Operation that was executed
      */
-    public static OperationFuture completeSlowly(Operation op) {
+    public static OperationFuture completeSlowly(EditSession session, Operation op) {
         if (taskId == -1) {
             // Start the worker task
             taskId = getSchedulingPlatform().schedule(0, 1, new SlowCompletionWorker());
@@ -111,7 +112,7 @@ public final class Operations {
             if (taskId == -1) {
                 // Platform does not support scheduling
                 // Just do the operation now and return a completed Future
-                OperationFuture future = new OperationFuture(op);
+                OperationFuture future = new OperationFuture(session, op);
                 try {
                     Operation innerOp = op;
                     while (innerOp != null) {
@@ -122,11 +123,12 @@ public final class Operations {
                 } catch (WorldEditException ex) {
                     future.throwing(ex);
                 }
+                // session.flushQueue();
                 return future;
             }
         }
 
-        return SlowCompletionWorker.queueOperation(op);
+        return SlowCompletionWorker.queueOperation(session, op);
     }
 
     public static void completeFutureNow(OperationFuture future) throws WorldEditException {
@@ -157,8 +159,8 @@ public final class Operations {
         private static final Deque<OperationFuture> queue = new ArrayDeque<OperationFuture>();
         private int cancelCounter = 0;
 
-        protected static OperationFuture queueOperation(Operation op) {
-            OperationFuture future = new OperationFuture(op);
+        protected static OperationFuture queueOperation(EditSession session, Operation op) {
+            OperationFuture future = new OperationFuture(session, op);
             queue.addLast(future);
             return future;
         }
@@ -185,7 +187,7 @@ public final class Operations {
             OperationFuture future;
             while (run.shouldContinue() && (future = queue.pollFirst()) != null) {
                 if (future.isDone()) {
-                    // cancelled, or someone else completed it (?)
+                    // cancelled
                     continue;
                 }
 
@@ -203,6 +205,8 @@ public final class Operations {
                     }
                 }
 
+                future.getEditSession().flushQueue();
+
                 if (future.isDone()) {
                     // Operation threw an exception
                     continue;
@@ -214,6 +218,8 @@ public final class Operations {
                     // Run timed out - NOT done!
                     // Put it back in the queue.
                     queue.addFirst(future);
+                    future.delayed();
+                    WorldEdit.logger.info("Performing long operation...");
                     return;
                 }
             }

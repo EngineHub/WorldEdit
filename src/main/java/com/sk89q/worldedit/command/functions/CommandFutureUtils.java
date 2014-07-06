@@ -24,7 +24,10 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.operation.OperationFuture;
 
-public class CommandFutureUtils {
+public final class CommandFutureUtils {
+    private CommandFutureUtils() {
+    }
+
     public static OperationFuture withCountPrinters(Player player, OperationFuture future) {
         return future
                 .onFinish(new BlocksChangedPrinter(player))
