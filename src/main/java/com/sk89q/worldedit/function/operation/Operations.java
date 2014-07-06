@@ -27,7 +27,9 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -129,6 +131,7 @@ public final class Operations {
         }
 
         session.setInLongOperation(true);
+        // TODO try running for ~5ms here
         return SlowCompletionWorker.queueOperation(session, op);
     }
 
@@ -146,6 +149,10 @@ public final class Operations {
             }
         }
         future.complete();
+    }
+
+    public static List<OperationFuture> getQueueSnapshot() {
+        return new ArrayList<OperationFuture>(SlowCompletionWorker.queue);
     }
 
     protected static class SlowCompletionWorker implements Runnable {

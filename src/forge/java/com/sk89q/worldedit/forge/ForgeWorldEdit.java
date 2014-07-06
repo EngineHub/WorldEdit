@@ -34,6 +34,8 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -87,6 +89,8 @@ public class ForgeWorldEdit {
         config.load();
 
         scheduler = new ForgeMiniScheduler();
+        TickRegistry.registerTickHandler(scheduler, Side.CLIENT);
+        TickRegistry.registerTickHandler(scheduler, Side.SERVER);
     }
 
     @EventHandler

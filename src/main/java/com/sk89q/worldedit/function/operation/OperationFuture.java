@@ -46,6 +46,7 @@ public class OperationFuture implements Future<Operation> {
     private EditSession session;
     private AffectedCounter counter = null;
     private Throwable thrown;
+    private long startTime = System.currentTimeMillis();
     private List<WEConsumer<OperationFuture>> completionTasks = Lists.newArrayList();
     private List<WEConsumer<OperationFuture>> firstDelayTasks = Lists.newArrayList();
     private List<WEConsumer<OperationFuture>> failureTasks = Lists.newArrayList();
@@ -65,6 +66,10 @@ public class OperationFuture implements Future<Operation> {
      */
     public Operation getOriginalOperation() {
         return originalOperation;
+    }
+
+    public long getStartTime() {
+        return startTime;
     }
 
     public AffectedCounter getCountingOperation() {
