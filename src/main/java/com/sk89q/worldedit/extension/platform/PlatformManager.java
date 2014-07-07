@@ -240,7 +240,12 @@ public class PlatformManager {
                 permActor = player;
             }
 
-            return (T) new PlayerProxy(player, permActor, getWorldForEditing(player.getWorld()));
+            Player cuiActor = queryCapability(Capability.WORLDEDIT_CUI).matchPlayer(player);
+            if (cuiActor == null) {
+                cuiActor = player;
+            }
+
+            return (T) new PlayerProxy(player, permActor, cuiActor, getWorldForEditing(player.getWorld()));
         } else {
             return base;
         }

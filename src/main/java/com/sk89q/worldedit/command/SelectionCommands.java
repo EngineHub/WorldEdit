@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.command;
 
 import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandAlias;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
@@ -706,7 +705,7 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = { "/sel", ";" },
+        aliases = { "/sel", ";", "/desel", "/deselect" },
         usage = "[cuboid|extend|poly|ellipsoid|sphere|cyl|convex]",
         desc = "Choose a region selector",
         min = 0,
@@ -761,9 +760,4 @@ public class SelectionCommands {
         session.dispatchCUISelection(player);
     }
 
-    @Command(aliases = {"/desel", "/deselect"}, desc = "Deselect the current selection")
-    @CommandAlias("/sel")
-    public void deselect() {
-
-    }
 }

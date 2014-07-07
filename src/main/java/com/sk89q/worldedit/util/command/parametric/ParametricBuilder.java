@@ -27,7 +27,9 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.util.auth.Authorizer;
 import com.sk89q.worldedit.util.auth.NullAuthorizer;
 import com.sk89q.worldedit.util.command.CommandCallable;
+import com.sk89q.worldedit.util.command.CommandCompleter;
 import com.sk89q.worldedit.util.command.Dispatcher;
+import com.sk89q.worldedit.util.command.NullCompleter;
 import com.sk89q.worldedit.util.command.binding.PrimitiveBindings;
 import com.sk89q.worldedit.util.command.binding.StandardBindings;
 import com.sk89q.worldedit.util.command.binding.Switch;
@@ -57,6 +59,7 @@ public class ParametricBuilder {
     private final List<InvokeListener> invokeListeners = new ArrayList<InvokeListener>();
     private final List<ExceptionConverter> exceptionConverters = new ArrayList<ExceptionConverter>();
     private Authorizer authorizer = new NullAuthorizer();
+    private CommandCompleter defaultCompleter = new NullCompleter();
     
     /**
      * Create a new builder.
@@ -225,4 +228,26 @@ public class ParametricBuilder {
         checkNotNull(authorizer);
         this.authorizer = authorizer;
     }
+
+    /**
+     * Get the default command suggestions provider that will be used if
+     * no suggestions are available.
+     *
+     * @return the default command completer
+     */
+    public CommandCompleter getDefaultCompleter() {
+        return defaultCompleter;
+    }
+
+    /**
+     * Set the default command suggestions provider that will be used if
+     * no suggestions are available.
+     *
+     * @param defaultCompleter the default command completer
+     */
+    public void setDefaultCompleter(CommandCompleter defaultCompleter) {
+        checkNotNull(defaultCompleter);
+        this.defaultCompleter = defaultCompleter;
+    }
+
 }

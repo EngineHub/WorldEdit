@@ -1312,4 +1312,12 @@ public class BukkitWorld extends LocalWorld {
         return null;
     }
 
+    /**
+     * @deprecated Use {@link #setBlock(Vector, BaseBlock, boolean)}
+     */
+    @Deprecated
+    public boolean setBlock(Vector pt, com.sk89q.worldedit.foundation.Block block, boolean notifyAdjacent) throws WorldEditException {
+        return setBlock(pt, (BaseBlock) block, notifyAdjacent);
+    }
+
 }

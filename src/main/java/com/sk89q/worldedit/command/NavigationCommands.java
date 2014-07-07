@@ -23,8 +23,14 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.util.command.parametric.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
@@ -68,13 +74,7 @@ public class NavigationCommands {
         max = 1
     )
     @CommandPermissions("worldedit.navigation.ascend")
-    public void ascend(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        int levelsToAscend = 0;
-        if (args.argsLength() == 0) {
-            levelsToAscend = 1;
-        } else {
-            levelsToAscend = args.getInteger(0);
-        }
+    public void ascend(Player player, @Optional("1") int levelsToAscend) throws WorldEditException {
         int ascentLevels = 1;
         while (player.ascendLevel() && levelsToAscend != ascentLevels) {
             ++ascentLevels;
@@ -94,13 +94,7 @@ public class NavigationCommands {
         max = 1
     )
     @CommandPermissions("worldedit.navigation.descend")
-    public void descend(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        int levelsToDescend = 0;
-        if (args.argsLength() == 0) {
-            levelsToDescend = 1;
-        } else {
-            levelsToDescend = args.getInteger(0);
-        }
+    public void descend(Player player, @Optional("1") int levelsToDescend) throws WorldEditException {
         int descentLevels = 1;
         while (player.descendLevel() && levelsToDescend != descentLevels) {
             ++descentLevels;
@@ -181,7 +175,6 @@ public class NavigationCommands {
     @CommandPermissions("worldedit.navigation.up")
     @Logging(POSITION)
     public void up(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
         final int distance = args.getInteger(0);
 
         final boolean alwaysGlass = getAlwaysGlass(args);

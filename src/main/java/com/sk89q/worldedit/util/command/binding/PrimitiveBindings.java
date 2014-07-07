@@ -19,8 +19,16 @@
 
 package com.sk89q.worldedit.util.command.binding;
 
-import com.sk89q.worldedit.util.command.parametric.*;
+import com.sk89q.worldedit.internal.expression.Expression;
+import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
+import com.sk89q.worldedit.util.command.parametric.ArgumentStack;
+import com.sk89q.worldedit.util.command.parametric.BindingBehavior;
+import com.sk89q.worldedit.util.command.parametric.BindingHelper;
+import com.sk89q.worldedit.util.command.parametric.BindingMatch;
+import com.sk89q.worldedit.util.command.parametric.ParameterException;
 
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 
 /**
@@ -85,6 +93,35 @@ public final class PrimitiveBindings extends BindingHelper {
     }
 
     /**
+     * Try to parse numeric input as either a number or a mathematical expression.
+     *
+     * @param input input
+     * @return a number
+     * @throws ParameterException thrown on parse error
+     */
+    private @Nullable Double parseNumericInput(@Nullable String input) throws ParameterException {
+        if (input == null) {
+            return null;
+        }
+
+        try {
+            return Double.parseDouble(input);
+        } catch (NumberFormatException e1) {
+            try {
+                Expression expression = Expression.compile(input);
+                return expression.evaluate();
+            } catch (EvaluationException e) {
+                throw new ParameterException(String.format(
+                        "Expected '%s' to be a valid number (or a valid mathematical expression)", input));
+            } catch (ExpressionException e) {
+                throw new ParameterException(String.format(
+                        "Expected '%s' to be a number or valid math expression (error: %s)", input, e.getMessage()));
+            }
+
+        }
+    }
+
+    /**
      * Gets a type from a {@link ArgumentStack}.
      * 
      * @param context the context
@@ -96,13 +133,15 @@ public final class PrimitiveBindings extends BindingHelper {
                   behavior = BindingBehavior.CONSUMES,
                   consumedCount = 1,
                   provideModifiers = true)
-    public Integer getInteger(ArgumentStack context, Annotation[] modifiers) 
-            throws ParameterException {
-        Integer v = context.nextInt();
+    public Integer getInteger(ArgumentStack context, Annotation[] modifiers) throws ParameterException {
+        Double v = parseNumericInput(context.next());
         if (v != null) {
-            validate(v, modifiers);
+            int intValue = v.intValue();
+            validate(intValue, modifiers);
+            return intValue;
+        } else {
+            return null;
         }
-        return v;
     }
 
     /**
@@ -117,8 +156,7 @@ public final class PrimitiveBindings extends BindingHelper {
                   behavior = BindingBehavior.CONSUMES,
                   consumedCount = 1,
                   provideModifiers = true)
-    public Short getShort(ArgumentStack context, Annotation[] modifiers) 
-            throws ParameterException {
+    public Short getShort(ArgumentStack context, Annotation[] modifiers) throws ParameterException {
         Integer v = getInteger(context, modifiers);
         if (v != null) {
             return v.shortValue();
@@ -138,13 +176,14 @@ public final class PrimitiveBindings extends BindingHelper {
                   behavior = BindingBehavior.CONSUMES,
                   consumedCount = 1,
                   provideModifiers = true)
-    public Double getDouble(ArgumentStack context, Annotation[] modifiers) 
-            throws ParameterException {
-        Double v = context.nextDouble();
+    public Double getDouble(ArgumentStack context, Annotation[] modifiers) throws ParameterException {
+        Double v = parseNumericInput(context.next());
         if (v != null) {
             validate(v, modifiers);
+            return v;
+        } else {
+            return null;
         }
-        return v;
     }
 
     /**
@@ -159,8 +198,7 @@ public final class PrimitiveBindings extends BindingHelper {
                   behavior = BindingBehavior.CONSUMES,
                   consumedCount = 1,
                   provideModifiers = true)
-    public Float getFloat(ArgumentStack context, Annotation[] modifiers) 
-            throws ParameterException {
+    public Float getFloat(ArgumentStack context, Annotation[] modifiers) throws ParameterException {
         Double v = getDouble(context, modifiers);
         if (v != null) {
             return v.floatValue();

@@ -24,6 +24,7 @@ import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 
@@ -33,14 +34,17 @@ class PlayerProxy extends AbstractPlayerActor {
 
     private final Player basePlayer;
     private final Actor permActor;
+    private final Actor cuiActor;
     private final World world;
 
-    PlayerProxy(Player basePlayer, Actor permActor, World world) {
+    PlayerProxy(Player basePlayer, Actor permActor, Actor cuiActor, World world) {
         checkNotNull(basePlayer);
         checkNotNull(permActor);
+        checkNotNull(cuiActor);
         checkNotNull(world);
         this.basePlayer = basePlayer;
         this.permActor = permActor;
+        this.cuiActor = cuiActor;
         this.world = world;
     }
 
@@ -127,5 +131,10 @@ class PlayerProxy extends AbstractPlayerActor {
     @Override
     public boolean hasPermission(String perm) {
         return permActor.hasPermission(perm);
+    }
+
+    @Override
+    public void dispatchCUIEvent(CUIEvent event) {
+        cuiActor.dispatchCUIEvent(event);
     }
 }
