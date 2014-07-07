@@ -43,6 +43,26 @@ public class ParserContext {
     private boolean preferringWildcard;
 
     /**
+     * Create a new instance.
+     */
+    public ParserContext() {
+    }
+
+    /**
+     * Creates a copy of another instance.
+     *
+     * @param other the other instance
+     */
+    public ParserContext(ParserContext other) {
+        setExtent(other.getExtent());
+        setSession(other.getSession());
+        setWorld(other.getWorld());
+        setActor(other.getActor());
+        setRestricted(other.isRestricted());
+        setPreferringWildcard(other.isPreferringWildcard());
+    }
+
+    /**
      * Get the {@link Extent} set on this context.
      *
      * @return an extent
