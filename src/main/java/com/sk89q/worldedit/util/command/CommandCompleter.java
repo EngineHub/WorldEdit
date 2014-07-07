@@ -22,37 +22,21 @@ package com.sk89q.worldedit.util.command;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 
+import java.util.List;
+
 /**
- * A command that can be executed.
+ * Provides a method that can provide tab completion for commands.
  */
-public interface CommandCallable extends CommandCompleter {
+public interface CommandCompleter {
 
     /**
-     * Execute the correct command based on the input.
-     * </p>
-     * The implementing class must perform the necessary permission checks.
+     * Get a list of suggestions based on input.
      *
-     * @param arguments the arguments
+     * @param arguments the arguments entered up to this point
      * @param locals the locals
-     * @param parentCommands a list of parent commands, with the first most entry being the top-level command
-     * @return the called command, or null if there was no command found
-     * @throws CommandException thrown on a command error
+     * @return a list of suggestions
+     * @throws CommandException thrown if there was a parsing error
      */
-    boolean call(String arguments, CommandLocals locals, String[] parentCommands) throws CommandException;
-    
-    /**
-     * Get an object describing this command.
-     * 
-     * @return the command description
-     */
-    Description getDescription();
-
-    /**
-     * Test whether this command can be executed with the given context.
-     *
-     * @param locals the locals
-     * @return true if execution is permitted
-     */
-    boolean testPermission(CommandLocals locals);
+    List<String> getSuggestions(String arguments, CommandLocals locals) throws CommandException;
 
 }
