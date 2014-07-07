@@ -134,6 +134,7 @@ class DefaultMaskParser extends InputParser<Mask> {
             default:
                 ParserContext tempContext = new ParserContext(context);
                 tempContext.setRestricted(false);
+                tempContext.setPreferringWildcard(true);
                 return new BlockMask(extent, worldEdit.getBlockRegistry().parseFromListInput(component, tempContext));
         }
     }
