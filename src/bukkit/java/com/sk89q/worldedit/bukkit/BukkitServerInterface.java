@@ -168,6 +168,7 @@ public class BukkitServerInterface extends ServerInterface {
     public Map<Capability, Preference> getCapabilities() {
         Map<Capability, Preference> capabilities = new EnumMap<Capability, Preference>(Capability.class);
         capabilities.put(Capability.CONFIGURATION, Preference.NORMAL);
+        capabilities.put(Capability.WORLDEDIT_CUI, Preference.NORMAL);
         capabilities.put(Capability.GAME_HOOKS, Preference.PREFERRED);
         capabilities.put(Capability.PERMISSIONS, Preference.PREFERRED);
         capabilities.put(Capability.USER_COMMANDS, Preference.PREFERRED);
