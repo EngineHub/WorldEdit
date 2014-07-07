@@ -449,7 +449,8 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.forest")
     @Logging(REGION)
-    public void forest(Player player, EditSession editSession, @Selection Region region, @Optional("tree") TreeType type, @Optional("5") double density) throws WorldEditException {
+    public void forest(Player player, EditSession editSession, @Selection Region region, @Optional("tree") TreeType type,
+                       @Optional("5") @Range(min = 0, max = 100) double density) throws WorldEditException {
         density = density / 100;
         ForestGenerator generator = new ForestGenerator(editSession, new TreeGenerator(type));
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(editSession), generator);
@@ -469,7 +470,7 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.flora")
     @Logging(REGION)
-    public void flora(Player player, EditSession editSession, @Selection Region region, @Optional("10") double density) throws WorldEditException {
+    public void flora(Player player, EditSession editSession, @Selection Region region, @Optional("10") @Range(min = 0, max = 100) double density) throws WorldEditException {
         density = density / 100;
         FloraGenerator generator = new FloraGenerator(editSession);
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(editSession), generator);
