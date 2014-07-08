@@ -20,8 +20,7 @@
 package com.sk89q.worldedit.function.operation;
 
 /**
- * An interface for classes that count blocks.
+ * A subinterface of Operation and AffectedCounter.
  */
-public interface AffectedCounter {
-    public int getAffected();
+public interface CountingOperation extends Operation, AffectedCounter {
 }

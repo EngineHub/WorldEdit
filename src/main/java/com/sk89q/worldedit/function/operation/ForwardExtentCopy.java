@@ -43,7 +43,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * source extent, and will copy as many blocks as there are in the source.
  * Therefore, interpolation will not occur to fill in the gaps.
  */
-public class ForwardExtentCopy implements Operation, AffectedCounter {
+public class ForwardExtentCopy implements CountingOperation {
 
     private final Extent source;
     private final Extent destination;

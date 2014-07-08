@@ -17,11 +17,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.operation;
+package com.sk89q.worldedit.function.block;
+
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.operation.AffectedCounter;
 
 /**
- * An interface for classes that count blocks.
+ * A RegionFunction that merely counts the blocks.
  */
-public interface AffectedCounter {
-    public int getAffected();
+public class BlockCounter implements AffectedCounter, RegionFunction {
+    private int count;
+
+    /**
+     * Returns the number of blocks that have been counted.
+     *
+     * @return the number of blocks
+     */
+    public int getAffected() {
+        return count;
+    }
+
+    @Override
+    public boolean apply(Vector position) throws WorldEditException {
+        count++;
+        return false;
+    }
 }
