@@ -26,7 +26,9 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Description;
@@ -40,11 +42,12 @@ import org.bukkit.scheduler.BukkitTask;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-public class BukkitServerInterface extends ServerInterface {
+public class BukkitServerInterface extends ServerInterface implements MultiUserPlatform {
     public Server server;
     public WorldEditPlugin plugin;
     private CommandRegistration dynamicCommands;
@@ -187,6 +190,7 @@ public class BukkitServerInterface extends ServerInterface {
     public Map<Capability, Preference> getCapabilities() {
         Map<Capability, Preference> capabilities = new EnumMap<Capability, Preference>(Capability.class);
         capabilities.put(Capability.CONFIGURATION, Preference.NORMAL);
+        capabilities.put(Capability.WORLDEDIT_CUI, Preference.NORMAL);
         capabilities.put(Capability.GAME_HOOKS, Preference.PREFERRED);
         capabilities.put(Capability.PERMISSIONS, Preference.PREFERRED);
         capabilities.put(Capability.USER_COMMANDS, Preference.PREFERRED);
@@ -197,5 +201,14 @@ public class BukkitServerInterface extends ServerInterface {
 
     public void unregisterCommands() {
         dynamicCommands.unregisterCommands();
+    }
+
+    @Override
+    public Collection<Actor> getConnectedUsers() {
+        List<Actor> users = new ArrayList<Actor>();
+        for (org.bukkit.entity.Player player : Bukkit.getServer().getOnlinePlayers()) {
+            users.add(new BukkitPlayer(plugin, this, player));
+        }
+        return users;
     }
 }

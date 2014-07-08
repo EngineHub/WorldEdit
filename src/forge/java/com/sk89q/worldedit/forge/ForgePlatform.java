@@ -23,7 +23,9 @@ import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Description;
@@ -38,13 +40,19 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
-class ForgePlatform extends ServerInterface {
+class ForgePlatform extends ServerInterface implements MultiUserPlatform {
 
     private final ForgeWorldEdit mod;
     private final MinecraftServer server;
@@ -222,11 +230,25 @@ class ForgePlatform extends ServerInterface {
     public Map<Capability, Preference> getCapabilities() {
         Map<Capability, Preference> capabilities = new EnumMap<Capability, Preference>(Capability.class);
         capabilities.put(Capability.CONFIGURATION, Preference.PREFER_OTHERS);
+        capabilities.put(Capability.WORLDEDIT_CUI, Preference.NORMAL);
         capabilities.put(Capability.GAME_HOOKS, Preference.NORMAL);
         capabilities.put(Capability.PERMISSIONS, Preference.PREFER_OTHERS);
         capabilities.put(Capability.USER_COMMANDS, Preference.NORMAL);
         capabilities.put(Capability.SCHEDULING, Preference.PREFER_OTHERS);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFERRED);
         return capabilities;
+    }
+
+    @Override
+    public Collection<Actor> getConnectedUsers() {
+        List<Actor> users = new ArrayList<Actor>();
+        ServerConfigurationManager scm = server.getConfigurationManager();
+        for (String name : scm.getAllUsernames()) {
+            EntityPlayerMP entity = scm.getPlayerForUsername(name);
+            if (entity != null) {
+                users.add(new ForgePlayer(entity));
+            }
+        }
+        return users;
     }
 }

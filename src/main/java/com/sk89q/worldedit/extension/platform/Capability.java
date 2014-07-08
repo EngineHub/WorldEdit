@@ -71,6 +71,11 @@ public enum Capability {
     SCHEDULING,
 
     /**
+     * The capability of a platform to dispatch WorldEditCUI events.
+     */
+    WORLDEDIT_CUI,
+
+    /**
      * The capability of a platform to perform modifications to a world.
      */
     WORLD_EDITING;

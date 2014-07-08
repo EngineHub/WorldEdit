@@ -33,6 +33,7 @@ import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.internal.command.ActorAuthorizer;
 import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
+import com.sk89q.worldedit.internal.command.UserCommandCompleter;
 import com.sk89q.worldedit.internal.command.WorldEditBinding;
 import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
 import com.sk89q.worldedit.session.request.Request;
@@ -93,6 +94,7 @@ public final class CommandManager {
         // Set up the commands manager
         ParametricBuilder builder = new ParametricBuilder();
         builder.setAuthorizer(new ActorAuthorizer());
+        builder.setDefaultCompleter(new UserCommandCompleter(platformManager));
         builder.addBinding(new WorldEditBinding(worldEdit));
         builder.addExceptionConverter(new WorldEditExceptionConverter(worldEdit));
         builder.addInvokeListener(new LegacyCommandsHandler());
