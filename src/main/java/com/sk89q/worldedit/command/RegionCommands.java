@@ -19,11 +19,15 @@
 
 package com.sk89q.worldedit.command;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.command.functions.AbstractNotifier;
+import com.sk89q.worldedit.command.functions.BlocksChangedNotifier;
 import com.sk89q.worldedit.command.functions.CommandFutureUtils;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.CommonOperationFactory;
@@ -33,11 +37,12 @@ import com.sk89q.worldedit.function.generator.ForestGenerator;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.NoiseFilter2D;
+import com.sk89q.worldedit.function.operation.CountDelegatedOperation;
+import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationFuture;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
-import com.sk89q.worldedit.function.util.WEConsumer;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.Selection;
@@ -69,8 +74,6 @@ import static com.sk89q.worldedit.regions.Regions.*;
  */
 public class RegionCommands {
 
-    private final WorldEdit worldEdit;
-
     /**
      * Create a new instance.
      *
@@ -78,7 +81,6 @@ public class RegionCommands {
      */
     public RegionCommands(WorldEdit worldEdit) {
         checkNotNull(worldEdit);
-        this.worldEdit = worldEdit;
     }
 
     @Command(
@@ -91,7 +93,7 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.set")
     @Logging(REGION)
     public void set(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        CommandFutureUtils.withCountPrinters(player,
+        CommandFutureUtils.withChangedBlocksMessage(player,
                 Operations.completeSlowly(editSession,
                         CommonOperationFactory.setBlocks(editSession, region, pattern)));
     }
@@ -180,7 +182,7 @@ public class RegionCommands {
             from = new ExistingBlockMask(editSession);
         }
 
-        CommandFutureUtils.withCountPrinters(player,
+        CommandFutureUtils.withChangedBlocksMessage(player,
                 Operations.completeSlowly(editSession,
                         CommonOperationFactory.replaceBlocks(editSession, region, from, to)));
     }
@@ -195,7 +197,7 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.overlay")
     @Logging(REGION)
     public void overlay(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        CommandFutureUtils.withCountPrinters(player,
+        CommandFutureUtils.withChangedBlocksMessage(player,
                 Operations.completeSlowly(editSession,
                         CommonOperationFactory.groundOverlay(editSession, asFlatRegion(region), pattern)));
     }
@@ -225,9 +227,15 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.naturalize")
     @Logging(REGION)
     public void naturalize(Player player, EditSession editSession, @Selection Region region) throws WorldEditException {
-        CommandFutureUtils.withCountAndPreMessagePrinters(player, "Naturalized the area",
-                Operations.completeSlowly(editSession,
-                        CommonOperationFactory.naturalize(editSession, asFlatRegion(region))));
+        OperationFuture future = Operations.completeSlowly(editSession,
+                CommonOperationFactory.naturalize(editSession, asFlatRegion(region)));
+        Futures.addCallback(future, new AbstractNotifier(player) {
+            @Override
+            public void onSuccess(Operation result) {
+                CountDelegatedOperation op = (CountDelegatedOperation) result;
+                player.print(op.getAffected() + " blocks naturalized.");
+            }
+        }, Operations.getExecutor());
     }
 
     @Command(
@@ -310,14 +318,14 @@ public class RegionCommands {
         OperationFuture future;
         future = Operations.completeSlowly(editSession,
                 CommonOperationFactory.moveRegion(editSession, region, direction, count, true, replace));
-        CommandFutureUtils.withCountAndPreMessagePrinters(
-                player, moveSelection ? "Selection moved" : "Blocks moved", future);
 
-        // TODO clean this up (and stack)
+        Futures.addCallback(future, new BlocksChangedNotifier(player,
+                moveSelection ? "Selection moved" : "Blocks moved", false), Operations.getExecutor());
+
         if (moveSelection) {
-            future.onFinish(new WEConsumer<OperationFuture>() {
+            Futures.addCallback(future, new FutureCallback<Operation>() {
                 @Override
-                public void accept(OperationFuture operationFuture) {
+                public void onSuccess(Operation result) {
                     try {
                         region.shift(direction.multiply(count));
 
@@ -327,7 +335,11 @@ public class RegionCommands {
                         player.printError(e.getMessage());
                     }
                 }
-            });
+
+                @Override
+                public void onFailure(Throwable t) {
+                }
+            }, Operations.getExecutor());
         }
     }
 
@@ -355,12 +367,13 @@ public class RegionCommands {
         OperationFuture future;
         future = Operations.completeSlowly(editSession,
                 CommonOperationFactory.stackCubiodRegion(editSession, region, direction, count, !ignoreAirBlocks));
-        CommandFutureUtils.withCountAndPostMessagePrinters(player, "Undo with //undo", future);
+
+        Futures.addCallback(future, new BlocksChangedNotifier(player, "Undo with //undo", true), Operations.getExecutor());
 
         if (moveSelection) {
-            future.onFinish(new WEConsumer<OperationFuture>() {
+            Futures.addCallback(future, new FutureCallback<Operation>() {
                 @Override
-                public void accept(OperationFuture operationFuture) {
+                public void onSuccess(Operation result) {
                     try {
                         final Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint());
 
@@ -373,7 +386,11 @@ public class RegionCommands {
                         player.printError(e.getMessage());
                     }
                 }
-            });
+
+                @Override
+                public void onFailure(Throwable t) {
+                }
+            }, Operations.getExecutor());
         }
     }
 
@@ -493,9 +510,8 @@ public class RegionCommands {
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
 
-        OperationFuture future = CommandFutureUtils.withCountPrinters(player,
-                Operations.completeSlowly(editSession, visitor));
-        future.setCountingOperation(ground);
+        CommandFutureUtils.withChangedBlocksMessage(player,
+                Operations.completeSlowly(editSession, new CountDelegatedOperation(visitor, ground)));
     }
 
     @Command(
@@ -514,9 +530,8 @@ public class RegionCommands {
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
 
-        OperationFuture future = CommandFutureUtils.withCountPrinters(player,
-                Operations.completeSlowly(editSession, visitor));
-        future.setCountingOperation(ground);
+        CommandFutureUtils.withChangedBlocksMessage(player,
+                Operations.completeSlowly(editSession, new CountDelegatedOperation(visitor, ground)));
     }
 
 }

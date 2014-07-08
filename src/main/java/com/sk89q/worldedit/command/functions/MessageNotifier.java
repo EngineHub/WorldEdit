@@ -20,23 +20,18 @@
 package com.sk89q.worldedit.command.functions;
 
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.function.operation.OperationFuture;
-import com.sk89q.worldedit.function.util.WEConsumer;
+import com.sk89q.worldedit.function.operation.Operation;
 
-/**
- * Prints a string to a player when an operation finishes.
- */
-public class SuccessNotifier implements WEConsumer<OperationFuture> {
-    private final Player player;
+public class MessageNotifier extends AbstractNotifier {
     private final String message;
 
-    public SuccessNotifier(Player player, String message) {
-        this.player = player;
+    public MessageNotifier(Player player, String message) {
+        super(player);
         this.message = message;
     }
 
     @Override
-    public void accept(OperationFuture operationFuture) {
+    public void onSuccess(Operation result) {
         player.print(message);
     }
 }

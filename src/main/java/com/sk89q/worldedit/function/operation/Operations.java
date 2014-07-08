@@ -26,10 +26,6 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -93,11 +89,18 @@ public final class Operations {
         }
     }
 
-    protected static Platform getSchedulingPlatform() {
-        return WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.SCHEDULING);
-    }
-
     private static int taskId = -1;
+    private static OperationExecutorServiceImpl executorService;
+
+    public static OperationExecutorService getExecutor() {
+        if (executorService == null) {
+            executorService = new OperationExecutorServiceImpl();
+            Platform platform = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.SCHEDULING);
+            taskId = platform.schedule(0, WorldEdit.getInstance().getConfiguration().slowExecutorPeriod,
+                    new SlowCompletionWorker());
+        }
+        return executorService;
+    }
 
     /**
      * Completes the given Operation slowly, with a best-effort attempt made
@@ -107,133 +110,26 @@ public final class Operations {
      * @param op an Operation
      * @return a Future that will complete with the final Operation that was executed
      */
-    public static OperationFuture completeSlowly(EditSession session, Operation op) {
+    public static OperationFuture completeSlowly(EditSession session, Operation op) throws WorldEditException {
+        OperationExecutorService service = getExecutor();
+
+        OperationFuture future = service.submit(op, session);
+
         if (taskId == -1) {
-            // Start the worker task
-            taskId = getSchedulingPlatform().schedule(0, WorldEdit.getInstance().getConfiguration().slowExecutorPeriod, new SlowCompletionWorker());
-
-            if (taskId == -1) {
-                // Platform does not support scheduling
-                // Just do the operation now and return a completed Future
-                OperationFuture future = new OperationFuture(session, op);
-                try {
-                    Operation innerOp = op;
-                    while (innerOp != null) {
-                        innerOp = innerOp.resume(new TrueRunContext());
-                        future.replaceOperation(innerOp);
-                    }
-                    future.complete();
-                } catch (WorldEditException ex) {
-                    future.throwing(ex);
-                }
-                session.flushQueue();
-                return future;
-            }
+            // Platform does not support scheduling - run the task now
+            executorService.heartbeat(TRUE_RUN_CONTEXT);
+        } else {
+            session.setInLongOperation(true);
         }
 
-        session.setInLongOperation(true);
-        // TODO try running for ~5ms here?
-        return SlowCompletionWorker.queueOperation(session, op);
+        return future;
     }
 
-    public static void completeFutureNow(OperationFuture future) throws WorldEditException {
-        SlowCompletionWorker.cancel(future);
-        Operation op = future.getOperation();
-        future.setStarted();
-        while (op != null) {
-            try {
-                op = op.resume(TRUE_RUN_CONTEXT);
-                future.replaceOperation(op);
-            } catch (WorldEditException e) {
-                future.throwing(e);
-                throw e;
-            }
-        }
-        future.complete();
-    }
-
-    public static List<OperationFuture> getQueueSnapshot() {
-        return new ArrayList<OperationFuture>(SlowCompletionWorker.queue);
-    }
-
-    protected static class SlowCompletionWorker implements Runnable {
-        /**
-         * A deck of the OperationFutures waiting to be processed.
-         *
-         * New Operations are added at the bottom ("last") of the deck, and
-         * operations are processed from the top. However, when an Operation
-         * doesn't fully complete within the allotted 30 milliseconds, it is
-         * placed back on the top of the deck to be processed again next tick.
-         */
-        private static final Deque<OperationFuture> queue = new ArrayDeque<OperationFuture>();
-        private int cancelCounter = 0;
-
-        protected static OperationFuture queueOperation(EditSession session, Operation op) {
-            OperationFuture future = new OperationFuture(session, op);
-            queue.addLast(future);
-            return future;
-        }
-
-        protected static boolean cancel(OperationFuture future) {
-            future.getOriginalOperation().cancel();
-            return queue.remove(future);
-        }
-
+    private static class SlowCompletionWorker implements Runnable {
         @Override
         public void run() {
             RunContext run = new TimedRunContext(WorldEdit.getInstance().getConfiguration().slowExecutorMillisPer, TimeUnit.MILLISECONDS);
-
-            // If no operations are active for 1 second, cancel the job
-            if (queue.size() == 0) {
-                cancelCounter++;
-                if (cancelCounter >= 25) {
-                    if (getSchedulingPlatform().cancelScheduled(taskId)) {
-                        taskId = -1;
-                    }
-                }
-                return;
-            }
-
-            OperationFuture future;
-            while (run.shouldContinue() && (future = queue.pollFirst()) != null) {
-                if (future.isDone()) {
-                    // cancelled
-                    continue;
-                }
-
-                future.setStarted();
-
-                // Process future
-                Operation operation = future.getOperation();
-                while (run.shouldContinue() && operation != null) {
-                    try {
-                        operation = operation.resume(run);
-                        future.replaceOperation(operation);
-                    } catch (WorldEditException e) {
-                        future.throwing(e);
-                        break;
-                    }
-                }
-
-                future.getEditSession().flushQueue();
-
-                if (future.isDone()) {
-                    // Operation threw an exception
-                    continue;
-                } else if (operation == null) {
-                    // Operation completed
-                    future.complete();
-                    future.getEditSession().setInLongOperation(false);
-                    continue;
-                } else {
-                    // Run timed out - NOT done!
-                    // Put it back in the queue.
-                    queue.addFirst(future);
-                    future.delayed();
-                    WorldEdit.logger.info("Performing long operation...");
-                    return;
-                }
-            }
+            executorService.heartbeat(run);
         }
     }
 }

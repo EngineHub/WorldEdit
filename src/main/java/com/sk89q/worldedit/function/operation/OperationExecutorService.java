@@ -17,24 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.functions;
+package com.sk89q.worldedit.function.operation;
 
-import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.function.operation.OperationFuture;
-import com.sk89q.worldedit.function.util.WEConsumer;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.sk89q.worldedit.EditSession;
 
-/**
- * Notifies players when an operation takes a long time.
- */
-public class ContinuationNotifier implements WEConsumer<OperationFuture> {
-    private final Player player;
-
-    public ContinuationNotifier(Player player) {
-        this.player = player;
-    }
-
-    @Override
-    public void accept(OperationFuture operationFuture) {
-        player.printDebug("Working... (Use //abort to abort)");
-    }
+public interface OperationExecutorService extends ListeningExecutorService {
+    public OperationFuture submit(Operation operation, EditSession editSession);
 }

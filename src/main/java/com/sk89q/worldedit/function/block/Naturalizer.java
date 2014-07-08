@@ -72,18 +72,20 @@ public class Naturalizer implements LayerFunction, AffectedCounter {
     @Override
     public boolean apply(Vector position, int depth) throws WorldEditException {
         if (mask.matches(editSession, position)) {
-            affected++;
             switch (depth) {
                 case 0:
                     editSession.setBlock(position, grass);
+                    affected++;
                     break;
                 case 1:
                 case 2:
                 case 3:
                     editSession.setBlock(position, dirt);
+                    affected++;
                     break;
                 default:
                     editSession.setBlock(position, stone);
+                    affected++;
             }
         }
 

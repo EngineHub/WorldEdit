@@ -23,40 +23,33 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.operation.AffectedCounter;
 import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.operation.OperationFuture;
-import com.sk89q.worldedit.function.util.WEConsumer;
-
-import java.util.concurrent.ExecutionException;
 
 /**
  * Prints the number of changed blocks from an operation.
  */
-public class BlocksChangedPrinter implements WEConsumer<OperationFuture> {
-    private final Player player;
+public class BlocksChangedNotifier extends AbstractNotifier {
     private String extraMessage;
     private boolean messageAfter;
 
-    public BlocksChangedPrinter(Player player) {
-        this.player = player;
+    public BlocksChangedNotifier(Player player) {
+        super(player);
     }
 
-    public BlocksChangedPrinter(Player player, String message, boolean messageAfter) {
-        this.player = player;
+    public BlocksChangedNotifier(Player player, String message, boolean messageAfter) {
+        super(player);
         this.extraMessage = message;
         this.messageAfter = messageAfter;
     }
 
     @Override
-    public void accept(OperationFuture operationFuture) {
-        // Prefer explicit counter, then first, then last
-        AffectedCounter counter = operationFuture.getCountingOperation();
-        if (counter != null) {
-            printChanged(counter);
+    public void onSuccess(Operation result) {
+        if (result instanceof AffectedCounter) {
+            printChanged((AffectedCounter) result);
             return;
         }
 
         WorldEdit.logger.warning("BlocksChangedPrinter used for an operation that doesn't count blocks!");
-        WorldEdit.logger.warning("For operation: " + operationFuture.getOriginalOperation().getClass().getName());
+        WorldEdit.logger.warning("For operation: " + result.getClass().getName());
 
         // Print a backup message
         player.print("Command complete.");

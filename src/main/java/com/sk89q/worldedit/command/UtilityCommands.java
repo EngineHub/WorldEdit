@@ -106,7 +106,7 @@ public class UtilityCommands {
 
         Vector pos = session.getPlacementPosition(player);
         CountingOperation operation = CommonOperationFactory.fillXZ(editSession, pos, pattern, radius, depth, recursive);
-        CommandFutureUtils.withCountPrinters(player, Operations.completeSlowly(editSession, operation));
+        CommandFutureUtils.withChangedBlocksMessage(player, Operations.completeSlowly(editSession, operation));
     }
 
     @Command(
@@ -138,7 +138,7 @@ public class UtilityCommands {
                       @Range(min = 0) double radius) throws WorldEditException {
         we.checkMaxRadius(radius);
 
-        CommandFutureUtils.withCountPrinters(player,
+        CommandFutureUtils.withChangedBlocksMessage(player,
                 Operations.completeSlowly(editSession,
                         CommonOperationFactory.drainCommand(editSession,
                                 session.getPlacementPosition(player), radius)));
@@ -157,7 +157,7 @@ public class UtilityCommands {
                         @Range(min = 0) double radius) throws WorldEditException {
         we.checkMaxRadius(radius);
 
-        CommandFutureUtils.withCountPrinters(player,
+        CommandFutureUtils.withChangedBlocksMessage(player,
                 Operations.completeSlowly(editSession,
                         CommonOperationFactory.fixLiquidCommand(editSession,
                                 session.getPlacementPosition(player), radius,
@@ -177,7 +177,7 @@ public class UtilityCommands {
                          @Range(min = 0) double radius) throws WorldEditException {
         we.checkMaxRadius(radius);
 
-        CommandFutureUtils.withCountPrinters(player,
+        CommandFutureUtils.withChangedBlocksMessage(player,
                 Operations.completeSlowly(editSession,
                         CommonOperationFactory.fixLiquidCommand(editSession,
                                 session.getPlacementPosition(player), radius,
@@ -215,7 +215,7 @@ public class UtilityCommands {
                 position.add(size - 1, h, size - 1));
         Pattern pattern = new BlockPattern(new BaseBlock(BlockID.AIR));
 
-        CommandFutureUtils.withCountPrinters(player,
+        CommandFutureUtils.withChangedBlocksMessage(player,
                 Operations.completeSlowly(editSession,
                         CommonOperationFactory.setBlocks(editSession, region, pattern)));
     }
@@ -251,7 +251,7 @@ public class UtilityCommands {
                 position.add(size - 1, -h, size - 1));
         Pattern pattern = new BlockPattern(new BaseBlock(BlockID.AIR));
 
-        CommandFutureUtils.withCountPrinters(player,
+        CommandFutureUtils.withChangedBlocksMessage(player,
                 Operations.completeSlowly(editSession,
                         CommonOperationFactory.setBlocks(editSession, region, pattern)));
     }
@@ -278,7 +278,7 @@ public class UtilityCommands {
                 position.add(adj, adj, adj));
         Pattern pattern = new BlockPattern(new BaseBlock(BlockID.AIR));
 
-        CommandFutureUtils.withCountPrinters(player,
+        CommandFutureUtils.withChangedBlocksMessage(player,
                 Operations.completeSlowly(editSession,
                         CommonOperationFactory.replaceBlocks(editSession, region, blockMask, pattern)));
     }
@@ -307,7 +307,7 @@ public class UtilityCommands {
                 position.subtract(adj, adj, adj),
                 position.add(adj, adj, adj));
 
-        CommandFutureUtils.withCountPrinters(player,
+        CommandFutureUtils.withChangedBlocksMessage(player,
                 Operations.completeSlowly(editSession,
                         CommonOperationFactory.replaceBlocks(editSession, region, blockMask, pattern)));
     }

@@ -876,15 +876,8 @@ public class EditSession implements Extent {
      */
     @SuppressWarnings("deprecation")
     public int center(Region region, Pattern pattern) throws MaxChangedBlocksException {
-        checkNotNull(region);
-        checkNotNull(pattern);
-
         Vector center = region.getCenter();
-        Region centerRegion = new CuboidRegion(
-                getWorld(), // Causes clamping of Y range
-                new Vector((int) center.getX(), (int) center.getY(), (int) center.getZ()),
-                center.toBlockVector());
-        return setBlocks(centerRegion, pattern);
+        return this.setBlock(region.getCenter(), Patterns.wrap(pattern).apply(center)) ? 1 : 0;
     }
 
     /**

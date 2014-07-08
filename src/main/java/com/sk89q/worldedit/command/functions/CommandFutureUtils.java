@@ -19,50 +19,17 @@
 
 package com.sk89q.worldedit.command.functions;
 
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.WorldEditException;
+import com.google.common.util.concurrent.Futures;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.operation.OperationFuture;
+import com.sk89q.worldedit.function.operation.Operations;
 
 public final class CommandFutureUtils {
     private CommandFutureUtils() {
     }
 
-    public static OperationFuture withCountPrinters(Player player, OperationFuture future) {
-        return future
-                .onFinish(new BlocksChangedPrinter(player))
-                .onFirstContinue(new ContinuationNotifier(player))
-                .onFailure(new FailureNotifier(player));
-    }
-
-    public static OperationFuture withCountAndPreMessagePrinters(Player player, String message, OperationFuture future) {
-        return future
-                .onFinish(new BlocksChangedPrinter(player, message, false))
-                .onFirstContinue(new ContinuationNotifier(player))
-                .onFailure(new FailureNotifier(player));
-    }
-
-    public static OperationFuture withCountAndPostMessagePrinters(Player player, String message, OperationFuture future) {
-        return future
-                .onFinish(new BlocksChangedPrinter(player, message, true))
-                .onFirstContinue(new ContinuationNotifier(player))
-                .onFailure(new FailureNotifier(player));
-    }
-
-    public static OperationFuture withSuccessMessage(Player player, String message, OperationFuture future) {
-        return future
-                .onFailure(new SuccessNotifier(player, message))
-                .onFirstContinue(new ContinuationNotifier(player))
-                .onFailure(new FailureNotifier(player));
-    }
-
-    public static void finishFutureNowAsMaxChangedBlocksException(OperationFuture future) throws MaxChangedBlocksException {
-        try {
-            future.finishNow();
-        } catch (MaxChangedBlocksException e) {
-            throw e;
-        } catch (WorldEditException e) {
-            throw new RuntimeException(e);
-        }
+    public static OperationFuture withChangedBlocksMessage(Player player, OperationFuture future) {
+        Futures.addCallback(future, new BlocksChangedNotifier(player), Operations.getExecutor());
+        return future;
     }
 }
