@@ -28,7 +28,11 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.command.functions.CommandFutureUtils;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.function.CommonOperationFactory;
+import com.sk89q.worldedit.function.operation.CountingOperation;
 import com.sk89q.worldedit.function.operation.OperationFuture;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
@@ -138,8 +142,9 @@ public class ClipboardCommands {
 
         session.setClipboard(clipboard);
 
-        CommandFutureUtils.withSuccessMessage(player, "Block(s) cut.",
-                editSession.setBlocks(region, block));
+        CountingOperation op = CommonOperationFactory.setBlocks(editSession, region, new BlockPattern(block));
+        Operations.completeLegacy(op);
+        player.print(op.getAffected() + " block(s) cut.");
     }
 
     @Command(

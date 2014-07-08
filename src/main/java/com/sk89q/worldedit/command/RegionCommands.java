@@ -26,6 +26,7 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.command.functions.CommandFutureUtils;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.function.CommonOperationFactory;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.generator.FloraGenerator;
 import com.sk89q.worldedit.function.generator.ForestGenerator;
@@ -89,9 +90,10 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.set")
     @Logging(REGION)
-    public void set(Player player, LocalSession session, EditSession editSession, Pattern pattern) throws WorldEditException {
+    public void set(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
         CommandFutureUtils.withCountPrinters(player,
-                editSession.setBlocks(session.getSelection(player.getWorld()), Patterns.wrap(pattern)));
+                Operations.completeSlowly(editSession,
+                        CommonOperationFactory.setBlocks(editSession, region, pattern)));
     }
 
     @Command(
@@ -165,18 +167,22 @@ public class RegionCommands {
         aliases = { "/replace", "/re", "/rep" },
         usage = "[from-block] <to-block>",
         desc = "Replace all blocks in the selection with another",
-        flags = "f",
         min = 1,
         max = 2
     )
     @CommandPermissions("worldedit.region.replace")
     @Logging(REGION)
-    public void replace(Player player, EditSession editSession, @Selection Region region, @Optional Mask from, Pattern to) throws WorldEditException {
+    public void replace(Player player, EditSession editSession,
+                        @Selection Region region,
+                        @Optional Mask from,
+                        Pattern to) throws WorldEditException {
         if (from == null) {
             from = new ExistingBlockMask(editSession);
         }
+
         CommandFutureUtils.withCountPrinters(player,
-                editSession.replaceBlocks(region, from, Patterns.wrap(to)));
+                Operations.completeSlowly(editSession,
+                        CommonOperationFactory.replaceBlocks(editSession, region, from, to)));
     }
 
     @Command(
@@ -190,27 +196,29 @@ public class RegionCommands {
     @Logging(REGION)
     public void overlay(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
         CommandFutureUtils.withCountPrinters(player,
-                editSession.overlayCuboidBlocks(region, Patterns.wrap(pattern)));
+                Operations.completeSlowly(editSession,
+                        CommonOperationFactory.groundOverlay(editSession, asFlatRegion(region), pattern)));
     }
 
     @Command(
         aliases = { "/center", "/middle" },
         usage = "<block>",
-        desc = "Set the center block(s)",
+        desc = "Set the center block to the given block.",
         min = 1,
         max = 1
     )
     @Logging(REGION)
     @CommandPermissions("worldedit.region.center")
     public void center(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        CommandFutureUtils.withCountAndPreMessagePrinters(player, "Center set",
-                editSession.center(region, Patterns.wrap(pattern)));
+        Vector center = region.getCenter();
+        editSession.setBlock(region.getCenter(), pattern.apply(center));
+        player.print("Center block set.");
     }
 
     @Command(
         aliases = { "/naturalize" },
         usage = "",
-        desc = "3 layers of dirt on top then rock below",
+        desc = "'Naturalize' the selection -- 3 layers of dirt on top then rock below.",
         min = 0,
         max = 0
     )
@@ -218,7 +226,8 @@ public class RegionCommands {
     @Logging(REGION)
     public void naturalize(Player player, EditSession editSession, @Selection Region region) throws WorldEditException {
         CommandFutureUtils.withCountAndPreMessagePrinters(player, "Naturalized the area",
-                editSession.naturalizeCuboidBlocks(region));
+                Operations.completeSlowly(editSession,
+                        CommonOperationFactory.naturalize(editSession, asFlatRegion(region))));
     }
 
     @Command(
@@ -231,8 +240,10 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.walls")
     @Logging(REGION)
     public void walls(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        CommandFutureUtils.withCountPrinters(player,
-                editSession.makeCuboidWalls(region, Patterns.wrap(pattern)));
+        CuboidRegion cuboid = CuboidRegion.makeCuboid(region);
+        Region walls = cuboid.getWalls();
+
+        set(player, editSession, walls, pattern);
     }
 
     @Command(
@@ -245,8 +256,10 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.faces")
     @Logging(REGION)
     public void faces(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        CommandFutureUtils.withCountPrinters(player,
-                editSession.makeCuboidFaces(region, Patterns.wrap(pattern)));
+        CuboidRegion cuboid = CuboidRegion.makeCuboid(region);
+        Region faces = cuboid.getFaces();
+
+        set(player, editSession, faces, pattern);
     }
 
     @Command(
@@ -262,12 +275,15 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.smooth")
     @Logging(REGION)
-    public void smooth(Player player, EditSession editSession, @Selection Region region, @Optional("1") int iterations, @Switch('n') boolean affectNatural) throws WorldEditException {
+    public void smooth(Player player, EditSession editSession,
+                       @Selection Region region,
+                       @Optional("1") int iterations,
+                       @Switch('n') boolean affectNatural) throws WorldEditException {
+
         HeightMap heightMap = new HeightMap(editSession, region, affectNatural);
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         int affected = heightMap.applyFilter(filter, iterations);
         player.print("Terrain's height map smoothed. " + affected + " block(s) changed.");
-
     }
 
     @Command(
@@ -291,10 +307,13 @@ public class RegionCommands {
                      @Optional("air") BaseBlock replace,
                      @Switch('s') boolean moveSelection) throws WorldEditException {
 
-        OperationFuture future = editSession.moveRegion(region, direction, count, true, replace);
+        OperationFuture future;
+        future = Operations.completeSlowly(editSession,
+                CommonOperationFactory.moveRegion(editSession, region, direction, count, true, replace));
         CommandFutureUtils.withCountAndPreMessagePrinters(
                 player, moveSelection ? "Selection moved" : "Blocks moved", future);
 
+        // TODO clean this up (and stack)
         if (moveSelection) {
             future.onFinish(new WEConsumer<OperationFuture>() {
                 @Override
@@ -333,7 +352,9 @@ public class RegionCommands {
                       @Optional(Direction.AIM) @Direction final Vector direction,
                       @Switch('s') boolean moveSelection,
                       @Switch('a') boolean ignoreAirBlocks) throws WorldEditException {
-        OperationFuture future = editSession.stackCuboidRegion(region, direction, count, !ignoreAirBlocks);
+        OperationFuture future;
+        future = Operations.completeSlowly(editSession,
+                CommonOperationFactory.stackCubiodRegion(editSession, region, direction, count, !ignoreAirBlocks));
         CommandFutureUtils.withCountAndPostMessagePrinters(player, "Undo with //undo", future);
 
         if (moveSelection) {
@@ -388,7 +409,10 @@ public class RegionCommands {
                 "Deforms a selected region with an expression\n" +
                 "The expression is executed for each block and is expected\n" +
                 "to modify the variables x, y and z to point to a new block\n" +
-                "to fetch. See also tinyurl.com/wesyntax.",
+                "to fetch. See also tinyurl.com/wesyntax.\n" +
+                "Flags:\n" +
+                "  -r: Use raw coordinates (start from 0,0)\n" +
+                "  -o: Use offset coordinates (start from you)",
             flags = "ro",
             min = 1,
             max = -1
@@ -432,7 +456,7 @@ public class RegionCommands {
 
     @Command(
         aliases = { "/hollow" },
-        usage = "[<thickness>[ <block>]]",
+        usage = "[thickness] [block]",
         desc = "Hollows out the object contained in this selection",
         help =
             "Hollows out the object contained in this selection.\n" +

@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.function;
 
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -33,14 +34,13 @@ import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
 import com.sk89q.worldedit.function.util.RegionOffset;
-import com.sk89q.worldedit.function.visitor.DownwardVisitor;
-import com.sk89q.worldedit.function.visitor.LayerVisitor;
-import com.sk89q.worldedit.function.visitor.RecursiveVisitor;
-import com.sk89q.worldedit.function.visitor.RegionVisitor;
+import com.sk89q.worldedit.function.visitor.*;
 import com.sk89q.worldedit.math.transform.AffineTransform;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.EllipsoidRegion;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 import java.util.Set;
@@ -153,5 +153,61 @@ public final class CommonOperationFactory {
         RegionVisitor placer = new RegionVisitor(buffer.asRegion(), replace);
 
         return new CountDelegatedOperation(new OperationQueue(copy, placer), copy);
+    }
+
+    public static CountingOperation drainCommand(EditSession session, Vector origin, double maxDistance) {
+        checkArgument(maxDistance >= 0, "maximum distance >= 0 required");
+
+        MaskIntersection mask = new MaskIntersection(
+                new BoundedHeightMask(0, session.getWorld().getMaxY()),
+                new RegionMask(new EllipsoidRegion((World) null, origin, new Vector(maxDistance, maxDistance, maxDistance))),
+                session.getWorld().createLiquidMask());
+
+        BlockReplace replace = new BlockReplace(session, new BlockPattern(new BaseBlock(BlockID.AIR)));
+        RecursiveVisitor visitor = new RecursiveVisitor(mask, replace);
+
+        // Around the origin in a 3x3 block
+        for (BlockVector position : CuboidRegion.fromCenter(origin, 1)) {
+            if (mask.test(position)) {
+                visitor.visit(position);
+            }
+        }
+
+        return visitor;
+    }
+
+    public static CountingOperation fixLiquidCommand(EditSession session, Vector origin, double radius, int moving, int stationary) {
+        checkArgument(radius >= 0, "maximum distance >= 0 required");
+
+        // Our origins can only be liquids
+        BlockMask liquidMask = new BlockMask(
+                session,
+                new BaseBlock(moving, -1),
+                new BaseBlock(stationary, -1));
+
+        // But we will also visit air blocks
+        MaskIntersection blockMask =
+                new MaskUnion(liquidMask,
+                        new BlockMask(
+                                session,
+                                new BaseBlock(BlockID.AIR)));
+
+        // There are boundaries that the routine needs to stay in
+        MaskIntersection mask = new MaskIntersection(
+                new BoundedHeightMask(0, Math.min(origin.getBlockY(), session.getWorld().getMaxY())),
+                new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
+                blockMask);
+
+        BlockReplace replace = new BlockReplace(session, new BlockPattern(new BaseBlock(stationary)));
+        NonRisingVisitor visitor = new NonRisingVisitor(mask, replace);
+
+        // Around the origin in a 3x3 block
+        for (BlockVector position : CuboidRegion.fromCenter(origin, 1)) {
+            if (liquidMask.test(position)) {
+                visitor.visit(position);
+            }
+        }
+
+        return visitor;
     }
 }

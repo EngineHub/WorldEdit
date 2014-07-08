@@ -22,13 +22,11 @@ package com.sk89q.worldedit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.command.functions.CommandFutureUtils;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.extent.ChangeSetExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.MaskingExtent;
 import com.sk89q.worldedit.extent.NullExtent;
-import com.sk89q.worldedit.extent.buffer.ForgetfulExtentBuffer;
 import com.sk89q.worldedit.extent.cache.LastAccessExtentCache;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.extent.inventory.BlockBagExtent;
@@ -41,16 +39,10 @@ import com.sk89q.worldedit.extent.world.FastModeExtent;
 import com.sk89q.worldedit.extent.world.SurvivalModeExtent;
 import com.sk89q.worldedit.function.CommonOperationFactory;
 import com.sk89q.worldedit.function.GroundFunction;
-import com.sk89q.worldedit.function.RegionMaskingFilter;
-import com.sk89q.worldedit.function.block.BlockReplace;
-import com.sk89q.worldedit.function.block.Counter;
-import com.sk89q.worldedit.function.block.Naturalizer;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
 import com.sk89q.worldedit.function.mask.*;
 import com.sk89q.worldedit.function.operation.*;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
-import com.sk89q.worldedit.function.util.RegionOffset;
 import com.sk89q.worldedit.function.visitor.*;
 import com.sk89q.worldedit.history.UndoContext;
 import com.sk89q.worldedit.history.change.BlockChange;
@@ -63,7 +55,6 @@ import com.sk89q.worldedit.math.interpolation.Interpolation;
 import com.sk89q.worldedit.math.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.math.interpolation.Node;
 import com.sk89q.worldedit.math.noise.RandomNoise;
-import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.*;
@@ -939,7 +930,6 @@ public class EditSession implements Extent {
      */
     @SuppressWarnings("deprecation")
     public int makeFaces(final Region region, Pattern pattern) throws MaxChangedBlocksException {
-        // TODO convert shape.generate() to OperationFuture
         checkNotNull(region);
         checkNotNull(pattern);
 
@@ -996,7 +986,6 @@ public class EditSession implements Extent {
      */
     @SuppressWarnings("deprecation")
     public int makeWalls(final Region region, Pattern pattern) throws MaxChangedBlocksException {
-        // TODO convert shape.generate() to OperationFuture
         checkNotNull(region);
         checkNotNull(pattern);
 
@@ -1134,26 +1123,13 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public OperationFuture drainArea(Vector origin, double radius) throws MaxChangedBlocksException {
+    public int drainArea(Vector origin, double radius) throws MaxChangedBlocksException {
         checkNotNull(origin);
         checkArgument(radius >= 0, "radius >= 0 required");
 
-        MaskIntersection mask = new MaskIntersection(
-                new BoundedHeightMask(0, getWorld().getMaxY()),
-                new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
-                getWorld().createLiquidMask());
-
-        BlockReplace replace = new BlockReplace(this, new BlockPattern(new BaseBlock(BlockID.AIR)));
-        RecursiveVisitor visitor = new RecursiveVisitor(mask, replace);
-
-        // Around the origin in a 3x3 block
-        for (BlockVector position : CuboidRegion.fromCenter(origin, 1)) {
-            if (mask.test(position)) {
-                visitor.visit(position);
-            }
-        }
-
-        return Operations.completeSlowly(this, visitor);
+        CountingOperation op = CommonOperationFactory.drainCommand(this, origin, radius);
+        Operations.completeLegacy(op);
+        return op.getAffected();
     }
 
     /**
@@ -1166,40 +1142,12 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public OperationFuture fixLiquid(Vector origin, double radius, int moving, int stationary) throws MaxChangedBlocksException {
+    public int fixLiquid(Vector origin, double radius, int moving, int stationary) throws MaxChangedBlocksException {
         checkNotNull(origin);
-        checkArgument(radius >= 0, "radius >= 0 required");
 
-        // Our origins can only be liquids
-        BlockMask liquidMask = new BlockMask(
-                this,
-                new BaseBlock(moving, -1),
-                new BaseBlock(stationary, -1));
-
-        // But we will also visit air blocks
-        MaskIntersection blockMask =
-                new MaskUnion(liquidMask,
-                        new BlockMask(
-                                this,
-                                new BaseBlock(BlockID.AIR)));
-
-        // There are boundaries that the routine needs to stay in
-        MaskIntersection mask = new MaskIntersection(
-                new BoundedHeightMask(0, Math.min(origin.getBlockY(), getWorld().getMaxY())),
-                new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
-                blockMask);
-
-        BlockReplace replace = new BlockReplace(this, new BlockPattern(new BaseBlock(stationary)));
-        NonRisingVisitor visitor = new NonRisingVisitor(mask, replace);
-
-        // Around the origin in a 3x3 block
-        for (BlockVector position : CuboidRegion.fromCenter(origin, 1)) {
-            if (liquidMask.test(position)) {
-                visitor.visit(position);
-            }
-        }
-
-        return Operations.completeSlowly(this, visitor);
+        CountingOperation op = CommonOperationFactory.fixLiquidCommand(this, origin, radius, moving, stationary);
+        Operations.completeLegacy(op);
+        return op.getAffected();
     }
 
     /**
@@ -1652,7 +1600,7 @@ public class EditSession implements Extent {
      * @return number of patches created
      * @throws MaxChangedBlocksException
      */
-    public OperationFuture makePumpkinPatches(Vector position, int apothem) throws MaxChangedBlocksException {
+    public int makePumpkinPatches(Vector position, int apothem) throws MaxChangedBlocksException {
         // We want to generate pumpkins
         GardenPatchGenerator generator = new GardenPatchGenerator(this);
         generator.setPlant(GardenPatchGenerator.getPumpkinPattern());
@@ -1668,9 +1616,9 @@ public class EditSession implements Extent {
         LayerVisitor visitor = new LayerVisitor(region, minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
 
-        OperationFuture future = Operations.completeSlowly(this, visitor);
-        future.setCountingOperation(ground);
-        return future;
+        CountingOperation op = new CountDelegatedOperation(visitor, ground);
+        Operations.completeLegacy(op);
+        return op.getAffected();
     }
 
     /**

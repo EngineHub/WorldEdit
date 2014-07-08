@@ -209,8 +209,8 @@ public class GenerationCommands {
     @CommandPermissions("worldedit.generation.pumpkins")
     @Logging(POSITION)
     public void pumpkins(Player player, LocalSession session, EditSession editSession, @Optional("10") int apothem) throws WorldEditException {
-        CommandFutureUtils.withCountAndPreMessagePrinters(player, "Pumpkin patches created",
-                editSession.makePumpkinPatches(session.getPlacementPosition(player), apothem));
+        int affected = editSession.makePumpkinPatches(session.getPlacementPosition(player), apothem);
+        player.print(affected + " block(s) changed.");
     }
 
     @Command(

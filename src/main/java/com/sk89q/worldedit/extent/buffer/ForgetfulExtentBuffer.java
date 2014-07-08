@@ -41,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Buffers changes to an {@link Extent} and allows later retrieval for
- * actual application of the changes.
+ * actual application of the changes, when used as a {@link Pattern}.
  * </p>
  * This buffer will not attempt to return results from the buffer when
  * accessor methods (such as {@link #getBlock(Vector)}) are called.
