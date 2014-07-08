@@ -110,7 +110,16 @@ public final class Operations {
      * @param op an Operation
      * @return a Future that will complete with the final Operation that was executed
      */
-    public static OperationFuture completeSlowly(EditSession session, Operation op) throws WorldEditException {
+    /*
+    Note that the parameter 'op' is a CountingOperation instead of an Operation.
+    This is because the Operation randomly gets cast to a CountingOperation in
+    the result listeners. If you have a non-Counting operation that needs to be
+    done over multiple ticks, go ahead and change the parameter.
+
+    If nobody comes up with a non-Counting Operation that needs to be done
+    slowly, then change the return type of OperationFuture to CountingOperation.
+     */
+    public static OperationFuture completeSlowly(EditSession session, CountingOperation op) throws WorldEditException {
         OperationExecutorService service = getExecutor();
 
         OperationFuture future = service.submit(op, session);
