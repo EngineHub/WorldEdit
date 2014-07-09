@@ -24,7 +24,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.input.InputParseException;
 
 /**
- * Input parser interface for {@link AbstractRegistry}.
+ * Input parser interface for {@link AbstractFactory}.
  *
  * @param <E> the element
  */

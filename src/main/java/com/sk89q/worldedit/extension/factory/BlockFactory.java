@@ -17,13 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.registry;
+package com.sk89q.worldedit.extension.factory;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.input.InputParseException;
-import com.sk89q.worldedit.internal.registry.AbstractRegistry;
+import com.sk89q.worldedit.internal.registry.AbstractFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -33,16 +33,16 @@ import java.util.Set;
  * new blocks from input.
  * </p>
  * Instances of this class can be taken from
- * {@link WorldEdit#getBlockRegistry()}.
+ * {@link WorldEdit#getBlockFactory()}.
  */
-public class BlockRegistry extends AbstractRegistry<BaseBlock> {
+public class BlockFactory extends AbstractFactory<BaseBlock> {
 
     /**
      * Create a new instance.
      *
      * @param worldEdit the WorldEdit instance.
      */
-    public BlockRegistry(WorldEdit worldEdit) {
+    public BlockFactory(WorldEdit worldEdit) {
         super(worldEdit);
 
         parsers.add(new DefaultBlockParser(worldEdit));

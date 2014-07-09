@@ -17,32 +17,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.registry;
+package com.sk89q.worldedit.extension.factory;
 
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.internal.registry.AbstractRegistry;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.internal.registry.AbstractFactory;
 
 /**
- * A registry of known {@link Pattern}s. Provides methods to instantiate
- * new patterns from input.
+ * A registry of known {@link Mask}s. Provides methods to instantiate
+ * new masks from input.
  * </p>
  * Instances of this class can be taken from
- * {@link WorldEdit#getPatternRegistry()}.
+ * {@link WorldEdit#getMaskFactory()}.
  */
-public final class PatternRegistry extends AbstractRegistry<Pattern> {
+public final class MaskFactory extends AbstractFactory<Mask> {
 
     /**
-     * Create a new instance.
+     * Create a new mask registry.
      *
      * @param worldEdit the WorldEdit instance
      */
-    public PatternRegistry(WorldEdit worldEdit) {
+    public MaskFactory(WorldEdit worldEdit) {
         super(worldEdit);
 
-        parsers.add(new HashTagPatternParser(worldEdit));
-        parsers.add(new SingleBlockPatternParser(worldEdit));
-        parsers.add(new RandomPatternParser(worldEdit));
+        parsers.add(new DefaultMaskParser(worldEdit));
     }
 
 }

@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.registry;
+package com.sk89q.worldedit.extension.factory;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -135,7 +135,7 @@ class DefaultMaskParser extends InputParser<Mask> {
                 ParserContext tempContext = new ParserContext(context);
                 tempContext.setRestricted(false);
                 tempContext.setPreferringWildcard(true);
-                return new BlockMask(extent, worldEdit.getBlockRegistry().parseFromListInput(component, tempContext));
+                return new BlockMask(extent, worldEdit.getBlockFactory().parseFromListInput(component, tempContext));
         }
     }
 

@@ -30,22 +30,22 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * An abstract implementation of a registry for internal usage.
+ * An abstract implementation of a factory for internal usage.
  *
- * @param <E> the element that the registry returns
+ * @param <E> the element that the factory returns
  */
 @SuppressWarnings("ProtectedField")
-public abstract class AbstractRegistry<E> {
+public abstract class AbstractFactory<E> {
 
     protected final WorldEdit worldEdit;
     protected final List<InputParser<E>> parsers = new ArrayList<InputParser<E>>();
 
     /**
-     * Create a new registry.
+     * Create a new factory.
      *
      * @param worldEdit the WorldEdit instance
      */
-    protected AbstractRegistry(WorldEdit worldEdit) {
+    protected AbstractFactory(WorldEdit worldEdit) {
         checkNotNull(worldEdit);
         this.worldEdit = worldEdit;
     }

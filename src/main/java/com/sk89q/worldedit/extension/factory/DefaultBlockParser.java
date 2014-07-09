@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.registry;
+package com.sk89q.worldedit.extension.factory;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.*;

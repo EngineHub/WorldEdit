@@ -178,7 +178,7 @@ public class WorldEditBinding extends BindingHelper {
         }
         parserContext.setSession(worldEdit.getSessionManager().get(actor));
         try {
-            return worldEdit.getBlockRegistry().parseFromInput(context.next(), parserContext);
+            return worldEdit.getBlockFactory().parseFromInput(context.next(), parserContext);
         } catch (NoMatchException e) {
             throw new ParameterException(e.getMessage(), e);
         }
@@ -207,7 +207,7 @@ public class WorldEditBinding extends BindingHelper {
         }
         parserContext.setSession(worldEdit.getSessionManager().get(actor));
         try {
-            return worldEdit.getPatternRegistry().parseFromInput(context.next(), parserContext);
+            return worldEdit.getPatternFactory().parseFromInput(context.next(), parserContext);
         } catch (NoMatchException e) {
             throw new ParameterException(e.getMessage(), e);
         }
@@ -236,7 +236,7 @@ public class WorldEditBinding extends BindingHelper {
         }
         parserContext.setSession(worldEdit.getSessionManager().get(actor));
         try {
-            return worldEdit.getMaskRegistry().parseFromInput(context.next(), parserContext);
+            return worldEdit.getMaskFactory().parseFromInput(context.next(), parserContext);
         } catch (NoMatchException e) {
             throw new ParameterException(e.getMessage(), e);
         }

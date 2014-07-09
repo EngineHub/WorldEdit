@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.registry;
+package com.sk89q.worldedit.extension.factory;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -36,7 +36,7 @@ class RandomPatternParser extends InputParser<Pattern> {
 
     @Override
     public Pattern parseFromInput(String input, ParserContext context) throws InputParseException {
-        BlockRegistry blockRegistry = worldEdit.getBlockRegistry();
+        BlockFactory blockRegistry = worldEdit.getBlockFactory();
         RandomPattern randomPattern = new RandomPattern();
 
         for (String token : input.split(",")) {
