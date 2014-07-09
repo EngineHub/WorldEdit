@@ -190,9 +190,9 @@ public class ClipboardCommands {
 
         ClipboardHolder holder = session.getClipboard();
         AffineTransform transform = new AffineTransform();
-        transform = transform.rotateY(Math.toRadians(yRotate != null ? yRotate : 0));
-        transform = transform.rotateX(Math.toRadians(xRotate != null ? xRotate : 0));
-        transform = transform.rotateZ(Math.toRadians(zRotate != null ? zRotate : 0));
+        transform = transform.rotateY(-Math.toRadians(yRotate != null ? yRotate : 0));
+        transform = transform.rotateX(-Math.toRadians(xRotate != null ? xRotate : 0));
+        transform = transform.rotateZ(-Math.toRadians(zRotate != null ? zRotate : 0));
         holder.setTransform(holder.getTransform().combine(transform));
         player.print("The clipboard copy has been rotated.");
     }
