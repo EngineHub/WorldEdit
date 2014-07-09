@@ -10,6 +10,8 @@
   <allow pkg="com.sk89q"/>
   <allow pkg="com.google.common"/>
   <allow pkg="com.thoughtworks.paranamer"/>
+  <allow pkg="gnu.trove"/>
+  <allow pkg="com.google.gson"/>
 
   <subpackage name="util.yaml">
     <allow pkg="org.yaml.snakeyaml"/>
