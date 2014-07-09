@@ -17,40 +17,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.mapping;
+package com.sk89q.worldedit.world.registry;
 
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 import javax.annotation.Nullable;
 
 /**
- * A resolver can create state objects (such as {@link BaseBlock}) from
- * universal identifiers, but also get the universal identifier for
- * a given state object (at least when it is known).
- * </p>
- * Identifiers may be case-sensitive. Routines that work with IDs should
- * not make changes to the casing of the IDs or perform case-insensitive
- * comparisons. Implementations may normalize the casing of IDs if it
- * is appropriate.
- *
- * @param <E> the type of state object
+ * Describes a possible value for a {@code State}.
  */
-public interface Resolver<E> {
+public interface StateValue {
 
     /**
-     * Create an instance of the state object from the given ID.
+     * Return whether this state is set on the given block.
      *
-     * @param id the ID
-     * @return an instance, otherwise null if an instance cannot be created
+     * @param block the block
+     * @return true if this value is set
      */
-    @Nullable E create(String id);
+    boolean isSet(BaseBlock block);
 
     /**
-     * Get the ID for the given object.
+     * Set the state to this value on the given block.
      *
-     * @param object the object
-     * @return the ID, otherwise null if it is not known
+     * @param block the block to change
+     * @return true if the value was set successfully
      */
-    @Nullable String getId(E object);
+    boolean set(BaseBlock block);
+
+    /**
+     * Return the direction associated with this value.
+     *
+     * @return the direction, otherwise null
+     */
+    @Nullable
+    Vector getDirection();
 
 }

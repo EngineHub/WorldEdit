@@ -19,7 +19,16 @@
 
 package com.sk89q.worldedit.internal;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BiomeType;
+import com.sk89q.worldedit.BlockVector2D;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.EntityType;
+import com.sk89q.worldedit.LocalEntity;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -30,7 +39,7 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.mapping.Resolver;
+import com.sk89q.worldedit.world.registry.WorldData;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -260,6 +269,11 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
+    public WorldData getWorldData() {
+        return world.getWorldData();
+    }
+
+    @Override
     public boolean equals(Object other) {
         return world.equals(other);
     }
@@ -312,33 +326,6 @@ public class LocalWorldAdapter extends LocalWorld {
     @Nullable
     public Operation commit() {
         return world.commit();
-    }
-    @Override
-    public Resolver<BaseBlock> getBlockMapping() {
-        return world.getBlockMapping();
-    }
-
-    @Override
-    public Resolver<BaseEntity> getEntityMapping() {
-        return world.getEntityMapping();
-    }
-
-    @Override
-    @Nullable
-    public <T> T getMetaData(BaseBlock block, Class<T> metaDataClass) {
-        return world.getMetaData(block, metaDataClass);
-    }
-
-    @Override
-    @Nullable
-    public <T> T getMetaData(Entity entity, Class<T> metaDataClass) {
-        return world.getMetaData(entity, metaDataClass);
-    }
-
-    @Override
-    @Nullable
-    public <T> T getMetaData(BaseEntity entity, Class<T> metaDataClass) {
-        return world.getMetaData(entity, metaDataClass);
     }
 
     @Override

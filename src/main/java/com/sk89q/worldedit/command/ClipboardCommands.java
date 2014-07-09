@@ -32,9 +32,9 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.block.BlockReplace;
-import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
+import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.annotation.Direction;
@@ -92,7 +92,7 @@ public class ClipboardCommands {
             copy.setSourceMask(mask);
         }
         Operations.completeLegacy(copy);
-        session.replaceClipboard(clipboard);
+        session.setClipboard(new ClipboardHolder(clipboard, editSession.getWorld().getWorldData()));
 
         player.print(region.getArea() + " block(s) were copied.");
     }
@@ -124,7 +124,7 @@ public class ClipboardCommands {
             copy.setSourceMask(mask);
         }
         Operations.completeLegacy(copy);
-        session.replaceClipboard(clipboard);
+        session.setClipboard(new ClipboardHolder(clipboard, editSession.getWorld().getWorldData()));
 
         player.print(region.getArea() + " block(s) were copied.");
     }
@@ -154,12 +154,12 @@ public class ClipboardCommands {
         Region region = clipboard.getRegion();
 
         Vector to = atOrigin ? clipboard.getOrigin() : session.getPlacementPosition(player);
-        ForwardExtentCopy copy = new ForwardExtentCopy(clipboard, region, clipboard.getOrigin(), editSession, to);
-        copy.setTransform(holder.getTransform());
-        if (ignoreAirBlocks) {
-            copy.setSourceMask(new ExistingBlockMask(clipboard));
-        }
-        Operations.completeLegacy(copy);
+        Operation operation = holder
+                .createPaste(editSession, editSession.getWorld().getWorldData())
+                .to(to)
+                .ignoreAirBlocks(ignoreAirBlocks)
+                .build();
+        Operations.completeLegacy(operation);
 
         if (selectPasted) {
             Vector max = to.add(region.getMaximumPoint().subtract(region.getMinimumPoint()));
@@ -169,7 +169,7 @@ public class ClipboardCommands {
             selector.explainRegionAdjust(player, session);
         }
 
-        player.print("The clipboard has been pasted at " + to.add(region.getMinimumPoint()));
+        player.print("The clipboard has been pasted at " + to);
     }
 
     @Command(
@@ -252,7 +252,7 @@ public class ClipboardCommands {
     )
     @CommandPermissions("worldedit.clipboard.clear")
     public void clearClipboard(Player player, LocalSession session, EditSession editSession) throws WorldEditException {
-        session.replaceClipboard(null);
+        session.setClipboard(null);
         player.print("Clipboard cleared.");
     }
 }

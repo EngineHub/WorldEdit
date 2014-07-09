@@ -29,7 +29,6 @@ import com.sk89q.worldedit.command.tool.SinglePickaxe;
 import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
@@ -44,7 +43,12 @@ import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
 
-import java.util.*;
+import javax.annotation.Nullable;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * An instance of this represents the WorldEdit session of a user. A session
@@ -326,7 +330,7 @@ public class LocalSession {
      * Gets the clipboard.
      *
      * @return clipboard, may be null
-     * @throws EmptyClipboardException
+     * @throws EmptyClipboardException thrown if no clipboard is set
      */
     public ClipboardHolder getClipboard() throws EmptyClipboardException {
         if (clipboard == null) {
@@ -338,10 +342,12 @@ public class LocalSession {
     /**
      * Sets the clipboard.
      *
-     * @param clipboard
+     * <p>Pass {@code null} to clear the clipboard.</p>
+     *
+     * @param clipboard the clipboard, or null if the clipboard is to be cleared
      */
-    public ClipboardHolder replaceClipboard(Clipboard clipboard) {
-        return this.clipboard = new ClipboardHolder(clipboard);
+    public void setClipboard(@Nullable ClipboardHolder clipboard) {
+        this.clipboard = clipboard;
     }
 
     /**

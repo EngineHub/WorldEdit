@@ -19,13 +19,20 @@
 
 package com.sk89q.worldedit.math.transform;
 
-import com.google.common.base.Function;
 import com.sk89q.worldedit.Vector;
 
 /**
  * Makes a transformation of {@link Vector}s.
  */
-public interface Transform extends Function<Vector, Vector> {
+public interface Transform {
+
+    /**
+     * Returns the result of applying the function to the input.
+     *
+     * @param input the input
+     * @return the result
+     */
+    Vector apply(Vector input);
 
     /**
      * Create a new inverse transform.

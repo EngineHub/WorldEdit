@@ -19,24 +19,67 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BiomeType;
+import com.sk89q.worldedit.BlockVector2D;
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EntityType;
+import com.sk89q.worldedit.LocalEntity;
+import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.ContainerBlock;
+import com.sk89q.worldedit.blocks.FurnaceBlock;
+import com.sk89q.worldedit.blocks.LazyBlock;
+import com.sk89q.worldedit.blocks.MobSpawnerBlock;
 import com.sk89q.worldedit.blocks.NoteBlock;
+import com.sk89q.worldedit.blocks.SignBlock;
+import com.sk89q.worldedit.blocks.SkullBlock;
 import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
-import com.sk89q.worldedit.entity.*;
+import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.world.mapping.NullResolver;
-import com.sk89q.worldedit.world.mapping.Resolver;
-import org.bukkit.*;
+import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.sk89q.worldedit.world.registry.WorldData;
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.block.*;
+import org.bukkit.Material;
+import org.bukkit.SkullType;
+import org.bukkit.TreeType;
+import org.bukkit.World;
+import org.bukkit.block.Biome;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Chest;
+import org.bukkit.block.CreatureSpawner;
+import org.bukkit.block.Furnace;
+import org.bukkit.block.Sign;
+import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Ambient;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Golem;
+import org.bukkit.entity.Hanging;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Painting;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Villager;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -49,7 +92,14 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1181,6 +1231,11 @@ public class BukkitWorld extends LocalWorld {
     }
 
     @Override
+    public WorldData getWorldData() {
+        return LegacyWorldData.getInstance();
+    }
+
+    @Override
     public void simulateBlockMine(Vector pt) {
         getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).breakNaturally();
     }
@@ -1278,38 +1333,6 @@ public class BukkitWorld extends LocalWorld {
         }
 
         return super.setBlock(pt, block, notifyAdjacent);
-    }
-
-    @Override
-    public Resolver<BaseBlock> getBlockMapping() {
-        return new NullResolver<BaseBlock>();
-    }
-
-    @Override
-    public Resolver<BaseEntity> getEntityMapping() {
-        return new NullResolver<BaseEntity>();
-    }
-
-    @Nullable
-    @Override
-    public <T> T getMetaData(BaseBlock block, Class<T> metaDataClass) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getMetaData(com.sk89q.worldedit.entity.Entity entity, Class<T> metaDataClass) {
-        if (entity instanceof com.sk89q.worldedit.bukkit.BukkitEntity) {
-            return ((com.sk89q.worldedit.bukkit.BukkitEntity) entity).getMetaData(metaDataClass);
-        }
-
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getMetaData(BaseEntity entity, Class<T> metaDataClass) {
-        return null;
     }
 
     /**

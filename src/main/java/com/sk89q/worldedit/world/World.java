@@ -19,7 +19,16 @@
 
 package com.sk89q.worldedit.world;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BiomeType;
+import com.sk89q.worldedit.BlockVector2D;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.EntityType;
+import com.sk89q.worldedit.LocalEntity;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -28,12 +37,12 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
-import com.sk89q.worldedit.world.mapping.Mapping;
+import com.sk89q.worldedit.world.registry.WorldData;
 
 /**
  * Represents a world (dimension).
  */
-public interface World extends Extent, Mapping {
+public interface World extends Extent {
 
     /**
      * Get the name of the world.
@@ -345,6 +354,13 @@ public interface World extends Extent, Mapping {
      * @return true if the effect was played
      */
     boolean queueBlockBreakEffect(Platform server, Vector position, int blockId, double priority);
+
+    /**
+     * Get the data for blocks and so on for this world.
+     *
+     * @return the world data
+     */
+    WorldData getWorldData();
 
     @Override
     boolean equals(Object other);

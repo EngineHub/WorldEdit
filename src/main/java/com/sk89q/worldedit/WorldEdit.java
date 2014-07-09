@@ -46,9 +46,14 @@ import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
+import com.sk89q.worldedit.world.registry.BundledBlockData;
 
 import javax.script.ScriptException;
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -91,6 +96,7 @@ public class WorldEdit {
     static {
         WorldEditPrefixHandler.register("com.sk89q.worldedit");
         getVersion();
+        BundledBlockData.getInstance(); // Load block registry
     }
 
     private WorldEdit() {

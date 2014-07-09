@@ -17,34 +17,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.math;
+package com.sk89q.worldedit.world.registry;
 
 /**
- * Various math utility methods.
+ * An implementation of {@link WorldData} that uses legacy numeric IDs and
+ * a built-in block database.
  */
-public final class MathUtils {
+public final class LegacyWorldData implements WorldData {
+
+    private static final LegacyWorldData INSTANCE = new LegacyWorldData();
+    private final LegacyBlockRegistry blockRegistry = new LegacyBlockRegistry();
 
     /**
-     * Safe minimum, such that 1 / SAFE_MIN does not overflow.
-     * <p>
-     * In IEEE 754 arithmetic, this is also the smallest normalized number
-     * 2<sup>-1022</sup>. The value of this constant is from Apache Commons
-     * Math 2.2.
+     * Create a new instance.
      */
-    public static final double SAFE_MIN = 0x1.0p-1022;
+    private LegacyWorldData() {
+    }
 
-    private MathUtils() {
+    @Override
+    public BlockRegistry getBlockRegistry() {
+        return blockRegistry;
     }
 
     /**
-     * Modulus, divisor-style.
+     * Get a singleton instance.
      *
-     * @param a a
-     * @param n n
-     * @return the modulus
+     * @return an instance
      */
-    public static int divisorMod(int a, int n) {
-        return (int) (a - n * Math.floor(Math.floor(a) / n));
+    public static LegacyWorldData getInstance() {
+        return INSTANCE;
     }
 
 }

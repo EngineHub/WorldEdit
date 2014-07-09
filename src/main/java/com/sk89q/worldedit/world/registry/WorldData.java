@@ -17,34 +17,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.math;
+package com.sk89q.worldedit.world.registry;
 
 /**
- * Various math utility methods.
+ * Describes the necessary data for blocks, entities, and other objects
+ * on a world.
  */
-public final class MathUtils {
+public interface WorldData {
 
     /**
-     * Safe minimum, such that 1 / SAFE_MIN does not overflow.
-     * <p>
-     * In IEEE 754 arithmetic, this is also the smallest normalized number
-     * 2<sup>-1022</sup>. The value of this constant is from Apache Commons
-     * Math 2.2.
-     */
-    public static final double SAFE_MIN = 0x1.0p-1022;
-
-    private MathUtils() {
-    }
-
-    /**
-     * Modulus, divisor-style.
+     * Get the block registry.
      *
-     * @param a a
-     * @param n n
-     * @return the modulus
+     * @return the block registry
      */
-    public static int divisorMod(int a, int n) {
-        return (int) (a - n * Math.floor(Math.floor(a) / n));
-    }
+    BlockRegistry getBlockRegistry();
 
 }

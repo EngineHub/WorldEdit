@@ -292,6 +292,10 @@ public class AffineTransform implements Transform {
                 vector.getX() * m20 + vector.getY() * m21 + vector.getZ() * m22 + m23);
     }
 
+    public AffineTransform combine(AffineTransform other) {
+        return concatenate(other);
+    }
+
     @Override
     public Transform combine(Transform other) {
         if (other instanceof AffineTransform) {
@@ -305,4 +309,6 @@ public class AffineTransform implements Transform {
     public String toString() {
         return String.format("Affine[%g %g %g %g, %g %g %g %g, %g %g %g %g]}", m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23);
     }
+
+
 }

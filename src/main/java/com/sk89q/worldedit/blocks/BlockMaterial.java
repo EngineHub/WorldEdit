@@ -17,28 +17,55 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.mapping;
-
-import javax.annotation.Nullable;
+package com.sk89q.worldedit.blocks;
 
 /**
- * An implementation of a {@link Resolver} that knows nothing and returns
- * {@code null} in all cases.
- *
- * @param <E> the object to resolve
+ * Describes the material for a block.
  */
-public class NullResolver<E> implements Resolver<E> {
+public interface BlockMaterial {
 
-    @Nullable
-    @Override
-    public E create(String id) {
-        return null;
-    }
+    boolean isRenderedAsNormalBlock();
 
-    @Nullable
-    @Override
-    public String getId(E object) {
-        return null;
-    }
+    boolean isFullCube();
+
+    boolean isOpaque();
+
+    boolean isPowerSource();
+
+    boolean isLiquid();
+
+    boolean isSolid();
+
+    float getHardness();
+
+    float getResistance();
+
+    float getSlipperiness();
+
+    boolean isGrassBlocking();
+
+    float getAmbientOcclusionLightValue();
+
+    int getLightOpacity();
+
+    int getLightValue();
+
+    boolean isFragileWhenPushed();
+
+    boolean isUnpushable();
+
+    boolean isAdventureModeExempt();
+
+    boolean isTicksRandomly();
+
+    boolean isUsingNeighborLight();
+
+    boolean isMovementBlocker();
+
+    boolean isBurnable();
+
+    boolean isToolRequired();
+
+    boolean isReplacedDuringPlacement();
 
 }

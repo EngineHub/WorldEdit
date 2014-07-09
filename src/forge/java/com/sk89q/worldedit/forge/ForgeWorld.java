@@ -20,7 +20,13 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BiomeType;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.EntityType;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
@@ -30,14 +36,22 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
-import com.sk89q.worldedit.world.mapping.NullResolver;
-import com.sk89q.worldedit.world.mapping.Resolver;
+import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.sk89q.worldedit.world.registry.WorldData;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IProjectile;
-import net.minecraft.entity.item.*;
+import net.minecraft.entity.item.EntityBoat;
+import net.minecraft.entity.item.EntityEnderEye;
+import net.minecraft.entity.item.EntityFallingSand;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.entity.item.EntityMinecart;
+import net.minecraft.entity.item.EntityPainting;
+import net.minecraft.entity.item.EntityTNTPrimed;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.passive.EntityAmbientCreature;
 import net.minecraft.entity.passive.EntityAnimal;
@@ -433,6 +447,11 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
+    public WorldData getWorldData() {
+        return LegacyWorldData.getInstance();
+    }
+
+    @Override
     public boolean isValidBlockType(int id) {
         return (id == 0) || (net.minecraft.block.Block.blocksList[id] != null);
     }
@@ -478,34 +497,6 @@ public class ForgeWorld extends AbstractWorld {
         } else {
             return false;
         }
-    }
-
-    @Override
-    public Resolver<BaseBlock> getBlockMapping() {
-        return new NullResolver<BaseBlock>();
-    }
-
-    @Override
-    public Resolver<BaseEntity> getEntityMapping() {
-        return new NullResolver<BaseEntity>();
-    }
-
-    @Nullable
-    @Override
-    public <T> T getMetaData(BaseBlock block, Class<T> metaDataClass) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getMetaData(Entity entity, Class<T> metaDataClass) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getMetaData(BaseEntity entity, Class<T> metaDataClass) {
-        return null;
     }
 
     @Override

@@ -28,8 +28,8 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
-import com.sk89q.worldedit.world.mapping.NullResolver;
-import com.sk89q.worldedit.world.mapping.Resolver;
+import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.sk89q.worldedit.world.registry.WorldData;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -95,6 +95,11 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
+    public WorldData getWorldData() {
+        return LegacyWorldData.getInstance();
+    }
+
+    @Override
     public BaseBlock getBlock(Vector position) {
         return new BaseBlock(BlockID.AIR);
     }
@@ -102,34 +107,6 @@ public class NullWorld extends AbstractWorld {
     @Override
     public BaseBlock getLazyBlock(Vector position) {
         return new BaseBlock(BlockID.AIR);
-    }
-
-    @Override
-    public Resolver<BaseBlock> getBlockMapping() {
-        return new NullResolver<BaseBlock>();
-    }
-
-    @Override
-    public Resolver<BaseEntity> getEntityMapping() {
-        return new NullResolver<BaseEntity>();
-    }
-
-    @Nullable
-    @Override
-    public <T> T getMetaData(BaseBlock block, Class<T> metaDataClass) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getMetaData(Entity entity, Class<T> metaDataClass) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getMetaData(BaseEntity entity, Class<T> metaDataClass) {
-        return null;
     }
 
     @Override
