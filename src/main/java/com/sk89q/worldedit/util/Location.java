@@ -38,7 +38,8 @@ public class Location {
 
     private final Extent extent;
     private final Vector position;
-    private final Vector direction;
+    private final float pitch;
+    private final float yaw;
 
     /**
      * Create a new instance in the given extent at 0, 0, 0 with a
@@ -89,6 +90,21 @@ public class Location {
     }
 
     /**
+     * Create a new instance in the given extent with the given coordinates
+     * and the given direction vector.
+     *
+     * @param extent the extent
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param z the Z coordinate
+     * @param yaw the yaw, in radians
+     * @param pitch the pitch, in radians
+     */
+    public Location(Extent extent, double x, double y, double z, float yaw, float pitch) {
+        this(extent, new Vector(x, y, z), yaw, pitch);
+    }
+
+    /**
      * Create a new instance in the given extent with the given position vector
      * and the given direction vector.
      *
@@ -97,12 +113,26 @@ public class Location {
      * @param direction the direction vector
      */
     public Location(Extent extent, Vector position, Vector direction) {
+        this(extent, position, 0, 0);
+        this.setDirection(direction);
+    }
+
+    /**
+     * Create a new instance in the given extent with the given position vector
+     * and the given direction vector.
+     *
+     * @param extent the extent
+     * @param position the position vector
+     * @param yaw the yaw, in radians
+     * @param pitch the pitch, in radians
+     */
+    public Location(Extent extent, Vector position, float yaw, float pitch) {
         checkNotNull(extent);
         checkNotNull(position);
-        checkNotNull(direction);
         this.extent = extent;
         this.position = position;
-        this.direction = direction;
+        this.pitch = pitch;
+        this.yaw = yaw;
     }
 
     /**
@@ -125,15 +155,36 @@ public class Location {
     }
 
     /**
-     * Get the direction.
-     * </p>
-     * The direction vector <em>may</em> be a null vector. It may or may not
-     * be a unit vector.
+     * Get the yaw in radians.
      *
-     * @return the direction
+     * @return the yaw in radians
+     */
+    public float getYaw() {
+        return yaw;
+    }
+
+    /**
+     * Get the pitch in radians.
+     *
+     * @return the pitch in radians
+     */
+    public float getPitch() {
+        return pitch;
+    }
+
+    /**
+     * Get the direction vector.
+     *
+     * @return the direction vector
      */
     public Vector getDirection() {
-        return direction;
+        double yaw = this.getYaw();
+        double pitch = this.getPitch();
+        double xz = Math.cos(pitch);
+        return new Vector(
+                -xz * Math.sin(yaw),
+                -Math.sin(pitch),
+                xz * Math.cos(yaw));
     }
 
     /**
@@ -143,7 +194,24 @@ public class Location {
      * @return the new instance
      */
     public Location setDirection(Vector direction) {
-        return new Location(extent, position, direction);
+        double x = direction.getX();
+        double z = direction.getZ();
+
+        if (x == 0 && z == 0) {
+            float pitch = direction.getY() > 0 ? -90 : 90;
+            return new Location(extent, position, 0, pitch);
+        } else {
+            double t = Math.atan2(-x, z);
+            double x2 = x * x;
+            double z2 = z * z;
+            double xz = Math.sqrt(x2 + z2);
+            double _2pi = 2 * Math.PI;
+
+            float pitch = (float) Math.atan(-direction.getY() / xz);
+            float yaw = (float) ((t + _2pi) % _2pi);
+
+            return new Location(extent, position, yaw, pitch);
+        }
     }
 
     /**
@@ -181,7 +249,7 @@ public class Location {
      * @return a new immutable instance
      */
     public Location setX(double x) {
-        return new Location(extent, position.setX(x), direction);
+        return new Location(extent, position.setX(x), yaw, pitch);
     }
 
     /**
@@ -192,7 +260,7 @@ public class Location {
      * @return a new immutable instance
      */
     public Location setX(int x) {
-        return new Location(extent, position.setX(x), direction);
+        return new Location(extent, position.setX(x), yaw, pitch);
     }
 
     /**
@@ -221,7 +289,7 @@ public class Location {
      * @return a new immutable instance
      */
     public Location setY(double y) {
-        return new Location(extent, position.setY(y), direction);
+        return new Location(extent, position.setY(y), yaw, pitch);
     }
 
     /**
@@ -232,7 +300,7 @@ public class Location {
      * @return a new immutable instance
      */
     public Location setY(int y) {
-        return new Location(extent, position.setY(y), direction);
+        return new Location(extent, position.setY(y), yaw, pitch);
     }
 
     /**
@@ -261,7 +329,7 @@ public class Location {
      * @return a new immutable instance
      */
     public Location setZ(double z) {
-        return new Location(extent, position.setZ(z), direction);
+        return new Location(extent, position.setZ(z), yaw, pitch);
     }
 
     /**
@@ -272,7 +340,7 @@ public class Location {
      * @return a new immutable instance
      */
     public Location setZ(int z) {
-        return new Location(extent, position.setZ(z), direction);
+        return new Location(extent, position.setZ(z), yaw, pitch);
     }
 
     @Override
@@ -282,7 +350,8 @@ public class Location {
 
         Location location = (Location) o;
 
-        if (!direction.equals(location.direction)) return false;
+        if (Double.doubleToLongBits(pitch) != Double.doubleToLongBits(location.pitch)) return false;
+        if (Double.doubleToLongBits(yaw) != Double.doubleToLongBits(location.yaw)) return false;
         if (!position.equals(location.position)) return false;
         if (!extent.equals(location.extent)) return false;
 
@@ -293,7 +362,8 @@ public class Location {
     public int hashCode() {
         int result = extent.hashCode();
         result = 31 * result + position.hashCode();
-        result = 31 * result + direction.hashCode();
+        result = 31 * result + Float.floatToIntBits(this.pitch);
+        result = 31 * result + Float.floatToIntBits(this.yaw);
         return result;
     }
 

@@ -22,7 +22,6 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.Vectors;
 import com.sk89q.worldedit.world.World;
 import org.bukkit.Bukkit;
 
@@ -76,8 +75,11 @@ final class BukkitAdapter {
     public static Location adapt(org.bukkit.Location location) {
         checkNotNull(location);
         Vector position = BukkitUtil.toVector(location);
-        Vector direction = Vectors.fromEulerDeg(location.getYaw(), location.getPitch());
-        return new com.sk89q.worldedit.util.Location(adapt(location.getWorld()), position, direction);
+        return new com.sk89q.worldedit.util.Location(
+                adapt(location.getWorld()),
+                position,
+                (float) Math.toRadians(location.getYaw()),
+                (float) Math.toRadians(location.getPitch()));
     }
 
     /**
