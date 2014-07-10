@@ -79,9 +79,7 @@ public class SchematicCommands {
     @Command(
             aliases = { "load" },
             usage = "[<format>] <filename>",
-            desc = "Load a schematic into your clipboard",
-            min = 0,
-            max = 1
+            desc = "Load a schematic into your clipboard"
     )
     @Deprecated
     @CommandPermissions({ "worldedit.clipboard.load", "worldedit.schematic.load" })
@@ -135,9 +133,7 @@ public class SchematicCommands {
     @Command(
             aliases = { "save" },
             usage = "[<format>] <filename>",
-            desc = "Save a schematic into your clipboard",
-            min = 0,
-            max = 1
+            desc = "Save a schematic into your clipboard"
     )
     @Deprecated
     @CommandPermissions({ "worldedit.clipboard.save", "worldedit.schematic.save" })
