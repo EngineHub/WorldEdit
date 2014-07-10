@@ -80,6 +80,10 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
 
     @Override
     public boolean selectSecondary(Vector pos) {
+        if (!started) {
+            return false;
+        }
+
         final double radiusScalar = Math.ceil(pos.distance(region.getCenter()));
         region.setRadius(new Vector(radiusScalar, radiusScalar, radiusScalar));
 
