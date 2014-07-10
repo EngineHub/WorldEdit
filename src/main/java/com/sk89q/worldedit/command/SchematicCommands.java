@@ -35,7 +35,6 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.CuboidClipboardTransform;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
@@ -159,11 +158,11 @@ public class SchematicCommands {
         Transform transform = holder.getTransform();
         Clipboard target;
 
-        // If we have a transform, we have to make a copy so we can save
-        // this transformed copy
+        // If we have a transform, bake it into the copy
         if (!transform.isIdentity()) {
-            CuboidClipboardTransform result = CuboidClipboardTransform.transform(clipboard, transform, holder.getWorldData());
+            FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboard, transform, holder.getWorldData());
             target = new BlockArrayClipboard(result.getTransformedRegion());
+            target.setOrigin(clipboard.getOrigin());
             Operations.completeLegacy(result.copyTo(target));
         } else {
             target = clipboard;
