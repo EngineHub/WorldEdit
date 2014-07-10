@@ -19,11 +19,14 @@
 
 package com.sk89q.worldedit.command;
 
+import com.google.common.io.Closer;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.EmptyClipboardException;
+import com.sk89q.worldedit.FilenameException;
 import com.sk89q.worldedit.FilenameResolutionException;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -31,12 +34,25 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.schematic.SchematicFormat;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
+import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.util.command.parametric.Optional;
+import com.sk89q.worldedit.world.registry.WorldData;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -45,6 +61,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class SchematicCommands {
 
+    private static final Logger log = Logger.getLogger(SchematicCommands.class.getCanonicalName());
     private final WorldEdit worldEdit;
 
     /**
@@ -58,36 +75,114 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = { "load", "l" },
-            usage = "[format] <filename>",
-            desc = "Load a file into your clipboard",
-            help = "Load a schematic file into your clipboard\n" +
-                    "Format is a format from \"//schematic formats\"\n" +
-                    "If the format is not provided, WorldEdit will\n" +
-                    "attempt to automatically detect the format of the schematic",
-            flags = "f",
-            min = 1,
-            max = 2
+            aliases = { "load" },
+            usage = "[<format>] <filename>",
+            desc = "Load a schematic into your clipboard",
+            min = 0,
+            max = 1
     )
-    @CommandPermissions({"worldedit.clipboard.load", "worldedit.schematic.load"}) // TODO: Remove 'clipboard' perm
-    public void load(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException, CommandException {
-        // TODO: Update for new clipboard
-        throw new CommandException("Needs to be re-written again");
+    @Deprecated
+    @CommandPermissions({ "worldedit.clipboard.load", "worldedit.schematic.load" })
+    public void load(Player player, LocalSession session, @Optional("schematic") String formatName, String filename) throws FilenameException {
+        LocalConfiguration config = worldEdit.getConfiguration();
+
+        File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
+        File f = worldEdit.getSafeOpenFile(player, dir, filename, "schematic", "schematic");
+
+        if (!f.exists()) {
+            player.printError("Schematic " + filename + " does not exist!");
+            return;
+        }
+
+        ClipboardFormat format = ClipboardFormat.findByAlias(formatName);
+        if (format == null) {
+            player.printError("Unknown schematic format: " + formatName);
+            return;
+        }
+
+        Closer closer = Closer.create();
+        try {
+            String filePath = f.getCanonicalPath();
+            String dirPath = dir.getCanonicalPath();
+
+            if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
+                player.printError("Clipboard file could not read or it does not exist.");
+            } else {
+                FileInputStream fis = closer.register(new FileInputStream(f));
+                BufferedInputStream bis = closer.register(new BufferedInputStream(fis));
+                ClipboardReader reader = format.getReader(bis);
+
+                WorldData worldData = player.getWorld().getWorldData();
+                Clipboard clipboard = reader.read(player.getWorld().getWorldData());
+                session.setClipboard(new ClipboardHolder(clipboard, worldData));
+
+                log.info(player.getName() + " loaded " + filePath);
+                player.print(filename + " loaded. Paste it with //paste");
+            }
+        } catch (IOException e) {
+            player.printError("Schematic could not read or it does not exist: " + e.getMessage());
+            log.log(Level.WARNING, "Failed to load a saved clipboard", e);
+        } finally {
+            try {
+                closer.close();
+            } catch (IOException ignored) {
+            }
+        }
     }
 
     @Command(
-            aliases = { "save", "s" },
-            usage = "[format] <filename>",
-            desc = "Save your clipboard to file",
-            help = "Save your clipboard to file\n" +
-                    "Format is a format from \"//schematic formats\"\n",
-            min = 1,
-            max = 2
+            aliases = { "save" },
+            usage = "[<format>] <filename>",
+            desc = "Save a schematic into your clipboard",
+            min = 0,
+            max = 1
     )
-    @CommandPermissions({"worldedit.clipboard.save", "worldedit.schematic.save"}) // TODO: Remove 'clipboard' perm
-    public void save(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException, CommandException {
-        // TODO: Update for new clipboard
-        throw new CommandException("Needs to be re-written again");
+    @Deprecated
+    @CommandPermissions({ "worldedit.clipboard.save", "worldedit.schematic.save" })
+    public void save(Player player, LocalSession session, @Optional("schematic") String formatName, String filename) throws FilenameException, CommandException, EmptyClipboardException {
+        LocalConfiguration config = worldEdit.getConfiguration();
+
+        File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
+        File f = worldEdit.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
+
+        if (!f.exists()) {
+            player.printError("Schematic " + filename + " does not exist!");
+            return;
+        }
+
+        ClipboardFormat format = ClipboardFormat.findByAlias(formatName);
+        if (format == null) {
+            player.printError("Unknown schematic format: " + formatName);
+            return;
+        }
+
+        ClipboardHolder holder = session.getClipboard();
+
+        Closer closer = Closer.create();
+        try {
+            // Create parent directories
+            File parent = f.getParentFile();
+            if (parent != null && !parent.exists()) {
+                if (!parent.mkdirs()) {
+                    throw new CommandException("Could not create folder for schematics!");
+                }
+            }
+
+            FileOutputStream fos = closer.register(new FileOutputStream(f));
+            BufferedOutputStream bos = closer.register(new BufferedOutputStream(fos));
+            ClipboardWriter writer = closer.register(format.getWriter(bos));
+            writer.write(holder.getClipboard(), holder.getWorldData());
+            log.info(player.getName() + " saved " + f.getCanonicalPath());
+            player.print(filename + " saved.");
+        } catch (IOException e) {
+            player.printError("Schematic could not written: " + e.getMessage());
+            log.log(Level.WARNING, "Failed to write a saved clipboard", e);
+        } finally {
+            try {
+                closer.close();
+            } catch (IOException ignored) {
+            }
+        }
     }
 
     @Command(
@@ -127,13 +222,13 @@ public class SchematicCommands {
     )
     @CommandPermissions("worldedit.schematic.formats")
     public void formats(Actor actor) throws WorldEditException {
-        actor.print("Available schematic formats (Name: Lookup names)");
+        actor.print("Available clipboard formats (Name: Lookup names)");
         StringBuilder builder;
         boolean first = true;
-        for (SchematicFormat format : SchematicFormat.getFormats()) {
+        for (ClipboardFormat format : ClipboardFormat.values()) {
             builder = new StringBuilder();
-            builder.append(format.getName()).append(": ");
-            for (String lookupName : format.getLookupNames()) {
+            builder.append(format.name()).append(": ");
+            for (String lookupName : format.getAliases()) {
                 if (!first) {
                     builder.append(", ");
                 }
@@ -204,9 +299,8 @@ public class SchematicCommands {
             }
 
             build.append("\n\u00a79");
-            SchematicFormat format = SchematicFormat.getFormat(file);
-            build.append(prefix).append(file.getName())
-               .append(": ").append(format == null ? "Unknown" : format.getName());
+            ClipboardFormat format = ClipboardFormat.findByFile(file);
+            build.append(prefix).append(file.getName()).append(": ").append(format == null ? "Unknown" : format.name());
         }
         return build.toString();
     }
