@@ -241,7 +241,7 @@ public final class CommandManager {
             Throwable t = e.getCause();
             actor.printError("Please report this error: [See console]");
             actor.printRaw(t.getClass().getName() + ": " + t.getMessage());
-            t.printStackTrace();
+            logger.log(Level.SEVERE, "An unexpected error while handling a WorldEdit command", t);
         } catch (CommandException e) {
             String message = e.getMessage();
             if (message != null) {
