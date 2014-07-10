@@ -27,6 +27,15 @@ import com.sk89q.worldedit.Vector;
 public interface Transform {
 
     /**
+     * Return whether this transform is an identity.
+     *
+     * <p>If it is not known, then {@code false} must be returned.</p>
+     *
+     * @return true if identity
+     */
+    boolean isIdentity();
+
+    /**
      * Returns the result of applying the function to the input.
      *
      * @param input the input

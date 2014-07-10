@@ -55,6 +55,17 @@ public class CombinedTransform implements Transform {
     }
 
     @Override
+    public boolean isIdentity() {
+        for (Transform transform : transforms) {
+            if (!transform.isIdentity()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
     public Vector apply(Vector vector) {
         for (Transform transform : transforms) {
             vector = transform.apply(vector);

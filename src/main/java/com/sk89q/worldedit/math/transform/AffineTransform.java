@@ -109,6 +109,7 @@ public class AffineTransform implements Transform {
     // ===================================================================
     // accessors
 
+    @Override
     public boolean isIdentity() {
         if (m00 != 1)
             return false;
