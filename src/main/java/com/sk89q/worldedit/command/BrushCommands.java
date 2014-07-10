@@ -46,7 +46,6 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
@@ -132,16 +131,16 @@ public class BrushCommands {
     @Command(
         aliases = { "clipboard", "copy" },
         usage = "",
-        flags = "a",
         desc = "Choose the clipboard brush",
         help =
             "Chooses the clipboard brush.\n" +
-            "The -a flag makes it not paste air.",
-        min = 0,
-        max = 0
+            "The -a flag makes it not paste air.\n" +
+            "Without the -p flag, the paste will appear centered at the target location. " +
+            "With the flag, then the paste will appear relative to where you had " +
+            "stood relative to the copied area when you copied it."
     )
     @CommandPermissions("worldedit.brush.clipboard")
-    public void clipboardBrush(Player player, LocalSession session, EditSession editSession, @Switch('a') boolean ignoreAir) throws WorldEditException {
+    public void clipboardBrush(Player player, LocalSession session, EditSession editSession, @Switch('a') boolean ignoreAir, @Switch('p') boolean usingOrigin) throws WorldEditException {
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
 
@@ -152,7 +151,7 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(size.getBlockZ());
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
-        tool.setBrush(new ClipboardBrush(holder, ignoreAir), "worldedit.brush.clipboard");
+        tool.setBrush(new ClipboardBrush(holder, ignoreAir, usingOrigin), "worldedit.brush.clipboard");
 
         player.print("Clipboard brush shape equipped.");
     }

@@ -33,10 +33,12 @@ public class ClipboardBrush implements Brush {
 
     private ClipboardHolder holder;
     private boolean ignoreAirBlocks;
+    private boolean usingOrigin;
 
-    public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks) {
+    public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean usingOrigin) {
         this.holder = holder;
         this.ignoreAirBlocks = ignoreAirBlocks;
+        this.usingOrigin = usingOrigin;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class ClipboardBrush implements Brush {
 
         Operation operation = holder
                 .createPaste(editSession, editSession.getWorld().getWorldData())
-                .to(pos.subtract(centerOffset))
+                .to(usingOrigin ? pos : pos.subtract(centerOffset))
                 .ignoreAirBlocks(ignoreAirBlocks)
                 .build();
 
