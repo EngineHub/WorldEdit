@@ -246,7 +246,7 @@ public final class CommandManager {
             String message = e.getMessage();
             if (message != null) {
                 actor.printError(e.getMessage());
-            } else
+            } else {
                 actor.printError("An unknown error has occurred! Please see console.");
                 logger.log(Level.SEVERE, "An unknown error occurred", e);
             }
