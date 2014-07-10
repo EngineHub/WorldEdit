@@ -243,7 +243,13 @@ public final class CommandManager {
             actor.printRaw(t.getClass().getName() + ": " + t.getMessage());
             t.printStackTrace();
         } catch (CommandException e) {
-            actor.printError(e.getMessage());
+            String message = e.getMessage();
+            if (message != null) {
+                actor.printError(e.getMessage());
+            } else
+                actor.printError("An unknown error has occurred! Please see console.");
+                logger.log(Level.SEVERE, "An unknown error occurred", e);
+            }
         } finally {
             EditSession editSession = locals.get(EditSession.class);
 
