@@ -233,7 +233,7 @@ public class BukkitWorld extends LocalWorld {
 
     @Nullable
     @Override
-    public com.sk89q.worldedit.entity.Entity createEntity(Vector position, BaseEntity entity) {
+    public com.sk89q.worldedit.entity.Entity createEntity(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 

@@ -99,8 +99,8 @@ public class BlockArrayClipboard implements Clipboard {
 
     @Nullable
     @Override
-    public Entity createEntity(Vector position, BaseEntity entity) {
-        ClipboardEntity ret = new ClipboardEntity(new Location(this, position), entity);
+    public Entity createEntity(Location location, BaseEntity entity) {
+        ClipboardEntity ret = new ClipboardEntity(location, entity);
         entities.add(ret);
         return ret;
     }
