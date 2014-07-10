@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * @author zml2008
@@ -278,7 +279,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
 
         // Build and output
         CompoundTag schematicTag = new CompoundTag("Schematic", schematic);
-        NBTOutputStream stream = new NBTOutputStream(new FileOutputStream(file));
+        NBTOutputStream stream = new NBTOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
         stream.writeTag(schematicTag);
         stream.close();
     }
