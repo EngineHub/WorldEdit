@@ -26,10 +26,8 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
-import com.sk89q.worldedit.util.Location;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -77,8 +75,8 @@ public abstract class AbstractDelegateExtent implements Extent {
 
     @Override
     @Nullable
-    public Entity createEntity(Location location, BaseEntity entity) {
-        return extent.createEntity(location, entity);
+    public Entity createEntity(Vector position, BaseEntity entity) {
+        return extent.createEntity(position, entity);
     }
 
     @Override

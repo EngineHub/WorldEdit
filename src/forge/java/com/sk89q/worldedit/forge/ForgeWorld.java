@@ -33,7 +33,6 @@ import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.registry.LegacyWorldData;
@@ -510,7 +509,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Nullable
     @Override
-    public Entity createEntity(Location location, BaseEntity entity) {
+    public Entity createEntity(Vector position, BaseEntity entity) {
         World world = getWorld();
         net.minecraft.entity.Entity createdEntity = EntityList.createEntityByName(entity.getTypeId(), world);
         if (createdEntity != null) {

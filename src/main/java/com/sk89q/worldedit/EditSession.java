@@ -589,8 +589,8 @@ public class EditSession implements Extent {
 
     @Override
     @Nullable
-    public Entity createEntity(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
-        return world.createEntity(location, entity);
+    public Entity createEntity(Vector position, BaseEntity entity) {
+        return world.createEntity(position, entity);
     }
 
     /**

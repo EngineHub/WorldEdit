@@ -22,7 +22,6 @@ package com.sk89q.worldedit.extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.util.Location;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -70,10 +69,10 @@ public interface Extent extends InputExtent, OutputExtent {
     /**
      * Create an entity at the given location.
      *
+     * @param position the position
      * @param entity the entity
-     * @param location the location
      * @return a reference to the created entity, or null if the entity could not be created
      */
-    @Nullable Entity createEntity(Location location, BaseEntity entity);
+    @Nullable Entity createEntity(Vector position, BaseEntity entity);
 
 }
