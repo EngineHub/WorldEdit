@@ -25,7 +25,6 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.FilenameException;
 import com.sk89q.worldedit.FilenameResolutionException;
 import com.sk89q.worldedit.LocalConfiguration;
@@ -34,10 +33,14 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.CuboidClipboardTransform;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.world.registry.WorldData;
@@ -139,16 +142,11 @@ public class SchematicCommands {
     )
     @Deprecated
     @CommandPermissions({ "worldedit.clipboard.save", "worldedit.schematic.save" })
-    public void save(Player player, LocalSession session, @Optional("schematic") String formatName, String filename) throws FilenameException, CommandException, EmptyClipboardException {
+    public void save(Player player, LocalSession session, @Optional("schematic") String formatName, String filename) throws CommandException, WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
         File f = worldEdit.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
-
-        if (!f.exists()) {
-            player.printError("Schematic " + filename + " does not exist!");
-            return;
-        }
 
         ClipboardFormat format = ClipboardFormat.findByAlias(formatName);
         if (format == null) {
@@ -157,6 +155,19 @@ public class SchematicCommands {
         }
 
         ClipboardHolder holder = session.getClipboard();
+        Clipboard clipboard = holder.getClipboard();
+        Transform transform = holder.getTransform();
+        Clipboard target;
+
+        // If we have a transform, we have to make a copy so we can save
+        // this transformed copy
+        if (!transform.isIdentity()) {
+            CuboidClipboardTransform result = CuboidClipboardTransform.transform(clipboard, transform, holder.getWorldData());
+            target = new BlockArrayClipboard(result.getTransformedRegion());
+            Operations.completeLegacy(result.copyTo(target));
+        } else {
+            target = clipboard;
+        }
 
         Closer closer = Closer.create();
         try {
@@ -171,7 +182,7 @@ public class SchematicCommands {
             FileOutputStream fos = closer.register(new FileOutputStream(f));
             BufferedOutputStream bos = closer.register(new BufferedOutputStream(fos));
             ClipboardWriter writer = closer.register(format.getWriter(bos));
-            writer.write(holder.getClipboard(), holder.getWorldData());
+            writer.write(target, holder.getWorldData());
             log.info(player.getName() + " saved " + f.getCanonicalPath());
             player.print(filename + " saved.");
         } catch (IOException e) {
