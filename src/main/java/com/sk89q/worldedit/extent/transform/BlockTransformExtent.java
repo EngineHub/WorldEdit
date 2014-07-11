@@ -155,7 +155,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      */
     @Nullable
     private static StateValue getNewStateValue(State state, Transform transform, Vector oldDirection) {
-        Vector newDirection = transform.apply(oldDirection).normalize();
+        Vector newDirection = transform.apply(oldDirection).subtract(transform.apply(Vector.ZERO)).normalize();
         StateValue newValue = null;
         double closest = -2;
         boolean found = false;
