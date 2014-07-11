@@ -41,6 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.EllipsoidRegionSelector implements RegionSelector, CUIRegion {
 
     protected EllipsoidRegion region;
+    protected boolean started = false;
 
     /**
      * Create a new selector.
@@ -113,11 +114,17 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
 
         region.setCenter(pos.toBlockVector());
         region.setRadius(new Vector());
+        started = true;
+
         return true;
     }
 
     @Override
     public boolean selectSecondary(Vector pos) {
+        if (!started) {
+            return false;
+        }
+
         final Vector diff = pos.subtract(region.getCenter());
         final Vector minRadius = Vector.getMaximum(diff, diff.multiply(-1.0));
         region.extendRadius(minRadius);
@@ -153,7 +160,7 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
 
     @Override
     public boolean isDefined() {
-        return region.getRadius().lengthSq() > 0;
+        return started && region.getRadius().lengthSq() > 0;
     }
 
     @Override

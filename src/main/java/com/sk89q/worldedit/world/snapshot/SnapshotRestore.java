@@ -19,25 +19,25 @@
 
 package com.sk89q.worldedit.world.snapshot;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.world.chunk.Chunk;
-import com.sk89q.worldedit.world.storage.ChunkStore;
-import com.sk89q.worldedit.world.DataException;
-import com.sk89q.worldedit.world.storage.MissingChunkException;
-import com.sk89q.worldedit.world.storage.MissingWorldException;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.chunk.Chunk;
+import com.sk89q.worldedit.world.storage.ChunkStore;
+import com.sk89q.worldedit.world.storage.MissingChunkException;
+import com.sk89q.worldedit.world.storage.MissingWorldException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -168,7 +168,7 @@ public class SnapshotRestore {
                 for (Vector pos : entry.getValue()) {
                     try {
                         BaseBlock block = chunk.getBlock(pos);
-                        editSession.rawSetBlock(pos, block);
+                        editSession.setBlock(pos, block);
                     } catch (DataException e) {
                         // this is a workaround: just ignore for now
                     }

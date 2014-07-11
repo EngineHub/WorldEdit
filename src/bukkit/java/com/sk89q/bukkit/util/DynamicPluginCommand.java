@@ -30,7 +30,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -81,10 +80,10 @@ public class DynamicPluginCommand extends org.bukkit.command.Command implements 
 
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-        if (owner instanceof TabCompleter) {
+        if (registeredWith instanceof CommandInspector) {
             return ((TabCompleter) owner).onTabComplete(sender, this, alias, args);
         } else {
-            return Collections.emptyList();
+            return super.tabComplete(sender, alias, args);
         }
     }
 
