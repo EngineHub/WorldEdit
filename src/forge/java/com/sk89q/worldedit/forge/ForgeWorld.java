@@ -32,7 +32,10 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.internal.helper.MCDirections;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.Direction.Flag;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
@@ -500,7 +503,29 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public List<Entity> getEntities() {
+    @SuppressWarnings("unchecked")
+    public List<? extends Entity> getEntities(Region region) {
+        List<Entity> entities = new ArrayList<Entity>();
+        World world = getWorld();
+        for (Vector2D pt : region.getChunks()) {
+            if (!world.getChunkProvider().chunkExists(pt.getBlockX(), pt.getBlockZ())) {
+                continue;
+            }
+
+            Chunk chunk = world.getChunkProvider().provideChunk(pt.getBlockX(), pt.getBlockZ());
+            for (List<net.minecraft.entity.Entity> entitySubList : chunk.entityLists) {
+                for (net.minecraft.entity.Entity entity : entitySubList) {
+                    if (region.contains(new Vector(entity.posX, entity.posY, entity.posZ))) {
+                        entities.add(new ForgeEntity(entity));
+                    }
+                }
+            }
+        }
+        return entities;
+    }
+
+    @Override
+    public List<? extends Entity> getEntities() {
         List<Entity> entities = new ArrayList<Entity>();
         for (Object entity : getWorld().getLoadedEntityList()) {
             entities.add(new ForgeEntity((net.minecraft.entity.Entity) entity));
@@ -518,6 +543,19 @@ public class ForgeWorld extends AbstractWorld {
             if (tag != null) {
                 createdEntity.readFromNBT(NBTConverter.toNative(entity.getNbtData()));
             }
+
+            createdEntity.setLocationAndAngles(location.getX(), location.getY(), location.getZ(), (float) Math.toDegrees(location.getYaw()), (float) Math.toDegrees(location.getPitch()));
+
+            // Special handling for hanging entities
+            if (createdEntity instanceof EntityHanging) {
+                EntityHanging hanging = (EntityHanging) createdEntity;
+                hanging.xPosition = location.getBlockX();
+                hanging.yPosition = location.getBlockY();
+                hanging.zPosition = location.getBlockZ();
+                Direction direction = Direction.findClosest(location.getDirection(), Flag.CARDINAL);
+                hanging.setDirection(MCDirections.toHanging(direction));
+            }
+
             world.spawnEntityInWorld(createdEntity);
             return new ForgeEntity(createdEntity);
         } else {

@@ -113,8 +113,7 @@ public class Location {
      * @param direction the direction vector
      */
     public Location(Extent extent, Vector position, Vector direction) {
-        this(extent, position, 0, 0);
-        this.setDirection(direction);
+        this(extent, position, direction.toYaw(), direction.toPitch());
     }
 
     /**
@@ -194,24 +193,7 @@ public class Location {
      * @return the new instance
      */
     public Location setDirection(Vector direction) {
-        double x = direction.getX();
-        double z = direction.getZ();
-
-        if (x == 0 && z == 0) {
-            float pitch = direction.getY() > 0 ? -90 : 90;
-            return new Location(extent, position, 0, pitch);
-        } else {
-            double t = Math.atan2(-x, z);
-            double x2 = x * x;
-            double z2 = z * z;
-            double xz = Math.sqrt(x2 + z2);
-            double _2pi = 2 * Math.PI;
-
-            float pitch = (float) Math.atan(-direction.getY() / xz);
-            float yaw = (float) ((t + _2pi) % _2pi);
-
-            return new Location(extent, position, yaw, pitch);
-        }
+        return new Location(extent, position, direction.toYaw(), direction.toPitch());
     }
 
     /**

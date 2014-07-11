@@ -653,6 +653,40 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
+     * Get this vector's pitch as used within the game.
+     *
+     * @return pitch in radians
+     */
+    public float toPitch() {
+        double x = getX();
+        double z = getZ();
+
+        if (x == 0 && z == 0) {
+            return getY() > 0 ? -90 : 90;
+        } else {
+            double x2 = x * x;
+            double z2 = z * z;
+            double xz = Math.sqrt(x2 + z2);
+            return (float) Math.atan(-getY() / xz);
+        }
+    }
+
+    /**
+     * Get this vector's yaw as used within the game.
+     *
+     * @return yaw in radians
+     */
+    public float toYaw() {
+        double x = getX();
+        double z = getZ();
+
+        double t = Math.atan2(-x, z);
+        double _2pi = 2 * Math.PI;
+
+        return (float) ((t + _2pi) % _2pi);
+    }
+
+    /**
      * Get a block point from a point.
      *
      * @param x
@@ -792,4 +826,5 @@ public class Vector implements Comparable<Vector> {
             (v1.z + v2.z) / 2
         );
     }
+
 }

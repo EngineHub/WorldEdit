@@ -172,11 +172,6 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
-    public LocalEntity[] getEntities(Region region) {
-        return world.getEntities(region);
-    }
-
-    @Override
     public int killEntities(LocalEntity... entity) {
         return world.killEntities(entity);
     }
@@ -294,6 +289,11 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
+    public List<? extends Entity> getEntities(Region region) {
+        return world.getEntities(region);
+    }
+
+    @Override
     public BaseBlock getBlock(Vector position) {
         return world.getBlock(position);
     }
@@ -335,7 +335,7 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
-    public List<Entity> getEntities() {
+    public List<? extends Entity> getEntities() {
         return world.getEntities();
     }
 

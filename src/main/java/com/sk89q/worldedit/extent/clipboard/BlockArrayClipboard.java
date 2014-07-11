@@ -31,6 +31,7 @@ import com.sk89q.worldedit.util.Location;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -93,8 +94,19 @@ public class BlockArrayClipboard implements Clipboard {
     }
 
     @Override
-    public List<Entity> getEntities() {
-        return new ArrayList<Entity>(entities);
+    public List<? extends Entity> getEntities(Region region) {
+        List<Entity> filtered = new ArrayList<Entity>();
+        for (Entity entity : entities) {
+            if (region.contains(entity.getLocation().toVector())) {
+                filtered.add(entity);
+            }
+        }
+        return Collections.unmodifiableList(filtered);
+    }
+
+    @Override
+    public List<? extends Entity> getEntities() {
+        return Collections.unmodifiableList(entities);
     }
 
     @Nullable

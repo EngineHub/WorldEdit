@@ -110,6 +110,11 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
+    public List<Entity> getEntities(Region region) {
+        return Collections.emptyList();
+    }
+
+    @Override
     public List<Entity> getEntities() {
         return Collections.emptyList();
     }

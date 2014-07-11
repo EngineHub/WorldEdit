@@ -39,7 +39,6 @@ import com.sk89q.worldedit.blocks.MobSpawnerBlock;
 import com.sk89q.worldedit.blocks.NoteBlock;
 import com.sk89q.worldedit.blocks.SignBlock;
 import com.sk89q.worldedit.blocks.SkullBlock;
-import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
@@ -220,6 +219,26 @@ public class BukkitWorld extends LocalWorld {
             e.printStackTrace();
             skipNmsAccess = true; skipNmsSafeSet = true; skipNmsValidBlockCheck = true;
         }
+    }
+
+    @Override
+    public List<com.sk89q.worldedit.entity.Entity> getEntities(Region region) {
+        World world = getWorld();
+
+        List<com.sk89q.worldedit.entity.Entity> entities = new ArrayList<com.sk89q.worldedit.entity.Entity>();
+        for (Vector2D pt : region.getChunks()) {
+            if (!world.isChunkLoaded(pt.getBlockX(), pt.getBlockZ())) {
+                continue;
+            }
+
+            final Entity[] ents = world.getChunkAt(pt.getBlockX(), pt.getBlockZ()).getEntities();
+            for (Entity ent : ents) {
+                if (region.contains(BukkitUtil.toVector(ent.getLocation()))) {
+                    entities.add(BukkitAdapter.adapt(ent));
+                }
+            }
+        }
+        return entities;
     }
 
     @Override
@@ -1241,33 +1260,13 @@ public class BukkitWorld extends LocalWorld {
     }
 
     @Override
-    public LocalEntity[] getEntities(Region region) {
-        World world = getWorld();
-
-        List<BukkitEntity> entities = new ArrayList<BukkitEntity>();
-        for (Vector2D pt : region.getChunks()) {
-            if (!world.isChunkLoaded(pt.getBlockX(), pt.getBlockZ())) {
-                continue;
-            }
-
-            final Entity[] ents = world.getChunkAt(pt.getBlockX(), pt.getBlockZ()).getEntities();
-            for (Entity ent : ents) {
-                if (region.contains(BukkitUtil.toVector(ent.getLocation()))) {
-                    entities.add(BukkitUtil.toLocalEntity(ent));
-                }
-            }
-        }
-        return entities.toArray(new BukkitEntity[entities.size()]);
-    }
-
-    @Override
     public int killEntities(LocalEntity... entities) {
         World world = getWorld();
 
         int amount = 0;
         Set<UUID> toKill = new HashSet<UUID>();
         for (LocalEntity entity : entities) {
-            toKill.add(((BukkitEntity) entity).getEntityId());
+            toKill.add(((com.sk89q.worldedit.bukkit.entity.BukkitEntity) entity).getEntityId());
         }
         for (Entity entity : world.getEntities()) {
             if (toKill.contains(entity.getUniqueId())) {

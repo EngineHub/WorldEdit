@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class EntityVisitor implements Operation {
 
-    private final Iterator<Entity> iterator;
+    private final Iterator<? extends Entity> iterator;
     private final EntityFunction function;
     private int affected = 0;
 
@@ -44,7 +44,7 @@ public class EntityVisitor implements Operation {
      * @param iterator the iterator
      * @param function the function
      */
-    public EntityVisitor(Iterator<Entity> iterator, EntityFunction function) {
+    public EntityVisitor(Iterator<? extends Entity> iterator, EntityFunction function) {
         checkNotNull(iterator);
         checkNotNull(function);
         this.iterator = iterator;

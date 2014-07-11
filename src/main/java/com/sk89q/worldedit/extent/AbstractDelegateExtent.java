@@ -27,6 +27,7 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.regions.Region;
 
 import javax.annotation.Nullable;
 
@@ -82,8 +83,13 @@ public abstract class AbstractDelegateExtent implements Extent {
     }
 
     @Override
-    public List<Entity> getEntities() {
+    public List<? extends Entity> getEntities() {
         return extent.getEntities();
+    }
+
+    @Override
+    public List<? extends Entity> getEntities(Region region) {
+        return extent.getEntities(region);
     }
 
     @Override

@@ -26,6 +26,7 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.regions.Region;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -47,6 +48,11 @@ public class NullExtent implements Extent {
     @Override
     public Vector getMaximumPoint() {
         return nullPoint;
+    }
+
+    @Override
+    public List<Entity> getEntities(Region region) {
+        return Collections.emptyList();
     }
 
     @Override

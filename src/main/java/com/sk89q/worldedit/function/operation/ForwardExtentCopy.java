@@ -19,19 +19,24 @@
 
 package com.sk89q.worldedit.function.operation;
 
-import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.CombinedRegionFunction;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.block.ExtentBlockCopy;
+import com.sk89q.worldedit.function.entity.ExtentEntityCopy;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.function.visitor.EntityVisitor;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.math.transform.Identity;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.Region;
+
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -52,6 +57,7 @@ public class ForwardExtentCopy implements Operation {
     private final Vector to;
     private int repetitions = 1;
     private Mask sourceMask = Masks.alwaysTrue();
+    private boolean removingEntities;
     private RegionFunction sourceFunction = null;
     private Transform transform = new Identity();
     private Transform currentTransform = null;
@@ -178,6 +184,24 @@ public class ForwardExtentCopy implements Operation {
     }
 
     /**
+     * Return whether entities that are copied should be removed.
+     *
+     * @return true if removing
+     */
+    public boolean isRemovingEntities() {
+        return removingEntities;
+    }
+
+    /**
+     * Set whether entities that are copied should be removed.
+     *
+     * @param removing true if removing
+     */
+    public void setRemovingEntities(boolean removingEntities) {
+        this.removingEntities = removingEntities;
+    }
+
+    /**
      * Get the number of affected objects.
      *
      * @return the number of affected
@@ -200,13 +224,19 @@ public class ForwardExtentCopy implements Operation {
                 currentTransform = transform;
             }
 
-            ExtentBlockCopy copy = new ExtentBlockCopy(source, from, destination, to, currentTransform);
-            RegionMaskingFilter filter = new RegionMaskingFilter(sourceMask, copy);
+            ExtentBlockCopy blockCopy = new ExtentBlockCopy(source, from, destination, to, currentTransform);
+            RegionMaskingFilter filter = new RegionMaskingFilter(sourceMask, blockCopy);
             RegionFunction function = sourceFunction != null ? new CombinedRegionFunction(filter, sourceFunction) : filter;
-            RegionVisitor visitor = new RegionVisitor(region, function);
-            lastVisitor = visitor;
+            RegionVisitor blockVisitor = new RegionVisitor(region, function);
+
+            ExtentEntityCopy entityCopy = new ExtentEntityCopy(from, destination, to, currentTransform);
+            entityCopy.setRemoving(removingEntities);
+            List<? extends Entity> entities = source.getEntities(region);
+            EntityVisitor entityVisitor = new EntityVisitor(entities.iterator(), entityCopy);
+
+            lastVisitor = blockVisitor;
             currentTransform = currentTransform.combine(transform);
-            return new DelegateOperation(this, visitor);
+            return new DelegateOperation(this, new OperationQueue(blockVisitor, entityVisitor));
         } else {
             return null;
         }

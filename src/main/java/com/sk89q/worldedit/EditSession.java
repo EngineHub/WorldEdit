@@ -583,14 +583,9 @@ public class EditSession implements Extent {
     }
 
     @Override
-    public List<Entity> getEntities() {
-        return world.getEntities();
-    }
-
-    @Override
     @Nullable
     public Entity createEntity(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
-        return world.createEntity(location, entity);
+        return bypassNone.createEntity(location, entity);
     }
 
     /**
@@ -647,6 +642,16 @@ public class EditSession implements Extent {
     @Override
     public Vector getMaximumPoint() {
         return getWorld().getMaximumPoint();
+    }
+
+    @Override
+    public List<? extends Entity> getEntities(Region region) {
+        return bypassNone.getEntities(region);
+    }
+
+    @Override
+    public List<? extends Entity> getEntities() {
+        return bypassNone.getEntities();
     }
 
     /**
@@ -1160,6 +1165,7 @@ public class EditSession implements Extent {
         ForwardExtentCopy copy = new ForwardExtentCopy(this, region, buffer, to);
         copy.setTransform(new AffineTransform().translate(dir.multiply(distance)));
         copy.setSourceFunction(remove); // Remove
+        copy.setRemovingEntities(true);
         if (!copyAir) {
             copy.setSourceMask(new ExistingBlockMask(this));
         }

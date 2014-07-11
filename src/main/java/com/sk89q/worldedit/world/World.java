@@ -210,14 +210,6 @@ public interface World extends Extent {
     void simulateBlockMine(Vector position);
 
     /**
-     * Get a list of entities in the given region.
-     *
-     * @param region the region
-     * @return a list of entities
-     */
-    LocalEntity[] getEntities(Region region);
-
-    /**
      * Kill the entities listed in the provided array.
      *
      * @param entity an array of entities

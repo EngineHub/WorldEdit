@@ -23,7 +23,10 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.internal.helper.MCDirections;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.EntityList;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -40,17 +43,42 @@ class ForgeEntity implements Entity {
 
     @Override
     public BaseEntity getState() {
-        NBTTagCompound tag = new NBTTagCompound();
-        entity.writeToNBT(tag);
-        return new BaseEntity(EntityList.getEntityString(entity), NBTConverter.fromNative(tag));
+        String id = EntityList.getEntityString(entity);
+        if (id != null) {
+            NBTTagCompound tag = new NBTTagCompound();
+            entity.writeToNBT(tag);
+            return new BaseEntity(id, NBTConverter.fromNative(tag));
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Location getLocation() {
-        return new Location(
-                ForgeAdapter.adapt(entity.worldObj),
-                new Vector(entity.posX, entity.posY, entity.posZ),
-                ForgeAdapter.adapt(entity.getLookVec()));
+        Vector position;
+        float pitch;
+        float yaw;
+
+        if (entity instanceof EntityHanging) {
+            EntityHanging hanging = (EntityHanging) entity;
+
+            position = new Vector(hanging.xPosition, hanging.yPosition, hanging.zPosition);
+
+            Direction direction = MCDirections.fromHanging(hanging.hangingDirection);
+            if (direction != null) {
+                yaw = direction.toVector().toYaw();
+                pitch = direction.toVector().toPitch();
+            } else {
+                yaw = (float) Math.toRadians(entity.rotationYaw);
+                pitch = (float) Math.toRadians(entity.rotationPitch);
+            }
+        } else {
+            position = new Vector(entity.posX, entity.posY, entity.posZ);
+            yaw = (float) Math.toRadians(entity.rotationYaw);
+            pitch = (float) Math.toRadians(entity.rotationPitch);
+        }
+
+        return new Location(ForgeAdapter.adapt(entity.worldObj), position, yaw, pitch);
     }
 
     @Override
