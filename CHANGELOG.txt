@@ -1,3 +1,15 @@
+5.6.3
+
+Note: We are working on WorldEdit 6.x so 5.x are maintenance releases and will
+mostly contain bug fixes and minor changes.
+
+- Added support for CraftBukkit 1.7.10.
+- Fixed activated hoppers rotating incorrectly.
+- Fixed listing schematics with directories in the folder.
+
+5.6.2
+- Backport 1.7.9 support to WE 5.x
+
 5.6.1
 - Added support for Minecraft 1.7.5 on Bukkit.
 - Added //flora command to place flora over grass.
