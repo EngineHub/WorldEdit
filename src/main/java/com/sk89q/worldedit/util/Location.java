@@ -163,12 +163,43 @@ public class Location {
     }
 
     /**
+     * Create a clone of this object with the given yaw.
+     *
+     * @param yaw the new yaw
+     * @return the new instance
+     */
+    public Location setYaw(float yaw) {
+        return new Location(extent, position, yaw, pitch);
+    }
+
+    /**
      * Get the pitch in radians.
      *
      * @return the pitch in radians
      */
     public float getPitch() {
         return pitch;
+    }
+
+    /**
+     * Create a clone of this object with the given pitch.
+     *
+     * @param pitch the new yaw
+     * @return the new instance
+     */
+    public Location setPitch(float pitch) {
+        return new Location(extent, position, yaw, pitch);
+    }
+
+    /**
+     * Create a clone of this object with the given yaw and pitch.
+     *
+     * @param yaw the new yaw
+     * @param pitch the new pitch
+     * @return the new instance
+     */
+    public Location setDirection(float yaw, float pitch) {
+        return new Location(extent, position, yaw, pitch);
     }
 
     /**
