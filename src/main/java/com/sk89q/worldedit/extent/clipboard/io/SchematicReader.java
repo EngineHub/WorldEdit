@@ -21,6 +21,8 @@ package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.DoubleTag;
+import com.sk89q.jnbt.FloatTag;
 import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTInputStream;
@@ -31,12 +33,15 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.registry.WorldData;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -79,29 +84,32 @@ public class SchematicReader implements ClipboardReader {
         }
 
         // Check type of Schematic
-        String materials = getChildTag(schematic, "Materials", StringTag.class).getValue();
+        String materials = requireTag(schematic, "Materials", StringTag.class).getValue();
         if (!materials.equals("Alpha")) {
             throw new IOException("Schematic file is not an Alpha schematic");
         }
 
-        // Parse origin and region from WEOrigin and WEOffset
+        // ====================================================================
+        // Metadata
+        // ====================================================================
+
         Vector origin;
         Region region;
 
         // Get information
-        short width = getChildTag(schematic, "Width", ShortTag.class).getValue();
-        short height = getChildTag(schematic, "Height", ShortTag.class).getValue();
-        short length = getChildTag(schematic, "Length", ShortTag.class).getValue();
+        short width = requireTag(schematic, "Width", ShortTag.class).getValue();
+        short height = requireTag(schematic, "Height", ShortTag.class).getValue();
+        short length = requireTag(schematic, "Length", ShortTag.class).getValue();
 
         try {
-            int originX = getChildTag(schematic, "WEOriginX", IntTag.class).getValue();
-            int originY = getChildTag(schematic, "WEOriginY", IntTag.class).getValue();
-            int originZ = getChildTag(schematic, "WEOriginZ", IntTag.class).getValue();
+            int originX = requireTag(schematic, "WEOriginX", IntTag.class).getValue();
+            int originY = requireTag(schematic, "WEOriginY", IntTag.class).getValue();
+            int originZ = requireTag(schematic, "WEOriginZ", IntTag.class).getValue();
             Vector min = new Vector(originX, originY, originZ);
 
-            int offsetX = getChildTag(schematic, "WEOffsetX", IntTag.class).getValue();
-            int offsetY = getChildTag(schematic, "WEOffsetY", IntTag.class).getValue();
-            int offsetZ = getChildTag(schematic, "WEOffsetZ", IntTag.class).getValue();
+            int offsetX = requireTag(schematic, "WEOffsetX", IntTag.class).getValue();
+            int offsetY = requireTag(schematic, "WEOffsetY", IntTag.class).getValue();
+            int offsetZ = requireTag(schematic, "WEOffsetZ", IntTag.class).getValue();
             Vector offset = new Vector(offsetX, offsetY, offsetZ);
 
             origin = min.subtract(offset);
@@ -111,16 +119,20 @@ public class SchematicReader implements ClipboardReader {
             region = new CuboidRegion(origin, origin.add(width, height, length).subtract(Vector.ONE));
         }
 
+        // ====================================================================
+        // Blocks
+        // ====================================================================
+
         // Get blocks
-        byte[] blockId = getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
-        byte[] blockData = getChildTag(schematic, "Data", ByteArrayTag.class).getValue();
+        byte[] blockId = requireTag(schematic, "Blocks", ByteArrayTag.class).getValue();
+        byte[] blockData = requireTag(schematic, "Data", ByteArrayTag.class).getValue();
         byte[] addId = new byte[0];
         short[] blocks = new short[blockId.length]; // Have to later combine IDs
 
         // We support 4096 block IDs using the same method as vanilla Minecraft, where
         // the highest 4 bits are stored in a separate byte array.
         if (schematic.containsKey("AddBlocks")) {
-            addId = getChildTag(schematic, "AddBlocks", ByteArrayTag.class).getValue();
+            addId = requireTag(schematic, "AddBlocks", ByteArrayTag.class).getValue();
         }
 
         // Combine the AddBlocks data with the first 8-bit block ID
@@ -137,7 +149,7 @@ public class SchematicReader implements ClipboardReader {
         }
 
         // Need to pull out tile entities
-        List<Tag> tileEntities = getChildTag(schematic, "TileEntities", ListTag.class).getValue();
+        List<Tag> tileEntities = requireTag(schematic, "TileEntities", ListTag.class).getValue();
         Map<BlockVector, Map<String, Tag>> tileEntitiesMap = new HashMap<BlockVector, Map<String, Tag>>();
 
         for (Tag tag : tileEntities) {
@@ -208,19 +220,64 @@ public class SchematicReader implements ClipboardReader {
             }
         }
 
+        // ====================================================================
+        // Entities
+        // ====================================================================
+
+        try {
+            List<Tag> entityTags = requireTag(schematic, "Entities", ListTag.class).getValue();
+
+            for (Tag tag : entityTags) {
+                if (tag instanceof CompoundTag) {
+                    CompoundTag compound = (CompoundTag) tag;
+                    StringTag idTag = getTag(compound, StringTag.class, "id");
+                    Vector position = getVector(getTag(compound, ListTag.class, "Pos"));
+
+                    if (idTag != null & position != null) {
+                        Location location = readRotation(getTag(compound, ListTag.class, "Rotation"), new Location(clipboard, position));
+                        BaseEntity state = new BaseEntity(idTag.getValue(), compound);
+                        clipboard.createEntity(location, state);
+                    }
+                }
+            }
+        } catch (IOException ignored) { // No entities? No problem
+        }
+
         return clipboard;
     }
 
-    /**
-     * Get child tag of a NBT structure.
-     *
-     * @param items The parent tag map
-     * @param key The name of the tag to get
-     * @param expected The expected type of the tag
-     * @return child tag casted to the expected type
-     * @throws IOException if the tag does not exist or the tag is not of the expected type
-     */
-    private static <T extends Tag> T getChildTag(Map<String, Tag> items, String key, Class<T> expected) throws IOException {
+    @Nullable
+    private static Vector getVector(@Nullable ListTag tag) {
+        if (tag != null) {
+            List<Tag> tags = tag.getValue();
+
+            if (tags.size() == 3 && tags.get(0) instanceof DoubleTag) {
+                double x = ((DoubleTag) tags.get(0)).getValue();
+                double y = ((DoubleTag) tags.get(1)).getValue();
+                double z = ((DoubleTag) tags.get(2)).getValue();
+                return new Vector(x, y, z);
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private static Location readRotation(@Nullable ListTag tag, Location location) {
+        if (tag != null) {
+            List<Tag> tags = tag.getValue();
+
+            if (tags.size() == 2 && tags.get(0) instanceof FloatTag) {
+                float yaw = ((FloatTag) tags.get(0)).getValue();
+                float pitch = ((FloatTag) tags.get(1)).getValue();
+                location = location.setDirection(yaw, pitch);
+            }
+        }
+
+        return location;
+    }
+
+    private static <T extends Tag> T requireTag(Map<String, Tag> items, String key, Class<T> expected) throws IOException {
         if (!items.containsKey(key)) {
             throw new IOException("Schematic file is missing a \"" + key + "\" tag");
         }
@@ -231,6 +288,22 @@ public class SchematicReader implements ClipboardReader {
         }
 
         return expected.cast(tag);
+    }
+
+    @Nullable
+    private static <T extends Tag> T getTag(CompoundTag tag, Class<T> expected, String key) {
+        Map<String, Tag> items = tag.getValue();
+
+        if (!items.containsKey(key)) {
+            return null;
+        }
+
+        Tag test = items.get(key);
+        if (!expected.isInstance(test)) {
+            return null;
+        }
+
+        return expected.cast(test);
     }
 
 }

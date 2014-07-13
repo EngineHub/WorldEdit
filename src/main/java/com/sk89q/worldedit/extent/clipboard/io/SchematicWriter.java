@@ -21,6 +21,8 @@ package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.DoubleTag;
+import com.sk89q.jnbt.FloatTag;
 import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTOutputStream;
@@ -29,19 +31,23 @@ import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.registry.WorldData;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
- /**
+/**
  * Writes schematic files based that are compatible with MCEdit and other editors.
  */
 public class SchematicWriter implements ClipboardWriter {
@@ -79,6 +85,10 @@ public class SchematicWriter implements ClipboardWriter {
             throw new IllegalArgumentException("Length of region too large for a .schematic");
         }
 
+        // ====================================================================
+        // Metadata
+        // ====================================================================
+
         HashMap<String, Tag> schematic = new HashMap<String, Tag>();
         schematic.put("Width", new ShortTag("Width", (short) width));
         schematic.put("Length", new ShortTag("Length", (short) length));
@@ -91,11 +101,14 @@ public class SchematicWriter implements ClipboardWriter {
         schematic.put("WEOffsetY", new IntTag("WEOffsetY", offset.getBlockY()));
         schematic.put("WEOffsetZ", new IntTag("WEOffsetZ", offset.getBlockZ()));
 
-        // Copy
+        // ====================================================================
+        // Block handling
+        // ====================================================================
+
         byte[] blocks = new byte[width * height * length];
         byte[] addBlocks = null;
         byte[] blockData = new byte[width * height * length];
-        ArrayList<Tag> tileEntities = new ArrayList<Tag>();
+        List<Tag> tileEntities = new ArrayList<Tag>();
 
         for (Vector point : region) {
             Vector relative = point.subtract(min);
@@ -140,20 +153,66 @@ public class SchematicWriter implements ClipboardWriter {
 
         schematic.put("Blocks", new ByteArrayTag("Blocks", blocks));
         schematic.put("Data", new ByteArrayTag("Data", blockData));
-        schematic.put("Entities", new ListTag("Entities", CompoundTag.class, new ArrayList<Tag>()));
         schematic.put("TileEntities", new ListTag("TileEntities", CompoundTag.class, tileEntities));
 
         if (addBlocks != null) {
             schematic.put("AddBlocks", new ByteArrayTag("AddBlocks", addBlocks));
         }
 
-        // Build and output
+        // ====================================================================
+        // Entities
+        // ====================================================================
+
+        List<Tag> entities = new ArrayList<Tag>();
+        for (Entity entity : clipboard.getEntities()) {
+            BaseEntity state = entity.getState();
+
+            if (state != null) {
+                Map<String, Tag> values = new HashMap<String, Tag>();
+
+                // Put NBT provided data
+                CompoundTag rawTag = state.getNbtData();
+                if (rawTag != null) {
+                    values.putAll(rawTag.getValue());
+                }
+
+                // Store our location data, overwriting any
+                values.put("id", new StringTag("id", state.getTypeId()));
+                values.put("Pos", writeVector(entity.getLocation().toVector(), "Pos"));
+                values.put("Rotation", writeRotation(entity.getLocation(), "Rotation"));
+
+                CompoundTag entityTag = new CompoundTag("Entity", values);
+                entities.add(entityTag);
+            }
+        }
+
+        schematic.put("Entities", new ListTag("Entities", CompoundTag.class, entities));
+
+        // ====================================================================
+        // Output
+        // ====================================================================
+
         CompoundTag schematicTag = new CompoundTag("Schematic", schematic);
         outputStream.writeTag(schematicTag);
     }
 
-     @Override
-     public void close() throws IOException {
-         outputStream.close();
-     }
- }
+    private Tag writeVector(Vector vector, String name) {
+        List<DoubleTag> list = new ArrayList<DoubleTag>();
+        list.add(new DoubleTag("", vector.getX()));
+        list.add(new DoubleTag("", vector.getY()));
+        list.add(new DoubleTag("", vector.getZ()));
+        return new ListTag(name, DoubleTag.class, list);
+    }
+
+    private Tag writeRotation(Location location, String name) {
+        List<FloatTag> list = new ArrayList<FloatTag>();
+        list.add(new FloatTag("", location.getYaw()));
+        list.add(new FloatTag("", location.getPitch()));
+        return new ListTag(name, FloatTag.class, list);
+    }
+
+    @Override
+    public void close() throws IOException {
+        outputStream.close();
+    }
+}
