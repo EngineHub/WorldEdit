@@ -74,7 +74,7 @@ class BukkitEntity implements Entity {
 
     @Override
     public BaseEntity getState() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return null;
     }
 
     @Override

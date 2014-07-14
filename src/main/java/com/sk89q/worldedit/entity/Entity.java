@@ -22,6 +22,8 @@ package com.sk89q.worldedit.entity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
 
+import javax.annotation.Nullable;
+
 /**
  * A reference to an instance of an entity that exists in an {@link Extent}
  * and thus would have position and similar details.
@@ -37,8 +39,9 @@ public interface Entity {
     /**
      * Get a copy of the entity's state.
      *
-     * @return the entity's state
+     * @return the entity's state or null if one cannot be gotten
      */
+    @Nullable
     BaseEntity getState();
 
     /**
