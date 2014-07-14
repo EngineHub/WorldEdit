@@ -203,6 +203,18 @@
     <defaultGoal>install</defaultGoal>
     <sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
 
+    <resources>
+      <!-- Data files -->
+      <resource>
+        <targetPath>.</targetPath>
+        <filtering>false</filtering>
+        <directory>${basedir}/src/main/resources/</directory>
+        <includes>
+          <include>**/*.json</include>
+        </includes>
+      </resource>
+    </resources>
+
     <!-- Used for uploading the docs -->
     <extensions>
       <extension>
