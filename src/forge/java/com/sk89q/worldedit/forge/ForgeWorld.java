@@ -32,6 +32,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.helper.MCDirections;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
@@ -491,10 +492,10 @@ public class ForgeWorld extends AbstractWorld {
         if (o == null) {
             return false;
         } else if ((o instanceof ForgeWorld)) {
-                ForgeWorld other = ((ForgeWorld) o);
-                World otherWorld = other.worldRef.get();
-                World thisWorld = other.worldRef.get();
-                return otherWorld != null && thisWorld != null && otherWorld.equals(thisWorld);
+            ForgeWorld other = ((ForgeWorld) o);
+            World otherWorld = other.worldRef.get();
+            World thisWorld = other.worldRef.get();
+            return otherWorld != null && thisWorld != null && otherWorld.equals(thisWorld);
         } else if (o instanceof com.sk89q.worldedit.world.World) {
             return ((com.sk89q.worldedit.world.World) o).getName().equals(getName());
         } else {
@@ -539,9 +540,13 @@ public class ForgeWorld extends AbstractWorld {
         World world = getWorld();
         net.minecraft.entity.Entity createdEntity = EntityList.createEntityByName(entity.getTypeId(), world);
         if (createdEntity != null) {
-            CompoundTag tag = entity.getNbtData();
-            if (tag != null) {
-                createdEntity.readFromNBT(NBTConverter.toNative(entity.getNbtData()));
+            CompoundTag nativeTag = entity.getNbtData();
+            if (nativeTag != null) {
+                NBTTagCompound tag = NBTConverter.toNative(entity.getNbtData());
+                for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
+                    tag.removeTag(name);
+                }
+                createdEntity.readFromNBT(tag);
             }
 
             createdEntity.setLocationAndAngles(location.getX(), location.getY(), location.getZ(), (float) Math.toDegrees(location.getYaw()), (float) Math.toDegrees(location.getPitch()));
