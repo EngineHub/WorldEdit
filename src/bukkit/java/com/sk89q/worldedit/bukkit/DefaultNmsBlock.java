@@ -349,9 +349,11 @@ public class DefaultNmsBlock extends NmsBlock {
                 }
             }
 
+            assert foreignKeys != null;
+
             for (Object obj : foreignKeys) {
                 String key = (String) obj;
-                NBTBase base = (NBTBase) ((NBTTagCompound) foreign).get(key);
+                NBTBase base = ((NBTTagCompound) foreign).get(key);
                 values.put(key, toNative(key, base));
             }
             return new CompoundTag(name, values);
@@ -376,7 +378,8 @@ public class DefaultNmsBlock extends NmsBlock {
             } catch (NoSuchFieldException e) {
             } catch (SecurityException e) {
             } catch (IllegalArgumentException e) {
-            } catch (IllegalAccessException e) {}
+            } catch (IllegalAccessException e) {
+            }
             return new ListTag(name, ByteTag.class, new ArrayList<ByteTag>());
         } else if (foreign instanceof NBTTagLong) {
             return new LongTag(name, ((NBTTagLong) foreign).c()); // getLong

@@ -42,8 +42,6 @@ public class AnvilChunk implements Chunk {
     private int rootZ;
 
     private Map<BlockVector, Map<String,Tag>> tileEntities;
-    @SuppressWarnings("unused")
-    private World world; // TODO: remove if stays unused.
 
     /**
      * Construct the chunk with a compound tag.
@@ -54,7 +52,6 @@ public class AnvilChunk implements Chunk {
      */
     public AnvilChunk(World world, CompoundTag tag) throws DataException {
         rootTag = tag;
-        this.world = world;
 
         rootX = NBTUtils.getChildTag(rootTag.getValue(), "xPos", IntTag.class).getValue();
         rootZ = NBTUtils.getChildTag(rootTag.getValue(), "zPos", IntTag.class).getValue();
@@ -93,20 +90,20 @@ public class AnvilChunk implements Chunk {
         }
 
         int sectionsize = 16 * 16 * 16;
-        for (int i = 0; i < blocks.length; i++) {
-            if (blocks[i].length != sectionsize) {
+        for (byte[] block : blocks) {
+            if (block.length != sectionsize) {
                 throw new InvalidFormatException(
                         "Chunk blocks byte array expected " + "to be "
                                 + sectionsize + " bytes; found "
-                                + blocks[i].length);
+                                + block.length);
             }
         }
 
-        for (int i = 0; i < data.length; i++) {
-            if (data[i].length != (sectionsize / 2)) {
+        for (byte[] aData : data) {
+            if (aData.length != (sectionsize / 2)) {
                 throw new InvalidFormatException("Chunk block data byte array "
                         + "expected to be " + sectionsize + " bytes; found "
-                        + data[i].length);
+                        + aData.length);
             }
         }
     }

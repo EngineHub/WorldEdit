@@ -89,7 +89,7 @@ public class CommandLoggingHandler extends AbstractInvokeListener implements Inv
 
         builder.append("WorldEdit: ").append(sender.getName());
         if (sender.isPlayer()) {
-            builder.append(" (in \"" + player.getWorld().getName() + "\")");
+            builder.append(" (in \"").append(player.getWorld().getName()).append("\")");
         }
 
         builder.append(": ").append(context.getCommand());
@@ -112,15 +112,15 @@ public class CommandLoggingHandler extends AbstractInvokeListener implements Inv
                 /* FALL-THROUGH */
 
             case POSITION:
-                builder.append(" - Position: " + position);
+                builder.append(" - Position: ").append(position);
                 break;
 
             case ALL:
-                builder.append(" - Position: " + position);
+                builder.append(" - Position: ").append(position);
                 /* FALL-THROUGH */
 
             case ORIENTATION_REGION:
-                builder.append(" - Orientation: " + player.getCardinalDirection().name());
+                builder.append(" - Orientation: ").append(player.getCardinalDirection().name());
                 /* FALL-THROUGH */
 
             case REGION:

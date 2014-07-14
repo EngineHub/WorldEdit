@@ -21,7 +21,6 @@ package com.sk89q.worldedit.forge;
 
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.extent.inventory.BlockBag;

@@ -72,7 +72,7 @@ public class BukkitWorld extends LocalWorld {
         for (String val : values) {
             try {
                 return Enum.valueOf(enumType, val);
-            } catch (IllegalArgumentException e) {}
+            } catch (IllegalArgumentException ignored) {}
         }
         return null;
     }
@@ -111,7 +111,7 @@ public class BukkitWorld extends LocalWorld {
                 if (!f.isFile()) continue;
                 filename = f.getName();
                 // load class using magic keyword
-                Class<?> testBlock = null;
+                Class<?> testBlock;
                 try {
                     testBlock = loader.loadClass("CL-NMS" + filename);
                 } catch (Throwable e) {
@@ -122,11 +122,11 @@ public class BukkitWorld extends LocalWorld {
                 if (NmsBlock.class.isAssignableFrom(testBlock)) {
                     // got a NmsBlock, test it now
                     Class<? extends NmsBlock> nmsClass = (Class<? extends NmsBlock>) testBlock;
-                    boolean canUse = false;
+                    boolean canUse;
                     try {
                         canUse = (Boolean) nmsClass.getMethod("verify").invoke(null);
                     } catch (Throwable e) {
-                        continue;
+                        canUse = false;
                     }
                     if (!canUse) continue; // not for this server
                     nmsBlockType = nmsClass;
@@ -1222,8 +1222,7 @@ public class BukkitWorld extends LocalWorld {
         default:
             if (!skipNmsAccess) {
                 try {
-                    NmsBlock block = null;
-                    block = (NmsBlock) nmsGetMethod.invoke(null, getWorld(), pt, type, data);
+                    NmsBlock block = (NmsBlock) nmsGetMethod.invoke(null, getWorld(), pt, type, data);
                     if (block != null) {
                         return block;
                     }

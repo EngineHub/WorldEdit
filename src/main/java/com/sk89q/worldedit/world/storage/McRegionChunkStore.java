@@ -44,9 +44,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
         int x = pos.getBlockX();
         int z = pos.getBlockZ();
 
-        String filename = "r." + (x >> 5) + "." + (z >> 5) + ".mca";
-
-        return filename;
+        return "r." + (x >> 5) + "." + (z >> 5) + ".mca";
     }
 
     protected McRegionReader getReader(Vector2D pos, String worldname) throws DataException, IOException {
@@ -57,7 +55,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
             } else {
                 try {
                     cachedReader.close();
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -83,7 +81,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
                         + tag.getClass().getName());
             }
 
-            Map<String, Tag> children = (Map<String, Tag>) ((CompoundTag) tag).getValue();
+            Map<String, Tag> children = ((CompoundTag) tag).getValue();
             CompoundTag rootTag = null;
 
             // Find Level tag

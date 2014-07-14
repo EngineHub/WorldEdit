@@ -27,7 +27,6 @@ import org.junit.*;
 
 import com.sk89q.worldedit.internal.expression.lexer.LexerException;
 import com.sk89q.worldedit.internal.expression.parser.ParserException;
-import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
 
 public class ExpressionTest {
     @Test
@@ -199,7 +198,7 @@ public class ExpressionTest {
         return expression.evaluate();
     }
 
-    private Expression compile(String expressionString, String... variableNames) throws ExpressionException, EvaluationException {
+    private Expression compile(String expressionString, String... variableNames) throws ExpressionException {
         final Expression expression = Expression.compile(expressionString, variableNames);
         expression.optimize();
         return expression;

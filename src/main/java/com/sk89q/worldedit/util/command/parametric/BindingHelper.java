@@ -64,7 +64,7 @@ public class BindingHelper implements Binding {
                 
                 // Set classifier
                 if (!info.classifier().equals(Annotation.class)) {
-                    classifier = (Class<? extends Annotation>) info.classifier();
+                    classifier = info.classifier();
                     types.add(classifier);
                 }
                 

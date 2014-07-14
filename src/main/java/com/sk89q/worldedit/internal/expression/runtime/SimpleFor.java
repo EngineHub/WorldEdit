@@ -86,7 +86,7 @@ public class SimpleFor extends Node {
     public RValue optimize() throws EvaluationException {
         // TODO: unroll small loops into Sequences
 
-        return new SimpleFor(getPosition(), (LValue) counter.optimize(), first.optimize(), last.optimize(), body.optimize());
+        return new SimpleFor(getPosition(), counter.optimize(), first.optimize(), last.optimize(), body.optimize());
     }
 
     @Override

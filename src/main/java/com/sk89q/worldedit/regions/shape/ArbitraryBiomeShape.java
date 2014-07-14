@@ -108,16 +108,16 @@ public abstract class ArbitraryBiomeShape {
         return cacheEntry;
     }
 
-    private boolean isInsideCached(int x, int z, BiomeType biomeType) {
+    private boolean isNotCached(int x, int z, BiomeType biomeType) {
         final int index = (z - cacheOffsetZ) + (x - cacheOffsetX) * cacheSizeZ;
 
         final BiomeType cacheEntry = cache[index];
         if (cacheEntry == null) {
             // unknown block, meaning they must be outside the extent at this stage, but might still be inside the shape
-            return getBiomeCached(x, z, biomeType) != null;
+            return getBiomeCached(x, z, biomeType) == null;
         }
 
-        return cacheEntry != OUTSIDE;
+        return cacheEntry == OUTSIDE;
     }
 
     /**
@@ -150,25 +150,10 @@ public abstract class ArbitraryBiomeShape {
                 continue;
             }
 
-            boolean draw = false;
-            do {
-                if (!isInsideCached(x + 1, z, biomeType)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x - 1, z, biomeType)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, z + 1, biomeType)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, z - 1, biomeType)) {
-                    draw = true;
-                    break;
-                }
-            } while (false);
+            boolean draw = isNotCached(x + 1, z, biomeType)
+                    || isNotCached(x - 1, z, biomeType)
+                    || isNotCached(x, z + 1, biomeType)
+                    || isNotCached(x, z - 1, biomeType);
 
             if (!draw) {
                 continue;

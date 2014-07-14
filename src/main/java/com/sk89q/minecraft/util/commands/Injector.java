@@ -36,6 +36,6 @@ public interface Injector {
      * @throws InvocationTargetException
      */
     public Object getInstance(Class<?> cls) throws InvocationTargetException,
-            IllegalAccessException, InstantiationException;
+            IllegalAccessException, InstantiationException, NoSuchMethodException;
 
 }

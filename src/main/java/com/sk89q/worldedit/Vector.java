@@ -236,10 +236,10 @@ public class Vector implements Comparable<Vector> {
     public Vector add(Vector... others) {
         double newX = x, newY = y, newZ = z;
 
-        for (int i = 0; i < others.length; ++i) {
-            newX += others[i].x;
-            newY += others[i].y;
-            newZ += others[i].z;
+        for (Vector other : others) {
+            newX += other.x;
+            newY += other.y;
+            newZ += other.z;
         }
         return new Vector(newX, newY, newZ);
     }
@@ -287,10 +287,10 @@ public class Vector implements Comparable<Vector> {
     public Vector subtract(Vector... others) {
         double newX = x, newY = y, newZ = z;
 
-        for (int i = 0; i < others.length; ++i) {
-            newX -= others[i].x;
-            newY -= others[i].y;
-            newZ -= others[i].z;
+        for (Vector other : others) {
+            newX -= other.x;
+            newY -= other.y;
+            newZ -= other.z;
         }
         return new Vector(newX, newY, newZ);
     }
@@ -338,10 +338,10 @@ public class Vector implements Comparable<Vector> {
     public Vector multiply(Vector... others) {
         double newX = x, newY = y, newZ = z;
 
-        for (int i = 0; i < others.length; ++i) {
-            newX *= others[i].x;
-            newY *= others[i].y;
-            newZ *= others[i].z;
+        for (Vector other : others) {
+            newX *= other.x;
+            newY *= other.y;
+            newZ *= other.z;
         }
         return new Vector(newX, newY, newZ);
     }

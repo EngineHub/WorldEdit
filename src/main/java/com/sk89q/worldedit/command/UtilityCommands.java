@@ -467,7 +467,7 @@ public class UtilityCommands {
             return;
         }
 
-        EntityType type = null;
+        EntityType type;
 
         if (typeStr.matches("all")) {
             type = EntityType.ALL;

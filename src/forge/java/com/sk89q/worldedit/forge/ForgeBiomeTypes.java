@@ -21,7 +21,6 @@ package com.sk89q.worldedit.forge;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.world.biome.BiomeGenBase;
@@ -49,12 +48,10 @@ public class ForgeBiomeTypes implements BiomeTypes {
     }
 
     public BiomeType get(String name) throws UnknownBiomeTypeException {
-        if (biomes == null) {
+        if (biomes.isEmpty()) {
             all();
         }
-        Iterator<BiomeType> it = biomes.keySet().iterator();
-        while (it.hasNext()) {
-            BiomeType test = (BiomeType) it.next();
+        for (BiomeType test : biomes.keySet()) {
             if (test.getName().equalsIgnoreCase(name)) {
                 return test;
             }
@@ -78,10 +75,10 @@ public class ForgeBiomeTypes implements BiomeTypes {
     }
 
     public static BiomeType getFromBaseBiome(BiomeGenBase biome) {
-        return biomes.containsValue(biome) ? (BiomeType) biomes.inverse().get(biome) : BiomeType.UNKNOWN;
+        return biomes.containsValue(biome) ? biomes.inverse().get(biome) : BiomeType.UNKNOWN;
     }
 
     public static BiomeGenBase getFromBiomeType(BiomeType biome) {
-        return (BiomeGenBase) biomes.get(biome);
+        return biomes.get(biome);
     }
 }

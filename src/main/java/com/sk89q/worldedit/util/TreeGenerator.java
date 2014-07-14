@@ -123,7 +123,7 @@ public class TreeGenerator {
         public static TreeType lookup(String name) {
             return lookup.get(name.toLowerCase());
         }
-    };
+    }
 
     private static Random rand = new Random();
 

@@ -139,9 +139,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                 InputStream is = jar.getInputStream(jarEntry);
                 FileOutputStream fos = new FileOutputStream(file);
 
-                fos = new FileOutputStream(file);
                 byte[] buf = new byte[8192];
-                int length = 0;
+                int length;
                 while ((length = is.read(buf)) > 0) {
                     fos.write(buf, 0, length);
                 }
@@ -159,7 +158,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         if (controller != null) {
             controller.clearSessions();
             controller.getPlatformManager().unregister(server);
-            config.unload();
             server.unregisterCommands();
         }
         this.getServer().getScheduler().cancelTasks(this);
@@ -169,7 +167,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      * Loads and reloads all configuration.
      */
     protected void loadConfiguration() {
-        config.unload();
         config.load();
         getPermissionsResolver().load();
     }
@@ -300,7 +297,9 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      * @param player
      * @param op
      * @throws Throwable
+     * @deprecated Please use {@link com.sk89q.worldedit.function.operation.Operations} instead.
      */
+    @Deprecated
     public void perform(Player player, WorldEditOperation op)
             throws Throwable {
         LocalPlayer wePlayer = wrapPlayer(player);

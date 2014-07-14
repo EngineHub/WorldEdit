@@ -375,7 +375,6 @@ public class PlatformManager {
         // Create a proxy actor with a potentially different world for
         // making changes to the world
         Player player = createProxyActor(event.getPlayer());
-        World world = player.getWorld();
 
         switch (event.getInputType()) {
             case PRIMARY: {

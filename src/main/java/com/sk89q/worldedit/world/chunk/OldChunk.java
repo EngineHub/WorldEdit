@@ -45,8 +45,6 @@ public class OldChunk implements Chunk {
     private int rootZ;
 
     private Map<BlockVector, Map<String,Tag>> tileEntities;
-    @SuppressWarnings("unused")
-    private World world; // TODO: remove if stays unused.
 
     /**
      * Construct the chunk with a compound tag.
@@ -56,8 +54,6 @@ public class OldChunk implements Chunk {
      */
     public OldChunk(World world, CompoundTag tag) throws DataException {
         rootTag = tag;
-        this.world = world;
-
         
         blocks = NBTUtils.getChildTag(rootTag.getValue(), "Blocks", ByteArrayTag.class).getValue();
         data = NBTUtils.getChildTag(rootTag.getValue(), "Data", ByteArrayTag.class).getValue();

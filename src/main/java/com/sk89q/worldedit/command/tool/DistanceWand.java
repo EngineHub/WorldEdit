@@ -73,7 +73,7 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
     }
 
     public WorldVector getTarget(Player player) {
-        WorldVector target = null;
+        WorldVector target;
         if (this.range > -1) {
             target = player.getBlockTrace(getRange(), true);
         } else {

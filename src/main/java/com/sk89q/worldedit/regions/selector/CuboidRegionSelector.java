@@ -93,7 +93,7 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
     }
 
     @Deprecated
-    public CuboidRegionSelector(@Nullable LocalWorld world, Vector pos1, Vector pos2) {
+    public CuboidRegionSelector(LocalWorld world, Vector pos1, Vector pos2) {
         this((World) world, pos1, pos2);
     }
 
@@ -104,7 +104,7 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
      * @param pos1 position 1
      * @param pos2 position 2
      */
-    public CuboidRegionSelector(@Nullable World world, Vector pos1, Vector pos2) {
+    public CuboidRegionSelector(World world, Vector pos1, Vector pos2) {
         this(world);
         checkNotNull(world);
         checkNotNull(pos1);

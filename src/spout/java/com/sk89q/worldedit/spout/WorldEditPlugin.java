@@ -43,6 +43,7 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.scheduler.TaskPriority;
 
 import java.io.*;
+import java.lang.Deprecated;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -247,7 +248,9 @@ public class WorldEditPlugin extends CommonPlugin {
      * @param player
      * @param op
      * @throws Throwable
+     * @deprecated Please use {@link com.sk89q.worldedit.function.operation.Operations} instead.
      */
+    @Deprecated
     public void perform(Player player, WorldEditOperation op)
             throws Throwable {
         LocalPlayer wePlayer = wrapPlayer(player);

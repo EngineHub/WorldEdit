@@ -49,7 +49,7 @@ public final class ParserProcessors {
         unaryOpMap.put("x--", "postdec");
         unaryOpMap.put("x!", "fac");
 
-        final Object[][][] binaryOpsLA = {
+        final String[][][] binaryOpsLA = {
                 {
                         { "^", "pow" },
                         { "**", "pow" },
@@ -85,7 +85,7 @@ public final class ParserProcessors {
                     { "||", "or" },
                 },
         };
-        final Object[][][] binaryOpsRA = {
+        final String[][][] binaryOpsRA = {
                 {
                         { "=", "ass" },
                         { "+=", "aadd" },
@@ -100,22 +100,21 @@ public final class ParserProcessors {
         @SuppressWarnings("unchecked")
         final Map<String, String>[] lBinaryOpMapsLA = binaryOpMapsLA = new Map[binaryOpsLA.length];
         for (int i = 0; i < binaryOpsLA.length; ++i) {
-            final Object[][] a = binaryOpsLA[i];
+            final String[][] a = binaryOpsLA[i];
             switch (a.length) {
             case 0:
                 lBinaryOpMapsLA[i] = Collections.emptyMap();
                 break;
 
             case 1:
-                final Object[] first = a[0];
-                lBinaryOpMapsLA[i] = Collections.singletonMap((String) first[0], (String) first[1]);
+                final String[] first = a[0];
+                lBinaryOpMapsLA[i] = Collections.singletonMap(first[0], first[1]);
                 break;
 
             default:
                 Map<String, String> m = lBinaryOpMapsLA[i] = new HashMap<String, String>();
-                for (int j = 0; j < a.length; ++j) {
-                    final Object[] element = a[j];
-                    m.put((String) element[0], (String) element[1]);
+                for (String[] element : a) {
+                    m.put(element[0], element[1]);
                 }
             }
         }
@@ -123,22 +122,21 @@ public final class ParserProcessors {
         @SuppressWarnings("unchecked")
         final Map<String, String>[] lBinaryOpMapsRA = binaryOpMapsRA = new Map[binaryOpsRA.length];
         for (int i = 0; i < binaryOpsRA.length; ++i) {
-            final Object[][] a = binaryOpsRA[i];
+            final String[][] a = binaryOpsRA[i];
             switch (a.length) {
             case 0:
                 lBinaryOpMapsRA[i] = Collections.emptyMap();
                 break;
 
             case 1:
-                final Object[] first = a[0];
-                lBinaryOpMapsRA[i] = Collections.singletonMap((String) first[0], (String) first[1]);
+                final String[] first = a[0];
+                lBinaryOpMapsRA[i] = Collections.singletonMap(first[0], first[1]);
                 break;
 
             default:
                 Map<String, String> m = lBinaryOpMapsRA[i] = new HashMap<String, String>();
-                for (int j = 0; j < a.length; ++j) {
-                    final Object[] element = a[j];
-                    m.put((String) element[0], (String) element[1]);
+                for (String[] element : a) {
+                    m.put(element[0], element[1]);
                 }
             }
         }

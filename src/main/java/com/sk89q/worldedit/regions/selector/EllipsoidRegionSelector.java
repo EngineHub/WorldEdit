@@ -76,7 +76,7 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
 
             region = new EllipsoidRegion(ellipsoidRegionSelector.getIncompleteRegion());
         } else {
-            Region oldRegion = null;
+            Region oldRegion;
             try {
                 oldRegion = oldSelector.getRegion();
             } catch (IncompleteRegionException e) {

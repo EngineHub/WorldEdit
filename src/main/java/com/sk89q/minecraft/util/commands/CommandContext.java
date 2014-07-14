@@ -76,6 +76,7 @@ public class CommandContext {
      */
     public CommandContext(String[] args, Set<Character> valueFlags, 
             boolean allowHangingFlag, CommandLocals locals) throws CommandException {
+        // TODO - Refactor!
         if (valueFlags == null) {
             valueFlags = Collections.emptySet();
         }

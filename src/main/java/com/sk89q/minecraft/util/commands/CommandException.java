@@ -62,9 +62,7 @@ public class CommandException extends Exception {
     public String getCommandUsed(String prefix, @Nullable String spacedSuffix) {
         checkNotNull(prefix);
         StringBuilder builder = new StringBuilder();
-        if (prefix != null) {
-            builder.append(prefix);
-        }
+        builder.append(prefix);
         ListIterator<String> li = commandStack.listIterator(commandStack.size());
         while (li.hasPrevious()) {
             if (li.previousIndex() != commandStack.size() - 1) {

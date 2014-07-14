@@ -334,7 +334,7 @@ public class EditSession implements Extent {
      * @return true if enabled
      */
     public boolean hasFastMode() {
-        return fastModeExtent != null ? fastModeExtent.isEnabled() : false;
+        return fastModeExtent != null && fastModeExtent.isEnabled();
     }
 
     /**
