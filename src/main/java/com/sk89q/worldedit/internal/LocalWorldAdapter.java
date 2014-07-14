@@ -101,42 +101,6 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
-    @Deprecated
-    public boolean setBlockType(Vector position, int type) {
-        return world.setBlockType(position, type);
-    }
-
-    @Override
-    @Deprecated
-    public boolean setBlockTypeFast(Vector position, int type) {
-        return world.setBlockTypeFast(position, type);
-    }
-
-    @Override
-    @Deprecated
-    public void setBlockData(Vector position, int data) {
-        world.setBlockData(position, data);
-    }
-
-    @Override
-    @Deprecated
-    public void setBlockDataFast(Vector position, int data) {
-        world.setBlockDataFast(position, data);
-    }
-
-    @Override
-    @Deprecated
-    public boolean setTypeIdAndData(Vector position, int type, int data) {
-        return world.setTypeIdAndData(position, type, data);
-    }
-
-    @Override
-    @Deprecated
-    public boolean setTypeIdAndDataFast(Vector position, int type, int data) {
-        return world.setTypeIdAndDataFast(position, type, data);
-    }
-
-    @Override
     public int getBlockLightLevel(Vector position) {
         return world.getBlockLightLevel(position);
     }
@@ -299,27 +263,8 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
-    public boolean copyFromWorld(Vector position, BaseBlock block) {
-        return false;
-    }
-
-    @Override
-    public boolean copyToWorld(Vector position, BaseBlock block) {
-        return false;
-    }
-
-    @Override
     public BaseBlock getLazyBlock(Vector position) {
         return world.getLazyBlock(position);
-    }
-
-    @Override
-    public boolean setBlock(Vector position, BaseBlock block) {
-        try {
-            return world.setBlock(position, block);
-        } catch (WorldEditException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

@@ -150,7 +150,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
 
     @ExceptionMatch
     public void convert(WorldEditException e) throws CommandException {
-        throw new CommandException(e.getMessage());
+        throw new CommandException(e.getMessage(), e);
     }
 
 }

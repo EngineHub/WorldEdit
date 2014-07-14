@@ -542,16 +542,6 @@
           <type>jar</type>
           <optional>true</optional>
         </dependency>
-
-        <!-- NMS blocks -->
-        <dependency>
-          <groupId>org.bukkit</groupId>
-          <artifactId>craftbukkit</artifactId>
-          <version>1.7.9-R0.1-SNAPSHOT</version>
-          <scope>compile</scope>
-          <type>jar</type>
-          <optional>true</optional>
-        </dependency>
       </dependencies>
 
       <build>
@@ -578,11 +568,11 @@
 
           <!-- NMS support in Bukkit -->
           <resource>
-            <targetPath>nmsblocks/</targetPath>
+            <targetPath>.</targetPath>
             <filtering>false</filtering>
-            <directory>${basedir}/src/bukkit/resources/nmsblocks/</directory>
+            <directory>${basedir}/src/bukkit/resources/</directory>
             <includes>
-              <include>*.class</include>
+              <include>**/*.class</include>
             </includes>
           </resource>
         </resources>

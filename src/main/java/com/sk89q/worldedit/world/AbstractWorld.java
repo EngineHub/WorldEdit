@@ -48,6 +48,37 @@ public abstract class AbstractWorld implements World {
     private int taskId = -1;
 
     @Override
+    public final boolean setBlockType(Vector position, int type) {
+        try {
+            return setBlock(position, new BaseBlock(type));
+        } catch (WorldEditException ignored) {
+            return false;
+        }
+    }
+
+    @Override
+    public final void setBlockData(Vector position, int data) {
+        try {
+            setBlock(position, new BaseBlock(getLazyBlock(position).getType(), data));
+        } catch (WorldEditException ignored) {
+        }
+    }
+
+    @Override
+    public final boolean setTypeIdAndData(Vector position, int type, int data) {
+        try {
+            return setBlock(position, new BaseBlock(type, data));
+        } catch (WorldEditException ignored) {
+            return false;
+        }
+    }
+
+    @Override
+    public final boolean setBlock(Vector pt, BaseBlock block) throws WorldEditException {
+        return setBlock(pt, block, true);
+    }
+
+    @Override
     public int getMaxY() {
         return getMaximumPoint().getBlockY();
     }
@@ -80,56 +111,6 @@ public abstract class AbstractWorld implements World {
     @Override
     public int getBlockData(Vector pt) {
         return getLazyBlock(pt).getData();
-    }
-
-    @Override
-    public boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
-        return setBlock(position, block, true);
-    }
-
-    @Override
-    public boolean setBlockType(Vector position, int type) {
-        try {
-            return setBlock(position, new BaseBlock(type));
-        } catch (WorldEditException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void setBlockData(Vector position, int data) {
-        try {
-            setBlock(position, new BaseBlock(getLazyBlock(position).getId(), data));
-        } catch (WorldEditException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void setBlockDataFast(Vector position, int data) {
-        setBlockData(position, data);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean setBlockTypeFast(Vector pt, int type) {
-        return setBlockType(pt, type);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean setTypeIdAndData(Vector pt, int type, int data) {
-        boolean ret = setBlockType(pt, type);
-        setBlockData(pt, data);
-        return ret;
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean setTypeIdAndDataFast(Vector pt, int type, int data) {
-        boolean ret = setBlockTypeFast(pt, type);
-        setBlockDataFast(pt, data);
-        return ret;
     }
 
     @Override

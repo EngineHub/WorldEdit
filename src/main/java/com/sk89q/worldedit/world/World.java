@@ -126,31 +126,13 @@ public interface World extends Extent {
      * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
      */
     @Deprecated
-    boolean setBlockTypeFast(Vector position, int type);
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
     void setBlockData(Vector position, int data);
 
     /**
      * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
      */
     @Deprecated
-    void setBlockDataFast(Vector position, int data);
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
     boolean setTypeIdAndData(Vector position, int type, int data);
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
-    boolean setTypeIdAndDataFast(Vector position, int type, int data);
 
     /**
      * Get the light level at the given block.
