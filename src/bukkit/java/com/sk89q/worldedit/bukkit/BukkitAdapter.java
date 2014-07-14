@@ -91,16 +91,11 @@ final class BukkitAdapter {
     public static org.bukkit.Location adapt(Location location) {
         checkNotNull(location);
         Vector position = location.toVector();
-        Vector direction = location.getDirection();
-        final double eyeX = direction.getX();
-        final double eyeZ = direction.getZ();
-        final float yaw = (float) Math.toDegrees(Math.atan2(-eyeX, eyeZ));
-        final double length = Math.sqrt(eyeX * eyeX + eyeZ * eyeZ);
-        final float pitch = (float) Math.toDegrees(Math.atan2(-direction.getY(), length));
         return new org.bukkit.Location(
                 adapt((World) location.getExtent()),
                 position.getX(), position.getY(), position.getZ(),
-                yaw, pitch);
+                (float) Math.toDegrees(location.getYaw()),
+                (float) Math.toDegrees(location.getPitch()));
     }
 
     /**
