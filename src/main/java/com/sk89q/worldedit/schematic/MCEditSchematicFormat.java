@@ -170,12 +170,8 @@ public class MCEditSchematicFormat extends SchematicFormat {
                     BlockVector pt = new BlockVector(x, y, z);
                     BaseBlock block = getBlockForId(blocks[index], blockData[index]);
 
-                    if (block instanceof TileEntityBlock && tileEntitiesMap.containsKey(pt)) {
-                        try {
-                            ((TileEntityBlock) block).setNbtData(new CompoundTag("", tileEntitiesMap.get(pt)));
-                        } catch (com.sk89q.worldedit.world.DataException e) {
-                            throw new DataException(e.getMessage());
-                        }
+                    if (tileEntitiesMap.containsKey(pt)) {
+                        block.setNbtData(new CompoundTag("", tileEntitiesMap.get(pt)));
                     }
                     clipboard.setBlock(pt, block);
                 }

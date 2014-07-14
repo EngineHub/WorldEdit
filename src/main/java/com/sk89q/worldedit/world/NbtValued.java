@@ -57,6 +57,6 @@ public interface NbtValued {
      * @param nbtData NBT data, or null if no data
      * @throws DataException if possibly the data is invalid
      */
-    void setNbtData(@Nullable CompoundTag nbtData) throws DataException;
+    void setNbtData(@Nullable CompoundTag nbtData);
 
 }
