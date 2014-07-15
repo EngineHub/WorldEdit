@@ -20,7 +20,11 @@
 package com.sk89q.worldedit.bukkit.adapter;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.entity.BaseEntity;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+
+import javax.annotation.Nullable;
 
 /**
  * An interface for adapters of various Bukkit implementations.
@@ -44,6 +48,25 @@ public interface BukkitImplAdapter {
      * @return true if a block was likely changed
      */
     boolean setBlock(Location location, BaseBlock state, boolean notifyAndLight);
+
+    /**
+     * Get the state for the given entity.
+     *
+     * @param entity the entity
+     * @return the state, or null
+     */
+    @Nullable
+    BaseEntity getEntity(Entity entity);
+
+    /**
+     * Create the given entity.
+     *
+     * @param location the location
+     * @param state the state
+     * @return the created entity or null
+     */
+    @Nullable
+    Entity createEntity(Location location, BaseEntity state);
 
 
 }

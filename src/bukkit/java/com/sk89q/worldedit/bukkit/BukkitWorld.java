@@ -142,7 +142,17 @@ public class BukkitWorld extends LocalWorld {
     @Nullable
     @Override
     public com.sk89q.worldedit.entity.Entity createEntity(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            Entity createdEntity = adapter.createEntity(BukkitAdapter.adapt(getWorld(), location), entity);
+            if (createdEntity != null) {
+                return new BukkitEntity(createdEntity);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     /**

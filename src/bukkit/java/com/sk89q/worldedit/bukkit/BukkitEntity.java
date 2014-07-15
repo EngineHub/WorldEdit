@@ -19,8 +19,10 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.entity.metadata.Tameable;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
@@ -74,12 +76,22 @@ class BukkitEntity implements Entity {
 
     @Override
     public BaseEntity getState() {
-        return null;
+        if (entity instanceof Player) {
+            return null;
+        }
+
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            return adapter.getEntity(entity);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public boolean remove() {
-        return false;
+        entity.remove();
+        return entity.isDead();
     }
 
 }
