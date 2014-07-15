@@ -19,28 +19,28 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.jnbt.Tag;
-
 /**
- * The <code>TAG_Byte</code> tag.
- * 
- * @author Graham Edgecombe
- * 
+ * The {@code TAG_Byte} tag.
  */
 public final class ByteTag extends Tag {
 
-    /**
-     * The value.
-     */
     private final byte value;
 
     /**
+     * Creates the tag with an empty name.
+     *
+     * @param value the value of the tag
+     */
+    public ByteTag(byte value) {
+        super();
+        this.value = value;
+    }
+
+    /**
      * Creates the tag.
-     * 
-     * @param name
-     *            The name.
-     * @param value
-     *            The value.
+     *
+     * @param name the name of the tag
+     * @param value the value of the tag
      */
     public ByteTag(String name, byte value) {
         super(name);

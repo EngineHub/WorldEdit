@@ -19,28 +19,28 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.jnbt.Tag;
-
 /**
- * The <code>TAG_Short</code> tag.
- * 
- * @author Graham Edgecombe
- * 
+ * The {@code TAG_Short} tag.
  */
 public final class ShortTag extends Tag {
 
-    /**
-     * The value.
-     */
     private final short value;
 
     /**
+     * Creates the tag with an empty name.
+     *
+     * @param value the value of the tag
+     */
+    public ShortTag(short value) {
+        super();
+        this.value = value;
+    }
+
+    /**
      * Creates the tag.
-     * 
-     * @param name
-     *            The name.
-     * @param value
-     *            The value.
+     *
+     * @param name the name of the tag
+     * @param value the value of the tag
      */
     public ShortTag(String name, short value) {
         super(name);

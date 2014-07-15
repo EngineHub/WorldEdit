@@ -19,8 +19,6 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.jnbt.Tag;
-
 /**
  * The <code>TAG_End</code> tag.
  * 
@@ -33,7 +31,7 @@ public final class EndTag extends Tag {
      * Creates the tag.
      */
     public EndTag() {
-        super("");
+        super();
     }
 
     @Override

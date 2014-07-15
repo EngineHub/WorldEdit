@@ -19,28 +19,28 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.jnbt.Tag;
-
 /**
- * The <code>TAG_Byte_Array</code> tag.
- * 
- * @author Graham Edgecombe
- * 
+ * The {@code TAG_Byte_Array} tag.
  */
 public final class ByteArrayTag extends Tag {
 
-    /**
-     * The value.
-     */
     private final byte[] value;
 
     /**
+     * Creates the tag with an empty name.
+     *
+     * @param value the value of the tag
+     */
+    public ByteArrayTag(byte[] value) {
+        super();
+        this.value = value;
+    }
+
+    /**
      * Creates the tag.
-     * 
-     * @param name
-     *            The name.
-     * @param value
-     *            The value.
+     *
+     * @param name the name of the tag
+     * @param value the value of the tag
      */
     public ByteArrayTag(String name, byte[] value) {
         super(name);
@@ -67,7 +67,7 @@ public final class ByteArrayTag extends Tag {
         if (name != null && !name.equals("")) {
             append = "(\"" + this.getName() + "\")";
         }
-        return "TAG_Byte_Array" + append + ": " + hex.toString();
+        return "TAG_Byte_Array" + append + ": " + hex;
     }
 
 }

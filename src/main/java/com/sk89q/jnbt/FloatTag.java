@@ -19,28 +19,28 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.jnbt.Tag;
-
 /**
- * The <code>TAG_Float</code> tag.
- * 
- * @author Graham Edgecombe
- * 
+ * The {@code TAG_Float} tag.
  */
 public final class FloatTag extends Tag {
 
-    /**
-     * The value.
-     */
     private final float value;
 
     /**
+     * Creates the tag with an empty name.
+     *
+     * @param value the value of the tag
+     */
+    public FloatTag(float value) {
+        super();
+        this.value = value;
+    }
+
+    /**
      * Creates the tag.
-     * 
-     * @param name
-     *            The name.
-     * @param value
-     *            The value.
+     *
+     * @param name the name of the tag
+     * @param value the value of the tag
      */
     public FloatTag(String name, float value) {
         super(name);

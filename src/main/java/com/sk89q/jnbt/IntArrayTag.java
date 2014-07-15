@@ -19,31 +19,35 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.jnbt.Tag;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * The <code>TAG_Int_Array</code> tag.
- * 
- * @author Graham Edgecombe
- * 
+ * The {@code TAG_Int_Array} tag.
  */
 public final class IntArrayTag extends Tag {
 
-    /**
-     * The value.
-     */
     private final int[] value;
 
     /**
+     * Creates the tag with an empty name.
+     *
+     * @param value the value of the tag
+     */
+    public IntArrayTag(int[] value) {
+        super();
+        checkNotNull(value);
+        this.value = value;
+    }
+
+    /**
      * Creates the tag.
-     * 
-     * @param name
-     *            The name.
-     * @param value
-     *            The value.
+     *
+     * @param name the name of the tag
+     * @param value the value of the tag
      */
     public IntArrayTag(String name, int[] value) {
         super(name);
+        checkNotNull(value);
         this.value = value;
     }
 

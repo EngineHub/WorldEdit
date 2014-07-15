@@ -27,20 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.ByteTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.DoubleTag;
-import com.sk89q.jnbt.EndTag;
-import com.sk89q.jnbt.FloatTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.LongTag;
-import com.sk89q.jnbt.NBTConstants;
-import com.sk89q.jnbt.NBTUtils;
-import com.sk89q.jnbt.ShortTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
 
 /**
  * <p>
@@ -60,19 +46,14 @@ import com.sk89q.jnbt.Tag;
  */
 public final class NBTInputStream implements Closeable {
 
-    /**
-     * The data input stream.
-     */
     private final DataInputStream is;
 
     /**
-     * Creates a new <code>NBTInputStream</code>, which will source its data
+     * Creates a new {@code NBTInputStream}, which will source its data
      * from the specified input stream.
      * 
-     * @param is
-     *            The input stream.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param is the input stream
+     * @throws IOException if an I/O error occurs
      */
     public NBTInputStream(InputStream is) throws IOException {
         this.is = new DataInputStream(is);
@@ -82,8 +63,7 @@ public final class NBTInputStream implements Closeable {
      * Reads an NBT tag from the stream.
      * 
      * @return The tag that was read.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @throws IOException if an I/O error occurs.
      */
     public Tag readTag() throws IOException {
         return readTag(0);
@@ -92,11 +72,9 @@ public final class NBTInputStream implements Closeable {
     /**
      * Reads an NBT from the stream.
      * 
-     * @param depth
-     *            The depth of this tag.
+     * @param depth the depth of this tag
      * @return The tag that was read.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @throws IOException if an I/O error occurs.
      */
     private Tag readTag(int depth) throws IOException {
         int type = is.readByte() & 0xFF;
@@ -117,18 +95,13 @@ public final class NBTInputStream implements Closeable {
     /**
      * Reads the payload of a tag, given the name and type.
      * 
-     * @param type
-     *            The type.
-     * @param name
-     *            The name.
-     * @param depth
-     *            The depth.
-     * @return The tag.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param type the type
+     * @param name the name
+     * @param depth the depth
+     * @return the tag
+     * @throws IOException if an I/O error occurs.
      */
-    private Tag readTagPayload(int type, String name, int depth)
-            throws IOException {
+    private Tag readTagPayload(int type, String name, int depth) throws IOException {
         switch (type) {
         case NBTConstants.TYPE_END:
             if (depth == 0) {
@@ -197,6 +170,7 @@ public final class NBTInputStream implements Closeable {
         }
     }
 
+    @Override
     public void close() throws IOException {
         is.close();
     }
