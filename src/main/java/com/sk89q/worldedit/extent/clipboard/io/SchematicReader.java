@@ -40,6 +40,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.registry.WorldData;
+import com.sk89q.worldedit.world.storage.NBTConversions;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -230,12 +231,11 @@ public class SchematicReader implements ClipboardReader {
             for (Tag tag : entityTags) {
                 if (tag instanceof CompoundTag) {
                     CompoundTag compound = (CompoundTag) tag;
-                    StringTag idTag = getTag(compound, StringTag.class, "id");
-                    Vector position = getVector(getTag(compound, ListTag.class, "Pos"));
+                    String id = compound.getString("id");
+                    Location location = NBTConversions.toLocation(clipboard, compound.getListTag("Pos"), compound.getListTag("Rotation"));
 
-                    if (idTag != null & position != null) {
-                        Location location = readRotation(getTag(compound, ListTag.class, "Rotation"), new Location(clipboard, position));
-                        BaseEntity state = new BaseEntity(idTag.getValue(), compound);
+                    if (!id.isEmpty()) {
+                        BaseEntity state = new BaseEntity(id, compound);
                         clipboard.createEntity(location, state);
                     }
                 }
@@ -244,37 +244,6 @@ public class SchematicReader implements ClipboardReader {
         }
 
         return clipboard;
-    }
-
-    @Nullable
-    private static Vector getVector(@Nullable ListTag tag) {
-        if (tag != null) {
-            List<Tag> tags = tag.getValue();
-
-            if (tags.size() == 3 && tags.get(0) instanceof DoubleTag) {
-                double x = ((DoubleTag) tags.get(0)).getValue();
-                double y = ((DoubleTag) tags.get(1)).getValue();
-                double z = ((DoubleTag) tags.get(2)).getValue();
-                return new Vector(x, y, z);
-            }
-        }
-
-        return null;
-    }
-
-    @Nullable
-    private static Location readRotation(@Nullable ListTag tag, Location location) {
-        if (tag != null) {
-            List<Tag> tags = tag.getValue();
-
-            if (tags.size() == 2 && tags.get(0) instanceof FloatTag) {
-                float yaw = ((FloatTag) tags.get(0)).getValue();
-                float pitch = ((FloatTag) tags.get(1)).getValue();
-                location = location.setDirection(yaw, pitch);
-            }
-        }
-
-        return location;
     }
 
     private static <T extends Tag> T requireTag(Map<String, Tag> items, String key, Class<T> expected) throws IOException {

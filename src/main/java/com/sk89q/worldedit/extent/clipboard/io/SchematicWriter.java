@@ -206,8 +206,8 @@ public class SchematicWriter implements ClipboardWriter {
 
     private Tag writeRotation(Location location, String name) {
         List<FloatTag> list = new ArrayList<FloatTag>();
-        list.add(new FloatTag("", location.getYaw()));
-        list.add(new FloatTag("", location.getPitch()));
+        list.add(new FloatTag("", (float) Math.toDegrees(location.getYaw())));
+        list.add(new FloatTag("", (float) Math.toDegrees(location.getPitch())));
         return new ListTag(name, FloatTag.class, list);
     }
 
