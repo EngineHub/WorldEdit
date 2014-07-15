@@ -59,4 +59,22 @@ public final class MCDirections {
         }
     }
 
+    public static int fromLegacyHanging(byte i) {
+        switch (i) {
+            case 0: return 2;
+            case 1: return 1;
+            case 2: return 0;
+            default: return 3;
+        }
+    }
+
+    public static byte toLegacyHanging(int i) {
+        switch (i) {
+            case 0: return (byte) 2;
+            case 1: return (byte) 1;
+            case 2: return (byte) 0;
+            default: return (byte) 3;
+        }
+    }
+
 }

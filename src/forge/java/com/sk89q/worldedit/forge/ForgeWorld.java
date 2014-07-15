@@ -551,16 +551,6 @@ public class ForgeWorld extends AbstractWorld {
 
             createdEntity.setLocationAndAngles(location.getX(), location.getY(), location.getZ(), (float) Math.toDegrees(location.getYaw()), (float) Math.toDegrees(location.getPitch()));
 
-            // Special handling for hanging entities
-            if (createdEntity instanceof EntityHanging) {
-                EntityHanging hanging = (EntityHanging) createdEntity;
-                hanging.xPosition = location.getBlockX();
-                hanging.yPosition = location.getBlockY();
-                hanging.zPosition = location.getBlockZ();
-                Direction direction = Direction.findClosest(location.getDirection(), Flag.CARDINAL);
-                hanging.setDirection(MCDirections.toHanging(direction));
-            }
-
             world.spawnEntityInWorld(createdEntity);
             return new ForgeEntity(createdEntity);
         } else {

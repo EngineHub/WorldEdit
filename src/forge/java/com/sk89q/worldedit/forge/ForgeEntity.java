@@ -55,28 +55,9 @@ class ForgeEntity implements Entity {
 
     @Override
     public Location getLocation() {
-        Vector position;
-        float pitch;
-        float yaw;
-
-        if (entity instanceof EntityHanging) {
-            EntityHanging hanging = (EntityHanging) entity;
-
-            position = new Vector(hanging.xPosition, hanging.yPosition, hanging.zPosition);
-
-            Direction direction = MCDirections.fromHanging(hanging.hangingDirection);
-            if (direction != null) {
-                yaw = direction.toVector().toYaw();
-                pitch = direction.toVector().toPitch();
-            } else {
-                yaw = (float) Math.toRadians(entity.rotationYaw);
-                pitch = (float) Math.toRadians(entity.rotationPitch);
-            }
-        } else {
-            position = new Vector(entity.posX, entity.posY, entity.posZ);
-            yaw = (float) Math.toRadians(entity.rotationYaw);
-            pitch = (float) Math.toRadians(entity.rotationPitch);
-        }
+        Vector position = new Vector(entity.posX, entity.posY, entity.posZ);
+        float yaw = (float) Math.toRadians(entity.rotationYaw);
+        float pitch = (float) Math.toRadians(entity.rotationPitch);
 
         return new Location(ForgeAdapter.adapt(entity.worldObj), position, yaw, pitch);
     }

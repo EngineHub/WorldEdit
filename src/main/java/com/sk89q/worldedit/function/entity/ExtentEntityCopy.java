@@ -19,13 +19,18 @@
 
 package com.sk89q.worldedit.function.entity;
 
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.EntityFunction;
+import com.sk89q.worldedit.internal.helper.MCDirections;
 import com.sk89q.worldedit.math.transform.Transform;
+import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.Direction.Flag;
 import com.sk89q.worldedit.util.Location;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -87,6 +92,10 @@ public class ExtentEntityCopy implements EntityFunction {
             Vector newPosition = transform.apply(location.toVector().subtract(from));
             Vector newDirection = transform.apply(location.getDirection()).subtract(transform.apply(Vector.ZERO)).normalize();
             Location newLocation = new Location(destination, newPosition.add(to), newDirection);
+
+            // Some entities store their position data in NBT
+            state = transformNbtData(state);
+
             boolean success = destination.createEntity(newLocation, state) != null;
 
             // Remove
@@ -98,6 +107,51 @@ public class ExtentEntityCopy implements EntityFunction {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Transform NBT data in the given entity state and return a new instance
+     * if the NBT data needs to be transformed.
+     *
+     * @param state the existing state
+     * @return a new state or the existing one
+     */
+    private BaseEntity transformNbtData(BaseEntity state) {
+        CompoundTag tag = state.getNbtData();
+
+        if (tag != null) {
+            // Handle hanging entities (paintings, item frames, etc.)
+            boolean hasTilePosition = tag.containsKey("TileX") && tag.containsKey("TileY") && tag.containsKey("TileZ");
+            boolean hasDirection = tag.containsKey("Direction");
+            boolean hasLegacyDirection = tag.containsKey("Dir");
+
+            if (hasTilePosition) {
+                Vector tilePosition = new Vector(tag.asInt("TileX"), tag.asInt("TileY"), tag.asInt("TileZ"));
+                Vector newTilePosition = transform.apply(tilePosition.subtract(from)).add(to);
+
+                CompoundTagBuilder builder = tag.createBuilder()
+                        .putInt("TileX", newTilePosition.getBlockX())
+                        .putInt("TileY", newTilePosition.getBlockY())
+                        .putInt("TileZ", newTilePosition.getBlockZ());
+
+                if (hasDirection || hasLegacyDirection) {
+                    int d = hasDirection ? tag.asInt("Direction") : MCDirections.fromLegacyHanging((byte) tag.asInt("Dir"));
+                    Direction direction = MCDirections.fromHanging(d);
+
+                    if (direction != null) {
+                        Vector vector = transform.apply(direction.toVector()).subtract(transform.apply(Vector.ZERO)).normalize();
+                        Direction newDirection = Direction.findClosest(vector, Flag.CARDINAL);
+
+                        builder.putByte("Direction", (byte) MCDirections.toHanging(newDirection));
+                        builder.putByte("Dir", MCDirections.toLegacyHanging(MCDirections.toHanging(newDirection)));
+                    }
+                }
+
+                return new BaseEntity(state.getTypeId(), builder.build());
+            }
+        }
+
+        return state;
     }
 
 }
