@@ -19,12 +19,10 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.World;
-
-import java.util.Random;
 
 /**
  * A legacy abstract implementation of {@link World}. New implementations
@@ -52,13 +50,6 @@ public abstract class LocalWorld extends AbstractWorld {
         private KillFlags() {
         }
     }
-
-    /**
-     * @deprecated Don't use this anymore. It will be removed
-     */
-    @SuppressWarnings("ProtectedField")
-    @Deprecated
-    protected Random random = new Random();
 
     @Override
     public BaseBlock getLazyBlock(Vector position) {
