@@ -210,13 +210,13 @@ public final class ListTag extends Tag {
     /**
      * Get a {@code int[]} named with the given index.
      *
-     * <p>If the index does not exist or its value is not an integer array tag,
+     * <p>If the index does not exist or its value is not an int array tag,
      * then an empty array will be returned.</p>
      *
      * @param index the index
-     * @return an integer array
+     * @return an int array
      */
-    public int[] getIntegerArray(int index) {
+    public int[] getIntArray(int index) {
         Tag tag = getIfExists(index);
         if (tag instanceof IntArrayTag) {
             return ((IntArrayTag) tag).getValue();
@@ -226,15 +226,15 @@ public final class ListTag extends Tag {
     }
 
     /**
-     * Get an integer named with the given index.
+     * Get an int named with the given index.
      *
-     * <p>If the index does not exist or its value is not an integer tag,
+     * <p>If the index does not exist or its value is not an int tag,
      * then {@code 0} will be returned.</p>
      *
      * @param index the index
-     * @return an integer
+     * @return an int
      */
-    public int getInteger(int index) {
+    public int getInt(int index) {
         Tag tag = getIfExists(index);
         if (tag instanceof IntTag) {
             return ((IntTag) tag).getValue();
@@ -244,16 +244,16 @@ public final class ListTag extends Tag {
     }
 
     /**
-     * Get an integer named with the given index, even if it's another
+     * Get an int named with the given index, even if it's another
      * type of number.
      *
      * <p>If the index does not exist or its value is not a number,
      * then {@code 0} will be returned.</p>
      *
      * @param index the index
-     * @return an integer
+     * @return an int
      */
-    public int asInteger(int index) {
+    public int asInt(int index) {
         Tag tag = getIfExists(index);
         if (tag instanceof ByteTag) {
             return ((ByteTag) tag).getValue();

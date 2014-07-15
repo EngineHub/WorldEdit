@@ -63,6 +63,113 @@ public class CompoundTagBuilder {
     }
 
     /**
+     * Put the given key and value into the compound tag as a
+     * {@code ByteArrayTag}.
+     *
+     * @param key they key
+     * @param value the value
+     * @return this object
+     */
+    public CompoundTagBuilder putByteArray(String key, byte[] value) {
+        return put(key, new ByteArrayTag(key, value));
+    }
+
+    /**
+     * Put the given key and value into the compound tag as a
+     * {@code ByteTag}.
+     *
+     * @param key they key
+     * @param value the value
+     * @return this object
+     */
+    public CompoundTagBuilder putByte(String key, byte value) {
+        return put(key, new ByteTag(key, value));
+    }
+
+    /**
+     * Put the given key and value into the compound tag as a
+     * {@code DoubleTag}.
+     *
+     * @param key they key
+     * @param value the value
+     * @return this object
+     */
+    public CompoundTagBuilder putDouble(String key, double value) {
+        return put(key, new DoubleTag(key, value));
+    }
+
+    /**
+     * Put the given key and value into the compound tag as a
+     * {@code FloatTag}.
+     *
+     * @param key they key
+     * @param value the value
+     * @return this object
+     */
+    public CompoundTagBuilder putFloat(String key, float value) {
+        return put(key, new FloatTag(key, value));
+    }
+
+    /**
+     * Put the given key and value into the compound tag as a
+     * {@code IntArrayTag}.
+     *
+     * @param key they key
+     * @param value the value
+     * @return this object
+     */
+    public CompoundTagBuilder putIntArray(String key, int[] value) {
+        return put(key, new IntArrayTag(key, value));
+    }
+
+    /**
+     * Put the given key and value into the compound tag as an {@code IntTag}.
+     *
+     * @param key they key
+     * @param value the value
+     * @return this object
+     */
+    public CompoundTagBuilder putInt(String key, int value) {
+        return put(key, new IntTag(key, value));
+    }
+
+    /**
+     * Put the given key and value into the compound tag as a
+     * {@code LongTag}.
+     *
+     * @param key they key
+     * @param value the value
+     * @return this object
+     */
+    public CompoundTagBuilder putLong(String key, long value) {
+        return put(key, new LongTag(key, value));
+    }
+
+    /**
+     * Put the given key and value into the compound tag as a
+     * {@code ShortTag}.
+     *
+     * @param key they key
+     * @param value the value
+     * @return this object
+     */
+    public CompoundTagBuilder putShort(String key, short value) {
+        return put(key, new ShortTag(key, value));
+    }
+
+    /**
+     * Put the given key and value into the compound tag as a
+     * {@code StringTag}.
+     *
+     * @param key they key
+     * @param value the value
+     * @return this object
+     */
+    public CompoundTagBuilder putString(String key, String value) {
+        return put(key, new StringTag(key, value));
+    }
+
+    /**
      * Put all the entries from the given map into this map.
      *
      * @param value the map of tags

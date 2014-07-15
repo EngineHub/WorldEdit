@@ -196,13 +196,13 @@ public final class CompoundTag extends Tag {
     /**
      * Get a {@code int[]} named with the given key.
      *
-     * <p>If the key does not exist or its value is not an integer array tag,
+     * <p>If the key does not exist or its value is not an int array tag,
      * then an empty array will be returned.</p>
      *
      * @param key the key
-     * @return an integer array
+     * @return an int array
      */
-    public int[] getIntegerArray(String key) {
+    public int[] getIntArray(String key) {
         Tag tag = value.get(key);
         if (tag instanceof IntArrayTag) {
             return ((IntArrayTag) tag).getValue();
@@ -212,15 +212,15 @@ public final class CompoundTag extends Tag {
     }
 
     /**
-     * Get an integer named with the given key.
+     * Get an int named with the given key.
      *
-     * <p>If the key does not exist or its value is not an integer tag,
+     * <p>If the key does not exist or its value is not an int tag,
      * then {@code 0} will be returned.</p>
      *
      * @param key the key
-     * @return an integer
+     * @return an int
      */
-    public int getInteger(String key) {
+    public int getInt(String key) {
         Tag tag = value.get(key);
         if (tag instanceof IntTag) {
             return ((IntTag) tag).getValue();
@@ -230,16 +230,16 @@ public final class CompoundTag extends Tag {
     }
 
     /**
-     * Get an integer named with the given key, even if it's another
+     * Get an int named with the given key, even if it's another
      * type of number.
      *
      * <p>If the key does not exist or its value is not a number,
      * then {@code 0} will be returned.</p>
      *
      * @param key the key
-     * @return an integer
+     * @return an int
      */
-    public int asInteger(String key) {
+    public int asInt(String key) {
         Tag tag = value.get(key);
         if (tag instanceof ByteTag) {
             return ((ByteTag) tag).getValue();
