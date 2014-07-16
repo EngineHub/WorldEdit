@@ -124,5 +124,11 @@ public class ChangeSetExtent extends AbstractDelegateExtent {
             }
             return success;
         }
+
+        @Nullable
+        @Override
+        public <T> T getFacet(Class<? extends T> cls) {
+            return entity.getFacet(cls);
+        }
     }
 }

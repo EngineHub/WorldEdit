@@ -33,24 +33,6 @@ import com.sk89q.worldedit.world.World;
 @Deprecated
 public abstract class LocalWorld extends AbstractWorld {
 
-    /**
-     * Named flags to use as parameters to {@link LocalWorld#killMobs(Vector, double, int)}
-     */
-    @SuppressWarnings("PointlessBitwiseExpression")
-    public final class KillFlags {
-        public static final int PETS = 1 << 0;
-        public static final int NPCS = 1 << 1;
-        public static final int ANIMALS = 1 << 2;
-        public static final int GOLEMS = 1 << 3;
-        public static final int AMBIENT = 1 << 4;
-        public static final int TAGGED = 1 << 5;
-        public static final int FRIENDLY = PETS | NPCS | ANIMALS | GOLEMS | AMBIENT | TAGGED;
-        public static final int WITH_LIGHTNING = 1 << 20;
-
-        private KillFlags() {
-        }
-    }
-
     @Override
     public BaseBlock getLazyBlock(Vector position) {
         return getBlock(position);

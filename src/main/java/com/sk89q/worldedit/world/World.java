@@ -22,9 +22,6 @@ package com.sk89q.worldedit.world;
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EntityType;
-import com.sk89q.worldedit.LocalEntity;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
@@ -190,46 +187,6 @@ public interface World extends Extent {
      * @param position the position
      */
     void simulateBlockMine(Vector position);
-
-    /**
-     * Kill the entities listed in the provided array.
-     *
-     * @param entity an array of entities
-     * @return the number of entities that were removed
-     */
-    int killEntities(LocalEntity... entity);
-
-    /**
-     * @deprecated Use {@link #killMobs(Vector, double, int)}
-     */
-    @Deprecated
-    int killMobs(Vector origin, int radius);
-
-    /**
-     * @deprecated Use {@link #killMobs(Vector, double, int)}
-     */
-    @Deprecated
-    int killMobs(Vector origin, int radius, boolean killPets);
-
-    /**
-     * Kill mobs at the given location with the given radius.
-     *
-     * @param origin the origin
-     * @param radius the radius
-     * @param flags kill flags (see {@link LocalWorld.KillFlags})
-     * @return the number of mobs that were killed
-     */
-    int killMobs(Vector origin, double radius, int flags);
-
-    /**
-     * Remove entities in an area.
-     *
-     * @param type the type of entity
-     * @param origin the origin
-     * @param radius the radius
-     * @return the number of mobs that were killed
-     */
-    int removeEntities(EntityType type, Vector origin, int radius);
 
     /**
      * Regenerate an area.

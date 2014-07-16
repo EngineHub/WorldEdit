@@ -44,6 +44,15 @@ public class BaseEntity implements NbtValued {
     }
 
     /**
+     * Create a new base entity with no NBT data.
+     *
+     * @param id the entity type ID
+     */
+    public BaseEntity(String id) {
+        setTypeId(id);
+    }
+
+    /**
      * Make a clone of a {@link BaseEntity}.
      *
      * @param other the object to clone

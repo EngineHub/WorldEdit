@@ -22,7 +22,6 @@ package com.sk89q.worldedit.forge;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EntityType;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
@@ -33,34 +32,15 @@ import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.internal.Constants;
-import com.sk89q.worldedit.internal.helper.MCDirections;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.Direction;
-import com.sk89q.worldedit.util.Direction.Flag;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.registry.LegacyWorldData;
 import com.sk89q.worldedit.world.registry.WorldData;
 import net.minecraft.block.Block;
-import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.IProjectile;
-import net.minecraft.entity.item.EntityBoat;
-import net.minecraft.entity.item.EntityEnderEye;
-import net.minecraft.entity.item.EntityFallingSand;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityItemFrame;
-import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.entity.item.EntityPainting;
-import net.minecraft.entity.item.EntityTNTPrimed;
-import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.entity.monster.EntityGolem;
-import net.minecraft.entity.passive.EntityAmbientCreature;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -224,128 +204,13 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(item);
 
-        if ((item == null) || (item.getType() == 0)) {
+        if (item.getType() == 0) {
             return;
         }
 
         EntityItem entity = new EntityItem(getWorld(), position.getX(), position.getY(), position.getZ(), ForgeUtil.toForgeItemStack(item));
         entity.delayBeforeCanPickup = 10;
         getWorld().spawnEntityInWorld(entity);
-    }
-
-    @Override
-    @SuppressWarnings({"unchecked", "ConstantConditions"})
-    public int killMobs(Vector origin, double radius, int flags) {
-        boolean killPets = (flags & 0x1) != 0;
-        boolean killNPCs = (flags & 0x2) != 0;
-        boolean killAnimals = (flags & 0x4) != 0;
-
-        boolean killGolems = (flags & 0x8) != 0;
-        boolean killAmbient = (flags & 0x10) != 0;
-
-        int num = 0;
-        double radiusSq = radius * radius;
-
-        for (net.minecraft.entity.Entity obj : (Iterable<net.minecraft.entity.Entity>) getWorld().loadedEntityList) {
-            if ((obj instanceof EntityLiving)) {
-                EntityLiving ent = (EntityLiving) obj;
-
-                if (!killAnimals && ent instanceof EntityAnimal) {
-                    continue;
-                }
-
-                if (!killPets && ent instanceof EntityTameable && ((EntityTameable) ent).isTamed()) {
-                    continue; // tamed pet
-                }
-
-                if (!killGolems && ent instanceof EntityGolem) {
-                    continue;
-                }
-
-                if (!killNPCs && ent instanceof EntityVillager) {
-                    continue;
-                }
-
-                if (!killAmbient && ent instanceof EntityAmbientCreature) {
-                    continue;
-                }
-
-                if ((radius < 0.0D) || (origin.distanceSq(new Vector(ent.posX, ent.posY, ent.posZ)) <= radiusSq)) {
-                    ent.isDead = true;
-                    num++;
-                }
-            }
-        }
-
-        return num;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public int removeEntities(EntityType type, Vector origin, int radius) {
-        checkNotNull(type);
-        checkNotNull(origin);
-
-        int num = 0;
-        double radiusSq = Math.pow(radius, 2.0D);
-
-        for (net.minecraft.entity.Entity ent : (Iterable<net.minecraft.entity.Entity>) getWorld().loadedEntityList) {
-            if ((radius != -1) && (origin.distanceSq(new Vector(ent.posX, ent.posY, ent.posZ)) > radiusSq)) {
-                continue;
-            }
-            if (type == EntityType.ALL) {
-                if (((ent instanceof EntityBoat)) || ((ent instanceof EntityItem)) || ((ent instanceof EntityFallingSand)) || ((ent instanceof EntityMinecart)) || ((ent instanceof EntityHanging)) || ((ent instanceof EntityTNTPrimed)) || ((ent instanceof EntityXPOrb)) || ((ent instanceof EntityEnderEye)) || ((ent instanceof IProjectile))) {
-                    ent.isDead = true;
-                    num++;
-                }
-            } else if ((type == EntityType.PROJECTILES) || (type == EntityType.ARROWS)) {
-                if (((ent instanceof EntityEnderEye)) || ((ent instanceof IProjectile))) {
-                    ent.isDead = true;
-                    num++;
-                }
-            } else if (type == EntityType.BOATS) {
-                if ((ent instanceof EntityBoat)) {
-                    ent.isDead = true;
-                    num++;
-                }
-            } else if (type == EntityType.ITEMS) {
-                if ((ent instanceof EntityItem)) {
-                    ent.isDead = true;
-                    num++;
-                }
-            } else if (type == EntityType.FALLING_BLOCKS) {
-                if ((ent instanceof EntityFallingSand)) {
-                    ent.isDead = true;
-                    num++;
-                }
-            } else if (type == EntityType.MINECARTS) {
-                if ((ent instanceof EntityMinecart)) {
-                    ent.isDead = true;
-                    num++;
-                }
-            } else if (type == EntityType.PAINTINGS) {
-                if ((ent instanceof EntityPainting)) {
-                    ent.isDead = true;
-                    num++;
-                }
-            } else if (type == EntityType.ITEM_FRAMES) {
-                if ((ent instanceof EntityItemFrame)) {
-                    ent.isDead = true;
-                    num++;
-                }
-            } else if (type == EntityType.TNT) {
-                if ((ent instanceof EntityTNTPrimed)) {
-                    ent.isDead = true;
-                    num++;
-                }
-            } else if ((type == EntityType.XP_ORBS) && ((ent instanceof EntityXPOrb))) {
-                ent.isDead = true;
-                num++;
-            }
-
-        }
-
-        return num;
     }
 
     @Override

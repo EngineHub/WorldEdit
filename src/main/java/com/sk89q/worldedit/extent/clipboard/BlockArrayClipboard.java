@@ -164,6 +164,12 @@ public class BlockArrayClipboard implements Clipboard {
         public boolean remove() {
             return entities.remove(this);
         }
+
+        @Nullable
+        @Override
+        public <T> T getFacet(Class<? extends T> cls) {
+            return null;
+        }
     }
 
 }

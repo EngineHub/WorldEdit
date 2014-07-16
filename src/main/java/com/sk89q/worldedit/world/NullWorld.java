@@ -75,16 +75,6 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public int killMobs(Vector origin, double radius, int flags) {
-        return 0;
-    }
-
-    @Override
-    public int removeEntities(EntityType type, Vector origin, int radius) {
-        return 0;
-    }
-
-    @Override
     public boolean regenerate(Region region, EditSession editSession) {
         return false;
     }

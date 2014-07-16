@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.entity;
 
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.util.Faceted;
 import com.sk89q.worldedit.util.Location;
 
 import javax.annotation.Nullable;
@@ -34,7 +35,7 @@ import javax.annotation.Nullable;
  * can then be used to spawn new instances of that particular entity
  * description.
  */
-public interface Entity {
+public interface Entity extends Faceted {
 
     /**
      * Get a copy of the entity's state.

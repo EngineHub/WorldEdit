@@ -28,6 +28,8 @@ import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 
+import javax.annotation.Nullable;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 class PlayerProxy extends AbstractPlayerActor {
@@ -136,5 +138,11 @@ class PlayerProxy extends AbstractPlayerActor {
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
         cuiActor.dispatchCUIEvent(event);
+    }
+
+    @Nullable
+    @Override
+    public <T> T getFacet(Class<? extends T> cls) {
+        return basePlayer.getFacet(cls);
     }
 }

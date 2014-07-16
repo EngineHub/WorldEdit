@@ -25,13 +25,11 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld.KillFlags;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.command.UtilityCommands.FlagContainer;
 import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.brush.ButcherBrush;
 import com.sk89q.worldedit.command.tool.brush.ClipboardBrush;
@@ -41,6 +39,7 @@ import com.sk89q.worldedit.command.tool.brush.HollowCylinderBrush;
 import com.sk89q.worldedit.command.tool.brush.HollowSphereBrush;
 import com.sk89q.worldedit.command.tool.brush.SmoothBrush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
+import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.mask.BlockMask;
@@ -229,13 +228,21 @@ public class BrushCommands {
     
     @Command(
             aliases = { "butcher", "kill" },
-            usage = "[radius] [command flags]",
+            usage = "[radius]",
+            flags = "plangbtf",
             desc = "Butcher brush",
             help = "Kills nearby mobs within the specified radius.\n" +
-                   "Any number of 'flags' that the //butcher command uses\n" +
-                   "may be specified as an argument",
+                    "Flags:" +
+                    "  -p also kills pets.\n" +
+                    "  -n also kills NPCs.\n" +
+                    "  -g also kills Golems.\n" +
+                    "  -a also kills animals.\n" +
+                    "  -b also kills ambient mobs.\n" +
+                    "  -t also kills mobs with name tags.\n" +
+                    "  -f compounds all previous flags.\n" +
+                    "  -l currently does nothing.",
             min = 0,
-            max = 2
+            max = 1
     )
     @CommandPermissions("worldedit.brush.butcher")
     public void butcherBrush(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
@@ -254,24 +261,13 @@ public class BrushCommands {
             return;
         }
 
-        FlagContainer flags = new FlagContainer(player);
-        if (args.argsLength() == 2) {
-            String flagString = args.getString(1);
-            // straight from the command, using contains instead of hasflag
-            flags.or(KillFlags.FRIENDLY      , flagString.contains("f")); // No permission check here. Flags will instead be filtered by the subsequent calls.
-            flags.or(KillFlags.PETS          , flagString.contains("p"), "worldedit.butcher.pets");
-            flags.or(KillFlags.NPCS          , flagString.contains("n"), "worldedit.butcher.npcs");
-            flags.or(KillFlags.GOLEMS        , flagString.contains("g"), "worldedit.butcher.golems");
-            flags.or(KillFlags.ANIMALS       , flagString.contains("a"), "worldedit.butcher.animals");
-            flags.or(KillFlags.AMBIENT       , flagString.contains("b"), "worldedit.butcher.ambient");
-            flags.or(KillFlags.TAGGED        , flagString.contains("t"), "worldedit.butcher.tagged");
-            flags.or(KillFlags.WITH_LIGHTNING, flagString.contains("l"), "worldedit.butcher.lightning");
-        }
+        CreatureButcher flags = new CreatureButcher(player);
+        flags.fromCommand(args);
+
         BrushTool tool = session.getBrushTool(player.getItemInHand());
         tool.setSize(radius);
-        tool.setBrush(new ButcherBrush(flags.flags), "worldedit.brush.butcher");
+        tool.setBrush(new ButcherBrush(flags), "worldedit.brush.butcher");
 
-        player.print(String.format("Butcher brush equipped (%.0f).",
-                radius));
+        player.print(String.format("Butcher brush equipped (%.0f).", radius));
     }
 }

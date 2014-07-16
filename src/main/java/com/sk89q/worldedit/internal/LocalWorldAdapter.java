@@ -22,8 +22,6 @@ package com.sk89q.worldedit.internal;
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EntityType;
-import com.sk89q.worldedit.LocalEntity;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
@@ -133,33 +131,6 @@ public class LocalWorldAdapter extends LocalWorld {
     @Override
     public void simulateBlockMine(Vector position) {
         world.simulateBlockMine(position);
-    }
-
-    @Override
-    public int killEntities(LocalEntity... entity) {
-        return world.killEntities(entity);
-    }
-
-    @Override
-    @Deprecated
-    public int killMobs(Vector origin, int radius) {
-        return world.killMobs(origin, radius);
-    }
-
-    @Override
-    @Deprecated
-    public int killMobs(Vector origin, int radius, boolean killPets) {
-        return world.killMobs(origin, radius, killPets);
-    }
-
-    @Override
-    public int killMobs(Vector origin, double radius, int flags) {
-        return world.killMobs(origin, radius, flags);
-    }
-
-    @Override
-    public int removeEntities(EntityType type, Vector origin, int radius) {
-        return world.removeEntities(type, origin, radius);
     }
 
     @Override

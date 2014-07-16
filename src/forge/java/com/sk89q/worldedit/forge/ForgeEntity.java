@@ -22,13 +22,13 @@ package com.sk89q.worldedit.forge;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.entity.metadata.EntityType;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.internal.helper.MCDirections;
-import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
-import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.EntityList;
 import net.minecraft.nbt.NBTTagCompound;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -39,6 +39,15 @@ class ForgeEntity implements Entity {
     ForgeEntity(net.minecraft.entity.Entity entity) {
         checkNotNull(entity);
         this.entity = entity;
+    }
+
+    /**
+     * Return the underlying entity.
+     *
+     * @return the underlying entity
+     */
+    net.minecraft.entity.Entity getEntity() {
+        return entity;
     }
 
     @Override
@@ -73,4 +82,14 @@ class ForgeEntity implements Entity {
         return true;
     }
 
+    @SuppressWarnings("unchecked")
+    @Nullable
+    @Override
+    public <T> T getFacet(Class<? extends T> cls) {
+        if (EntityType.class.isAssignableFrom(cls)) {
+            return (T) new ForgeEntityType(entity);
+        } else {
+            return null;
+        }
+    }
 }

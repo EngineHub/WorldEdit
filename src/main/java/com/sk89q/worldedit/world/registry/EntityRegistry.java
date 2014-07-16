@@ -19,39 +19,24 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.entity.metadata.EntityType;
+
+import javax.annotation.Nullable;
+
 /**
- * An implementation of {@link WorldData} that uses legacy numeric IDs and
- * a built-in block database.
+ * Provides information on entities.
  */
-public final class LegacyWorldData implements WorldData {
-
-    private static final LegacyWorldData INSTANCE = new LegacyWorldData();
-    private final LegacyBlockRegistry blockRegistry = new LegacyBlockRegistry();
-    private final NullEntityRegistry entityRegistry = new NullEntityRegistry();
+public interface EntityRegistry {
 
     /**
-     * Create a new instance.
-     */
-    private LegacyWorldData() {
-    }
-
-    @Override
-    public BlockRegistry getBlockRegistry() {
-        return blockRegistry;
-    }
-
-    @Override
-    public EntityRegistry getEntityRegistry() {
-        return entityRegistry;
-    }
-
-    /**
-     * Get a singleton instance.
+     * Create a new entity using its ID.
      *
-     * @return an instance
+     * @param id the id
+     * @return the entity, which may be null if the entity does not exist
      */
-    public static LegacyWorldData getInstance() {
-        return INSTANCE;
-    }
+    @Nullable
+    BaseEntity createFromId(String id);
 
 }

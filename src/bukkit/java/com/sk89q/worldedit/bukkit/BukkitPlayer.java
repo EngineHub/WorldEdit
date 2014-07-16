@@ -35,6 +35,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import javax.annotation.Nullable;
+
 public class BukkitPlayer extends LocalPlayer {
     private Player player;
     private WorldEditPlugin plugin;
@@ -183,5 +185,11 @@ public class BukkitPlayer extends LocalPlayer {
                 position,
                 (float) Math.toRadians(nativeLocation.getYaw()),
                 (float) Math.toRadians(nativeLocation.getPitch()));
+    }
+
+    @Nullable
+    @Override
+    public <T> T getFacet(Class<? extends T> cls) {
+        return null;
     }
 }

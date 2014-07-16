@@ -23,9 +23,12 @@ import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.entity.metadata.EntityType;
 import com.sk89q.worldedit.entity.metadata.Tameable;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -94,4 +97,14 @@ class BukkitEntity implements Entity {
         return entity.isDead();
     }
 
+    @SuppressWarnings("unchecked")
+    @Nullable
+    @Override
+    public <T> T getFacet(Class<? extends T> cls) {
+        if (EntityType.class.isAssignableFrom(cls)) {
+            return (T) new BukkitEntityType(entity);
+        } else {
+            return null;
+        }
+    }
 }

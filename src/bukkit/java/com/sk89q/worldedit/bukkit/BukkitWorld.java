@@ -22,8 +22,6 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EntityType;
-import com.sk89q.worldedit.LocalEntity;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
@@ -35,12 +33,10 @@ import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.Enums;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.registry.LegacyWorldData;
 import com.sk89q.worldedit.world.registry.WorldData;
 import org.bukkit.Effect;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeType;
 import org.bukkit.World;
@@ -48,24 +44,7 @@ import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
-import org.bukkit.entity.Ambient;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.ExperienceOrb;
-import org.bukkit.entity.FallingBlock;
-import org.bukkit.entity.Golem;
-import org.bukkit.entity.Hanging;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Painting;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.TNTPrimed;
-import org.bukkit.entity.Tameable;
-import org.bukkit.entity.Villager;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -75,11 +54,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -88,8 +64,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BukkitWorld extends LocalWorld {
 
     private static final Logger logger = WorldEdit.logger;
-    private static final org.bukkit.entity.EntityType tntMinecartType =
-            Enums.findByValue(org.bukkit.entity.EntityType.class, "MINECART_TNT");
 
     private static final Map<Integer, Effect> effects = new HashMap<Integer, Effect>();
     static {
@@ -377,168 +351,6 @@ public class BukkitWorld extends LocalWorld {
         world.dropItemNaturally(BukkitUtil.toLocation(world, pt), bukkitItem);
     }
 
-    @Override
-    public int killMobs(Vector origin, double radius, int flags) {
-        World world = getWorld();
-
-        boolean killPets = (flags & KillFlags.PETS) != 0;
-        boolean killNPCs = (flags & KillFlags.NPCS) != 0;
-        boolean killAnimals = (flags & KillFlags.ANIMALS) != 0;
-        boolean withLightning = (flags & KillFlags.WITH_LIGHTNING) != 0;
-        boolean killGolems = (flags & KillFlags.GOLEMS) != 0;
-        boolean killAmbient = (flags & KillFlags.AMBIENT) != 0;
-        boolean killTagged = (flags & KillFlags.TAGGED) != 0;
-
-        int num = 0;
-        double radiusSq = radius * radius;
-
-        Location bukkitOrigin = BukkitUtil.toLocation(world, origin);
-
-        for (LivingEntity ent : world.getLivingEntities()) {
-            if (ent instanceof HumanEntity) {
-                continue;
-            }
-
-            if (!killAnimals && ent instanceof Animals) {
-                continue;
-            }
-
-            if (!killPets && ent instanceof Tameable && ((Tameable) ent).isTamed()) {
-                continue; // tamed pet
-            }
-
-            if (!killGolems && ent instanceof Golem) {
-                continue;
-            }
-
-            if (!killNPCs && ent instanceof Villager) {
-                continue;
-            }
-
-            if (!killAmbient && ent instanceof Ambient) {
-                continue;
-            }
-
-            if (!killTagged && isTagged(ent)) {
-                continue;
-            }
-
-            if (radius < 0 || bukkitOrigin.distanceSquared(ent.getLocation()) <= radiusSq) {
-                if (withLightning) {
-                    world.strikeLightningEffect(ent.getLocation());
-                }
-                ent.remove();
-                ++num;
-            }
-        }
-
-        return num;
-    }
-
-    private static boolean isTagged(LivingEntity ent) {
-        return ent.getCustomName() != null;
-    }
-
-    /**
-     * Remove entities in an area.
-     *
-     * @param origin
-     * @param radius
-     * @return
-     */
-    @Override
-    public int removeEntities(EntityType type, Vector origin, int radius) {
-        World world = getWorld();
-
-        int num = 0;
-        double radiusSq = Math.pow(radius, 2);
-
-        for (Entity ent : world.getEntities()) {
-            if (radius != -1
-                    && origin.distanceSq(BukkitUtil.toVector(ent.getLocation())) > radiusSq) {
-                continue;
-            }
-
-            switch (type) {
-            case ALL:
-                if (ent instanceof Projectile || ent instanceof Boat || ent instanceof Item
-                        || ent instanceof FallingBlock || ent instanceof Minecart || ent instanceof Hanging
-                        || ent instanceof TNTPrimed || ent instanceof ExperienceOrb) {
-                    ent.remove();
-                    num++;
-                }
-                break;
-
-            case PROJECTILES:
-            case ARROWS:
-                if (ent instanceof Projectile) {
-                    // covers: arrow, egg, enderpearl, fireball, fish, snowball, throwpotion, thrownexpbottle
-                    ent.remove();
-                    ++num;
-                }
-                break;
-
-            case BOATS:
-                if (ent instanceof Boat) {
-                    ent.remove();
-                    ++num;
-                }
-                break;
-
-            case ITEMS:
-                if (ent instanceof Item) {
-                    ent.remove();
-                    ++num;
-                }
-                break;
-
-            case FALLING_BLOCKS:
-                if (ent instanceof FallingBlock) {
-                    ent.remove();
-                    ++num;
-                }
-                break;
-
-            case MINECARTS:
-                if (ent instanceof Minecart) {
-                    ent.remove();
-                    ++num;
-                }
-                break;
-
-            case PAINTINGS:
-                if (ent instanceof Painting) {
-                    ent.remove();
-                    ++num;
-                }
-                break;
-
-            case ITEM_FRAMES:
-                if (ent instanceof ItemFrame) {
-                    ent.remove();
-                    ++num;
-                }
-                break;
-
-            case TNT:
-                if (ent instanceof TNTPrimed || ent.getType() == tntMinecartType) {
-                    ent.remove();
-                    ++num;
-                }
-                break;
-
-            case XP_ORBS:
-                if (ent instanceof ExperienceOrb) {
-                    ent.remove();
-                    ++num;
-                }
-                break;
-            }
-        }
-
-        return num;
-    }
-
     @SuppressWarnings("deprecation")
     @Override
     public boolean isValidBlockType(int type) {
@@ -607,24 +419,6 @@ public class BukkitWorld extends LocalWorld {
     @Override
     public void simulateBlockMine(Vector pt) {
         getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).breakNaturally();
-    }
-
-    @Override
-    public int killEntities(LocalEntity... entities) {
-        World world = getWorld();
-
-        int amount = 0;
-        Set<UUID> toKill = new HashSet<UUID>();
-        for (LocalEntity entity : entities) {
-            toKill.add(((com.sk89q.worldedit.bukkit.entity.BukkitEntity) entity).getEntityId());
-        }
-        for (Entity entity : world.getEntities()) {
-            if (toKill.contains(entity.getUniqueId())) {
-                entity.remove();
-                ++amount;
-            }
-        }
-        return amount;
     }
 
     @Override

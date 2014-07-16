@@ -21,8 +21,6 @@ package com.sk89q.worldedit.world;
 
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalEntity;
-import com.sk89q.worldedit.LocalWorld.KillFlags;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
@@ -139,21 +137,6 @@ public abstract class AbstractWorld implements World {
         } catch (WorldEditException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public int killEntities(LocalEntity... entities) {
-        return 0;
-    }
-
-    @Override
-    public int killMobs(Vector origin, int radius) {
-        return killMobs(origin, radius, false);
-    }
-
-    @Override
-    public int killMobs(Vector origin, int radius, boolean killPets) {
-        return killMobs(origin, radius, killPets ? KillFlags.PETS : 0);
     }
 
     @Override
