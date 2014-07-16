@@ -19,8 +19,6 @@
 
 package com.sk89q.jnbt;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Represents a NBT tag.
  */
@@ -41,7 +39,9 @@ public abstract class Tag {
      * @param name the name
      */
     Tag(String name) {
-        checkNotNull(name);
+        if (name == null) {
+            name = "";
+        }
         this.name = name;
     }
 
