@@ -24,16 +24,12 @@ Contributing
 We happily accept contributions, especially through pull requests on GitHub.
 Submissions must be licensed under the GNU Lesser General Public License v3.
 
-Please read CONTRIBUTING.md for important guidelines to follow.
-
-We recommend following our
-[mailing list](https://groups.google.com/d/forum/sk-dev-discuss), especially if
-you have some big ideas that you want to implement.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for important guidelines to follow.
 
 Links
 -----
 
-* [Mailing list](https://groups.google.com/d/forum/sk-dev-discuss)
+* [Visit our website](http://www.enginehub.org/)
 * [IRC channel](http://skq.me/irc/irc.esper.net/sk89q/) (#sk89q on irc.esper.net)
 * [Issue tracker](http://youtrack.sk89q.com/issues/WORLDEDIT)
 * [Continuous integration](http://builds.enginehub.org) [![Build Status](https://secure.travis-ci.org/sk89q/worldedit.png)](http://travis-ci.org/sk89q/worldedit)
