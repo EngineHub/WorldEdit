@@ -97,8 +97,8 @@ public class Location {
      * @param x the X coordinate
      * @param y the Y coordinate
      * @param z the Z coordinate
-     * @param yaw the yaw, in radians
-     * @param pitch the pitch, in radians
+     * @param yaw the yaw, in degrees
+     * @param pitch the pitch, in degrees
      */
     public Location(Extent extent, double x, double y, double z, float yaw, float pitch) {
         this(extent, new Vector(x, y, z), yaw, pitch);
@@ -122,8 +122,8 @@ public class Location {
      *
      * @param extent the extent
      * @param position the position vector
-     * @param yaw the yaw, in radians
-     * @param pitch the pitch, in radians
+     * @param yaw the yaw, in degrees
+     * @param pitch the pitch, in degrees
      */
     public Location(Extent extent, Vector position, float yaw, float pitch) {
         checkNotNull(extent);
@@ -154,9 +154,9 @@ public class Location {
     }
 
     /**
-     * Get the yaw in radians.
+     * Get the yaw in degrees.
      *
-     * @return the yaw in radians
+     * @return the yaw in degrees
      */
     public float getYaw() {
         return yaw;
@@ -173,9 +173,9 @@ public class Location {
     }
 
     /**
-     * Get the pitch in radians.
+     * Get the pitch in degrees.
      *
-     * @return the pitch in radians
+     * @return the pitch in degrees
      */
     public float getPitch() {
         return pitch;
@@ -208,8 +208,8 @@ public class Location {
      * @return the direction vector
      */
     public Vector getDirection() {
-        double yaw = this.getYaw();
-        double pitch = this.getPitch();
+        double yaw = Math.toRadians(this.getYaw());
+        double pitch = Math.toRadians(this.getPitch());
         double xz = Math.cos(pitch);
         return new Vector(
                 -xz * Math.sin(yaw),

@@ -183,8 +183,8 @@ public class BukkitPlayer extends LocalPlayer {
         return new com.sk89q.worldedit.util.Location(
                 getWorld(),
                 position,
-                (float) Math.toRadians(nativeLocation.getYaw()),
-                (float) Math.toRadians(nativeLocation.getPitch()));
+                nativeLocation.getYaw(),
+                nativeLocation.getPitch());
     }
 
     @Nullable

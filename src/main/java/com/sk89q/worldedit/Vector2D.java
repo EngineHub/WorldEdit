@@ -517,8 +517,7 @@ public class Vector2D {
      * @param translateZ what to add after rotation
      * @return
      */
-    public Vector2D transform2D(double angle,
-            double aboutX, double aboutZ, double translateX, double translateZ) {
+    public Vector2D transform2D(double angle, double aboutX, double aboutZ, double translateX, double translateZ) {
         angle = Math.toRadians(angle);
         double x = this.x - aboutX;
         double z = this.z - aboutZ;

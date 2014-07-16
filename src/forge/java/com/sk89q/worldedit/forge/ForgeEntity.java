@@ -65,8 +65,8 @@ class ForgeEntity implements Entity {
     @Override
     public Location getLocation() {
         Vector position = new Vector(entity.posX, entity.posY, entity.posZ);
-        float yaw = (float) Math.toRadians(entity.rotationYaw);
-        float pitch = (float) Math.toRadians(entity.rotationPitch);
+        float yaw = entity.rotationYaw;
+        float pitch = entity.rotationPitch;
 
         return new Location(ForgeAdapter.adapt(entity.worldObj), position, yaw, pitch);
     }

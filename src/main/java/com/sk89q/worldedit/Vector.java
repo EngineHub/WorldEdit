@@ -600,8 +600,7 @@ public class Vector implements Comparable<Vector> {
      * @param translateZ what to add after rotation
      * @return
      */
-    public Vector transform2D(double angle,
-            double aboutX, double aboutZ, double translateX, double translateZ) {
+    public Vector transform2D(double angle, double aboutX, double aboutZ, double translateX, double translateZ) {
         angle = Math.toRadians(angle);
         double x = this.x - aboutX;
         double z = this.z - aboutZ;
@@ -667,7 +666,7 @@ public class Vector implements Comparable<Vector> {
             double x2 = x * x;
             double z2 = z * z;
             double xz = Math.sqrt(x2 + z2);
-            return (float) Math.atan(-getY() / xz);
+            return (float) Math.toDegrees(Math.atan(-getY() / xz));
         }
     }
 
@@ -683,7 +682,7 @@ public class Vector implements Comparable<Vector> {
         double t = Math.atan2(-x, z);
         double _2pi = 2 * Math.PI;
 
-        return (float) ((t + _2pi) % _2pi);
+        return (float) Math.toDegrees(((t + _2pi) % _2pi));
     }
 
     /**

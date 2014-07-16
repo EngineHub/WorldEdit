@@ -244,6 +244,7 @@ public class AffineTransform implements Transform {
     }
 
     public AffineTransform rotateX(double theta) {
+        theta = Math.toRadians(theta);
         double cot = Math.cos(theta);
         double sit = Math.sin(theta);
         return concatenate(
@@ -254,6 +255,7 @@ public class AffineTransform implements Transform {
     }
 
     public AffineTransform rotateY(double theta) {
+        theta = Math.toRadians(theta);
         double cot = Math.cos(theta);
         double sit = Math.sin(theta);
         return concatenate(
@@ -264,6 +266,7 @@ public class AffineTransform implements Transform {
     }
 
     public AffineTransform rotateZ(double theta) {
+        theta = Math.toRadians(theta);
         double cot = Math.cos(theta);
         double sit = Math.sin(theta);
         return concatenate(

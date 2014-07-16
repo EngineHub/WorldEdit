@@ -63,8 +63,8 @@ public class ForgePlayer extends AbstractPlayerActor {
         return new Location(
                 ForgeWorldEdit.inst.getWorld(this.player.worldObj),
                 position,
-                (float) Math.toRadians(this.player.cameraYaw),
-                (float) Math.toRadians(this.player.cameraPitch));
+                this.player.cameraYaw,
+                this.player.cameraPitch);
     }
 
     public WorldVector getPosition() {

@@ -52,7 +52,7 @@ public final class NBTConversions {
         return new Location(
                 extent,
                 positionTag.asDouble(0), positionTag.asDouble(1), positionTag.asDouble(2),
-                ((float) Math.toRadians(directionTag.asDouble(0))), ((float) Math.toRadians(directionTag.asDouble(1))));
+                (float) directionTag.asDouble(0), (float) directionTag.asDouble(1));
     }
 
 }

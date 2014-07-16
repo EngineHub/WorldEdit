@@ -78,8 +78,8 @@ final class BukkitAdapter {
         return new com.sk89q.worldedit.util.Location(
                 adapt(location.getWorld()),
                 position,
-                (float) Math.toRadians(location.getYaw()),
-                (float) Math.toRadians(location.getPitch()));
+                location.getYaw(),
+                location.getPitch());
     }
 
     /**
@@ -94,8 +94,8 @@ final class BukkitAdapter {
         return new org.bukkit.Location(
                 adapt((World) location.getExtent()),
                 position.getX(), position.getY(), position.getZ(),
-                (float) Math.toDegrees(location.getYaw()),
-                (float) Math.toDegrees(location.getPitch()));
+                location.getYaw(),
+                location.getPitch());
     }
 
     /**
@@ -126,8 +126,8 @@ final class BukkitAdapter {
         return new org.bukkit.Location(
                 world,
                 location.getX(), location.getY(), location.getZ(),
-                (float) Math.toDegrees(location.getYaw()),
-                (float) Math.toDegrees(location.getPitch()));
+                location.getYaw(),
+                location.getPitch());
     }
 
     /**

@@ -414,7 +414,7 @@ public class ForgeWorld extends AbstractWorld {
                 createdEntity.readFromNBT(tag);
             }
 
-            createdEntity.setLocationAndAngles(location.getX(), location.getY(), location.getZ(), (float) Math.toDegrees(location.getYaw()), (float) Math.toDegrees(location.getPitch()));
+            createdEntity.setLocationAndAngles(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 
             world.spawnEntityInWorld(createdEntity);
             return new ForgeEntity(createdEntity);
