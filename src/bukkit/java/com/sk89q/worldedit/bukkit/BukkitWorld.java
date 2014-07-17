@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
@@ -34,7 +33,7 @@ import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -159,25 +158,6 @@ public class BukkitWorld extends LocalWorld {
     @Override
     public int getBlockLightLevel(Vector pt) {
         return getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getLightLevel();
-    }
-
-    @Override
-    public BiomeType getBiome(Vector2D pt) {
-        Biome bukkitBiome = getWorld().getBiome(pt.getBlockX(), pt.getBlockZ());
-        try {
-            return BukkitBiomeType.valueOf(bukkitBiome.name());
-        } catch (IllegalArgumentException exc) {
-            return BiomeType.UNKNOWN;
-        }
-    }
-
-    @Override
-    public void setBiome(Vector2D pt, BiomeType biome) {
-        if (biome instanceof BukkitBiomeType) {
-            Biome bukkitBiome;
-            bukkitBiome = ((BukkitBiomeType) biome).getBukkitBiome();
-            getWorld().setBiome(pt.getBlockX(), pt.getBlockZ(), bukkitBiome);
-        }
     }
 
     @Override
@@ -413,7 +393,7 @@ public class BukkitWorld extends LocalWorld {
 
     @Override
     public WorldData getWorldData() {
-        return LegacyWorldData.getInstance();
+        return BukkitWorldData.getInstance();
     }
 
     @Override
@@ -451,6 +431,29 @@ public class BukkitWorld extends LocalWorld {
         return new LazyBlock(bukkitBlock.getTypeId(), bukkitBlock.getData(), this, position);
     }
 
+    @Override
+    public BaseBiome getBiome(Vector2D position) {
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            int id = adapter.getBiomeId(getWorld().getBiome(position.getBlockX(), position.getBlockZ()));
+            return new BaseBiome(id);
+        } else {
+            return new BaseBiome(0);
+        }
+    }
+
+    @Override
+    public boolean setBiome(Vector2D position, BaseBiome biome) {
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            Biome bukkitBiome = adapter.getBiome(biome.getId());
+            getWorld().setBiome(position.getBlockX(), position.getBlockZ(), bukkitBiome);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * @deprecated Use {@link #setBlock(Vector, BaseBlock, boolean)}
      */
@@ -458,5 +461,4 @@ public class BukkitWorld extends LocalWorld {
     public boolean setBlock(Vector pt, com.sk89q.worldedit.foundation.Block block, boolean notifyAdjacent) throws WorldEditException {
         return setBlock(pt, (BaseBlock) block, notifyAdjacent);
     }
-
 }

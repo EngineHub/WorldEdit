@@ -17,31 +17,46 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.function.mask;
 
-import java.util.List;
+import com.sk89q.worldedit.Vector2D;
 
-public interface BiomeTypes {
+import java.util.Collection;
 
-    /**
-     * Returns if a biome with the given name is available.
-     *
-     * @param name
-     * @return
-     */
-    boolean has(String name);
+/**
+ * Tests true if any contained mask is true, even if it just one.
+ */
+public class MaskUnion2D extends MaskIntersection2D {
 
     /**
-     * Returns the biome type for the given name
+     * Create a new union.
      *
-     * @return
+     * @param masks a list of masks
      */
-    BiomeType get(String name) throws UnknownBiomeTypeException;
+    public MaskUnion2D(Collection<Mask2D> masks) {
+        super(masks);
+    }
 
     /**
-     * Returns a list of all available biome types.
+     * Create a new union.
      *
-     * @return
+     * @param mask a list of masks
      */
-    List<BiomeType> all();
+    public MaskUnion2D(Mask2D... mask) {
+        super(mask);
+    }
+
+    @Override
+    public boolean test(Vector2D vector) {
+        Collection<Mask2D> masks = getMasks();
+
+        for (Mask2D mask : masks) {
+            if (mask.test(vector)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

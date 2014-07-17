@@ -22,6 +22,8 @@ package com.sk89q.worldedit.bukkit.adapter;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 
 import javax.annotation.Nullable;
@@ -30,6 +32,46 @@ import javax.annotation.Nullable;
  * An interface for adapters of various Bukkit implementations.
  */
 public interface BukkitImplAdapter {
+
+    /**
+     * Get the block ID for the given material.
+     *
+     * <p>Returns 0 if it is not known or it doesn't exist.</p>
+     *
+     * @param material the material
+     * @return the block ID
+     */
+    int getBlockId(Material material);
+
+    /**
+     * Get the material for the given block ID.
+     *
+     * <p>Returns {@link Material#AIR} if it is not known or it doesn't exist.</p>
+     *
+     * @param id the block ID
+     * @return the material
+     */
+    Material getMaterial(int id);
+
+    /**
+     * Get the biome ID for the given biome.
+     *
+     * <p>Returns 0 if it is not known or it doesn't exist.</p>
+     *
+     * @param biome biome
+     * @return the biome ID
+     */
+    int getBiomeId(Biome biome);
+
+    /**
+     * Get the biome ID for the given biome ID..
+     *
+     * <p>Returns {@link Biome#OCEAN} if it is not known or it doesn't exist.</p>
+     *
+     * @param id the biome ID
+     * @return the biome
+     */
+    Biome getBiome(int id);
 
     /**
      * Get the block at the given location.

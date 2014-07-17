@@ -17,38 +17,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.mask;
+package com.sk89q.worldedit.function.biome;
 
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.function.FlatRegionFunction;
+import com.sk89q.worldedit.world.biome.BaseBiome;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A mask that returns true whenever the block at the location is not
- * an air block (it contains some other block).
+ * Replaces the biome at the locations that this function is applied to.
  */
-public class ExistingBlockMask extends AbstractExtentMask {
+public class BiomeReplace implements FlatRegionFunction {
+
+    private final Extent extent;
+    private BaseBiome biome;
 
     /**
-     * Create a new existing block map.
+     * Create a new instance.
      *
-     * @param extent the extent to check
+     * @param extent an extent
+     * @param biome a biome
      */
-    public ExistingBlockMask(Extent extent) {
-        super(extent);
+    public BiomeReplace(Extent extent, BaseBiome biome) {
+        checkNotNull(extent);
+        checkNotNull(biome);
+        this.extent = extent;
+        this.biome = biome;
     }
 
     @Override
-    public boolean test(Vector vector) {
-        return getExtent().getLazyBlock(vector).getType() != BlockID.AIR;
-    }
-
-    @Nullable
-    @Override
-    public Mask2D toMask2D() {
-        return null;
+    public boolean apply(Vector2D position) throws WorldEditException {
+        return extent.setBiome(position, biome);
     }
 
 }

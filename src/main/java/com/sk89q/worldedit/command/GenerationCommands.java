@@ -22,7 +22,11 @@ package com.sk89q.worldedit.command;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
@@ -35,6 +39,7 @@ import com.sk89q.worldedit.util.command.binding.Range;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.binding.Text;
 import com.sk89q.worldedit.util.command.parametric.Optional;
+import com.sk89q.worldedit.world.biome.BaseBiome;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
@@ -332,7 +337,7 @@ public class GenerationCommands {
     @Logging(ALL)
     public void generateBiome(Player player, LocalSession session, EditSession editSession,
                               @Selection Region region,
-                              BiomeType target,
+                              BaseBiome target,
                               @Text String expression,
                               @Switch('h') boolean hollow,
                               @Switch('r') boolean useRawCoords,
@@ -368,7 +373,7 @@ public class GenerationCommands {
         try {
             final int affected = editSession.makeBiomeShape(region, zero, unit, target, expression, hollow);
             player.findFreePosition();
-            player.print("Biome changed to " + target.getName() + ". " + affected + " columns affected.");
+            player.print("" + affected + " columns affected.");
         } catch (ExpressionException e) {
             player.printError(e.getMessage());
         }

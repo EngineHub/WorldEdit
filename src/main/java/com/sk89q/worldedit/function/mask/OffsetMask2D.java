@@ -19,9 +19,7 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.Vector;
-
-import javax.annotation.Nullable;
+import com.sk89q.worldedit.Vector2D;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -29,10 +27,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Checks whether another mask tests true for a position that is offset
  * a given vector.
  */
-public class OffsetMask extends AbstractMask {
+public class OffsetMask2D extends AbstractMask2D {
 
-    private Mask mask;
-    private Vector offset;
+    private Mask2D mask;
+    private Vector2D offset;
 
     /**
      * Create a new instance.
@@ -40,7 +38,7 @@ public class OffsetMask extends AbstractMask {
      * @param mask the mask
      * @param offset the offset
      */
-    public OffsetMask(Mask mask, Vector offset) {
+    public OffsetMask2D(Mask2D mask, Vector2D offset) {
         checkNotNull(mask);
         checkNotNull(offset);
         this.mask = mask;
@@ -52,7 +50,7 @@ public class OffsetMask extends AbstractMask {
      *
      * @return the mask
      */
-    public Mask getMask() {
+    public Mask2D getMask() {
         return mask;
     }
 
@@ -61,7 +59,7 @@ public class OffsetMask extends AbstractMask {
      *
      * @param mask the mask
      */
-    public void setMask(Mask mask) {
+    public void setMask(Mask2D mask) {
         checkNotNull(mask);
         this.mask = mask;
     }
@@ -71,7 +69,7 @@ public class OffsetMask extends AbstractMask {
      *
      * @return the offset
      */
-    public Vector getOffset() {
+    public Vector2D getOffset() {
         return offset;
     }
 
@@ -80,25 +78,14 @@ public class OffsetMask extends AbstractMask {
      *
      * @param offset the offset
      */
-    public void setOffset(Vector offset) {
+    public void setOffset(Vector2D offset) {
         checkNotNull(offset);
         this.offset = offset;
     }
 
     @Override
-    public boolean test(Vector vector) {
+    public boolean test(Vector2D vector) {
         return getMask().test(vector.add(offset));
-    }
-
-    @Nullable
-    @Override
-    public Mask2D toMask2D() {
-        Mask2D childMask = getMask().toMask2D();
-        if (childMask != null) {
-            return new OffsetMask2D(childMask, getOffset().toVector2D());
-        } else {
-            return null;
-        }
     }
 
 }

@@ -19,33 +19,28 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Combines several masks and requires that all masks return true
- * when a certain position is tested. It serves as a logical AND operation
- * on a list of masks.
+ * Tests true if all contained masks test true.
  */
-public class MaskIntersection extends AbstractMask {
+public class MaskIntersection2D implements Mask2D {
 
-    private final Set<Mask> masks = new HashSet<Mask>();
+    private final Set<Mask2D> masks = new HashSet<Mask2D>();
 
     /**
      * Create a new intersection.
      *
      * @param masks a list of masks
      */
-    public MaskIntersection(Collection<Mask> masks) {
+    public MaskIntersection2D(Collection<Mask2D> masks) {
         checkNotNull(masks);
         this.masks.addAll(masks);
     }
@@ -55,7 +50,7 @@ public class MaskIntersection extends AbstractMask {
      *
      * @param mask a list of masks
      */
-    public MaskIntersection(Mask... mask) {
+    public MaskIntersection2D(Mask2D... mask) {
         this(Arrays.asList(checkNotNull(mask)));
     }
 
@@ -64,7 +59,7 @@ public class MaskIntersection extends AbstractMask {
      *
      * @param masks the masks
      */
-    public void add(Collection<Mask> masks) {
+    public void add(Collection<Mask2D> masks) {
         checkNotNull(masks);
         this.masks.addAll(masks);
     }
@@ -74,7 +69,7 @@ public class MaskIntersection extends AbstractMask {
      *
      * @param mask the masks
      */
-    public void add(Mask... mask) {
+    public void add(Mask2D... mask) {
         add(Arrays.asList(checkNotNull(mask)));
     }
 
@@ -83,38 +78,23 @@ public class MaskIntersection extends AbstractMask {
      *
      * @return the masks
      */
-    public Collection<Mask> getMasks() {
+    public Collection<Mask2D> getMasks() {
         return masks;
     }
 
     @Override
-    public boolean test(Vector vector) {
+    public boolean test(Vector2D vector) {
         if (masks.isEmpty()) {
             return false;
         }
 
-        for (Mask mask : masks) {
+        for (Mask2D mask : masks) {
             if (!mask.test(vector)) {
                 return false;
             }
         }
 
         return true;
-    }
-
-    @Nullable
-    @Override
-    public Mask2D toMask2D() {
-        List<Mask2D> mask2dList = new ArrayList<Mask2D>();
-        for (Mask mask : masks) {
-            Mask2D mask2d = mask.toMask2D();
-            if (mask2d != null) {
-                mask2dList.add(mask2d);
-            } else {
-                return null;
-            }
-        }
-        return new MaskIntersection2D(mask2dList);
     }
 
 }

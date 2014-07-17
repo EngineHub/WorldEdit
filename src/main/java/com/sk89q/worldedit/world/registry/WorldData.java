@@ -39,4 +39,11 @@ public interface WorldData {
      */
     EntityRegistry getEntityRegistry();
 
+    /**
+     * Get the biome registry.
+     *
+     * @return the biome registry
+     */
+    BiomeRegistry getBiomeRegistry();
+
 }

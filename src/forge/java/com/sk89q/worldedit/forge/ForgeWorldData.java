@@ -17,33 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry;
+package com.sk89q.worldedit.forge;
+
+import com.sk89q.worldedit.world.registry.BiomeRegistry;
+import com.sk89q.worldedit.world.registry.LegacyWorldData;
 
 /**
- * An implementation of {@link WorldData} that uses legacy numeric IDs and
- * a built-in block database.
+ * World data for the Forge platform.
  */
-public class LegacyWorldData implements WorldData {
+class ForgeWorldData extends LegacyWorldData {
 
-    private static final LegacyWorldData INSTANCE = new LegacyWorldData();
-    private final LegacyBlockRegistry blockRegistry = new LegacyBlockRegistry();
-    private final NullEntityRegistry entityRegistry = new NullEntityRegistry();
-    private final NullBiomeRegistry biomeRegistry = new NullBiomeRegistry();
+    private static final ForgeWorldData INSTANCE = new ForgeWorldData();
+    private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
 
     /**
      * Create a new instance.
      */
-    protected LegacyWorldData() {
-    }
-
-    @Override
-    public BlockRegistry getBlockRegistry() {
-        return blockRegistry;
-    }
-
-    @Override
-    public EntityRegistry getEntityRegistry() {
-        return entityRegistry;
+    ForgeWorldData() {
     }
 
     @Override
@@ -52,11 +42,11 @@ public class LegacyWorldData implements WorldData {
     }
 
     /**
-     * Get a singleton instance.
+     * Get a static instance.
      *
      * @return an instance
      */
-    public static LegacyWorldData getInstance() {
+    public static ForgeWorldData getInstance() {
         return INSTANCE;
     }
 

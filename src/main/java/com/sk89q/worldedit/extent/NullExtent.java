@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.extent;
 
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -27,6 +28,7 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.biome.BaseBiome;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -76,8 +78,19 @@ public class NullExtent implements Extent {
         return new BaseBlock(0);
     }
 
+    @Nullable
+    @Override
+    public BaseBiome getBiome(Vector2D position) {
+        return null;
+    }
+
     @Override
     public boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
+        return false;
+    }
+
+    @Override
+    public boolean setBiome(Vector2D position, BaseBiome biome) {
         return false;
     }
 

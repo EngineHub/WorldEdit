@@ -19,17 +19,30 @@
 
 package com.sk89q.worldedit.extension.factory;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.function.mask.*;
+import com.sk89q.worldedit.function.mask.BiomeMask2D;
+import com.sk89q.worldedit.function.mask.BlockMask;
+import com.sk89q.worldedit.function.mask.ExistingBlockMask;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.MaskIntersection;
+import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.function.mask.NoiseFilter;
+import com.sk89q.worldedit.function.mask.OffsetMask;
+import com.sk89q.worldedit.function.mask.RegionMask;
+import com.sk89q.worldedit.function.mask.SolidBlockMask;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.masks.BiomeTypeMask;
 import com.sk89q.worldedit.math.noise.RandomNoise;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.session.request.RequestSelection;
+import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.Biomes;
+import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -109,18 +122,19 @@ class DefaultMaskParser extends InputParser<Mask> {
                 return new MaskIntersection(offsetMask, Masks.negate(submask));
 
             case '$':
-                Set<BiomeType> biomes = new HashSet<BiomeType>();
+                Set<BaseBiome> biomes = new HashSet<BaseBiome>();
                 String[] biomesList = component.substring(1).split(",");
+                BiomeRegistry biomeRegistry = context.requireWorld().getWorldData().getBiomeRegistry();
+                List<BaseBiome> knownBiomes = biomeRegistry.getBiomes();
                 for (String biomeName : biomesList) {
-                    try {
-                        BiomeType biome = worldEdit.getServer().getBiomes().get(biomeName);
-                        biomes.add(biome);
-                    } catch (UnknownBiomeTypeException e) {
+                    BaseBiome biome = Biomes.findBiomeByName(knownBiomes, biomeName, biomeRegistry);
+                    if (biome == null) {
                         throw new InputParseException("Unknown biome '" + biomeName + "'");
                     }
+                    biomes.add(biome);
                 }
 
-                return Masks.wrap(new BiomeTypeMask(biomes));
+                return Masks.asMask(new BiomeMask2D(context.requireExtent(), biomes));
 
             case '%':
                 int i = Integer.parseInt(component.substring(1));

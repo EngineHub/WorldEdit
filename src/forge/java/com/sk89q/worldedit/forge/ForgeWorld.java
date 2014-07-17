@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
@@ -36,7 +35,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityList;
@@ -181,22 +180,23 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public BiomeType getBiome(Vector2D position) {
+    public BaseBiome getBiome(Vector2D position) {
         checkNotNull(position);
-        return ForgeBiomeTypes.getFromBaseBiome(getWorld().getBiomeGenForCoords(position.getBlockX(), position.getBlockZ()));
+        return new BaseBiome(getWorld().getBiomeGenForCoords(position.getBlockX(), position.getBlockZ()).biomeID);
     }
 
     @Override
-    public void setBiome(Vector2D position, BiomeType biome) {
+    public boolean setBiome(Vector2D position, BaseBiome biome) {
         checkNotNull(position);
         checkNotNull(biome);
 
-        if (getWorld().getChunkProvider().chunkExists(position.getBlockX(), position.getBlockZ())) {
-            Chunk chunk = getWorld().getChunkFromBlockCoords(position.getBlockX(), position.getBlockZ());
-            if ((chunk != null) && (chunk.isChunkLoaded)) {
-                chunk.getBiomeArray()[((position.getBlockZ() & 0xF) << 4 | position.getBlockX() & 0xF)] = (byte) ForgeBiomeTypes.getFromBiomeType(biome).biomeID;
-            }
+        Chunk chunk = getWorld().getChunkFromBlockCoords(position.getBlockX(), position.getBlockZ());
+        if ((chunk != null) && (chunk.isChunkLoaded)) {
+            chunk.getBiomeArray()[((position.getBlockZ() & 0xF) << 4 | position.getBlockX() & 0xF)] = (byte) biome.getId();
+            return true;
         }
+
+        return false;
     }
 
     @Override
@@ -317,7 +317,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public WorldData getWorldData() {
-        return LegacyWorldData.getInstance();
+        return ForgeWorldData.getInstance();
     }
 
     @Override

@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.BiomeTypes;
+import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.entity.Player;
@@ -56,13 +56,13 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
 
     private final ForgeWorldEdit mod;
     private final MinecraftServer server;
-    private final ForgeBiomeTypes biomes;
+    private final ForgeBiomeRegistry biomes;
     private boolean hookingEvents = false;
 
     ForgePlatform(ForgeWorldEdit mod) {
         this.mod = mod;
         this.server = FMLCommonHandler.instance().getMinecraftServerInstance();
-        this.biomes = new ForgeBiomeTypes();
+        this.biomes = new ForgeBiomeRegistry();
     }
 
     boolean isHookingEvents() {
@@ -93,11 +93,6 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
 
     @Override
     public void reload() {
-    }
-
-    @Override
-    public BiomeTypes getBiomes() {
-        return this.biomes;
     }
 
     @Override

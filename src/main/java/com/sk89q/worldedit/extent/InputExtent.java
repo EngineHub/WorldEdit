@@ -20,9 +20,10 @@
 package com.sk89q.worldedit.extent;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.world.biome.BaseBiome;
 
 /**
  * Provides the current state of blocks, entities, and so on.
@@ -73,5 +74,16 @@ public interface InputExtent {
      * @return the block
      */
     BaseBlock getLazyBlock(Vector position);
+
+    /**
+     * Get the biome at the given location.
+     *
+     * <p>If there is no biome available, then the ocean biome should be
+     * returned.</p>
+     *
+     * @param position the (x, z) location to check the biome at
+     * @return the biome at the location
+     */
+    BaseBiome getBiome(Vector2D position);
 
 }

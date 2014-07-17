@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.internal.command;
 
-import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
@@ -47,8 +46,12 @@ import com.sk89q.worldedit.util.command.parametric.BindingHelper;
 import com.sk89q.worldedit.util.command.parametric.BindingMatch;
 import com.sk89q.worldedit.util.command.parametric.ParameterException;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.Biomes;
+import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Binds standard WorldEdit classes such as {@link Player} and {@link LocalSession}.
@@ -288,25 +291,40 @@ public class WorldEditBinding extends BindingHelper {
     }
 
     /**
-     * Gets an {@link BiomeType} from a {@link ArgumentStack}.
+     * Gets an {@link BaseBiome} from a {@link ArgumentStack}.
      *
      * @param context the context
      * @return a pattern
      * @throws ParameterException on error
      * @throws WorldEditException on error
      */
-    @BindingMatch(type = BiomeType.class,
+    @BindingMatch(type = BaseBiome.class,
                   behavior = BindingBehavior.CONSUMES,
                   consumedCount = 1)
-    public BiomeType getBiomeType(ArgumentStack context) throws ParameterException, WorldEditException {
+    public BaseBiome getBiomeType(ArgumentStack context) throws ParameterException, WorldEditException {
         String input = context.next();
         if (input != null) {
-            BiomeType type = worldEdit.getServer().getBiomes().get(input);
-            if (type != null) {
-                return type;
+            Actor actor = context.getContext().getLocals().get(Actor.class);
+            World world;
+            if (actor instanceof Entity) {
+                Extent extent = ((Entity) actor).getExtent();
+                if (extent instanceof World) {
+                    world = (World) extent;
+                } else {
+                    throw new ParameterException("A world is required.");
+                }
+            } else {
+                throw new ParameterException("An entity is required.");
+            }
+
+            BiomeRegistry biomeRegistry = world.getWorldData().getBiomeRegistry();
+            List<BaseBiome> knownBiomes = biomeRegistry.getBiomes();
+            BaseBiome biome = Biomes.findBiomeByName(knownBiomes, input, biomeRegistry);
+            if (biome != null) {
+                return biome;
             } else {
                 throw new ParameterException(
-                        String.format("Can't recognize biome type '%s' -- use //biomelist to list available types", input));
+                        String.format("Can't recognize biome type '%s' -- use /biomelist to list available types", input));
             }
         } else {
             throw new ParameterException(

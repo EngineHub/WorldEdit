@@ -17,20 +17,41 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.world.biome;
 
-public interface BiomeType {
+import com.google.common.base.Function;
+import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
-    public static final BiomeType UNKNOWN = new BiomeType() {
-        public String getName() {
-            return "Unknown";
-        }
-    };
+import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+/**
+ * Returns the name of a biome using a given {@code BiomeRegistry}.
+ */
+class BiomeName implements Function<BaseBiome, String> {
+
+    private final BiomeRegistry registry;
 
     /**
-     * Get the name of this biome type.
+     * Create a new instance.
      *
-     * @return String
+     * @param registry the biome registry
      */
-    public String getName();
+    BiomeName(BiomeRegistry registry) {
+        checkNotNull(registry);
+        this.registry = registry;
+    }
+
+    @Nullable
+    @Override
+    public String apply(BaseBiome input) {
+        BiomeData data = registry.getData(input);
+        if (data != null) {
+            return data.getName();
+        } else {
+            return null;
+        }
+    }
+
 }

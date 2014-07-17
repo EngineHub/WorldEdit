@@ -20,9 +20,11 @@
 package com.sk89q.worldedit.extent;
 
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.world.biome.BaseBiome;
 
 import javax.annotation.Nullable;
 
@@ -48,6 +50,15 @@ public interface OutputExtent {
      * @return true if the block was successfully set (return value may not be accurate)
      */
     boolean setBlock(Vector position, BaseBlock block) throws WorldEditException;
+
+    /**
+     * Set the biome.
+     *
+     * @param position the (x, z) location to set the biome at
+     * @param biome the biome to set to
+     * @return true if the biome was successfully set (return value may not be accurate)
+     */
+    boolean setBiome(Vector2D position, BaseBiome biome);
 
     /**
      * Return an {@link Operation} that should be called to tie up loose ends

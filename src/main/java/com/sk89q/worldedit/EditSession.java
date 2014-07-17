@@ -76,6 +76,7 @@ import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.biome.BaseBiome;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -375,6 +376,16 @@ public class EditSession implements Extent {
      */
     public int getBlockChangeCount() {
         return changeSet.size();
+    }
+
+    @Override
+    public BaseBiome getBiome(Vector2D position) {
+        return bypassNone.getBiome(position);
+    }
+
+    @Override
+    public boolean setBiome(Vector2D position, BaseBiome biome) {
+        return bypassNone.setBiome(position, biome);
     }
 
     @Override
@@ -2248,7 +2259,7 @@ public class EditSession implements Extent {
         } // while
     }
 
-    public int makeBiomeShape(final Region region, final Vector zero, final Vector unit, final BiomeType biomeType, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException {
+    public int makeBiomeShape(final Region region, final Vector zero, final Vector unit, final BaseBiome biomeType, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException {
         final Vector2D zero2D = zero.toVector2D();
         final Vector2D unit2D = unit.toVector2D();
 
@@ -2261,7 +2272,7 @@ public class EditSession implements Extent {
 
         final ArbitraryBiomeShape shape = new ArbitraryBiomeShape(region) {
             @Override
-            protected BiomeType getBiome(int x, int z, BiomeType defaultBiomeType) {
+            protected BaseBiome getBiome(int x, int z, BaseBiome defaultBiomeType) {
                 final Vector2D current = new Vector2D(x, z);
                 environment.setCurrentBlock(current.toVector(0));
                 final Vector2D scaled = current.subtract(zero2D).divide(unit2D);

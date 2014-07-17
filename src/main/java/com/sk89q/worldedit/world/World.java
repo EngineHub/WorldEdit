@@ -19,12 +19,10 @@
 
 package com.sk89q.worldedit.world;
 
-import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -146,22 +144,6 @@ public interface World extends Extent {
      * @return true if the container was cleared
      */
     boolean clearContainerBlockContents(Vector position);
-
-    /**
-     * Get the biome type.
-     *
-     * @param position the (x, z) location to check the biome at
-     * @return the biome type at the location
-     */
-    BiomeType getBiome(Vector2D position);
-
-    /**
-     * Set the biome type.
-     *
-     * @param position the (x, z) location to set the biome at
-     * @param biome the biome type to set to
-     */
-    void setBiome(Vector2D position, BiomeType biome);
 
     /**
      * Drop an item at the given position.

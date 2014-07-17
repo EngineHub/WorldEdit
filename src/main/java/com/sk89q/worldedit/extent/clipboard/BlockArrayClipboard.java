@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.extent.clipboard;
 
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
@@ -28,6 +29,7 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.biome.BaseBiome;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -144,6 +146,16 @@ public class BlockArrayClipboard implements Clipboard {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public BaseBiome getBiome(Vector2D position) {
+        return new BaseBiome(0);
+    }
+
+    @Override
+    public boolean setBiome(Vector2D position, BaseBiome biome) {
+        return false;
     }
 
     @Nullable

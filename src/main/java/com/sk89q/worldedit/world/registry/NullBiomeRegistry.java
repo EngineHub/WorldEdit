@@ -17,58 +17,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.mask;
+package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeData;
 
 import javax.annotation.Nullable;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * A mask that tests whether given positions are contained within a region.
+ * A biome registry that knows nothing.
  */
-public class RegionMask extends AbstractMask {
-
-    private Region region;
+public class NullBiomeRegistry implements BiomeRegistry {
 
     /**
-     * Create a new region mask.
-     *
-     * @param region the region
+     * Create a new instance.
      */
-    public RegionMask(Region region) {
-        setRegion(region);
-    }
-
-    /**
-     * Get the region.
-     *
-     * @return the region
-     */
-    public Region getRegion() {
-        return region;
-    }
-
-    /**
-     * Set the region that positions must be contained within.
-     *
-     * @param region the region
-     */
-    public void setRegion(Region region) {
-        checkNotNull(region);
-        this.region = region;
-    }
-
-    @Override
-    public boolean test(Vector vector) {
-        return region.contains(vector);
+    public NullBiomeRegistry() {
     }
 
     @Nullable
     @Override
-    public Mask2D toMask2D() {
+    public BaseBiome createFromId(int id) {
+        return null;
+    }
+
+    @Override
+    public List<BaseBiome> getBiomes() {
+        return Collections.emptyList();
+    }
+
+    @Nullable
+    @Override
+    public BiomeData getData(BaseBiome biome) {
         return null;
     }
 

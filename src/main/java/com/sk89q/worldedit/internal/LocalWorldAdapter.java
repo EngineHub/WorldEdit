@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.internal;
 
-import com.sk89q.worldedit.BiomeType;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
@@ -37,6 +36,7 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
 
 import javax.annotation.Nullable;
@@ -109,13 +109,13 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
-    public BiomeType getBiome(Vector2D position) {
+    public BaseBiome getBiome(Vector2D position) {
         return world.getBiome(position);
     }
 
     @Override
-    public void setBiome(Vector2D position, BiomeType biome) {
-        world.setBiome(position, biome);
+    public boolean setBiome(Vector2D position, BaseBiome biome) {
+        return world.setBiome(position, biome);
     }
 
     @Override

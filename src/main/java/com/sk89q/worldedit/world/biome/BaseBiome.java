@@ -17,59 +17,66 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.mask;
-
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.regions.Region;
-
-import javax.annotation.Nullable;
+package com.sk89q.worldedit.world.biome;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A mask that tests whether given positions are contained within a region.
+ * Basic storage object to represent a given biome.
  */
-public class RegionMask extends AbstractMask {
+public class BaseBiome {
 
-    private Region region;
+    private int id;
 
     /**
-     * Create a new region mask.
+     * Create a new biome with the given biome ID.
      *
-     * @param region the region
+     * @param id the biome ID
      */
-    public RegionMask(Region region) {
-        setRegion(region);
+    public BaseBiome(int id) {
+        this.id = id;
     }
 
     /**
-     * Get the region.
+     * Create a clone of the given biome.
      *
-     * @return the region
+     * @param biome the biome to clone
      */
-    public Region getRegion() {
-        return region;
+    public BaseBiome(BaseBiome biome) {
+        checkNotNull(biome);
+        this.id = biome.getId();
     }
 
     /**
-     * Set the region that positions must be contained within.
+     * Get the biome ID.
      *
-     * @param region the region
+     * @return the biome ID
      */
-    public void setRegion(Region region) {
-        checkNotNull(region);
-        this.region = region;
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * Set the biome id.
+     *
+     * @param id the biome ID
+     */
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override
-    public boolean test(Vector vector) {
-        return region.contains(vector);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BaseBiome baseBiome = (BaseBiome) o;
+
+        return id == baseBiome.id;
     }
 
-    @Nullable
     @Override
-    public Mask2D toMask2D() {
-        return null;
+    public int hashCode() {
+        return id;
     }
-
 }

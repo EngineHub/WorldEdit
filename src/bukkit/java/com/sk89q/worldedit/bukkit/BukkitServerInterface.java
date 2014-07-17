@@ -21,7 +21,6 @@ package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
-import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
@@ -50,13 +49,13 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
     public Server server;
     public WorldEditPlugin plugin;
     private CommandRegistration dynamicCommands;
-    private BukkitBiomeTypes biomes;
+    private BukkitBiomeRegistry biomes;
     private boolean hookingEvents;
 
     public BukkitServerInterface(WorldEditPlugin plugin, Server server) {
         this.plugin = plugin;
         this.server = server;
-        this.biomes = new BukkitBiomeTypes();
+        this.biomes = new BukkitBiomeRegistry();
         dynamicCommands = new CommandRegistration(plugin);
     }
 
@@ -79,11 +78,6 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
     @Override
     public void reload() {
         plugin.loadConfiguration();
-    }
-
-    @Override
-    public BiomeTypes getBiomes() {
-        return biomes;
     }
 
     @Override

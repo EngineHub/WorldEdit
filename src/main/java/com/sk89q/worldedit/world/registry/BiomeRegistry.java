@@ -17,31 +17,42 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.mask;
+package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeData;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
- * Tests whether a given vector meets a criteria.
+ * Provides information on biomes.
  */
-public interface Mask {
+public interface BiomeRegistry {
 
     /**
-     * Returns true if the criteria is met.
+     * Create a new biome given its biome ID.
      *
-     * @param vector the vector to test
-     * @return true if the criteria is met
-     */
-    boolean test(Vector vector);
-
-    /**
-     * Get the 2D version of this mask if one exists.
-     *
-     * @return a 2D mask version or {@code null} if this mask can't be 2D
+     * @param id its biome ID
+     * @return a new biome or null if it can't be created
      */
     @Nullable
-    Mask2D toMask2D();
+    BaseBiome createFromId(int id);
+
+    /**
+     * Get a list of available biomes.
+     *
+     * @return a list of biomes
+     */
+    List<BaseBiome> getBiomes();
+
+    /**
+     * Get data about a biome.
+     *
+     * @param biome the biome
+     * @return a data object or null if information is not known
+     */
+    @Nullable
+    BiomeData getData(BaseBiome biome);
 
 }
