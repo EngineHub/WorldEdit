@@ -114,6 +114,7 @@ public class ParserContext {
      */
     public void setWorld(@Nullable World world) {
         this.world = world;
+        setExtent(world);
     }
 
     /**
