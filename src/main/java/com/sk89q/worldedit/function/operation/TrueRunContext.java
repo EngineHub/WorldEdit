@@ -17,44 +17,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.platform;
-
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.world.World;
-
-import java.util.Collections;
-import java.util.List;
+package com.sk89q.worldedit.function.operation;
 
 /**
- * An abstract implementation of {@link Platform}.
+ * Always returns true - let all Operations run to completion.
  */
-public abstract class AbstractPlatform implements Platform {
+public class TrueRunContext implements RunContext {
 
+    /**
+     * Always returns true.
+     *
+     * <p>
+     * <b>Documentation inherited from RunContext:</b><br>
+     * {@inheritDoc}
+     *
+     * @return Always true.
+     */
     @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return -1;
-    }
-
-    @Override
-    public int scheduleNext(Runnable task) {
-        return -1;
-    }
-
-    @Override
-    public boolean cancelScheduled(int taskId) {
-        return false;
-    }
-
-    @Override
-    public boolean isPrimaryThread() {
+    public boolean shouldContinue() {
         return true;
     }
-
-    @Override
-    public List<? extends World> getWorlds() {
-        return Collections.emptyList();
-    }
-
 }

@@ -66,6 +66,11 @@ public enum Capability {
     PERMISSIONS,
 
     /**
+     * The capability of a platform to properly respond to schedule() calls.
+     */
+    SCHEDULING,
+
+    /**
      * The capability of a platform to dispatch WorldEditCUI events.
      */
     WORLDEDIT_CUI,

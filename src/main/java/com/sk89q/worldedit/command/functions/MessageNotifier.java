@@ -17,44 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.platform;
+package com.sk89q.worldedit.command.functions;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.function.operation.Operation;
 
-import java.util.Collections;
-import java.util.List;
+public class MessageNotifier extends AbstractNotifier {
+    private final String message;
 
-/**
- * An abstract implementation of {@link Platform}.
- */
-public abstract class AbstractPlatform implements Platform {
-
-    @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return -1;
+    public MessageNotifier(Player player, String message) {
+        super(player);
+        this.message = message;
     }
 
     @Override
-    public int scheduleNext(Runnable task) {
-        return -1;
+    public void onSuccess(Operation result) {
+        player.print(message);
     }
-
-    @Override
-    public boolean cancelScheduled(int taskId) {
-        return false;
-    }
-
-    @Override
-    public boolean isPrimaryThread() {
-        return true;
-    }
-
-    @Override
-    public List<? extends World> getWorlds() {
-        return Collections.emptyList();
-    }
-
 }

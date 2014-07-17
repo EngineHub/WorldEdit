@@ -17,44 +17,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.platform;
+package com.sk89q.worldedit.function.block;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.world.World;
-
-import java.util.Collections;
-import java.util.List;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.operation.AffectedCounter;
 
 /**
- * An abstract implementation of {@link Platform}.
+ * A RegionFunction that merely counts the blocks.
  */
-public abstract class AbstractPlatform implements Platform {
+public class BlockCounter implements AffectedCounter, RegionFunction {
+    private int count;
 
-    @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return -1;
+    /**
+     * Returns the number of blocks that have been counted.
+     *
+     * @return the number of blocks
+     */
+    public int getAffected() {
+        return count;
     }
 
     @Override
-    public int scheduleNext(Runnable task) {
-        return -1;
-    }
-
-    @Override
-    public boolean cancelScheduled(int taskId) {
+    public boolean apply(Vector position) throws WorldEditException {
+        count++;
         return false;
     }
-
-    @Override
-    public boolean isPrimaryThread() {
-        return true;
-    }
-
-    @Override
-    public List<? extends World> getWorlds() {
-        return Collections.emptyList();
-    }
-
 }

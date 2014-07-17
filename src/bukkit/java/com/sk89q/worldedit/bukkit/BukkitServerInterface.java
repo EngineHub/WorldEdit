@@ -38,6 +38,7 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
+import org.bukkit.scheduler.BukkitTask;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -87,8 +88,26 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
     }
 
     @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay, period);
+    public int schedule(long delay, long period, Runnable run) {
+        BukkitTask task = server.getScheduler().runTaskTimer(plugin, run, delay, period);
+        return task.getTaskId();
+    }
+
+    @Override
+    public int scheduleNext(Runnable run) {
+        BukkitTask task = server.getScheduler().runTask(plugin, run);
+        return task.getTaskId();
+    }
+
+    @Override
+    public boolean cancelScheduled(int taskId) {
+        server.getScheduler().cancelTask(taskId);
+        return true;
+    }
+
+    @Override
+    public boolean isPrimaryThread() {
+        return server.isPrimaryThread();
     }
 
     @Override
@@ -175,6 +194,7 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
         capabilities.put(Capability.GAME_HOOKS, Preference.PREFERRED);
         capabilities.put(Capability.PERMISSIONS, Preference.PREFERRED);
         capabilities.put(Capability.USER_COMMANDS, Preference.PREFERRED);
+        capabilities.put(Capability.SCHEDULING, Preference.PREFERRED);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFER_OTHERS);
         return capabilities;
     }

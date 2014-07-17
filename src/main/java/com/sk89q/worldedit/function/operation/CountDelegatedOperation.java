@@ -21,40 +21,35 @@ package com.sk89q.worldedit.function.operation;
 
 import com.sk89q.worldedit.WorldEditException;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
- * Executes a delegate operation, but returns to another operation upon
- * completing the delegate.
+ * A wrapper class that delegates methods of both Operation and AffectedCounter,
+ * so that a CountDelegatedOperation can be used where desired.
  */
-public class DelegateOperation implements Operation {
+public class CountDelegatedOperation implements CountingOperation {
+    private Operation operation;
+    private AffectedCounter counter;
 
-    private final Operation original;
-    private Operation delegate;
+    public CountDelegatedOperation(Operation op, AffectedCounter counter) {
+        checkArgument(op != counter);
+        this.operation = op;
+        this.counter = counter;
+    }
 
-    /**
-     * Create a new operation delegate.
-     *
-     * @param original the operation to return to
-     * @param delegate the delegate operation to complete before returning
-     */
-    public DelegateOperation(Operation original, Operation delegate) {
-        checkNotNull(original);
-        checkNotNull(delegate);
-        this.original = original;
-        this.delegate = delegate;
+    @Override
+    public int getAffected() {
+        return counter.getAffected();
     }
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
-        delegate = delegate.resume(run);
-        return delegate != null ? this : original;
+        operation = operation.resume(run);
+        return (operation == null) ? null : this;
     }
 
     @Override
     public void cancel() {
-        delegate.cancel();
-        original.cancel();
+        operation.cancel();
     }
-
 }

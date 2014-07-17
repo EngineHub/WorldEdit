@@ -22,13 +22,14 @@ package com.sk89q.worldedit.function;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.operation.AffectedCounter;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Applies a {@link RegionFunction} to the first ground block.
  */
-public class GroundFunction implements LayerFunction {
+public class GroundFunction implements LayerFunction, AffectedCounter {
 
     private Mask mask;
     private final RegionFunction function;
@@ -71,6 +72,7 @@ public class GroundFunction implements LayerFunction {
      *
      * @return the number of affected
      */
+    @Override
     public int getAffected() {
         return affected;
     }

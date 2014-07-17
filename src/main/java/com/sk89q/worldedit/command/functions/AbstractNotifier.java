@@ -17,19 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.operation;
+package com.sk89q.worldedit.command.functions;
 
-/**
- * A RunContext is provided to an Operation and should be used to implement
- * time limits on the Operation.
- */
-public interface RunContext {
-    /**
-     * Return whether the current operation should still continue running.
-     * </p>
-     * This method can be called frequently.
-     *
-     * @return true if the operation should continue running
-     */
-    boolean shouldContinue();
+import com.google.common.util.concurrent.FutureCallback;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.function.operation.Operation;
+
+public abstract class AbstractNotifier implements FutureCallback<Operation> {
+    protected final Player player;
+    public AbstractNotifier(Player player) {
+        this.player = player;
+    }
+
+    @Override
+    public void onFailure(Throwable t) {
+        String message = t.getMessage();
+        if (message != null && !message.equals("")) {
+            player.printError(message);
+        } else {
+            player.printError("An error occured: " + t.getClass().getName());
+        }
+    }
 }

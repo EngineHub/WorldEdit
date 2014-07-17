@@ -34,6 +34,8 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -69,6 +71,7 @@ public class ForgeWorldEdit {
     private ForgePlatform platform;
     private ForgeConfiguration config;
     private File workingDir;
+    private ForgeMiniScheduler scheduler;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -84,6 +87,10 @@ public class ForgeWorldEdit {
 
         config = new ForgeConfiguration(this);
         config.load();
+
+        scheduler = new ForgeMiniScheduler();
+        TickRegistry.registerTickHandler(scheduler, Side.CLIENT);
+        TickRegistry.registerTickHandler(scheduler, Side.SERVER);
     }
 
     @EventHandler
@@ -237,6 +244,10 @@ public class ForgeWorldEdit {
      */
     public File getWorkingDir() {
         return this.workingDir;
+    }
+
+    public ForgeMiniScheduler getScheduler() {
+        return this.scheduler;
     }
 
     /**

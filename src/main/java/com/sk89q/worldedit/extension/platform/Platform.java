@@ -72,9 +72,32 @@ public interface Platform {
      * @param delay Delay in server ticks before executing first repeat
      * @param period Period in server ticks of the task
      * @param task Task to be executed
-     * @return Task id number (-1 if scheduling failed)
+     * @return Task id number (-1 if scheduling failed - e.g. this Platform does not support scheduling)
      */
     int schedule(long delay, long period, Runnable task);
+
+    /**
+     * Schedules the given Runnable to be invoked at or near the start of the next server tick.
+     *
+     * @param task Task to be executed
+     * @return Task id number (-1 if scheduling failed - e.g. this Platform does not support scheduling)
+     */
+    int scheduleNext(Runnable task);
+
+    /**
+     * Attempt to cancel a task previously scheduled with the {@link #schedule(long, long, Runnable)} method.
+     *
+     * @param taskId task ID returned from schedule()
+     * @return true if success, false if failure
+     */
+    boolean cancelScheduled(int taskId);
+
+    /**
+     * Check if the current thread is the main server thread.
+     *
+     * @return true if server thread, false if not
+     */
+    boolean isPrimaryThread();
 
     List<? extends World> getWorlds();
 

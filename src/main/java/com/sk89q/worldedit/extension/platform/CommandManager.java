@@ -257,6 +257,7 @@ public final class CommandManager {
                 session.remember(editSession);
                 editSession.flushQueue();
 
+                // TODO copy to Operations for slow completions
                 if (config.profile) {
                     long time = System.currentTimeMillis() - start;
                     int changed = editSession.getBlockChangeCount();

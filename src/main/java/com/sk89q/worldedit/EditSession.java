@@ -27,7 +27,6 @@ import com.sk89q.worldedit.extent.ChangeSetExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.MaskingExtent;
 import com.sk89q.worldedit.extent.NullExtent;
-import com.sk89q.worldedit.extent.buffer.ForgetfulExtentBuffer;
 import com.sk89q.worldedit.extent.cache.LastAccessExtentCache;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.extent.inventory.BlockBagExtent;
@@ -38,17 +37,12 @@ import com.sk89q.worldedit.extent.world.BlockQuirkExtent;
 import com.sk89q.worldedit.extent.world.ChunkLoadingExtent;
 import com.sk89q.worldedit.extent.world.FastModeExtent;
 import com.sk89q.worldedit.extent.world.SurvivalModeExtent;
+import com.sk89q.worldedit.function.CommonOperationFactory;
 import com.sk89q.worldedit.function.GroundFunction;
-import com.sk89q.worldedit.function.RegionMaskingFilter;
-import com.sk89q.worldedit.function.block.BlockReplace;
-import com.sk89q.worldedit.function.block.Counter;
-import com.sk89q.worldedit.function.block.Naturalizer;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
 import com.sk89q.worldedit.function.mask.*;
 import com.sk89q.worldedit.function.operation.*;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
-import com.sk89q.worldedit.function.util.RegionOffset;
 import com.sk89q.worldedit.function.visitor.*;
 import com.sk89q.worldedit.history.UndoContext;
 import com.sk89q.worldedit.history.change.BlockChange;
@@ -61,7 +55,6 @@ import com.sk89q.worldedit.math.interpolation.Interpolation;
 import com.sk89q.worldedit.math.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.math.interpolation.Node;
 import com.sk89q.worldedit.math.noise.RandomNoise;
-import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.*;
@@ -123,6 +116,8 @@ public class EditSession implements Extent {
     private final Extent bypassReorderHistory;
     private final Extent bypassHistory;
     private final Extent bypassNone;
+
+    private boolean hasSlowOperation;
 
     @SuppressWarnings("deprecation")
     private Mask oldMask;
@@ -241,6 +236,10 @@ public class EditSession implements Extent {
      */
     public void setBlockChangeLimit(int limit) {
         changeLimiter.setLimit(limit);
+    }
+
+    public void setInLongOperation(boolean inOperation) {
+        this.hasSlowOperation = inOperation;
     }
 
     /**
@@ -373,7 +372,11 @@ public class EditSession implements Extent {
      * @return the number of block changes
      */
     public int getBlockChangeCount() {
-        return changeSet.size();
+        int count = changeSet.size();
+        if (count == 0 && hasSlowOperation) {
+            return -1;
+        }
+        return count;
     }
 
     @Override
@@ -665,12 +668,9 @@ public class EditSession implements Extent {
      * @return the number of blocks that matched the pattern
      */
     public int countBlocks(Region region, Set<BaseBlock> searchBlocks) {
-        FuzzyBlockMask mask = new FuzzyBlockMask(this, searchBlocks);
-        Counter count = new Counter();
-        RegionMaskingFilter filter = new RegionMaskingFilter(mask, count);
-        RegionVisitor visitor = new RegionVisitor(region, filter);
-        Operations.completeBlindly(visitor); // We can't throw exceptions, nor do we expect any
-        return count.getCount();
+        CountingOperation op = CommonOperationFactory.countBlocks(this, region, searchBlocks);
+        Operations.completeBlindly(op); // We can't throw exceptions, nor do we expect any
+        return op.getAffected();
     }
 
     /**
@@ -705,34 +705,10 @@ public class EditSession implements Extent {
     public int fillXZ(Vector origin, Pattern pattern, double radius, int depth, boolean recursive) throws MaxChangedBlocksException {
         checkNotNull(origin);
         checkNotNull(pattern);
-        checkArgument(radius >= 0, "radius >= 0");
-        checkArgument(depth >= 1, "depth >= 1");
 
-        MaskIntersection mask = new MaskIntersection(
-                new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
-                new BoundedHeightMask(
-                        Math.max(origin.getBlockY() - depth + 1, 0),
-                        Math.min(getWorld().getMaxY(), origin.getBlockY())),
-                Masks.negate(new ExistingBlockMask(this)));
-
-        // Want to replace blocks
-        BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
-
-        // Pick how we're going to visit blocks
-        RecursiveVisitor visitor;
-        if (recursive) {
-            visitor = new RecursiveVisitor(mask, replace);
-        } else {
-            visitor = new DownwardVisitor(mask, replace, origin.getBlockY());
-        }
-
-        // Start at the origin
-        visitor.visit(origin);
-
-        // Execute
-        Operations.completeLegacy(visitor);
-
-        return visitor.getAffected();
+        CountingOperation op = CommonOperationFactory.fillXZ(this, origin, Patterns.wrap(pattern), radius, depth, recursive);
+        Operations.completeLegacy(op);
+        return op.getAffected();
     }
 
     /**
@@ -782,30 +758,6 @@ public class EditSession implements Extent {
     }
 
     /**
-     * Remove blocks of a certain type nearby a given position.
-     *
-     * @param position center position of cuboid
-     * @param blockType the block type to match
-     * @param apothem an apothem of the cuboid, where the minimum is 1
-     * @return number of blocks affected
-     * @throws MaxChangedBlocksException thrown if too many blocks are changed
-     */
-    @SuppressWarnings("deprecation")
-    public int removeNear(Vector position, int blockType, int apothem) throws MaxChangedBlocksException {
-        checkNotNull(position);
-        checkArgument(apothem >= 1, "apothem >= 1");
-
-        Mask mask = new FuzzyBlockMask(this, new BaseBlock(blockType, -1));
-        Vector adjustment = new Vector(1, 1, 1).multiply(apothem - 1);
-        Region region = new CuboidRegion(
-                getWorld(), // Causes clamping of Y range
-                position.add(adjustment.multiply(-1)),
-                position.add(adjustment));
-        Pattern pattern = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
-        return replaceBlocks(region, mask, pattern);
-    }
-
-    /**
      * Sets all the blocks inside a region to a given block type.
      *
      * @param region the region
@@ -831,10 +783,33 @@ public class EditSession implements Extent {
         checkNotNull(region);
         checkNotNull(pattern);
 
-        BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
-        RegionVisitor visitor = new RegionVisitor(region, replace);
-        Operations.completeLegacy(visitor);
-        return visitor.getAffected();
+        CountingOperation op = CommonOperationFactory.setBlocks(this, region, Patterns.wrap(pattern));
+        Operations.completeLegacy(op);
+        return op.getAffected();
+    }
+
+    /**
+     * Remove blocks of a certain type nearby a given position.
+     *
+     * @param position center position of cuboid
+     * @param blockType the block type to match
+     * @param apothem an apothem of the cuboid, where the minimum is 1
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    @SuppressWarnings("deprecation")
+    public int removeNear(Vector position, int blockType, int apothem) throws MaxChangedBlocksException {
+        checkNotNull(position);
+        checkArgument(apothem >= 1, "apothem >= 1");
+
+        Mask mask = new FuzzyBlockMask(this, new BaseBlock(blockType, -1));
+        Vector adjustment = new Vector(1, 1, 1).multiply(apothem - 1);
+        Region region = new CuboidRegion(
+                getWorld(), // Causes clamping of Y range
+                position.add(adjustment.multiply(-1)),
+                position.add(adjustment));
+        Pattern pattern = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
+        return replaceBlocks(region, mask, pattern);
     }
 
     /**
@@ -884,11 +859,9 @@ public class EditSession implements Extent {
         checkNotNull(mask);
         checkNotNull(pattern);
 
-        BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
-        RegionMaskingFilter filter = new RegionMaskingFilter(mask, replace);
-        RegionVisitor visitor = new RegionVisitor(region, filter);
-        Operations.completeLegacy(visitor);
-        return visitor.getAffected();
+        CountingOperation op = CommonOperationFactory.replaceBlocks(this, region, mask, Patterns.wrap(pattern));
+        Operations.completeLegacy(op);
+        return op.getAffected();
     }
 
     /**
@@ -903,15 +876,8 @@ public class EditSession implements Extent {
      */
     @SuppressWarnings("deprecation")
     public int center(Region region, Pattern pattern) throws MaxChangedBlocksException {
-        checkNotNull(region);
-        checkNotNull(pattern);
-
         Vector center = region.getCenter();
-        Region centerRegion = new CuboidRegion(
-                getWorld(), // Causes clamping of Y range
-                new Vector((int) center.getX(), (int) center.getY(), (int) center.getZ()),
-                center.toBlockVector());
-        return setBlocks(centerRegion, pattern);
+        return this.setBlock(region.getCenter(), Patterns.wrap(pattern).apply(center)) ? 1 : 0;
     }
 
     /**
@@ -1066,12 +1032,9 @@ public class EditSession implements Extent {
         checkNotNull(region);
         checkNotNull(pattern);
 
-        BlockReplace replace = new BlockReplace(this, Patterns.wrap(pattern));
-        RegionOffset offset = new RegionOffset(new Vector(0, 1, 0), replace);
-        GroundFunction ground = new GroundFunction(new ExistingBlockMask(this), offset);
-        LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
-        Operations.completeLegacy(visitor);
-        return ground.getAffected();
+        CountingOperation op = CommonOperationFactory.groundOverlay(this, asFlatRegion(region), Patterns.wrap(pattern));
+        Operations.completeLegacy(op);
+        return op.getAffected();
     }
 
     /**
@@ -1085,11 +1048,9 @@ public class EditSession implements Extent {
     public int naturalizeCuboidBlocks(Region region) throws MaxChangedBlocksException {
         checkNotNull(region);
 
-        Naturalizer naturalizer = new Naturalizer(this);
-        FlatRegion flatRegion = Regions.asFlatRegion(region);
-        LayerVisitor visitor = new LayerVisitor(flatRegion, minimumBlockY(region), maximumBlockY(region), naturalizer);
-        Operations.completeLegacy(visitor);
-        return naturalizer.getAffected();
+        CountingOperation op = CommonOperationFactory.naturalize(this, asFlatRegion(region));
+        Operations.completeLegacy(op);
+        return op.getAffected();
     }
 
     /**
@@ -1107,16 +1068,9 @@ public class EditSession implements Extent {
         checkNotNull(dir);
         checkArgument(count >= 1, "count >= 1 required");
 
-        Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
-        Vector to = region.getMinimumPoint();
-        ForwardExtentCopy copy = new ForwardExtentCopy(this, region, this, to);
-        copy.setRepetitions(count);
-        copy.setTransform(new AffineTransform().translate(dir.multiply(size)));
-        if (!copyAir) {
-            copy.setSourceMask(new ExistingBlockMask(this));
-        }
-        Operations.completeLegacy(copy);
-        return copy.getAffected();
+        CountingOperation op = CommonOperationFactory.stackCubiodRegion(this, region, dir, count, copyAir);
+        Operations.completeLegacy(op);
+        return op.getAffected();
     }
 
     /**
@@ -1133,33 +1087,10 @@ public class EditSession implements Extent {
     public int moveRegion(Region region, Vector dir, int distance, boolean copyAir, BaseBlock replacement) throws MaxChangedBlocksException {
         checkNotNull(region);
         checkNotNull(dir);
-        checkArgument(distance >= 1, "distance >= 1 required");
 
-        Vector to = region.getMinimumPoint();
-
-        // Remove the original blocks
-        com.sk89q.worldedit.function.pattern.Pattern pattern = replacement != null ?
-                new BlockPattern(replacement) :
-                new BlockPattern(new BaseBlock(BlockID.AIR));
-        BlockReplace remove = new BlockReplace(this, pattern);
-
-        // Copy to a buffer so we don't destroy our original before we can copy all the blocks from it
-        ForgetfulExtentBuffer buffer = new ForgetfulExtentBuffer(this, new RegionMask(region));
-        ForwardExtentCopy copy = new ForwardExtentCopy(this, region, buffer, to);
-        copy.setTransform(new AffineTransform().translate(dir.multiply(distance)));
-        copy.setSourceFunction(remove); // Remove
-        if (!copyAir) {
-            copy.setSourceMask(new ExistingBlockMask(this));
-        }
-
-        // Then we need to copy the buffer to the world
-        BlockReplace replace = new BlockReplace(this, buffer);
-        RegionVisitor visitor = new RegionVisitor(buffer.asRegion(), replace);
-
-        OperationQueue operation = new OperationQueue(copy, visitor);
-        Operations.completeLegacy(operation);
-
-        return copy.getAffected();
+        CountingOperation op = CommonOperationFactory.moveRegion(this, region, dir, distance, copyAir, replacement);
+        Operations.completeLegacy(op);
+        return op.getAffected();
     }
 
     /**
@@ -1189,24 +1120,9 @@ public class EditSession implements Extent {
         checkNotNull(origin);
         checkArgument(radius >= 0, "radius >= 0 required");
 
-        MaskIntersection mask = new MaskIntersection(
-                new BoundedHeightMask(0, getWorld().getMaxY()),
-                new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
-                getWorld().createLiquidMask());
-
-        BlockReplace replace = new BlockReplace(this, new BlockPattern(new BaseBlock(BlockID.AIR)));
-        RecursiveVisitor visitor = new RecursiveVisitor(mask, replace);
-
-        // Around the origin in a 3x3 block
-        for (BlockVector position : CuboidRegion.fromCenter(origin, 1)) {
-            if (mask.test(position)) {
-                visitor.visit(position);
-            }
-        }
-
-        Operations.completeLegacy(visitor);
-
-        return visitor.getAffected();
+        CountingOperation op = CommonOperationFactory.drainCommand(this, origin, radius);
+        Operations.completeLegacy(op);
+        return op.getAffected();
     }
 
     /**
@@ -1221,40 +1137,10 @@ public class EditSession implements Extent {
      */
     public int fixLiquid(Vector origin, double radius, int moving, int stationary) throws MaxChangedBlocksException {
         checkNotNull(origin);
-        checkArgument(radius >= 0, "radius >= 0 required");
 
-        // Our origins can only be liquids
-        BlockMask liquidMask = new BlockMask(
-                this,
-                new BaseBlock(moving, -1),
-                new BaseBlock(stationary, -1));
-
-        // But we will also visit air blocks
-        MaskIntersection blockMask =
-                new MaskUnion(liquidMask,
-                        new BlockMask(
-                                this,
-                                new BaseBlock(BlockID.AIR)));
-
-        // There are boundaries that the routine needs to stay in
-        MaskIntersection mask = new MaskIntersection(
-                new BoundedHeightMask(0, Math.min(origin.getBlockY(), getWorld().getMaxY())),
-                new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
-                blockMask);
-
-        BlockReplace replace = new BlockReplace(this, new BlockPattern(new BaseBlock(stationary)));
-        NonRisingVisitor visitor = new NonRisingVisitor(mask, replace);
-
-        // Around the origin in a 3x3 block
-        for (BlockVector position : CuboidRegion.fromCenter(origin, 1)) {
-            if (liquidMask.test(position)) {
-                visitor.visit(position);
-            }
-        }
-
-        Operations.completeLegacy(visitor);
-
-        return visitor.getAffected();
+        CountingOperation op = CommonOperationFactory.fixLiquidCommand(this, origin, radius, moving, stationary);
+        Operations.completeLegacy(op);
+        return op.getAffected();
     }
 
     /**
@@ -1722,8 +1608,10 @@ public class EditSession implements Extent {
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(this), generator);
         LayerVisitor visitor = new LayerVisitor(region, minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
-        Operations.completeLegacy(visitor);
-        return ground.getAffected();
+
+        CountingOperation op = new CountDelegatedOperation(visitor, ground);
+        Operations.completeLegacy(op);
+        return op.getAffected();
     }
 
     /**
@@ -2132,12 +2020,12 @@ public class EditSession implements Extent {
             throws MaxChangedBlocksException {
 
         Set<Vector> vset = new HashSet<Vector>();
-        List<Node> nodes = new ArrayList(nodevectors.size());
+        List<Node> nodes = new ArrayList<Node>(nodevectors.size());
 
         Interpolation interpol = new KochanekBartelsInterpolation();
 
-        for (int loop = 0; loop < nodevectors.size(); loop++) {
-            Node n = new Node(nodevectors.get(loop));
+        for (Vector nodevector : nodevectors) {
+            Node n = new Node(nodevector);
             n.setTension(tension);
             n.setBias(bias);
             n.setContinuity(continuity);

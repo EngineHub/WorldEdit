@@ -22,6 +22,8 @@ package com.sk89q.worldedit.function.visitor;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.function.operation.AffectedCounter;
+import com.sk89q.worldedit.function.operation.CountingOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.operation.RunContext;
@@ -41,7 +43,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * functionality that starts at certain points and extends outward from
  * those points.
  */
-public abstract class BreadthFirstSearch implements Operation {
+public abstract class BreadthFirstSearch implements CountingOperation {
 
     private final RegionFunction function;
     private final Queue<BlockVector> queue = new ArrayDeque<BlockVector>();
@@ -150,6 +152,7 @@ public abstract class BreadthFirstSearch implements Operation {
      *
      * @return the number of affected
      */
+    @Override
     public int getAffected() {
         return affected;
     }
@@ -165,6 +168,10 @@ public abstract class BreadthFirstSearch implements Operation {
 
             for (Vector dir : directions) {
                 visit(position, position.add(dir));
+            }
+
+            if (!run.shouldContinue()) {
+                return this;
             }
         }
 

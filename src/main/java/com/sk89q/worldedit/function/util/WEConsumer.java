@@ -17,19 +17,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.operation;
+package com.sk89q.worldedit.function.util;
 
 /**
- * A RunContext is provided to an Operation and should be used to implement
- * time limits on the Operation.
+ * Represents an operation that accepts a single input argument and returns no
+ * result. Unlike most other functional interfaces, Consumer is expected to
+ * operate via side-effects.
+ *
+ * This is a functional interface whose functional method is accept(Object).
+ *
+ * This class is modeled after the Java 8 class java.util.function.Consumer.
  */
-public interface RunContext {
+public interface WEConsumer<T> {
     /**
-     * Return whether the current operation should still continue running.
-     * </p>
-     * This method can be called frequently.
+     * Performs this operation on the given argument.
      *
-     * @return true if the operation should continue running
+     * @param t the input argument
      */
-    boolean shouldContinue();
+    public void accept(T t);
 }

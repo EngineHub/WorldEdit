@@ -102,7 +102,24 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
 
     @Override
     public int schedule(long delay, long period, Runnable task) {
-        return -1;
+        return mod.getScheduler().schedule(delay, period, task);
+    }
+
+    @Override
+    public int scheduleNext(Runnable task) {
+        return mod.getScheduler().schedule(0, 0, task);
+    }
+
+    @Override
+    public boolean cancelScheduled(int taskId) {
+        return mod.getScheduler().cancel(taskId);
+    }
+
+    @Override
+    public boolean isPrimaryThread() {
+        // XXX this is a HACK - we want a Forge API for this
+        // forge does not store the server thread in a variable like Bukkit does
+        return Thread.currentThread().getName().equals("Server thread");
     }
 
     @Override
@@ -217,6 +234,7 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
         capabilities.put(Capability.GAME_HOOKS, Preference.NORMAL);
         capabilities.put(Capability.PERMISSIONS, Preference.PREFER_OTHERS);
         capabilities.put(Capability.USER_COMMANDS, Preference.NORMAL);
+        capabilities.put(Capability.SCHEDULING, Preference.PREFER_OTHERS);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFERRED);
         return capabilities;
     }

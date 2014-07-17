@@ -108,6 +108,8 @@ public class PropertiesConfiguration extends LocalConfiguration {
         scriptTimeout = getInt("scripting-timeout", scriptTimeout);
         saveDir = getString("schematic-save-dir", saveDir);
         scriptsDir = getString("craftscript-dir", scriptsDir);
+        slowExecutorPeriod = getInt("gradual-period", slowExecutorPeriod);
+        slowExecutorMillisPer = getInt("gradual-allotment-millis", slowExecutorMillisPer);
         butcherDefaultRadius = getInt("butcher-default-radius", butcherDefaultRadius);
         butcherMaxRadius = getInt("butcher-max-radius", butcherMaxRadius);
         allowSymlinks = getBool("allow-symbolic-links", allowSymlinks);

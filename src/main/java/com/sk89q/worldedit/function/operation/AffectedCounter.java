@@ -20,16 +20,8 @@
 package com.sk89q.worldedit.function.operation;
 
 /**
- * A RunContext is provided to an Operation and should be used to implement
- * time limits on the Operation.
+ * An interface for classes that count blocks.
  */
-public interface RunContext {
-    /**
-     * Return whether the current operation should still continue running.
-     * </p>
-     * This method can be called frequently.
-     *
-     * @return true if the operation should continue running
-     */
-    boolean shouldContinue();
+public interface AffectedCounter {
+    public int getAffected();
 }

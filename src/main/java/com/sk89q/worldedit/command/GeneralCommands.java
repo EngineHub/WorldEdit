@@ -27,7 +27,11 @@ import com.sk89q.worldedit.blocks.ItemType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.operation.OperationFuture;
+import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.util.command.parametric.Optional;
+
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -156,7 +160,7 @@ public class GeneralCommands {
         max = 1
     )
     public void searchItem(Actor actor, CommandContext args) throws WorldEditException {
-        
+
         String query = args.getString(0).trim().toLowerCase();
         boolean blocksOnly = args.hasFlag('b');
         boolean itemsOnly = args.hasFlag('i');
@@ -220,6 +224,59 @@ public class GeneralCommands {
         if (found == 0) {
             actor.printError("No items found.");
         }
+    }
+
+    @Command(
+            aliases = { "/abort", "abort" },
+            usage = "[id]",
+            desc = "Aborts a long-running action",
+            min = 0,
+            max = 1
+    )
+    @CommandPermissions("worldedit.queue.abort")
+    public void abortOperation(Actor player, CommandContext args) {
+        List<OperationFuture> queue = Operations.getQueueSnapshot();
+        // if only one operation, don't require the id
+        if (queue.size() == 1) {
+            queue.get(0).cancel(true);
+            return;
+        }
+        // otherwise, if no id given, show the list
+        if (args.argsLength() == 0) {
+            viewOperationQueue(player);
+            return;
+        }
+        int hashEnd = args.getInteger(0);
+        for (OperationFuture future : queue) {
+            int hash = System.identityHashCode(future);
+            if (hashEnd == hash % 100) {
+                future.cancel(true);
+            }
+        }
+    }
+
+    @Command(
+            aliases = { "/queue", "queue" },
+            usage = "",
+            desc = "View the long-running queue",
+            min = 0,
+            max = 0
+    )
+    @CommandPermissions("worldedit.queue.view")
+    public void viewOperationQueue(Actor player) {
+        List<OperationFuture> queue = Operations.getQueueSnapshot();
+        if (queue.size() == 0) {
+            player.print("No long-running tasks.");
+            return;
+        }
+
+        for (OperationFuture future : queue) {
+            int hash = System.identityHashCode(future);
+            long duration = System.currentTimeMillis() - future.getStartTime();
+            player.print(String.format("[%02d] Running for %.1f seconds", hash % 100, duration / 1000.0));
+        }
+
+        player.print("Use '//abort id' to cancel an operation.");
     }
 
 }

@@ -22,18 +22,21 @@ package com.sk89q.worldedit.function.visitor;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.FlatRegionFunction;
+import com.sk89q.worldedit.function.operation.CountingOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.regions.FlatRegion;
+
+import java.util.Iterator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Applies region functions to columns in a {@link FlatRegion}.
  */
-public class FlatRegionVisitor implements Operation {
+public class FlatRegionVisitor implements CountingOperation {
 
-    private final FlatRegion flatRegion;
+    private final Iterator<Vector2D> iterator;
     private final FlatRegionFunction function;
     private int affected = 0;
 
@@ -47,8 +50,8 @@ public class FlatRegionVisitor implements Operation {
         checkNotNull(flatRegion);
         checkNotNull(function);
 
-        this.flatRegion = flatRegion;
         this.function = function;
+        this.iterator = flatRegion.asFlatRegion().iterator();
     }
 
     /**
@@ -56,15 +59,20 @@ public class FlatRegionVisitor implements Operation {
      *
      * @return the number of affected
      */
+    @Override
     public int getAffected() {
         return affected;
     }
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
-        for (Vector2D pt : flatRegion.asFlatRegion()) {
-            if (function.apply(pt)) {
+        while (iterator.hasNext()) {
+            if (function.apply(iterator.next())) {
                 affected++;
+            }
+
+            if (!run.shouldContinue()) {
+                return this;
             }
         }
 

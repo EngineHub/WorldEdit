@@ -124,6 +124,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
 
         @Override
         public Operation resume(RunContext run) throws WorldEditException {
+            // TODO implement RunContext checking
             Extent extent = getExtent();
 
             final Set<BlockVector> blocks = new HashSet<BlockVector>();
