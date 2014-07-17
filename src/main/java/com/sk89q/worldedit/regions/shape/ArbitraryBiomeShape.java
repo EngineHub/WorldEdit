@@ -84,12 +84,12 @@ public abstract class ArbitraryBiomeShape {
      */
     protected abstract BaseBiome getBiome(int x, int z, BaseBiome defaultBaseBiome);
 
-    private BaseBiome getBiomeCached(int x, int z, BaseBiome BaseBiome) {
+    private BaseBiome getBiomeCached(int x, int z, BaseBiome baseBiome) {
         final int index = (z - cacheOffsetZ) + (x - cacheOffsetX) * cacheSizeZ;
 
         final BaseBiome cacheEntry = cache[index];
         if (cacheEntry == null) {// unknown, fetch material
-            final BaseBiome material = getBiome(x, z, BaseBiome);
+            final BaseBiome material = getBiome(x, z, baseBiome);
             if (material == null) {
                 // outside
                 cache[index] = OUTSIDE;
@@ -108,13 +108,13 @@ public abstract class ArbitraryBiomeShape {
         return cacheEntry;
     }
 
-    private boolean isInsideCached(int x, int z, BaseBiome BaseBiome) {
+    private boolean isInsideCached(int x, int z, BaseBiome baseBiome) {
         final int index = (z - cacheOffsetZ) + (x - cacheOffsetX) * cacheSizeZ;
 
         final BaseBiome cacheEntry = cache[index];
         if (cacheEntry == null) {
             // unknown block, meaning they must be outside the extent at this stage, but might still be inside the shape
-            return getBiomeCached(x, z, BaseBiome) != null;
+            return getBiomeCached(x, z, baseBiome) != null;
         }
 
         return cacheEntry != OUTSIDE;
@@ -124,11 +124,11 @@ public abstract class ArbitraryBiomeShape {
      * Generates the shape.
      *
      * @param editSession The EditSession to use.
-     * @param BaseBiome The default biome type.
+     * @param baseBiome The default biome type.
      * @param hollow Specifies whether to generate a hollow shape.
      * @return number of affected blocks.
      */
-    public int generate(EditSession editSession, BaseBiome BaseBiome, boolean hollow) {
+    public int generate(EditSession editSession, BaseBiome baseBiome, boolean hollow) {
         int affected = 0;
 
         for (Vector2D position : getExtent()) {
@@ -136,7 +136,7 @@ public abstract class ArbitraryBiomeShape {
             int z = position.getBlockZ();
 
             if (!hollow) {
-                final BaseBiome material = getBiome(x, z, BaseBiome);
+                final BaseBiome material = getBiome(x, z, baseBiome);
                 if (material != OUTSIDE) {
                     editSession.getWorld().setBiome(position, material);
                     ++affected;
@@ -145,26 +145,26 @@ public abstract class ArbitraryBiomeShape {
                 continue;
             }
 
-            final BaseBiome material = getBiomeCached(x, z, BaseBiome);
+            final BaseBiome material = getBiomeCached(x, z, baseBiome);
             if (material == null) {
                 continue;
             }
 
             boolean draw = false;
             do {
-                if (!isInsideCached(x + 1, z, BaseBiome)) {
+                if (!isInsideCached(x + 1, z, baseBiome)) {
                     draw = true;
                     break;
                 }
-                if (!isInsideCached(x - 1, z, BaseBiome)) {
+                if (!isInsideCached(x - 1, z, baseBiome)) {
                     draw = true;
                     break;
                 }
-                if (!isInsideCached(x, z + 1, BaseBiome)) {
+                if (!isInsideCached(x, z + 1, baseBiome)) {
                     draw = true;
                     break;
                 }
-                if (!isInsideCached(x, z - 1, BaseBiome)) {
+                if (!isInsideCached(x, z - 1, baseBiome)) {
                     draw = true;
                     break;
                 }
