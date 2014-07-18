@@ -90,6 +90,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     public void onEnable() {
         this.INSTANCE = this;
 
+        getDataFolder().mkdirs();
+
         WorldEdit worldEdit = WorldEdit.getInstance();
 
         loadAdapter(); // Need an adapter to work with special blocks with NBT data
