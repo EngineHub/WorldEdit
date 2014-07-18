@@ -46,6 +46,11 @@ import java.util.List;
  */
 public class NullWorld extends AbstractWorld {
 
+    private static final NullWorld INSTANCE = new NullWorld();
+
+    protected NullWorld() {
+    }
+
     @Override
     public String getName() {
         return "null";
@@ -120,4 +125,14 @@ public class NullWorld extends AbstractWorld {
     public Entity createEntity(Location location, BaseEntity entity) {
         return null;
     }
+
+    /**
+     * Return an instance of this null world.
+     *
+     * @return a null world
+     */
+    public static NullWorld getInstance() {
+        return INSTANCE;
+    }
+
 }

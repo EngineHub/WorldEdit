@@ -24,11 +24,12 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.entity.metadata.EntityType;
-import com.sk89q.worldedit.entity.metadata.Tameable;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.NullWorld;
 
 import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -37,7 +38,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 class BukkitEntity implements Entity {
 
-    private final org.bukkit.entity.Entity entity;
+    private final WeakReference<org.bukkit.entity.Entity> entityRef;
 
     /**
      * Create a new instance.
@@ -46,46 +47,43 @@ class BukkitEntity implements Entity {
      */
     BukkitEntity(org.bukkit.entity.Entity entity) {
         checkNotNull(entity);
-        this.entity = entity;
-    }
-
-    /**
-     * Get the underlying Bukkit entity.
-     *
-     * @return the Bukkit entity
-     */
-    protected org.bukkit.entity.Entity getEntity() {
-        return entity;
-    }
-
-    @SuppressWarnings("unchecked")
-    <T> T getMetaData(Class<T> metaDataClass) {
-        if (metaDataClass == Tameable.class && getEntity() instanceof org.bukkit.entity.Tameable) {
-            return (T) new TameableAdapter((org.bukkit.entity.Tameable) getEntity());
-        } else {
-            return null;
-        }
+        this.entityRef = new WeakReference<org.bukkit.entity.Entity>(entity);
     }
 
     @Override
     public Extent getExtent() {
-        return BukkitAdapter.adapt(getEntity().getWorld());
+        org.bukkit.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            return BukkitAdapter.adapt(entity.getWorld());
+        } else {
+            return NullWorld.getInstance();
+        }
     }
 
     @Override
     public Location getLocation() {
-        return BukkitAdapter.adapt(getEntity().getLocation());
+        org.bukkit.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            return BukkitAdapter.adapt(entity.getLocation());
+        } else {
+            return new Location(NullWorld.getInstance());
+        }
     }
 
     @Override
     public BaseEntity getState() {
-        if (entity instanceof Player) {
-            return null;
-        }
+        org.bukkit.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            if (entity instanceof Player) {
+                return null;
+            }
 
-        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-        if (adapter != null) {
-            return adapter.getEntity(entity);
+            BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+            if (adapter != null) {
+                return adapter.getEntity(entity);
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
@@ -93,15 +91,21 @@ class BukkitEntity implements Entity {
 
     @Override
     public boolean remove() {
-        entity.remove();
-        return entity.isDead();
+        org.bukkit.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            entity.remove();
+            return entity.isDead();
+        } else {
+            return true;
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Nullable
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
-        if (EntityType.class.isAssignableFrom(cls)) {
+        org.bukkit.entity.Entity entity = entityRef.get();
+        if (entity != null && EntityType.class.isAssignableFrom(cls)) {
             return (T) new BukkitEntityType(entity);
         } else {
             return null;

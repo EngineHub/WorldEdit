@@ -190,7 +190,7 @@ public class EditSession implements Extent {
             this.bypassNone = extent;
         } else {
             Extent extent = new NullExtent();
-            extent = survivalExtent = new SurvivalModeExtent(extent, new NullWorld());
+            extent = survivalExtent = new SurvivalModeExtent(extent, NullWorld.getInstance());
             extent = blockBagExtent = new BlockBagExtent(extent, blockBag);
             extent = reorderExtent = new MultiStageReorder(extent, false);
             extent = maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue());
