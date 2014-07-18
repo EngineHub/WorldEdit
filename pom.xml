@@ -341,26 +341,6 @@
         </configuration>
       </plugin>
 
-      <!-- Stores parameter information -->
-      <plugin>
-        <groupId>com.thoughtworks.paranamer</groupId>
-        <artifactId>paranamer-maven-plugin-largestack</artifactId>
-        <version>2.5.5-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <id>run</id>
-            <phase>compile</phase>
-            <configuration>
-              <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
-              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-            </configuration>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
       <!-- JAR plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
