@@ -19,7 +19,12 @@
 
 package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockVector2D;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.geom.Polygons;
 import com.sk89q.worldedit.regions.iterator.FlatRegion3DIterator;
 import com.sk89q.worldedit.regions.iterator.FlatRegionIterator;
@@ -27,6 +32,8 @@ import com.sk89q.worldedit.world.World;
 
 import java.util.Iterator;
 import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents a cylindrical region.
@@ -77,6 +84,23 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      */
     public CylinderRegion(World world, Vector center, Vector2D radius, int minY, int maxY) {
         super(world);
+        setCenter(center.toVector2D());
+        setRadius(radius);
+        this.minY = minY;
+        this.maxY = maxY;
+        hasY = true;
+    }
+
+    /**
+     * Construct the region.
+     *
+     * @param center the center position
+     * @param radius the radius along the X and Z axes
+     * @param minY the minimum Y, inclusive
+     * @param maxY the maximum Y, inclusive
+     */
+    public CylinderRegion(Vector center, Vector2D radius, int minY, int maxY) {
+        super(null);
         setCenter(center.toVector2D());
         setRadius(radius);
         this.minY = minY;
@@ -377,4 +401,24 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     public List<BlockVector2D> polygonize(int maxPoints) {
         return Polygons.polygonizeCylinder(center, radius, maxPoints);
     }
+
+    /**
+     * Return a new instance with the given center and radius in the X and Z
+     * axes with a Y that extends from the bottom of the extent to the top
+     * of the extent.
+     *
+     * @param extent the extent
+     * @param center the center position
+     * @param radius the radius in the X and Z axes
+     * @return a region
+     */
+    public static CylinderRegion createRadius(Extent extent, Vector center, double radius) {
+        checkNotNull(extent);
+        checkNotNull(center);
+        Vector2D radiusVec = new Vector2D(radius, radius);
+        int minY = extent.getMinimumPoint().getBlockY();
+        int maxY = extent.getMaximumPoint().getBlockY();
+        return new CylinderRegion(center, radiusVec, minY, maxY);
+    }
+
 }

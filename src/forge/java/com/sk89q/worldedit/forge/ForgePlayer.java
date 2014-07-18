@@ -20,21 +20,23 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.Vectors;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.util.ChatMessageComponent;
 
-public class ForgePlayer extends LocalPlayer {
+import javax.annotation.Nullable;
+
+public class ForgePlayer extends AbstractPlayerActor {
+
     private EntityPlayerMP player;
 
     protected ForgePlayer(EntityPlayerMP player) {
@@ -51,10 +53,18 @@ public class ForgePlayer extends LocalPlayer {
     }
 
     @Override
+    public BaseEntity getState() {
+        throw new UnsupportedOperationException("Cannot create a state from this object");
+    }
+
+    @Override
     public Location getLocation() {
         Vector position = new Vector(this.player.posX, this.player.posY, this.player.posZ);
-        Vector direction = Vectors.fromEulerDeg(this.player.cameraYaw, this.player.cameraPitch);
-        return new Location(ForgeWorldEdit.inst.getWorld(this.player.worldObj), position, direction);
+        return new Location(
+                ForgeWorldEdit.inst.getWorld(this.player.worldObj),
+                position,
+                this.player.cameraYaw,
+                this.player.cameraPitch);
     }
 
     public WorldVector getPosition() {
@@ -126,4 +136,11 @@ public class ForgePlayer extends LocalPlayer {
     public boolean hasPermission(String perm) {
         return ForgeUtil.hasPermission(this.player, perm);
     }
+
+    @Nullable
+    @Override
+    public <T> T getFacet(Class<? extends T> cls) {
+        return null;
+    }
+
 }

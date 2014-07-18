@@ -43,7 +43,7 @@ public final class Transforms {
     public static Location transform(Location location, Transform transform) {
         checkNotNull(location);
         checkNotNull(transform);
-        return new Location(location.getWorld(), transform.apply(location.toVector()), location.getDirection());
+        return new Location(location.getExtent(), transform.apply(location.toVector()), location.getDirection());
     }
 
 }

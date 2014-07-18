@@ -21,10 +21,13 @@ package com.sk89q.worldedit.function.mask;
 
 import com.sk89q.worldedit.Vector;
 
+import javax.annotation.Nullable;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Checks whether the provided mask tests true for an offset position.
+ * Checks whether another mask tests true for a position that is offset
+ * a given vector.
  */
 public class OffsetMask extends AbstractMask {
 
@@ -85,6 +88,17 @@ public class OffsetMask extends AbstractMask {
     @Override
     public boolean test(Vector vector) {
         return getMask().test(vector.add(offset));
+    }
+
+    @Nullable
+    @Override
+    public Mask2D toMask2D() {
+        Mask2D childMask = getMask().toMask2D();
+        if (childMask != null) {
+            return new OffsetMask2D(childMask, getOffset().toVector2D());
+        } else {
+            return null;
+        }
     }
 
 }

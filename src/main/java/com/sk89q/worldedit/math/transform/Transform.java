@@ -19,13 +19,29 @@
 
 package com.sk89q.worldedit.math.transform;
 
-import com.google.common.base.Function;
 import com.sk89q.worldedit.Vector;
 
 /**
  * Makes a transformation of {@link Vector}s.
  */
-public interface Transform extends Function<Vector, Vector> {
+public interface Transform {
+
+    /**
+     * Return whether this transform is an identity.
+     *
+     * <p>If it is not known, then {@code false} must be returned.</p>
+     *
+     * @return true if identity
+     */
+    boolean isIdentity();
+
+    /**
+     * Returns the result of applying the function to the input.
+     *
+     * @param input the input
+     * @return the result
+     */
+    Vector apply(Vector input);
 
     /**
      * Create a new inverse transform.

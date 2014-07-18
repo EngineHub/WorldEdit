@@ -21,9 +21,12 @@ package com.sk89q.worldedit.function.mask;
 
 import com.sk89q.worldedit.Vector;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -86,7 +89,7 @@ public class MaskIntersection extends AbstractMask {
 
     @Override
     public boolean test(Vector vector) {
-        if (masks.size() == 0) {
+        if (masks.isEmpty()) {
             return false;
         }
 
@@ -97,6 +100,21 @@ public class MaskIntersection extends AbstractMask {
         }
 
         return true;
+    }
+
+    @Nullable
+    @Override
+    public Mask2D toMask2D() {
+        List<Mask2D> mask2dList = new ArrayList<Mask2D>();
+        for (Mask mask : masks) {
+            Mask2D mask2d = mask.toMask2D();
+            if (mask2d != null) {
+                mask2dList.add(mask2d);
+            } else {
+                return null;
+            }
+        }
+        return new MaskIntersection2D(mask2dList);
     }
 
 }

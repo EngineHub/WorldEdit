@@ -19,24 +19,41 @@
 
 package com.sk89q.worldedit.command.tool.brush;
 
-import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.session.ClipboardHolder;
 
 public class ClipboardBrush implements Brush {
 
-    private CuboidClipboard clipboard;
-    private boolean noAir;
+    private ClipboardHolder holder;
+    private boolean ignoreAirBlocks;
+    private boolean usingOrigin;
 
-    public ClipboardBrush(CuboidClipboard clipboard, boolean noAir) {
-        this.clipboard = clipboard;
-        this.noAir = noAir;
+    public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean usingOrigin) {
+        this.holder = holder;
+        this.ignoreAirBlocks = ignoreAirBlocks;
+        this.usingOrigin = usingOrigin;
     }
 
+    @Override
     public void build(EditSession editSession, Vector pos, Pattern mat, double size) throws MaxChangedBlocksException {
-        clipboard.place(editSession, pos.subtract(clipboard.getSize().divide(2)), noAir);
+        Clipboard clipboard = holder.getClipboard();
+        Region region = clipboard.getRegion();
+        Vector centerOffset = region.getCenter().subtract(clipboard.getOrigin());
+
+        Operation operation = holder
+                .createPaste(editSession, editSession.getWorld().getWorldData())
+                .to(usingOrigin ? pos : pos.subtract(centerOffset))
+                .ignoreAirBlocks(ignoreAirBlocks)
+                .build();
+
+        Operations.completeLegacy(operation);
     }
 
 }

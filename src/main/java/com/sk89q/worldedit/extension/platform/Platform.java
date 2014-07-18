@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.util.command.Dispatcher;
@@ -57,13 +56,6 @@ public interface Platform {
      * Reload WorldEdit configuration.
      */
     void reload();
-
-    /**
-     * Returns all available biomes.
-     *
-     * @return an object containing all the biomes
-     */
-    BiomeTypes getBiomes();
 
     /**
      * Schedules the given <code>task</code> to be invoked once every <code>period</code> ticks

@@ -21,11 +21,14 @@ package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -65,6 +68,11 @@ class PlayerProxy extends AbstractPlayerActor {
     @Override
     public String getName() {
         return basePlayer.getName();
+    }
+
+    @Override
+    public BaseEntity getState() {
+        throw new UnsupportedOperationException("Can't getState() on a player");
     }
 
     @Override
@@ -130,5 +138,11 @@ class PlayerProxy extends AbstractPlayerActor {
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
         cuiActor.dispatchCUIEvent(event);
+    }
+
+    @Nullable
+    @Override
+    public <T> T getFacet(Class<? extends T> cls) {
+        return basePlayer.getFacet(cls);
     }
 }

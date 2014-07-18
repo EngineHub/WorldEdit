@@ -26,30 +26,35 @@ import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EntityType;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld.KillFlags;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.command.util.CreatureButcher;
+import com.sk89q.worldedit.command.util.EntityRemover;
+import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.CommandManager;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.function.visitor.EntityVisitor;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.command.CommandCallable;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
 import com.sk89q.worldedit.util.command.binding.Text;
-import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
 import com.sk89q.worldedit.util.formatting.Style;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
@@ -374,7 +379,7 @@ public class UtilityCommands {
             "  -b also kills ambient mobs.\n" +
             "  -t also kills mobs with name tags.\n" +
             "  -f compounds all previous flags.\n" +
-            "  -l strikes lightning on each killed mob.",
+            "  -l currently does nothing.",
         min = 0,
         max = 1
     )
@@ -399,26 +404,37 @@ public class UtilityCommands {
             }
         }
 
-        FlagContainer flags = new FlagContainer(actor);
-        flags.or(KillFlags.FRIENDLY      , args.hasFlag('f')); // No permission check here. Flags will instead be filtered by the subsequent calls.
-        flags.or(KillFlags.PETS          , args.hasFlag('p'), "worldedit.butcher.pets");
-        flags.or(KillFlags.NPCS          , args.hasFlag('n'), "worldedit.butcher.npcs");
-        flags.or(KillFlags.GOLEMS        , args.hasFlag('g'), "worldedit.butcher.golems");
-        flags.or(KillFlags.ANIMALS       , args.hasFlag('a'), "worldedit.butcher.animals");
-        flags.or(KillFlags.AMBIENT       , args.hasFlag('b'), "worldedit.butcher.ambient");
-        flags.or(KillFlags.TAGGED        , args.hasFlag('t'), "worldedit.butcher.tagged");
-        flags.or(KillFlags.WITH_LIGHTNING, args.hasFlag('l'), "worldedit.butcher.lightning");
-        // If you add flags here, please add them to com.sk89q.worldedit.commands.BrushCommands.butcherBrush() as well
+        CreatureButcher flags = new CreatureButcher(actor);
+        flags.fromCommand(args);
 
-        int killed;
+        List<EntityVisitor> visitors = new ArrayList<EntityVisitor>();
+        LocalSession session = null;
+        EditSession editSession = null;
+
         if (player != null) {
-            LocalSession session = we.getSessionManager().get(player);
-            killed = player.getWorld().killMobs(session.getPlacementPosition(player), radius, flags.flags);
-        } else {
-            killed = 0;
-            for (World world : we.getServer().getWorlds()) {
-                killed += world.killMobs(new Vector(), radius, flags.flags);
+            session = we.getSessionManager().get(player);
+            Vector center = session.getPlacementPosition(player);
+            editSession = session.createEditSession(player);
+            List<? extends Entity> entities;
+            if (radius >= 0) {
+                CylinderRegion region = CylinderRegion.createRadius(editSession, center, radius);
+                entities = editSession.getEntities(region);
+            } else {
+                entities = editSession.getEntities();
             }
+            visitors.add(new EntityVisitor(entities.iterator(), flags.createFunction(editSession.getWorld().getWorldData().getEntityRegistry())));
+        } else {
+            Platform platform = we.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
+            for (World world : platform.getWorlds()) {
+                List<? extends Entity> entities = world.getEntities();
+                visitors.add(new EntityVisitor(entities.iterator(), flags.createFunction(world.getWorldData().getEntityRegistry())));
+            }
+        }
+
+        int killed = 0;
+        for (EntityVisitor visitor : visitors) {
+            Operations.completeLegacy(visitor);
+            killed += visitor.getAffected();
         }
 
         if (radius < 0) {
@@ -426,25 +442,10 @@ public class UtilityCommands {
         } else {
             actor.print("Killed " + killed + " mobs in a radius of " + radius + ".");
         }
-    }
 
-    public static class FlagContainer {
-        private final Actor player;
-        public int flags = 0;
-        public FlagContainer(Actor player) {
-            this.player = player;
-        }
-
-        public void or(int flag, boolean on) {
-            if (on) flags |= flag;
-        }
-
-        public void or(int flag, boolean on, String permission) {
-            or(flag, on);
-
-            if ((flags & flag) != 0 && !player.hasPermission(permission)) {
-                flags &= ~flag;
-            }
+        if (editSession != null) {
+            session.remember(editSession);
+            editSession.flushQueue();
         }
     }
 
@@ -457,56 +458,55 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.remove")
     @Logging(PLACEMENT)
-    public void remove(Actor actor, @Optional Player player, @Optional LocalSession session, CommandContext args) throws WorldEditException {
-
+    public void remove(Actor actor, CommandContext args) throws WorldEditException, CommandException {
         String typeStr = args.getString(0);
         int radius = args.getInteger(1);
+        Player player = actor instanceof Player ? (Player) actor : null;
 
         if (radius < -1) {
             actor.printError("Use -1 to remove all entities in loaded chunks");
             return;
         }
 
-        EntityType type = null;
+        EntityRemover remover = new EntityRemover();
+        remover.fromString(typeStr);
 
-        if (typeStr.matches("all")) {
-            type = EntityType.ALL;
-        } else if (typeStr.matches("projectiles?|arrows?")) {
-            type = EntityType.PROJECTILES;
-        } else if (typeStr.matches("items?")
-                || typeStr.matches("drops?")) {
-            type = EntityType.ITEMS;
-        } else if (typeStr.matches("falling(blocks?|sand|gravel)")) {
-            type = EntityType.FALLING_BLOCKS;
-        } else if (typeStr.matches("paintings?")
-                || typeStr.matches("art")) {
-            type = EntityType.PAINTINGS;
-        } else if (typeStr.matches("(item)frames?")) {
-            type = EntityType.ITEM_FRAMES;
-        } else if (typeStr.matches("boats?")) {
-            type = EntityType.BOATS;
-        } else if (typeStr.matches("minecarts?")
-                || typeStr.matches("carts?")) {
-            type = EntityType.MINECARTS;
-        } else if (typeStr.matches("tnt")) {
-            type = EntityType.TNT;
-        } else if (typeStr.matches("xp")) {
-            type = EntityType.XP_ORBS;
+        List<EntityVisitor> visitors = new ArrayList<EntityVisitor>();
+        LocalSession session = null;
+        EditSession editSession = null;
+
+        if (player != null) {
+            session = we.getSessionManager().get(player);
+            Vector center = session.getPlacementPosition(player);
+            editSession = session.createEditSession(player);
+            List<? extends Entity> entities;
+            if (radius >= 0) {
+                CylinderRegion region = CylinderRegion.createRadius(editSession, center, radius);
+                entities = editSession.getEntities(region);
+            } else {
+                entities = editSession.getEntities();
+            }
+            visitors.add(new EntityVisitor(entities.iterator(), remover.createFunction(editSession.getWorld().getWorldData().getEntityRegistry())));
         } else {
-            actor.printError("Acceptable types: projectiles, items, paintings, itemframes, boats, minecarts, tnt, xp, or all");
-            return;
+            Platform platform = we.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
+            for (World world : platform.getWorlds()) {
+                List<? extends Entity> entities = world.getEntities();
+                visitors.add(new EntityVisitor(entities.iterator(), remover.createFunction(world.getWorldData().getEntityRegistry())));
+            }
         }
 
         int removed = 0;
-        if (player != null) {
-            Vector origin = session.getPlacementPosition(player);
-            removed = player.getWorld().removeEntities(type, origin, radius);
-        } else {
-            for (World world : we.getServer().getWorlds()) {
-                removed += world.removeEntities(type, new Vector(), radius);
-            }
+        for (EntityVisitor visitor : visitors) {
+            Operations.completeLegacy(visitor);
+            removed += visitor.getAffected();
         }
-        player.print("Marked " + removed + " entit(ies) for removal.");
+
+        actor.print("Marked " + (removed != 1 ? "entities" : "entity") + " for removal.");
+
+        if (editSession != null) {
+            session.remember(editSession);
+            editSession.flushQueue();
+        }
     }
 
     @Command(

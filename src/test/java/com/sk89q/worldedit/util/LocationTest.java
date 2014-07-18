@@ -38,7 +38,7 @@ public class LocationTest {
     public void testGetWorld() throws Exception {
         World world = mock(World.class);
         Location location = new Location(world);
-        assertEquals(world, location.getWorld());
+        assertEquals(world, location.getExtent());
     }
 
     @Test
@@ -46,28 +46,9 @@ public class LocationTest {
         World world1 = mock(World.class);
         World world2 = mock(World.class);
         Location location1 = new Location(world1);
-        Location location2 = location1.setWorld(world2);
-        assertEquals(world1, location1.getWorld());
-        assertEquals(world2, location2.getWorld());
-    }
-
-    @Test
-    public void testGetDirection() throws Exception {
-        World world = mock(World.class);
-        Vector direction = new Vector(1, 1, 1);
-        Location location = new Location(world, new Vector(), direction);
-        assertEquals(direction, location.getDirection());
-    }
-
-    @Test
-    public void testSetDirection() throws Exception {
-        World world = mock(World.class);
-        Vector direction1 = new Vector(1, 1, 1);
-        Vector direction2 = new Vector(2, 2, 2);
-        Location location1 = new Location(world, new Vector(), direction1);
-        Location location2 = location1.setDirection(direction2);
-        assertEquals(direction1, location1.getDirection());
-        assertEquals(direction2, location2.getDirection());
+        Location location2 = location1.setExtent(world2);
+        assertEquals(world1, location1.getExtent());
+        assertEquals(world2, location2.getExtent());
     }
 
     @Test

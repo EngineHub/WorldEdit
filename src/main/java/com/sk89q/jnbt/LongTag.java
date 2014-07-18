@@ -19,28 +19,29 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.jnbt.Tag;
-
 /**
- * The <code>TAG_Long</code> tag.
- * 
- * @author Graham Edgecombe
+ * The {@code TAG_Long} tag.
  * 
  */
 public final class LongTag extends Tag {
 
-    /**
-     * The value.
-     */
     private final long value;
 
     /**
+     * Creates the tag with an empty name.
+     *
+     * @param value the value of the tag
+     */
+    public LongTag(long value) {
+        super();
+        this.value = value;
+    }
+
+    /**
      * Creates the tag.
-     * 
-     * @param name
-     *            The name.
-     * @param value
-     *            The value.
+     *
+     * @param name the name of the tag
+     * @param value the value of the tag
      */
     public LongTag(String name, long value) {
         super(name);

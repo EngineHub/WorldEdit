@@ -24,6 +24,8 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockType;
 
+import javax.annotation.Nullable;
+
 public class SolidBlockMask extends AbstractExtentMask {
 
     public SolidBlockMask(Extent extent) {
@@ -35,6 +37,12 @@ public class SolidBlockMask extends AbstractExtentMask {
         Extent extent = getExtent();
         BaseBlock lazyBlock = extent.getLazyBlock(vector);
         return !BlockType.canPassThrough(lazyBlock.getType(), lazyBlock.getData());
+    }
+
+    @Nullable
+    @Override
+    public Mask2D toMask2D() {
+        return null;
     }
 
 }

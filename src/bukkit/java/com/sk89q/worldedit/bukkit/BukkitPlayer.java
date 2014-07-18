@@ -19,22 +19,23 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.util.Vectors;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import javax.annotation.Nullable;
 
 public class BukkitPlayer extends LocalPlayer {
     private Player player;
@@ -171,10 +172,24 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
+    public BaseEntity getState() {
+        throw new UnsupportedOperationException("Cannot create a state from this object");
+    }
+
+    @Override
     public com.sk89q.worldedit.util.Location getLocation() {
         Location nativeLocation = player.getLocation();
         Vector position = BukkitUtil.toVector(nativeLocation);
-        Vector direction = Vectors.fromEulerDeg(nativeLocation.getYaw(), nativeLocation.getPitch());
-        return new com.sk89q.worldedit.util.Location(getWorld(), position, direction);
+        return new com.sk89q.worldedit.util.Location(
+                getWorld(),
+                position,
+                nativeLocation.getYaw(),
+                nativeLocation.getPitch());
+    }
+
+    @Nullable
+    @Override
+    public <T> T getFacet(Class<? extends T> cls) {
+        return null;
     }
 }

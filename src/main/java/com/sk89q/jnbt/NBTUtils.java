@@ -19,23 +19,31 @@
 
 package com.sk89q.jnbt;
 
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * A class which contains NBT-related utility methods.
- *
- * @author Graham Edgecombe
  *
  */
 public final class NBTUtils {
 
     /**
+     * Default private constructor.
+     */
+    private NBTUtils() {
+    }
+
+    /**
      * Gets the type name of a tag.
      *
-     * @param clazz
-     *            The tag class.
+     * @param clazz the tag class
      * @return The type name.
      */
     public static String getTypeName(Class<? extends Tag> clazz) {
@@ -72,11 +80,9 @@ public final class NBTUtils {
     /**
      * Gets the type code of a tag class.
      *
-     * @param clazz
-     *            The tag class.
+     * @param clazz the tag class
      * @return The type code.
-     * @throws IllegalArgumentException
-     *             if the tag class is invalid.
+     * @throws IllegalArgumentException if the tag class is invalid.
      */
     public static int getTypeCode(Class<? extends Tag> clazz) {
         if (clazz.equals(ByteArrayTag.class)) {
@@ -112,11 +118,9 @@ public final class NBTUtils {
     /**
      * Gets the class of a type of tag.
      *
-     * @param type
-     *            The type.
+     * @param type the type
      * @return The class.
-     * @throws IllegalArgumentException
-     *             if the tag type is invalid.
+     * @throws IllegalArgumentException if the tag type is invalid.
      */
     public static Class<? extends Tag> getTypeClass(int type) {
         switch (type) {
@@ -151,10 +155,17 @@ public final class NBTUtils {
     }
 
     /**
-     * Default private constructor.
+     * Read a vector from a list tag containing ideally three values: the
+     * X, Y, and Z components.
+     *
+     * <p>For values that are unavailable, their values will be 0.</p>
+     *
+     * @param listTag the list tag
+     * @return a vector
      */
-    private NBTUtils() {
-
+    public static Vector toVector(ListTag listTag) {
+        checkNotNull(listTag);
+        return new Vector(listTag.asDouble(0), listTag.asDouble(1), listTag.asDouble(2));
     }
 
     /**

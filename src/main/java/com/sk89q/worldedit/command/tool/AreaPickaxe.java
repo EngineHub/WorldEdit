@@ -25,6 +25,7 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.world.World;
 
 /**
  * A super pickaxe mode that will remove blocks in an area.
@@ -48,7 +49,7 @@ public class AreaPickaxe implements BlockTool {
         int ox = clicked.getBlockX();
         int oy = clicked.getBlockY();
         int oz = clicked.getBlockZ();
-        int initialType = clicked.getWorld().getBlockType(clicked.toVector());
+        int initialType = ((World) clicked.getExtent()).getBlockType(clicked.toVector());
 
         if (initialType == 0) {
             return true;
@@ -70,7 +71,7 @@ public class AreaPickaxe implements BlockTool {
                             continue;
                         }
 
-                        clicked.getWorld().queueBlockBreakEffect(server, pos, initialType, clicked.toVector().distanceSq(pos));
+                        ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialType, clicked.toVector().distanceSq(pos));
 
                         editSession.setBlock(pos, air);
                     }

@@ -600,8 +600,7 @@ public class Vector implements Comparable<Vector> {
      * @param translateZ what to add after rotation
      * @return
      */
-    public Vector transform2D(double angle,
-            double aboutX, double aboutZ, double translateX, double translateZ) {
+    public Vector transform2D(double angle, double aboutX, double aboutZ, double translateX, double translateZ) {
         angle = Math.toRadians(angle);
         double x = this.x - aboutX;
         double z = this.z - aboutZ;
@@ -650,6 +649,40 @@ public class Vector implements Comparable<Vector> {
         }
 
         throw new RuntimeException("This should not happen");
+    }
+
+    /**
+     * Get this vector's pitch as used within the game.
+     *
+     * @return pitch in radians
+     */
+    public float toPitch() {
+        double x = getX();
+        double z = getZ();
+
+        if (x == 0 && z == 0) {
+            return getY() > 0 ? -90 : 90;
+        } else {
+            double x2 = x * x;
+            double z2 = z * z;
+            double xz = Math.sqrt(x2 + z2);
+            return (float) Math.toDegrees(Math.atan(-getY() / xz));
+        }
+    }
+
+    /**
+     * Get this vector's yaw as used within the game.
+     *
+     * @return yaw in radians
+     */
+    public float toYaw() {
+        double x = getX();
+        double z = getZ();
+
+        double t = Math.atan2(-x, z);
+        double _2pi = 2 * Math.PI;
+
+        return (float) Math.toDegrees(((t + _2pi) % _2pi));
     }
 
     /**
@@ -792,4 +825,5 @@ public class Vector implements Comparable<Vector> {
             (v1.z + v2.z) / 2
         );
     }
+
 }

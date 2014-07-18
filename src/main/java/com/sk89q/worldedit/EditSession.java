@@ -22,6 +22,8 @@ package com.sk89q.worldedit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.extent.ChangeSetExtent;
 import com.sk89q.worldedit.extent.Extent;
@@ -69,12 +71,12 @@ import com.sk89q.worldedit.regions.shape.ArbitraryBiomeShape;
 import com.sk89q.worldedit.regions.shape.ArbitraryShape;
 import com.sk89q.worldedit.regions.shape.RegionShape;
 import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
-import com.sk89q.worldedit.util.Countable;
-import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.*;
 import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.biome.BaseBiome;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -377,6 +379,16 @@ public class EditSession implements Extent {
     }
 
     @Override
+    public BaseBiome getBiome(Vector2D position) {
+        return bypassNone.getBiome(position);
+    }
+
+    @Override
+    public boolean setBiome(Vector2D position, BaseBiome biome) {
+        return bypassNone.setBiome(position, biome);
+    }
+
+    @Override
     public BaseBlock getLazyBlock(Vector position) {
         return world.getLazyBlock(position);
     }
@@ -581,6 +593,12 @@ public class EditSession implements Extent {
         return getBlock(position).isAir() && setBlock(position, block);
     }
 
+    @Override
+    @Nullable
+    public Entity createEntity(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
+        return bypassNone.createEntity(location, entity);
+    }
+
     /**
      * Insert a contrived block change into the history.
      *
@@ -635,6 +653,16 @@ public class EditSession implements Extent {
     @Override
     public Vector getMaximumPoint() {
         return getWorld().getMaximumPoint();
+    }
+
+    @Override
+    public List<? extends Entity> getEntities(Region region) {
+        return bypassNone.getEntities(region);
+    }
+
+    @Override
+    public List<? extends Entity> getEntities() {
+        return bypassNone.getEntities();
     }
 
     /**
@@ -1148,6 +1176,7 @@ public class EditSession implements Extent {
         ForwardExtentCopy copy = new ForwardExtentCopy(this, region, buffer, to);
         copy.setTransform(new AffineTransform().translate(dir.multiply(distance)));
         copy.setSourceFunction(remove); // Remove
+        copy.setRemovingEntities(true);
         if (!copyAir) {
             copy.setSourceMask(new ExistingBlockMask(this));
         }
@@ -2230,7 +2259,7 @@ public class EditSession implements Extent {
         } // while
     }
 
-    public int makeBiomeShape(final Region region, final Vector zero, final Vector unit, final BiomeType biomeType, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException {
+    public int makeBiomeShape(final Region region, final Vector zero, final Vector unit, final BaseBiome biomeType, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException {
         final Vector2D zero2D = zero.toVector2D();
         final Vector2D unit2D = unit.toVector2D();
 
@@ -2243,7 +2272,7 @@ public class EditSession implements Extent {
 
         final ArbitraryBiomeShape shape = new ArbitraryBiomeShape(region) {
             @Override
-            protected BiomeType getBiome(int x, int z, BiomeType defaultBiomeType) {
+            protected BaseBiome getBiome(int x, int z, BaseBiome defaultBiomeType) {
                 final Vector2D current = new Vector2D(x, z);
                 environment.setCurrentBlock(current.toVector(0));
                 final Vector2D scaled = current.subtract(zero2D).divide(unit2D);

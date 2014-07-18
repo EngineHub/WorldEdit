@@ -19,21 +19,18 @@
 
 package com.sk89q.worldedit.function.pattern;
 
-import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A pattern that reads from {@link CuboidClipboard}.
- *
- * @deprecated May be removed without notice, but there is no direct replacement yet
+ * A pattern that reads from {@link Clipboard}.
  */
-@Deprecated
 public class ClipboardPattern extends AbstractPattern {
 
-    private final CuboidClipboard clipboard;
+    private final Clipboard clipboard;
     private final Vector size;
 
     /**
@@ -41,10 +38,10 @@ public class ClipboardPattern extends AbstractPattern {
      *
      * @param clipboard the clipboard
      */
-    public ClipboardPattern(CuboidClipboard clipboard) {
+    public ClipboardPattern(Clipboard clipboard) {
         checkNotNull(clipboard);
         this.clipboard = clipboard;
-        this.size = clipboard.getSize();
+        this.size = clipboard.getMaximumPoint().subtract(clipboard.getMinimumPoint()).add(1, 1, 1);
     }
 
     @Override
@@ -53,7 +50,7 @@ public class ClipboardPattern extends AbstractPattern {
         int yp = Math.abs(position.getBlockY()) % size.getBlockY();
         int zp = Math.abs(position.getBlockZ()) % size.getBlockZ();
 
-        return clipboard.getPoint(new Vector(xp, yp, zp));
+        return clipboard.getBlock(clipboard.getMinimumPoint().add(new Vector(xp, yp, zp)));
     }
 
 }

@@ -22,7 +22,7 @@ package com.sk89q.worldedit.util;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
 
 /**
@@ -62,7 +62,7 @@ public class TargetBlock {
      * @param checkDistance how often to check for blocks, the smaller the more precise
      */
     public TargetBlock(LocalPlayer player, int maxDistance, double checkDistance) {
-        this((Entity) player, maxDistance, checkDistance);
+        this((Player) player, maxDistance, checkDistance);
     }
 
     /**
@@ -72,10 +72,9 @@ public class TargetBlock {
      * @param maxDistance how far it checks for blocks
      * @param checkDistance how often to check for blocks, the smaller the more precise
      */
-    public TargetBlock(Entity player, int maxDistance, double checkDistance) {
+    public TargetBlock(Player player, int maxDistance, double checkDistance) {
         this.world = LocalWorldAdapter.adapt(player.getWorld());
-        this.setValues(player.getPosition(), player.getYaw(), player.getPitch(),
-                maxDistance, 1.65, checkDistance);
+        this.setValues(player.getPosition(), player.getYaw(), player.getPitch(), maxDistance, 1.65, checkDistance);
     }
 
     /**

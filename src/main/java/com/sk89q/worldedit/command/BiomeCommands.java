@@ -23,15 +23,29 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.function.FlatRegionFunction;
+import com.sk89q.worldedit.function.FlatRegionMaskingFilter;
+import com.sk89q.worldedit.function.biome.BiomeReplace;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.masks.BiomeTypeMask;
-import com.sk89q.worldedit.masks.InvertedMask;
+import com.sk89q.worldedit.function.mask.Mask2D;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.function.visitor.FlatRegionVisitor;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.Regions;
+import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeData;
+import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
 import java.util.HashSet;
 import java.util.List;
@@ -64,7 +78,7 @@ public class BiomeCommands {
         max = 1
     )
     @CommandPermissions("worldedit.biome.list")
-    public void biomeList(Actor actor, CommandContext args) throws WorldEditException {
+    public void biomeList(Player player, CommandContext args) throws WorldEditException {
         int page;
         int offset;
         int count = 0;
@@ -76,16 +90,22 @@ public class BiomeCommands {
             offset = (page - 1) * 19;
         }
 
-        List<BiomeType> biomes = worldEdit.getServer().getBiomes().all();
+        BiomeRegistry biomeRegistry = player.getWorld().getWorldData().getBiomeRegistry();
+        List<BaseBiome> biomes = biomeRegistry.getBiomes();
         int totalPages = biomes.size() / 19 + 1;
-        actor.print("Available Biomes (page " + page + "/" + totalPages + ") :");
-        for (BiomeType biome : biomes) {
+        player.print("Available Biomes (page " + page + "/" + totalPages + ") :");
+        for (BaseBiome biome : biomes) {
             if (offset > 0) {
                 offset--;
             } else {
-                actor.print(" " + biome.getName());
-                if (++count == 19) {
-                    break;
+                BiomeData data = biomeRegistry.getData(biome);
+                if (data != null) {
+                    player.print(" " + data.getName());
+                    if (++count == 19) {
+                        break;
+                    }
+                } else {
+                    player.print(" <unknown #" + biome.getId() + ">");
                 }
             }
         }
@@ -103,7 +123,11 @@ public class BiomeCommands {
         max = 0
     )
     @CommandPermissions("worldedit.biome.info")
-    public void biomeInfo(CommandContext args, Player player, LocalSession session) throws WorldEditException {
+    public void biomeInfo(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+        BiomeRegistry biomeRegistry = player.getWorld().getWorldData().getBiomeRegistry();
+        Set<BaseBiome> biomes = new HashSet<BaseBiome>();
+        String qualifier;
+
         if (args.hasFlag('t')) {
             Vector blockPosition = player.getBlockTrace(300);
             if (blockPosition == null) {
@@ -111,15 +135,18 @@ public class BiomeCommands {
                 return;
             }
 
-            BiomeType biome = player.getWorld().getBiome(blockPosition.toVector2D());
-            player.print("Biome: " + biome.getName());
+            BaseBiome biome = player.getWorld().getBiome(blockPosition.toVector2D());
+            biomes.add(biome);
+
+            qualifier = "at line of sight point";
         } else if (args.hasFlag('p')) {
-            BiomeType biome = player.getWorld().getBiome(player.getPosition().toVector2D());
-            player.print("Biome: " + biome.getName());
+            BaseBiome biome = player.getWorld().getBiome(player.getPosition().toVector2D());
+            biomes.add(biome);
+
+            qualifier = "at your position";
         } else {
             World world = player.getWorld();
             Region region = session.getSelection(world);
-            Set<BiomeType> biomes = new HashSet<BiomeType>();
 
             if (region instanceof FlatRegion) {
                 for (Vector2D pt : ((FlatRegion) region).asFlatRegion()) {
@@ -131,9 +158,16 @@ public class BiomeCommands {
                 }
             }
 
-            player.print("Biomes:");
-            for (BiomeType biome : biomes) {
-                player.print(" " + biome.getName());
+            qualifier = "in your selection";
+        }
+
+        player.print(biomes.size() != 1 ? "Biomes " + qualifier + ":" : "Biome " + qualifier + ":");
+        for (BaseBiome biome : biomes) {
+            BiomeData data = biomeRegistry.getData(biome);
+            if (data != null) {
+                player.print(" " + data.getName());
+            } else {
+                player.print(" <unknown #" + biome.getId() + ">");
             }
         }
     }
@@ -145,65 +179,31 @@ public class BiomeCommands {
             desc = "Sets the biome of the player's current block or region.",
             help =
                     "Set the biome of the region.\n" +
-                            "By default use all the blocks contained in your selection.\n" +
-                            "-p use the block you are currently in",
-            min = 1,
-            max = 1
+                    "By default use all the blocks contained in your selection.\n" +
+                    "-p use the block you are currently in"
     )
     @Logging(REGION)
     @CommandPermissions("worldedit.biome.set")
-    public void setBiome(CommandContext args, Player player, LocalSession session, EditSession editSession) throws WorldEditException {
-        final BiomeType target = worldEdit.getServer().getBiomes().get(args.getString(0));
-        if (target == null) {
-            player.printError("Biome '" + args.getString(0) + "' does not exist!");
-            return;
-        }
-
+    public void setBiome(Player player, LocalSession session, EditSession editSession, BaseBiome target, @Switch('p') boolean atPosition) throws WorldEditException {
+        World world = player.getWorld();
+        Region region;
         Mask mask = editSession.getMask();
-        BiomeTypeMask biomeMask = null;
-        boolean inverted = false;
-        if (mask instanceof BiomeTypeMask) {
-            biomeMask = (BiomeTypeMask) mask;
-        } else if (mask instanceof InvertedMask && ((InvertedMask) mask).getInvertedMask() instanceof BiomeTypeMask) {
-            inverted = true;
-            biomeMask = (BiomeTypeMask) ((InvertedMask) mask).getInvertedMask();
-        }
+        Mask2D mask2d = mask != null ? mask.toMask2D() : null;
 
-        if (args.hasFlag('p')) {
-            Vector2D pos = player.getPosition().toVector2D();
-            if (biomeMask == null || (biomeMask.matches2D(editSession, pos) ^ inverted)) {
-                player.getWorld().setBiome(pos, target);
-                player.print("Biome changed to " + target.getName() + " at your current location.");
-            } else {
-                player.print("Your global mask doesn't match this biome. Type //gmask to disable it.");
-            }
+        if (atPosition) {
+            region = new CuboidRegion(player.getPosition(), player.getPosition());
         } else {
-            int affected = 0;
-            World world = player.getWorld();
-            Region region = session.getSelection(world);
-
-            if (region instanceof FlatRegion) {
-                for (Vector2D pt : ((FlatRegion) region).asFlatRegion()) {
-                    if (biomeMask == null || (biomeMask.matches2D(editSession, pt) ^ inverted)) {
-                        world.setBiome(pt, target);
-                        ++affected;
-                    }
-                }
-            } else {
-                HashSet<Long> alreadyVisited = new HashSet<Long>();
-                for (Vector pt : region) {
-                    if (!alreadyVisited.contains((long)pt.getBlockX() << 32 | pt.getBlockZ())) {
-                        alreadyVisited.add(((long)pt.getBlockX() << 32 | pt.getBlockZ()));
-                        if (biomeMask == null || (biomeMask.matches(editSession, pt) ^ inverted)) {
-                            world.setBiome(pt.toVector2D(), target);
-                            ++affected;
-                        }
-                    }
-                }
-            }
-
-            player.print("Biome changed to " + target.getName() + ". " + affected + " columns affected.");
+            region = session.getSelection(world);
         }
+
+        FlatRegionFunction replace = new BiomeReplace(editSession, target);
+        if (mask2d != null) {
+            replace = new FlatRegionMaskingFilter(mask2d, replace);
+        }
+        FlatRegionVisitor visitor = new FlatRegionVisitor(Regions.asFlatRegion(region), replace);
+        Operations.completeLegacy(visitor);
+
+        player.print("Biomes were changed in " + visitor.getAffected() + " columns. You may have to rejoin your game (or close and reopen your world) to see a change.");
     }
 
 }

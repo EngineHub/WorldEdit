@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.internal;
 
-import com.sk89q.worldedit.BiomeTypes;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.entity.Player;
@@ -65,11 +64,6 @@ public class ServerInterfaceAdapter extends ServerInterface {
     @Override
     public void reload() {
         platform.reload();
-    }
-
-    @Override
-    public BiomeTypes getBiomes() {
-        return platform.getBiomes();
     }
 
     @Override

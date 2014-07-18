@@ -104,7 +104,11 @@ public class FastListIterator<E> implements Iterator<E> {
      * @return an iterator
      */
     public static <E> Iterator<E> reverseIterator(List<E> list) {
-        return new FastListIterator<E>(list, list.size() - 1, list.size(), -1);
+        if (!list.isEmpty()) {
+            return new FastListIterator<E>(list, list.size() - 1, list.size(), -1);
+        } else {
+            return new FastListIterator<E>(list, 0, 0, -1);
+        }
     }
 
 }

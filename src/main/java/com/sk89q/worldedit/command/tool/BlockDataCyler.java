@@ -41,7 +41,7 @@ public class BlockDataCyler implements DoubleActionBlockTool {
     private boolean handleCycle(Platform server, LocalConfiguration config,
             Player player, LocalSession session, Location clicked, boolean forward) {
 
-        World world = clicked.getWorld();
+        World world = (World) clicked.getExtent();
 
         int type = world.getBlockType(clicked.toVector());
         int data = world.getBlockData(clicked.toVector());

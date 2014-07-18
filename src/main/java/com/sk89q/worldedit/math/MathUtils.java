@@ -24,6 +24,15 @@ package com.sk89q.worldedit.math;
  */
 public final class MathUtils {
 
+    /**
+     * Safe minimum, such that 1 / SAFE_MIN does not overflow.
+     * <p>
+     * In IEEE 754 arithmetic, this is also the smallest normalized number
+     * 2<sup>-1022</sup>. The value of this constant is from Apache Commons
+     * Math 2.2.
+     */
+    public static final double SAFE_MIN = 0x1.0p-1022;
+
     private MathUtils() {
     }
 

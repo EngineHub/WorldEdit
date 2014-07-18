@@ -42,7 +42,7 @@ public class QueryTool implements BlockTool {
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
 
-        World world = clicked.getWorld();
+        World world = (World) clicked.getExtent();
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, 0, player);
         BaseBlock block = (editSession).rawGetBlock(clicked.toVector());
         BlockType type = BlockType.fromID(block.getType());

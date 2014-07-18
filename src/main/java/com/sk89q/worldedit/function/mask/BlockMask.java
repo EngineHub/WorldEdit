@@ -23,6 +23,7 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -96,4 +97,11 @@ public class BlockMask extends AbstractExtentMask {
         BaseBlock block = getExtent().getBlock(vector);
         return blocks.contains(block) || blocks.contains(new BaseBlock(block.getType(), -1));
     }
+
+    @Nullable
+    @Override
+    public Mask2D toMask2D() {
+        return null;
+    }
+
 }

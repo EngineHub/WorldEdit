@@ -142,6 +142,22 @@
       <type>jar</type>
     </dependency>
 
+    <!-- JSON parser -->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.2.4</version>
+      <optional>true</optional>
+    </dependency>
+
+    <!-- Optimized collections -->
+    <dependency>
+      <groupId>net.sf.trove4j</groupId>
+      <artifactId>trove4j</artifactId>
+      <version>3.0.3</version>
+      <optional>true</optional>
+    </dependency>
+
     <!-- @Nullable etc. -->
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
@@ -186,6 +202,18 @@
   <build>
     <defaultGoal>install</defaultGoal>
     <sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
+
+    <resources>
+      <!-- Data files -->
+      <resource>
+        <targetPath>.</targetPath>
+        <filtering>false</filtering>
+        <directory>${basedir}/src/main/resources/</directory>
+        <includes>
+          <include>**/*.json</include>
+        </includes>
+      </resource>
+    </resources>
 
     <!-- Used for uploading the docs -->
     <extensions>
@@ -367,12 +395,25 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <minimizeJar>true</minimizeJar>
               <artifactSet>
                 <includes>
                   <include>com.sk89q:jchronic</include>
                   <include>com.thoughtworks.paranamer:paranamer</include>
+                  <include>com.google.code.gson:gson</include>
+                  <include>net.sf.trove4j:trove4j</include>
                 </includes>
               </artifactSet>
+              <relocations>
+                <relocation>
+                  <pattern>gnu.trove</pattern>
+                  <shadedPattern>com.sk89q.worldedit.internal.trove</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>com.google.gson</pattern>
+                  <shadedPattern>com.sk89q.worldedit.internal.gson</shadedPattern>
+                </relocation>
+              </relocations>
             </configuration>
           </execution>
         </executions>
@@ -513,16 +554,6 @@
           <type>jar</type>
           <optional>true</optional>
         </dependency>
-
-        <!-- NMS blocks -->
-        <dependency>
-          <groupId>org.bukkit</groupId>
-          <artifactId>craftbukkit</artifactId>
-          <version>1.7.9-R0.1-SNAPSHOT</version>
-          <scope>compile</scope>
-          <type>jar</type>
-          <optional>true</optional>
-        </dependency>
       </dependencies>
 
       <build>
@@ -549,11 +580,11 @@
 
           <!-- NMS support in Bukkit -->
           <resource>
-            <targetPath>nmsblocks/</targetPath>
+            <targetPath>.</targetPath>
             <filtering>false</filtering>
-            <directory>${basedir}/src/bukkit/resources/nmsblocks/</directory>
+            <directory>${basedir}/src/bukkit/resources/</directory>
             <includes>
-              <include>*.class</include>
+              <include>**/*.class</include>
             </includes>
           </resource>
         </resources>

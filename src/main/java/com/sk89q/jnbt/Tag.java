@@ -20,32 +20,35 @@
 package com.sk89q.jnbt;
 
 /**
- * Represents a single NBT tag.
- * 
- * @author Graham Edgecombe
- * 
+ * Represents a NBT tag.
  */
 public abstract class Tag {
 
-    /**
-     * The name of this tag.
-     */
     private final String name;
+
+    /**
+     * Create a new tag with an empty name.
+     */
+    Tag() {
+        this("");
+    }
 
     /**
      * Creates the tag with the specified name.
      * 
-     * @param name
-     *            The name.
+     * @param name the name
      */
-    public Tag(String name) {
+    Tag(String name) {
+        if (name == null) {
+            name = "";
+        }
         this.name = name;
     }
 
     /**
      * Gets the name of this tag.
      * 
-     * @return The name of this tag.
+     * @return the name of this tag
      */
     public final String getName() {
         return name;
@@ -54,7 +57,7 @@ public abstract class Tag {
     /**
      * Gets the value of this tag.
      * 
-     * @return The value of this tag.
+     * @return the value
      */
     public abstract Object getValue();
 

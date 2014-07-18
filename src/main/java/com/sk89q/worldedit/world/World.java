@@ -19,7 +19,11 @@
 
 package com.sk89q.worldedit.world;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BlockVector2D;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -28,6 +32,7 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.world.registry.WorldData;
 
 /**
  * Represents a world (dimension).
@@ -116,31 +121,13 @@ public interface World extends Extent {
      * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
      */
     @Deprecated
-    boolean setBlockTypeFast(Vector position, int type);
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
     void setBlockData(Vector position, int data);
 
     /**
      * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
      */
     @Deprecated
-    void setBlockDataFast(Vector position, int data);
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
     boolean setTypeIdAndData(Vector position, int type, int data);
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
-    boolean setTypeIdAndDataFast(Vector position, int type, int data);
 
     /**
      * Get the light level at the given block.
@@ -157,22 +144,6 @@ public interface World extends Extent {
      * @return true if the container was cleared
      */
     boolean clearContainerBlockContents(Vector position);
-
-    /**
-     * Get the biome type.
-     *
-     * @param position the (x, z) location to check the biome at
-     * @return the biome type at the location
-     */
-    BiomeType getBiome(Vector2D position);
-
-    /**
-     * Set the biome type.
-     *
-     * @param position the (x, z) location to set the biome at
-     * @param biome the biome type to set to
-     */
-    void setBiome(Vector2D position, BiomeType biome);
 
     /**
      * Drop an item at the given position.
@@ -198,54 +169,6 @@ public interface World extends Extent {
      * @param position the position
      */
     void simulateBlockMine(Vector position);
-
-    /**
-     * Get a list of entities in the given region.
-     *
-     * @param region the region
-     * @return a list of entities
-     */
-    LocalEntity[] getEntities(Region region);
-
-    /**
-     * Kill the entities listed in the provided array.
-     *
-     * @param entity an array of entities
-     * @return the number of entities that were removed
-     */
-    int killEntities(LocalEntity... entity);
-
-    /**
-     * @deprecated Use {@link #killMobs(Vector, double, int)}
-     */
-    @Deprecated
-    int killMobs(Vector origin, int radius);
-
-    /**
-     * @deprecated Use {@link #killMobs(Vector, double, int)}
-     */
-    @Deprecated
-    int killMobs(Vector origin, int radius, boolean killPets);
-
-    /**
-     * Kill mobs at the given location with the given radius.
-     *
-     * @param origin the origin
-     * @param radius the radius
-     * @param flags kill flags (see {@link LocalWorld.KillFlags})
-     * @return the number of mobs that were killed
-     */
-    int killMobs(Vector origin, double radius, int flags);
-
-    /**
-     * Remove entities in an area.
-     *
-     * @param type the type of entity
-     * @param origin the origin
-     * @param radius the radius
-     * @return the number of mobs that were killed
-     */
-    int removeEntities(EntityType type, Vector origin, int radius);
 
     /**
      * Regenerate an area.
@@ -344,6 +267,13 @@ public interface World extends Extent {
      * @return true if the effect was played
      */
     boolean queueBlockBreakEffect(Platform server, Vector position, int blockId, double priority);
+
+    /**
+     * Get the data for blocks and so on for this world.
+     *
+     * @return the world data
+     */
+    WorldData getWorldData();
 
     @Override
     boolean equals(Object other);

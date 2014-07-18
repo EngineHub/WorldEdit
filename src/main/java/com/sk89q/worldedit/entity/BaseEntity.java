@@ -20,13 +20,7 @@
 package com.sk89q.worldedit.entity;
 
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.NbtValued;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -35,52 +29,43 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class BaseEntity implements NbtValued {
 
+    private String id;
     private CompoundTag nbtData;
 
     /**
-     * Create a new entity with the given entity ID.
+     * Create a new base entity.
      *
-     * @param id the ID of the entity, which determines its type
+     * @param id the entity type ID
+     * @param nbtData NBT data
+     */
+    public BaseEntity(String id, CompoundTag nbtData) {
+        setTypeId(id);
+        setNbtData(nbtData);
+    }
+
+    /**
+     * Create a new base entity with no NBT data.
+     *
+     * @param id the entity type ID
      */
     public BaseEntity(String id) {
-        checkNotNull(id);
-        Map<String, Tag> map = new HashMap<String, Tag>();
-        map.put("id", new StringTag("id", id));
-        this.nbtData = new CompoundTag("", map);
+        setTypeId(id);
     }
 
     /**
-     * Create a new entity with the given NBT data.
+     * Make a clone of a {@link BaseEntity}.
      *
-     * @param nbtData the NBT data
+     * @param other the object to clone
      */
-    public BaseEntity(CompoundTag nbtData) {
-        checkNotNull(nbtData);
-        this.nbtData = nbtData;
-    }
-
-    /**
-     * Get the ID of the entity, which determines the type of entity.
-     * An example of an entity ID would be "CaveSpider".
-     *
-     * @return the entity ID, which may be an empty string
-     */
-    public String getEntityId() {
-        CompoundTag nbtData = getNbtData();
-        if (nbtData == null) {
-            return "";
-        }
-        Tag idTag = nbtData.getValue().get("id");
-        if (idTag != null && idTag instanceof StringTag) {
-            return ((StringTag) idTag).getValue();
-        } else {
-            return "";
-        }
+    public BaseEntity(BaseEntity other) {
+        checkNotNull(other);
+        setTypeId(other.getTypeId());
+        setNbtData(other.getNbtData());
     }
 
     @Override
     public boolean hasNbtData() {
-        return getNbtData() != null;
+        return true;
     }
 
     @Override
@@ -89,9 +74,28 @@ public class BaseEntity implements NbtValued {
     }
 
     @Override
-    public void setNbtData(CompoundTag nbtData) throws DataException {
+    public void setNbtData(CompoundTag nbtData) {
         checkNotNull(nbtData);
         this.nbtData = nbtData;
+    }
+
+    /**
+     * Get the entity that determines the type of entity.
+     *
+     * @return the entity ID
+     */
+    public String getTypeId() {
+        return id;
+    }
+
+    /**
+     * Set the entity ID that determines the type of entity.
+     *
+     * @param id the id
+     */
+    public void setTypeId(String id) {
+        checkNotNull(id);
+        this.id = id;
     }
 
 }

@@ -20,7 +20,8 @@
 package com.sk89q.worldedit.world;
 
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.worldedit.world.DataException;
+
+import javax.annotation.Nullable;
 
 /**
  * Indicates an object that contains extra data identified as an NBT structure. This
@@ -47,6 +48,7 @@ public interface NbtValued {
      * 
      * @return compound tag, or null
      */
+    @Nullable
     CompoundTag getNbtData();
 
     /**
@@ -55,6 +57,6 @@ public interface NbtValued {
      * @param nbtData NBT data, or null if no data
      * @throws DataException if possibly the data is invalid
      */
-    void setNbtData(CompoundTag nbtData) throws DataException;
+    void setNbtData(@Nullable CompoundTag nbtData);
 
 }

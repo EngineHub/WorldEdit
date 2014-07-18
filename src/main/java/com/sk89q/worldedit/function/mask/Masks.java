@@ -22,12 +22,17 @@ package com.sk89q.worldedit.function.mask;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.session.request.Request;
 
+import javax.annotation.Nullable;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Various utility functions related to {@link Mask} and {@link Mask2D}.
  */
 public final class Masks {
+
+    private static final AlwaysTrue ALWAYS_TRUE = new AlwaysTrue();
+    private static final AlwaysFalse ALWAYS_FALSE = new AlwaysFalse();
 
     private Masks() {
     }
@@ -38,12 +43,7 @@ public final class Masks {
      * @return a mask
      */
     public static Mask alwaysTrue() {
-        return new AbstractMask() {
-            @Override
-            public boolean test(Vector vector) {
-                return true;
-            }
-        };
+        return ALWAYS_TRUE;
     }
 
     /**
@@ -52,12 +52,7 @@ public final class Masks {
      * @return a mask
      */
     public static Mask2D alwaysTrue2D() {
-        return new AbstractMask2D() {
-            @Override
-            public boolean test(Vector2D vector) {
-                return true;
-            }
-        };
+        return ALWAYS_TRUE;
     }
 
     /**
@@ -67,11 +62,28 @@ public final class Masks {
      * @return a new mask
      */
     public static Mask negate(final Mask mask) {
+        if (mask instanceof AlwaysTrue) {
+            return ALWAYS_FALSE;
+        } else if (mask instanceof AlwaysFalse) {
+            return ALWAYS_TRUE;
+        }
+
         checkNotNull(mask);
         return new AbstractMask() {
             @Override
             public boolean test(Vector vector) {
                 return !mask.test(vector);
+            }
+
+            @Nullable
+            @Override
+            public Mask2D toMask2D() {
+                Mask2D mask2d = mask.toMask2D();
+                if (mask2d != null) {
+                    return negate(mask2d);
+                } else {
+                    return null;
+                }
             }
         };
     }
@@ -83,11 +95,38 @@ public final class Masks {
      * @return a new mask
      */
     public static Mask2D negate(final Mask2D mask) {
+        if (mask instanceof AlwaysTrue) {
+            return ALWAYS_FALSE;
+        } else if (mask instanceof AlwaysFalse) {
+            return ALWAYS_TRUE;
+        }
+
         checkNotNull(mask);
         return new AbstractMask2D() {
             @Override
             public boolean test(Vector2D vector) {
                 return !mask.test(vector);
+            }
+        };
+    }
+
+    /**
+     * Return a 3-dimensional version of a 2D mask.
+     *
+     * @param mask the mask to make 3D
+     * @return a 3D mask
+     */
+    public static Mask asMask(final Mask2D mask) {
+        return new AbstractMask() {
+            @Override
+            public boolean test(Vector vector) {
+                return mask.test(vector.toVector2D());
+            }
+
+            @Nullable
+            @Override
+            public Mask2D toMask2D() {
+                return mask;
             }
         };
     }
@@ -113,6 +152,12 @@ public final class Masks {
             public boolean test(Vector vector) {
                 return mask.matches(editSession, vector);
             }
+
+            @Nullable
+            @Override
+            public Mask2D toMask2D() {
+                return null;
+            }
         };
     }
 
@@ -135,6 +180,12 @@ public final class Masks {
                 EditSession editSession = Request.request().getEditSession();
                 return editSession != null && mask.matches(editSession, vector);
             }
+
+            @Nullable
+            @Override
+            public Mask2D toMask2D() {
+                return null;
+            }
         };
     }
 
@@ -154,6 +205,42 @@ public final class Masks {
                 return mask.test(pos);
             }
         };
+    }
+
+    private static class AlwaysTrue implements Mask, Mask2D {
+        @Override
+        public boolean test(Vector vector) {
+            return true;
+        }
+
+        @Override
+        public boolean test(Vector2D vector) {
+            return true;
+        }
+
+        @Nullable
+        @Override
+        public Mask2D toMask2D() {
+            return this;
+        }
+    }
+
+    private static class AlwaysFalse implements Mask, Mask2D {
+        @Override
+        public boolean test(Vector vector) {
+            return false;
+        }
+
+        @Override
+        public boolean test(Vector2D vector) {
+            return false;
+        }
+
+        @Nullable
+        @Override
+        public Mask2D toMask2D() {
+            return this;
+        }
     }
 
 }

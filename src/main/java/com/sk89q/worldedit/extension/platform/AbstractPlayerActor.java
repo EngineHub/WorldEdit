@@ -19,26 +19,38 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BlockWorldVector;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.NotABlockException;
+import com.sk89q.worldedit.PlayerDirection;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.WorldEditPermissionException;
+import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.WorldVectorFace;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.util.TargetBlock;
 import com.sk89q.worldedit.world.World;
 
 import java.io.File;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * An abstract implementation of both a {@link Actor} and a {@link Player}
  * that is intended for implementations of WorldEdit to use to wrap
  * players that make use of WorldEdit.
  */
-public abstract class AbstractPlayerActor implements Actor, Player {
+public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
+
+    @Override
+    public final Extent getExtent() {
+        return getWorld();
+    }
 
     /**
      * Returns direction according to rotation. May return null.
@@ -465,6 +477,17 @@ public abstract class AbstractPlayerActor implements Actor, Player {
 
     @Override
     public boolean hasCreativeMode() {
+        return false;
+    }
+
+    @SuppressWarnings("CloneDoesntCallSuperClone")
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException("Not supported");
+    }
+
+    @Override
+    public boolean remove() {
         return false;
     }
 

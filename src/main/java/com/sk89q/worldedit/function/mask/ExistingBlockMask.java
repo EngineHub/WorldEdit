@@ -23,6 +23,8 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockID;
 
+import javax.annotation.Nullable;
+
 /**
  * A mask that returns true whenever the block at the location is not
  * an air block (it contains some other block).
@@ -41,6 +43,12 @@ public class ExistingBlockMask extends AbstractExtentMask {
     @Override
     public boolean test(Vector vector) {
         return getExtent().getLazyBlock(vector).getType() != BlockID.AIR;
+    }
+
+    @Nullable
+    @Override
+    public Mask2D toMask2D() {
+        return null;
     }
 
 }

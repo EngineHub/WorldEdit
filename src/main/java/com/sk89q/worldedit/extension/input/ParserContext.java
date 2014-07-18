@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.extension.input;
 
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.extension.factory.MaskFactory;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.extension.registry.MaskRegistry;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.world.World;
 
@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 
 /**
  * Contains contextual information that may be useful when constructing
- * objects from a registry (such as {@link MaskRegistry}).
+ * objects from a registry (such as {@link MaskFactory}).
  * </p>
  * By default, {@link #isRestricted()} will return true.
  */
@@ -114,6 +114,7 @@ public class ParserContext {
      */
     public void setWorld(@Nullable World world) {
         this.world = world;
+        setExtent(world);
     }
 
     /**

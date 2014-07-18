@@ -51,7 +51,7 @@ public class FloodFillTool implements BlockTool {
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
-        World world = clicked.getWorld();
+        World world = (World) clicked.getExtent();
 
         int initialType = world.getBlockType(clicked.toVector());
 

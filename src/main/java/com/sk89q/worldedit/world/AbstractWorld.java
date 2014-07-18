@@ -19,8 +19,11 @@
 
 package com.sk89q.worldedit.world;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.LocalWorld.KillFlags;
+import com.sk89q.worldedit.BlockVector2D;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
@@ -29,7 +32,6 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 
 import javax.annotation.Nullable;
@@ -42,6 +44,37 @@ public abstract class AbstractWorld implements World {
 
     private final PriorityQueue<QueuedEffect> effectQueue = new PriorityQueue<QueuedEffect>();
     private int taskId = -1;
+
+    @Override
+    public final boolean setBlockType(Vector position, int type) {
+        try {
+            return setBlock(position, new BaseBlock(type));
+        } catch (WorldEditException ignored) {
+            return false;
+        }
+    }
+
+    @Override
+    public final void setBlockData(Vector position, int data) {
+        try {
+            setBlock(position, new BaseBlock(getLazyBlock(position).getType(), data));
+        } catch (WorldEditException ignored) {
+        }
+    }
+
+    @Override
+    public final boolean setTypeIdAndData(Vector position, int type, int data) {
+        try {
+            return setBlock(position, new BaseBlock(type, data));
+        } catch (WorldEditException ignored) {
+            return false;
+        }
+    }
+
+    @Override
+    public final boolean setBlock(Vector pt, BaseBlock block) throws WorldEditException {
+        return setBlock(pt, block, true);
+    }
 
     @Override
     public int getMaxY() {
@@ -79,56 +112,6 @@ public abstract class AbstractWorld implements World {
     }
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
-        return setBlock(position, block, true);
-    }
-
-    @Override
-    public boolean setBlockType(Vector position, int type) {
-        try {
-            return setBlock(position, new BaseBlock(type));
-        } catch (WorldEditException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void setBlockData(Vector position, int data) {
-        try {
-            setBlock(position, new BaseBlock(getLazyBlock(position).getId(), data));
-        } catch (WorldEditException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void setBlockDataFast(Vector position, int data) {
-        setBlockData(position, data);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean setBlockTypeFast(Vector pt, int type) {
-        return setBlockType(pt, type);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean setTypeIdAndData(Vector pt, int type, int data) {
-        boolean ret = setBlockType(pt, type);
-        setBlockData(pt, data);
-        return ret;
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean setTypeIdAndDataFast(Vector pt, int type, int data) {
-        boolean ret = setBlockTypeFast(pt, type);
-        setBlockDataFast(pt, data);
-        return ret;
-    }
-
-    @Override
     public void dropItem(Vector pt, BaseItemStack item, int times) {
         for (int i = 0; i < times; ++i) {
             dropItem(pt, item);
@@ -154,26 +137,6 @@ public abstract class AbstractWorld implements World {
         } catch (WorldEditException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public LocalEntity[] getEntities(Region region) {
-        return new LocalEntity[0];
-    }
-
-    @Override
-    public int killEntities(LocalEntity... entities) {
-        return 0;
-    }
-
-    @Override
-    public int killMobs(Vector origin, int radius) {
-        return killMobs(origin, radius, false);
-    }
-
-    @Override
-    public int killMobs(Vector origin, int radius, boolean killPets) {
-        return killMobs(origin, radius, killPets ? KillFlags.PETS : 0);
     }
 
     @Override

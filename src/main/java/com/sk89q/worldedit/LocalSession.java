@@ -38,11 +38,17 @@ import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
 
-import java.util.*;
+import javax.annotation.Nullable;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * An instance of this represents the WorldEdit session of a user. A session
@@ -62,7 +68,7 @@ public class LocalSession {
     private boolean placeAtPos1 = false;
     private LinkedList<EditSession> history = new LinkedList<EditSession>();
     private int historyPointer = 0;
-    private CuboidClipboard clipboard;
+    private ClipboardHolder clipboard;
     private boolean toolControl = true;
     private boolean superPickaxe = false;
     private BlockTool pickaxeMode = new SinglePickaxe();
@@ -324,9 +330,9 @@ public class LocalSession {
      * Gets the clipboard.
      *
      * @return clipboard, may be null
-     * @throws EmptyClipboardException
+     * @throws EmptyClipboardException thrown if no clipboard is set
      */
-    public CuboidClipboard getClipboard() throws EmptyClipboardException {
+    public ClipboardHolder getClipboard() throws EmptyClipboardException {
         if (clipboard == null) {
             throw new EmptyClipboardException();
         }
@@ -336,9 +342,11 @@ public class LocalSession {
     /**
      * Sets the clipboard.
      *
-     * @param clipboard
+     * <p>Pass {@code null} to clear the clipboard.</p>
+     *
+     * @param clipboard the clipboard, or null if the clipboard is to be cleared
      */
-    public void setClipboard(CuboidClipboard clipboard) {
+    public void setClipboard(@Nullable ClipboardHolder clipboard) {
         this.clipboard = clipboard;
     }
 

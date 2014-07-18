@@ -19,17 +19,28 @@
 
 package com.sk89q.worldedit.internal;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BlockVector2D;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.registry.WorldData;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -88,42 +99,6 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
-    @Deprecated
-    public boolean setBlockType(Vector position, int type) {
-        return world.setBlockType(position, type);
-    }
-
-    @Override
-    @Deprecated
-    public boolean setBlockTypeFast(Vector position, int type) {
-        return world.setBlockTypeFast(position, type);
-    }
-
-    @Override
-    @Deprecated
-    public void setBlockData(Vector position, int data) {
-        world.setBlockData(position, data);
-    }
-
-    @Override
-    @Deprecated
-    public void setBlockDataFast(Vector position, int data) {
-        world.setBlockDataFast(position, data);
-    }
-
-    @Override
-    @Deprecated
-    public boolean setTypeIdAndData(Vector position, int type, int data) {
-        return world.setTypeIdAndData(position, type, data);
-    }
-
-    @Override
-    @Deprecated
-    public boolean setTypeIdAndDataFast(Vector position, int type, int data) {
-        return world.setTypeIdAndDataFast(position, type, data);
-    }
-
-    @Override
     public int getBlockLightLevel(Vector position) {
         return world.getBlockLightLevel(position);
     }
@@ -134,13 +109,13 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
-    public BiomeType getBiome(Vector2D position) {
+    public BaseBiome getBiome(Vector2D position) {
         return world.getBiome(position);
     }
 
     @Override
-    public void setBiome(Vector2D position, BiomeType biome) {
-        world.setBiome(position, biome);
+    public boolean setBiome(Vector2D position, BaseBiome biome) {
+        return world.setBiome(position, biome);
     }
 
     @Override
@@ -156,38 +131,6 @@ public class LocalWorldAdapter extends LocalWorld {
     @Override
     public void simulateBlockMine(Vector position) {
         world.simulateBlockMine(position);
-    }
-
-    @Override
-    public LocalEntity[] getEntities(Region region) {
-        return world.getEntities(region);
-    }
-
-    @Override
-    public int killEntities(LocalEntity... entity) {
-        return world.killEntities(entity);
-    }
-
-    @Override
-    @Deprecated
-    public int killMobs(Vector origin, int radius) {
-        return world.killMobs(origin, radius);
-    }
-
-    @Override
-    @Deprecated
-    public int killMobs(Vector origin, int radius, boolean killPets) {
-        return world.killMobs(origin, radius, killPets);
-    }
-
-    @Override
-    public int killMobs(Vector origin, double radius, int flags) {
-        return world.killMobs(origin, radius, flags);
-    }
-
-    @Override
-    public int removeEntities(EntityType type, Vector origin, int radius) {
-        return world.removeEntities(type, origin, radius);
     }
 
     @Override
@@ -256,6 +199,11 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
+    public WorldData getWorldData() {
+        return world.getWorldData();
+    }
+
+    @Override
     public boolean equals(Object other) {
         return world.equals(other);
     }
@@ -276,18 +224,13 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
+    public List<? extends Entity> getEntities(Region region) {
+        return world.getEntities(region);
+    }
+
+    @Override
     public BaseBlock getBlock(Vector position) {
         return world.getBlock(position);
-    }
-
-    @Override
-    public boolean copyFromWorld(Vector position, BaseBlock block) {
-        return false;
-    }
-
-    @Override
-    public boolean copyToWorld(Vector position, BaseBlock block) {
-        return false;
     }
 
     @Override
@@ -296,18 +239,20 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block) {
-        try {
-            return world.setBlock(position, block);
-        } catch (WorldEditException e) {
-            throw new RuntimeException(e);
-        }
+    @Nullable
+    public Operation commit() {
+        return world.commit();
     }
 
     @Override
     @Nullable
-    public Operation commit() {
-        return world.commit();
+    public Entity createEntity(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
+        return world.createEntity(location, entity);
+    }
+
+    @Override
+    public List<? extends Entity> getEntities() {
+        return world.getEntities();
     }
 
     public static LocalWorldAdapter adapt(World world) {

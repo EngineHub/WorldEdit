@@ -21,6 +21,8 @@ package com.sk89q.worldedit.function.mask;
 
 import com.sk89q.worldedit.Vector;
 
+import javax.annotation.Nullable;
+
 import static com.google.common.base.Preconditions.checkArgument;
 
 /**
@@ -47,6 +49,12 @@ public class BoundedHeightMask extends AbstractMask {
     @Override
     public boolean test(Vector vector) {
         return vector.getY() >= minY && vector.getY() <= maxY;
+    }
+
+    @Nullable
+    @Override
+    public Mask2D toMask2D() {
+        return null;
     }
 
 }
