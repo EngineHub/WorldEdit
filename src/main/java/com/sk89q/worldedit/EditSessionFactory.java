@@ -37,11 +37,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class EditSessionFactory {
 
-    @Deprecated
-    public EditSession getEditSession(LocalWorld world, int maxBlocks) {
-        return getEditSession((World) world, maxBlocks);
-    }
-
     /**
      * Construct an edit session with a maximum number of blocks.
      *
@@ -49,12 +44,19 @@ public class EditSessionFactory {
      * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
      */
     public EditSession getEditSession(World world, int maxBlocks) {
-        throw new IllegalArgumentException("This class is being removed");
-    }
 
-    @Deprecated
-    public EditSession getEditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
-        return getEditSession((World) world, maxBlocks, player);
+        //  ============ READ ME ============
+
+        // This method is actually implemented if you call WorldEdit.getEditSessionFactory()
+        // as it returns an instance of EditSessionFactoryImpl seen below.
+
+        // Previously, other plugins would create their own EditSessionFactory and extend ours and
+        // then use it to return custom EditSessions so the plugin could log block changes, etc.
+        // However, that method only allows one plugin to hook into WorldEdit at a time,
+        // so now we recommend catching the EditSessionEvent and hooking into our
+        // new(er) Extent framework.
+
+        throw new RuntimeException("Method needs to be implemented");
     }
 
     /**
@@ -65,12 +67,19 @@ public class EditSessionFactory {
      * @param player the player that the {@link EditSession} is for
      */
     public EditSession getEditSession(World world, int maxBlocks, Player player) {
-        throw new IllegalArgumentException("This class is being removed");
-    }
 
-    @Deprecated
-    public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag) {
-        return getEditSession((World) world, maxBlocks, blockBag);
+        //  ============ READ ME ============
+
+        // This method is actually implemented if you call WorldEdit.getEditSessionFactory()
+        // as it returns an instance of EditSessionFactoryImpl seen below.
+
+        // Previously, other plugins would create their own EditSessionFactory and extend ours and
+        // then use it to return custom EditSessions so the plugin could log block changes, etc.
+        // However, that method only allows one plugin to hook into WorldEdit at a time,
+        // so now we recommend catching the EditSessionEvent and hooking into our
+        // new(er) Extent framework.
+
+        throw new RuntimeException("Method needs to be implemented");
     }
 
     /**
@@ -81,12 +90,19 @@ public class EditSessionFactory {
      * @param blockBag an optional {@link BlockBag} to use, otherwise null
      */
     public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag) {
-        throw new IllegalArgumentException("This class is being removed");
-    }
 
-    @Deprecated
-    public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
-        return getEditSession((World) world, maxBlocks, blockBag, player);
+        //  ============ READ ME ============
+
+        // This method is actually implemented if you call WorldEdit.getEditSessionFactory()
+        // as it returns an instance of EditSessionFactoryImpl seen below.
+
+        // Previously, other plugins would create their own EditSessionFactory and extend ours and
+        // then use it to return custom EditSessions so the plugin could log block changes, etc.
+        // However, that method only allows one plugin to hook into WorldEdit at a time,
+        // so now we recommend catching the EditSessionEvent and hooking into our
+        // new(er) Extent framework.
+
+        throw new RuntimeException("Method needs to be implemented");
     }
 
     /**
@@ -98,7 +114,55 @@ public class EditSessionFactory {
      * @param player the player that the {@link EditSession} is for
      */
     public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag, Player player) {
-        throw new IllegalArgumentException("This class is being removed");
+
+        //  ============ READ ME ============
+
+        // This method is actually implemented if you call WorldEdit.getEditSessionFactory()
+        // as it returns an instance of EditSessionFactoryImpl seen below.
+
+        // Previously, other plugins would create their own EditSessionFactory and extend ours and
+        // then use it to return custom EditSessions so the plugin could log block changes, etc.
+        // However, that method only allows one plugin to hook into WorldEdit at a time,
+        // so now we recommend catching the EditSessionEvent and hooking into our
+        // new(er) Extent framework.
+
+        throw new RuntimeException("Method needs to be implemented");
+    }
+
+    // ------------------------------------------------------------------------
+    // Methods being deprecated
+    // ------------------------------------------------------------------------
+
+    /**
+     * @deprecated We are replacing {@link LocalWorld} with {@link World}, so use {@link #getEditSession(World, int)} instead
+     */
+    @Deprecated
+    public EditSession getEditSession(LocalWorld world, int maxBlocks) {
+        return getEditSession((World) world, maxBlocks);
+    }
+
+    /**
+     * @deprecated We are replacing {@link LocalWorld} with {@link World}, so use {@link #getEditSession(World, int, Player)} instead
+     */
+    @Deprecated
+    public EditSession getEditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
+        return getEditSession((World) world, maxBlocks, player);
+    }
+
+    /**
+     * @deprecated We are replacing {@link LocalWorld} with {@link World}, so use {@link #getEditSession(World, int, BlockBag)} instead
+     */
+    @Deprecated
+    public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag) {
+        return getEditSession((World) world, maxBlocks, blockBag);
+    }
+
+    /**
+     * @deprecated We are replacing {@link LocalWorld} with {@link World}, so use {@link #getEditSession(World, int, BlockBag, Player)} instead
+     */
+    @Deprecated
+    public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
+        return getEditSession((World) world, maxBlocks, blockBag, player);
     }
 
     /**
@@ -113,7 +177,7 @@ public class EditSessionFactory {
          *
          * @param eventBus the event bus
          */
-        public EditSessionFactoryImpl(EventBus eventBus) {
+        EditSessionFactoryImpl(EventBus eventBus) {
             checkNotNull(eventBus);
             this.eventBus = eventBus;
         }
