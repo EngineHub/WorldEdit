@@ -6,6 +6,7 @@
   <allow pkg="java"/>
   <allow pkg="javax"/>
   <allow pkg="org.junit"/>
+  <allow pkg="org.hamcrest"/>
   <allow pkg="org.mockito"/>
   <allow pkg="com.sk89q"/>
   <allow pkg="com.google.common"/>
