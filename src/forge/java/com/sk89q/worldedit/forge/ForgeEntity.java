@@ -25,38 +25,36 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.metadata.EntityType;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.NullWorld;
 import net.minecraft.entity.EntityList;
 import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 class ForgeEntity implements Entity {
 
-    private final net.minecraft.entity.Entity entity;
+    private final WeakReference<net.minecraft.entity.Entity> entityRef;
 
     ForgeEntity(net.minecraft.entity.Entity entity) {
         checkNotNull(entity);
-        this.entity = entity;
-    }
-
-    /**
-     * Return the underlying entity.
-     *
-     * @return the underlying entity
-     */
-    net.minecraft.entity.Entity getEntity() {
-        return entity;
+        this.entityRef = new WeakReference<net.minecraft.entity.Entity>(entity);
     }
 
     @Override
     public BaseEntity getState() {
-        String id = EntityList.getEntityString(entity);
-        if (id != null) {
-            NBTTagCompound tag = new NBTTagCompound();
-            entity.writeToNBT(tag);
-            return new BaseEntity(id, NBTConverter.fromNative(tag));
+        net.minecraft.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            String id = EntityList.getEntityString(entity);
+            if (id != null) {
+                NBTTagCompound tag = new NBTTagCompound();
+                entity.writeToNBT(tag);
+                return new BaseEntity(id, NBTConverter.fromNative(tag));
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
@@ -64,21 +62,34 @@ class ForgeEntity implements Entity {
 
     @Override
     public Location getLocation() {
-        Vector position = new Vector(entity.posX, entity.posY, entity.posZ);
-        float yaw = entity.rotationYaw;
-        float pitch = entity.rotationPitch;
+        net.minecraft.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            Vector position = new Vector(entity.posX, entity.posY, entity.posZ);
+            float yaw = entity.rotationYaw;
+            float pitch = entity.rotationPitch;
 
-        return new Location(ForgeAdapter.adapt(entity.worldObj), position, yaw, pitch);
+            return new Location(ForgeAdapter.adapt(entity.worldObj), position, yaw, pitch);
+        } else {
+            return new Location(NullWorld.getInstance());
+        }
     }
 
     @Override
     public Extent getExtent() {
-        return ForgeAdapter.adapt(entity.worldObj);
+        net.minecraft.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            return ForgeAdapter.adapt(entity.worldObj);
+        } else {
+            return NullWorld.getInstance();
+        }
     }
 
     @Override
     public boolean remove() {
-        entity.setDead();
+        net.minecraft.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            entity.setDead();
+        }
         return true;
     }
 
@@ -86,8 +97,13 @@ class ForgeEntity implements Entity {
     @Nullable
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
-        if (EntityType.class.isAssignableFrom(cls)) {
-            return (T) new ForgeEntityType(entity);
+        net.minecraft.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            if (EntityType.class.isAssignableFrom(cls)) {
+                return (T) new ForgeEntityType(entity);
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
