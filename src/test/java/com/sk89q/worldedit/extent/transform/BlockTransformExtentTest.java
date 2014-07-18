@@ -37,8 +37,8 @@ import static org.junit.Assert.assertThat;
 
 public class BlockTransformExtentTest {
 
-    private final Transform ROTATE_90 = new AffineTransform().rotateY(-90);
-    private final Transform ROTATE_NEG_90 = new AffineTransform().rotateY(90);
+    private static final Transform ROTATE_90 = new AffineTransform().rotateY(-90);
+    private static final Transform ROTATE_NEG_90 = new AffineTransform().rotateY(90);
     private final Set<BlockType> ignored = new HashSet<BlockType>();
 
     @Before
