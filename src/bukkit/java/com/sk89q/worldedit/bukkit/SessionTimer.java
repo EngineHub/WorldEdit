@@ -26,15 +26,13 @@ import com.sk89q.worldedit.WorldEdit;
 
 /**
  * Used to remove expired sessions in Bukkit.
- *
- * @author sk89q
  */
-public class SessionTimer implements Runnable {
+class SessionTimer implements Runnable {
 
     private WorldEdit worldEdit;
     private SessionCheck checker;
 
-    public SessionTimer(WorldEdit worldEdit, final Server server) {
+    SessionTimer(WorldEdit worldEdit, final Server server) {
         this.worldEdit = worldEdit;
         this.checker = new SessionCheck() {
             public boolean isOnlinePlayer(String name) {
@@ -44,6 +42,7 @@ public class SessionTimer implements Runnable {
         };
     }
 
+    @Override
     public void run() {
         worldEdit.flushExpiredSessions(checker);
     }
