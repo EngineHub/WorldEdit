@@ -106,7 +106,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      * @param registry the registry
      * @return the same block
      */
-    private static BaseBlock transform(BaseBlock block, Transform transform, BlockRegistry registry) {
+    public static BaseBlock transform(BaseBlock block, Transform transform, BlockRegistry registry) {
         return transform(block, transform, registry, block);
     }
 

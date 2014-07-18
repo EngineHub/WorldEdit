@@ -919,7 +919,7 @@
       "facing": {
         "values": {
           "north": { "data": 0, "direction": [0, 0, -1] },
-          "south": { "data": 1, "direction": [0, 0, 1] },
+          "south": { "data": 0, "direction": [0, 0, 1] },
           "east": { "data": 1, "direction": [1, 0, 0] },
           "west": { "data": 1, "direction": [-1, 0, 0] },
           "east_ascending": { "data": 2, "direction": [1, 1, 0] },
@@ -929,6 +929,7 @@
           "north_ascending": { "data": 4, "direction": [0, 1, -1] },
           "north_descending": { "data": 4, "direction": [0, -1, 1] },
           "south_ascending": { "data": 5, "direction": [0, 1, 1] },
+          "south_descending": { "data": 5, "direction": [0, -1, -1] },
           "southeast": { "data": 6, "direction": [1, 0, 1] },
           "southwest": { "data": 7, "direction": [-1, 0, 1] },
           "northwest": { "data": 8, "direction": [-1, 0, -1] },
@@ -969,7 +970,7 @@
       "facing": {
         "values": {
           "north": { "data": 0, "direction": [0, 0, -1] },
-          "south": { "data": 1, "direction": [0, 0, 1] },
+          "south": { "data": 0, "direction": [0, 0, 1] },
           "east": { "data": 1, "direction": [1, 0, 0] },
           "west": { "data": 1, "direction": [-1, 0, 0] },
           "east_ascending": { "data": 2, "direction": [1, 1, 0] },
@@ -979,6 +980,7 @@
           "north_ascending": { "data": 4, "direction": [0, 1, -1] },
           "north_descending": { "data": 4, "direction": [0, -1, 1] },
           "south_ascending": { "data": 5, "direction": [0, 1, 1] },
+          "south_descending": { "data": 5, "direction": [0, -1, -1] },
           "southeast": { "data": 6, "direction": [1, 0, 1] },
           "southwest": { "data": 7, "direction": [-1, 0, 1] },
           "northwest": { "data": 8, "direction": [-1, 0, -1] },
@@ -2320,7 +2322,7 @@
       "facing": {
         "values": {
           "north": { "data": 0, "direction": [0, 0, -1] },
-          "south": { "data": 1, "direction": [0, 0, 1] },
+          "south": { "data": 0, "direction": [0, 0, 1] },
           "east": { "data": 1, "direction": [1, 0, 0] },
           "west": { "data": 1, "direction": [-1, 0, 0] },
           "east_ascending": { "data": 2, "direction": [1, 1, 0] },
@@ -2330,6 +2332,7 @@
           "north_ascending": { "data": 4, "direction": [0, 1, -1] },
           "north_descending": { "data": 4, "direction": [0, -1, 1] },
           "south_ascending": { "data": 5, "direction": [0, 1, 1] },
+          "south_descending": { "data": 5, "direction": [0, -1, -1] },
           "southeast": { "data": 6, "direction": [1, 0, 1] },
           "southwest": { "data": 7, "direction": [-1, 0, 1] },
           "northwest": { "data": 8, "direction": [-1, 0, -1] },
@@ -2457,7 +2460,15 @@
           "east": { "data": 1, "direction": [1, 0, 0] },
           "south": { "data": 3, "direction": [0, 0, 1] },
           "west": { "data": 2, "direction": [-1, 0, 0] },
-          "north": { "data": 4, "direction": [0, 0, -1] }
+          "north": { "data": 4, "direction": [0, 0, -1] },
+          "ground_south": { "data": 5, "direction": [0, 1, 1] },
+          "ground_north": { "data": 5, "direction": [0, 1, -1] },
+          "ground_east": { "data": 6, "direction": [1, 1, 0] },
+          "ground_west": { "data": 6, "direction": [-1, 1, 0] },
+          "ceiling_south": { "data": 7, "direction": [0, -1, -1] },
+          "ceiling_north": { "data": 7, "direction": [0, -1, 1] },
+          "ceiling_east": { "data": 0, "direction": [1, -1, 0] },
+          "ceiling_west": { "data": 0, "direction": [-1, -1, 0] }
         }
       },
       "powered": {
@@ -3286,6 +3297,17 @@
     "legacyId": 94,
     "id": "minecraft:powered_repeater",
     "unlocalizedName": "tile.diode",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": { "data": 0, "direction": [0, 0, -1] },
+          "east": { "data": 1, "direction": [1, 0, 0] },
+          "south": { "data": 2, "direction": [0, 0, 1] },
+          "west": { "data": 3, "direction": [-1, 0, 0] }
+        }
+      }
+    },
     "material": {
       "renderedAsNormalBlock": false,
       "fullCube": false,
@@ -5006,6 +5028,17 @@
     "legacyId": 145,
     "id": "minecraft:anvil",
     "unlocalizedName": "tile.anvil",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "south": { "data": 0, "direction": [0, 0, 1] },
+          "north": { "data": 0, "direction": [0, 0, -1] },
+          "west": { "data": 1, "direction": [-1, 0, 0] },
+          "east": { "data": 1, "direction": [1, 0, 0] }
+        }
+      }
+    },
     "material": {
       "renderedAsNormalBlock": false,
       "fullCube": false,
@@ -5191,6 +5224,17 @@
     "legacyId": 150,
     "id": "minecraft:powered_comparator",
     "unlocalizedName": "tile.comparator",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": { "data": 0, "direction": [0, 0, -1] },
+          "east": { "data": 1, "direction": [1, 0, 0] },
+          "south": { "data": 2, "direction": [0, 0, 1] },
+          "west": { "data": 3, "direction": [-1, 0, 0] }
+        }
+      }
+    },
     "material": {
       "renderedAsNormalBlock": false,
       "fullCube": false,
@@ -5433,7 +5477,7 @@
       "facing": {
         "values": {
           "north": { "data": 0, "direction": [0, 0, -1] },
-          "south": { "data": 1, "direction": [0, 0, 1] },
+          "south": { "data": 0, "direction": [0, 0, 1] },
           "east": { "data": 1, "direction": [1, 0, 0] },
           "west": { "data": 1, "direction": [-1, 0, 0] },
           "east_ascending": { "data": 2, "direction": [1, 1, 0] },
@@ -5443,6 +5487,7 @@
           "north_ascending": { "data": 4, "direction": [0, 1, -1] },
           "north_descending": { "data": 4, "direction": [0, -1, 1] },
           "south_ascending": { "data": 5, "direction": [0, 1, 1] },
+          "south_descending": { "data": 5, "direction": [0, -1, -1] },
           "southeast": { "data": 6, "direction": [1, 0, 1] },
           "southwest": { "data": 7, "direction": [-1, 0, 1] },
           "northwest": { "data": 8, "direction": [-1, 0, -1] },
