@@ -17,21 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.operation;
+package com.sk89q.worldedit.function.util;
 
 /**
- * A RunContext is provided to an Operation and should be used to implement
- * time limits on the Operation.
+ * Counts the numbers of items that are affected.
  */
-public interface RunContext {
+public interface AffectedCounter {
 
     /**
-     * Return whether the current operation should still continue running.
-     * </p>
-     * This method can be called frequently.
+     * Get the number of affected items.
      *
-     * @return true if the operation should continue running
+     * @return the number of affected
      */
-    boolean shouldContinue();
+    public int getAffected();
 
 }

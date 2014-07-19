@@ -30,6 +30,7 @@ import com.sk89q.worldedit.function.block.ExtentBlockCopy;
 import com.sk89q.worldedit.function.entity.ExtentEntityCopy;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.function.util.AffectedCounter;
 import com.sk89q.worldedit.function.visitor.EntityVisitor;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.math.transform.Identity;
@@ -48,7 +49,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * source extent, and will copy as many blocks as there are in the source.
  * Therefore, interpolation will not occur to fill in the gaps.
  */
-public class ForwardExtentCopy implements Operation {
+public class ForwardExtentCopy implements Operation, AffectedCounter {
 
     private final Extent source;
     private final Extent destination;
@@ -195,17 +196,13 @@ public class ForwardExtentCopy implements Operation {
     /**
      * Set whether entities that are copied should be removed.
      *
-     * @param removing true if removing
+     * @param removingEntities true if removing
      */
     public void setRemovingEntities(boolean removingEntities) {
         this.removingEntities = removingEntities;
     }
 
-    /**
-     * Get the number of affected objects.
-     *
-     * @return the number of affected
-     */
+    @Override
     public int getAffected() {
         return affected;
     }

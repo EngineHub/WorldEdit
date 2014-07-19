@@ -25,6 +25,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.function.LayerFunction;
+import com.sk89q.worldedit.function.util.AffectedCounter;
 import com.sk89q.worldedit.masks.BlockMask;
 import com.sk89q.worldedit.masks.Mask;
 
@@ -35,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * only below that for all layers that originally consist of grass, dirt,
  * or smooth stone.
  */
-public class Naturalizer implements LayerFunction {
+public class Naturalizer implements LayerFunction, AffectedCounter {
 
     private final EditSession editSession;
     private final BaseBlock grass = new BaseBlock(BlockID.GRASS);
@@ -54,11 +55,7 @@ public class Naturalizer implements LayerFunction {
         this.editSession = editSession;
     }
 
-    /**
-     * Get the number of affected objects.
-     *
-     * @return the number of affected
-     */
+    @Override
     public int getAffected() {
         return affected;
     }
@@ -71,18 +68,20 @@ public class Naturalizer implements LayerFunction {
     @Override
     public boolean apply(Vector position, int depth) throws WorldEditException {
         if (mask.matches(editSession, position)) {
-            affected++;
             switch (depth) {
                 case 0:
                     editSession.setBlock(position, grass);
+                    affected++;
                     break;
                 case 1:
                 case 2:
                 case 3:
                     editSession.setBlock(position, dirt);
+                    affected++;
                     break;
                 default:
                     editSession.setBlock(position, stone);
+                    affected++;
             }
         }
 

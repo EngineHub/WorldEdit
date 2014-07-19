@@ -20,18 +20,36 @@
 package com.sk89q.worldedit.function.operation;
 
 /**
- * A RunContext is provided to an Operation and should be used to implement
- * time limits on the Operation.
+ * Always returns true - let all Operations run to completion.
  */
-public interface RunContext {
+public class ImmediateRunContext implements RunContext {
+
+    private static final ImmediateRunContext INSTANCE = new ImmediateRunContext();
+
+    private ImmediateRunContext() {
+    }
 
     /**
-     * Return whether the current operation should still continue running.
-     * </p>
-     * This method can be called frequently.
+     * Always returns true.
      *
-     * @return true if the operation should continue running
+     * <p><b>Documentation inherited from RunContext:</b></p>
+     *
+     * {@inheritDoc}
+     *
+     * @return Always true.
      */
-    boolean shouldContinue();
+    @Override
+    public boolean shouldContinue() {
+        return true;
+    }
+
+    /**
+     * Get a static instance of this object.
+     *
+     * @return an instance
+     */
+    public static ImmediateRunContext getInstance() {
+        return INSTANCE;
+    }
 
 }

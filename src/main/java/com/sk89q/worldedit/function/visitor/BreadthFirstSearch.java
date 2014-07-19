@@ -22,11 +22,18 @@ package com.sk89q.worldedit.function.visitor;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.function.util.AffectedCounter;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -41,7 +48,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * functionality that starts at certain points and extends outward from
  * those points.
  */
-public abstract class BreadthFirstSearch implements Operation {
+public abstract class BreadthFirstSearch implements Operation, AffectedCounter {
 
     private final RegionFunction function;
     private final Queue<BlockVector> queue = new ArrayDeque<BlockVector>();
@@ -145,11 +152,7 @@ public abstract class BreadthFirstSearch implements Operation {
      */
     protected abstract boolean isVisitable(Vector from, Vector to);
 
-    /**
-     * Get the number of affected objects.
-     *
-     * @return the number of affected
-     */
+    @Override
     public int getAffected() {
         return affected;
     }
@@ -165,6 +168,10 @@ public abstract class BreadthFirstSearch implements Operation {
 
             for (Vector dir : directions) {
                 visit(position, position.add(dir));
+            }
+
+            if (!run.shouldContinue()) {
+                return this;
             }
         }
 
