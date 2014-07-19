@@ -40,6 +40,8 @@ import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
@@ -94,7 +96,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         WorldEdit worldEdit = WorldEdit.getInstance();
 
-        loadAdapter(); // Need an adapter to work with special blocks with NBT data
         loadConfig(); // Load configuration
         PermissionsResolverManager.initialize(this); // Setup permission resolver
 
@@ -116,6 +117,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Forge WorldEdit and there's (probably) not going to be any other
         // platforms to be worried about... at the current time of writing
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
+
+        loadAdapter(); // Need an adapter to work with special blocks with NBT data
     }
 
     private void loadConfig() {
@@ -126,6 +129,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     }
 
     private void loadAdapter() {
+        WorldEdit worldEdit = WorldEdit.getInstance();
+
         // Attempt to load a Bukkit adapter
         BukkitImplLoader adapterLoader = new BukkitImplLoader();
 
@@ -144,7 +149,14 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             bukkitAdapter = adapterLoader.loadAdapter();
             log.log(Level.INFO, "Using " + bukkitAdapter.getClass().getCanonicalName() + " as the Bukkit adapter");
         } catch (AdapterLoadException e) {
-            log.log(Level.WARNING, e.getMessage());
+            Platform platform = worldEdit.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
+            if (platform instanceof BukkitServerInterface) {
+                log.log(Level.WARNING, e.getMessage());
+            } else {
+                log.log(Level.INFO, "WorldEdit could not find a Bukkit adapter for this MC version, " +
+                        "but it seems that you have another implementation of WorldEdit installed (" + platform.getPlatformName() + ") " +
+                        "that handles the world editing.");
+            }
         }
     }
 

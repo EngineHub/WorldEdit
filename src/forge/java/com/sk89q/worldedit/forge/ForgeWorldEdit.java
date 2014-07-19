@@ -97,7 +97,7 @@ public class ForgeWorldEdit {
     }
 
     @EventHandler
-    public void serverStarting(FMLServerStartingEvent event) {
+    public void serverAboutToSTart(FMLServerAboutToStartEvent event) {
         if (this.platform != null) {
             logger.warning("FMLServerStartingEvent occurred when FMLServerStoppingEvent hasn't");
             WorldEdit.getInstance().getPlatformManager().unregister(platform);
