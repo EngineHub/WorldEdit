@@ -88,19 +88,9 @@ public class PlatformManager {
         // Make sure that versions are in sync
         if (firstSeenVersion != null) {
             if (!firstSeenVersion.equals(platform.getVersion())) {
-                logger.log(Level.WARNING,
-                        "\n**********************************************\n" +
-                        "** You have WorldEdit installed for multiple platforms in the same \n" +
-                        "** game/program. This is OK except that you have different WorldEdit versions\n" +
-                        "** installed (i.e. {0} and {1}).\n" +
-                        "**\n" +
-                        "** WorldEdit has seen both versions {0} and {1}.\n" +
-                        "**\n" +
-                        "** Things may break! Please make sure that your WE versions are in sync.\n" +
-                        "**********************************************\n",
-                        new Object[]{
-                                firstSeenVersion, platform.getVersion()
-                        });
+                logger.log(Level.WARNING, "Multiple ports of WorldEdit are installed but they report different versions ({0} and {1}). " +
+                                "If these two versions are truly different, then you may run into unexpected crashes and errors.",
+                        new Object[]{ firstSeenVersion, platform.getVersion() });
             }
         } else {
             firstSeenVersion = platform.getVersion();

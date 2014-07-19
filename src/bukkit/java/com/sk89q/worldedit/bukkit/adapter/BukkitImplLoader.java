@@ -19,9 +19,7 @@
 
 package com.sk89q.worldedit.bukkit.adapter;
 
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.io.Closer;
-import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,24 +47,15 @@ public class BukkitImplLoader {
     private static final String CLASS_SUFFIX = ".class";
 
     private static final String LOAD_ERROR_MESSAGE =
-            "Failed to find an adapter for Bukkit!\n\n" +
-            "This version of WorldEdit (%s) does not fully support your version of Bukkit (%s).\n\n" +
-                    "What this means:\n" +
-                    "1) Block operations will work, but chests will be empty, signs will be blank, and so on.\n" +
-                    "2) You won't be able to save and load chests, signs, etc. with .schematic files.\n" +
-                    "3) You won't be able to work with entities properly.\n" +
-                    "4) Undo will will not be able to restore chests, signs, and etc.\n\n" +
-                    "Possible solutions:\n" +
-                    "1) If this is a new version of Minecraft, please wait for us to update. " +
-                    "You can also put in a ticket at http://youtrack.sk89q.com (check for an existing ticket first).\n" +
-                    "2) If you are using an older version of Minecraft, you may need to downgrade WorldEdit.\n" +
-                    "3) If you are using an older version of WorldEdit, you may need to update your WorldEdit.\n" +
-                    "4) If you are not using CraftBukkit, then report this issue to http://youtrack.sk89q.com " +
-                    "(check for an existing ticket first).\n" +
-                    "5) If you are developing WorldEdit, you can force an adapter with " +
-                    "-Dworldedit.bukkit.adapter=the_class_name.\n\n" +
-                    "Can I ignore this error? Yes! Just be aware of the undo issue.\n" +
-                    "Am I using CraftBukkit? %s.\n";
+            "\n**********************************************\n" +
+            "** This WorldEdit version does not fully support your version of Bukkit.\n" +
+            "**\n" +
+            "** When working with blocks or undoing, chests will be empty, signs\n" +
+            "** will be blank, and so on. There will be no support for entity\n" +
+            "** and biome-related functions.\n" +
+            "**\n" +
+            "** Please see http://wiki.sk89q.com/wiki/WorldEdit/Bukkit_adapters\n" +
+            "**********************************************\n";
 
     /**
      * Create a new instance.
@@ -183,15 +172,7 @@ public class BukkitImplLoader {
             }
         }
 
-        String weVersion = WorldEdit.getVersion();
-        String bukkitVersion = Bukkit.getBukkitVersion() + " implemented by " + Bukkit.getName() + " " + Bukkit.getVersion();
-        String usingCraftBukkit =
-                Bukkit.getName().equals("CraftBukkit")
-                ? "Probably (if you got it from dl.bukkit.org, then yes)"
-                : "No! You are using " + Bukkit.getName();
-
-        throw new AdapterLoadException(
-                String.format(LOAD_ERROR_MESSAGE, weVersion, bukkitVersion, usingCraftBukkit));
+        throw new AdapterLoadException(LOAD_ERROR_MESSAGE);
     }
 
 }
