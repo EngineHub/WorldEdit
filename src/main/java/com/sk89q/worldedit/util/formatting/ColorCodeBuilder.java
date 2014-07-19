@@ -39,7 +39,7 @@ public class ColorCodeBuilder {
     public String[] build(StyledFragment message) {
         StringBuilder builder = new StringBuilder();
         buildFragment(builder, message, message.getStyle(), new StyleSet());
-        return wordWrap(builder.toString(), GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH);
+        return builder.toString().split("\r?\n");
     }
     
     /**
