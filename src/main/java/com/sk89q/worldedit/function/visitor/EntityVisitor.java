@@ -24,6 +24,7 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.EntityFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.function.util.AffectedCounter;
 
 import java.util.Iterator;
 
@@ -32,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Visits entities as provided by an {@code Iterator}.
  */
-public class EntityVisitor implements Operation {
+public class EntityVisitor implements Operation, AffectedCounter {
 
     private final Iterator<? extends Entity> iterator;
     private final EntityFunction function;
@@ -51,11 +52,7 @@ public class EntityVisitor implements Operation {
         this.function = function;
     }
 
-    /**
-     * Get the number of affected objects.
-     *
-     * @return the number of affected
-     */
+    @Override
     public int getAffected() {
         return affected;
     }
@@ -63,8 +60,13 @@ public class EntityVisitor implements Operation {
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
         while (iterator.hasNext()) {
-            if (function.apply(iterator.next())) {
+            Entity entity = iterator.next();
+            if (function.apply(entity)) {
                 affected++;
+            }
+
+            if (!run.shouldContinue()) {
+                return this;
             }
         }
 
