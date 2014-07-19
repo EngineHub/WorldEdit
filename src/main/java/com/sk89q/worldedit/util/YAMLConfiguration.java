@@ -19,14 +19,14 @@
 
 package com.sk89q.worldedit.util;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.logging.Logger;
-
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.logging.Logger;
 
 /**
  * A less simple implementation of {@link LocalConfiguration} using YAML configuration files.
@@ -50,7 +50,6 @@ public class YAMLConfiguration extends LocalConfiguration {
             logger.severe("Error loading WorldEdit configuration: " + e);
             e.printStackTrace();
         }
-        showFirstUseVersion = false;
 
         profile = config.getBoolean("debug", profile);
         wandItem = config.getInt("wand-item", wandItem);
@@ -108,6 +107,8 @@ public class YAMLConfiguration extends LocalConfiguration {
         allowSymlinks = config.getBoolean("files.allow-symbolic-links", false);
         LocalSession.MAX_HISTORY_SIZE = Math.max(0, config.getInt("history.size", 15));
         LocalSession.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;
+
+        showHelpInfo = config.getBoolean("show-help-on-first-use", true);
 
         String snapshotsDir = config.getString("snapshots.directory", "");
         if (snapshotsDir.length() > 0) {

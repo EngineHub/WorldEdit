@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.forge;
 
-import java.io.File;
-
 import com.sk89q.worldedit.util.PropertiesConfiguration;
+
+import java.io.File;
 
 public class ForgeConfiguration extends PropertiesConfiguration {
 
@@ -29,11 +29,7 @@ public class ForgeConfiguration extends PropertiesConfiguration {
         super(new File(mod.getWorkingDir() + File.separator + "worldedit.properties"));
     }
 
-    public void load() {
-        super.load();
-        showFirstUseVersion = false;
-    }
-
+    @Override
     public File getWorkingDirectory() {
         return ForgeWorldEdit.inst.getWorkingDir();
     }

@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents WorldEdit's configuration.
@@ -108,7 +108,7 @@ public abstract class LocalConfiguration {
     public Set<Integer> allowedDataCycleBlocks = new HashSet<Integer>();
     public String saveDir = "schematics";
     public String scriptsDir = "craftscripts";
-    public boolean showFirstUseVersion = true;
+    public boolean showHelpInfo = true;
     public int butcherDefaultRadius = -1;
     public int butcherMaxRadius = -1;
     public boolean allowSymlinks = false;

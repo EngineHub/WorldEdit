@@ -70,3 +70,4 @@ shell-save-type:
 no-double-slash: false
 no-op-permissions: false
 debug: false
+show-help-on-first-use: true

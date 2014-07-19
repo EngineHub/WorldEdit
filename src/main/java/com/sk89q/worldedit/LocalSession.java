@@ -40,6 +40,9 @@ import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
+import com.sk89q.worldedit.util.formatting.Style;
+import com.sk89q.worldedit.util.formatting.StyledFragment;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
 
@@ -582,10 +585,11 @@ public class LocalSession {
      * @param player
      */
     public void tellVersion(Actor player) {
-        if (config.showFirstUseVersion) {
+        if (config.showHelpInfo) {
             if (!beenToldVersion) {
-                player.printRaw("\u00A78WorldEdit ver. " + WorldEdit.getVersion()
-                        + " (http://sk89q.com/projects/worldedit/)");
+                StyledFragment fragment = new StyledFragment(Style.GRAY_DARK);
+                fragment.append("Need help with WorldEdit? Ask us on IRC (irc.esper.net #sk89q) or on our forums @ http://forum.enginehub.org");
+                player.printRaw(ColorCodeBuilder.asColorCodes(fragment));
                 beenToldVersion = true;
             }
         }
