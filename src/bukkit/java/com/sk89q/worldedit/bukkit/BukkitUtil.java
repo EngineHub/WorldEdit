@@ -19,14 +19,10 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.BlockWorldVector;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Location;
+import java.util.List;
+
 import com.sk89q.worldedit.NotABlockException;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
@@ -37,11 +33,24 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
+
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockWorldVector;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.Location;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
+import com.sk89q.worldedit.bukkit.entity.BukkitExpOrb;
+import com.sk89q.worldedit.bukkit.entity.BukkitItem;
+import com.sk89q.worldedit.bukkit.entity.BukkitPainting;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Dye;
-
-import java.util.List;
 
 public final class BukkitUtil {
 
@@ -140,6 +149,20 @@ public final class BukkitUtil {
 
     public static World toWorld(final LocalWorld world) {
         return ((BukkitWorld) world).getWorld();
+    }
+
+    public static BukkitEntity toLocalEntity(Entity e) {
+        switch (e.getType()) {
+            case EXPERIENCE_ORB:
+                return new BukkitExpOrb(toLocation(e.getLocation()), e.getUniqueId(), ((ExperienceOrb)e).getExperience());
+            case PAINTING:
+                Painting paint = (Painting) e;
+                return new BukkitPainting(toLocation(e.getLocation()), paint.getArt(), paint.getFacing(), e.getUniqueId());
+            case DROPPED_ITEM:
+                return new BukkitItem(toLocation(e.getLocation()), ((Item)e).getItemStack(), e.getUniqueId());
+            default:
+                return new BukkitEntity(toLocation(e.getLocation()), e.getType(), e.getUniqueId());
+        }
     }
 
     public static BaseBlock toBlock(LocalWorld world, ItemStack itemStack) throws WorldEditException {
