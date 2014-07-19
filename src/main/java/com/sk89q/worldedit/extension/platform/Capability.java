@@ -33,10 +33,6 @@ public enum Capability {
         void initialize(PlatformManager platformManager, Platform platform) {
             platform.registerGameHooks();
         }
-
-        @Override
-        void unload(PlatformManager platformManager, Platform platform) {
-        }
     },
 
     /**

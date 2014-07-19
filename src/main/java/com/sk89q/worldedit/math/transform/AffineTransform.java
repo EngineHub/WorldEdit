@@ -143,8 +143,7 @@ public class AffineTransform implements Transform {
      * 12 double.
      */
     public double[] coefficients() {
-        double[] tab = {m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23};
-        return tab;
+        return new double[] {m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23};
     }
 
     /**

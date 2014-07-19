@@ -109,7 +109,7 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
             // World pattern
             Pattern worldPattern = Pattern.compile(worldname + "\\$");
             for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements(); ) {
-                ZipEntry testEntry = (ZipEntry) e.nextElement();
+                ZipEntry testEntry = e.nextElement();
                 // Check for world
                 if (worldPattern.matcher(worldname).matches()) {
                     // Check for file

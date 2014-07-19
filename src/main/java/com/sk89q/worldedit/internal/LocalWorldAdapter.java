@@ -205,6 +205,9 @@ public class LocalWorldAdapter extends LocalWorld {
 
     @Override
     public boolean equals(Object other) {
+        if (other instanceof LocalWorldAdapter) {
+            return world.equals(((LocalWorldAdapter) other).world);
+        }
         return world.equals(other);
     }
 

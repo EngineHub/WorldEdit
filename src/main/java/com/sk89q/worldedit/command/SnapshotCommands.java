@@ -162,7 +162,7 @@ public class SnapshotCommands {
             return;
         }
 
-        int index = -1;
+        int index;
         try {
             index = Integer.parseInt(args.getString(0));
         } catch (NumberFormatException e) {

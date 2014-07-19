@@ -35,6 +35,7 @@ import java.util.Set;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 /**
@@ -69,13 +70,14 @@ public class PropertiesConfiguration extends LocalConfiguration {
             stream = new FileInputStream(path);
             properties.load(stream);
         } catch (FileNotFoundException e) {
+            WorldEdit.logger.warning("Configuration file not found - using defaults");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if (stream != null) {
                 try {
                     stream.close();
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -132,7 +134,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
             if (output != null) {
                 try {
                     output.close();
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -243,7 +245,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
                 try {
                     int v = Integer.parseInt(part.trim());
                     set.add(v);
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException ignored) {
                 }
             }
             return set;

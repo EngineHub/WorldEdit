@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.internal.cui;
 
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extension.platform.Actor;
 

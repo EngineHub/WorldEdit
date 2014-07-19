@@ -55,6 +55,7 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
 
     @Override
     public BaseBlock parseFromInput(String input, ParserContext context) throws InputParseException {
+        // TODO - Refactor!
         BlockType blockType;
         input = input.replace("_", " ");
         input = input.replace(";", "|");

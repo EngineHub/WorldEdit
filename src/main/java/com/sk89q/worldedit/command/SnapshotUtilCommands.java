@@ -109,7 +109,7 @@ public class SnapshotUtilCommands {
             }
         }
 
-        ChunkStore chunkStore = null;
+        ChunkStore chunkStore;
 
         // Load chunk store
         try {
@@ -147,7 +147,7 @@ public class SnapshotUtilCommands {
         } finally {
             try {
                 chunkStore.close();
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
         }
     }

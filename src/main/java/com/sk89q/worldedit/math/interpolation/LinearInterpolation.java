@@ -155,7 +155,6 @@ public class LinearInterpolation implements Interpolation {
 
         position *= nodes.size() - 1;
 
-        final int index = (int) Math.floor(position);
-        return index;
+        return (int) Math.floor(position);
     }
 }

@@ -794,7 +794,7 @@ public class WorldEdit {
         LocalSession session = getSessionManager().get(player);
         CraftScriptContext scriptContext = new CraftScriptContext(this, getServer(), getConfiguration(), session, player, args);
 
-        CraftScriptEngine engine = null;
+        CraftScriptEngine engine;
 
         try {
             engine = new RhinoCraftScriptEngine();

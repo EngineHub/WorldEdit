@@ -23,8 +23,16 @@ package com.sk89q.worldedit;
  * Represents a WorldEdit operation.
  *
  * @author sk89q
+ * @deprecated Please use {@link com.sk89q.worldedit.function.operation.Operation} instead.
  */
+@Deprecated
 public abstract class WorldEditOperation {
+    /**
+     * Perform the operation.
+     *
+     * @deprecated Please use {@link com.sk89q.worldedit.function.operation.Operation} instead.
+     */
+    @Deprecated
     public abstract void run(LocalSession session,
             LocalPlayer player, EditSession editSession) throws Throwable;
 }

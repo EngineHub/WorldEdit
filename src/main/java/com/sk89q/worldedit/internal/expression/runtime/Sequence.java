@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.internal.expression.runtime;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.sk89q.worldedit.internal.expression.Expression;
@@ -77,9 +78,7 @@ public class Sequence extends Node {
             droppedLast = null;
             invokable = invokable.optimize();
             if (invokable instanceof Sequence) {
-                for (RValue subInvokable : ((Sequence) invokable).sequence) {
-                    newSequence.add(subInvokable);
-                }
+                Collections.addAll(newSequence, ((Sequence) invokable).sequence);
             } else if (invokable instanceof Constant) {
                 droppedLast = invokable;
             } else {

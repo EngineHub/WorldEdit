@@ -120,21 +120,21 @@ public abstract class ArbitraryShape {
         return new BaseBlock(cacheEntry & 255, ((cacheEntry >> 8) - 1) & 15);
     }
 
-    private boolean isInsideCached(int x, int y, int z, Pattern pattern) {
+    private boolean isNotCached(int x, int y, int z, Pattern pattern) {
         final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
 
         switch (cache[index]) {
         case 0:
             // unknown block, meaning they must be outside the extent at this stage, but might still be inside the shape
-            return getMaterialCached(x, y, z, pattern) != null;
+            return getMaterialCached(x, y, z, pattern) == null;
 
         case -1:
             // outside
-            return false;
+            return true;
 
         default:
             // inside
-            return true;
+            return false;
         }
     }
 
@@ -169,33 +169,12 @@ public abstract class ArbitraryShape {
                 continue;
             }
 
-            boolean draw = false;
-            do {
-                if (!isInsideCached(x + 1, y, z, pattern)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x - 1, y, z, pattern)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, y, z + 1, pattern)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, y, z - 1, pattern)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, y + 1, z, pattern)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, y - 1, z, pattern)) {
-                    draw = true;
-                    break;
-                }
-            } while (false);
+            boolean draw = isNotCached(x + 1, y, z, pattern)
+                    || isNotCached(x - 1, y, z, pattern)
+                    || isNotCached(x, y, z + 1, pattern)
+                    || isNotCached(x, y, z - 1, pattern)
+                    || isNotCached(x, y + 1, z, pattern)
+                    || isNotCached(x, y - 1, z, pattern);
 
             if (!draw) {
                 continue;

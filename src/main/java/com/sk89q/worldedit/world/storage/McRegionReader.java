@@ -101,11 +101,10 @@ public class McRegionReader {
 
     /**
      * Read the header.
-     * 
-     * @throws DataException
+     *
      * @throws IOException
      */
-    private void readHeader() throws DataException, IOException {
+    private void readHeader() throws IOException {
         offsets = new int[SECTOR_INTS];
 
         for (int i = 0; i < SECTOR_INTS; ++i) {

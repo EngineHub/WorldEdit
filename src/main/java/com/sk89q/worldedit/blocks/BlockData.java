@@ -960,7 +960,7 @@ public final class BlockData {
         case BlockID.STAINED_GLASS_PANE:
             if (increment == 1) {
                 data = nextClothColor(data);
-            } else if (increment == -1) {
+            } else {
                 data = prevClothColor(data);
             }
             return data;

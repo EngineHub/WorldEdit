@@ -105,7 +105,7 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
         } else {
             Pattern pattern = Pattern.compile(".*\\.mc[ra]$");
             for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements(); ) {
-                ZipEntry testEntry = (ZipEntry) e.nextElement();
+                ZipEntry testEntry = e.nextElement();
                 // Check for world
                 if (testEntry.getName().startsWith(worldname + "/")) {
                     if (pattern.matcher(testEntry.getName()).matches()) { // does entry end in .mca

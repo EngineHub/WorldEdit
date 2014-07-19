@@ -119,7 +119,4 @@ public class YAMLConfiguration extends LocalConfiguration {
         shellSaveType = type.equals("") ? null : type;
 
     }
-
-    public void unload() {
-    }
 }

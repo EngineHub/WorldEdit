@@ -104,7 +104,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 if (buff != null) {
                     buff.close();
                 }
-            } catch (IOException e2) {
+            } catch (IOException ignored) {
             }
         }
 
@@ -169,7 +169,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 if (buff != null) {
                     buff.close();
                 }
-            } catch (IOException e2) {
+            } catch (IOException ignored) {
             }
         }
     }

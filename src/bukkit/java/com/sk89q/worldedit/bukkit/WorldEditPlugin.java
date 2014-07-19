@@ -168,9 +168,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.clearSessions();
         worldEdit.getPlatformManager().unregister(server);
-        if (config != null) {
-            config.unload();
-        }
         if (server != null) {
             server.unregisterCommands();
         }
@@ -181,7 +178,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      * Loads and reloads all configuration.
      */
     protected void loadConfiguration() {
-        config.unload();
         config.load();
         getPermissionsResolver().load();
     }
