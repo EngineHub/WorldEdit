@@ -71,7 +71,7 @@ public class ForgeWorldEdit {
     private ForgePlatform platform;
     private ForgeConfiguration config;
     private File workingDir;
-    private ForgeTickScheduler scheduler;
+    private WorldTickScheduler scheduler;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -88,7 +88,7 @@ public class ForgeWorldEdit {
         config = new ForgeConfiguration(this);
         config.load();
 
-        scheduler = new ForgeTickScheduler();
+        scheduler = new WorldTickScheduler();
         TickRegistry.registerTickHandler(scheduler, Side.CLIENT);
         TickRegistry.registerTickHandler(scheduler, Side.SERVER);
     }
@@ -253,7 +253,7 @@ public class ForgeWorldEdit {
      *
      * @return the scheduler
      */
-    ForgeTickScheduler getScheduler() {
+    WorldTickScheduler getScheduler() {
         return this.scheduler;
     }
 

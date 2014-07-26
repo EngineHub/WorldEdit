@@ -49,6 +49,7 @@ import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
+import com.sk89q.worldedit.util.task.OperationScheduler;
 import com.sk89q.worldedit.util.task.SimpleOperationScheduler;
 import com.sk89q.worldedit.util.task.SimpleSupervisor;
 import com.sk89q.worldedit.util.task.Supervisor;
@@ -94,8 +95,8 @@ public class WorldEdit {
 
     private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(
             EvenMoreExecutors.newBoundedCachedThreadPool(0, EXECUTOR_MAX_THREADS, EXECUTOR_QUEUE_SIZE));
-    private final SimpleSupervisor supervisor = new SimpleSupervisor();
-    private final SimpleOperationScheduler operationScheduler = new SimpleOperationScheduler(supervisor);
+    private final Supervisor supervisor = new SimpleSupervisor();
+    private final OperationScheduler operationScheduler = new SimpleOperationScheduler(supervisor);
     private final EventBus eventBus = new EventBus();
     private final PlatformManager platformManager = new PlatformManager(this);
     private final EditSessionFactory editSessionFactory = new EditSessionFactory.EditSessionFactoryImpl(eventBus);
@@ -162,7 +163,7 @@ public class WorldEdit {
      *
      * @return an instance
      */
-    public SimpleOperationScheduler getOperationScheduler() {
+    public OperationScheduler getOperationScheduler() {
         return operationScheduler;
     }
 

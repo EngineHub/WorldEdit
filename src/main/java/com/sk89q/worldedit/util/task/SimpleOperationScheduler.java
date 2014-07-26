@@ -42,7 +42,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class SimpleOperationScheduler extends AbstractOperationScheduler {
 
-    private final SimpleSupervisor supervisor;
+    private final Supervisor supervisor;
     private final Queue<OperationTask> scheduled = new ArrayDeque<OperationTask>();
     private final List<OperationTask> running = new ArrayList<OperationTask>();
     private final Object lock = new Object();
@@ -53,7 +53,7 @@ public class SimpleOperationScheduler extends AbstractOperationScheduler {
      *
      * @param supervisor the supervisor to submit tasks to
      */
-    public SimpleOperationScheduler(SimpleSupervisor supervisor) {
+    public SimpleOperationScheduler(Supervisor supervisor) {
         checkNotNull(supervisor);
         this.supervisor = supervisor;
     }

@@ -35,9 +35,9 @@ import java.util.logging.Logger;
 /**
  * A small task scheduler implementation providing only synchronous tasks.
  */
-class ForgeTickScheduler extends AbstractTickScheduler implements ITickHandler {
+class WorldTickScheduler extends AbstractTickScheduler implements ITickHandler {
 
-    private static final Logger log = Logger.getLogger(ForgeTickScheduler.class.getCanonicalName());
+    private static final Logger log = Logger.getLogger(WorldTickScheduler.class.getCanonicalName());
     private final PriorityQueue<Task> pending = new PriorityQueue<Task>(10,
             new Comparator<Task>() {
                 @Override
