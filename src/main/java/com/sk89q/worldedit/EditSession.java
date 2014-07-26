@@ -353,7 +353,7 @@ public class EditSession implements Extent {
      */
     public void setFastMode(boolean enabled) {
         if (multiPassExtent != null) {
-            multiPassExtent.setNotifyAndLight(enabled);
+            multiPassExtent.setNotifyAndLight(!enabled);
         }
     }
 
