@@ -17,31 +17,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.mask;
-
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.Blocks;
-import com.sk89q.worldedit.extent.Extent;
+package com.sk89q.worldedit.blocks;
 
 import java.util.Collection;
 
-public class FuzzyBlockMask extends BlockMask {
+/**
+ * Block-related utility methods.
+ */
+public final class Blocks {
 
-    public FuzzyBlockMask(Extent extent, Collection<BaseBlock> blocks) {
-        super(extent, blocks);
+    private Blocks() {
     }
 
-    public FuzzyBlockMask(Extent extent, BaseBlock... block) {
-        super(extent, block);
+    /**
+     * Checks whether a given block is in a list of base blocks.
+     *
+     * @param collection the collection
+     * @param o the block
+     * @return true if the collection contains the given block
+     */
+    public static boolean containsFuzzy(Collection<? extends BaseBlock> collection, BaseBlock o) {
+        // Allow masked data in the searchBlocks to match various types
+        for (BaseBlock b : collection) {
+            if (b.equalsFuzzy(o)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    @Override
-    public boolean test(Vector vector) {
-        Extent extent = getExtent();
-        Collection<BaseBlock> blocks = getBlocks();
-        BaseBlock lazyBlock = extent.getLazyBlock(vector);
-        BaseBlock compare = new BaseBlock(lazyBlock.getType(), lazyBlock.getData());
-        return Blocks.containsFuzzy(blocks, compare);
-    }
 }

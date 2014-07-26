@@ -23,10 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents an item, without an amount value. See {@link BaseItemStack} for an instance
- * with stack amount information.
+ * Represents an item, without an amount value. See {@link BaseItemStack}
+ * for an instance with stack amount information.
  *
- * @author sk89q
+ * <p>This class may be removed in the future.</p>
  */
 public class BaseItem {
     
