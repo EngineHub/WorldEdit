@@ -25,6 +25,7 @@ import com.sk89q.worldedit.function.FlatRegionFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.function.util.AffectedCounter;
+import com.sk89q.worldedit.regions.FlatChunkSortedIterable;
 import com.sk89q.worldedit.regions.FlatRegion;
 
 import java.util.Iterator;
@@ -36,7 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class FlatRegionVisitor implements Operation, AffectedCounter {
 
-    private final Iterator<Vector2D> iterator;
+    private final Iterator<? extends Vector2D> iterator;
     private final FlatRegionFunction function;
     private int affected = 0;
 
@@ -50,8 +51,13 @@ public class FlatRegionVisitor implements Operation, AffectedCounter {
         checkNotNull(flatRegion);
         checkNotNull(function);
 
+        if (flatRegion instanceof FlatChunkSortedIterable) {
+            this.iterator = ((FlatChunkSortedIterable) flatRegion.clone()).flatChunkSortedIterator();
+        } else {
+            this.iterator = flatRegion.clone().asFlatRegion().iterator();
+        }
+
         this.function = function;
-        this.iterator = flatRegion.asFlatRegion().iterator();
     }
 
     @Override

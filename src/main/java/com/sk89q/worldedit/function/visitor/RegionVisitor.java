@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.function.visitor;
 
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.function.util.AffectedCounter;
+import com.sk89q.worldedit.regions.ChunkSortedIterable;
 import com.sk89q.worldedit.regions.Region;
 
 import java.util.Iterator;
@@ -35,13 +35,17 @@ import java.util.Iterator;
  */
 public class RegionVisitor implements Operation, AffectedCounter {
 
-    private final Iterator<BlockVector> iterator;
+    private final Iterator<? extends Vector> iterator;
     private final RegionFunction function;
     private int affected = 0;
 
     public RegionVisitor(Region region, RegionFunction function) {
-        // Clone the region, because some operations like to reuse them...
-        this.iterator = region.clone().iterator();
+        if (region instanceof ChunkSortedIterable) {
+            this.iterator = ((ChunkSortedIterable) region.clone()).chunkSortedIterator();
+        } else {
+            this.iterator = region.clone().iterator();
+        }
+
         this.function = function;
     }
 
