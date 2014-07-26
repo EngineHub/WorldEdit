@@ -45,7 +45,7 @@ import java.util.Set;
 /**
  * Re-orders blocks into several stages.
  */
-public class MultiStageReorder extends AbstractDelegateExtent implements ReorderingExtent {
+public class MultiStageReorder extends AbstractDelegateExtent<Extent> implements ReorderingExtent {
 
     private TupleArrayList<BlockVector, BaseBlock> stage1 = new TupleArrayList<BlockVector, BaseBlock>();
     private TupleArrayList<BlockVector, BaseBlock> stage2 = new TupleArrayList<BlockVector, BaseBlock>();

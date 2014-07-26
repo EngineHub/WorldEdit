@@ -28,7 +28,7 @@ import com.sk89q.worldedit.extent.Extent;
 /**
  * An abstract class to implement block loggers and so on with.
  */
-public abstract class AbstractLoggingExtent extends AbstractDelegateExtent {
+public abstract class AbstractLoggingExtent extends AbstractDelegateExtent<Extent> {
 
     /**
      * Create a new instance.

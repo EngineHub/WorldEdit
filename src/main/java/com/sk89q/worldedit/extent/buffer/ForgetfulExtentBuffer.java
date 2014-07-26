@@ -46,7 +46,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * This buffer will not attempt to return results from the buffer when
  * accessor methods (such as {@link #getBlock(Vector)}) are called.
  */
-public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pattern {
+public class ForgetfulExtentBuffer extends AbstractDelegateExtent<Extent> implements Pattern {
 
     private static final BaseBlock AIR = new BaseBlock(BlockID.AIR);
 

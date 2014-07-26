@@ -40,16 +40,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A base class for {@link Extent}s that merely passes extents onto another.
  */
-public abstract class AbstractDelegateExtent implements Extent {
+public abstract class AbstractDelegateExtent<T extends Extent> implements Extent {
 
-    private final Extent extent;
+    private final T extent;
 
     /**
      * Create a new instance.
      *
      * @param extent the extent
      */
-    protected AbstractDelegateExtent(Extent extent) {
+    protected AbstractDelegateExtent(T extent) {
         checkNotNull(extent);
         this.extent = extent;
     }
@@ -59,7 +59,7 @@ public abstract class AbstractDelegateExtent implements Extent {
      *
      * @return the extent
      */
-    public Extent getExtent() {
+    public T getExtent() {
         return extent;
     }
 

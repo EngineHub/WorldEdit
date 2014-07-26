@@ -32,7 +32,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * Limits the number of blocks that can be changed before a
  * {@link MaxChangedBlocksException} is thrown.
  */
-public class BlockChangeLimiter extends AbstractDelegateExtent {
+public class BlockChangeLimiter extends AbstractDelegateExtent<Extent> {
 
     private int limit;
     private int count = 0;

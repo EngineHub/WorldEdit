@@ -38,7 +38,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Transforms blocks themselves (but not their position) according to a
  * given transform.
  */
-public class BlockTransformExtent extends AbstractDelegateExtent {
+public class BlockTransformExtent extends AbstractDelegateExtent<Extent> {
 
     private static final double RIGHT_ANGLE = Math.toRadians(90);
 

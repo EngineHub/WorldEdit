@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * Applies a {@link BlockBag} to operations.
  */
-public class BlockBagExtent extends AbstractDelegateExtent {
+public class BlockBagExtent extends AbstractDelegateExtent<Extent> {
 
     private Map<Integer, Integer> missingBlocks = new HashMap<Integer, Integer>();
     private BlockBag blockBag;
@@ -41,7 +41,6 @@ public class BlockBagExtent extends AbstractDelegateExtent {
      * Create a new instance.
      *
      * @param extent the extent
-     * @param world the world
      * @param blockBag the block bag
      */
     public BlockBagExtent(Extent extent, @Nullable BlockBag blockBag) {

@@ -31,7 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Automatically loads chunks when blocks are accessed.
  */
-public class ChunkLoadingExtent extends AbstractDelegateExtent {
+public class ChunkLoadingExtent extends AbstractDelegateExtent<Extent> {
 
     private final World world;
 

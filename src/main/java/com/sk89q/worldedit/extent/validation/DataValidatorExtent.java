@@ -31,7 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Validates set data to prevent creating invalid blocks and such.
  */
-public class DataValidatorExtent extends AbstractDelegateExtent {
+public class DataValidatorExtent extends AbstractDelegateExtent<Extent> {
 
     private final World world;
 

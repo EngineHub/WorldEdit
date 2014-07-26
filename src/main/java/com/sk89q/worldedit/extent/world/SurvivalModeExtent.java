@@ -37,7 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * in the constructor. For that reason, if you wish to "catch" changes, you
  * should catch them before the changes reach this extent.
  */
-public class SurvivalModeExtent extends AbstractDelegateExtent {
+public class SurvivalModeExtent extends AbstractDelegateExtent<Extent> {
 
     private final World world;
     private boolean toolUse = false;

@@ -29,7 +29,7 @@ import com.sk89q.worldedit.extent.Extent;
  * Returns the same cached {@link BaseBlock} for repeated calls to
  * {@link #getLazyBlock(Vector)} with the same position.
  */
-public class LastAccessExtentCache extends AbstractDelegateExtent {
+public class LastAccessExtentCache extends AbstractDelegateExtent<Extent> {
 
     private CachedBlock lastBlock;
 
