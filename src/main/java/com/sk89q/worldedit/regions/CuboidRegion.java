@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * An axis-aligned cuboid. It can be defined using two corners of the cuboid.
  */
-public class CuboidRegion extends AbstractRegion implements FlatRegion {
+public class CuboidRegion extends AbstractRegion implements FlatRegion, ChunkSortedIterable, FlatChunkSortedIterable {
 
     private Vector pos1;
     private Vector pos2;
@@ -378,6 +378,47 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
     }
 
     @Override
+    public Iterator<? extends Vector> chunkSortedIterator() {
+        final Vector min = getMinimumPoint();
+        final Vector max = getMaximumPoint();
+        final Iterator<Vector2D> chunkIterator = getChunks().iterator();
+
+        return new Iterator<BlockVector>() {
+            private Iterator<BlockVector> current;
+
+            private void nextChunk() {
+                if (current == null || !current.hasNext()) {
+                    if (chunkIterator.hasNext()) {
+                        Vector2D chunk = chunkIterator.next();
+                        Vector chunkMin = Vector.getMaximum(min, chunk.multiply(16).toVector(min.getY()));
+                        Vector chunkMax = Vector.getMinimum(max, chunk.multiply(16).add(15, 15).toVector(max.getY()));
+                        current = new CuboidRegion(chunkMin, chunkMax).iterator();
+                    } else {
+                        current = null;
+                    }
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                nextChunk();
+                return (current != null && current.hasNext());
+            }
+
+            @Override
+            public BlockVector next() {
+                if (!hasNext()) throw new java.util.NoSuchElementException();
+                return current.next();
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    @Override
     public Iterable<Vector2D> asFlatRegion() {
         return new Iterable<Vector2D>() {
             @Override
@@ -411,6 +452,47 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
                         throw new UnsupportedOperationException();
                     }
                 };
+            }
+        };
+    }
+
+    @Override
+    public Iterator<? extends Vector2D> flatChunkSortedIterator() {
+        final Vector min = getMinimumPoint();
+        final Vector max = getMaximumPoint();
+        final Iterator<Vector2D> chunkIterator = getChunks().iterator();
+
+        return new Iterator<Vector2D>() {
+            private Iterator<Vector2D> current;
+
+            private void nextChunk() {
+                if (current == null || !current.hasNext()) {
+                    if (chunkIterator.hasNext()) {
+                        Vector2D chunk = chunkIterator.next();
+                        Vector chunkMin = Vector.getMaximum(min, chunk.multiply(16).toVector(min.getY()));
+                        Vector chunkMax = Vector.getMinimum(max, chunk.multiply(16).add(15, 15).toVector(max.getY()));
+                        current = new CuboidRegion(chunkMin, chunkMax).asFlatRegion().iterator();
+                    } else {
+                        current = null;
+                    }
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                nextChunk();
+                return (current != null && current.hasNext());
+            }
+
+            @Override
+            public Vector2D next() {
+                if (!hasNext()) throw new java.util.NoSuchElementException();
+                return current.next();
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         };
     }
@@ -450,4 +532,5 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         Vector size = new Vector(1, 1, 1).multiply(apothem);
         return new CuboidRegion(origin.subtract(size), origin.add(size));
     }
+
 }

@@ -19,26 +19,27 @@
 
 package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.Vector;
 
-public interface FlatRegion extends Region {
+import java.util.Iterator;
+
+/**
+ * Provides an {@code Iterator} over locations that sorts all visits
+ * by chunk. All the positions within a chunk are exhausted before moving
+ * onto the next chunk.
+ *
+ * @see FlatChunkSortedIterable the 2D version of this class
+ */
+public interface ChunkSortedIterable {
 
     /**
-     * Gets the minimum Y value
+     * Get a chunk shorted iterator.
      *
-     * @return
-     */
-    public int getMinimumY();
-
-    /**
-     * Gets the maximum Y value
+     * <p>All the positions within a chunk are exhausted before moving
+     * onto the next chunk.</p>
      *
-     * @return
+     * @return an iterator
      */
-    public int getMaximumY();
+    Iterator<? extends Vector> chunkSortedIterator();
 
-    @Override
-    public FlatRegion clone();
-
-    public Iterable<Vector2D> asFlatRegion();
 }
