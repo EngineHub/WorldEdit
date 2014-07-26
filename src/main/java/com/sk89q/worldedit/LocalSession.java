@@ -32,6 +32,9 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.OperationQueue;
+import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
@@ -47,6 +50,7 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -69,8 +73,6 @@ public class LocalSession {
     private long expirationTime = System.currentTimeMillis() + EXPIRATION_GRACE;
     private RegionSelector selector = new CuboidRegionSelector();
     private boolean placeAtPos1 = false;
-    private LinkedList<EditSession> history = new LinkedList<EditSession>();
-    private int historyPointer = 0;
     private ClipboardHolder clipboard;
     private boolean toolControl = true;
     private boolean superPickaxe = false;
@@ -86,6 +88,11 @@ public class LocalSession {
     private boolean fastMode = false;
     private Mask mask;
     private TimeZone timezone = TimeZone.getDefault();
+
+    @GuardedBy("history")
+    private final LinkedList<EditSession> history = new LinkedList<EditSession>();
+    @GuardedBy("history")
+    private int historyPointer = 0;
 
     /**
      * Construct the object.
@@ -118,8 +125,10 @@ public class LocalSession {
      * Clear history.
      */
     public void clearHistory() {
-        history.clear();
-        historyPointer = 0;
+        synchronized (history) {
+            history.clear();
+            historyPointer = 0;
+        }
     }
 
     /**
@@ -129,18 +138,20 @@ public class LocalSession {
      * @param editSession
      */
     public void remember(EditSession editSession) {
-        // Don't store anything if no changes were made
-        if (editSession.size() == 0) return;
+        synchronized (history) {
+            // Don't store anything if no changes were made
+            if (editSession.size() == 0) return;
 
-        // Destroy any sessions after this undo point
-        while (historyPointer < history.size()) {
-            history.remove(historyPointer);
+            // Destroy any sessions after this undo point
+            while (historyPointer < history.size()) {
+                history.remove(historyPointer);
+            }
+            history.add(editSession);
+            while (history.size() > MAX_HISTORY_SIZE) {
+                history.remove(0);
+            }
+            historyPointer = history.size();
         }
-        history.add(editSession);
-        while (history.size() > MAX_HISTORY_SIZE) {
-            history.remove(0);
-        }
-        historyPointer = history.size();
     }
 
     /**
@@ -162,18 +173,20 @@ public class LocalSession {
      * @return whether anything was undone
      */
     public EditSession undo(BlockBag newBlockBag, Player player) {
-        --historyPointer;
-        if (historyPointer >= 0) {
-            EditSession editSession = history.get(historyPointer);
-            EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
-                    .getEditSession(editSession.getWorld(), -1, newBlockBag, player);
-            newEditSession.enableQueue();
-            newEditSession.setFastMode(fastMode);
-            editSession.undo(newEditSession);
-            return editSession;
-        } else {
-            historyPointer = 0;
-            return null;
+        synchronized (history) {
+            --historyPointer;
+            if (historyPointer >= 0) {
+                EditSession editSession = history.get(historyPointer);
+                EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
+                        .getEditSession(editSession.getWorld(), -1, newBlockBag, player);
+                newEditSession.enableQueue();
+                newEditSession.setFastMode(fastMode);
+                editSession.undo(newEditSession);
+                return editSession;
+            } else {
+                historyPointer = 0;
+                return null;
+            }
         }
     }
 
@@ -770,6 +783,28 @@ public class LocalSession {
         editSession.setMask(mask);
 
         return editSession;
+    }
+
+    /**
+     * Wrap an operation so that it finishes correctly and commits changes to
+     * the history.
+     *
+     * @param operation the operation
+     * @param editSession the edit session
+     * @return a new operation to execute
+     */
+    public Operation wrapOperation(Operation operation, final EditSession editSession) {
+        return new OperationQueue(operation, editSession.commit(), new Operation() {
+            @Override
+            public Operation resume(RunContext run) throws WorldEditException {
+                remember(editSession);
+                return null;
+            }
+
+            @Override
+            public void cancel() {
+            }
+        });
     }
 
     /**

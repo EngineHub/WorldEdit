@@ -84,6 +84,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     private BukkitServerInterface server;
     private final WorldEditAPI api = new WorldEditAPI(this);
     private BukkitConfiguration config;
+    private final BukkitTickScheduler scheduler = new BukkitTickScheduler(this);
 
     /**
      * Called on plugin enable.
@@ -465,6 +466,10 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     @Nullable
     BukkitImplAdapter getBukkitImplAdapter() {
         return bukkitAdapter;
+    }
+
+    BukkitTickScheduler getScheduler() {
+        return scheduler;
     }
 
 }

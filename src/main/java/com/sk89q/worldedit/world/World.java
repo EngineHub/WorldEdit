@@ -30,6 +30,7 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.scheduler.TickScheduler;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.registry.WorldData;
@@ -274,6 +275,8 @@ public interface World extends Extent {
      * @return the world data
      */
     WorldData getWorldData();
+
+    TickScheduler getScheduler();
 
     @Override
     boolean equals(Object other);

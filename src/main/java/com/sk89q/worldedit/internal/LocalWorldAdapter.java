@@ -34,6 +34,7 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.scheduler.TickScheduler;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BaseBiome;
@@ -201,6 +202,11 @@ public class LocalWorldAdapter extends LocalWorld {
     @Override
     public WorldData getWorldData() {
         return world.getWorldData();
+    }
+
+    @Override
+    public TickScheduler getScheduler() {
+        return world.getScheduler();
     }
 
     @Override

@@ -19,17 +19,18 @@
 
 package com.sk89q.worldedit.util.task;
 
-/**
- * Manages running tasks and informs users of their progress, but does not
- * execute the task.
- */
-public interface Supervisor {
+import com.google.common.util.concurrent.ListenableFuture;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.world.World;
 
-    /**
-     * Monitor the given task.
-     *
-     * @param task the task
-     */
-    void monitor(Task<?> task);
+/**
+ * An abstract implementation of an operation scheduler.
+ */
+public abstract class AbstractOperationScheduler implements OperationScheduler {
+
+    @Override
+    public ListenableFuture<Operation> submit(Operation operation, World world) {
+        return submit(operation, world, null, null);
+    }
 
 }

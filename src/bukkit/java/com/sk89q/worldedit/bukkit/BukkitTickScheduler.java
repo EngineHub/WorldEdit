@@ -17,19 +17,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.task;
+package com.sk89q.worldedit.bukkit;
 
-/**
- * Manages running tasks and informs users of their progress, but does not
- * execute the task.
- */
-public interface Supervisor {
+import com.sk89q.worldedit.util.scheduler.AbstractTickScheduler;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
-    /**
-     * Monitor the given task.
-     *
-     * @param task the task
-     */
-    void monitor(Task<?> task);
+import static com.google.common.base.Preconditions.checkNotNull;
+
+class BukkitTickScheduler extends AbstractTickScheduler {
+
+    private final Plugin plugin;
+
+    BukkitTickScheduler(Plugin plugin) {
+        checkNotNull(plugin);
+        this.plugin = plugin;
+    }
+
+    @Override
+    protected void submit(Runnable runnable, long delay) {
+        Bukkit.getServer().getScheduler().runTaskLater(plugin, runnable, delay);
+    }
 
 }

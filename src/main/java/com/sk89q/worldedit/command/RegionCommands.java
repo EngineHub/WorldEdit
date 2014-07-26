@@ -19,22 +19,30 @@
 
 package com.sk89q.worldedit.command;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.GroundFunction;
+import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.generator.FloraGenerator;
 import com.sk89q.worldedit.function.generator.ForestGenerator;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.NoiseFilter2D;
+import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
+import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
@@ -64,12 +72,15 @@ import static com.sk89q.worldedit.regions.Regions.*;
  */
 public class RegionCommands {
 
+    private final WorldEdit worldEdit;
+
     /**
      * Create a new instance.
      *
      * @param worldEdit reference to WorldEdit
      */
     public RegionCommands(WorldEdit worldEdit) {
+        this.worldEdit = worldEdit;
     }
 
     @Command(
@@ -81,9 +92,14 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.set")
     @Logging(REGION)
-    public void set(Player player, LocalSession session, EditSession editSession, Pattern pattern) throws WorldEditException {
-        int affected = editSession.setBlocks(session.getSelection(player.getWorld()), Patterns.wrap(pattern));
-        player.print(affected + " block(s) have been changed.");
+    public void set(final Player player, LocalSession session, Pattern pattern) throws WorldEditException {
+        EditSession editSession = session.createEditSession(player);
+        BlockReplace replace = new BlockReplace(editSession, pattern);
+        RegionVisitor visitor = new RegionVisitor(session.getSelection(player.getWorld()), replace);
+
+        Operation operation = session.wrapOperation(visitor, editSession);
+        ListenableFuture<?> future = worldEdit.getOperationScheduler().submit(operation, player.getWorld(), "//replace", player);
+        Operations.addBlockChangeMessage(future, visitor, player);
     }
 
     @Command(

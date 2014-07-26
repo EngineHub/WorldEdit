@@ -34,6 +34,7 @@ import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.scheduler.TickScheduler;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
@@ -318,6 +319,11 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public WorldData getWorldData() {
         return ForgeWorldData.getInstance();
+    }
+
+    @Override
+    public TickScheduler getScheduler() {
+        return ForgeWorldEdit.inst.getScheduler();
     }
 
     @Override

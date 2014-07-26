@@ -21,18 +21,60 @@ package com.sk89q.worldedit.util.task;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import javax.annotation.Nullable;
+
 /**
- * A task performs a task when its {@code submit()} method is called.
- *
- * @param <V> the type of the returned value
+ * A task is a job that can be scheduled, run, or cancelled. Tasks can report
+ * on their own status.
  */
-public interface Task<V> {
+public interface Task<V> extends ListenableFuture<V> {
 
     /**
-     * Start the task.
+     * Get the name of the task so it can be printed to the user.
      *
-     * @return a future representing the returned value of the task
+     * @return the name of the task
      */
-    ListenableFuture<V> submit();
+    String getName();
+
+    /**
+     * Get the owner of the task.
+     *
+     * @return an owner object, if one is known or valid, otherwise {@code null}
+     */
+    @Nullable
+    Object getOwner();
+
+    /**
+     * Get the state of the task.
+     *
+     * @return the state of the task
+     */
+    State getState();
+
+    /**
+     * Represents the state of a task.
+     */
+    public enum State {
+        /**
+         * The task has been cancelled and may be stopped or will stop.
+         */
+        CANCELLED,
+        /**
+         * The task has failed.
+         */
+        FAILED,
+        /**
+         * The task is currently running.
+         */
+        RUNNING,
+        /**
+         * The task has been scheduled to run but is not running yet.
+         */
+        SCHEDULED,
+        /**
+         * The task has succeeded.
+         */
+        SUCCEEDED
+    }
 
 }

@@ -19,17 +19,43 @@
 
 package com.sk89q.worldedit.util.task;
 
+import com.google.common.util.concurrent.AbstractFuture;
+
+import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * Manages running tasks and informs users of their progress, but does not
- * execute the task.
+ * An abstract task that stores a pre-set name and owner on a field.
+ *
+ * @param <V>
  */
-public interface Supervisor {
+public abstract class AbstractTask<V> extends AbstractFuture<V> implements Task<V> {
+
+    private final String name;
+    private final Object owner;
 
     /**
-     * Monitor the given task.
+     * Create a new instance.
      *
-     * @param task the task
+     * @param name the name
+     * @param owner the owner
      */
-    void monitor(Task<?> task);
+    protected AbstractTask(String name, @Nullable Object owner) {
+        checkNotNull(name);
+        this.name = name;
+        this.owner = owner;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Nullable
+    @Override
+    public Object getOwner() {
+        return owner;
+    }
 
 }

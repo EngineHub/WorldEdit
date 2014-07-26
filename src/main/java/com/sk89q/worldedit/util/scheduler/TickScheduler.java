@@ -17,19 +17,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.task;
+package com.sk89q.worldedit.util.scheduler;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 /**
- * Manages running tasks and informs users of their progress, but does not
- * execute the task.
+ * Schedules tasks to run later in a given number of ticks.
  */
-public interface Supervisor {
+public interface TickScheduler {
 
     /**
-     * Monitor the given task.
+     * Schedule a runnable to be executed in the given number of ticks.
      *
-     * @param task the task
+     * @param runnable the runnable to execute
+     * @param delay the delay in ticks
+     * @return a future representing the scheduled task
      */
-    void monitor(Task<?> task);
+    Future<?> schedule(Runnable runnable, long delay);
+
+    /**
+     * Schedule a task to be executed in the given number of ticks.
+     *
+     * @param task the task to execute
+     * @param delay the delay in ticks
+     * @return a future representing the scheduled task
+     */
+    <V> Future<V> schedule(Callable<V> task, long delay);
 
 }

@@ -19,8 +19,17 @@
 
 package com.sk89q.worldedit.function.operation;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.function.util.AffectedCounter;
+
+import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Operation helper methods.
@@ -76,6 +85,37 @@ public final class Operations {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    /**
+     * Add a message on successful completion of the given future stating
+     * a number of blocks changed using the counter provided
+     * by {@code counter}.
+     *
+     * @param future the future
+     * @param counter the counter
+     * @param actor the actor
+     */
+    public static void addBlockChangeMessage(ListenableFuture<?> future, final AffectedCounter counter, final Actor actor) {
+        checkNotNull(future);
+        checkNotNull(counter);
+        checkNotNull(actor);
+
+        Futures.addCallback(future, new FutureCallback<Object>() {
+            @Override
+            public void onSuccess(@Nullable Object result) {
+                int changed = counter.getAffected();
+                if (changed == 1) {
+                    actor.print("1 block was changed.");
+                } else {
+                    actor.print(changed + " blocks were changed.");
+                }
+            }
+
+            @Override
+            public void onFailure(@Nullable Throwable t) {
+            }
+        });
     }
 
 }

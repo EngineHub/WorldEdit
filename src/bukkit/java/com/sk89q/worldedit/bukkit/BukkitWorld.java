@@ -32,6 +32,7 @@ import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.scheduler.TickScheduler;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
@@ -394,6 +395,11 @@ public class BukkitWorld extends LocalWorld {
     @Override
     public WorldData getWorldData() {
         return BukkitWorldData.getInstance();
+    }
+
+    @Override
+    public TickScheduler getScheduler() {
+        return WorldEditPlugin.getInstance().getScheduler();
     }
 
     @Override

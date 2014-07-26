@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
@@ -44,8 +46,12 @@ import com.sk89q.worldedit.scripting.CraftScriptEngine;
 import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
+import com.sk89q.worldedit.util.task.SimpleOperationScheduler;
+import com.sk89q.worldedit.util.task.SimpleSupervisor;
+import com.sk89q.worldedit.util.task.Supervisor;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
 
 import javax.script.ScriptException;
@@ -79,11 +85,17 @@ import static com.sk89q.worldedit.event.platform.Interaction.OPEN;
  */
 public class WorldEdit {
 
+    private static final int EXECUTOR_QUEUE_SIZE = 20;
+    private static final int EXECUTOR_MAX_THREADS = 2;
     public static final Logger logger = Logger.getLogger(WorldEdit.class.getCanonicalName());
 
     private final static WorldEdit instance = new WorldEdit();
     private static String version;
 
+    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(
+            EvenMoreExecutors.newBoundedCachedThreadPool(0, EXECUTOR_MAX_THREADS, EXECUTOR_QUEUE_SIZE));
+    private final SimpleSupervisor supervisor = new SimpleSupervisor();
+    private final SimpleOperationScheduler operationScheduler = new SimpleOperationScheduler(supervisor);
     private final EventBus eventBus = new EventBus();
     private final PlatformManager platformManager = new PlatformManager(this);
     private final EditSessionFactory editSessionFactory = new EditSessionFactory.EditSessionFactoryImpl(eventBus);
@@ -124,6 +136,34 @@ public class WorldEdit {
      */
     public PlatformManager getPlatformManager() {
         return platformManager;
+    }
+
+    /**
+     * Get a bounded re-usuable executor service for tasks that can run
+     * in another thread from the server.
+     *
+     * @return an executor service
+     */
+    public ListeningExecutorService getExecutorService() {
+        return executorService;
+    }
+
+    /**
+     * Get the supervisor that keeps tracking of concurrent jobs.
+     *
+     * @return the supervisor
+     */
+    public Supervisor getSupervisor() {
+        return supervisor;
+    }
+
+    /**
+     * Get the operations scheduler that executes operations.
+     *
+     * @return an instance
+     */
+    public SimpleOperationScheduler getOperationScheduler() {
+        return operationScheduler;
     }
 
     /**
