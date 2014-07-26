@@ -29,10 +29,12 @@ public class SelectionMinMaxEvent implements CUIEvent {
         this.max = max;
     }
 
+    @Override
     public String getTypeId() {
         return "mm";
     }
 
+    @Override
     public String[] getParameters() {
         return new String[] {
                     String.valueOf(min),

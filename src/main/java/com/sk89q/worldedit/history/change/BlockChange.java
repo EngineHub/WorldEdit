@@ -29,10 +29,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents a block change that may be undone or replayed.
- * </p>
- * This block change does not have an {@link Extent} assigned to it because
+ *
+ * <p>This block change does not have an {@link Extent} assigned to it because
  * one will be taken from the passed {@link UndoContext}. If the context
- * does not have an extent (it is null), cryptic errors may occur.
+ * does not have an extent (it is null), cryptic errors may occur.</p>
  */
 public class BlockChange implements Change {
 

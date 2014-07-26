@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.internal.cui;
 
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extension.platform.Actor;
 
@@ -46,13 +45,14 @@ public interface CUIRegion {
      * up-to-date data. If the CUI version is smaller than
      * this value, the legacy methods will be called.
      * 
-     * @return 
+     * @return the protocol version
      */
     public int getProtocolVersion();
     
     /**
-     * Returns the type ID to send to CUI in the selection event. 
-     * @return 
+     * Returns the type ID to send to CUI in the selection event.
+     *
+     * @return the type ID
      */
     public String getTypeID();
     
@@ -60,7 +60,7 @@ public interface CUIRegion {
      * Returns the type ID to send to CUI in the selection
      * event if the CUI is in legacy mode.
      * 
-     * @return 
+     * @return the legacy type ID
      */
     public String getLegacyTypeID();
 }

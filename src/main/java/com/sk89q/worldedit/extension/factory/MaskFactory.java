@@ -26,9 +26,9 @@ import com.sk89q.worldedit.internal.registry.AbstractFactory;
 /**
  * A registry of known {@link Mask}s. Provides methods to instantiate
  * new masks from input.
- * </p>
- * Instances of this class can be taken from
- * {@link WorldEdit#getMaskFactory()}.
+ *
+ * <p>Instances of this class can be taken from
+ * {@link WorldEdit#getMaskFactory()}.</p>
  */
 public final class MaskFactory extends AbstractFactory<Mask> {
 

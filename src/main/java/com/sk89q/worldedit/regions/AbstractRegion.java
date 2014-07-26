@@ -28,9 +28,7 @@ import com.sk89q.worldedit.world.storage.ChunkStore;
 import java.util.*;
 
 public abstract class AbstractRegion implements Region {
-    /**
-     * Stores the world.
-     */
+
     protected World world;
 
     public AbstractRegion(World world) {
@@ -158,7 +156,7 @@ public abstract class AbstractRegion implements Region {
     /**
      * Get a list of chunks.
      *
-     * @return
+     * @return a set of chunks
      */
     @Override
     public Set<Vector2D> getChunks() {
@@ -210,4 +208,5 @@ public abstract class AbstractRegion implements Region {
 
         return chunks;
     }
+
 }

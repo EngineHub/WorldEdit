@@ -19,13 +19,16 @@
 
 package com.sk89q.worldedit.regions.iterator;
 
-import java.util.Iterator;
-
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.Region;
 
+import java.util.Iterator;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class RegionIterator implements Iterator<BlockVector> {
+
     private final Region region;
     private final int maxX;
     private final int maxY;
@@ -36,6 +39,8 @@ public class RegionIterator implements Iterator<BlockVector> {
     private int nextZ;
 
     public RegionIterator(Region region) {
+        checkNotNull(region);
+
         this.region = region;
 
         Vector max = region.getMaximumPoint();
@@ -51,6 +56,7 @@ public class RegionIterator implements Iterator<BlockVector> {
         forward();
     }
 
+    @Override
     public boolean hasNext() {
         return nextX != Integer.MIN_VALUE;
     }
@@ -61,6 +67,7 @@ public class RegionIterator implements Iterator<BlockVector> {
         }
     }
 
+    @Override
     public BlockVector next() {
         if (!hasNext()) throw new java.util.NoSuchElementException();
 
@@ -89,7 +96,9 @@ public class RegionIterator implements Iterator<BlockVector> {
         nextX = Integer.MIN_VALUE;
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
+
 }

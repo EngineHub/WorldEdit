@@ -21,10 +21,9 @@ package com.sk89q.worldedit.internal.expression.runtime;
 
 /**
  * A break or continue statement.
- *
- * @author TomyLobo
  */
 public class Break extends Node {
+
     boolean doContinue;
 
     public Break(int position, boolean doContinue) {
@@ -47,4 +46,5 @@ public class Break extends Node {
     public String toString() {
         return doContinue ? "continue" : "break";
     }
+
 }

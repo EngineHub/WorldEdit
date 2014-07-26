@@ -26,9 +26,9 @@ import com.sk89q.worldedit.internal.registry.AbstractFactory;
 /**
  * A registry of known {@link Pattern}s. Provides methods to instantiate
  * new patterns from input.
- * </p>
- * Instances of this class can be taken from
- * {@link WorldEdit#getPatternFactory()}.
+ *
+ * <p>Instances of this class can be taken from
+ * {@link WorldEdit#getPatternFactory()}.</p>
  */
 public final class PatternFactory extends AbstractFactory<Pattern> {
 

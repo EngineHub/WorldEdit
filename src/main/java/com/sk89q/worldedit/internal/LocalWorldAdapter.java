@@ -47,6 +47,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Wraps {@link World}s into {@link LocalWorld}.
  */
+@SuppressWarnings("deprecation")
 public class LocalWorldAdapter extends LocalWorld {
 
     private final World world;
@@ -203,6 +204,7 @@ public class LocalWorldAdapter extends LocalWorld {
         return world.getWorldData();
     }
 
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     @Override
     public boolean equals(Object other) {
         return world.equals(other);

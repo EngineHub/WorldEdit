@@ -22,16 +22,19 @@
 package com.sk89q.worldedit.internal.cui;
 
 public class SelectionPolygonEvent implements CUIEvent {
+
     protected final int[] vertices;
 
     public SelectionPolygonEvent(int... vertices) {
         this.vertices = vertices;
     }
 
+    @Override
     public String getTypeId() {
         return "poly";
     }
 
+    @Override
     public String[] getParameters() {
         final String[] ret = new String[vertices.length];
 
@@ -42,4 +45,5 @@ public class SelectionPolygonEvent implements CUIEvent {
 
         return ret;
     }
+
 }

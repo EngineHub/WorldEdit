@@ -20,26 +20,24 @@
 package com.sk89q.worldedit.extent.inventory;
 
 /**
- *
- * @author sk89q
+ * Thrown when the target inventory of a block bag is full.
  */
 public class OutOfSpaceException extends BlockBagException {
-    private static final long serialVersionUID = -2962840237632916821L;
 
-    /**
-     * Stores the block ID.
-     */
     private int id;
 
     /**
      * Construct the object.
-     * @param id
+     *
+     * @param id the ID of the block
      */
     public OutOfSpaceException(int id) {
         this.id = id;
     }
 
     /**
+     * Get the ID of the block
+     *
      * @return the id
      */
     public int getID() {

@@ -21,38 +21,36 @@
 
 package com.sk89q.worldedit.math.interpolation;
 
-import java.util.List;
-
 import com.sk89q.worldedit.Vector;
+
+import java.util.List;
 
 /**
  * Represents an arbitrary function in &#8477; &rarr; &#8477;<sup>3</sup>
- *
- * @author TomyLobo
- *
  */
 public interface Interpolation {
+
     /**
      * Sets nodes to be used by subsequent calls to
      * {@link #getPosition(double)} and the other methods.
      *
-     * @param nodes
+     * @param nodes the nodes
      */
     public void setNodes(List<Node> nodes);
 
     /**
      * Gets the result of f(position)
      *
-     * @param position
-     * @return
+     * @param position the position to interpolate
+     * @return the result
      */
     public Vector getPosition(double position);
 
     /**
      * Gets the result of f'(position).
      *
-     * @param position
-     * @return
+     * @param position the position to interpolate
+     * @return the result
      */
     public Vector get1stDerivative(double position);
 
@@ -63,9 +61,16 @@ public interface Interpolation {
      *
      * @param positionA lower limit
      * @param positionB upper limit
-     * @return
+     * @return the arc length
      */
     double arcLength(double positionA, double positionB);
 
+    /**
+     * Get the segment position.
+     *
+     * @param position the position
+     * @return the segment position
+     */
     int getSegment(double position);
+
 }

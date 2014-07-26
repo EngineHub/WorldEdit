@@ -186,7 +186,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
                     current = current.add(attachment.vector()).toBlockVector();
 
                     if (!blocks.contains(current)) {
-                        // We ran outside the remaing set => assume we can place blocks on this
+                        // We ran outside the remaining set => assume we can place blocks on this
                         break;
                     }
 

@@ -20,11 +20,10 @@
 package com.sk89q.worldedit.internal.expression.lexer.tokens;
 
 /**
- * A number
- *
- * @author TomyLobo
+ * A number.
  */
 public class NumberToken extends Token {
+
     public final double value;
 
     public NumberToken(int position, double value) {
@@ -41,4 +40,5 @@ public class NumberToken extends Token {
     public String toString() {
         return "NumberToken(" + value + ")";
     }
+
 }

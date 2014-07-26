@@ -21,7 +21,11 @@ package com.sk89q.worldedit.regions.polyhedron;
 
 import com.sk89q.worldedit.Vector;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class Triangle {
+
+    private String tag = "Triangle";
     private final Vector[] vertices;
     private final Vector normal;
     private final double b;
@@ -29,11 +33,15 @@ public class Triangle {
     /**
      * Constructs a triangle with the given vertices (counter-clockwise)
      *
-     * @param v0
-     * @param v1
-     * @param v2
+     * @param v0 first vertex
+     * @param v1 second vertex
+     * @param v2 third vertex
      */
     public Triangle(Vector v0, Vector v1, Vector v2) {
+        checkNotNull(v0);
+        checkNotNull(v1);
+        checkNotNull(v2);
+
         vertices = new Vector[] { v0, v1, v2 };
 
         this.normal = v1.subtract(v0).cross(v2.subtract(v0)).normalize();
@@ -66,30 +74,40 @@ public class Triangle {
     /**
      * Returns whether the given point is above the plane the triangle is in.
      *
-     * @param pt
-     * @return
+     * @param pt the point to test
+     * @return true if the point is below
      */
     public boolean below(Vector pt) {
+        checkNotNull(pt);
         return normal.dot(pt) < b;
     }
 
     /**
      * Returns whether the given point is above the plane the triangle is in.
      *
-     * @param pt
-     * @return
+     * @param pt the point to test
+     * @return true if the point is above
      */
     public boolean above(Vector pt) {
+        checkNotNull(pt);
         return normal.dot(pt) > b;
+    }
+
+    /**
+     * Set the triangle's tag.
+     *
+     * @param tag the tag
+     * @return this object
+     */
+    public Triangle tag(String tag) {
+        checkNotNull(tag);
+        this.tag = tag;
+        return this;
     }
 
     @Override
     public String toString() {
-        return tag+"(" + this.vertices[0] + "," + this.vertices[1] + "," + this.vertices[2] + ")";
+        return tag + "(" + this.vertices[0] + "," + this.vertices[1] + "," + this.vertices[2] + ")";
     }
-    String tag = "Triangle";
-    public Triangle tag(String tag) {
-        this.tag = tag;
-        return this;
-    }
+
 }

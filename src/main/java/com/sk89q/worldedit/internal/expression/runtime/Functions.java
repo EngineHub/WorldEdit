@@ -27,17 +27,16 @@ import java.util.*;
 
 /**
  * Contains all functions that can be used in expressions.
- *
- * @author TomyLobo
  */
 @SuppressWarnings("UnusedDeclaration")
 public final class Functions {
+
     private static class Overload {
         private final Method method;
         private final int mask;
         private final boolean isSetter;
 
-        public Overload(Method method) throws IllegalArgumentException {
+        private Overload(Method method) throws IllegalArgumentException {
             this.method = method;
 
             boolean isSetter = false;
@@ -436,4 +435,5 @@ public final class Functions {
 
         return queryInternal(type, data, typeId, dataValue);
     }
+
 }

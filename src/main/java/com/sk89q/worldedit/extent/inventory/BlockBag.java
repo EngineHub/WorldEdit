@@ -24,15 +24,14 @@ import com.sk89q.worldedit.blocks.*;
 
 /**
  * Represents a source to get blocks from and store removed ones.
- *
- * @author sk89q
  */
 public abstract class BlockBag {
+
     /**
      * Stores a block as if it was mined.
      * 
-     * @param id
-     * @throws BlockBagException
+     * @param id the type ID
+     * @throws BlockBagException on error
      * @deprecated Use {@link BlockBag#storeDroppedBlock(int, int)} instead
      */
     @Deprecated
@@ -43,9 +42,9 @@ public abstract class BlockBag {
     /**
      * Stores a block as if it was mined.
      * 
-     * @param id
-     * @param data 
-     * @throws BlockBagException
+     * @param id the type ID
+     * @param data the data value
+     * @throws BlockBagException on error
      */
     public void storeDroppedBlock(int id, int data) throws BlockBagException {
         BaseItem dropped = BlockType.getBlockBagItem(id, data);
@@ -58,8 +57,8 @@ public abstract class BlockBag {
     /**
      * Sets a block as if it was placed by hand.
      *
-     * @param id
-     * @throws BlockBagException
+     * @param id the type ID
+     * @throws BlockBagException on error
      * @deprecated Use {@link #fetchPlacedBlock(int,int)} instead
      */
     @Deprecated
@@ -70,9 +69,9 @@ public abstract class BlockBag {
     /**
      * Sets a block as if it was placed by hand.
      *
-     * @param id
-     * @param data TODO
-     * @throws BlockBagException
+     * @param id the type ID
+     * @param data the data value
+     * @throws BlockBagException on error
      */
     public void fetchPlacedBlock(int id, int data) throws BlockBagException {
         try {
@@ -117,10 +116,10 @@ public abstract class BlockBag {
     /**
      * Get a block.
      *
-     * Either this method or fetchItem needs to be overridden
+     * <p>Either this method or fetchItem needs to be overridden.</p>
      *
-     * @param id
-     * @throws BlockBagException 
+     * @param id the type ID
+     * @throws BlockBagException on error
      */
     public void fetchBlock(int id) throws BlockBagException {
         fetchItem(new BaseItem(id));
@@ -129,10 +128,10 @@ public abstract class BlockBag {
     /**
      * Get a block.
      *
-     * Either this method or fetchBlock needs to be overridden
+     * <p>Either this method or fetchItem needs to be overridden.</p>
      *
-     * @param item
-     * @throws BlockBagException 
+     * @param item the item
+     * @throws BlockBagException on error
      */
     public void fetchItem(BaseItem item) throws BlockBagException {
         fetchBlock(item.getType());
@@ -140,11 +139,11 @@ public abstract class BlockBag {
 
     /**
      * Store a block.
+     *
+     * <p>Either this method or fetchItem needs to be overridden.</p>
      * 
-     * Either this method or storeItem needs to be overridden
-     * 
-     * @param id
-     * @throws BlockBagException 
+     * @param id the type ID
+     * @throws BlockBagException on error
      */
     public void storeBlock(int id) throws BlockBagException {
         storeItem(new BaseItem(id));
@@ -152,11 +151,11 @@ public abstract class BlockBag {
 
     /**
      * Store a block.
+     *
+     * <p>Either this method or fetchItem needs to be overridden.</p>
      * 
-     * Either this method or storeBlock needs to be overridden
-     * 
-     * @param item
-     * @throws BlockBagException 
+     * @param item the item
+     * @throws BlockBagException on error
      */
     public void storeItem(BaseItem item) throws BlockBagException {
         storeBlock(item.getType());
@@ -165,7 +164,7 @@ public abstract class BlockBag {
     /**
      * Checks to see if a block exists without removing it.
      * 
-     * @param id
+     * @param id the type ID
      * @return whether the block exists
      */
     public boolean peekBlock(int id) {
@@ -186,14 +185,14 @@ public abstract class BlockBag {
     /**
      * Adds a position to be used a source.
      *
-     * @param pos
+     * @param pos the position
      */
     public abstract void addSourcePosition(WorldVector pos);
 
     /**
      * Adds a position to be used a source.
      *
-     * @param pos
+     * @param pos the position
      */
     public abstract void addSingleSourcePosition(WorldVector pos);
 }

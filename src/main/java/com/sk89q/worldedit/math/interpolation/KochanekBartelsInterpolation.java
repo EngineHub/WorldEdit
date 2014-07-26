@@ -21,21 +21,21 @@
 
 package com.sk89q.worldedit.math.interpolation;
 
+import com.sk89q.worldedit.Vector;
+
 import java.util.Collections;
 import java.util.List;
 
-import com.sk89q.worldedit.Vector;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Kochanek-Bartels interpolation.<br />
- * Continuous in the 2nd derivative.<br />
- * Supports {@link Node#tension tension}, {@link Node#bias bias} and
- * {@link Node#continuity continuity} parameters per {@link Node}
+ * A Kochanek-Bartels interpolation; continuous in the 2nd derivative.
  *
- * @author TomyLobo
- *
+ * <p>Supports {@link Node#tension tension}, {@link Node#bias bias} and
+ * {@link Node#continuity continuity} parameters per {@link Node}.</p>
  */
 public class KochanekBartelsInterpolation implements Interpolation {
+
     private List<Node> nodes;
     private Vector[] coeffA;
     private Vector[] coeffB;
@@ -49,6 +49,8 @@ public class KochanekBartelsInterpolation implements Interpolation {
 
     @Override
     public void setNodes(List<Node> nodes) {
+        checkNotNull(nodes);
+
         this.nodes = nodes;
         recalc();
     }
@@ -197,12 +199,6 @@ public class KochanekBartelsInterpolation implements Interpolation {
 
     /**
      * Assumes a < b
-     *
-     * @param indexLeft
-     * @param remainderLeft
-     * @param indexRight
-     * @param remainderRight
-     * @return
      */
     private double arcLengthRecursive(int indexLeft, double remainderLeft, int indexRight, double remainderRight) {
         switch (indexRight - indexLeft) {
@@ -250,7 +246,7 @@ public class KochanekBartelsInterpolation implements Interpolation {
 
         position *= scaling;
 
-        final int index = (int) Math.floor(position);
-        return index;
+        return (int) Math.floor(position);
     }
+
 }

@@ -21,10 +21,9 @@ package com.sk89q.worldedit.internal.expression.lexer.tokens;
 
 /**
  * A unary or binary operator.
- *
- * @author TomyLobo
  */
 public class OperatorToken extends Token {
+
     public final String operator;
 
     public OperatorToken(int position, String operator) {
@@ -41,4 +40,5 @@ public class OperatorToken extends Token {
     public String toString() {
         return "OperatorToken(" + operator + ")";
     }
+
 }

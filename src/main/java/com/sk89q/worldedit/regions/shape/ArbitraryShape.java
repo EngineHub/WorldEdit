@@ -30,10 +30,9 @@ import com.sk89q.worldedit.regions.Region;
 /**
  * Generates solid and hollow shapes according to materials returned by the
  * {@link #getMaterial} method.
- *
- * @author TomyLobo
  */
-public abstract class ArbitraryShape {
+public abstract class ArbitraryShape
+{
     protected final Region extent;
     private int cacheOffsetX;
     private int cacheOffsetY;
@@ -208,4 +207,5 @@ public abstract class ArbitraryShape {
 
         return affected;
     }
+
 }

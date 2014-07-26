@@ -24,10 +24,9 @@ import com.sk89q.worldedit.internal.expression.parser.ParserException;
 
 /**
  * An if/else statement or a ternary operator.
- *
- * @author TomyLobo
  */
 public class Conditional extends Node {
+
     private RValue condition;
     private RValue truePart;
     private RValue falsePart;
@@ -90,4 +89,5 @@ public class Conditional extends Node {
 
         return this;
     }
+
 }

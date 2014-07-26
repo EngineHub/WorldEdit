@@ -37,6 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Adapts {@link Platform}s into the legacy {@link ServerInterface}.
  */
+@SuppressWarnings("ALL")
 public class ServerInterfaceAdapter extends ServerInterface {
 
     private final Platform platform;

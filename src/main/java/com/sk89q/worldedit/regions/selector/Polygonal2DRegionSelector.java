@@ -53,6 +53,9 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
         this(world, 50);
     }
 
+    /**
+     * @deprecated cast {@code world} to {@link World}
+     */
     @Deprecated
     public Polygonal2DRegionSelector(@Nullable LocalWorld world, int maxPoints) {
         this((World) world, maxPoints);
@@ -108,6 +111,9 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
         }
     }
 
+    /**
+     * @deprecated cast {@code world} to {@link World}
+     */
     @Deprecated
     public Polygonal2DRegionSelector(@Nullable LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
         this((World) world, points, minY, maxY);

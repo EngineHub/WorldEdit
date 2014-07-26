@@ -20,11 +20,10 @@
 package com.sk89q.worldedit.internal.expression.lexer.tokens;
 
 /**
- * An identifier
- *
- * @author TomyLobo
+ * An identifier.
  */
 public class IdentifierToken extends Token {
+
     public final String value;
 
     public IdentifierToken(int position, String value) {
@@ -41,4 +40,5 @@ public class IdentifierToken extends Token {
     public String toString() {
         return "IdentifierToken(" + value + ")";
     }
+
 }

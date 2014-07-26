@@ -30,8 +30,8 @@ import javax.annotation.Nullable;
 /**
  * Contains contextual information that may be useful when constructing
  * objects from a registry (such as {@link MaskFactory}).
- * </p>
- * By default, {@link #isRestricted()} will return true.
+ *
+ * <p>By default, {@link #isRestricted()} will return true.</p>
  */
 public class ParserContext {
 

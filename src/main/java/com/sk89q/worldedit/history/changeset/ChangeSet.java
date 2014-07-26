@@ -38,9 +38,9 @@ public interface ChangeSet {
 
     /**
      * Get a backward directed iterator that can be used for undo.
-     * </p>
-     * The iterator may return the changes out of order, as long as the final
-     * result after all changes have been applied is correct.
+     *
+     * <p>The iterator may return the changes out of order, as long as the final
+     * result after all changes have been applied is correct.</p>
      *
      * @return a undo directed iterator
      */
@@ -48,9 +48,9 @@ public interface ChangeSet {
 
     /**
      * Get a forward directed iterator that can be used for redo.
-     * </p>
-     * The iterator may return the changes out of order, as long as the final
-     * result after all changes have been applied is correct.
+     *
+     * <p>The iterator may return the changes out of order, as long as the final
+     * result after all changes have been applied is correct.</p>
      *
      * @return a forward directed iterator
      */

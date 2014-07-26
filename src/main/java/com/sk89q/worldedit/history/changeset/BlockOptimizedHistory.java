@@ -36,10 +36,10 @@ import static java.util.Map.Entry;
 /**
  * An extension of {@link ArrayListHistory} that stores {@link BlockChange}s
  * separately in two {@link ArrayList}s.
- * </p>
- * Whether this is a good idea or not is highly questionable, but this class
+ *
+ * <p>Whether this is a good idea or not is highly questionable, but this class
  * exists because this is how history was implemented in WorldEdit for
- * many years.
+ * many years.</p>
  */
 public class BlockOptimizedHistory extends ArrayListHistory {
 

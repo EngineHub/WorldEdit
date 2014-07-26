@@ -47,6 +47,9 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
         format.setMaximumFractionDigits(3);
     }
 
+    /**
+     * @deprecated cast {@code world} to {@link World}
+     */
     @Deprecated
     public CylinderRegionSelector(@Nullable LocalWorld world) {
         this((World) world);

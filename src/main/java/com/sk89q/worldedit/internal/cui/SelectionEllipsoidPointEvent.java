@@ -22,6 +22,7 @@ package com.sk89q.worldedit.internal.cui;
 import com.sk89q.worldedit.Vector;
 
 public class SelectionEllipsoidPointEvent implements CUIEvent {
+
     protected final int id;
     protected final Vector pos;
 
@@ -30,10 +31,12 @@ public class SelectionEllipsoidPointEvent implements CUIEvent {
         this.pos = pos;
     }
 
+    @Override
     public String getTypeId() {
         return "e";
     }
 
+    @Override
     public String[] getParameters() {
         return new String[] {
                     String.valueOf(id),
@@ -42,4 +45,5 @@ public class SelectionEllipsoidPointEvent implements CUIEvent {
                     String.valueOf(pos.getBlockZ())
                 };
     }
+
 }

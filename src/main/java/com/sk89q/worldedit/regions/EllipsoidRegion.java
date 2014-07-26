@@ -30,23 +30,25 @@ import java.util.Set;
 import java.util.HashSet;
 
 /**
- *
- * @author TomyLobo
+ * Represents an ellipsoid region.
  */
 public class EllipsoidRegion extends AbstractRegion {
+
     /**
      * Stores the center.
      */
     private Vector center;
+
     /**
      * Stores the radii plus 0.5 on each axis.
      */
     private Vector radius;
+
     /**
      * Construct a new instance of this ellipsoid region.
      *
-     * @param pos1
-     * @param pos2
+     * @param pos1 the first position
+     * @param pos2 the second position
      */
     public EllipsoidRegion(Vector pos1, Vector pos2) {
         this(null, pos1, pos2);
@@ -60,9 +62,9 @@ public class EllipsoidRegion extends AbstractRegion {
     /**
      * Construct a new instance of this ellipsoid region.
      *
-     * @param world
-     * @param center
-     * @param radius
+     * @param world the world
+     * @param center the center
+     * @param radius the radius
      */
     public EllipsoidRegion(World world, Vector center, Vector radius) {
         super(world);
@@ -74,56 +76,32 @@ public class EllipsoidRegion extends AbstractRegion {
         this(ellipsoidRegion.world, ellipsoidRegion.center, ellipsoidRegion.getRadius());
     }
 
-    /**
-     * Get the lower point of the ellipsoid.
-     *
-     * @return min point
-     */
+    @Override
     public Vector getMinimumPoint() {
         return center.subtract(getRadius());
     }
 
-    /**
-     * Get the upper point of the ellipsoid.
-     *
-     * @return max point
-     */
+    @Override
     public Vector getMaximumPoint() {
         return center.add(getRadius());
     }
 
-    /**
-     * Get the number of blocks in the region.
-     *
-     * @return number of blocks
-     */
+    @Override
     public int getArea() {
         return (int) Math.floor((4.0 / 3.0) * Math.PI * radius.getX() * radius.getY() * radius.getZ());
     }
 
-    /**
-     * Get X-size.
-     *
-     * @return width
-     */
+    @Override
     public int getWidth() {
         return (int) (2 * radius.getX());
     }
 
-    /**
-     * Get Y-size.
-     *
-     * @return height
-     */
+    @Override
     public int getHeight() {
         return (int) (2 * radius.getY());
     }
 
-    /**
-     * Get Z-size.
-     *
-     * @return length
-     */
+    @Override
     public int getLength() {
         return (int) (2 * radius.getZ());
     }
@@ -148,23 +126,13 @@ public class EllipsoidRegion extends AbstractRegion {
         return total.divide(2).floor();
     }
 
-    /**
-     * Expand the region.
-     *
-     * @param changes array/arguments with multiple related changes
-     * @throws RegionOperationException
-     */
+    @Override
     public void expand(Vector... changes) throws RegionOperationException {
         center = center.add(calculateDiff(changes));
         radius = radius.add(calculateChanges(changes));
     }
 
-    /**
-     * Contract the region.
-     *
-     * @param changes array/arguments with multiple related changes
-     * @throws RegionOperationException
-     */
+    @Override
     public void contract(Vector... changes) throws RegionOperationException {
         center = center.subtract(calculateDiff(changes));
         Vector newRadius = radius.subtract(calculateChanges(changes));
@@ -189,35 +157,31 @@ public class EllipsoidRegion extends AbstractRegion {
     /**
      * Set the center.
      *
-     * @param center
+     * @param center the center
      */
     public void setCenter(Vector center) {
         this.center = center;
     }
 
     /**
-     * Get the radiuses.
+     * Get the radii.
      *
-     * @return radiuses
+     * @return radii
      */
     public Vector getRadius() {
         return radius.subtract(0.5, 0.5, 0.5);
     }
 
     /**
-     * Set radiuses.
+     * Set the radii.
      *
-     * @param radius
+     * @param radius the radius
      */
     public void setRadius(Vector radius) {
         this.radius = radius.add(0.5, 0.5, 0.5);
     }
 
-    /**
-     * Get a list of chunks that this region is within.
-     *
-     * @return
-     */
+    @Override
     public Set<Vector2D> getChunks() {
         final Set<Vector2D> chunks = new HashSet<Vector2D>();
 
@@ -241,11 +205,7 @@ public class EllipsoidRegion extends AbstractRegion {
         return chunks;
     }
 
-    /**
-     * Returns true based on whether the region contains the point,
-     *
-     * @param pt
-     */
+    @Override
     public boolean contains(Vector pt) {
         return pt.subtract(center).divide(radius).lengthSq() <= 1;
     }
@@ -265,7 +225,9 @@ public class EllipsoidRegion extends AbstractRegion {
         setRadius(Vector.getMaximum(minRadius, getRadius()));
     }
 
+    @Override
     public EllipsoidRegion clone() {
         return (EllipsoidRegion) super.clone();
     }
+
 }

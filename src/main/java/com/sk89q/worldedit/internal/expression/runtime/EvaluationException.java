@@ -23,11 +23,8 @@ import com.sk89q.worldedit.internal.expression.ExpressionException;
 
 /**
  * Thrown when there's a problem during expression evaluation.
- *
- * @author TomyLobo
  */
 public class EvaluationException extends ExpressionException {
-    private static final long serialVersionUID = 1L;
 
     public EvaluationException(int position) {
         super(position, getPrefix(position));
@@ -48,4 +45,5 @@ public class EvaluationException extends ExpressionException {
     private static String getPrefix(int position) {
         return position < 0 ? "Evaluation error" : ("Evaluation error at " + (position + 1));
     }
+
 }

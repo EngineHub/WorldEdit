@@ -24,14 +24,13 @@ package com.sk89q.worldedit.math.interpolation;
 import com.sk89q.worldedit.Vector;
 
 /**
- * Represents a node for interpolation.<br />
- * The {@link #tension}, {@link #bias} and {@link #continuity} fields
- * are parameters for the Kochanek-Bartels interpolation algorithm.
+ * Represents a node for interpolation.
  *
- * @author TomyLobo
- *
+ * <p>The {@link #tension}, {@link #bias} and {@link #continuity} fields
+ * are parameters for the Kochanek-Bartels interpolation algorithm.</p>
  */
 public class Node {
+
     private Vector position;
 
     private double tension;
@@ -86,4 +85,5 @@ public class Node {
     public void setContinuity(double continuity) {
         this.continuity = continuity;
     }
+
 }

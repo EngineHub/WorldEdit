@@ -23,11 +23,8 @@ import com.sk89q.worldedit.internal.expression.ExpressionException;
 
 /**
  * Thrown when the parser encounters a problem.
- *
- * @author TomyLobo
  */
 public class ParserException extends ExpressionException {
-    private static final long serialVersionUID = 1L;
 
     public ParserException(int position) {
         super(position, getPrefix(position));
@@ -48,4 +45,5 @@ public class ParserException extends ExpressionException {
     private static String getPrefix(int position) {
         return position < 0 ? "Parser error" : ("Parser error at " + (position + 1));
     }
+
 }

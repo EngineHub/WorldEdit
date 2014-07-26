@@ -19,47 +19,57 @@
 
 package com.sk89q.worldedit.internal.expression;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
 import com.sk89q.worldedit.internal.expression.lexer.Lexer;
 import com.sk89q.worldedit.internal.expression.lexer.tokens.Token;
 import com.sk89q.worldedit.internal.expression.parser.Parser;
-import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
 import com.sk89q.worldedit.internal.expression.runtime.Constant;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
+import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
 import com.sk89q.worldedit.internal.expression.runtime.Functions;
 import com.sk89q.worldedit.internal.expression.runtime.RValue;
 import com.sk89q.worldedit.internal.expression.runtime.ReturnException;
 import com.sk89q.worldedit.internal.expression.runtime.Variable;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+
 /**
  * Compiles and evaluates expressions.
  *
- * Supported operators:
- * Logical: &&, ||, ! (unary)
- * Bitwise: ~ (unary), >>, << 
- * Arithmetic: +, -, *, /, % (modulo), ^ (power), - (unary), --, ++ (prefix only)
- * Comparison: <=, >=, >, <, ==, !=, ~= (near)
+ * <p>Supported operators:</p>
  *
- * Supported functions: abs, acos, asin, atan, atan2, cbrt, ceil, cos, cosh, exp, floor, ln, log, log10, max, max, min, min, rint, round, sin, sinh, sqrt, tan, tanh and more. (See the Functions class or the wiki)
+ * <ul>
+ *     <li>Logical: &&, ||, ! (unary)</li>
+ *     <li>Bitwise: ~ (unary), &gt;&gt;, &lt;&lt;</li>
+ *     <li>Arithmetic: +, -, *, /, % (modulo), ^ (power), - (unary), --, ++ (prefix only)</li>
+ *     <li>Comparison: &lt;=, &gt;=, &gt;, &lt;, ==, !=, ~= (near)</li>
+ * </ul>
  *
- * Constants: e, pi
+ * <p>Supported functions: abs, acos, asin, atan, atan2, cbrt, ceil, cos, cosh,
+ * exp, floor, ln, log, log10, max, max, min, min, rint, round, sin, sinh,
+ * sqrt, tan, tanh and more. (See the Functions class or the wiki)</p>
  *
- * To compile an equation, run <code>Expression.compile("expression here", "var1", "var2"...)</code>
- * If you wish to run the equation multiple times, you can then optimize it, by calling myExpression.optimize();
- * You can then run the equation as many times as you want by calling myExpression.evaluate(var1, var2...)
- * You do not need to pass values for all variables specified while compiling.
- * To query variables after evaluation, you can use myExpression.getVariable("variable name").
- * To get a value out of these, use myVariable.getValue()
+ * <p>Constants: e, pi</p>
  *
- * Variables are also supported and can be set either by passing values to <code>evaluate</code>
+ * <p>To compile an equation, run
+ * {@code Expression.compile("expression here", "var1", "var2"...)}.
+ * If you wish to run the equation multiple times, you can then optimize it,
+ * by calling {@link #optimize()}. You can then run the equation as many times
+ * as you want by calling {@link #evaluate(double...)}. You do not need to
+ * pass values for all variables specified while compiling.
+ * To query variables after evaluation, you can use
+ * {@link #getVariable(String, boolean)}. To get a value out of these, use
+ * {@link Variable#getValue()}.</p>
+ *
+ * <p>Variables are also supported and can be set either by passing values
+ * to {@link #evaluate(double...)}.</p>
  *
  * @author TomyLobo
  */
 public class Expression {
+
     private static final ThreadLocal<Stack<Expression>> instance = new ThreadLocal<Stack<Expression>>();
 
     private final Map<String, RValue> variables = new HashMap<String, RValue>();
@@ -167,4 +177,5 @@ public class Expression {
     public void setEnvironment(ExpressionEnvironment environment) {
         this.environment = environment;
     }
+
 }

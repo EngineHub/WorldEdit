@@ -24,10 +24,9 @@ import com.sk89q.worldedit.internal.expression.parser.ParserException;
 
 /**
  * A return statement.
- *
- * @author TomyLobo
  */
 public class Return extends Node {
+
     RValue value;
 
     public Return(int position, RValue value) {
@@ -57,4 +56,5 @@ public class Return extends Node {
 
         return this;
     }
+
 }

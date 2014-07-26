@@ -29,10 +29,9 @@ import com.sk89q.worldedit.world.biome.BaseBiome;
 /**
  * Generates solid and hollow shapes according to materials returned by the
  * {@link #getBiome} method.
- *
- * @author TomyLobo
  */
 public abstract class ArbitraryBiomeShape {
+
     private final FlatRegion extent;
     private int cacheOffsetX;
     private int cacheOffsetZ;
@@ -192,4 +191,5 @@ public abstract class ArbitraryBiomeShape {
             return this == o;
         }
     };
+
 }

@@ -30,7 +30,7 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.world.World;
 
 /**
- * A player.
+ * Represents a player
  */
 public interface Player extends Entity, Actor {
 
@@ -192,12 +192,19 @@ public interface Player extends Entity, Actor {
      * Get the point of the block being looked at. May return null.
      * Will return the farthest away air block if useLastBlock is true and no other block is found.
      *
-     * @param range How far to checks for blocks
-     * @param useLastBlock Try to return the last valid air block found.
+     * @param range how far to checks for blocks
+     * @param useLastBlock try to return the last valid air block found
      * @return point
      */
     WorldVector getBlockTrace(int range, boolean useLastBlock);
 
+    /**
+     * Get the face that the player is looking at.
+     *
+     * @param range the range
+     * @param useLastBlock try to return the last valid air block found
+     * @return a face
+     */
     WorldVectorFace getBlockTraceFace(int range, boolean useLastBlock);
 
     /**
@@ -225,25 +232,31 @@ public interface Player extends Entity, Actor {
 
     /**
      * Get the actor's position.
-     * </p>
-     * If the actor has no permission, then return a dummy location.
+     *
+     * <p>If the actor has no permission, then a dummy location is returned.</p>
      *
      * @return the actor's position
+     * @deprecated use {@link #getLocation()}
      */
+    @Deprecated
     WorldVector getPosition();
 
     /**
-     * Get the player's view pitch.
+     * Get the player's view pitch in degrees.
      *
      * @return pitch
+     * @deprecated use {@link #getLocation()}
      */
+    @Deprecated
     double getPitch();
 
     /**
-     * Get the player's view yaw.
+     * Get the player's view yaw in degrees.
      *
      * @return yaw
+     * @deprecated use {@link #getLocation()}
      */
+    @Deprecated
     double getYaw();
 
     /**
@@ -257,16 +270,16 @@ public interface Player extends Entity, Actor {
     /**
      * Move the player.
      *
-     * @param pos Where to move them
-     * @param pitch The pitch (up/down) of the player's view
-     * @param yaw The yaw (left/right) of the player's view
+     * @param pos where to move them
+     * @param pitch the pitch (up/down) of the player's view in degrees
+     * @param yaw the yaw (left/right) of the player's view in degrees
      */
     void setPosition(Vector pos, float pitch, float yaw);
 
     /**
      * Move the player.
      *
-     * @param pos Where to move them
+     * @param pos where to move them
      */
     void setPosition(Vector pos);
 

@@ -27,11 +27,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Represents a format that a schematic can be stored as
- * @author zml2008
- */
 public abstract class SchematicFormat {
+
     private static final Map<String, SchematicFormat> SCHEMATIC_FORMATS = new HashMap<String, SchematicFormat>();
 
     // Built-in schematic formats
@@ -142,4 +139,5 @@ public abstract class SchematicFormat {
     public abstract void save(CuboidClipboard clipboard, File file) throws IOException, DataException;
 
     public abstract boolean isOfFormat(File file);
+
 }

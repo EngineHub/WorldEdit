@@ -22,10 +22,22 @@ package com.sk89q.worldedit.entity;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.world.NbtValued;
 
+import javax.annotation.Nullable;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A snapshot of an entity that can be reused and passed around.
+ * Represents a mutable "snapshot" of an entity.
+ *
+ * <p>An instance of this class contains all the information needed to
+ * accurately reproduce the entity, provided that the instance was
+ * made correctly. In some implementations, it may not be possible to get a
+ * snapshot of entities correctly, so, for example, the NBT data for an entity
+ * may be missing.</p>
+ *
+ * <p>This class identifies entities using its entity type string, although
+ * this is not very efficient as the types are currently not interned. This
+ * may be changed in the future.</p>
  */
 public class BaseEntity implements NbtValued {
 
@@ -68,14 +80,14 @@ public class BaseEntity implements NbtValued {
         return true;
     }
 
+    @Nullable
     @Override
     public CompoundTag getNbtData() {
         return nbtData;
     }
 
     @Override
-    public void setNbtData(CompoundTag nbtData) {
-        checkNotNull(nbtData);
+    public void setNbtData(@Nullable CompoundTag nbtData) {
         this.nbtData = nbtData;
     }
 

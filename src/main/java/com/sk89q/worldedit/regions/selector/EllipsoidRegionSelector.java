@@ -50,6 +50,9 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
         this((World) null);
     }
 
+    /**
+     * @deprecated cast {@code world} to {@link World}
+     */
     @Deprecated
     public EllipsoidRegionSelector(@Nullable LocalWorld world) {
         this((World) world);
@@ -76,7 +79,7 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
 
             region = new EllipsoidRegion(ellipsoidRegionSelector.getIncompleteRegion());
         } else {
-            Region oldRegion = null;
+            Region oldRegion;
             try {
                 oldRegion = oldSelector.getRegion();
             } catch (IncompleteRegionException e) {

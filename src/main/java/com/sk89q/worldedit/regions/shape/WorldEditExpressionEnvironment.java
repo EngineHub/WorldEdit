@@ -25,6 +25,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
 
 public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
+
     private final Vector unit;
     private final Vector zero2;
     private Vector current = new Vector();
@@ -78,4 +79,5 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
     public void setCurrentBlock(Vector current) {
         this.current = current;
     }
+
 }

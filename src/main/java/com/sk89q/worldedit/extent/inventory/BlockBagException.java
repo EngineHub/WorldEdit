@@ -20,9 +20,7 @@
 package com.sk89q.worldedit.extent.inventory;
 
 /**
- *
- * @author sk89q
+ * Thrown when a block bag detects a problem.
  */
 public class BlockBagException extends Exception {
-    private static final long serialVersionUID = 4672190086028430655L;
 }

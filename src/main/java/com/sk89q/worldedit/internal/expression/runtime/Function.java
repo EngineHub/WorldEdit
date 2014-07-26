@@ -19,20 +19,19 @@
 
 package com.sk89q.worldedit.internal.expression.runtime;
 
+import com.sk89q.worldedit.internal.expression.Expression;
+import com.sk89q.worldedit.internal.expression.parser.ParserException;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.sk89q.worldedit.internal.expression.Expression;
-import com.sk89q.worldedit.internal.expression.parser.ParserException;
-
 /**
- * Wrapper for a Java method and its arguments (other Nodes)
- *
- * @author TomyLobo
+ * Wrapper for a Java method and its arguments (other Nodes).
  */
 public class Function extends Node {
+
     /**
      * Add this annotation on functions that don't always return the same value
      * for the same inputs and on functions with side-effects.
@@ -120,4 +119,5 @@ public class Function extends Node {
 
         return this;
     }
+
 }

@@ -53,6 +53,7 @@ import java.util.Collection;
  * as a "wildcard" block value, even though a {@link Mask} would be
  * more appropriate.</p>
  */
+@SuppressWarnings("deprecation")
 public class BaseBlock extends Block implements TileEntityBlock {
 
     /**
@@ -251,9 +252,8 @@ public class BaseBlock extends Block implements TileEntityBlock {
         return nbtData;
     }
 
-    @Nullable
     @Override
-    public void setNbtData(CompoundTag nbtData) {
+    public void setNbtData(@Nullable CompoundTag nbtData) {
         this.nbtData = nbtData;
     }
 
@@ -359,11 +359,9 @@ public class BaseBlock extends Block implements TileEntityBlock {
         }
 
         final BaseBlock otherBlock = (BaseBlock) o;
-        if (getType() != otherBlock.getType()) {
-            return false;
-        }
 
-        return getData() == otherBlock.getData();
+        return getType() == otherBlock.getType() && getData() == otherBlock.getData();
+
     }
 
     /**

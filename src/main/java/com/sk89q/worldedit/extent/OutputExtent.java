@@ -37,13 +37,13 @@ public interface OutputExtent {
      * Change the block at the given location to the given block. The operation may
      * not tie the given {@link BaseBlock} to the world, so future changes to the
      * {@link BaseBlock} do not affect the world until this method is called again.
-     * </p>
-     * The return value of this method indicates whether the change was probably
+     *
+     * <p>The return value of this method indicates whether the change was probably
      * successful. It may not be successful if, for example, the location is out
      * of the bounds of the extent. It may be unsuccessful if the block passed
      * is the same as the one in the world. However, the return value is only an
      * estimation and it may be incorrect, but it could be used to count, for
-     * example, the approximate number of changes.
+     * example, the approximate number of changes.</p>
      *
      * @param position position of the block
      * @param block block to set

@@ -33,7 +33,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class DocumentationPrinter {
+
     private DocumentationPrinter() {
     }
 
@@ -191,7 +193,6 @@ public final class DocumentationPrinter {
     }
 
     private static void writeBukkitYAML(PrintStream stream) {
-
         stream.println("name: WorldEdit");
         stream.println("main: com.sk89q.worldedit.bukkit.WorldEditPlugin");
         stream.println("version: ${project.version}");
@@ -202,4 +203,5 @@ public final class DocumentationPrinter {
         stream.println("# Permissions aren't here. Read http://wiki.sk89q.com/wiki/WEPIF/DinnerPerms");
         stream.println("# for how WorldEdit permissions actually work.");
     }
+
 }

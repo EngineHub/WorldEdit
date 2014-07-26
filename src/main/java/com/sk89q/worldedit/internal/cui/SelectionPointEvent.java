@@ -33,10 +33,12 @@ public class SelectionPointEvent implements CUIEvent {
         this.area = area;
     }
 
+    @Override
     public String getTypeId() {
         return "p";
     }
 
+    @Override
     public String[] getParameters() {
         return new String[] {
                     String.valueOf(id),

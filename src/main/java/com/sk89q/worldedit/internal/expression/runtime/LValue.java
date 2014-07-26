@@ -24,13 +24,15 @@ import com.sk89q.worldedit.internal.expression.parser.ParserException;
 
 /**
  * A value that can be used on the left side of an assignment.
- *
- * @author TomyLobo
  */
 public interface LValue extends RValue {
+
     public double assign(double value) throws EvaluationException;
 
+    @Override
     public LValue optimize() throws EvaluationException;
 
+    @Override
     public LValue bindVariables(Expression expression, boolean preferLValue) throws ParserException;
+
 }

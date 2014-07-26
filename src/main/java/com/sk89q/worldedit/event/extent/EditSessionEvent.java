@@ -34,17 +34,19 @@ import static com.sk89q.worldedit.EditSession.Stage;
 
 /**
  * Raised (several times) when a new {@link EditSession} is being instantiated.
- * </p>
- * Block loggers, as well as block set interceptors, can use this event to wrap
+ *
+ * <p></p>Block loggers, as well as block set interceptors, can use this event to wrap
  * the given {@link Extent} with their own, which would allow them to intercept
  * all changes made to the world. For example, the code below would wrap the
  * existing extent with a custom one, and the custom extent would receive
  * all method calls <strong>before</strong> the extent fetched from
- * {@link #getExtent()} would.
+ * {@link #getExtent()} would.</p>
+ *
  * <pre>
  * event.setExtent(new MyExtent(event.getExtent())
  * </pre>
- * This event is fired several times during the creation of a single
+ *
+ * <p></p>This event is fired several times during the creation of a single
  * {@link EditSession}, but {@link #getStage()} will differ each time.
  * The stage determines at which point {@link Extent}s added to this event
  * will be called. For example, if you inject an extent when the stage
@@ -55,7 +57,7 @@ import static com.sk89q.worldedit.EditSession.Stage;
  * custom {@link Extent} because that method bypasses history (and reorder).
  * It is thus recommended that loggers intercept at {@link Stage#BEFORE_CHANGE}
  * and block interceptors intercept at BOTH {@link Stage#BEFORE_CHANGE} and
- * {@link Stage#BEFORE_HISTORY}.
+ * {@link Stage#BEFORE_HISTORY}.</p>
  */
 public class EditSessionEvent extends Event {
 

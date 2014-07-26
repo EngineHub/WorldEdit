@@ -23,27 +23,27 @@ import com.sk89q.worldedit.Vector;
 
 /**
  * An affine transform.
- * </p>
- * This class is from the
+ *
+ * <p>This class is from the
  * <a href="http://geom-java.sourceforge.net/index.html>JavaGeom project</a>,
- * which is licensed under LGPL v2.1.
+ * which is licensed under LGPL v2.1.</p>
  */
 public class AffineTransform implements Transform {
 
     /**
      * coefficients for x coordinate.
      */
-    protected double m00, m01, m02, m03;
+    private double m00, m01, m02, m03;
 
     /**
      * coefficients for y coordinate.
      */
-    protected double m10, m11, m12, m13;
+    private double m10, m11, m12, m13;
 
     /**
      * coefficients for z coordinate.
      */
-    protected double m20, m21, m22, m23;
+    private double m20, m21, m22, m23;
 
     // ===================================================================
     // constructors
@@ -143,8 +143,7 @@ public class AffineTransform implements Transform {
      * 12 double.
      */
     public double[] coefficients() {
-        double[] tab = {m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23};
-        return tab;
+        return new double[]{m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23};
     }
 
     /**
@@ -160,6 +159,7 @@ public class AffineTransform implements Transform {
     /**
      * Computes the inverse affine transform.
      */
+    @Override
     public AffineTransform inverse() {
         double det = this.determinant();
         return new AffineTransform(
@@ -185,7 +185,7 @@ public class AffineTransform implements Transform {
 
     /**
      * Returns the affine transform created by applying first the affine
-     * transform given by <code>that</code>, then this affine transform.
+     * transform given by {@code that}, then this affine transform.
      *
      * @param that the transform to apply first
      * @return the composition this * that
@@ -211,7 +211,7 @@ public class AffineTransform implements Transform {
 
     /**
      * Return the affine transform created by applying first this affine
-     * transform, then the affine transform given by <code>that</code>.
+     * transform, then the affine transform given by {@code that}.
      *
      * @param that the transform to apply in a second step
      * @return the composition that * this

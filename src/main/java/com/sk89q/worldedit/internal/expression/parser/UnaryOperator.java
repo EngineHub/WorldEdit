@@ -23,10 +23,9 @@ import com.sk89q.worldedit.internal.expression.lexer.tokens.OperatorToken;
 
 /**
  * The parser uses this pseudo-token to mark operators as unary operators.
- *
- * @author TomyLobo
  */
 public class UnaryOperator extends PseudoToken {
+
     final String operator;
 
     public UnaryOperator(OperatorToken operatorToken) {
@@ -47,4 +46,5 @@ public class UnaryOperator extends PseudoToken {
     public String toString() {
         return "UnaryOperator(" + operator + ")";
     }
+
 }

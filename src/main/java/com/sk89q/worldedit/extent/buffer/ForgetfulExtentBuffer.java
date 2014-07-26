@@ -42,9 +42,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Buffers changes to an {@link Extent} and allows later retrieval for
  * actual application of the changes.
- * </p>
- * This buffer will not attempt to return results from the buffer when
- * accessor methods (such as {@link #getBlock(Vector)}) are called.
+ *
+ * <p>This buffer will not attempt to return results from the buffer when
+ * accessor methods (such as {@link #getBlock(Vector)}) are called.</p>
  */
 public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pattern {
 

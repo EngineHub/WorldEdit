@@ -75,8 +75,6 @@ public class NoiseFilter2D extends AbstractMask2D {
 
     /**
      * Set the probability of passing as a number between 0 and 1 (inclusive).
-     *
-     * @return the density
      */
     public void setDensity(double density) {
         checkArgument(density >= 0, "density must be >= 0");

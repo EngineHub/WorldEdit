@@ -31,8 +31,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Visits adjacent points on the same X-Z plane as long as the points
  * pass the given mask, and then executes the provided region
  * function on the entire column.
- * </p>
- * This is used by <code>//fill</code>.
+ *
+ * <p>This is used by {@code //fill}.</p>
  */
 public class DownwardVisitor extends RecursiveVisitor {
 

@@ -43,8 +43,8 @@ public interface NbtValued {
      * in any way, should be sent to {@link #setNbtData(CompoundTag)} so that
      * the instance knows of the changes. Making changes without calling
      * {@link #setNbtData(CompoundTag)} could have unintended consequences.
-     * </p>
-     * {@link #hasNbtData()} must return true if and only if method does not return null.
+     *
+     * <p>{@link #hasNbtData()} must return true if and only if method does not return null.</p>
      * 
      * @return compound tag, or null
      */
@@ -55,7 +55,6 @@ public interface NbtValued {
      * Set the object's NBT data (tile entity data).
      * 
      * @param nbtData NBT data, or null if no data
-     * @throws DataException if possibly the data is invalid
      */
     void setNbtData(@Nullable CompoundTag nbtData);
 
