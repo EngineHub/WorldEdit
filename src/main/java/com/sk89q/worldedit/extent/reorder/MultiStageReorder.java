@@ -35,7 +35,12 @@ import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.util.collection.TupleArrayList;
 
-import java.util.*;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Re-orders blocks into several stages.
@@ -113,11 +118,20 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
 
     @Override
     public Operation commitBefore() {
-        return new OperationQueue(
-                new BlockMapEntryPlacer(
-                        getExtent(),
-                        Iterators.concat(stage1.iterator(), stage2.iterator())),
-                new Stage3Committer());
+        return new Operation() {
+            @Override
+            public Operation resume(RunContext run) throws WorldEditException {
+                return new OperationQueue(
+                        new BlockMapEntryPlacer(
+                                getExtent(),
+                                Iterators.concat(stage1.iterator(), stage2.iterator())),
+                        new Stage3Committer());
+            }
+
+            @Override
+            public void cancel() {
+            }
+        };
     }
 
     private class Stage3Committer implements Operation {
