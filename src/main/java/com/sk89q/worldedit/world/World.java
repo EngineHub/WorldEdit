@@ -23,22 +23,21 @@ import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.SimulatedExtent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.scheduler.TickScheduler;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.scheduler.TickScheduler;
 import com.sk89q.worldedit.world.registry.WorldData;
 
 /**
  * Represents a world (dimension).
  */
-public interface World extends Extent {
+public interface World extends SimulatedExtent {
 
     /**
      * Get the name of the world.
@@ -91,26 +90,6 @@ public interface World extends Extent {
      */
     @Deprecated
     int getBlockData(Vector pt);
-
-    /**
-     * Similar to {@link Extent#setBlock(Vector, BaseBlock)} but a
-     * {@code notifyAndLight} parameter indicates whether adjacent blocks
-     * should be notified that changes have been made and lighting operations
-     * should be executed.
-     * </p>
-     * If it's not possible to skip lighting, or if it's not possible to
-     * avoid notifying adjacent blocks, then attempt to meet the
-     * specification as best as possible.
-     * </p>
-     * On implementations where the world is not simulated, the
-     * {@code notifyAndLight} parameter has no effect either way.
-     *
-     * @param position position of the block
-     * @param block block to set
-     * @param notifyAndLight true to to notify and light
-     * @return true if the block was successfully set (return value may not be accurate)
-     */
-    boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException;
 
     /**
      * @deprecated Use {@link #setBlock(Vector, BaseBlock)}

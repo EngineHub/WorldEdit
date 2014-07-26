@@ -100,6 +100,11 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
+    public boolean notifyAndLightBlock(Vector position, int previousId) throws WorldEditException {
+        return world.notifyAndLightBlock(position, previousId);
+    }
+
+    @Override
     public int getBlockLightLevel(Vector position) {
         return world.getBlockLightLevel(position);
     }

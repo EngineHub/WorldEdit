@@ -146,17 +146,34 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         if (notifyAndLight) {
-            world.updateAllLightTypes(x, y, z);
-            world.markBlockForUpdate(x, y, z);
-            world.notifyBlockChange(x, y, z, previousId);
-
-            Block mcBlock = Block.blocksList[block.getId()];
-            if (mcBlock != null && mcBlock.hasComparatorInputOverride()) {
-                world.func_96440_m(x, y, z, block.getId());
-            }
+            notifyAndLightBlock(position, previousId);
         }
 
         return successful;
+    }
+
+    @Override
+    public boolean notifyAndLightBlock(Vector position, int previousId) throws WorldEditException {
+        checkNotNull(position);
+
+        World world = getWorldChecked();
+        int x = position.getBlockX();
+        int y = position.getBlockY();
+        int z = position.getBlockZ();
+
+        Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
+        int id = chunk.getBlockID(x & 15, y, z & 15);
+
+        world.updateAllLightTypes(x, y, z);
+        world.markBlockForUpdate(x, y, z);
+        world.notifyBlockChange(x, y, z, previousId);
+
+        Block mcBlock = Block.blocksList[id];
+        if (mcBlock != null && mcBlock.hasComparatorInputOverride()) {
+            world.func_96440_m(x, y, z, id);
+        }
+
+        return true;
     }
 
     @Override
