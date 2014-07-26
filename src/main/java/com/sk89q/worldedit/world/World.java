@@ -276,6 +276,11 @@ public interface World extends Extent {
      */
     WorldData getWorldData();
 
+    /**
+     * Get the tick scheduler for this world.
+     *
+     * @return the tick scheduler
+     */
     TickScheduler getScheduler();
 
     @Override
