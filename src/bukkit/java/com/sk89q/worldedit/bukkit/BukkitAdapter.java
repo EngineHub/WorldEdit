@@ -36,6 +36,27 @@ final class BukkitAdapter {
     }
 
     /**
+     * Convert any WorldEdit world into an equivalent wrapped Bukkit world.
+     *
+     * <p>If a matching world cannot be found, a {@link RuntimeException}
+     * will be thrown.</p>
+     *
+     * @param world the world
+     * @return a wrapped Bukkit world
+     */
+    public static BukkitWorld asBukkitWorld(World world) {
+        if (world instanceof BukkitWorld) {
+            return (BukkitWorld) world;
+        } else {
+            BukkitWorld bukkitWorld = WorldEditPlugin.getInstance().getInternalPlatform().matchWorld(world);
+            if (bukkitWorld == null) {
+                throw new RuntimeException("World '" + world.getName() + "' has no matching version in Bukkit");
+            }
+            return bukkitWorld;
+        }
+    }
+
+    /**
      * Create a WorldEdit world from a Bukkit world.
      *
      * @param world the Bukkit world

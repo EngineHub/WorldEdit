@@ -409,7 +409,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         try {
             Region region = selector.getRegion();
-            World world = ((BukkitWorld) session.getSelectionWorld()).getWorld();
+            World world = BukkitAdapter.asBukkitWorld(session.getSelectionWorld()).getWorld();
 
             if (region instanceof CuboidRegion) {
                 return new CuboidSelection(world, selector, (CuboidRegion) region);

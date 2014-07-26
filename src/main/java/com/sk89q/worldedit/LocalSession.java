@@ -65,6 +65,9 @@ import java.util.TimeZone;
  * @author sk89q
  */
 public class LocalSession {
+
+    private static final boolean SHOW_HELP_MESSAGE = false;
+
     public static int MAX_HISTORY_SIZE = 15;
     public static int EXPIRATION_GRACE = 600000;
 
@@ -597,8 +600,9 @@ public class LocalSession {
      *
      * @param player
      */
+    @SuppressWarnings({"PointlessBooleanExpression", "ConstantConditions"})
     public void tellVersion(Actor player) {
-        if (config.showHelpInfo) {
+        if (config.showHelpInfo && SHOW_HELP_MESSAGE) {
             if (!beenToldVersion) {
                 StyledFragment fragment = new StyledFragment(Style.GRAY_DARK);
                 fragment.append("Need help with WorldEdit? Ask us on IRC (irc.esper.net #sk89q) or on our forums @ http://forum.enginehub.org");
