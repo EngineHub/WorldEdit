@@ -37,7 +37,7 @@ import java.util.List;
 public class MultiPassBlockSetExtent extends AbstractDelegateExtent<SimulatedExtent> {
 
     private final List<Vector> positions = new ArrayList<Vector>();
-    private boolean notifyAndLight;
+    private boolean notifyAndLight = true;
 
     /**
      * Create a new instance.
