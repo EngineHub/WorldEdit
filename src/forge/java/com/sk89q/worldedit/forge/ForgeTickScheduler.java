@@ -88,7 +88,7 @@ class ForgeTickScheduler extends AbstractTickScheduler implements ITickHandler {
     @SuppressWarnings("unchecked")
     @Override
     public EnumSet ticks() {
-        return EnumSet.of(TickType.CLIENT, TickType.SERVER);
+        return EnumSet.of(TickType.WORLD);
     }
 
     @Override
