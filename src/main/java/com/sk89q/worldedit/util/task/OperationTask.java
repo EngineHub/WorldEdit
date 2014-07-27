@@ -26,6 +26,8 @@ import com.sk89q.worldedit.util.scheduler.TickScheduler;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -34,10 +36,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 class OperationTask extends AbstractTask<Operation> implements Task<Operation>, Runnable {
 
+    private static final Logger logger = Logger.getLogger(OperationTask.class.getCanonicalName());
     private final Operation initialOperation;
     private final TickScheduler scheduler;
     private Operation nextOperation;
     private State state = State.SCHEDULED;
+    private long elapsedTime = 0;
 
     /**
      * Create a new task.
@@ -60,12 +64,15 @@ class OperationTask extends AbstractTask<Operation> implements Task<Operation>, 
     public void run() {
         state = State.RUNNING;
         try {
-            nextOperation = nextOperation.resume(new TimedRunContext(5, TimeUnit.MILLISECONDS));
+            long now = System.nanoTime();
+            nextOperation = nextOperation.resume(new TimedRunContext(20, TimeUnit.MILLISECONDS));
+            elapsedTime += System.nanoTime() - now;
 
             if (nextOperation != null) {
                 submitToScheduler();
             } else {
                 state = State.SUCCEEDED;
+                logger.log(Level.FINE, initialOperation + " took " + TimeUnit.MILLISECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS) + "ms");
                 set(initialOperation);
             }
         } catch (WorldEditException e) {
