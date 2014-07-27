@@ -21,10 +21,9 @@ package com.sk89q.worldedit.blocks;
 
 /**
  * List of item IDs.
- *
- * @author sk89q
  */
 public final class ItemID {
+
     public static final int IRON_SHOVEL = 256;
     public static final int IRON_PICK = 257;
     public static final int IRON_AXE = 258;
@@ -202,4 +201,5 @@ public final class ItemID {
 
     private ItemID() {
     }
+
 }

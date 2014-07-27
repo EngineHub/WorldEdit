@@ -25,17 +25,16 @@ import com.sk89q.worldedit.internal.expression.runtime.LValue;
 import com.sk89q.worldedit.internal.expression.runtime.RValue;
 
 public class UnboundVariable extends PseudoToken implements LValue {
+
     public final String name;
 
     public UnboundVariable(int position, String name) {
         super(position);
         this.name = name;
-        // TODO Auto-generated constructor stub
     }
 
     @Override
     public char id() {
-        // TODO Auto-generated method stub
         return 'V';
     }
 
@@ -77,4 +76,5 @@ public class UnboundVariable extends PseudoToken implements LValue {
 
         return (LValue) variable;
     }
+
 }

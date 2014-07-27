@@ -21,21 +21,23 @@
 
 package com.sk89q.worldedit.math.interpolation;
 
+import com.sk89q.worldedit.Vector;
+
 import java.util.List;
 
-import com.sk89q.worldedit.Vector;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Simple linear interpolation. Mainly used for testing.
- *
- * @author TomyLobo
- *
  */
 public class LinearInterpolation implements Interpolation {
+
     private List<Node> nodes;
 
     @Override
     public void setNodes(List<Node> nodes) {
+        checkNotNull(nodes);
+        
         this.nodes = nodes;
     }
 
@@ -112,13 +114,7 @@ public class LinearInterpolation implements Interpolation {
     }
 
     /**
-     * Assumes a < b
-     *
-     * @param indexA
-     * @param remainderA
-     * @param indexB
-     * @param remainderB
-     * @return
+     * Assumes a < b.
      */
     private double arcLengthRecursive(int indexA, double remainderA, int indexB, double remainderB) {
         switch (indexB - indexA) {
@@ -157,4 +153,5 @@ public class LinearInterpolation implements Interpolation {
 
         return (int) Math.floor(position);
     }
+
 }

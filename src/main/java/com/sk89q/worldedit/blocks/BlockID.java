@@ -21,8 +21,6 @@ package com.sk89q.worldedit.blocks;
 
 /**
  * List of block IDs.
- *
- * @author sk89q
  */
 public final class BlockID {
     public static final int AIR = 0;

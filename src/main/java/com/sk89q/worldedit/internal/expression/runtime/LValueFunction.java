@@ -19,17 +19,17 @@
 
 package com.sk89q.worldedit.internal.expression.runtime;
 
-import java.lang.reflect.Method;
-
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.parser.ParserException;
 
+import java.lang.reflect.Method;
+
 /**
- * Wrapper for a pair of Java methods and their arguments (other Nodes), forming an LValue
- *
- * @author TomyLobo
+ * Wrapper for a pair of Java methods and their arguments (other Nodes),
+ * forming an LValue.
  */
 public class LValueFunction extends Function implements LValue {
+
     private final Object[] setterArgs;
     private final Method setter;
 
@@ -73,4 +73,5 @@ public class LValueFunction extends Function implements LValue {
 
         return this;
     }
+
 }

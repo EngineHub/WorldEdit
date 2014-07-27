@@ -19,7 +19,12 @@
 
 package com.sk89q.worldedit.regions.selector;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockVector2D;
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
@@ -32,7 +37,11 @@ import com.sk89q.worldedit.regions.polyhedron.Triangle;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -45,6 +54,9 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
     private final ConvexPolyhedralRegion region;
     private BlockVector pos1;
 
+    /**
+     * @deprecated cast {@code world} to {@link World}
+     */
     @Deprecated
     public ConvexPolyhedralRegionSelector(@Nullable LocalWorld world, int maxVertices) {
         this((World) world, maxVertices);

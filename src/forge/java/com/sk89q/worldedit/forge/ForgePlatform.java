@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.entity.Player;
@@ -167,11 +166,11 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
                 @Override
                 public int compareTo(@Nullable Object o) {
                     if (o == null) {
-                        return -1;
+                        return 0;
                     } else if (o instanceof ICommand) {
                         return super.compareTo((ICommand) o);
                     } else {
-                        return -1;
+                        return 0;
                     }
                 }
             });

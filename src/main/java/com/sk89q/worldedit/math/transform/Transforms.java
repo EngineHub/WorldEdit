@@ -33,8 +33,8 @@ public final class Transforms {
 
     /**
      * Transform a location's position with a given transform.
-     * </p>
-     * Direction is unaffected.
+     *
+     * <p>Direction is unaffected.</p>
      *
      * @param location the location
      * @param transform the transform

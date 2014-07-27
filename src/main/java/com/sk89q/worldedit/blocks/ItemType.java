@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.sk89q.util.StringUtil;
+
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,14 +29,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.sk89q.util.StringUtil;
-
 /**
- * ItemType types.
- *
- * @author sk89q
+ * An enum of types of items.
  */
 public enum ItemType {
+
     // Blocks
     AIR(BlockID.AIR, "Air", "air"),
     STONE(BlockID.STONE, "Stone", "stone", "rock"),
@@ -412,8 +412,9 @@ public enum ItemType {
     /**
      * Construct the type.
      *
-     * @param id
-     * @param name
+     * @param id the type ID of the item
+     * @param name the name of the item
+     * @param lookupKey a name to refer to the item type by
      */
     ItemType(int id, String name, String lookupKey) {
         this.id = id;
@@ -424,8 +425,9 @@ public enum ItemType {
     /**
      * Construct the type.
      *
-     * @param id
-     * @param name
+     * @param id the type ID of the item
+     * @param name the name of the item
+     * @param lookupKeys a list of names to refer to the item type by
      */
     ItemType(int id, String name, String... lookupKeys) {
         this.id = id;
@@ -436,9 +438,10 @@ public enum ItemType {
     /**
      * Return type from ID. May return null.
      *
-     * @param id
-     * @return
+     * @param id the type ID of the item
+     * @return an item type or null
      */
+    @Nullable
     public static ItemType fromID(int id) {
         return ids.get(id);
     }
@@ -446,8 +449,10 @@ public enum ItemType {
     /**
      * Get a name for the item.
      *
-     * @param id
-     * @return
+     * <p>If the item type is not null, the numeric ID will be returned.</p>
+     *
+     * @param id the type ID of the item
+     * @return a name for the item
      */
     public static String toName(int id) {
         ItemType type = ids.get(id);
@@ -461,8 +466,10 @@ public enum ItemType {
     /**
      * Get a name for a held item.
      *
-     * @param id
-     * @return
+     * <p>If the item type is not null, the numeric ID will be returned.</p>
+     *
+     * @param id the type ID of the item
+     * @return the name of the item
      */
     public static String toHeldName(int id) {
         if (id == 0) {
@@ -479,9 +486,10 @@ public enum ItemType {
     /**
      * Return type from name. May return null.
      *
-     * @param name
-     * @return
+     * @param name the name
+     * @return the type or null
      */
+    @Nullable
     public static ItemType lookup(String name) {
         return lookup(name, true);
     }
@@ -489,10 +497,11 @@ public enum ItemType {
     /**
      * Return type from name. May return null.
      *
-     * @param name
-     * @param fuzzy
-     * @return
+     * @param name the name
+     * @param fuzzy true to do a fuzzy string search
+     * @return the type or null
      */
+    @Nullable
     public static ItemType lookup(String name, boolean fuzzy) {
         try {
             return fromID(Integer.parseInt(name));
@@ -504,7 +513,7 @@ public enum ItemType {
     /**
      * Get item numeric ID.
      *
-     * @return
+     * @return the type ID of this item
      */
     public int getID() {
         return id;
@@ -513,7 +522,7 @@ public enum ItemType {
     /**
      * Get user-friendly item name.
      *
-     * @return
+     * @return a name of this item
      */
     public String getName() {
         return name;
@@ -522,7 +531,7 @@ public enum ItemType {
     /**
      * Get a list of aliases.
      *
-     * @return
+     * @return a list of aliases
      */
     public String[] getAliases() {
         return lookupKeys;
@@ -620,8 +629,8 @@ public enum ItemType {
     /**
      * Returns true if an item should not be stacked.
      *
-     * @param id
-     * @return
+     * @param id the type ID of the item
+     * @return true if the item should not stack
      */
     public static boolean shouldNotStack(int id) {
         return shouldNotStack.contains(id);
@@ -668,10 +677,11 @@ public enum ItemType {
      * Returns true if an item uses its damage value for something
      * other than damage.
      *
-     * @param id
-     * @return
+     * @param id the type ID of the item
+     * @return true if the item uses its damage value
      */
     public static boolean usesDamageValue(int id) {
         return usesDamageValue.contains(id);
     }
+
 }

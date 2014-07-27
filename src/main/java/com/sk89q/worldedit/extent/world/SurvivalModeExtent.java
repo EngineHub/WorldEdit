@@ -31,11 +31,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Makes changes to the world as if a player had done so during survival mode.
- * </p>
- * Note that this extent may choose to not call the underlying
+ *
+ * <p>Note that this extent may choose to not call the underlying
  * extent and may instead call methods on the {@link World} that is passed
  * in the constructor. For that reason, if you wish to "catch" changes, you
- * should catch them before the changes reach this extent.
+ * should catch them before the changes reach this extent.</p>
  */
 public class SurvivalModeExtent extends AbstractDelegateExtent<Extent> {
 
@@ -57,10 +57,10 @@ public class SurvivalModeExtent extends AbstractDelegateExtent<Extent> {
     /**
      * Return whether changes to the world should be simulated with the
      * use of game tools (such as pickaxes) whenever possible and reasonable.
-     * </p>
-     * For example, we could pretend that the act of setting a coal ore block
+     *
+     * <p>For example, we could pretend that the act of setting a coal ore block
      * to air (nothing) was the act of a player mining that coal ore block
-     * with a pickaxe, which would mean that a coal item would be dropped.
+     * with a pickaxe, which would mean that a coal item would be dropped.</p>
      *
      * @return true if tool use is to be simulated
      */

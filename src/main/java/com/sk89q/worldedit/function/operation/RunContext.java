@@ -27,8 +27,8 @@ public interface RunContext {
 
     /**
      * Return whether the current operation should still continue running.
-     * </p>
-     * This method can be called frequently.
+     *
+     * <p>This method can be called frequently.</p>
      *
      * @return true if the operation should continue running
      */

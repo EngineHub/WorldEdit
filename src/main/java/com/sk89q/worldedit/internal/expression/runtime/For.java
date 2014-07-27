@@ -24,10 +24,9 @@ import com.sk89q.worldedit.internal.expression.parser.ParserException;
 
 /**
  * A Java/C-style for loop.
- *
- * @author TomyLobo
  */
 public class For extends Node {
+
     RValue init;
     RValue condition;
     RValue increment;
@@ -101,4 +100,5 @@ public class For extends Node {
 
         return this;
     }
+
 }

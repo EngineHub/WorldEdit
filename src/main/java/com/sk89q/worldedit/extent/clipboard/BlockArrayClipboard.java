@@ -51,8 +51,8 @@ public class BlockArrayClipboard implements Clipboard {
 
     /**
      * Create a new instance.
-     * <p>
-     * The origin will be placed at the region's lowest minimum point.
+     *
+     * <p>The origin will be placed at the region's lowest minimum point.</p>
      *
      * @param region the bounding region
      */

@@ -28,19 +28,21 @@ import javax.annotation.Nullable;
 /**
  * A reference to an instance of an entity that exists in an {@link Extent}
  * and thus would have position and similar details.
- * </p>
- * This object cannot be directly cloned because it represents a particular
+ *
+ * <p>This object cannot be directly cloned because it represents a particular
  * instance of an entity, but a {@link BaseEntity} can be created from
- * this entity (or at least, it will be possible in the future), which
- * can then be used to spawn new instances of that particular entity
- * description.
+ * this entity by calling {@link #getState()}.</p>
  */
 public interface Entity extends Faceted {
 
     /**
      * Get a copy of the entity's state.
      *
-     * @return the entity's state or null if one cannot be gotten
+     * <p>In some cases, this method may return {@code null} if a snapshot
+     * of the entity can't be created. It may not be possible, for example,
+     * to get a snapshot of a player.</p>
+     *
+     * @return the entity's state or null if one cannot be created
      */
     @Nullable
     BaseEntity getState();

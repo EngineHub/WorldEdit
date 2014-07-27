@@ -23,8 +23,6 @@ import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 
 /**
  * Block data related classes.
- *
- * @author sk89q
  */
 public final class BlockData {
 
@@ -34,9 +32,9 @@ public final class BlockData {
     /**
      * Rotate a block's data value 90 degrees (north->east->south->west->north);
      * 
-     * @param type
-     * @param data
-     * @return
+     * @param type the type ID of the bock
+     * @param data the data ID of the block
+     * @return the new data value
      */
     public static int rotate90(int type, int data) {
         switch (type) {
@@ -251,10 +249,10 @@ public final class BlockData {
 
     /**
      * Rotate a block's data value -90 degrees (north<-east<-south<-west<-north);
-     * 
-     * @param type
-     * @param data
-     * @return
+     *
+     * @param type the type ID of the bock
+     * @param data the data ID of the block
+     * @return the new data value
      */
     public static int rotate90Reverse(int type, int data) {
         // case ([0-9]+): return ([0-9]+) -> case \2: return \1
@@ -470,10 +468,10 @@ public final class BlockData {
 
     /**
      * Flip a block's data value.
-     * 
-     * @param type
-     * @param data
-     * @return
+     *
+     * @param type the type ID of the bock
+     * @param data the data ID of the block
+     * @return the new data value
      */
     public static int flip(int type, int data) {
         return rotate90(type, rotate90(type, data));
@@ -481,11 +479,11 @@ public final class BlockData {
 
     /**
      * Flip a block's data value.
-     * 
-     * @param type
-     * @param data
-     * @param direction
-     * @return
+     *
+     * @param type the type ID of the bock
+     * @param data the data ID of the block
+     * @param direction the direction to flip
+     * @return the new data value
      */
     public static int flip(int type, int data, FlipDirection direction) {
         int flipX = 0;
@@ -971,14 +969,6 @@ public final class BlockData {
     }
 
     /**
-     * Better modulo, not just remainder.
-     */
-    private static int mod(int x, int y) {
-        int res = x % y;
-        return res < 0 ? res + y : res;
-    }
-
-    /**
      * Returns the data value for the next color of cloth in the rainbow. This
      * should not be used if you want to just increment the data value.
      * @param data
@@ -1010,8 +1000,9 @@ public final class BlockData {
     /**
      * Returns the data value for the previous ext color of cloth in the rainbow.
      * This should not be used if you want to just increment the data value.
-     * @param data
-     * @return
+     *
+     * @param data the data value
+     * @return the new data value
      */
     public static int prevClothColor(int data) {
         switch (data) {
@@ -1035,4 +1026,13 @@ public final class BlockData {
 
         return ClothColor.ID.WHITE;
     }
+
+    /**
+     * Better modulo, not just remainder.
+     */
+    private static int mod(int x, int y) {
+        int res = x % y;
+        return res < 0 ? res + y : res;
+    }
+
 }

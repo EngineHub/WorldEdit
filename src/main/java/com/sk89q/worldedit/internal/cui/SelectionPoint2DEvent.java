@@ -43,10 +43,12 @@ public class SelectionPoint2DEvent implements CUIEvent {
         this.area = area;
     }
 
+    @Override
     public String getTypeId() {
         return "p2";
     }
 
+    @Override
     public String[] getParameters() {
         return new String[] {
                     String.valueOf(id),

@@ -21,31 +21,39 @@
 
 package com.sk89q.worldedit.math.interpolation;
 
+import com.sk89q.worldedit.Vector;
+
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
-import com.sk89q.worldedit.Vector;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Reparametrises another interpolation function by arc length.<br />
- * This is done so entities travel at roughly the same speed across
- * the whole route.
+ * Reparametrises another interpolation function by arc length.
  *
- * @author TomyLobo
- *
+ * <p>This is done so entities travel at roughly the same speed across
+ * the whole route.</p>
  */
 public class ReparametrisingInterpolation implements Interpolation {
+
+    private static final Logger log = Logger.getLogger(ReparametrisingInterpolation.class.getCanonicalName());
+
     private final Interpolation baseInterpolation;
     private double totalArcLength;
     private final TreeMap<Double, Double> cache = new TreeMap<Double, Double>();
 
     public ReparametrisingInterpolation(Interpolation baseInterpolation) {
+        checkNotNull(baseInterpolation);
+        
         this.baseInterpolation = baseInterpolation;
     }
 
     @Override
     public void setNodes(List<Node> nodes) {
+        checkNotNull(nodes);
+
         baseInterpolation.setNodes(nodes);
         cache.clear();
         cache.put(0.0, 0.0);
@@ -94,7 +102,7 @@ public class ReparametrisingInterpolation implements Interpolation {
 
         Entry<Double, Double> ceilingEntry = cache.ceilingEntry(arc);
         if (ceilingEntry == null) {
-            System.out.println("Error in arcToParameter: no ceiling entry for "+arc+" found!");
+            log.warning("Error in arcToParameter: no ceiling entry for " + arc + " found!");
             return 0;
         }
         final double rightArc = ceilingEntry.getKey();
@@ -148,4 +156,5 @@ public class ReparametrisingInterpolation implements Interpolation {
 
         return baseInterpolation.getSegment(arcToParameter(position));
     }
+
 }

@@ -50,6 +50,9 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
         this((World) null);
     }
 
+    /**
+     * @deprecated cast {@code world} to {@link World}
+     */
     @Deprecated
     public CuboidRegionSelector(@Nullable LocalWorld world) {
         this((World) world);
@@ -92,6 +95,9 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
         region.setPos2(pos2);
     }
 
+    /**
+     * @deprecated cast {@code world} to {@link World}
+     */
     @Deprecated
     public CuboidRegionSelector(LocalWorld world, Vector pos1, Vector pos2) {
         this((World) world, pos1, pos2);
@@ -106,7 +112,6 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
      */
     public CuboidRegionSelector(World world, Vector pos1, Vector pos2) {
         this(world);
-        checkNotNull(world);
         checkNotNull(pos1);
         checkNotNull(pos2);
         this.pos1 = pos1.toBlockVector();

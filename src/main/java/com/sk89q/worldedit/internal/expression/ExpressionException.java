@@ -20,12 +20,10 @@
 package com.sk89q.worldedit.internal.expression;
 
 /**
- * Thrown when there's a problem during any stage of the expression compilation or evaluation.
- *
- * @author TomyLobo
+ * Thrown when there's a problem during any stage of the expression
+ * compilation or evaluation.
  */
 public class ExpressionException extends Exception {
-    private static final long serialVersionUID = 1L;
 
     private final int position;
 
@@ -51,4 +49,5 @@ public class ExpressionException extends Exception {
     public int getPosition() {
         return position;
     }
+
 }

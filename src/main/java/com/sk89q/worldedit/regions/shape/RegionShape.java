@@ -26,10 +26,9 @@ import com.sk89q.worldedit.regions.Region;
 /**
  * Generates solid and hollow shapes according to materials returned by the
  * {@link #getMaterial} method.
- *
- * @author TomyLobo
  */
 public class RegionShape extends ArbitraryShape {
+
     public RegionShape(Region extent) {
         super(extent);
     }
@@ -42,4 +41,5 @@ public class RegionShape extends ArbitraryShape {
 
         return defaultMaterial;
     }
+
 }

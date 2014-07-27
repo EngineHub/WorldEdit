@@ -28,8 +28,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An implementation of {@link Entity} that stores a {@link BaseEntity} with it.
- * </p>
- * Calls to {@link #getState()} return a clone.
+ *
+ * <p>Calls to {@link #getState()} return a clone.</p>
  */
 abstract class StoredEntity implements Entity {
 

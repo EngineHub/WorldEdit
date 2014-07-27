@@ -39,9 +39,9 @@ public interface LayerFunction {
 
     /**
      * Apply the function to the given position.
-     * </p>
-     * The depth would be the number of blocks from the surface if
-     * a {@link LayerVisitor} was used.
+     *
+     * <p>The depth would be the number of blocks from the surface if
+     * a {@link LayerVisitor} was used.</p>
      *
      * @param position the position
      * @param depth the depth as a number starting from 0

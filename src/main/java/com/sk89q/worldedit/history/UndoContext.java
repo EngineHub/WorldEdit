@@ -26,9 +26,9 @@ import javax.annotation.Nullable;
 
 /**
  * Provides context for undo and redo operations.
- * </p>
- * For example, {@link BlockChange}s take the {@link Extent} from the
- * context rather than store a reference to one.
+ *
+ * <p>For example, {@link BlockChange}s take the {@link Extent} from the
+ * context rather than store a reference to one.</p>
  */
 public class UndoContext {
 

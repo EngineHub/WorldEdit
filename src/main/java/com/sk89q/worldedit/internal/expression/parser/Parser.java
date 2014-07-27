@@ -19,9 +19,6 @@
 
 package com.sk89q.worldedit.internal.expression.parser;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.Identifiable;
 import com.sk89q.worldedit.internal.expression.lexer.tokens.IdentifierToken;
@@ -43,12 +40,14 @@ import com.sk89q.worldedit.internal.expression.runtime.SimpleFor;
 import com.sk89q.worldedit.internal.expression.runtime.Switch;
 import com.sk89q.worldedit.internal.expression.runtime.While;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Processes a list of tokens into an executable tree.
  *
- * Tokens can be numbers, identifiers, operators and assorted other characters.
- *
- * @author TomyLobo
+ * <p>Tokens can be numbers, identifiers, operators and assorted other characters.</p>
  */
 public class Parser {
     private final class NullToken extends Token {
@@ -56,6 +55,7 @@ public class Parser {
             super(position);
         }
 
+        @Override
         public char id() {
             return '\0';
         }
@@ -75,7 +75,7 @@ public class Parser {
         this.expression = expression;
     }
 
-    public static final RValue parse(List<Token> tokens, Expression expression) throws ParserException {
+    public static RValue parse(List<Token> tokens, Expression expression) throws ParserException {
         return new Parser(tokens, expression).parse();
     }
 
@@ -309,7 +309,7 @@ public class Parser {
         }
     }
 
-    private final RValue parseExpression(boolean canBeEmpty) throws ParserException {
+    private RValue parseExpression(boolean canBeEmpty) throws ParserException {
         LinkedList<Identifiable> halfProcessed = new LinkedList<Identifiable>();
 
         // process brackets, numbers, functions, variables and detect prefix operators
@@ -423,7 +423,7 @@ public class Parser {
         }
     }
 
-    private final RValue parseBracket() throws ParserException {
+    private RValue parseBracket() throws ParserException {
         consumeCharacter('(');
 
         final RValue ret = parseExpression(false);
@@ -435,10 +435,8 @@ public class Parser {
 
     private boolean hasKeyword(String keyword) {
         final Token next = peek();
-        if (!(next instanceof KeywordToken)) {
-            return false;
-        }
-        return ((KeywordToken) next).value.equals(keyword);
+
+        return next instanceof KeywordToken && ((KeywordToken) next).value.equals(keyword);
     }
 
     private void assertCharacter(char character) throws ParserException {

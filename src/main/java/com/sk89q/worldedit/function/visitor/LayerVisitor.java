@@ -37,11 +37,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Visits the layers within a region.
- * </p>
- * This class works by iterating over all the columns in a {@link FlatRegion},
+ *
+ * <p>This class works by iterating over all the columns in a {@link FlatRegion},
  * finding the first ground block in each column (searching from a given
  * maximum Y down to a minimum Y), and then applies a {@link LayerFunction} to
- * each layer.
+ * each layer.</p>
  */
 public class LayerVisitor extends AbstractOperation {
 

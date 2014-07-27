@@ -30,10 +30,9 @@ import java.util.*;
 
 /**
  * Helper classfor Parser. Contains processors for statements and operators.
- *
- * @author TomyLobo
  */
 public final class ParserProcessors {
+
     private static final Map<String, String> unaryOpMap = new HashMap<String, String>();
 
     private static final Map<String, String>[] binaryOpMapsLA;
@@ -345,4 +344,5 @@ public final class ParserProcessors {
         }
         return ret;
     }
+
 }

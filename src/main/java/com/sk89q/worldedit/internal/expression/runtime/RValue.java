@@ -25,13 +25,13 @@ import com.sk89q.worldedit.internal.expression.parser.ParserException;
 
 /**
  * A value that can be used on the right side of an assignment.
- *
- * @author TomyLobo
  */
 public interface RValue extends Identifiable {
+
     public double getValue() throws EvaluationException;
 
     public RValue optimize() throws EvaluationException;
 
     public RValue bindVariables(Expression expression, boolean preferLValue) throws ParserException;
+
 }

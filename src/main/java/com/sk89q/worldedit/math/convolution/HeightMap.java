@@ -26,14 +26,15 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.regions.Region;
 
-/**
- * Allows applications of Kernels onto the region's heightmap.
- * Currently only used for smoothing (with a GaussianKernel).
- * 
- * @author Grum
- */
+import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Allows applications of Kernels onto the region's height map.
+ *
+ * <p>Currently only used for smoothing (with a GaussianKernel)</p>.
+ */
 public class HeightMap {
+
     private int[] data;
     private int width;
     private int height;
@@ -44,8 +45,8 @@ public class HeightMap {
     /**
      * Constructs the HeightMap
      * 
-     * @param session
-     * @param region
+     * @param session an edit session
+     * @param region the region
      */
     public HeightMap(EditSession session, Region region) {
         this(session, region, false);
@@ -53,12 +54,15 @@ public class HeightMap {
 
     /**
      * Constructs the HeightMap
-     * 
-     * @param session
-     * @param region
+     *
+     * @param session an edit session
+     * @param region the region
      * @param naturalOnly ignore non-natural blocks
      */
     public HeightMap(EditSession session, Region region, boolean naturalOnly) {
+        checkNotNull(session);
+        checkNotNull(region);
+
         this.session = session;
         this.region = region;
 
@@ -82,13 +86,15 @@ public class HeightMap {
     /**
      * Apply the filter 'iterations' amount times.
      * 
-     * @param filter
-     * @param iterations
+     * @param filter the filter
+     * @param iterations the number of iterations
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
 
     public int applyFilter(HeightMapFilter filter, int iterations) throws MaxChangedBlocksException {
+        checkNotNull(filter);
+
         int[] newData = new int[data.length];
         System.arraycopy(data, 0, newData, 0, data.length);
 
@@ -102,12 +108,14 @@ public class HeightMap {
     /**
      * Apply a raw heightmap to the region
      * 
-     * @param data
+     * @param data the data
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
 
     public int apply(int[] data) throws MaxChangedBlocksException {
+        checkNotNull(data);
+
         Vector minY = region.getMinimumPoint();
         int originX = minY.getBlockX();
         int originY = minY.getBlockY();
@@ -178,4 +186,5 @@ public class HeightMap {
 
         return blocksChanged;
     }
+
 }

@@ -19,6 +19,13 @@
 
 package com.sk89q.worldedit.internal.expression.lexer;
 
+import com.sk89q.worldedit.internal.expression.lexer.tokens.CharacterToken;
+import com.sk89q.worldedit.internal.expression.lexer.tokens.IdentifierToken;
+import com.sk89q.worldedit.internal.expression.lexer.tokens.KeywordToken;
+import com.sk89q.worldedit.internal.expression.lexer.tokens.NumberToken;
+import com.sk89q.worldedit.internal.expression.lexer.tokens.OperatorToken;
+import com.sk89q.worldedit.internal.expression.lexer.tokens.Token;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,16 +36,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.sk89q.worldedit.internal.expression.lexer.tokens.*;
-
 /**
  * Processes a string into a list of tokens.
  *
- * Tokens can be numbers, identifiers, operators and assorted other characters.
- *
- * @author TomyLobo
+ * <p>Tokens can be numbers, identifiers, operators and assorted other
+ * characters.</p>
  */
 public class Lexer {
+
     private final String expression;
     private int position = 0;
 
@@ -46,7 +51,7 @@ public class Lexer {
         this.expression = expression;
     }
 
-    public static final List<Token> tokenize(String expression) throws LexerException {
+    public static List<Token> tokenize(String expression) throws LexerException {
         return new Lexer(expression).tokenize();
     }
 
@@ -114,7 +119,7 @@ public class Lexer {
     private static final Pattern numberPattern = Pattern.compile("^([0-9]*(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)");
     private static final Pattern identifierPattern = Pattern.compile("^([A-Za-z][0-9A-Za-z_]*)");
 
-    private final List<Token> tokenize() throws LexerException {
+    private List<Token> tokenize() throws LexerException {
         List<Token> tokens = new ArrayList<Token>();
 
         do {
@@ -139,7 +144,7 @@ public class Lexer {
             final Matcher numberMatcher = numberPattern.matcher(expression.substring(position));
             if (numberMatcher.lookingAt()) {
                 String numberPart = numberMatcher.group(1);
-                if (numberPart.length() > 0) {
+                if (!numberPart.isEmpty()) {
                     try {
                         tokens.add(new NumberToken(position, Double.parseDouble(numberPart)));
                     } catch (NumberFormatException e) {
@@ -154,7 +159,7 @@ public class Lexer {
             final Matcher identifierMatcher = identifierPattern.matcher(expression.substring(position));
             if (identifierMatcher.lookingAt()) {
                 String identifierPart = identifierMatcher.group(1);
-                if (identifierPart.length() > 0) {
+                if (!identifierPart.isEmpty()) {
                     if (keywords.contains(identifierPart)) {
                         tokens.add(new KeywordToken(position, identifierPart));
                     } else {
@@ -176,7 +181,7 @@ public class Lexer {
         return expression.charAt(position);
     }
 
-    private final void skipWhitespace() {
+    private void skipWhitespace() {
         while (position < expression.length() && Character.isWhitespace(peek())) {
             ++position;
         }
@@ -230,4 +235,5 @@ public class Lexer {
             return new OperatorToken(startPosition, tokenName);
         }
     }
+
 }

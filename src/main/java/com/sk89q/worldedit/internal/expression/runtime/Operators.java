@@ -21,11 +21,10 @@ package com.sk89q.worldedit.internal.expression.runtime;
 
 /**
  * Contains all unary and binary operators.
- *
- * @author TomyLobo
  */
 @SuppressWarnings("UnusedDeclaration")
 public final class Operators {
+
     private Operators() {
     }
 
@@ -225,4 +224,5 @@ public final class Operators {
         final long longDiff = Math.abs(aLong - bLong);
         return longDiff <= maxUlps;
     }
+
 }

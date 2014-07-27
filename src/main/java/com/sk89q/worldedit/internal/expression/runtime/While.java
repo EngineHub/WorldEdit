@@ -24,10 +24,9 @@ import com.sk89q.worldedit.internal.expression.parser.ParserException;
 
 /**
  * A while loop.
- *
- * @author TomyLobo
  */
 public class While extends Node {
+
     RValue condition;
     RValue body;
     boolean footChecked;
@@ -125,4 +124,5 @@ public class While extends Node {
 
         return this;
     }
+
 }

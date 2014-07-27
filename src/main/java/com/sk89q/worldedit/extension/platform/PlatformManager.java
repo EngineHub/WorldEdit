@@ -44,8 +44,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Manages registered {@link Platform}s for WorldEdit. Platforms are
  * implementations of WorldEdit.
- * </p>
- * This class is thread-safe.
+ *
+ * <p>This class is thread-safe.</p>
  */
 public class PlatformManager {
 
@@ -99,9 +99,9 @@ public class PlatformManager {
 
     /**
      * Unregister a platform from WorldEdit.
-     * </p>
-     * If the platform has been chosen for any capabilities, then a new
-     * platform will be found.
+     *
+     * <p>If the platform has been chosen for any capabilities, then a new
+     * platform will be found.</p>
      *
      * @param platform the platform
      */
@@ -189,8 +189,8 @@ public class PlatformManager {
 
     /**
      * Get a list of loaded platforms.
-     * </p>
-     * The returned list is a copy of the original and is mutable.
+     *
+     * <p>The returned list is a copy of the original and is mutable.</p>
      *
      * @return a list of platforms
      */
@@ -252,9 +252,9 @@ public class PlatformManager {
 
     /**
      * Get the current configuration.
-     * </p>
-     * If no platform has been registered yet, then a default configuration
-     * will be returned.
+     *
+     * <p>If no platform has been registered yet, then a default configuration
+     * will be returned.</p>
      *
      * @return the configuration
      */

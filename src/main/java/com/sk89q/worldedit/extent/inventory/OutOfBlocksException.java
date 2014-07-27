@@ -20,9 +20,7 @@
 package com.sk89q.worldedit.extent.inventory;
 
 /**
- *
- * @author sk89q
+ * Thrown when there are no more blocks left.
  */
 public class OutOfBlocksException extends BlockBagException {
-    private static final long serialVersionUID = 7495899825677689509L;
 }

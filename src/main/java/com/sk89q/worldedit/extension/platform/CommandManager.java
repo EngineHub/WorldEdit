@@ -59,8 +59,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Handles the registration and invocation of commands.
- * </p>
- * This class is primarily for internal usage.
+ *
+ * <p>This class is primarily for internal usage.</p>
  */
 public final class CommandManager {
 
@@ -206,7 +206,7 @@ public final class CommandManager {
         Request.reset();
 
         Actor actor = platformManager.createProxyActor(event.getActor());
-        String split[] = commandDetection(event.getArguments().split(" "));
+        String[] split = commandDetection(event.getArguments().split(" "));
 
         // No command found!
         if (!dispatcher.contains(split[0])) {

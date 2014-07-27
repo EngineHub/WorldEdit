@@ -24,10 +24,9 @@ import com.sk89q.worldedit.internal.expression.parser.ParserException;
 
 /**
  * A simple-style for loop.
- *
- * @author TomyLobo
  */
 public class SimpleFor extends Node {
+
     LValue counter;
     RValue first;
     RValue last;
@@ -98,4 +97,5 @@ public class SimpleFor extends Node {
 
         return this;
     }
+
 }

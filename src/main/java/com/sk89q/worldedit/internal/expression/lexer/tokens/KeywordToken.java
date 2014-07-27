@@ -20,11 +20,10 @@
 package com.sk89q.worldedit.internal.expression.lexer.tokens;
 
 /**
- * A keyword
- *
- * @author TomyLobo
+ * A keyword.
  */
 public class KeywordToken extends Token {
+
     public final String value;
 
     public KeywordToken(int position, String value) {
@@ -41,4 +40,5 @@ public class KeywordToken extends Token {
     public String toString() {
         return "KeywordToken(" + value + ")";
     }
+
 }

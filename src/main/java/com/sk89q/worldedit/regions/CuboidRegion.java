@@ -48,6 +48,9 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion, ChunkSor
         this(null, pos1, pos2);
     }
 
+    /**
+     * @deprecated cast {@code world} to {@link World}
+     */
     @Deprecated
     public CuboidRegion(LocalWorld world, Vector pos1, Vector pos2) {
         this((World) world, pos1, pos2);

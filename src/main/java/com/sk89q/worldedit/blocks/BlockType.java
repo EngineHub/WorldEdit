@@ -22,7 +22,15 @@ package com.sk89q.worldedit.blocks;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.PlayerDirection;
 
-import java.util.*;
+import javax.annotation.Nullable;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Block types.
@@ -229,8 +237,9 @@ public enum BlockType {
     /**
      * Construct the type.
      *
-     * @param id
-     * @param name
+     * @param id the ID of the block
+     * @param name the name of the block
+     * @param lookupKey a name to reference the block by
      */
     BlockType(int id, String name, String lookupKey) {
         this.id = id;
@@ -241,8 +250,9 @@ public enum BlockType {
     /**
      * Construct the type.
      *
-     * @param id
-     * @param name
+     * @param id the ID of the block
+     * @param name the name of the block
+     * @param lookupKeys an array of keys to reference the block by
      */
     BlockType(int id, String name, String... lookupKeys) {
         this.id = id;
@@ -253,9 +263,10 @@ public enum BlockType {
     /**
      * Return type from ID. May return null.
      *
-     * @param id
-     * @return
+     * @param id the type ID
+     * @return a block type, otherwise null
      */
+    @Nullable
     public static BlockType fromID(int id) {
         return ids.get(id);
     }
@@ -263,9 +274,10 @@ public enum BlockType {
     /**
      * Return type from name. May return null.
      *
-     * @param name
-     * @return
+     * @param name the name to search
+     * @return a block type or null
      */
+    @Nullable
     public static BlockType lookup(String name) {
         return lookup(name, true);
     }
@@ -273,10 +285,11 @@ public enum BlockType {
     /**
      * Return type from name. May return null.
      *
-     * @param name
-     * @param fuzzy
-     * @return
+     * @param name the name (or ID) of a block
+     * @param fuzzy true to for a fuzzy search on the block name
+     * @return a block type or null
      */
+    @Nullable
     public static BlockType lookup(String name, boolean fuzzy) {
         try {
             return fromID(Integer.parseInt(name));
@@ -285,8 +298,8 @@ public enum BlockType {
         }
     }
 
-    private static Map<Integer, BaseBlock> itemBlockMapping = new HashMap<Integer, BaseBlock>();
-    private static Map<Integer, BaseBlock> dataItemBlockMapping = new HashMap<Integer, BaseBlock>();
+    private static final Map<Integer, BaseBlock> itemBlockMapping = new HashMap<Integer, BaseBlock>();
+    private static final Map<Integer, BaseBlock> dataItemBlockMapping = new HashMap<Integer, BaseBlock>();
     static {
         for (int data = 0; data < 16; ++data) {
             dataItemBlockMapping.put(typeDataKey(BlockID.DIRT, data), new BaseBlock(BlockID.DIRT, data));
@@ -328,6 +341,14 @@ public enum BlockType {
         itemBlockMapping.put(ItemID.COMPARATOR, new BaseBlock(BlockID.COMPARATOR_OFF, -1));
     }
 
+    /**
+     * Get the equivalent block for an item.
+     *
+     * @param typeId the type ID of the block
+     * @param data the data valuie of the block
+     * @return a block or null
+     */
+    @Nullable
     public static BaseBlock getBlockForItem(int typeId, int data) {
         final BaseBlock block = itemBlockMapping.get(typeId);
 
@@ -341,7 +362,7 @@ public enum BlockType {
     /**
      * Get block numeric ID.
      *
-     * @return
+     * @return the block ID
      */
     public int getID() {
         return id;
@@ -350,7 +371,7 @@ public enum BlockType {
     /**
      * Get user-friendly block name.
      *
-     * @return
+     * @return the block name
      */
     public String getName() {
         return name;
@@ -415,19 +436,21 @@ public enum BlockType {
     }
 
     /**
-     * Checks to see whether a block should be placed last.
+     * Checks to see whether a block should be placed last (when reordering
+     * blocks that are placed).
      *
-     * @param id
-     * @return
+     * @param id the block ID
+     * @return true if the block should be placed last
      */
     public static boolean shouldPlaceLast(int id) {
         return shouldPlaceLast.contains(id);
     }
 
     /**
-     * Checks to see whether this block should be placed last.
+     * Checks to see whether this block should be placed last (when reordering
+     * blocks that are placed)
      *
-     * @return
+     * @return true if the block should be placed last
      */
     public boolean shouldPlaceLast() {
         return shouldPlaceLast.contains(id);
@@ -454,8 +477,8 @@ public enum BlockType {
      *
      * This applies to blocks that can be attached to other blocks that have an attachment.
      *
-     * @param id
-     * @return
+     * @param id the type ID of the block
+     * @return whether the block is in the final queue
      */
     public static boolean shouldPlaceFinal(int id) {
         return shouldPlaceFinal.contains(id);
@@ -522,8 +545,8 @@ public enum BlockType {
     /**
      * Checks whether a block can be passed through.
      *
-     * @param id
-     * @return
+     * @param id the ID of the block
+     * @return true if the block can be passed through
      */
     public static boolean canPassThrough(int id) {
         return canPassThrough.contains(id);
@@ -532,9 +555,9 @@ public enum BlockType {
     /**
      * Checks whether a block can be passed through.
      *
-     * @param id
-     * @param data
-     * @return
+     * @param id the ID of the block
+     * @param data the data value of the block
+     * @return true if the block can be passed through
      */
     public static boolean canPassThrough(int id, int data) {
         return canPassThrough.contains(-16*id-data) || canPassThrough.contains(id);
@@ -543,17 +566,18 @@ public enum BlockType {
     /**
      * Checks whether a block can be passed through.
      *
-     * @param block
-     * @return
+     * @param block the block
+     * @return true if the block can be passed through
      */
     public static boolean canPassThrough(BaseBlock block) {
+        checkNotNull(block);
         return canPassThrough(block.getId(), block.getData());
     }
 
     /**
-     * Checks whether a block can be passed through.
+     * Checks whether the block type can be passed through.
      *
-     * @return
+     * @return whether the block can be passed through
      */
     public boolean canPassThrough() {
         return canPassThrough.contains(id);
@@ -622,9 +646,9 @@ public enum BlockType {
     /**
      * Returns the y offset a player falls to when falling onto the top of a block at xp+0.5/zp+0.5.
      *
-     * @param id
-     * @param data
-     * @return
+     * @param id the block ID
+     * @param data the block data value
+     * @return the y offset
      */
     public static double centralTopLimit(int id, int data) {
         if (centralTopLimit.containsKey(-16*id-data))
@@ -639,17 +663,18 @@ public enum BlockType {
     /**
      * Returns the y offset a player falls to when falling onto the top of a block at xp+0.5/zp+0.5.
      *
-     * @param block
-     * @return
+     * @param block the block
+     * @return the y offset
      */
     public static double centralTopLimit(BaseBlock block) {
+        checkNotNull(block);
         return centralTopLimit(block.getId(), block.getData());
     }
 
     /**
      * Returns the y offset a player falls to when falling onto the top of a block at xp+0.5/zp+0.5.
      *
-     * @return
+     * @return the y offset
      */
     public double centralTopLimit() {
         if (centralTopLimit.containsKey(id))
@@ -771,8 +796,8 @@ public enum BlockType {
     /**
      * Returns true if the block uses its data value.
      *
-     * @param id
-     * @return
+     * @param id the type ID
+     * @return true if the block type uses its data value
      */
     public static boolean usesData(int id) {
         return usesData.contains(id);
@@ -781,7 +806,7 @@ public enum BlockType {
     /**
      * Returns true if the block uses its data value.
      *
-     * @return
+     * @return true if this block type uses its data value
      */
     public boolean usesData() {
         return usesData.contains(id);
@@ -806,8 +831,8 @@ public enum BlockType {
     /**
      * Returns true if the block is a container block.
      *
-     * @param id
-     * @return
+     * @param id the block ID
+     * @return true if the block is a container
      */
     public static boolean isContainerBlock(int id) {
         return isContainerBlock.contains(id);
@@ -816,7 +841,7 @@ public enum BlockType {
     /**
      * Returns true if the block is a container block.
      *
-     * @return
+     * @return true if the block is a container block
      */
     public boolean isContainerBlock() {
         return isContainerBlock.contains(id);
@@ -861,19 +886,19 @@ public enum BlockType {
     }
 
     /**
-     * Returns true if a block uses redstone in some way.
+     * Returns true if a block uses Redstone in some way.
      *
-     * @param id
-     * @return
+     * @param id the type ID of the block
+     * @return true if the block uses Redstone
      */
     public static boolean isRedstoneBlock(int id) {
         return isRedstoneBlock.contains(id);
     }
 
     /**
-     * Returns true if a block uses redstone in some way.
+     * Returns true if a block uses Redstone in some way.
      *
-     * @return
+     * @return true if the block uses Redstone
      */
     public boolean isRedstoneBlock() {
         return isRedstoneBlock.contains(id);
@@ -894,21 +919,23 @@ public enum BlockType {
     }
 
     /**
-     * Returns true if a block can transfer redstone.
-     * Made this since isRedstoneBlock was getting big.
+     * Returns true if a block can transfer Redstone.
      *
-     * @param id
-     * @return
+     * <p>This was made since {@link #isRedstoneBlock} was getting big.</p>
+     *
+     * @param id the type ID of the block
+     * @return true if the block can transfer redstone
      */
     public static boolean canTransferRedstone(int id) {
         return canTransferRedstone.contains(id);
     }
 
     /**
-     * Returns true if a block can transfer redstone.
-     * Made this since isRedstoneBlock was getting big.
+     * Returns true if a block can transfer Redstone.
      *
-     * @return
+     * <p>This was made since {@link #isRedstoneBlock} was getting big.</p>
+     *
+     * @return true if the block can transfer redstone
      */
     public boolean canTransferRedstone() {
         return canTransferRedstone.contains(id);
@@ -935,19 +962,19 @@ public enum BlockType {
     }
 
     /**
-     * Yay for convenience methods.
+     * Returns whether the block is a Redstone source.
      *
-     * @param id
-     * @return
+     * @param id the type ID of the block
+     * @return true if the block is a Redstone source
      */
     public static boolean isRedstoneSource(int id) {
         return isRedstoneSource.contains(id);
     }
 
     /**
-     * Yay for convenience methods.
+     * Returns whether the block is a Redstone source.
      *
-     * @return
+     * @return true if the block is a Redstone source
      */
     public boolean isRedstoneSource() {
         return isRedstoneSource.contains(id);
@@ -965,19 +992,19 @@ public enum BlockType {
     }
 
     /**
-     * Checks if the id is that of one of the rail types
+     * Checks if the block is that of one of the rail types.
      *
-     * @param id
-     * @return
+     * @param id the type ID of the block
+     * @return true if the block is a rail block
      */
     public static boolean isRailBlock(int id) {
         return isRailBlock.contains(id);
     }
 
     /**
-     * Checks if the id is that of one of the rail types
+     * Checks if the block is that of one of the rail types
      *
-     * @return
+     * @return true if the block is a rail block
      */
     public boolean isRailBlock() {
         return isRailBlock.contains(id);
@@ -1018,10 +1045,10 @@ public enum BlockType {
     }
 
     /**
-     * Checks if the block type is naturally occuring
+     * Checks if the block type is naturally occurring.
      *
-     * @param id      ID of the block
-     * @return true if the block type is naturally occuring
+     * @param id the type ID of the block
+     * @return true if the block type is naturally occurring
      * @deprecated Use {@link #isNaturalTerrainBlock(int, int)}
      */
     @Deprecated
@@ -1030,30 +1057,30 @@ public enum BlockType {
     }
 
     /**
-     * Checks if the block type is naturally occuring
+     * Checks if the block type is naturally occurring
      *
-     * @param id      ID of the block
-     * @param data    Data value of the block
-     * @return true if the block type is naturally occuring
+     * @param id the type ID of the block
+     * @param data data value of the block
+     * @return true if the block type is naturally occurring
      */
     public static boolean isNaturalTerrainBlock(int id, int data) {
         return isNaturalTerrainBlock.contains(-16*id-data) || isNaturalTerrainBlock.contains(id);
     }
 
     /**
-     * Checks if the block type is naturally occuring
+     * Checks if the block type is naturally occurring
      *
-     * @param block The block
-     * @return true if the block type is naturally occuring
+     * @param block the block
+     * @return true if the block type is naturally occurring
      */
     public static boolean isNaturalTerrainBlock(BaseBlock block) {
         return isNaturalTerrainBlock(block.getId(), block.getData());
     }
 
     /**
-     * Checks if the block type is naturally occuring
+     * Checks if the block type is naturally occurring
      *
-     * @return true if the block type is naturally occuring
+     * @return true if the block type is naturally occurring
      */
     public boolean isNaturalTerrainBlock() {
         return isNaturalTerrainBlock.contains(id);
@@ -1087,10 +1114,10 @@ public enum BlockType {
     }
 
     /**
-     * Checks if the block type emits light
+     * Checks if the block type emits light.
      *
-     * @param id
-     * @return
+     * @param id the type ID of the block
+     * @return true if the block emits light
      */
     public static boolean emitsLight(int id) {
         return emitsLight.contains(id);
@@ -1197,10 +1224,10 @@ public enum BlockType {
     }
 
     /**
-     * Checks if the block type lets light through
+     * Checks if the block type lets light through.
      *
-     * @param id
-     * @return
+     * @param id the type ID of the block
+     * @return true if the block type lets light through
      */
     public static boolean isTranslucent(int id) {
         return isTranslucent.contains(id);
@@ -1409,10 +1436,11 @@ public enum BlockType {
      * dropped, a block with a BaseItemStack of type AIR and size 0 will be returned.
      * If the block should not be destroyed (i.e. bedrock), null will be returned.
      *
-     * @param type
-     * @param data
-     * @return
+     * @param type the type of of the block
+     * @param data the data value of the block
+     * @return the item or null
      */
+    @Nullable
     public static BaseItem getBlockBagItem(int type, int data) {
         BaseItem dropped = nonDataBlockBagItems.get(type);
         if (dropped != null) return dropped;
@@ -1445,8 +1473,8 @@ public enum BlockType {
      * dropped, 0 will be returned. If the block should not be destroyed
      * (i.e. bedrock), -1 will be returned.
      *
-     * @param id
-     * @return
+     * @param id the type ID of the block
+     * @return the dropped item
      * @deprecated This function ignores the data value.
      */
     @Deprecated
@@ -1458,11 +1486,26 @@ public enum BlockType {
         return dropped.getType();
     }
 
+    /**
+     * Get the block drop for this type given a data value.
+     *
+     * @param data the data value
+     * @return the item stack
+     */
     public BaseItemStack getBlockDrop(short data) {
         return getBlockDrop(id, data);
     }
 
     private static final Random random = new Random();
+
+    /**
+     * Get the block drop for a block.
+     *
+     * @param id the type ID of the block
+     * @param data the data value
+     * @return an item or null
+     */
+    @Nullable
     public static BaseItemStack getBlockDrop(int id, short data) {
         int store;
         switch (id) {
@@ -1765,8 +1808,8 @@ public enum BlockType {
      * Returns the direction to the block(B) this block(A) is attached to.
      * Attached means that if block B is destroyed, block A will pop off.
      *
-     * @param type The block id of block A
-     * @param data The data value of block A
+     * @param type the block id of block A
+     * @param data the data value of block A
      * @return direction to block B
      */
     public static PlayerDirection getAttachment(int type, int data) {

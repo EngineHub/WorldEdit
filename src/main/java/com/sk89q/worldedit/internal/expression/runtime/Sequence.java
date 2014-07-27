@@ -19,19 +19,19 @@
 
 package com.sk89q.worldedit.internal.expression.runtime;
 
+import com.sk89q.worldedit.internal.expression.Expression;
+import com.sk89q.worldedit.internal.expression.parser.ParserException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.sk89q.worldedit.internal.expression.Expression;
-import com.sk89q.worldedit.internal.expression.parser.ParserException;
-
 /**
- * A sequence of operations, usually separated by semicolons in the input stream.
- *
- * @author TomyLobo
+ * A sequence of operations, usually separated by semicolons in the
+ * input stream.
  */
 public class Sequence extends Node {
+
     final RValue[] sequence;
 
     public Sequence(int position, RValue... sequence) {
@@ -105,4 +105,5 @@ public class Sequence extends Node {
 
         return this;
     }
+
 }

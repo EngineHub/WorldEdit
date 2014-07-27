@@ -23,10 +23,7 @@ import java.awt.image.Kernel;
 
 /**
  * A linear Kernel generator (all cells weight the same)
- * 
- * @author Grum
  */
-
 public class LinearKernel extends Kernel {
 
     public LinearKernel(int radius) {
@@ -44,4 +41,5 @@ public class LinearKernel extends Kernel {
 
         return data;
     }
+
 }

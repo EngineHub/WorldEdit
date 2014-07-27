@@ -17,34 +17,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.expression.runtime;
+package com.sk89q.worldedit.blocks;
+
+import java.util.Collection;
 
 /**
- * A break or continue statement.
+ * Block-related utility methods.
  */
-public class Break extends Node {
+public final class Blocks {
 
-    boolean doContinue;
-
-    public Break(int position, boolean doContinue) {
-        super(position);
-
-        this.doContinue = doContinue;
+    private Blocks() {
     }
 
-    @Override
-    public double getValue() throws EvaluationException {
-        throw new BreakException(doContinue);
-    }
-
-    @Override
-    public char id() {
-        return 'b';
-    }
-
-    @Override
-    public String toString() {
-        return doContinue ? "continue" : "break";
+    /**
+     * Checks whether a given block is in a list of base blocks.
+     *
+     * @param collection the collection
+     * @param o the block
+     * @return true if the collection contains the given block
+     */
+    public static boolean containsFuzzy(Collection<? extends BaseBlock> collection, BaseBlock o) {
+        // Allow masked data in the searchBlocks to match various types
+        for (BaseBlock b : collection) {
+            if (b.equalsFuzzy(o)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

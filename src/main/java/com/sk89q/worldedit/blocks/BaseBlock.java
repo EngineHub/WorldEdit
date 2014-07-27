@@ -24,37 +24,50 @@ import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.foundation.Block;
-import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.world.registry.WorldData;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
- * Represents a mutable copy of a block that is not tied to any 'real' block in a world.
- * A single instance of this can be set to multiple locations and each location would
- * have a copy of this instance's data.
- * </p>
- * Implementations can and should extend this class to allow native implementations
- * of NBT data handling, primarily for performance reasons. Subclasses can only convert
- * from and to WorldEdit-native NBT structures when absolutely necessary (a.k.a. when
- * {@link #getNbtData()} and {@link #setNbtData(CompoundTag)} are called). When
- * overriding the NBT methods, {@link #getNbtId()} should be overridden too, otherwise
- * the default implementation will invoke {@link #getNbtData()}, a potentially costly
- * operation when it is not needed. Implementations may want to cache converted NBT data
- * structures if possible.
+ * Represents a mutable "snapshot" of a block.
+ *
+ * <p>An instance of this block contains all the information needed to
+ * accurately reproduce the block, provided that the instance was
+ * made correctly. In some implementations, it may not be possible to get a
+ * snapshot of blocks correctly, so, for example, the NBT data for a block
+ * may be missing.</p>
+ *
+ * <p>This class identifies blocks using an integer ID. However, IDs for
+ * a given block may differ between worlds so it is important that users of
+ * this class convert the ID from one "world space" to another "world space,"
+ * a task that that is assisted with by working with the source and
+ * destination {@link WorldData} instances. Numeric IDs are utilized because
+ * they are more space efficient to store, and it also implies that internal
+ * uses of this class (i.e. history, etc.) do not need to worry about
+ * interning block string IDs.</p>
+ *
+ * <p>A peculiar detail of this class is that it accepts {@code -1} as a
+ * valid data value. This is due to legacy reasons: WorldEdit uses -1
+ * as a "wildcard" block value, even though a {@link Mask} would be
+ * more appropriate.</p>
  */
+@SuppressWarnings("deprecation")
 public class BaseBlock extends Block implements TileEntityBlock {
 
     /**
-     * Indicates the highest possible block ID (inclusive) that can be used. This value
-     * is subject to change depending on the implementation, but internally this class
-     * only supports a range of 4096 IDs (for space reasons), which coincides with the
-     * number of possible IDs that official Minecraft supports as of version 1.3.
+     * Indicates the highest possible block ID (inclusive) that can be used.
+     * This value is subject to change depending on the implementation, but
+     * internally this class only supports a range of 4096 IDs (for space
+     * reasons), which coincides with the number of possible IDs that official
+     * Minecraft supports as of version 1.7.
      */
     public static final int MAX_ID = 4095;
 
     /**
-     * Indicates the maximum data value (inclusive) that can be used. Minecraft 1.4 may
-     * abolish usage of data values and this value may be removed in the future.
+     * Indicates the maximum data value (inclusive) that can be used. A future
+     * version of Minecraft may abolish block data values.
      */
     public static final int MAX_DATA = 15;
 
@@ -63,6 +76,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
 
     private short id;
     private short data;
+    @Nullable
     private CompoundTag nbtData;
 
     /**
@@ -90,17 +104,13 @@ public class BaseBlock extends Block implements TileEntityBlock {
     }
 
     /**
-     * Construct a block with the given ID, data value, and NBT data structure.
+     * Construct a block with the given ID, data value and NBT data structure.
      *
      * @param id ID value
      * @param data data value
-     * @param nbtData NBT data
-     * @throws DataException if possibly the data is invalid
-     * @see #setId(int)
-     * @see #setData(int)
-     * @see #setNbtData(CompoundTag)
+     * @param nbtData NBT data, which may be null
      */
-    public BaseBlock(int id, int data, CompoundTag nbtData) {
+    public BaseBlock(int id, int data, @Nullable CompoundTag nbtData) {
         setId(id);
         setData(data);
         setNbtData(nbtData);
@@ -236,13 +246,14 @@ public class BaseBlock extends Block implements TileEntityBlock {
         }
     }
 
+    @Nullable
     @Override
     public CompoundTag getNbtData() {
         return nbtData;
     }
 
     @Override
-    public void setNbtData(CompoundTag nbtData) {
+    public void setNbtData(@Nullable CompoundTag nbtData) {
         this.nbtData = nbtData;
     }
 
@@ -275,9 +286,11 @@ public class BaseBlock extends Block implements TileEntityBlock {
 
     /**
      * Rotate this block 90 degrees.
-     * 
+     *
      * @return new data value
+     * @deprecated Use {@link BlockData#rotate90(int, int)}
      */
+    @Deprecated
     public int rotate90() {
         int newData = BlockData.rotate90(getType(), getData());
         setData(newData);
@@ -288,7 +301,9 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * Rotate this block -90 degrees.
      * 
      * @return new data value
+     * @deprecated Use {@link BlockData#rotate90Reverse(int, int)}
      */
+    @Deprecated
     public int rotate90Reverse() {
         int newData = BlockData.rotate90Reverse(getType(), getData());
         setData((short) newData);
@@ -300,7 +315,9 @@ public class BaseBlock extends Block implements TileEntityBlock {
      *
      * @param increment 1 for forward, -1 for backward
      * @return new data value
+     * @deprecated Use {@link BlockData#cycle(int, int, int)}
      */
+    @Deprecated
     public int cycleData(int increment) {
         int newData = BlockData.cycle(getType(), getData(), increment);
         setData((short) newData);
@@ -311,7 +328,9 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * Flip this block.
      * 
      * @return this block
+     * @deprecated Use {@link BlockData#flip(int, int)}
      */
+    @Deprecated
     public BaseBlock flip() {
         setData((short) BlockData.flip(getType(), getData()));
         return this;
@@ -322,7 +341,9 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * 
      * @param direction direction to flip in
      * @return this block
+     * @deprecated Use {@link BlockData#flip(int, int, FlipDirection)}
      */
+    @Deprecated
     public BaseBlock flip(FlipDirection direction) {
         setData((short) BlockData.flip(getType(), getData(), direction));
         return this;
@@ -338,11 +359,9 @@ public class BaseBlock extends Block implements TileEntityBlock {
         }
 
         final BaseBlock otherBlock = (BaseBlock) o;
-        if (getType() != otherBlock.getType()) {
-            return false;
-        }
 
-        return getData() == otherBlock.getData();
+        return getType() == otherBlock.getType() && getData() == otherBlock.getData();
+
     }
 
     /**
@@ -356,8 +375,6 @@ public class BaseBlock extends Block implements TileEntityBlock {
     }
 
     /**
-     * @param iter
-     * @return
      * @deprecated This method is silly, use {@link #containsFuzzy(java.util.Collection, BaseBlock)} instead.
      */
     @Deprecated
@@ -370,14 +387,12 @@ public class BaseBlock extends Block implements TileEntityBlock {
         return false;
     }
 
+    /**
+     * @deprecated Use {@link Blocks#containsFuzzy(Collection, BaseBlock)}
+     */
+    @Deprecated
     public static boolean containsFuzzy(Collection<BaseBlock> collection, BaseBlock o) {
-        // allow masked data in the searchBlocks to match various types
-        for (BaseBlock b : collection) {
-            if (b.equalsFuzzy(o)) {
-                return true;
-            }
-        }
-        return false;
+        return Blocks.containsFuzzy(collection, o);
     }
 
     @Override

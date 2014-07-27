@@ -44,10 +44,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Makes a copy of a portion of one extent to another extent or another point.
- * </p>
- * This is a forward extent copy, meaning that it iterates over the blocks in the
- * source extent, and will copy as many blocks as there are in the source.
- * Therefore, interpolation will not occur to fill in the gaps.
+ *
+ * <p>This is a forward extent copy, meaning that it iterates over the blocks
+ * in the source extent, and will copy as many blocks as there are in the
+ * source. Therefore, interpolation will not occur to fill in the gaps.</p>
  */
 public class ForwardExtentCopy extends AbstractOperation implements AffectedCounter {
 
@@ -103,8 +103,8 @@ public class ForwardExtentCopy extends AbstractOperation implements AffectedCoun
 
     /**
      * Get the transformation that will occur on every point.
-     * </p>
-     * The transformation will stack with each repetition.
+     *
+     * <p>The transformation will stack with each repetition.</p>
      *
      * @return a transformation
      */
@@ -125,8 +125,8 @@ public class ForwardExtentCopy extends AbstractOperation implements AffectedCoun
 
     /**
      * Get the mask that gets applied to the source extent.
-     * </p>
-     * This mask can be used to filter what will be copied from the source.
+     *
+     * <p>This mask can be used to filter what will be copied from the source.</p>
      *
      * @return a source mask
      */

@@ -23,10 +23,9 @@ import com.sk89q.worldedit.internal.expression.Identifiable;
 
 /**
  * A token. The lexer generates these to make the parser's job easier.
- *
- * @author TomyLobo
  */
 public abstract class Token implements Identifiable {
+
     private final int position;
 
     public Token(int position) {
@@ -37,4 +36,5 @@ public abstract class Token implements Identifiable {
     public int getPosition() {
         return position;
     }
+
 }

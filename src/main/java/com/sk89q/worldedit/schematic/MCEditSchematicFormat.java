@@ -36,10 +36,8 @@ import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-/**
- * @author zml2008
- */
 public class MCEditSchematicFormat extends SchematicFormat {
+
     private static final int MAX_SIZE = Short.MAX_VALUE - Short.MIN_VALUE;
 
     protected MCEditSchematicFormat() {
@@ -327,4 +325,5 @@ public class MCEditSchematicFormat extends SchematicFormat {
         }
         return expected.cast(tag);
     }
+
 }

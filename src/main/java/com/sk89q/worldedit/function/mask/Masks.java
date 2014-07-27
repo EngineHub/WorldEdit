@@ -133,10 +133,10 @@ public final class Masks {
 
     /**
      * Wrap an old-style mask and convert it to a new mask.
-     * </p>
-     * Note, however, that this is strongly not recommended because
+     *
+     * <p>Note, however, that this is strongly not recommended because
      * {@link com.sk89q.worldedit.masks.Mask#prepare(LocalSession, LocalPlayer, Vector)}
-     * is not called.
+     * is not called.</p>
      *
      * @param mask the old-style mask
      * @param editSession the edit session to bind to
@@ -163,10 +163,10 @@ public final class Masks {
 
     /**
      * Wrap an old-style mask and convert it to a new mask.
-     * </p>
-     * As an {@link EditSession} is not provided in this case, one will be
+     *
+     * <p>As an {@link EditSession} is not provided in this case, one will be
      * taken from the {@link Request}, if possible. If not possible, then the
-     * mask will return false.
+     * mask will return false.</p>
      *
      * @param mask the old-style mask
      * @return a new-style mask

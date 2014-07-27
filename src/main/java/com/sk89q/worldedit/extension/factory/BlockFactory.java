@@ -31,9 +31,9 @@ import java.util.Set;
 /**
  * A registry of known {@link BaseBlock}s. Provides methods to instantiate
  * new blocks from input.
- * </p>
- * Instances of this class can be taken from
- * {@link WorldEdit#getBlockFactory()}.
+ *
+ * <p>Instances of this class can be taken from
+ * {@link WorldEdit#getBlockFactory()}.</p>
  */
 public class BlockFactory extends AbstractFactory<BaseBlock> {
 

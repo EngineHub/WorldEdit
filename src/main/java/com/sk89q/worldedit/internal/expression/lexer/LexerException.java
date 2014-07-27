@@ -23,11 +23,8 @@ import com.sk89q.worldedit.internal.expression.ExpressionException;
 
 /**
  * Thrown when the lexer encounters a problem.
- *
- * @author TomyLobo
  */
 public class LexerException extends ExpressionException {
-    private static final long serialVersionUID = 1L;
 
     public LexerException(int position) {
         super(position, getPrefix(position));
@@ -48,4 +45,5 @@ public class LexerException extends ExpressionException {
     private static String getPrefix(int position) {
         return position < 0 ? "Lexer error" : ("Lexer error at " + (position + 1));
     }
+
 }

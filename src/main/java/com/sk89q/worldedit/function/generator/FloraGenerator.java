@@ -31,9 +31,9 @@ import com.sk89q.worldedit.function.pattern.RandomPattern;
 
 /**
  * Generates flora (which may include tall grass, flowers, etc.).
- * <p>
- * The current implementation is not biome-aware, but it may become so in
- * the future.
+ *
+ * <p>The current implementation is not biome-aware, but it may become so in
+ * the future.</p>
  */
 public class FloraGenerator implements RegionFunction {
 
@@ -53,8 +53,9 @@ public class FloraGenerator implements RegionFunction {
 
     /**
      * Return whether the flora generator is set to be biome-aware.
-     * <p>
-     * By default, it is currently disabled by default, but this may change.
+     *
+     * <p>By default, it is currently disabled by default, but
+     * this may change.</p>
      *
      * @return true if biome aware
      */
@@ -64,8 +65,8 @@ public class FloraGenerator implements RegionFunction {
 
     /**
      * Set whether the generator is biome aware.
-     * <p>
-     * It is currently not possible to make the generator biome-aware.
+     *
+     * <p>It is currently not possible to make the generator biome-aware.</p>
      *
      * @param biomeAware must always be false
      */
@@ -73,7 +74,6 @@ public class FloraGenerator implements RegionFunction {
         if (biomeAware) {
             throw new IllegalArgumentException("Cannot enable biome-aware mode; not yet implemented");
         }
-        this.biomeAware = biomeAware;
     }
 
     /**

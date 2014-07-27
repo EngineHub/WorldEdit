@@ -22,12 +22,10 @@ package com.sk89q.worldedit.blocks;
 /**
  * Represents a stack of BaseItems.
  *
- * @author sk89q
+ * <p>This class may be removed in the future.</p>
  */
 public class BaseItemStack extends BaseItem {
-    /**
-     * Amount of an item.
-     */
+
     private int amount = 1;
 
     /**

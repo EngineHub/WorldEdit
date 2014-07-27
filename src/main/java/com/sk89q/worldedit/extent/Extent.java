@@ -39,9 +39,9 @@ public interface Extent extends InputExtent, OutputExtent {
 
     /**
      * Get the minimum point in the extent.
-     * </p>
-     * If the extent is unbounded, then a large (negative) value may
-     * be returned.
+     *
+     * <p>If the extent is unbounded, then a large (negative) value may
+     * be returned.</p>
      *
      * @return the minimum point
      */
@@ -49,9 +49,9 @@ public interface Extent extends InputExtent, OutputExtent {
 
     /**
      * Get the maximum point in the extent.
-     * </p>
-     * If the extent is unbounded, then a large (positive) value may
-     * be returned.
+     *
+     * <p>If the extent is unbounded, then a large (positive) value may
+     * be returned.</p>
      *
      * @return the maximum point
      */
@@ -59,10 +59,10 @@ public interface Extent extends InputExtent, OutputExtent {
 
     /**
      * Get a list of all entities within the given region.
-     * </p>
-     * If the extent is not wholly loaded (i.e. a world being simulated in the
+     *
+     * <p>If the extent is not wholly loaded (i.e. a world being simulated in the
      * game will not have every chunk loaded), then this list may not be
-     * incomplete.
+     * incomplete.</p>
      *
      * @return a list of entities
      */
@@ -70,10 +70,10 @@ public interface Extent extends InputExtent, OutputExtent {
 
     /**
      * Get a list of all entities.
-     * </p>
-     * If the extent is not wholly loaded (i.e. a world being simulated in the
+     *
+     * <p>If the extent is not wholly loaded (i.e. a world being simulated in the
      * game will not have every chunk loaded), then this list may not be
-     * incomplete.
+     * incomplete.</p>
      *
      * @return a list of entities
      */

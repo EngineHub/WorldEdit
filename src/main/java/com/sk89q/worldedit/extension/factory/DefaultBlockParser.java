@@ -145,7 +145,7 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
         if (parseDataValue) { // Block data not yet detected
             // Parse the block data (optional)
             try {
-                if (typeAndData.length > 1 && typeAndData[1].length() > 0) {
+                if (typeAndData.length > 1 && !typeAndData[1].isEmpty()) {
                     data = Integer.parseInt(typeAndData[1]);
                 }
 

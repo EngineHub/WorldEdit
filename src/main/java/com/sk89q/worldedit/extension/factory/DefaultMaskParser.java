@@ -63,7 +63,7 @@ class DefaultMaskParser extends InputParser<Mask> {
         List<Mask> masks = new ArrayList<Mask>();
 
         for (String component : input.split(" ")) {
-            if (component.length() == 0) {
+            if (component.isEmpty()) {
                 continue;
             }
 

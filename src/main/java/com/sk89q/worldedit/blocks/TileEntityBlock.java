@@ -22,11 +22,10 @@ package com.sk89q.worldedit.blocks;
 import com.sk89q.worldedit.world.NbtValued;
 
 /**
- * Indicates a block that contains extra data identified as an NBT structure. Compared
- * to a {@link NbtValued}, tile entity blocks also contain an ID.
+ * Indicates a block that contains extra data identified as an NBT structure.
+ * Compared to a {@link NbtValued}, tile entity blocks also contain an ID.
  *
  * @see NbtValued
- * @author sk89q
  */
 public interface TileEntityBlock extends NbtValued {
 

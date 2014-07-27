@@ -44,10 +44,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * to a certain adjacent point provided that the method
  * {@link #isVisitable(com.sk89q.worldedit.Vector, com.sk89q.worldedit.Vector)}
  * returns true for that point.
- * </p>
- * As an abstract implementation, this class can be used to implement
+ *
+ * <p>As an abstract implementation, this class can be used to implement
  * functionality that starts at certain points and extends outward from
- * those points.
+ * those points.</p>
  */
 public abstract class BreadthFirstSearch extends AbstractOperation implements AffectedCounter {
 
@@ -70,12 +70,13 @@ public abstract class BreadthFirstSearch extends AbstractOperation implements Af
 
     /**
      * Get the list of directions will be visited.
-     * </p>
-     * Directions are {@link com.sk89q.worldedit.Vector}s that determine
+     *
+     * <p>Directions are {@link com.sk89q.worldedit.Vector}s that determine
      * what adjacent points area available. Vectors should not be
-     * unit vectors. An example of a valid direction is {@code new Vector(1, 0, 1)}.
-     * </p>
-     * The list of directions can be cleared.
+     * unit vectors. An example of a valid direction is
+     * {@code new Vector(1, 0, 1)}.</p>
+     *
+     * <p>The list of directions can be cleared.</p>
      *
      * @return the list of directions
      */

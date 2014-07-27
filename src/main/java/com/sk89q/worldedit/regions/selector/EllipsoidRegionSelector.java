@@ -50,6 +50,9 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
         this((World) null);
     }
 
+    /**
+     * @deprecated cast {@code world} to {@link World}
+     */
     @Deprecated
     public EllipsoidRegionSelector(@Nullable LocalWorld world) {
         this((World) world);

@@ -22,11 +22,8 @@ package com.sk89q.worldedit.math.convolution;
 import java.awt.image.Kernel;
 
 /**
- * A Gaussian Kernel generator (2D bellcurve)
- * 
- * @author Grum
+ * A Gaussian Kernel generator (2D bellcurve).
  */
-
 public class GaussianKernel extends Kernel {
 
     /**
@@ -35,7 +32,6 @@ public class GaussianKernel extends Kernel {
      * @param radius the resulting diameter will be radius * 2 + 1
      * @param sigma controls 'flatness'
      */
-
     public GaussianKernel(int radius, double sigma) {
         super(radius * 2 + 1, radius * 2 + 1, createKernel(radius, sigma));
     }
@@ -54,4 +50,5 @@ public class GaussianKernel extends Kernel {
 
         return data;
     }
+
 }

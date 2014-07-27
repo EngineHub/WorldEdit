@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.Blocks;
+import com.sk89q.worldedit.extent.Extent;
 
 import java.util.Collection;
 
@@ -41,6 +42,6 @@ public class FuzzyBlockMask extends BlockMask {
         Collection<BaseBlock> blocks = getBlocks();
         BaseBlock lazyBlock = extent.getLazyBlock(vector);
         BaseBlock compare = new BaseBlock(lazyBlock.getType(), lazyBlock.getData());
-        return BaseBlock.containsFuzzy(blocks, compare);
+        return Blocks.containsFuzzy(blocks, compare);
     }
 }

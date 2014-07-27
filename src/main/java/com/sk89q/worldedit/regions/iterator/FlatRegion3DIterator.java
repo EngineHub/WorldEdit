@@ -19,12 +19,14 @@
 
 package com.sk89q.worldedit.regions.iterator;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.regions.FlatRegion;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FlatRegion3DIterator implements Iterator<BlockVector> {
 
@@ -36,6 +38,9 @@ public class FlatRegion3DIterator implements Iterator<BlockVector> {
     private int nextY;
 
     public FlatRegion3DIterator(FlatRegion region, Iterator<Vector2D> flatIterator) {
+        checkNotNull(region);
+        checkNotNull(flatIterator);
+
         this.flatIterator = flatIterator;
         this.minY = region.getMinimumY();
         this.maxY = region.getMaximumY();
@@ -80,4 +85,5 @@ public class FlatRegion3DIterator implements Iterator<BlockVector> {
     public void remove() {
         throw new UnsupportedOperationException();
     }
+
 }

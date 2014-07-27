@@ -21,12 +21,10 @@ package com.sk89q.worldedit.internal.expression.runtime;
 
 /**
  * Thrown when a return statement is encountered.
- * {@link com.sk89q.worldedit.internal.expression.Expression#evaluate} catches this exception and returns the enclosed value.
- *
- * @author TomyLobo
+ * {@link com.sk89q.worldedit.internal.expression.Expression#evaluate}
+ * catches this exception and returns the enclosed value.
  */
 public class ReturnException extends EvaluationException {
-    private static final long serialVersionUID = 1L;
 
     final double value;
 
@@ -39,4 +37,5 @@ public class ReturnException extends EvaluationException {
     public double getValue() {
         return value;
     }
+
 }

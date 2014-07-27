@@ -24,10 +24,9 @@ import com.sk89q.worldedit.internal.expression.parser.ParserException;
 
 /**
  * A node in the execution tree of an expression.
- *
- * @author TomyLobo
  */
 public abstract class Node implements RValue {
+
     private final int position;
 
     public Node(int position) {
@@ -37,6 +36,7 @@ public abstract class Node implements RValue {
     @Override
     public abstract String toString();
 
+    @Override
     public RValue optimize() throws EvaluationException {
         return this;
     }
@@ -50,4 +50,5 @@ public abstract class Node implements RValue {
     public RValue bindVariables(Expression expression, boolean preferLValue) throws ParserException {
         return this;
     }
+
 }

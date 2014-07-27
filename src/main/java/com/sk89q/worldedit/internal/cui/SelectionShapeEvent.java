@@ -27,10 +27,12 @@ public class SelectionShapeEvent implements CUIEvent {
         this.shapeName = shapeName;
     }
 
+    @Override
     public String getTypeId() {
         return "s";
     }
 
+    @Override
     public String[] getParameters() {
         return new String[] { shapeName };
     }

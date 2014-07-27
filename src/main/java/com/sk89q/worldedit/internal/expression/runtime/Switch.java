@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.internal.expression.runtime;
 
+import com.sk89q.worldedit.internal.expression.Expression;
+import com.sk89q.worldedit.internal.expression.parser.ParserException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,15 +29,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.sk89q.worldedit.internal.expression.Expression;
-import com.sk89q.worldedit.internal.expression.parser.ParserException;
-
 /**
  * A switch/case construct.
- *
- * @author TomyLobo
  */
 public class Switch extends Node implements RValue {
+
     private RValue parameter;
     private final Map<Double, Integer> valueMap;
     private final RValue[] caseStatements;
@@ -203,4 +202,5 @@ public class Switch extends Node implements RValue {
 
         return this;
     }
+
 }

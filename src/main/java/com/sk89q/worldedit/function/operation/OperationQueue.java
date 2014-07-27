@@ -90,7 +90,7 @@ public class OperationQueue extends AbstractOperation {
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
-        if (current == null && queue.size() > 0) {
+        if (current == null && !queue.isEmpty()) {
             current = queue.poll();
         }
 

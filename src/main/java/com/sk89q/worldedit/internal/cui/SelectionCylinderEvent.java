@@ -34,10 +34,12 @@ public class SelectionCylinderEvent implements CUIEvent {
         this.radius = radius;
     }
 
+    @Override
     public String getTypeId() {
         return "cyl";
     }
 
+    @Override
     public String[] getParameters() {
         return new String[] {
                     String.valueOf(pos.getBlockX()),

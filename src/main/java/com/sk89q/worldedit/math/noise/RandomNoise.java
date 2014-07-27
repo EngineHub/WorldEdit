@@ -33,7 +33,7 @@ public class RandomNoise implements NoiseGenerator {
     private final Random random;
 
     /**
-     * Create a new noise generator using the given <code>Random</code>.
+     * Create a new noise generator using the given {@code Random}.
      *
      * @param random the random instance
      */
@@ -42,7 +42,7 @@ public class RandomNoise implements NoiseGenerator {
     }
 
     /**
-     * Create a new noise generator with a newly constructed <code>Random</code>
+     * Create a new noise generator with a newly constructed {@code Random}
      * instance.
      */
     public RandomNoise() {

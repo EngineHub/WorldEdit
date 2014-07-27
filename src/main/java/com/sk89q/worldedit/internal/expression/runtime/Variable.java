@@ -24,10 +24,9 @@ import com.sk89q.worldedit.internal.expression.parser.ParserException;
 
 /**
  * A variable.
- *
- * @author TomyLobo
  */
 public final class Variable extends Node implements LValue {
+
     public double value;
 
     public Variable(double value) {
@@ -64,4 +63,5 @@ public final class Variable extends Node implements LValue {
     public LValue bindVariables(Expression expression, boolean preferLValue) throws ParserException {
         return this;
     }
+
 }

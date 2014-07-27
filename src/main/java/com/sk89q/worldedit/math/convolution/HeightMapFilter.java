@@ -21,33 +21,36 @@ package com.sk89q.worldedit.math.convolution;
 
 import java.awt.image.Kernel;
 
-/**
- * Allows applications of Kernels onto the region's heightmap.
- * Only used for smoothing (with a GaussianKernel).
- * 
- * @author Grum
- */
+import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Allows applications of Kernels onto the region's height map.
+ *
+ * <p>Only used for smoothing (with a GaussianKernel).</p>
+ */
 public class HeightMapFilter {
+
     private Kernel kernel;
 
     /**
      * Construct the HeightMapFilter object.
      * 
-     * @param kernel
+     * @param kernel the kernel
      */
     public HeightMapFilter(Kernel kernel) {
+        checkNotNull(kernel);
         this.kernel = kernel;
     }
 
     /**
      * Construct the HeightMapFilter object.
      * 
-     * @param kernelWidth
-     * @param kernelHeight
-     * @param kernelData
+     * @param kernelWidth the width
+     * @param kernelHeight the height
+     * @param kernelData the data
      */
     public HeightMapFilter(int kernelWidth, int kernelHeight, float[] kernelData) {
+        checkNotNull(kernelData);
         this.kernel = new Kernel(kernelWidth, kernelHeight, kernelData);
     }
 
@@ -61,21 +64,26 @@ public class HeightMapFilter {
     /**
      * Set Kernel
      * 
-     * @param kernel
+     * @param kernel the kernel
      */
     public void setKernel(Kernel kernel) {
+        checkNotNull(kernel);
+
         this.kernel = kernel;
     }
 
     /**
      * Filter with a 2D kernel
-     * 
-     * @param inData
-     * @param width
-     * @param height
-     * @return the modified heightmap
+     *
+     * @param inData the data
+     * @param width the width
+     * @param height the height
+     *
+     * @return the modified height map
      */
     public int[] filter(int[] inData, int width, int height) {
+        checkNotNull(inData);
+
         int index = 0;
         float[] matrix = kernel.getKernelData(null);
         int[] outData = new int[inData.length];
@@ -117,4 +125,5 @@ public class HeightMapFilter {
         }
         return outData;
     }
+
 }
