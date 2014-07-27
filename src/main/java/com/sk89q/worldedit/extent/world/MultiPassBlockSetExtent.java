@@ -20,24 +20,27 @@
 package com.sk89q.worldedit.extent.world;
 
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.SimulatedExtent;
+import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.util.Vectors;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 /**
  * Sets blocks over several passes to increase speed.
  */
 public class MultiPassBlockSetExtent extends AbstractDelegateExtent<SimulatedExtent> {
 
-    private final List<Vector> positions = new ArrayList<Vector>();
+    private final Queue<Vector> positions = new ArrayDeque<Vector>();
     private boolean notifyAndLight = true;
+    private Vector2D lastChunk;
 
     /**
      * Create a new instance.
@@ -72,7 +75,8 @@ public class MultiPassBlockSetExtent extends AbstractDelegateExtent<SimulatedExt
     public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         if (getExtent().setBlock(location, block, false)) {
             if (getNotifyAndLight()) {
-                positions.add(location);
+                lastChunk = Vectors.toChunkVector(location);
+                positions.offer(location);
             }
             return true;
         } else {
@@ -81,22 +85,45 @@ public class MultiPassBlockSetExtent extends AbstractDelegateExtent<SimulatedExt
     }
 
     @Override
-    protected Operation commitBefore() {
-        return new Operation() {
-            private Iterator<Vector> iterator;
+    protected Operation thisInterleaveOperation() {
+        return createOperation(true);
+    }
+
+    @Override
+    protected Operation thisFinalizeOperation() {
+        return createOperation(false);
+    }
+
+    private Operation createOperation(final boolean opportunistic) {
+        return new AbstractOperation() {
+            @Override
+            public boolean isOpportunistic() {
+                return opportunistic;
+            }
 
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
-                if (iterator == null) {
-                    iterator = positions.iterator();
-                }
+                Vector position;
 
-                while (iterator.hasNext()) {
-                    Vector position = iterator.next();
+                while (true) {
+                    if (opportunistic) {
+                        position = positions.peek();
+
+                        if (position != null && Vectors.toChunkVector(position).equalsBlock(lastChunk)) {
+                            return null;
+                        }
+                    }
+
+                    position = positions.poll(); // Remove from queue
+
+                    if (position == null) {
+                        break;
+                    }
+
                     getExtent().notifyAndLightBlock(position, 0);
 
                     if (!run.shouldContinue()) {
-                        return this;
+                        return opportunistic ? null : this;
                     }
                 }
 
@@ -105,7 +132,6 @@ public class MultiPassBlockSetExtent extends AbstractDelegateExtent<SimulatedExt
 
             @Override
             public void cancel() {
-
             }
         };
     }

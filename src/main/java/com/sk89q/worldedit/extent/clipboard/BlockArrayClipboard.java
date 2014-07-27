@@ -160,7 +160,13 @@ public class BlockArrayClipboard implements Clipboard {
 
     @Nullable
     @Override
-    public Operation commit() {
+    public Operation getInterleaveOperation() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Operation getFinalizeOperation() {
         return null;
     }
 

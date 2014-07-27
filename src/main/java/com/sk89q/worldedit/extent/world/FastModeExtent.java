@@ -25,6 +25,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.world.World;
@@ -94,8 +95,8 @@ public class FastModeExtent extends AbstractDelegateExtent<Extent> {
     }
 
     @Override
-    protected Operation commitBefore() {
-        return new Operation() {
+    protected Operation thisFinalizeOperation() {
+        return new AbstractOperation() {
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
                 // TODO can we pass the RunContext in here?

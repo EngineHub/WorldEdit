@@ -698,12 +698,19 @@ public class EditSession implements Extent {
      * Finish off the queue.
      */
     public void flushQueue() {
-        Operations.completeBlindly(commit());
+        Operations.completeBlindly(getFinalizeOperation());
+    }
+
+    @Nullable
+    @Override
+    public Operation getInterleaveOperation() {
+        return bypassNone.getInterleaveOperation();
     }
 
     @Override
-    public @Nullable Operation commit() {
-        return bypassNone.commit();
+    @Nullable
+    public Operation getFinalizeOperation() {
+        return bypassNone.getFinalizeOperation();
     }
 
     public int countBlock(Region region, Set<Integer> searchIDs) {

@@ -29,6 +29,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.extent.AbstractExtent;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -40,7 +41,7 @@ import java.util.PriorityQueue;
 /**
  * An abstract implementation of {@link World}.
  */
-public abstract class AbstractWorld implements World {
+public abstract class AbstractWorld extends AbstractExtent implements World {
 
     private final PriorityQueue<QueuedEffect> effectQueue = new PriorityQueue<QueuedEffect>();
     private int taskId = -1;
@@ -218,7 +219,7 @@ public abstract class AbstractWorld implements World {
     }
 
     @Override
-    public @Nullable Operation commit() {
+    public @Nullable Operation getFinalizeOperation() {
         return null;
     }
 

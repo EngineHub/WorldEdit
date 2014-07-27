@@ -114,14 +114,52 @@ public abstract class AbstractDelegateExtent<T extends Extent> implements Extent
         return extent.getMaximumPoint();
     }
 
-    protected Operation commitBefore() {
+    /**
+     * Get the interleaved operation for this extent.
+     *
+     * <p>Implementations of this method do not need to worry about calling
+     * the parent's methods.</p>
+     *
+     * @return an operation or {@code null} if there is no operation to execute
+     */
+    @Nullable
+    protected Operation thisInterleaveOperation() {
         return null;
     }
 
+    /**
+     * Get the finalization operation for this extent.
+     *
+     * <p>Implementations of this method do not need to worry about calling
+     * the parent's methods.</p>
+     *
+     * @return an operation or {@code null} if there is no operation to execute
+     */
+    @Nullable
+    protected Operation thisFinalizeOperation() {
+        return null;
+    }
+
+    @Nullable
     @Override
-    public final @Nullable Operation commit() {
-        Operation ours = commitBefore();
-        Operation other = extent.commit();
+    public final Operation getInterleaveOperation() {
+        Operation ours = thisInterleaveOperation();
+        Operation other = extent.getInterleaveOperation();
+        if (ours != null && other != null) {
+            return new OperationQueue(ours, other);
+        } else if (ours != null) {
+            return ours;
+        } else if (other != null) {
+            return other;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public final @Nullable Operation getFinalizeOperation() {
+        Operation ours = thisFinalizeOperation();
+        Operation other = extent.getFinalizeOperation();
         if (ours != null && other != null) {
             return new OperationQueue(ours, other);
         } else if (ours != null) {

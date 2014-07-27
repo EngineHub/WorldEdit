@@ -32,6 +32,8 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.function.operation.AbstractOperation;
+import com.sk89q.worldedit.function.operation.UnfairOperationInterleave;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.RunContext;
@@ -798,7 +800,16 @@ public class LocalSession {
      * @return a new operation to execute
      */
     public Operation wrapOperation(Operation operation, final EditSession editSession) {
-        return new OperationQueue(operation, editSession.commit(), new Operation() {
+        Operation interleaved = editSession.getInterleaveOperation();
+        Operation result;
+
+        if (interleaved != null) {
+            result = new UnfairOperationInterleave(interleaved, operation);
+        } else {
+            result = operation;
+        }
+
+        return new OperationQueue(result, editSession.getFinalizeOperation(), new AbstractOperation() {
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
                 remember(editSession);

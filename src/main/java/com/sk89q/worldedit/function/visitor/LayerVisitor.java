@@ -25,6 +25,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.function.mask.Mask2D;
 import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.regions.FlatRegion;
@@ -42,7 +43,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * maximum Y down to a minimum Y), and then applies a {@link LayerFunction} to
  * each layer.
  */
-public class LayerVisitor implements Operation {
+public class LayerVisitor extends AbstractOperation {
 
     private final Iterator<Vector2D> iterator;
     private final LayerFunction function;

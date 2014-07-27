@@ -22,6 +22,7 @@ package com.sk89q.worldedit.function.visitor;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.EntityFunction;
+import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.function.util.AffectedCounter;
@@ -33,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Visits entities as provided by an {@code Iterator}.
  */
-public class EntityVisitor implements Operation, AffectedCounter {
+public class EntityVisitor extends AbstractOperation implements AffectedCounter {
 
     private final Iterator<? extends Entity> iterator;
     private final EntityFunction function;

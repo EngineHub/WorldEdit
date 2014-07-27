@@ -22,6 +22,7 @@ package com.sk89q.worldedit.function.visitor;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.FlatRegionFunction;
+import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.function.util.AffectedCounter;
@@ -35,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Applies region functions to columns in a {@link FlatRegion}.
  */
-public class FlatRegionVisitor implements Operation, AffectedCounter {
+public class FlatRegionVisitor extends AbstractOperation implements AffectedCounter {
 
     private final Iterator<? extends Vector2D> iterator;
     private final FlatRegionFunction function;

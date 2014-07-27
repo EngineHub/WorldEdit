@@ -22,6 +22,7 @@ package com.sk89q.worldedit.function.operation;
 import com.sk89q.worldedit.WorldEditException;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
 
@@ -30,7 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Executes multiple queues in order.
  */
-public class OperationQueue implements Operation {
+public class OperationQueue extends AbstractOperation {
 
     private final Deque<Operation> queue = new ArrayDeque<Operation>();
     private Operation current;
@@ -59,9 +60,21 @@ public class OperationQueue implements Operation {
      * @param operation an array of operations
      */
     public OperationQueue(Operation... operation) {
-        checkNotNull(operation);
-        for (Operation o : operation) {
-            offer(o);
+        this(Arrays.asList(checkNotNull(operation)));
+    }
+
+    @Override
+    public boolean isOpportunistic() {
+        if (!queue.isEmpty()) {
+            for (Operation operation : queue) {
+                if (!operation.isOpportunistic()) {
+                    return false;
+                }
+            }
+
+            return true;
+        } else {
+            return false;
         }
     }
 

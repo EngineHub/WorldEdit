@@ -29,6 +29,7 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.BlockMapEntryPlacer;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
@@ -117,8 +118,8 @@ public class MultiStageReorder extends AbstractDelegateExtent<Extent> implements
     }
 
     @Override
-    public Operation commitBefore() {
-        return new Operation() {
+    public Operation thisFinalizeOperation() {
+        return new AbstractOperation() {
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
                 return new OperationQueue(
@@ -134,7 +135,7 @@ public class MultiStageReorder extends AbstractDelegateExtent<Extent> implements
         };
     }
 
-    private class Stage3Committer implements Operation {
+    private class Stage3Committer extends AbstractOperation {
 
         @Override
         public Operation resume(RunContext run) throws WorldEditException {

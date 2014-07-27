@@ -30,6 +30,16 @@ import com.sk89q.worldedit.WorldEditException;
 public interface Operation {
 
     /**
+     * Returns whether this operation is opportunistic; that is, the operation
+     * will never know when it will finish so {@link #resume(RunContext)} will
+     * always return {@code null}, but as long as other related operations are
+     * active, this operation should be resumed.
+     *
+     * @return true if opportunistic
+     */
+    boolean isOpportunistic();
+
+    /**
      * Complete the next step. If this method returns true, then the method may
      * be called again in the future, or possibly never. If this method
      * returns false, then this method should not be called again.

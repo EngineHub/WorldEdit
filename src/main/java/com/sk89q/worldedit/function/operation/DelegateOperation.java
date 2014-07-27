@@ -27,7 +27,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Executes a delegate operation, but returns to another operation upon
  * completing the delegate.
  */
-public class DelegateOperation implements Operation {
+public class DelegateOperation extends AbstractOperation {
 
     private final Operation original;
     private Operation delegate;

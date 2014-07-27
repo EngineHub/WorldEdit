@@ -31,7 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Performs an undo or redo from a given {@link ChangeSet}.
  */
-public class ChangeSetExecutor implements Operation {
+public class ChangeSetExecutor extends AbstractOperation {
 
     public enum Type {UNDO, REDO}
 

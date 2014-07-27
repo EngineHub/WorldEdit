@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Sets block from an iterator of {@link Map.Entry} containing a
  * {@link BlockVector} as the key and a {@link BaseBlock} as the value.
  */
-public class BlockMapEntryPlacer implements Operation {
+public class BlockMapEntryPlacer extends AbstractOperation {
 
     private final Extent extent;
     private final Iterator<Map.Entry<BlockVector, BaseBlock>> iterator;

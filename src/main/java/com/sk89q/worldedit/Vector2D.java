@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit;
 
+import javax.annotation.Nullable;
+
 /**
  *
  * @author sk89q
@@ -583,6 +585,20 @@ public class Vector2D {
         Vector2D other = (Vector2D) obj;
         return other.x == this.x && other.z == this.z;
 
+    }
+
+    /**
+     * Return whether the floored X and Z components of the given vector
+     * equals that of this vector.
+     *
+     * @param other the other vector
+     * @return true if the components match
+     */
+    public boolean equalsBlock(@Nullable Vector2D other) {
+        if (other == null) {
+            return false;
+        }
+        return other.getBlockX() == getBlockX() && other.getBlockZ() == getBlockZ();
     }
 
     /**
