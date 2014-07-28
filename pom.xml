@@ -183,6 +183,14 @@
       <type>jar</type>
     </dependency>
 
+    <!-- Noise library -->
+    <dependency>
+      <groupId>com.sk89q.lib</groupId>
+      <artifactId>jlibnoise</artifactId>
+      <version>1.0.0</version>
+      <optional>true</optional>
+    </dependency>
+
     <!-- Unit tests -->
     <dependency>
       <groupId>org.mockito</groupId>
