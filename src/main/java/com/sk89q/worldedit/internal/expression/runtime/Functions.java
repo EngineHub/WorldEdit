@@ -19,11 +19,19 @@
 
 package com.sk89q.worldedit.internal.expression.runtime;
 
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.runtime.Function.Dynamic;
+import com.sk89q.worldedit.math.noise.PerlinNoise;
+import com.sk89q.worldedit.math.noise.RidgedMultiFractalNoise;
+import com.sk89q.worldedit.math.noise.VoronoiNoise;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Contains all functions that can be used in expressions.
@@ -375,6 +383,62 @@ public final class Functions {
         return random.nextInt((int) Math.floor(max.getValue()));
     }
 
+    private static final ThreadLocal<PerlinNoise> localPerlin = new ThreadLocal<PerlinNoise>() {
+        @Override
+        protected PerlinNoise initialValue() {
+            return new PerlinNoise();
+        }
+    };
+
+    public static double perlin(RValue seed, RValue x, RValue y, RValue z, RValue frequency, RValue octaves, RValue persistence) throws EvaluationException {
+        PerlinNoise perlin = localPerlin.get();
+        try {
+            perlin.setSeed((int) seed.getValue());
+            perlin.setFrequency(frequency.getValue());
+            perlin.setOctaveCount((int) octaves.getValue());
+            perlin.setPersistence(persistence.getValue());
+        } catch (IllegalArgumentException e) {
+            throw new EvaluationException(0, "Perlin noise error: " + e.getMessage());
+        }
+        return perlin.noise(new Vector(x.getValue(), y.getValue(), z.getValue()));
+    }
+
+    private static final ThreadLocal<VoronoiNoise> localVoronoi = new ThreadLocal<VoronoiNoise>() {
+        @Override
+        protected VoronoiNoise initialValue() {
+            return new VoronoiNoise();
+        }
+    };
+
+    public static double voronoi(RValue seed, RValue x, RValue y, RValue z, RValue frequency) throws EvaluationException {
+        VoronoiNoise voronoi = localVoronoi.get();
+        try {
+            voronoi.setSeed((int) seed.getValue());
+            voronoi.setFrequency(frequency.getValue());
+        } catch (IllegalArgumentException e) {
+            throw new EvaluationException(0, "Voronoi error: " + e.getMessage());
+        }
+        return voronoi.noise(new Vector(x.getValue(), y.getValue(), z.getValue()));
+    }
+
+    private static final ThreadLocal<RidgedMultiFractalNoise> localRidgedMulti = new ThreadLocal<RidgedMultiFractalNoise>() {
+        @Override
+        protected RidgedMultiFractalNoise initialValue() {
+            return new RidgedMultiFractalNoise();
+        }
+    };
+
+    public static double ridgedmulti(RValue seed, RValue x, RValue y, RValue z, RValue frequency, RValue octaves) throws EvaluationException {
+        RidgedMultiFractalNoise ridgedMulti = localRidgedMulti.get();
+        try {
+            ridgedMulti.setSeed((int) seed.getValue());
+            ridgedMulti.setFrequency(frequency.getValue());
+            ridgedMulti.setOctaveCount((int) octaves.getValue());
+        } catch (IllegalArgumentException e) {
+            throw new EvaluationException(0, "Ridged multi error: " + e.getMessage());
+        }
+        return ridgedMulti.noise(new Vector(x.getValue(), y.getValue(), z.getValue()));
+    }
 
     private static double queryInternal(RValue type, RValue data, double typeId, double dataValue) throws EvaluationException {
         // Compare to input values and determine return value
