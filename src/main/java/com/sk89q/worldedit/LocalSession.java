@@ -198,7 +198,7 @@ public class LocalSession {
      * @param player the player
      * @return whether anything was undone
      */
-    public EditSession undo(BlockBag newBlockBag, LocalPlayer player) {
+    public EditSession undo(@Nullable BlockBag newBlockBag, LocalPlayer player) {
         return undo(newBlockBag, (Player) player);
     }
 
@@ -209,8 +209,7 @@ public class LocalSession {
      * @param player the player
      * @return whether anything was undone
      */
-    public EditSession undo(BlockBag newBlockBag, Player player) {
-        checkNotNull(newBlockBag);
+    public EditSession undo(@Nullable BlockBag newBlockBag, Player player) {
         checkNotNull(player);
         --historyPointer;
         if (historyPointer >= 0) {
@@ -234,7 +233,7 @@ public class LocalSession {
      * @param player the player
      * @return whether anything was redone
      */
-    public EditSession redo(BlockBag newBlockBag, LocalPlayer player) {
+    public EditSession redo(@Nullable BlockBag newBlockBag, LocalPlayer player) {
         return redo(newBlockBag, (Player) player);
     }
 
@@ -245,8 +244,7 @@ public class LocalSession {
      * @param player the player
      * @return whether anything was redone
      */
-    public EditSession redo(BlockBag newBlockBag, Player player) {
-        checkNotNull(newBlockBag);
+    public EditSession redo(@Nullable BlockBag newBlockBag, Player player) {
         checkNotNull(player);
         if (historyPointer < history.size()) {
             EditSession editSession = history.get(historyPointer);
