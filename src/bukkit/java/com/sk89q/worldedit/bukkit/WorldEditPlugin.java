@@ -110,9 +110,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Now we can register events
         getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
 
-        // Register session timer
-        getServer().getScheduler().runTaskTimerAsynchronously(this, new SessionTimer(worldEdit, getServer()), 120, 120);
-
         // If we are on MCPC+/Cauldron, then Forge will have already loaded
         // Forge WorldEdit and there's (probably) not going to be any other
         // platforms to be worried about... at the current time of writing

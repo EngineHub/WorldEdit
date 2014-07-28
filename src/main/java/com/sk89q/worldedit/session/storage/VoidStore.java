@@ -17,15 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.session.storage;
+
+import com.sk89q.worldedit.LocalSession;
+
+import java.io.IOException;
+import java.util.UUID;
 
 /**
- * @author zml2008
+ * A session store that doesn't know how to store sessions.
  */
-public class WorldEditPermissionException extends WorldEditException {
-    private static final long serialVersionUID = 1L;
+public class VoidStore implements SessionStore {
 
-    public WorldEditPermissionException() {
-        super("You don't have permission to do this.");
+    @Override
+    public LocalSession load(UUID id) throws IOException {
+        return new LocalSession();
     }
+
+    @Override
+    public void save(UUID id, LocalSession session) throws IOException {
+    }
+
 }

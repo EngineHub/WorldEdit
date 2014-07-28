@@ -661,41 +661,6 @@ public class WorldEdit {
     }
 
     /**
-     * Handle a disconnection.
-     *
-     * @param player the player
-     */
-    @Deprecated
-    public void handleDisconnect(Player player) {
-        forgetPlayer(player);
-    }
-
-    /**
-     * Mark for expiration of the session.
-     *
-     * @param player the player
-     */
-    public void markExpire(Player player) {
-        sessions.markforExpiration(player);
-    }
-
-    /**
-     * Forget a player.
-     *
-     * @param player the player
-     */
-    public void forgetPlayer(Player player) {
-        sessions.remove(player);
-    }
-
-    /*
-     * Flush expired sessions.
-     */
-    public void flushExpiredSessions(SessionCheck checker) {
-        sessions.removeExpired(checker);
-    }
-
-    /**
      * Called on arm swing.
      *
      * @param player the player

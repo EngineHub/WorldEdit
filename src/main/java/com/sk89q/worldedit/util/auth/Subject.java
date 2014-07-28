@@ -17,34 +17,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit;
-
-import org.bukkit.Server;
-import org.bukkit.entity.Player;
-import com.sk89q.worldedit.SessionCheck;
-import com.sk89q.worldedit.WorldEdit;
+package com.sk89q.worldedit.util.auth;
 
 /**
- * Used to remove expired sessions in Bukkit.
+ * A subject has authorization attached to it.
  */
-class SessionTimer implements Runnable {
+public interface Subject {
 
-    private WorldEdit worldEdit;
-    private SessionCheck checker;
+    /**
+     * Get a list of groups that this subject is a part of.
+     *
+     * @return an array containing a group name per entry
+     */
+    String[] getGroups();
 
-    SessionTimer(WorldEdit worldEdit, final Server server) {
-        this.worldEdit = worldEdit;
-        this.checker = new SessionCheck() {
-            public boolean isOnlinePlayer(String name) {
-                Player player = server.getPlayer(name);
-                return player != null && player.isOnline();
-            }
-        };
-    }
+    /**
+     * Check whether this subject has been granted the given permission
+     * and throw an exception on error.
+     *
+     * @param permission the permission
+     * @throws AuthorizationException thrown if not permitted
+     */
+    void checkPermission(String permission) throws AuthorizationException;
 
-    @Override
-    public void run() {
-        worldEdit.flushExpiredSessions(checker);
-    }
+    /**
+     * Return whether this subject has the given permission.
+     *
+     * @param permission the permission
+     * @return true if permission is granted
+     */
+    boolean hasPermission(String permission);
 
 }
