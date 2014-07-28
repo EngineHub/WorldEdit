@@ -389,6 +389,7 @@
                   <include>com.sk89q:jchronic</include>
                   <include>com.thoughtworks.paranamer:paranamer</include>
                   <include>com.google.code.gson:gson</include>
+                  <include>com.sk89q.lib:jlibnoise</include>
                   <!-- <include>net.sf.trove4j:trove4j</include> -->
                 </includes>
               </artifactSet>
