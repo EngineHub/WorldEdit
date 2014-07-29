@@ -100,7 +100,7 @@ public class YAMLProcessor extends YAMLNode {
     /**
      * Loads the configuration file.
      *
-     * @throws java.io.IOException
+     * @throws java.io.IOException on load error
      */
     public void load() throws IOException {
         InputStream stream = null;
@@ -298,6 +298,7 @@ public class YAMLProcessor extends YAMLNode {
      * This method returns an empty ConfigurationNode for using as a
      * default in methods that select a node from a node list.
      *
+     * @param writeDefaults true to write default values when a property is requested that doesn't exist
      * @return a node
      */
     public static YAMLNode getEmptyNode(boolean writeDefaults) {

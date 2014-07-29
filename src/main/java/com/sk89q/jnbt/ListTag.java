@@ -323,7 +323,9 @@ public final class ListTag extends Tag {
      * list will also be returned.</p>
      *
      * @param index the index
+     * @param listType the class of the contained type
      * @return a list of tags
+     * @param <T> the NBT type
      */
     @SuppressWarnings("unchecked")
     public <T extends Tag> List<T> getList(int index, Class<T> listType) {

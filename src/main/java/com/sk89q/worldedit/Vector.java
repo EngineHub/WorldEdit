@@ -599,7 +599,7 @@ public class Vector implements Comparable<Vector> {
     /**
      * Rounds all components to the closest integer.
      *
-     * <p>Components < 0.5 are rounded down, otherwise up.</p>
+     * <p>Components &lt; 0.5 are rounded down, otherwise up.</p>
      *
      * @return a new vector
      */

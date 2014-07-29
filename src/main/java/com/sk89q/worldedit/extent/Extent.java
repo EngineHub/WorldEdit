@@ -64,6 +64,7 @@ public interface Extent extends InputExtent, OutputExtent {
      * game will not have every chunk loaded), then this list may not be
      * incomplete.</p>
      *
+     * @param region the region in which entities must be contained
      * @return a list of entities
      */
     List<? extends Entity> getEntities(Region region);

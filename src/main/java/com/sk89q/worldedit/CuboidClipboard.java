@@ -505,6 +505,7 @@ public class CuboidClipboard {
      * Set the block at a position in the clipboard.
      *
      * @param position the point, relative to the origin of the copy (0, 0, 0) and not to the actual copy origin.
+     * @param block the block to set
      * @throws ArrayIndexOutOfBoundsException if the position is outside the bounds of the CuboidClipboard
      */
     public void setBlock(Vector position, BaseBlock block) {

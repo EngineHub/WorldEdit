@@ -509,7 +509,7 @@ public class Vector2D {
     /**
      * Rounds all components to the closest integer.
      *
-     * <p>Components < 0.5 are rounded down, otherwise up.</p>
+     * <p>Components &lt; 0.5 are rounded down, otherwise up.</p>
      *
      * @return a new vector
      */
@@ -607,6 +607,7 @@ public class Vector2D {
     /**
      * Creates a 3D vector by adding the specified Y component to this vector.
      *
+     * @param y the Y component
      * @return a new vector
      */
     public Vector toVector(double y) {

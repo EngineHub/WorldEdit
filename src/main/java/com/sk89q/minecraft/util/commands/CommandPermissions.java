@@ -31,6 +31,8 @@ public @interface CommandPermissions {
     /**
      * A list of permissions. Only one permission has to be met
      * for the command to be permitted.
+     *
+     * @return a list of permissions strings
      */
     String[] value();
 

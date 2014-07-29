@@ -35,11 +35,15 @@ public @interface NestedCommand {
 
     /**
      * A list of classes with the child commands.
+     *
+     * @return a list of classes
      */
     Class<?>[] value();
 
     /**
      * If set to true it will execute the body of the tagged method.
+     *
+     * @return true to execute the body of the annotated method
      */
     boolean executeBody() default false;
 

@@ -31,11 +31,10 @@ public interface Injector {
      * 
      * @param cls class
      * @return object
-     * @throws IllegalAccessException
-     * @throws InstantiationException
-     * @throws InvocationTargetException
+     * @throws IllegalAccessException thrown on injection fault
+     * @throws InstantiationException thrown on injection fault
+     * @throws InvocationTargetException thrown on injection fault
      */
-    public Object getInstance(Class<?> cls) throws InvocationTargetException,
-            IllegalAccessException, InstantiationException;
+    public Object getInstance(Class<?> cls) throws InvocationTargetException, IllegalAccessException, InstantiationException;
 
 }

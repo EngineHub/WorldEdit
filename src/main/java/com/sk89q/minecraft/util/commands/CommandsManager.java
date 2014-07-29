@@ -396,10 +396,9 @@ public abstract class CommandsManager<T> {
      * @param args arguments
      * @param player command source
      * @param methodArgs method arguments
-     * @throws CommandException
+     * @throws CommandException thrown when the command throws an error
      */
-    public void execute(String cmd, String[] args, T player,
-            Object... methodArgs) throws CommandException {
+    public void execute(String cmd, String[] args, T player, Object... methodArgs) throws CommandException {
 
         String[] newArgs = new String[args.length + 1];
         System.arraycopy(args, 0, newArgs, 1, args.length);
@@ -574,6 +573,8 @@ public abstract class CommandsManager<T> {
     /**
      * Get the injector used to create new instances. This can be
      * null, in which case only classes will be registered statically.
+     *
+     * @return an injector instance
      */
     public Injector getInjector() {
         return injector;

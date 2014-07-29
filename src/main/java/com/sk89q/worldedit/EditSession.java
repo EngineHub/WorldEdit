@@ -95,7 +95,7 @@ import static com.sk89q.worldedit.regions.Regions.*;
  * {@link Extent}s that are chained together. For example, history is logged
  * using the {@link ChangeSetExtent}.</p>
  */
-@SuppressWarnings("FieldCanBeLocal")
+@SuppressWarnings({"FieldCanBeLocal", "deprecation"})
 public class EditSession implements Extent {
 
     private static final Logger log = Logger.getLogger(EditSession.class.getCanonicalName());
@@ -134,6 +134,10 @@ public class EditSession implements Extent {
     private Mask oldMask;
 
     /**
+     * Create a new instance.
+     *
+     * @param world a world
+     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
      * @deprecated use {@link WorldEdit#getEditSessionFactory()} to create {@link EditSession}s
      */
     @SuppressWarnings("deprecation")
@@ -143,6 +147,11 @@ public class EditSession implements Extent {
     }
 
     /**
+     * Create a new instance.
+     *
+     * @param world a world
+     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
+     * @param blockBag the block bag to set, or null to use none
      * @deprecated use {@link WorldEdit#getEditSessionFactory()} to create {@link EditSession}s
      */
     @Deprecated
@@ -234,7 +243,7 @@ public class EditSession implements Extent {
      * Get the maximum number of blocks that can be changed. -1 will be returned
      * if it the limit disabled.
      *
-     * @return the limit (>= 0) or -1 for no limit
+     * @return the limit (&gt;= 0) or -1 for no limit
      */
     public int getBlockChangeLimit() {
         return changeLimiter.getLimit();
@@ -243,7 +252,7 @@ public class EditSession implements Extent {
     /**
      * Set the maximum number of blocks that can be changed.
      *
-     * @param limit the limit (>= 0) or -1 for no limit
+     * @param limit the limit (&gt;= 0) or -1 for no limit
      */
     public void setBlockChangeLimit(int limit) {
         changeLimiter.setLimit(limit);
@@ -299,6 +308,9 @@ public class EditSession implements Extent {
     }
 
     /**
+     * Set the mask.
+     *
+     * @param mask the mask
      * @deprecated Use {@link #setMask(Mask)}
      */
     @Deprecated
@@ -483,6 +495,7 @@ public class EditSession implements Extent {
      * @param block the block
      * @param stage the level
      * @return whether the block changed
+     * @throws WorldEditException thrown on a set error
      */
     public boolean setBlock(Vector position, BaseBlock block, Stage stage) throws WorldEditException {
         switch (stage) {
@@ -683,6 +696,13 @@ public class EditSession implements Extent {
         return bypassNone.commit();
     }
 
+    /**
+     * Count the number of blocks of a given list of types in a region.
+     *
+     * @param region the region
+     * @param searchIDs a list of IDs to search
+     * @return the number of found blocks
+     */
     public int countBlock(Region region, Set<Integer> searchIDs) {
         Set<BaseBlock> passOn = new HashSet<BaseBlock>();
         for (Integer i : searchIDs) {
@@ -954,7 +974,7 @@ public class EditSession implements Extent {
      * @param region the region
      * @param block the block to place
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     @SuppressWarnings("deprecation")
     public int makeCuboidFaces(Region region, BaseBlock block) throws MaxChangedBlocksException {
@@ -1009,7 +1029,7 @@ public class EditSession implements Extent {
      * @param region the region
      * @param block the block to place
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     @SuppressWarnings("deprecation")
     public int makeCuboidWalls(Region region, BaseBlock block) throws MaxChangedBlocksException {
@@ -1301,7 +1321,7 @@ public class EditSession implements Extent {
      * @param height The cylinder's up/down extent. If negative, extend downward.
      * @param filled If false, only a shell will be generated.
      * @return number of blocks changed
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int makeCylinder(Vector pos, Pattern block, double radius, int height, boolean filled) throws MaxChangedBlocksException {
         return makeCylinder(pos, block, radius, radius, height, filled);
@@ -1317,7 +1337,7 @@ public class EditSession implements Extent {
      * @param height The cylinder's up/down extent. If negative, extend downward.
      * @param filled If false, only a shell will be generated.
      * @return number of blocks changed
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int makeCylinder(Vector pos, Pattern block, double radiusX, double radiusZ, int height, boolean filled) throws MaxChangedBlocksException {
         int affected = 0;
@@ -1395,7 +1415,7 @@ public class EditSession implements Extent {
     * @param radius The sphere's radius
     * @param filled If false, only a shell will be generated.
     * @return number of blocks changed
-    * @throws MaxChangedBlocksException
+    * @throws MaxChangedBlocksException thrown if too many blocks are changed
     */
     public int makeSphere(Vector pos, Pattern block, double radius, boolean filled) throws MaxChangedBlocksException {
         return makeSphere(pos, block, radius, radius, radius, filled);
@@ -1411,7 +1431,7 @@ public class EditSession implements Extent {
      * @param radiusZ The sphere/ellipsoid's largest east/west extent
      * @param filled If false, only a shell will be generated.
      * @return number of blocks changed
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int makeSphere(Vector pos, Pattern block, double radiusX, double radiusY, double radiusZ, boolean filled) throws MaxChangedBlocksException {
         int affected = 0;
@@ -1497,7 +1517,7 @@ public class EditSession implements Extent {
      * @param size size of pyramid
      * @param filled true if filled
      * @return number of blocks changed
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int makePyramid(Vector position, Pattern block, int size, boolean filled) throws MaxChangedBlocksException {
         int affected = 0;
@@ -1537,7 +1557,7 @@ public class EditSession implements Extent {
      * @param position the position
      * @param radius the radius
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int thaw(Vector position, double radius)
             throws MaxChangedBlocksException {
@@ -1596,7 +1616,7 @@ public class EditSession implements Extent {
      * @param position a position
      * @param radius a radius
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int simulateSnow(Vector position, double radius) throws MaxChangedBlocksException {
         int affected = 0;
@@ -1660,7 +1680,7 @@ public class EditSession implements Extent {
      * @param position a position
      * @param radius a radius
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      * @deprecated Use {@link #green(Vector, double, boolean)}.
      */
     @Deprecated
@@ -1675,7 +1695,7 @@ public class EditSession implements Extent {
      * @param radius a radius
      * @param onlyNormalDirt only affect normal dirt (data value 0)
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int green(Vector position, double radius, boolean onlyNormalDirt)
             throws MaxChangedBlocksException {
@@ -1737,7 +1757,7 @@ public class EditSession implements Extent {
      * @param position the base position
      * @param apothem the apothem of the (square) area
      * @return number of patches created
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int makePumpkinPatches(Vector position, int apothem) throws MaxChangedBlocksException {
         // We want to generate pumpkins
@@ -1766,7 +1786,7 @@ public class EditSession implements Extent {
      * @param density between 0 and 1, inclusive
      * @param treeGenerator the tree genreator
      * @return number of trees created
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int makeForest(Vector basePosition, int size, double density, TreeGenerator treeGenerator) throws MaxChangedBlocksException {
         int affected = 0;
@@ -2005,7 +2025,7 @@ public class EditSession implements Extent {
      * @param pattern The block pattern to use
      *
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int hollowOutRegion(Region region, int thickness, Pattern pattern) throws MaxChangedBlocksException {
         int affected = 0;
@@ -2086,7 +2106,7 @@ public class EditSession implements Extent {
      * @param filled If false, only a shell will be generated.
      *
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int drawLine(Pattern pattern, Vector pos1, Vector pos2, double radius, boolean filled)
             throws MaxChangedBlocksException {
@@ -2157,7 +2177,7 @@ public class EditSession implements Extent {
      * @param filled If false, only a shell will be generated.
      *
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int drawSpline(Pattern pattern, List<Vector> nodevectors, double tension, double bias, double continuity, double quality, double radius, boolean filled)
             throws MaxChangedBlocksException {

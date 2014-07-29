@@ -59,7 +59,9 @@ public @interface Logging {
     }
 
     /**
-     * Log mode. Can be either POSITION, REGION, ORIENTATION_REGION, PLACEMENT or ALL.
+     * Log mode.
+     *
+     * @return either POSITION, REGION, ORIENTATION_REGION, PLACEMENT or ALL
      */
     LogMode value();
 

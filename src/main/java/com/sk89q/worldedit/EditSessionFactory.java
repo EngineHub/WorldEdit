@@ -42,6 +42,7 @@ public class EditSessionFactory {
      *
      * @param world the world
      * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
+     * @return an instance
      */
     public EditSession getEditSession(World world, int maxBlocks) {
 
@@ -65,6 +66,7 @@ public class EditSessionFactory {
      * @param world the world
      * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
      * @param player the player that the {@link EditSession} is for
+     * @return an instance
      */
     public EditSession getEditSession(World world, int maxBlocks, Player player) {
 
@@ -88,6 +90,7 @@ public class EditSessionFactory {
      * @param world the world
      * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
      * @param blockBag an optional {@link BlockBag} to use, otherwise null
+     * @return an instance
      */
     public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag) {
 
@@ -112,6 +115,7 @@ public class EditSessionFactory {
      * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
      * @param blockBag an optional {@link BlockBag} to use, otherwise null
      * @param player the player that the {@link EditSession} is for
+     * @return an instance
      */
     public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag, Player player) {
 
@@ -134,6 +138,11 @@ public class EditSessionFactory {
     // ------------------------------------------------------------------------
 
     /**
+     * Construct an edit session.
+     *
+     * @param world the world
+     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
+     * @return an instance
      * @deprecated We are replacing {@link LocalWorld} with {@link World}, so use {@link #getEditSession(World, int)} instead
      */
     @Deprecated
@@ -142,6 +151,12 @@ public class EditSessionFactory {
     }
 
     /**
+     * Construct an edit session.
+     *
+     * @param world the world
+     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
+     * @param player the player that the {@link EditSession} is for
+     * @return an instance
      * @deprecated We are replacing {@link LocalWorld} with {@link World}, so use {@link #getEditSession(World, int, Player)} instead
      */
     @Deprecated
@@ -150,6 +165,12 @@ public class EditSessionFactory {
     }
 
     /**
+     * Construct an edit session.
+     *
+     * @param world the world
+     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
+     * @param blockBag an optional {@link BlockBag} to use, otherwise null
+     * @return an instance
      * @deprecated We are replacing {@link LocalWorld} with {@link World}, so use {@link #getEditSession(World, int, BlockBag)} instead
      */
     @Deprecated
@@ -158,6 +179,13 @@ public class EditSessionFactory {
     }
 
     /**
+     * Construct an edit session.
+     *
+     * @param world the world
+     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
+     * @param blockBag an optional {@link BlockBag} to use, otherwise null
+     * @param player the player that the {@link EditSession} is for
+     * @return an instance
      * @deprecated We are replacing {@link LocalWorld} with {@link World}, so use {@link #getEditSession(World, int, BlockBag, Player)} instead
      */
     @Deprecated
