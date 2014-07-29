@@ -37,6 +37,7 @@ import com.sk89q.worldedit.event.platform.Interaction;
 import com.sk89q.worldedit.event.platform.PlatformInitializeEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.event.platform.PlayerInputEvent;
+import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.internal.ServerInterfaceAdapter;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.util.Location;
@@ -330,7 +331,7 @@ public class PlatformManager {
 
                     RegionSelector selector = session.getRegionSelector(player.getWorld());
 
-                    if (selector.selectPrimary(location.toVector())) {
+                    if (selector.selectPrimary(location.toVector(), ActorSelectorLimits.forActor(player))) {
                         selector.explainPrimarySelection(actor, session, vector);
                     }
 
@@ -365,7 +366,7 @@ public class PlatformManager {
                     }
 
                     RegionSelector selector = session.getRegionSelector(player.getWorld());
-                    if (selector.selectSecondary(vector)) {
+                    if (selector.selectSecondary(vector, ActorSelectorLimits.forActor(player))) {
                         selector.explainSecondarySelection(actor, session, vector);
                     }
 

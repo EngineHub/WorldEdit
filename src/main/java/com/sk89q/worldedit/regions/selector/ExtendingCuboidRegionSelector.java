@@ -19,29 +19,33 @@
 
 package com.sk89q.worldedit.regions.selector;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 
 /**
- * A {@link RegionSelector} for {@link CuboidRegion}s that enlarges the
- * region with every secondary selection.
+ * Creates a {@code CuboidRegion} from a user's selections by expanding
+ * the region on every right click.
  */
 public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
 
-    @Deprecated
-    public ExtendingCuboidRegionSelector(@Nullable LocalWorld world) {
-        this((World) world);
+    /**
+     * Create a new selector with a {@code null} world.
+     */
+    public ExtendingCuboidRegionSelector() {
+        super((World) null);
     }
 
     /**
      * Create a new selector.
      *
-     * @param world the world
+     * @param world the world, which may be {@code null}
      */
     public ExtendingCuboidRegionSelector(@Nullable World world) {
         super(world);
@@ -55,71 +59,71 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
     public ExtendingCuboidRegionSelector(RegionSelector oldSelector) {
         super(oldSelector);
 
-        if (pos1 == null || pos2 == null) {
+        if (position1 == null || position2 == null) {
             return;
         }
 
-        pos1 = region.getMinimumPoint().toBlockVector();
-        pos2 = region.getMaximumPoint().toBlockVector();
-        region.setPos1(pos1);
-        region.setPos2(pos2);
+        position1 = region.getMinimumPoint().toBlockVector();
+        position2 = region.getMaximumPoint().toBlockVector();
+        region.setPos1(position1);
+        region.setPos2(position2);
     }
 
     /**
      * Create a new selector.
      *
      * @param world the world
-     * @param pos1 the first position
-     * @param pos2 the second position
+     * @param position1 the first position
+     * @param position2 the second position
      */
-    public ExtendingCuboidRegionSelector(@Nullable LocalWorld world, Vector pos1, Vector pos2) {
+    public ExtendingCuboidRegionSelector(@Nullable World world, Vector position1, Vector position2) {
         this(world);
-        pos1 = Vector.getMinimum(pos1,  pos2);
-        pos2 = Vector.getMaximum(pos1,  pos2);
-        region.setPos1(pos1);
-        region.setPos2(pos2);
+        position1 = Vector.getMinimum(position1, position2);
+        position2 = Vector.getMaximum(position1, position2);
+        region.setPos1(position1);
+        region.setPos2(position2);
     }
 
     @Override
-    public boolean selectPrimary(Vector pos) {
-        if (pos1 != null && pos2 != null && pos.compareTo(pos1) == 0 && pos.compareTo(pos2) == 0) {
+    public boolean selectPrimary(Vector position, SelectorLimits limits) {
+        if (position1 != null && position2 != null && position.compareTo(position1) == 0 && position.compareTo(position2) == 0) {
             return false;
         }
 
-        pos1 = pos2 = pos.toBlockVector();
-        region.setPos1(pos1);
-        region.setPos2(pos2);
+        position1 = position2 = position.toBlockVector();
+        region.setPos1(position1);
+        region.setPos2(position2);
         return true;
     }
 
     @Override
-    public boolean selectSecondary(Vector pos) {
-        if (pos1 == null || pos2 == null) {
-            return selectPrimary(pos);
+    public boolean selectSecondary(Vector position, SelectorLimits limits) {
+        if (position1 == null || position2 == null) {
+            return selectPrimary(position, limits);
         }
 
-        if (region.contains(pos)) {
+        if (region.contains(position)) {
             return false;
         }
 
-        double x1 = Math.min(pos.getX(), pos1.getX());
-        double y1 = Math.min(pos.getY(), pos1.getY());
-        double z1 = Math.min(pos.getZ(), pos1.getZ());
+        double x1 = Math.min(position.getX(), position1.getX());
+        double y1 = Math.min(position.getY(), position1.getY());
+        double z1 = Math.min(position.getZ(), position1.getZ());
 
-        double x2 = Math.max(pos.getX(), pos2.getX());
-        double y2 = Math.max(pos.getY(), pos2.getY());
-        double z2 = Math.max(pos.getZ(), pos2.getZ());
+        double x2 = Math.max(position.getX(), position2.getX());
+        double y2 = Math.max(position.getY(), position2.getY());
+        double z2 = Math.max(position.getZ(), position2.getZ());
 
-        final BlockVector o1 = pos1;
-        final BlockVector o2 = pos2;
-        pos1 = new BlockVector(x1, y1, z1);
-        pos2 = new BlockVector(x2, y2, z2);
-        region.setPos1(pos1);
-        region.setPos2(pos2);
+        final BlockVector o1 = position1;
+        final BlockVector o2 = position2;
+        position1 = new BlockVector(x1, y1, z1);
+        position2 = new BlockVector(x2, y2, z2);
+        region.setPos1(position1);
+        region.setPos2(position2);
 
         assert(region.contains(o1));
         assert(region.contains(o2));
-        assert(region.contains(pos));
+        assert(region.contains(position));
 
         return true;
     }
@@ -136,21 +140,6 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
         player.print("Extended selection to encompass " + pos + " (" + region.getArea() + ").");
 
         explainRegionAdjust(player, session);
-    }
-
-    @Override
-    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position) {
-        explainPrimarySelection((Actor) player, session, position);
-    }
-
-    @Override
-    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position) {
-        explainSecondarySelection((Actor) player, session, position);
-    }
-
-    @Override
-    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
-        explainRegionAdjust((Actor) player, session);
     }
 
 }

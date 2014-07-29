@@ -19,40 +19,34 @@
 
 package com.sk89q.worldedit.regions.selector;
 
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 
 /**
- * A {@link RegionSelector} for {@link SphereRegionSelector}s.
+ * Creates a {@code SphereRegion} from a user's selections.
  */
 public class SphereRegionSelector extends EllipsoidRegionSelector {
 
-    @Deprecated
-    public SphereRegionSelector(@Nullable LocalWorld world) {
-        this((World) world);
+    /**
+     * Create a new selector with a {@code null world}.
+     */
+    public SphereRegionSelector() {
+        super();
     }
 
     /**
      * Create a new selector.
      *
-     * @param world the world
+     * @param world the world, which may be {@code null}
      */
     public SphereRegionSelector(@Nullable World world) {
         super(world);
-    }
-
-    /**
-     * Create a new selector.
-     */
-    public SphereRegionSelector() {
-        super();
     }
 
     /**
@@ -74,17 +68,17 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
      * @param center the center position
      * @param radius the radius
      */
-    public SphereRegionSelector(@Nullable LocalWorld world, Vector center, int radius) {
+    public SphereRegionSelector(@Nullable World world, Vector center, int radius) {
         super(world, center, new Vector(radius, radius, radius));
     }
 
     @Override
-    public boolean selectSecondary(Vector pos) {
+    public boolean selectSecondary(Vector position, SelectorLimits limits) {
         if (!started) {
             return false;
         }
 
-        final double radiusScalar = Math.ceil(pos.distance(region.getCenter()));
+        final double radiusScalar = Math.ceil(position.distance(region.getCenter()));
         region.setRadius(new Vector(radiusScalar, radiusScalar, radiusScalar));
 
         return true;
@@ -104,21 +98,6 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
     @Override
     public String getTypeName() {
         return "sphere";
-    }
-
-    @Override
-    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position) {
-        explainPrimarySelection((Actor) player, session, position);
-    }
-
-    @Override
-    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position) {
-        explainSecondarySelection((Actor) player, session, position);
-    }
-
-    @Override
-    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
-        explainRegionAdjust((Actor) player, session);
     }
 
 }

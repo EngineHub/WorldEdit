@@ -19,11 +19,26 @@
 
 package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.internal.cui.CUIRegion;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.extension.platform.Actor;
 
-/**
- * @deprecated This class only exists as to not break binary compatibility
- */
-@Deprecated
-public abstract class CuboidRegionSelector extends AbstractLegacyRegionSelector implements CUIRegion {
+abstract class AbstractLegacyRegionSelector implements RegionSelector {
+
+    @Deprecated
+    public final void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainPrimarySelection((Actor) player, session, position);
+    }
+
+    @Deprecated
+    public final void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position) {
+        explainSecondarySelection((Actor) player, session, position);
+    }
+
+    @Deprecated
+    public final void explainRegionAdjust(LocalPlayer player, LocalSession session) {
+        explainRegionAdjust((Actor) player, session);
+    }
+
 }

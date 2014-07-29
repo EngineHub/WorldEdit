@@ -19,13 +19,14 @@
 
 package com.sk89q.worldedit.bukkit.selections;
 
-import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
-import com.sk89q.worldedit.regions.RegionSelector;
-import org.bukkit.Location;
-import org.bukkit.World;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
-import com.sk89q.worldedit.regions.*;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
+import com.sk89q.worldedit.regions.selector.limit.PermissiveSelectorLimits;
+import org.bukkit.Location;
+import org.bukkit.World;
 
 public class CuboidSelection extends RegionSelection {
 
@@ -51,8 +52,8 @@ public class CuboidSelection extends RegionSelection {
         CuboidRegionSelector sel = new CuboidRegionSelector(BukkitUtil.getLocalWorld(world));
 
         // set up selector
-        sel.selectPrimary(pt1);
-        sel.selectSecondary(pt2);
+        sel.selectPrimary(pt1, PermissiveSelectorLimits.getInstance());
+        sel.selectSecondary(pt2, PermissiveSelectorLimits.getInstance());
 
         // set up CuboidSelection
         cuboid = sel.getIncompleteRegion();

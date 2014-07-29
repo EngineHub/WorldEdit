@@ -23,6 +23,7 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.regions.RegionSelector;
 
 /**
@@ -46,7 +47,7 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
             if (target == null) return true;
 
             RegionSelector selector = session.getRegionSelector(player.getWorld());
-            if (selector.selectPrimary(target)) {
+            if (selector.selectPrimary(target, ActorSelectorLimits.forActor(player))) {
                 selector.explainPrimarySelection(player, session, target);
             }
             return true;
@@ -63,7 +64,7 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
             if (target == null) return true;
 
             RegionSelector selector = session.getRegionSelector(player.getWorld());
-            if (selector.selectSecondary(target)) {
+            if (selector.selectSecondary(target, ActorSelectorLimits.forActor(player))) {
                 selector.explainSecondarySelection(player, session, target);
             }
             return true;

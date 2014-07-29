@@ -17,13 +17,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.regions;
+package com.sk89q.worldedit.regions.selector.limit;
 
-import com.sk89q.worldedit.internal.cui.CUIRegion;
+import com.google.common.base.Optional;
 
 /**
- * @deprecated This class only exists as to not break binary compatibility
+ * Defines limits for selections.
  */
-@Deprecated
-public abstract class CuboidRegionSelector extends AbstractLegacyRegionSelector implements CUIRegion {
+public interface SelectorLimits {
+
+    /**
+     * Get the optionally defined vertex limit for polygons.
+     *
+     * <p>If one is not present, then there is no limitation.</p>
+     *
+     * @return an optional vertex limit
+     */
+    Optional<Integer> getPolygonVertexLimit();
+
+    /**
+     * Get the optionally defined vertex limit for polyhedrons.
+     *
+     * <p>If one is not present, then there is no limitation.</p>
+     *
+     * @return an optional vertex limit
+     */
+    Optional<Integer> getPolyhedronVertexLimit();
+
 }

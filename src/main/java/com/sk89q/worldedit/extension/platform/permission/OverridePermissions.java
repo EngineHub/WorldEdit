@@ -17,13 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.regions;
-
-import com.sk89q.worldedit.internal.cui.CUIRegion;
+package com.sk89q.worldedit.extension.platform.permission;
 
 /**
- * @deprecated This class only exists as to not break binary compatibility
+ * Standard override permissions.
  */
-@Deprecated
-public abstract class CuboidRegionSelector extends AbstractLegacyRegionSelector implements CUIRegion {
+public final class OverridePermissions {
+
+    public static final String NO_LIMITS = "worldedit.limit.unrestricted";
+
+    private OverridePermissions() {
+    }
+
 }

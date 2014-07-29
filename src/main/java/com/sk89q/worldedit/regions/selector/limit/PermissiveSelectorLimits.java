@@ -17,13 +17,37 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.regions;
+package com.sk89q.worldedit.regions.selector.limit;
 
-import com.sk89q.worldedit.internal.cui.CUIRegion;
+import com.google.common.base.Optional;
 
 /**
- * @deprecated This class only exists as to not break binary compatibility
+ * No limits at all.
  */
-@Deprecated
-public abstract class CuboidRegionSelector extends AbstractLegacyRegionSelector implements CUIRegion {
+public class PermissiveSelectorLimits implements SelectorLimits {
+
+    private static final PermissiveSelectorLimits INSTANCE = new PermissiveSelectorLimits();
+
+    private PermissiveSelectorLimits() {
+    }
+
+    @Override
+    public Optional<Integer> getPolygonVertexLimit() {
+        return Optional.absent();
+    }
+
+    @Override
+    public Optional<Integer> getPolyhedronVertexLimit() {
+        return Optional.absent();
+    }
+
+    /**
+     * Get a static instance.
+     *
+     * @return an instance
+     */
+    public static PermissiveSelectorLimits getInstance() {
+        return INSTANCE;
+    }
+
 }

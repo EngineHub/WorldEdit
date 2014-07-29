@@ -25,7 +25,7 @@ import com.sk89q.worldedit.internal.cui.CUIRegion;
  * @deprecated This class only exists as to not break binary compatibility
  */
 @Deprecated
-public abstract class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
+public abstract class Polygonal2DRegionSelector extends AbstractLegacyRegionSelector implements CUIRegion {
 
     /**
      * Get the number of points.

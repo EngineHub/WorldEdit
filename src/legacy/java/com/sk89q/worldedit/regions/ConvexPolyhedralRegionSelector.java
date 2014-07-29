@@ -25,5 +25,5 @@ import com.sk89q.worldedit.internal.cui.CUIRegion;
  * @deprecated This class only exists as to not break binary compatibility
  */
 @Deprecated
-public abstract class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion {
+public abstract class ConvexPolyhedralRegionSelector extends AbstractLegacyRegionSelector implements CUIRegion {
 }
