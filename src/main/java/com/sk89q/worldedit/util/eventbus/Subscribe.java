@@ -29,7 +29,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * Used to mark methods as event handlers.
  */
 @Retention(RUNTIME)
-@Target({METHOD})
+@Target(METHOD)
 public @interface Subscribe {
 
     /**

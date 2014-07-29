@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.event;
 
-import com.sk89q.worldedit.util.eventbus.EventBus;
-
 /**
  * An abstract base class for all WorldEdit events.
  */

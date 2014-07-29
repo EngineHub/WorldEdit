@@ -40,7 +40,7 @@ public class DynamicRegionMask extends AbstractMask {
     }
 
     @Override
-    public boolean matches(EditSession editSession, Vector pos) {
-        return region == null || region.contains(pos);
+    public boolean matches(EditSession editSession, Vector position) {
+        return region == null || region.contains(position);
     }
 }

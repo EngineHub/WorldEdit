@@ -33,8 +33,6 @@ import java.util.Map;
 
 /**
  * Represents dispensers.
- *
- * @author sk89q
  */
 public class DispenserBlock extends ContainerBlock {
 
@@ -106,4 +104,5 @@ public class DispenserBlock extends ContainerBlock {
             throw new RuntimeException(e);
         }
     }
+
 }

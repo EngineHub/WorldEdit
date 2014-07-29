@@ -206,8 +206,8 @@ public class EllipsoidRegion extends AbstractRegion {
     }
 
     @Override
-    public boolean contains(Vector pt) {
-        return pt.subtract(center).divide(radius).lengthSq() <= 1;
+    public boolean contains(Vector position) {
+        return position.subtract(center).divide(radius).lengthSq() <= 1;
     }
 
     /**

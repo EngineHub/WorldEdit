@@ -26,20 +26,15 @@ import com.sk89q.worldedit.blocks.BaseBlock;
  */
 @Deprecated
 public class BlockChance {
-    /**
-     * Block.
-     */
+
     private BaseBlock block;
-    /**
-     * Chance. Can be any positive value.
-     */
     private double chance;
 
     /**
      * Construct the object.
      *
-     * @param block
-     * @param chance
+     * @param block the block
+     * @param chance the probability of the block
      */
     public BlockChance(BaseBlock block, double chance) {
         this.block = block;
@@ -59,4 +54,5 @@ public class BlockChance {
     public double getChance() {
         return chance;
     }
+
 }

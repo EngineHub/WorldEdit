@@ -26,10 +26,8 @@ import org.bukkit.entity.ExperienceOrb;
 
 import java.util.UUID;
 
-/**
- * @author zml2008
- */
 public class BukkitExpOrb extends BukkitEntity {
+
     private final int amount;
 
     public BukkitExpOrb(Location loc, UUID entityId, int amount) {
@@ -47,4 +45,5 @@ public class BukkitExpOrb extends BukkitEntity {
         }
         return false;
     }
+
 }

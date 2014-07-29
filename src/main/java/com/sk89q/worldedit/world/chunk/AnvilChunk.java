@@ -19,7 +19,13 @@
 
 package com.sk89q.worldedit.world.chunk;
 
-import com.sk89q.jnbt.*;
+import com.sk89q.jnbt.ByteArrayTag;
+import com.sk89q.jnbt.ByteTag;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.IntTag;
+import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.NBTUtils;
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -28,6 +34,7 @@ import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,38 +100,38 @@ public class AnvilChunk implements Chunk {
         }
 
         int sectionsize = 16 * 16 * 16;
-        for (int i = 0; i < blocks.length; i++) {
-            if (blocks[i].length != sectionsize) {
+        for (byte[] block : blocks) {
+            if (block.length != sectionsize) {
                 throw new InvalidFormatException(
                         "Chunk blocks byte array expected " + "to be "
                                 + sectionsize + " bytes; found "
-                                + blocks[i].length);
+                                + block.length);
             }
         }
 
-        for (int i = 0; i < data.length; i++) {
-            if (data[i].length != (sectionsize / 2)) {
+        for (byte[] aData : data) {
+            if (aData.length != (sectionsize / 2)) {
                 throw new InvalidFormatException("Chunk block data byte array "
                         + "expected to be " + sectionsize + " bytes; found "
-                        + data[i].length);
+                        + aData.length);
             }
         }
     }
     
     @Override
-    public int getBlockID(Vector pos) throws DataException {
-        int x = pos.getBlockX() - rootX * 16;
-        int y = pos.getBlockY();
-        int z = pos.getBlockZ() - rootZ * 16;
+    public int getBlockID(Vector position) throws DataException {
+        int x = position.getBlockX() - rootX * 16;
+        int y = position.getBlockY();
+        int z = position.getBlockZ() - rootZ * 16;
 
         int section = y >> 4;
         if (section < 0 || section >= blocks.length) {
-            throw new DataException("Chunk does not contain position " + pos);
+            throw new DataException("Chunk does not contain position " + position);
         }
         
         int yindex = y & 0x0F;
         if (yindex < 0 || yindex >= 16) {
-            throw new DataException("Chunk does not contain position " + pos);
+            throw new DataException("Chunk does not contain position " + position);
         }
 
         int index = x + (z * 16 + (yindex * 16 * 16));
@@ -144,25 +151,25 @@ public class AnvilChunk implements Chunk {
             
             return (blocks[section][index] & 0xFF) + addId;
         } catch (IndexOutOfBoundsException e) {
-            throw new DataException("Chunk does not contain position " + pos);
+            throw new DataException("Chunk does not contain position " + position);
         }
     }
 
     @Override
-    public int getBlockData(Vector pos) throws DataException {
-        int x = pos.getBlockX() - rootX * 16;
-        int y = pos.getBlockY();
-        int z = pos.getBlockZ() - rootZ * 16;
+    public int getBlockData(Vector position) throws DataException {
+        int x = position.getBlockX() - rootX * 16;
+        int y = position.getBlockY();
+        int z = position.getBlockZ() - rootZ * 16;
 
         int section = y >> 4;
         int yIndex = y & 0x0F;
         
         if (section < 0 || section >= blocks.length) {
-            throw new DataException("Chunk does not contain position " + pos);
+            throw new DataException("Chunk does not contain position " + position);
         }
         
         if (yIndex < 0 || yIndex >= 16) {
-            throw new DataException("Chunk does not contain position " + pos);
+            throw new DataException("Chunk does not contain position " + position);
         }
 
         int index = x + (z * 16 + (yIndex * 16 * 16));
@@ -176,7 +183,7 @@ public class AnvilChunk implements Chunk {
                 return data[section][index] & 0xF;
             }
         } catch (IndexOutOfBoundsException e) {
-            throw new DataException("Chunk does not contain position " + pos);
+            throw new DataException("Chunk does not contain position " + position);
         }
     }
 
@@ -233,26 +240,28 @@ public class AnvilChunk implements Chunk {
      * return null if there is no tile entity data. Not public yet because
      * what this function returns isn't ideal for usage.
      *
-     * @param pos
-     * @return
-     * @throws DataException
+     * @param position the position
+     * @return the compound tag for that position, which may be null
+     * @throws DataException thrown if there is a data error
      */
-    private CompoundTag getBlockTileEntity(Vector pos) throws DataException {
+    @Nullable
+    private CompoundTag getBlockTileEntity(Vector position) throws DataException {
         if (tileEntities == null) {
             populateTileEntities();
         }
 
-        Map<String, Tag> values = tileEntities.get(new BlockVector(pos));
+        Map<String, Tag> values = tileEntities.get(new BlockVector(position));
         if (values == null) {
             return null;
         }
+
         return new CompoundTag("", values);
     }
 
     @Override
-    public BaseBlock getBlock(Vector pos) throws DataException {
-        int id = getBlockID(pos);
-        int data = getBlockData(pos);
+    public BaseBlock getBlock(Vector position) throws DataException {
+        int id = getBlockID(position);
+        int data = getBlockData(position);
         BaseBlock block;
 
         /*if (id == BlockID.WALL_SIGN || id == BlockID.SIGN_POST) {
@@ -271,11 +280,9 @@ public class AnvilChunk implements Chunk {
             block = new BaseBlock(id, data);
         //}
 
-        if (block instanceof TileEntityBlock) {
-            CompoundTag tileEntity = getBlockTileEntity(pos);
-            if (tileEntity != null) {
-                ((TileEntityBlock) block).setNbtData(tileEntity);
-            }
+        CompoundTag tileEntity = getBlockTileEntity(position);
+        if (tileEntity != null) {
+            ((TileEntityBlock) block).setNbtData(tileEntity);
         }
 
         return block;

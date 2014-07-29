@@ -52,6 +52,7 @@ public abstract class RegionSelection implements Selection {
         this.region = region;
     }
 
+    @Override
     public RegionSelector getRegionSelector() {
         return selector;
     }
@@ -60,48 +61,58 @@ public abstract class RegionSelection implements Selection {
         this.selector = selector;
     }
 
+    @Override
     public Location getMinimumPoint() {
         return toLocation(world, region.getMinimumPoint());
     }
 
+    @Override
     public Vector getNativeMinimumPoint() {
         return region.getMinimumPoint();
     }
 
+    @Override
     public Location getMaximumPoint() {
         return toLocation(world, region.getMaximumPoint());
     }
 
+    @Override
     public Vector getNativeMaximumPoint() {
         return region.getMaximumPoint();
     }
 
+    @Override
     public World getWorld() {
         return world;
     }
 
+    @Override
     public int getArea() {
         return region.getArea();
     }
 
+    @Override
     public int getWidth() {
         return region.getWidth();
     }
 
+    @Override
     public int getHeight() {
         return region.getHeight();
     }
 
+    @Override
     public int getLength() {
         return region.getLength();
     }
 
-    public boolean contains(Location pt) {
-        if (!pt.getWorld().equals(world)) {
+    @Override
+    public boolean contains(Location position) {
+        if (!position.getWorld().equals(world)) {
             return false;
         }
 
-        return region.contains(toVector(pt));
+        return region.contains(toVector(position));
     }
 
 }

@@ -21,11 +21,8 @@ package com.sk89q.util.yaml;
 
 /**
  * YAMLProcessor exception.
- * 
- * @author sk89q
  */
 public class YAMLProcessorException extends Exception {
-    private static final long serialVersionUID = -2442886939908724203L;
 
     public YAMLProcessorException() {
         super();
@@ -34,4 +31,5 @@ public class YAMLProcessorException extends Exception {
     public YAMLProcessorException(String msg) {
         super(msg);
     }
+
 }

@@ -55,6 +55,10 @@
 
 package com.sk89q.worldedit.world.storage;
 
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.util.io.ForwardSeekableInputStream;
+import com.sk89q.worldedit.world.DataException;
+
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -62,15 +66,9 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
-import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.util.io.ForwardSeekableInputStream;
-import com.sk89q.worldedit.world.DataException;
-
 /**
  * Reader for a MCRegion file. This reader works on input streams, meaning
  * that it can be used to read files from non-file based sources.
- *
- * @author sk89q
  */
 public class McRegionReader {
 
@@ -83,12 +81,12 @@ public class McRegionReader {
     protected ForwardSeekableInputStream stream;
     protected DataInputStream dataStream;
 
-    protected int offsets[];
+    protected int[] offsets;
 
     /**
      * Construct the reader.
      * 
-     * @param stream
+     * @param stream the stream
      * @throws DataException
      * @throws IOException
      */
@@ -117,16 +115,14 @@ public class McRegionReader {
     /**
      * Gets the uncompressed data input stream for a chunk.
      * 
-     * @param pos
-     * @return
+     * @param position chunk position
+     * @return an input stream
      * @throws IOException
      * @throws DataException
      */
-    public synchronized InputStream getChunkInputStream(Vector2D pos)
-            throws IOException, DataException {
-
-        int x = pos.getBlockX() & 31;
-        int z = pos.getBlockZ() & 31;
+    public synchronized InputStream getChunkInputStream(Vector2D position) throws IOException, DataException {
+        int x = position.getBlockX() & 31;
+        int z = position.getBlockZ() & 31;
 
         if (x < 0 || x >= 32 || z < 0 || z >= 32) {
             throw new DataException("MCRegion file does not contain " + x + "," + z);
@@ -175,9 +171,9 @@ public class McRegionReader {
     /**
      * Get the offset for a chunk. May return 0 if it doesn't exist.
      * 
-     * @param x
-     * @param z
-     * @return
+     * @param x the X coordinate
+     * @param z the Z coordinate
+     * @return the offset
      */
     private int getOffset(int x, int z) {
         return offsets[x + z * 32];
@@ -185,10 +181,10 @@ public class McRegionReader {
 
     /**
      * Returns whether the file contains a chunk.
-     * 
-     * @param x
-     * @param z
-     * @return
+     *
+     * @param x the X coordinate
+     * @param z the Z coordinate
+     * @return the offset
      */
     public boolean hasChunk(int x, int z) {
         return getOffset(x, z) != 0;
@@ -196,8 +192,6 @@ public class McRegionReader {
 
     /**
      * Close the stream.
-     * 
-     * @throws IOException
      */
     public void close() throws IOException {
         stream.close();

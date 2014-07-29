@@ -21,11 +21,8 @@ package com.sk89q.worldedit.world;
 
 /**
  * Thrown when there is an exception related to data handling.
- *
- * @author sk89q
  */
 public class DataException extends Exception {
-    private static final long serialVersionUID = 5806521052111023788L;
 
     public DataException(String msg) {
         super(msg);
@@ -34,4 +31,5 @@ public class DataException extends Exception {
     public DataException() {
         super();
     }
+
 }

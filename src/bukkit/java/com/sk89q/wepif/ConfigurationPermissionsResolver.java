@@ -50,6 +50,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
         return section;
     }
 
+    @Override
     public void load() {
         userGroups = new HashMap<String, Set<String>>();
         userPermissionsCache = new HashMap<String, Set<String>>();
@@ -64,7 +65,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
                 List<String> permissions =
                         config.getStringList("permissions.groups." + key + ".permissions", null);
 
-                if (permissions.size() > 0) {
+                if (!permissions.isEmpty()) {
                     Set<String> groupPerms = new HashSet<String>(permissions);
                     userGroupPermissions.put(key, groupPerms);
 
@@ -84,7 +85,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
                 List<String> permissions =
                         config.getStringList("permissions.users." + key + ".permissions", null);
 
-                if (permissions.size() > 0) {
+                if (!permissions.isEmpty()) {
                     permsCache.addAll(permissions);
                 }
 
@@ -92,7 +93,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
                         config.getStringList("permissions.users." + key + ".groups", null);
                 groups.add("default");
 
-                if (groups.size() > 0) {
+                if (!groups.isEmpty()) {
                     for (String group : groups) {
                         Set<String> groupPerms = userGroupPermissions.get(group);
                         if (groupPerms != null) {
@@ -107,6 +108,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
         }
     }
 
+    @Override
     public boolean hasPermission(String player, String permission) {
         int dotPos = permission.lastIndexOf(".");
         if (dotPos > -1) {
@@ -124,11 +126,13 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
         return perms.contains("*") || perms.contains(permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, String player, String permission) {
         return hasPermission(player, "worlds." + worldName + "." + permission)
                 || hasPermission(player, permission);
     }
 
+    @Override
     public boolean inGroup(String player, String group) {
         Set<String> groups = userGroups.get(player.toLowerCase());
         if (groups == null) {
@@ -138,6 +142,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
         return groups.contains(group);
     }
 
+    @Override
     public String[] getGroups(String player) {
         Set<String> groups = userGroups.get(player.toLowerCase());
         if (groups == null) {
@@ -147,22 +152,27 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
         return groups.toArray(new String[groups.size()]);
     }
 
+    @Override
     public boolean hasPermission(OfflinePlayer player, String permission) {
         return hasPermission(player.getName(), permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
         return hasPermission(worldName, player.getName(), permission);
     }
 
+    @Override
     public boolean inGroup(OfflinePlayer player, String group) {
         return inGroup(player.getName(), group);
     }
 
+    @Override
     public String[] getGroups(OfflinePlayer player) {
         return getGroups(player.getName());
     }
 
+    @Override
     public String getDetectionMessage() {
         return "No known permissions plugin detected. Using configuration file for permissions.";
     }

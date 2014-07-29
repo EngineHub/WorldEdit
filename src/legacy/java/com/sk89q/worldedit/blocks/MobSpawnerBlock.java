@@ -33,8 +33,6 @@ import java.util.Map;
 
 /**
  * A mob spawner block.
- *
- * @author sk89q
  */
 public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
 
@@ -247,6 +245,6 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
         if (spawnDataTag != null) {
             this.spawnData = new CompoundTag("SpawnData", spawnDataTag.getValue());
         }
-
     }
+
 }

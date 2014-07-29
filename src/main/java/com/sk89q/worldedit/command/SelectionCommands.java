@@ -65,10 +65,9 @@ import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 /**
  * Selection commands.
- * 
- * @author sk89q
  */
 public class SelectionCommands {
+
     private final WorldEdit we;
     
     public SelectionCommands(WorldEdit we) {

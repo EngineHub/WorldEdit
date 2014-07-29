@@ -33,9 +33,9 @@ import java.util.Set;
  * A region that mirrors the current selection according to the current
  * {@link LocalSession} and {@link LocalWorld} set on the current
  * {@link Request}.
- * </p>
- * If a selection cannot be taken, then the selection will be assumed to be
- * that of a {@link NullRegion}.
+ *
+ * <p>If a selection cannot be taken, then the selection will be assumed to be
+ * that of a {@link NullRegion}.</p>
  */
 public class RequestSelection implements Region {
 
@@ -109,8 +109,8 @@ public class RequestSelection implements Region {
     }
 
     @Override
-    public boolean contains(Vector pt) {
-        return getRegion().contains(pt);
+    public boolean contains(Vector position) {
+        return getRegion().contains(position);
     }
 
     @Override

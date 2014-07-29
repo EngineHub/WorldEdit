@@ -29,7 +29,13 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class NijiPermissionsResolver implements PermissionsResolver {
+
+    private static final Logger log = Logger.getLogger(NijiPermissionsResolver.class.getCanonicalName());
+
     private Server server;
     private Permissions api;
 
@@ -56,6 +62,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         return new NijiPermissionsResolver(server, (Permissions) plugin);
     }
 
+    @Override
     public void load() {
 
     }
@@ -65,6 +72,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         this.api = plugin;
     }
 
+    @Override
     @SuppressWarnings("static-access")
     public boolean hasPermission(String name, String permission) {
         try {
@@ -76,11 +84,12 @@ public class NijiPermissionsResolver implements PermissionsResolver {
                 return api.Security.permission(player, permission);
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            log.log(Level.WARNING, "Failed to check permissions", t);
             return false;
         }
     }
 
+    @Override
     public boolean hasPermission(String worldName, String name, String permission) {
         try {
             try {
@@ -89,11 +98,12 @@ public class NijiPermissionsResolver implements PermissionsResolver {
                 return api.getHandler().has(server.getPlayerExact(name), permission);
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            log.log(Level.WARNING, "Failed to check permissions", t);
             return false;
         }
     }
 
+    @Override
     @SuppressWarnings("static-access")
     public boolean inGroup(String name, String group) {
         try {
@@ -105,11 +115,12 @@ public class NijiPermissionsResolver implements PermissionsResolver {
                 return api.Security.inGroup(name, group);
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            log.log(Level.WARNING, "Failed to check groups", t);
             return false;
         }
     }
 
+    @Override
     @SuppressWarnings("static-access")
     public String[] getGroups(String name) {
         try {
@@ -128,23 +139,27 @@ public class NijiPermissionsResolver implements PermissionsResolver {
                 return groups;
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            log.log(Level.WARNING, "Failed to get groups", t);
             return new String[0];
         }
     }
 
+    @Override
     public boolean hasPermission(OfflinePlayer player, String permission) {
         return hasPermission(player.getName(), permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
         return hasPermission(worldName, player.getName(), permission);
     }
 
+    @Override
     public boolean inGroup(OfflinePlayer player, String group) {
         return inGroup(player.getName(), group);
     }
 
+    @Override
     public String[] getGroups(OfflinePlayer player) {
         return getGroups(player.getName());
     }
@@ -155,7 +170,9 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         return permsCommand == null || !(permsCommand.getPlugin().equals(plugin));
     }
 
+    @Override
     public String getDetectionMessage() {
         return "Permissions plugin detected! Using Permissions plugin for permissions.";
     }
+
 }

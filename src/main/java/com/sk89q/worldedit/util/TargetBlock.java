@@ -29,12 +29,11 @@ import com.sk89q.worldedit.internal.LocalWorldAdapter;
  * This class uses an inefficient method to figure out what block a player
  * is looking towards.
  * 
- * Originally written by toi. It was ported to WorldEdit and trimmed down by
- * sk89q. Thanks to Raphfrk for optimization of toi's original class.
- * 
- * @author toi
+ * <p>Originally written by toi. It was ported to WorldEdit and trimmed down by
+ * sk89q. Thanks to Raphfrk for optimization of toi's original class.</p>
  */
 public class TargetBlock {
+
     private LocalWorld world;
     private int maxDistance;
     private double checkDistance, curDistance;
@@ -81,8 +80,8 @@ public class TargetBlock {
      * Set the values, all constructors uses this function
      * 
      * @param loc location of the view
-     * @param xRotation
-     * @param yRotation
+     * @param xRotation the X rotation
+     * @param yRotation the Y rotation
      * @param maxDistance how far it checks for blocks
      * @param viewHeight where the view is positioned in y-axis
      * @param checkDistance how often to check for blocks, the smaller the more precise
@@ -210,4 +209,5 @@ public class TargetBlock {
         getAnyTargetBlock();
         return WorldVectorFace.getWorldVectorFace(world, getCurrentBlock(), getPreviousBlock());
     }
+
 }

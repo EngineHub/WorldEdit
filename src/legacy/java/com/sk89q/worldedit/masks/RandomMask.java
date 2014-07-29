@@ -35,7 +35,7 @@ public class RandomMask extends AbstractMask {
     }
 
     @Override
-    public boolean matches(EditSession editSession, Vector pos) {
+    public boolean matches(EditSession editSession, Vector position) {
         return Math.random() < ratio;
     }
 }

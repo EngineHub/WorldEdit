@@ -25,13 +25,16 @@ import com.sk89q.worldedit.blocks.*;
 /**
  * @deprecated Block bags are currently not a supported feature of WorldEdit
  */
+@SuppressWarnings("deprecation")
 @Deprecated
+
 public abstract class BlockBag {
+
     /**
      * Stores a block as if it was mined.
      * 
-     * @param id
-     * @throws BlockBagException
+     * @param id the ID of the block
+     * @throws BlockBagException thrown on a error
      * @deprecated Use {@link BlockBag#storeDroppedBlock(int, int)} instead
      */
     @Deprecated
@@ -42,9 +45,9 @@ public abstract class BlockBag {
     /**
      * Stores a block as if it was mined.
      * 
-     * @param id
-     * @param data 
-     * @throws BlockBagException
+     * @param id the ID of the block
+     * @param data the data value of the block
+     * @throws BlockBagException thrown on a error
      */
     public void storeDroppedBlock(int id, int data) throws BlockBagException {
         BaseItem dropped = BlockType.getBlockBagItem(id, data);
@@ -57,7 +60,7 @@ public abstract class BlockBag {
     /**
      * Sets a block as if it was placed by hand.
      *
-     * @param id
+     * @param id the ID of the block
      * @throws BlockBagException
      * @deprecated Use {@link #fetchPlacedBlock(int,int)} instead
      */
@@ -69,8 +72,8 @@ public abstract class BlockBag {
     /**
      * Sets a block as if it was placed by hand.
      *
-     * @param id
-     * @param data TODO
+     * @param id the ID of the block
+     * @param data the data value of the block
      * @throws BlockBagException
      */
     public void fetchPlacedBlock(int id, int data) throws BlockBagException {
@@ -118,7 +121,7 @@ public abstract class BlockBag {
      *
      * Either this method or fetchItem needs to be overridden
      *
-     * @param id
+     * @param id the ID of the block
      * @throws BlockBagException 
      */
     public void fetchBlock(int id) throws BlockBagException {
@@ -130,7 +133,7 @@ public abstract class BlockBag {
      *
      * Either this method or fetchBlock needs to be overridden
      *
-     * @param item
+     * @param item the item
      * @throws BlockBagException 
      */
     public void fetchItem(BaseItem item) throws BlockBagException {
@@ -142,7 +145,7 @@ public abstract class BlockBag {
      * 
      * Either this method or storeItem needs to be overridden
      * 
-     * @param id
+     * @param id the ID of the block
      * @throws BlockBagException 
      */
     public void storeBlock(int id) throws BlockBagException {
@@ -154,7 +157,7 @@ public abstract class BlockBag {
      * 
      * Either this method or storeBlock needs to be overridden
      * 
-     * @param item
+     * @param item the item
      * @throws BlockBagException 
      */
     public void storeItem(BaseItem item) throws BlockBagException {
@@ -164,7 +167,7 @@ public abstract class BlockBag {
     /**
      * Checks to see if a block exists without removing it.
      * 
-     * @param id
+     * @param id the ID of the block
      * @return whether the block exists
      */
     public boolean peekBlock(int id) {
@@ -185,14 +188,15 @@ public abstract class BlockBag {
     /**
      * Adds a position to be used a source.
      *
-     * @param pos
+     * @param position the position of the source
      */
-    public abstract void addSourcePosition(WorldVector pos);
+    public abstract void addSourcePosition(WorldVector position);
 
     /**
      * Adds a position to be used a source.
      *
-     * @param pos
+     * @param position the position of the source
      */
-    public abstract void addSingleSourcePosition(WorldVector pos);
+    public abstract void addSingleSourcePosition(WorldVector position);
+
 }

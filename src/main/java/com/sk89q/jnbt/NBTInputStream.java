@@ -29,20 +29,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
  * This class reads <strong>NBT</strong>, or <strong>Named Binary Tag</strong>
- * streams, and produces an object graph of subclasses of the <code>Tag</code>
+ * streams, and produces an object graph of subclasses of the {@code Tag}
  * object.
- * </p>
  * 
- * <p>
- * The NBT format was created by Markus Persson, and the specification may be
+ * <p>The NBT format was created by Markus Persson, and the specification may be
  * found at <a href="http://www.minecraft.net/docs/NBT.txt">
- * http://www.minecraft.net/docs/NBT.txt</a>.
- * </p>
- * 
- * @author Graham Edgecombe
- * 
+ * http://www.minecraft.net/docs/NBT.txt</a>.</p>
  */
 public final class NBTInputStream implements Closeable {
 

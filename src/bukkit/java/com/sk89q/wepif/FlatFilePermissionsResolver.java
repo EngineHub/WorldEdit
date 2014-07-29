@@ -19,27 +19,32 @@
 
 package com.sk89q.wepif;
 
+import com.sk89q.util.yaml.YAMLProcessor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
-
-import com.sk89q.util.yaml.YAMLProcessor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FlatFilePermissionsResolver implements PermissionsResolver {
+
+    private static final Logger log = Logger.getLogger(FlatFilePermissionsResolver.class.getCanonicalName());
+
     private Map<String, Set<String>> userPermissionsCache;
     private Set<String> defaultPermissionsCache;
     private Map<String, Set<String>> userGroups;
 
-    protected File groupFile;
-    protected File userFile;
+    private final File groupFile;
+    private final File userFile;
 
     public static PermissionsResolver factory(Server server, YAMLProcessor config) {
         File groups = new File("perms_groups.txt");
@@ -80,7 +85,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 line = line.trim();
 
                 // Blank line
-                if (line.length() == 0) {
+                if (line.isEmpty()) {
                     continue;
                 } else if (line.charAt(0) == ';' || line.charAt(0) == '#') {
                     continue;
@@ -98,19 +103,20 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.log(Level.WARNING, "Failed to load permissions", e);
         } finally {
             try {
                 if (buff != null) {
                     buff.close();
                 }
-            } catch (IOException e2) {
+            } catch (IOException ignored) {
             }
         }
 
         return userGroupPermissions;
     }
 
+    @Override
     public void load() {
         userGroups = new HashMap<String, Set<String>>();
         userPermissionsCache = new HashMap<String, Set<String>>();
@@ -135,7 +141,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 line = line.trim();
 
                 // Blank line
-                if (line.length() == 0) {
+                if (line.isEmpty()) {
                     continue;
                 } else if (line.charAt(0) == ';' || line.charAt(0) == '#') {
                     continue;
@@ -163,17 +169,18 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.log(Level.WARNING, "Failed to load permissions", e);
         } finally {
             try {
                 if (buff != null) {
                     buff.close();
                 }
-            } catch (IOException e2) {
+            } catch (IOException ignored) {
             }
         }
     }
 
+    @Override
     public boolean hasPermission(String player, String permission) {
         int dotPos = permission.lastIndexOf(".");
         if (dotPos > -1) {
@@ -191,20 +198,19 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
         return perms.contains("*") || perms.contains(permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, String player, String permission) {
         return hasPermission(player, "worlds." + worldName + "." + permission)
                 || hasPermission(player, permission);
     }
 
+    @Override
     public boolean inGroup(String player, String group) {
         Set<String> groups = userGroups.get(player.toLowerCase());
-        if (groups == null) {
-            return false;
-        }
-
-        return groups.contains(group);
+        return groups != null && groups.contains(group);
     }
 
+    @Override
     public String[] getGroups(String player) {
         Set<String> groups = userGroups.get(player.toLowerCase());
         if (groups == null) {
@@ -214,22 +220,27 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
         return groups.toArray(new String[groups.size()]);
     }
 
+    @Override
     public boolean hasPermission(OfflinePlayer player, String permission) {
         return hasPermission(player.getName(), permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
         return hasPermission(worldName, player.getName(), permission);
     }
 
+    @Override
     public boolean inGroup(OfflinePlayer player, String group) {
         return inGroup(player.getName(), group);
     }
 
+    @Override
     public String[] getGroups(OfflinePlayer player) {
         return getGroups(player.getName());
     }
 
+    @Override
     public String getDetectionMessage() {
         return "perms_groups.txt and perms_users.txt detected! Using flat file permissions.";
     }

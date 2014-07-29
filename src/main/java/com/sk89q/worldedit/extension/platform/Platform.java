@@ -30,9 +30,9 @@ import java.util.Map;
 
 /**
  * Represents a platform that WorldEdit has been implemented for.
- * </p>
- * It is strongly recommended that implementations extend from
- * {@link AbstractPlatform}.
+ *
+ * <p>It is strongly recommended that implementations extend from
+ * {@link AbstractPlatform}.</p>
  */
 public interface Platform {
 
@@ -58,8 +58,8 @@ public interface Platform {
     void reload();
 
     /**
-     * Schedules the given <code>task</code> to be invoked once every <code>period</code> ticks
-     * after an initial delay of <code>delay</code> ticks.
+     * Schedules the given {@code task} to be invoked once every
+     * {@code period} ticks after an initial delay of {@code delay} ticks.
      *
      * @param delay Delay in server ticks before executing first repeat
      * @param period Period in server ticks of the task
@@ -68,12 +68,17 @@ public interface Platform {
      */
     int schedule(long delay, long period, Runnable task);
 
+    /**
+     * Get a list of available or loaded worlds.
+     *
+     * @return a list of worlds
+     */
     List<? extends World> getWorlds();
 
     /**
      * Create a duplicate of the given player.
-     * </p>
-     * The given player may have been provided by a different platform.
+     *
+     * <p>The given player may have been provided by a different platform.</p>
      *
      * @param player the player to match
      * @return a matched player, otherwise null
@@ -82,8 +87,8 @@ public interface Platform {
 
     /**
      * Create a duplicate of the given world.
-     * </p>
-     * The given world may have been provided by a different platform.
+     *
+     * <p>The given world may have been provided by a different platform.</p>
      *
      * @param world the world to match
      * @return a matched world, otherwise null
@@ -111,9 +116,9 @@ public interface Platform {
 
     /**
      * Get the version of WorldEdit that this platform provides.
-     * </p>
-     * This version should match WorldEdit releases because it may be
-     * checked to match.
+     *
+     * <p>This version should match WorldEdit releases because it may be
+     * checked to match.</p>
      *
      * @return the version
      */
@@ -121,9 +126,9 @@ public interface Platform {
 
     /**
      * Get a friendly name of the platform.
-     * </p>
-     * The name can be anything (reasonable). An example name may be
-     * "Bukkit" or "Forge".
+     *
+     * <p>The name can be anything (reasonable). An example name may be
+     * "Bukkit" or "Forge".</p>
      *
      * @return the platform name
      */

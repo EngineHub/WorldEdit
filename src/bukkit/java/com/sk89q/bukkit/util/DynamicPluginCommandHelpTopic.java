@@ -30,10 +30,8 @@ import org.bukkit.help.HelpTopicFactory;
 
 import java.util.Map;
 
-/**
- * @author zml2008
- */
 public class DynamicPluginCommandHelpTopic extends HelpTopic {
+
     private final DynamicPluginCommand cmd;
 
     public DynamicPluginCommandHelpTopic(DynamicPluginCommand cmd) {
@@ -140,10 +138,10 @@ public class DynamicPluginCommandHelpTopic extends HelpTopic {
     }
 
     public static class Factory implements HelpTopicFactory<DynamicPluginCommand> {
-
         @Override
         public HelpTopic createTopic(DynamicPluginCommand command) {
             return new DynamicPluginCommandHelpTopic(command);
         }
     }
+
 }

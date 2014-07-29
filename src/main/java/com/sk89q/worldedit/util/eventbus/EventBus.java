@@ -36,13 +36,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Dispatches events to listeners, and provides ways for listeners to register
  * themselves.
- * </p>
- * This class is based on Guava's {@link EventBus} but priority is supported
+ *
+ * <p>This class is based on Guava's {@link EventBus} but priority is supported
  * and events are dispatched at the time of call, rather than being queued up.
- * This does allow dispatching during an in-progress dispatch.
- * </p>
- * This implementation utilizes naive synchronization on all getter and setter
- * methods. Dispatch does not occur when a lock has been acquired, however.
+ * This does allow dispatching during an in-progress dispatch.</p>
+ *
+ * <p>This implementation utilizes naive synchronization on all getter and
+ * setter methods. Dispatch does not occur when a lock has been acquired,
+ * however.</p>
  */
 public class EventBus {
 

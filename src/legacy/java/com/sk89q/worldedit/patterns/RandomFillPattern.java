@@ -32,19 +32,14 @@ import java.util.Random;
  */
 @Deprecated
 public class RandomFillPattern implements Pattern {
-    /**
-     * Random number generator.
-     */
+
     private static final Random random = new Random();
-    /**
-     * Blocks and their proportions.
-     */
     private List<BlockChance> blocks;
 
     /**
      * Construct the object.
      *
-     * @param blocks
+     * @param blocks a list of blocks
      */
     public RandomFillPattern(List<BlockChance> blocks) {
         double max = 0;
@@ -66,13 +61,8 @@ public class RandomFillPattern implements Pattern {
         this.blocks = finalBlocks;
     }
 
-    /**
-     * Get next block.
-     *
-     * @param pos
-     * @return
-     */
-    public BaseBlock next(Vector pos) {
+    @Override
+    public BaseBlock next(Vector position) {
         double r = random.nextDouble();
 
         for (BlockChance block : blocks) {
@@ -84,7 +74,9 @@ public class RandomFillPattern implements Pattern {
         throw new RuntimeException("ProportionalFillPattern");
     }
 
+    @Override
     public BaseBlock next(int x, int y, int z) {
         return next(null);
     }
+
 }

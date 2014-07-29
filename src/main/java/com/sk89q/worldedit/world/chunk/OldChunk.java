@@ -19,11 +19,15 @@
 
 package com.sk89q.worldedit.world.chunk;
 
-import com.sk89q.jnbt.*;
+import com.sk89q.jnbt.ByteArrayTag;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.IntTag;
+import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.NBTUtils;
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
@@ -33,11 +37,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a chunk.
- *
- * @author sk89q
+ * Represents an Alpha chunk.
  */
 public class OldChunk implements Chunk {
+
     private CompoundTag rootTag;
     private byte[] blocks;
     private byte[] data;
@@ -45,19 +48,16 @@ public class OldChunk implements Chunk {
     private int rootZ;
 
     private Map<BlockVector, Map<String,Tag>> tileEntities;
-    @SuppressWarnings("unused")
-    private World world; // TODO: remove if stays unused.
 
     /**
      * Construct the chunk with a compound tag.
      *
-     * @param tag
+     * @param world the world
+     * @param tag the tag
      * @throws DataException
      */
     public OldChunk(World world, CompoundTag tag) throws DataException {
         rootTag = tag;
-        this.world = world;
-
         
         blocks = NBTUtils.getChildTag(rootTag.getValue(), "Blocks", ByteArrayTag.class).getValue();
         data = NBTUtils.getChildTag(rootTag.getValue(), "Data", ByteArrayTag.class).getValue();
@@ -77,27 +77,27 @@ public class OldChunk implements Chunk {
     }
 
     @Override
-    public int getBlockID(Vector pos) throws DataException {
-        if(pos.getBlockY() >= 128) return 0;
+    public int getBlockID(Vector position) throws DataException {
+        if(position.getBlockY() >= 128) return 0;
         
-        int x = pos.getBlockX() - rootX * 16;
-        int y = pos.getBlockY();
-        int z = pos.getBlockZ() - rootZ * 16;
+        int x = position.getBlockX() - rootX * 16;
+        int y = position.getBlockY();
+        int z = position.getBlockZ() - rootZ * 16;
         int index = y + (z * 128 + (x * 128 * 16));
         try {
             return blocks[index];
         } catch (IndexOutOfBoundsException e) {
-            throw new DataException("Chunk does not contain position " + pos);
+            throw new DataException("Chunk does not contain position " + position);
         }
     }
 
     @Override
-    public int getBlockData(Vector pos) throws DataException {
-        if(pos.getBlockY() >= 128) return 0;
+    public int getBlockData(Vector position) throws DataException {
+        if(position.getBlockY() >= 128) return 0;
         
-        int x = pos.getBlockX() - rootX * 16;
-        int y = pos.getBlockY();
-        int z = pos.getBlockZ() - rootZ * 16;
+        int x = position.getBlockX() - rootX * 16;
+        int y = position.getBlockY();
+        int z = position.getBlockZ() - rootZ * 16;
         int index = y + (z * 128 + (x * 128 * 16));
         boolean shift = index % 2 == 0;
         index /= 2;
@@ -109,7 +109,7 @@ public class OldChunk implements Chunk {
                 return data[index] & 0xF;
             }
         } catch (IndexOutOfBoundsException e) {
-            throw new DataException("Chunk does not contain position " + pos);
+            throw new DataException("Chunk does not contain position " + position);
         }
     }
 
@@ -166,16 +166,16 @@ public class OldChunk implements Chunk {
      * return null if there is no tile entity data. Not public yet because
      * what this function returns isn't ideal for usage.
      *
-     * @param pos
-     * @return
+     * @param position the position
+     * @return a tag
      * @throws DataException
      */
-    private CompoundTag getBlockTileEntity(Vector pos) throws DataException {
+    private CompoundTag getBlockTileEntity(Vector position) throws DataException {
         if (tileEntities == null) {
             populateTileEntities();
         }
 
-        Map<String, Tag> values = tileEntities.get(new BlockVector(pos));
+        Map<String, Tag> values = tileEntities.get(new BlockVector(position));
         if (values == null) {
             return null;
         }
@@ -183,9 +183,9 @@ public class OldChunk implements Chunk {
     }
 
     @Override
-    public BaseBlock getBlock(Vector pos) throws DataException {
-        int id = getBlockID(pos);
-        int data = getBlockData(pos);
+    public BaseBlock getBlock(Vector position) throws DataException {
+        int id = getBlockID(position);
+        int data = getBlockData(position);
         BaseBlock block;
 
         /*if (id == BlockID.WALL_SIGN || id == BlockID.SIGN_POST) {
@@ -204,11 +204,9 @@ public class OldChunk implements Chunk {
             block = new BaseBlock(id, data);
         //}
 
-        if (block instanceof TileEntityBlock) {
-            CompoundTag tileEntity = getBlockTileEntity(pos);
-            if (tileEntity != null) {
-                ((TileEntityBlock) block).setNbtData(tileEntity);
-            }
+        CompoundTag tileEntity = getBlockTileEntity(position);
+        if (tileEntity != null) {
+            block.setNbtData(tileEntity);
         }
 
         return block;

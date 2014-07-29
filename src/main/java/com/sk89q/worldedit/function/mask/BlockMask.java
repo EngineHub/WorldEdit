@@ -34,9 +34,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A mask that checks whether blocks at the given positions are matched by
  * a block in a list.
- * </p>
- * This mask checks for both an exact block ID and data value match, as well
- * for a block with the same ID but a data value of -1.
+ *
+ * <p>This mask checks for both an exact block ID and data value match, as well
+ * for a block with the same ID but a data value of -1.</p>
  */
 public class BlockMask extends AbstractExtentMask {
 

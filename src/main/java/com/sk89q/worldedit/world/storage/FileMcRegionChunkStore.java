@@ -29,27 +29,30 @@ import java.io.InputStream;
 import java.util.regex.Pattern;
 
 public class FileMcRegionChunkStore extends McRegionChunkStore {
-    /**
-     * Folder to read from.
-     */
+
     private File path;
 
     /**
      * Create an instance. The passed path is the folder to read the
      * chunk files from.
      * 
-     * @param path
+     * @param path a path
      */
     public FileMcRegionChunkStore(File path) {
         this.path = path;
     }
 
     @Override
-    protected InputStream getInputStream(String name, String world) throws IOException,
-            DataException {
+    protected InputStream getInputStream(String name, String world) throws IOException, DataException {
         Pattern ext = Pattern.compile(".*\\.mc[ra]$"); // allow either file extension, both work the same
         File file = null;
-        for (File f : new File(path, "region" + File.separator).listFiles()) {
+        File[] files = new File(path, "region").listFiles();
+
+        if (files == null) {
+            throw new FileNotFoundException();
+        }
+
+        for (File f : files) {
             String tempName = f.getName().replaceFirst("mcr$", "mca"); // matcher only does one at a time
             if (ext.matcher(f.getName()).matches() && name.equalsIgnoreCase(tempName)) {
                 // get full original path now

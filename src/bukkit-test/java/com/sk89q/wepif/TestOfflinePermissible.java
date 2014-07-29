@@ -36,22 +36,27 @@ public class TestOfflinePermissible implements OfflinePlayer, Permissible {
     
     private final Map<String, Boolean> assignedPermissions = new HashMap<String, Boolean>();
 
+    @Override
     public boolean isOp() {
         return op;
     }
 
+    @Override
     public void setOp(boolean b) {
         this.op = b;
     }
 
+    @Override
     public boolean isPermissionSet(String s) {
         return assignedPermissions.containsKey(s.toLowerCase());
     }
 
+    @Override
     public boolean isPermissionSet(Permission permission) {
         return isPermissionSet(permission.getName());
     }
 
+    @Override
     public boolean hasPermission(String s) {
         if (isPermissionSet(s)) {
             return assignedPermissions.get(s.toLowerCase());
@@ -59,34 +64,42 @@ public class TestOfflinePermissible implements OfflinePlayer, Permissible {
         return false;
     }
 
+    @Override
     public boolean hasPermission(Permission permission) {
         return hasPermission(permission.getName());
     }
 
+    @Override
     public PermissionAttachment addAttachment(Plugin plugin, String s, boolean b) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public PermissionAttachment addAttachment(Plugin plugin) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public PermissionAttachment addAttachment(Plugin plugin, String s, boolean b, int i) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public PermissionAttachment addAttachment(Plugin plugin, int i) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void removeAttachment(PermissionAttachment permissionAttachment) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void recalculatePermissions() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public Set<PermissionAttachmentInfo> getEffectivePermissions() {
         Set<PermissionAttachmentInfo> ret = new HashSet<PermissionAttachmentInfo>();
         for (Map.Entry<String, Boolean> entry : assignedPermissions.entrySet()) {
@@ -109,10 +122,12 @@ public class TestOfflinePermissible implements OfflinePlayer, Permissible {
     
     // -- Unneeded OfflinePlayer methods
 
+    @Override
     public boolean isOnline() {
         return false;
     }
 
+    @Override
     public String getName() {
         return "Tester";
     }
@@ -121,42 +136,52 @@ public class TestOfflinePermissible implements OfflinePlayer, Permissible {
         return randomUuid;
     }
 
+    @Override
     public boolean isBanned() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void setBanned(boolean b) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public boolean isWhitelisted() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void setWhitelisted(boolean b) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public Player getPlayer() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public long getFirstPlayed() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public long getLastPlayed() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public boolean hasPlayedBefore() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public Location getBedSpawnLocation() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public Map<String, Object> serialize() {
         throw new UnsupportedOperationException("Not supported yet.");
     }

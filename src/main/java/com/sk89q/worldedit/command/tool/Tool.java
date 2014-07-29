@@ -23,7 +23,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 
 /**
  * Represents a tool. This interface alone defines nothing. A tool also
- * has to implement <code>BlockTool</code> or <code>TraceTool</code>.
+ * has to implement {@code BlockTool} or {@code TraceTool}.
  */
 public interface Tool {
 

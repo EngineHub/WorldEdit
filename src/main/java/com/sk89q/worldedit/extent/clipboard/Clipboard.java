@@ -30,8 +30,8 @@ public interface Clipboard extends Extent {
 
     /**
      * Get the bounding region of this extent.
-     * </p>
-     * Implementations should return a copy of the region.
+     *
+     * <p>Implementations should return a copy of the region.</p>
      *
      * @return the bounding region
      */

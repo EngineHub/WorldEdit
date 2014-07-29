@@ -181,9 +181,7 @@ public class Switch extends Node implements RValue {
             }
 
             if (invokable instanceof Sequence) {
-                for (RValue subInvokable : ((Sequence) invokable).sequence) {
-                    newSequence.add(subInvokable);
-                }
+                Collections.addAll(newSequence, ((Sequence) invokable).sequence);
             } else {
                 newSequence.add(invokable);
             }

@@ -200,9 +200,9 @@ public final class Masks {
         checkNotNull(mask);
         return new com.sk89q.worldedit.masks.AbstractMask() {
             @Override
-            public boolean matches(EditSession editSession, Vector pos) {
+            public boolean matches(EditSession editSession, Vector position) {
                 Request.request().setEditSession(editSession);
-                return mask.test(pos);
+                return mask.test(position);
             }
         };
     }

@@ -30,12 +30,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * A fast iterator for lists that uses an internal index integer
  * and caches the size of the list. The size of the list cannot change
  * during iteration and {@link Iterator#remove()} is not supported.
- * </p>
- * The iterator in Java, at least in older Java versions, is very slow,
+ *
+ * <p>The iterator in Java, at least in older Java versions, is very slow,
  * causing a significant amount of time in operations in WorldEdit
  * being spent on {@link Iterator#hasNext()}. In contrast, the iterator
  * implemented by this class is very quick, as long as
- * {@link List#get(int)} is fast.
+ * {@link List#get(int)} is fast.</p>
  *
  * @param <E> the element
  */

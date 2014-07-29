@@ -26,8 +26,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Event handler object for {@link EventBus} that is able to dispatch
  * an event.
- * </p>
- * Original for Guava, licensed under the Apache License, Version 2.0.
+ *
+ * <p>Original for Guava, licensed under the Apache License, Version 2.0.</p>
  */
 public abstract class EventHandler implements Comparable<EventHandler> {
 
@@ -62,8 +62,8 @@ public abstract class EventHandler implements Comparable<EventHandler> {
 
     /**
      * Dispatch the given event.
-     * </p>
-     * Subclasses should override {@link #dispatch(Object)}.
+     *
+     * <p>Subclasses should override {@link #dispatch(Object)}.</p>
      *
      * @param event the event
      * @throws InvocationTargetException thrown if an exception is thrown during dispatch

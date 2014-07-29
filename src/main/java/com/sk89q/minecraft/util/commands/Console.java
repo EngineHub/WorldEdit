@@ -24,9 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * This annotation indicates that a command can be used from the console.
- *
- * @author sk89q
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Console {
+
 }

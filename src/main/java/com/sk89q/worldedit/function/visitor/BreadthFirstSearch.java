@@ -103,12 +103,12 @@ public abstract class BreadthFirstSearch implements Operation {
      * that it has not been visited. The position passed to this method
      * will still be visited even if it fails
      * {@link #isVisitable(com.sk89q.worldedit.Vector, com.sk89q.worldedit.Vector)}.
-     * </p>
-     * This method should be used before the search begins, because if
+     *
+     * <p>This method should be used before the search begins, because if
      * the position <em>does</em> fail the test, and the search has already
      * visited it (because it is connected to another root point),
      * the search will mark the position as "visited" and a call to this
-     * method will do nothing.
+     * method will do nothing.</p>
      *
      * @param position the position
      */

@@ -27,11 +27,10 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Indicates how the affected blocks should be hinted at in the log.
- *
- * @author sk89q
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Logging {
+
     public enum LogMode {
         /**
          * Player position
@@ -63,4 +62,5 @@ public @interface Logging {
      * Log mode. Can be either POSITION, REGION, ORIENTATION_REGION, PLACEMENT or ALL.
      */
     LogMode value();
+
 }

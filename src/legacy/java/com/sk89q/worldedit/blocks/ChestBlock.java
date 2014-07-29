@@ -34,8 +34,6 @@ import java.util.Map;
 
 /**
  * Represents a chest block.
- *
- * @author sk89q
  */
 public class ChestBlock extends ContainerBlock {
 
@@ -109,4 +107,5 @@ public class ChestBlock extends ContainerBlock {
             throw new RuntimeException(e);
         }
     }
+
 }

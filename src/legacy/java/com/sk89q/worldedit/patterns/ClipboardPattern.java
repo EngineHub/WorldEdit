@@ -24,47 +24,28 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
  * Pattern that repeats the clipboard.
- *
- * @author sk89q
  */
 public class ClipboardPattern implements Pattern {
-    /**
-     * Clipboard.
-     */
+
     private CuboidClipboard clipboard;
-    /**
-     * Size of the clipboard.
-     */
     private Vector size;
 
     /**
      * Construct the object.
      *
-     * @param clipboard
+     * @param clipboard the clipboard
      */
     public ClipboardPattern(CuboidClipboard clipboard) {
         this.clipboard = clipboard;
         this.size = clipboard.getSize();
     }
 
-    /**
-     * Get next block.
-     *
-     * @param pos
-     * @return
-     */
-    public BaseBlock next(Vector pos) {
-        return next(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ());
+    @Override
+    public BaseBlock next(Vector position) {
+        return next(position.getBlockX(), position.getBlockY(), position.getBlockZ());
     }
 
-    /**
-     * Get next block.
-     *
-     * @param x
-     * @param y
-     * @param z
-     * @return
-     */
+    @Override
     public BaseBlock next(int x, int y, int z) {
         int xp = Math.abs(x) % size.getBlockX();
         int yp = Math.abs(y) % size.getBlockY();
@@ -72,4 +53,5 @@ public class ClipboardPattern implements Pattern {
 
         return clipboard.getPoint(new Vector(xp, yp, zp));
     }
+
 }

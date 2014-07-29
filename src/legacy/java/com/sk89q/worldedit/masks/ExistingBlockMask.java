@@ -29,7 +29,7 @@ import com.sk89q.worldedit.blocks.BlockID;
 @Deprecated
 public class ExistingBlockMask extends AbstractMask {
     @Override
-    public boolean matches(EditSession editSession, Vector pos) {
-        return editSession.getBlockType(pos) != BlockID.AIR;
+    public boolean matches(EditSession editSession, Vector position) {
+        return editSession.getBlockType(position) != BlockID.AIR;
     }
 }

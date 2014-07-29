@@ -94,7 +94,7 @@ public class CommandContext {
             isHanging = false;
             
             String arg = args[i];
-            if (arg.length() == 0) {
+            if (arg.isEmpty()) {
                 isHanging = true;
                 continue;
             }
@@ -127,7 +127,7 @@ public class CommandContext {
                 }
 
                 // In case there is an empty quoted string
-                if (arg.length() == 0) {
+                if (arg.isEmpty()) {
                     continue;
                 }
                 // else raise exception about hanging quotes?

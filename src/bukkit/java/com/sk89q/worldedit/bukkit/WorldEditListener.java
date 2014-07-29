@@ -55,7 +55,7 @@ public class WorldEditListener implements Listener {
     /**
      * Construct the object;
      *
-     * @param plugin
+     * @param plugin the plugin
      */
     public WorldEditListener(WorldEditPlugin plugin) {
         this.plugin = plugin;
@@ -67,7 +67,7 @@ public class WorldEditListener implements Listener {
             return;
         }
 
-        // this will automatically refresh their sesssion, we don't have to do anything
+        // this will automatically refresh their session, we don't have to do anything
         WorldEdit.getInstance().getSession(plugin.wrapPlayer(event.getPlayer()));
     }
 

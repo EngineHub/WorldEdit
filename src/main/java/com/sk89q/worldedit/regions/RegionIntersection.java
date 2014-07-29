@@ -25,6 +25,7 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,11 +35,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * An intersection of several other regions. Any location that is contained in one
  * of the child regions is considered as contained by this region.
- * </p>
- * {@link #iterator()} returns a special iterator that will iterate through
+ *
+ * <p>{@link #iterator()} returns a special iterator that will iterate through
  * the iterators of each region in an undefined sequence. Some positions may
  * be repeated if the position is contained in more than one region, but this cannot
- * be guaranteed to occur.
+ * be guaranteed to occur.</p>
  */
 public class RegionIntersection extends AbstractRegion {
 
@@ -71,7 +72,7 @@ public class RegionIntersection extends AbstractRegion {
     public RegionIntersection(LocalWorld world, List<Region> regions) {
         super(world);
         checkNotNull(regions);
-        checkArgument(regions.size() > 0, "empty region list is not supported");
+        checkArgument(!regions.isEmpty(), "empty region list is not supported");
         for (Region region : regions) {
             this.regions.add(region);
         }
@@ -87,9 +88,7 @@ public class RegionIntersection extends AbstractRegion {
         super(world);
         checkNotNull(regions);
         checkArgument(regions.length > 0, "empty region list is not supported");
-        for (Region region : regions) {
-            this.regions.add(region);
-        }
+        Collections.addAll(this.regions, regions);
     }
 
     @Override
@@ -123,11 +122,11 @@ public class RegionIntersection extends AbstractRegion {
     }
 
     @Override
-    public boolean contains(Vector pt) {
-        checkNotNull(pt);
+    public boolean contains(Vector position) {
+        checkNotNull(position);
 
         for (Region region : regions) {
-            if (region.contains(pt)) {
+            if (region.contains(position)) {
                 return true;
             }
         }

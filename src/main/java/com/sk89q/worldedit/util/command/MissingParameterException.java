@@ -25,7 +25,5 @@ import com.sk89q.worldedit.util.command.parametric.ParameterException;
  * Thrown when there is a missing parameter.
  */
 public class MissingParameterException extends ParameterException {
-    
-    private static final long serialVersionUID = 2169299987926950535L;
 
 }

@@ -84,9 +84,9 @@ public class ParametricBuilder {
      * if this is not specific enough, an annotation can be defined and used. This
      * makes it a "classifier" and it will take precedence over the base type. For
      * example, even if there is a binding that handles {@link String} parameters,
-     * a special <code>@MyArg</code> annotation can be assigned to a {@link String}
+     * a special {@code @MyArg} annotation can be assigned to a {@link String}
      * parameter, which will cause the {@link Builder} to consult the {@link Binding}
-     * associated with <code>@MyArg</code> rather than with the binding for
+     * associated with {@code @MyArg} rather than with the binding for
      * the {@link String} type.</p>
      * 
      * @param binding the binding

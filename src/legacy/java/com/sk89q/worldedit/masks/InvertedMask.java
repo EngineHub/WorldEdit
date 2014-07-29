@@ -36,13 +36,14 @@ public class InvertedMask extends AbstractMask {
         this.mask = mask;
     }
 
+    @Override
     public void prepare(LocalSession session, LocalPlayer player, Vector target) {
         mask.prepare(session, player, target);
     }
 
     @Override
-    public boolean matches(EditSession editSession, Vector pos) {
-        return !mask.matches(editSession, pos);
+    public boolean matches(EditSession editSession, Vector position) {
+        return !mask.matches(editSession, position);
     }
 
     public Mask getInvertedMask() {

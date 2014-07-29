@@ -23,33 +23,37 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.world.DataException;
 
+/**
+ * A 16 by 16 block chunk.
+ */
 public interface Chunk {
 
     /**
      * Get the block ID of a block.
      *
-     * @param pos
-     * @return
-     * @throws DataException
+     * @param position the position of the block
+     * @return the type ID of the block
+     * @throws DataException thrown on data error
      */
-    public int getBlockID(Vector pos) throws DataException;
+    public int getBlockID(Vector position) throws DataException;
     
     /**
      * Get the block data of a block.
      *
-     * @param pos
-     * @return
-     * @throws DataException
+     * @param position the position of the block
+     * @return the data value of the block
+     * @throws DataException thrown on data error
      */
-    public int getBlockData(Vector pos) throws DataException;
+    public int getBlockData(Vector position) throws DataException;
     
     
     /**
      * Get a block;
      *
-     * @param pos
-     * @return block
-     * @throws DataException
+     * @param position the position of the block
+     * @return block the block
+     * @throws DataException thrown on data error
      */
-    public BaseBlock getBlock(Vector pos) throws DataException;
+    public BaseBlock getBlock(Vector position) throws DataException;
+
 }

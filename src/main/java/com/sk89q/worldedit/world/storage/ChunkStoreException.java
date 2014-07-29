@@ -21,12 +21,7 @@ package com.sk89q.worldedit.world.storage;
 
 import com.sk89q.worldedit.world.DataException;
 
-/**
- *
- * @author sk89q
- */
 public class ChunkStoreException extends DataException {
-    private static final long serialVersionUID = 1483900743779953289L;
 
     public ChunkStoreException(String msg) {
         super(msg);
@@ -35,4 +30,5 @@ public class ChunkStoreException extends DataException {
     public ChunkStoreException() {
         super();
     }
+
 }

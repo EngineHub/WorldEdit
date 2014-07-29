@@ -68,7 +68,7 @@ public final class FileDialogUtil {
         private Set<String> exts;
         private String desc;
 
-        public ExtensionFilter(String[] exts) {
+        private ExtensionFilter(String[] exts) {
             this.exts = new HashSet<String>(Arrays.asList(exts));
 
             desc = StringUtil.joinString(exts, ",");

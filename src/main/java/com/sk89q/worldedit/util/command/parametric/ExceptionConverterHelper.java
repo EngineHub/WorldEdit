@@ -89,7 +89,7 @@ public abstract class ExceptionConverterHelper implements ExceptionConverter {
         final Class<? extends Throwable> cls;
         final Method method;
         
-        public ExceptionHandler(Class<? extends Throwable> cls, Method method) {
+        private ExceptionHandler(Class<? extends Throwable> cls, Method method) {
             this.cls = cls;
             this.method = method;
         }

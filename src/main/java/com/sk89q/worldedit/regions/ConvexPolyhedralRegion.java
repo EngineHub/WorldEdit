@@ -277,14 +277,14 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
     }
 
     @Override
-    public boolean contains(Vector pt) {
+    public boolean contains(Vector position) {
         if (!isDefined()) {
             return false;
         }
 
-        final int x = pt.getBlockX();
-        final int y = pt.getBlockY();
-        final int z = pt.getBlockZ();
+        final int x = position.getBlockX();
+        final int y = position.getBlockY();
+        final int z = position.getBlockZ();
 
         final Vector min = getMinimumPoint();
         final Vector max = getMaximumPoint();
@@ -296,7 +296,7 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
         if (z < min.getBlockZ()) return false;
         if (z > max.getBlockZ()) return false;
 
-        return containsRaw(pt);
+        return containsRaw(position);
     }
 
     private boolean containsRaw(Vector pt) {

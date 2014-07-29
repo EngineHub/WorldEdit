@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * Represents a sign block.
- * 
- * @author sk89q
  */
 public class SignBlock extends BaseBlock implements TileEntityBlock {
 
@@ -139,4 +137,5 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
             text[3] = ((StringTag) t).getValue();
         }
     }
+
 }

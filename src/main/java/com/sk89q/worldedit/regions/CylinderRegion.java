@@ -37,10 +37,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents a cylindrical region.
- *
- * @author yetanotherx
  */
 public class CylinderRegion extends AbstractRegion implements FlatRegion {
+
     private Vector2D center;
     private Vector2D radius;
     private int minY;
@@ -305,13 +304,13 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      * Checks to see if a point is inside this region.
      */
     @Override
-    public boolean contains(Vector pt) {
-        final int blockY = pt.getBlockY();
+    public boolean contains(Vector position) {
+        final int blockY = position.getBlockY();
         if (blockY < minY || blockY > maxY) {
             return false;
         }
 
-        return pt.toVector2D().subtract(center).divide(radius).lengthSq() <= 1;
+        return position.toVector2D().subtract(center).divide(radius).lengthSq() <= 1;
     }
 
 

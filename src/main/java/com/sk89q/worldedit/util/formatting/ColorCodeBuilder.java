@@ -61,7 +61,7 @@ public class ColorCodeBuilder {
             } else {
                 StyleSet style = parentStyle.extend(message.getStyle());
                 builder.append(getAdditive(style, lastStyle));
-                builder.append(node.toString());
+                builder.append(node);
                 lastStyle = style;
             }
         }
@@ -102,7 +102,7 @@ public class ColorCodeBuilder {
         StringBuilder builder = new StringBuilder();
         builder.append(getFormattingCode(style));
         if (style.getColor() != null) {
-            builder.append(style.getColor().toString());
+            builder.append(style.getColor());
         }
         return builder.toString();
     }
@@ -236,7 +236,7 @@ public class ColorCodeBuilder {
         }
 
         // Iterate over the wrapped lines, applying the last color from one line to the beginning of the next
-        if (lines.get(0).length() == 0 || lines.get(0).charAt(0) != Style.COLOR_CHAR) {
+        if (lines.get(0).isEmpty() || lines.get(0).charAt(0) != Style.COLOR_CHAR) {
             lines.set(0, Style.WHITE + lines.get(0));
         }
         for (int i = 1; i < lines.size(); i++) {
@@ -244,7 +244,7 @@ public class ColorCodeBuilder {
             final String subLine = lines.get(i);
 
             char color = pLine.charAt(pLine.lastIndexOf(Style.COLOR_CHAR) + 1);
-            if (subLine.length() == 0 || subLine.charAt(0) != Style.COLOR_CHAR) {
+            if (subLine.isEmpty() || subLine.charAt(0) != Style.COLOR_CHAR) {
                 lines.set(i, Style.getByChar(color) + subLine);
             }
         }

@@ -42,14 +42,14 @@ public class ClipboardBrush implements Brush {
     }
 
     @Override
-    public void build(EditSession editSession, Vector pos, Pattern mat, double size) throws MaxChangedBlocksException {
+    public void build(EditSession editSession, Vector position, Pattern pattern, double size) throws MaxChangedBlocksException {
         Clipboard clipboard = holder.getClipboard();
         Region region = clipboard.getRegion();
         Vector centerOffset = region.getCenter().subtract(clipboard.getOrigin());
 
         Operation operation = holder
                 .createPaste(editSession, editSession.getWorld().getWorldData())
-                .to(usingOrigin ? pos : pos.subtract(centerOffset))
+                .to(usingOrigin ? position : position.subtract(centerOffset))
                 .ignoreAirBlocks(ignoreAirBlocks)
                 .build();
 

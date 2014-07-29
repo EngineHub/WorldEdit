@@ -29,28 +29,18 @@ import java.util.NoSuchElementException;
 /**
  * Double array lists to work like a Map, but not really.
  *
- * @author sk89q
- * @param <A>
- * @param <B>
+ * <p>The usefulness of this class is highly questionable.</p>
  */
 public class DoubleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
-    /**
-     * First list.
-     */
+
     private List<A> listA = new ArrayList<A>();
-    /**
-     * Second list.
-     */
     private List<B> listB = new ArrayList<B>();
-    /**
-     * Is reversed when iterating.
-     */
     private boolean isReversed = false;
 
     /**
      * Construct the object.
      *
-     * @param isReversed
+     * @param isReversed true if the list should be reversed
      */
     public DoubleArrayList(boolean isReversed) {
         this.isReversed = isReversed;
@@ -59,8 +49,8 @@ public class DoubleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
     /**
      * Add an item.
      *
-     * @param a
-     * @param b
+     * @param a the first item
+     * @param b the second item
      */
     public void put(A a, B b) {
         listA.add(a);
@@ -69,7 +59,8 @@ public class DoubleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
 
     /**
      * Get size.
-     * @return
+     *
+     * @return count of objects
      */
     public int size() {
         return listA.size();
@@ -86,7 +77,7 @@ public class DoubleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
     /**
      * Get an entry set.
      *
-     * @return
+     * @return entry set
      */
     public Iterator<Map.Entry<A, B>> iterator(boolean reversed) {
         if (reversed) {
@@ -100,19 +91,13 @@ public class DoubleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
         }
     }
 
-    /**
-     * Get an entry set.
-     *
-     * @return
-     */
+    @Override
     public Iterator<Map.Entry<A, B>> iterator() {
         return iterator(isReversed);
     }
 
     /**
      * Entry iterator.
-     *
-     * @param <T>
      */
     public class ForwardEntryIterator<T extends Map.Entry<A, B>>
             implements Iterator<Map.Entry<A, B>> {
@@ -125,14 +110,17 @@ public class DoubleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
             this.valueIterator = valueIterator;
         }
 
+        @Override
         public boolean hasNext() {
             return keyIterator.hasNext();
         }
 
+        @Override
         public Map.Entry<A, B> next() throws NoSuchElementException {
             return new Entry<A, B>(keyIterator.next(), valueIterator.next());
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -140,8 +128,6 @@ public class DoubleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
 
     /**
      * Entry iterator.
-     *
-     * @param <T>
      */
     public class ReverseEntryIterator<T extends Map.Entry<A, B>>
             implements Iterator<Map.Entry<A, B>> {
@@ -154,14 +140,17 @@ public class DoubleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
             this.valueIterator = valueIterator;
         }
 
+        @Override
         public boolean hasNext() {
             return keyIterator.hasPrevious();
         }
 
+        @Override
         public Map.Entry<A, B> next() throws NoSuchElementException {
             return new Entry<A, B>(keyIterator.previous(), valueIterator.previous());
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -169,9 +158,6 @@ public class DoubleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
 
     /**
      * Class to masquerade as Map.Entry.
-     *
-     * @param <C>
-     * @param <D>
      */
     public class Entry<C, D> implements Map.Entry<A, B> {
         private A key;
@@ -182,16 +168,20 @@ public class DoubleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
             this.value = value;
         }
 
+        @Override
         public A getKey() {
             return key;
         }
 
+        @Override
         public B getValue() {
             return value;
         }
 
+        @Override
         public B setValue(B value) {
             throw new UnsupportedOperationException();
         }
     }
+
 }

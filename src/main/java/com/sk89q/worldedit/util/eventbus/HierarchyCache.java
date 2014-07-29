@@ -26,10 +26,10 @@ import com.sk89q.worldedit.internal.annotation.RequiresNewerGuava;
 import java.util.*;
 
 /**
- * Holds a cache of class hierarcy.
- * </p>
- * This exists because Bukkit has an ancient version of Guava and the cache
- * library in Guava has since changed.
+ * Holds a cache of class hierarchy.
+ *
+ * <p>This exists because Bukkit has an ancient version of Guava and the cache
+ * library in Guava has since changed.</>
  */
 @RequiresNewerGuava
 class HierarchyCache {

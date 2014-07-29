@@ -147,8 +147,8 @@ public class TransformRegion extends AbstractRegion {
     }
 
     @Override
-    public boolean contains(Vector pt) {
-        return region.contains(transform.inverse().apply(pt));
+    public boolean contains(Vector position) {
+        return region.contains(transform.inverse().apply(position));
     }
 
     @Override

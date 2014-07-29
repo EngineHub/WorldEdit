@@ -72,10 +72,9 @@ import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
 
 /**
  * Utility commands.
- * 
- * @author sk89q
  */
 public class UtilityCommands {
+
     private final WorldEdit we;
 
     public UtilityCommands(WorldEdit we) {
@@ -672,4 +671,5 @@ public class UtilityCommands {
             actor.printRaw(ColorCodeBuilder.asColorCodes(box));
         }
     }
+
 }

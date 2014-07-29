@@ -20,8 +20,6 @@
 package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.entity.BaseEntity;
-import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.entity.metadata.EntityType;
 
 import javax.annotation.Nullable;
 

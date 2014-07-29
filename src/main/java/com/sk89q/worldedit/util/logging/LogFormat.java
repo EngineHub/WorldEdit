@@ -55,7 +55,7 @@ public class LogFormat extends Formatter {
         if (t != null) {
             StringWriter writer = new StringWriter();
             t.printStackTrace(new PrintWriter(writer));
-            text.append(writer.toString());
+            text.append(writer);
         }
 
         return text.toString();

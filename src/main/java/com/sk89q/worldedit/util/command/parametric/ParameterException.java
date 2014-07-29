@@ -24,8 +24,6 @@ package com.sk89q.worldedit.util.command.parametric;
  */
 public class ParameterException extends Exception {
 
-    private static final long serialVersionUID = -8255175019708245673L;
-
     public ParameterException() {
         super();
     }

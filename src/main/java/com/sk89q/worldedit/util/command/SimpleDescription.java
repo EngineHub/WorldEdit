@@ -115,7 +115,7 @@ public class SimpleDescription implements Description {
             if (!first) {
                 builder.append(" ");
             }
-            builder.append(parameter.toString());
+            builder.append(parameter);
             first = false;
         }
         

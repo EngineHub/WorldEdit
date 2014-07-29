@@ -32,6 +32,7 @@ import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.*;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * YAML configuration loader. To use this class, construct it with path to
@@ -58,13 +59,11 @@ import java.util.*;
  *         babies: true</pre>
  *
  * <p>Calling code could access sturmeh's baby eating state by using
- * <code>getBoolean("sturmeh.eats.babies", false)</code>. For lists, there are
- * methods such as <code>getStringList</code> that will return a type safe list.
- *
- *
- * @author sk89q
+ * {@code getBoolean("sturmeh.eats.babies", false)}. For lists, there are
+ * methods such as {@code getStringList} that will return a type safe list.
  */
 public class YAMLProcessor extends YAMLNode {
+
     public static final String LINE_BREAK = DumperOptions.LineBreak.getPlatformLineBreak().getString();
     public static final char COMMENT_CHAR = '#';
     protected final Yaml yaml;
@@ -117,7 +116,7 @@ public class YAMLProcessor extends YAMLNode {
                 if (stream != null) {
                     stream.close();
                 }
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
         }
     }
@@ -156,7 +155,7 @@ public class YAMLProcessor extends YAMLNode {
     /**
      * Return the set header.
      *
-     * @return
+     * @return the header text
      */
     public String getHeader() {
         return header;
@@ -184,13 +183,11 @@ public class YAMLProcessor extends YAMLNode {
                 writer.append(header);
                 writer.append(LINE_BREAK);
             }
-            if (comments.size() == 0 || format != YAMLFormat.EXTENDED) {
+            if (comments.isEmpty() || format != YAMLFormat.EXTENDED) {
                 yaml.dump(root, writer);
             } else {
                 // Iterate over each root-level property and dump
-                for (Iterator<Map.Entry<String, Object>> i = root.entrySet().iterator(); i.hasNext(); ) {
-                    Map.Entry<String, Object> entry = i.next();
-
+                for (Entry<String, Object> entry : root.entrySet()) {
                     // Output comment, if present
                     String comment = comments.get(entry.getKey());
                     if (comment != null) {
@@ -204,13 +201,13 @@ public class YAMLProcessor extends YAMLNode {
                 }
             }
             return true;
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         } finally {
             try {
                 if (stream != null) {
                     stream.close();
                 }
-            } catch (IOException e) {}
+            } catch (IOException ignored) {}
         }
 
         return false;
@@ -241,7 +238,7 @@ public class YAMLProcessor extends YAMLNode {
      * Returns a root-level comment.
      *
      * @param key the property key
-     * @return the comment or <code>null</code>
+     * @return the comment or {@code null}
      */
     public String getComment(String key) {
         return comments.get(key);
@@ -259,7 +256,7 @@ public class YAMLProcessor extends YAMLNode {
      * Set a root-level comment.
      *
      * @param key the property key
-     * @param comment the comment. May be <code>null</code>, in which case the comment
+     * @param comment the comment. May be {@code null}, in which case the comment
      *   is removed.
      */
     public void setComment(String key, String... comment) {
@@ -300,7 +297,8 @@ public class YAMLProcessor extends YAMLNode {
     /**
      * This method returns an empty ConfigurationNode for using as a
      * default in methods that select a node from a node list.
-     * @return
+     *
+     * @return a node
      */
     public static YAMLNode getEmptyNode(boolean writeDefaults) {
         return new YAMLNode(new LinkedHashMap<String, Object>(), writeDefaults);
@@ -321,12 +319,14 @@ public class YAMLProcessor extends YAMLNode {
     }
 
     private static class FancyRepresenter extends Representer {
-        public FancyRepresenter() {
+        private FancyRepresenter() {
             this.nullRepresenter = new Represent() {
+                @Override
                 public Node representData(Object o) {
                     return representScalar(Tag.NULL, "");
                 }
             };
         }
     }
+
 }

@@ -56,12 +56,6 @@ public class WorldVector2D extends Vector2D {
         return world;
     }
 
-    /**
-     * Checks if another object is equivalent.
-     *
-     * @param obj
-     * @return whether the other object is equivalent
-     */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof WorldVector2D)) {

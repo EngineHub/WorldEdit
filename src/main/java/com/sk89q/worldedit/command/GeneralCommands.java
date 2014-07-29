@@ -173,7 +173,7 @@ public class GeneralCommands {
             }
 
             return;
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignored) {
         }
 
         if (query.length() <= 2) {

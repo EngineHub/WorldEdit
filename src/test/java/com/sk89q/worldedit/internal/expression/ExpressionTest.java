@@ -19,15 +19,16 @@
 
 package com.sk89q.worldedit.internal.expression;
 
-import static org.junit.Assert.*;
-import static java.lang.Math.*;
-
-import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
-import org.junit.*;
-
 import com.sk89q.worldedit.internal.expression.lexer.LexerException;
 import com.sk89q.worldedit.internal.expression.parser.ParserException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
+import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
+import org.junit.Test;
+
+import static java.lang.Math.atan2;
+import static java.lang.Math.sin;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class ExpressionTest {
     @Test
@@ -74,11 +75,11 @@ public class ExpressionTest {
         try {
             compile("(");
             fail("Error expected");
-        } catch (ParserException e) {}
+        } catch (ParserException ignored) {}
         try {
             compile("x(");
             fail("Error expected");
-        } catch (ParserException e) {}
+        } catch (ParserException ignored) {}
 
         // test overloader errors
         try {

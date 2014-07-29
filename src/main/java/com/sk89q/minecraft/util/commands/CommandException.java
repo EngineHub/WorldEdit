@@ -27,8 +27,7 @@ import java.util.ListIterator;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CommandException extends Exception {
-    
-    private static final long serialVersionUID = 870638193072101739L;
+
     private List<String> commandStack = new ArrayList<String>();
 
     public CommandException() {

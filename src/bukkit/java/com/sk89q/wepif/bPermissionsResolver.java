@@ -26,9 +26,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
-/**
- * @author zml2008
- */
 public class bPermissionsResolver implements PermissionsResolver {
 
     public static PermissionsResolver factory(Server server, YAMLProcessor config) {
@@ -47,29 +44,36 @@ public class bPermissionsResolver implements PermissionsResolver {
         this.server = server;
     }
 
+    @Override
     public void load() {
     }
 
+    @Override
     public String getDetectionMessage() {
         return "bPermissions detected! Using bPermissions for permissions";
     }
 
+    @Override
     public boolean hasPermission(String name, String permission) {
         return hasPermission(server.getOfflinePlayer(name), permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, String name, String permission) {
         return ApiLayer.hasPermission(worldName, CalculableType.USER, name, permission);
     }
 
+    @Override
     public boolean inGroup(String player, String group) {
         return inGroup(server.getOfflinePlayer(player), group);
     }
 
+    @Override
     public String[] getGroups(String player) {
         return getGroups(server.getOfflinePlayer(player));
     }
 
+    @Override
     public boolean hasPermission(OfflinePlayer player, String permission) {
         Player onlinePlayer = player.getPlayer();
         if (onlinePlayer == null) {
@@ -79,10 +83,12 @@ public class bPermissionsResolver implements PermissionsResolver {
         }
     }
 
+    @Override
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
         return hasPermission(worldName, player.getName(), permission);
     }
 
+    @Override
     public boolean inGroup(OfflinePlayer player, String group) {
         Player onlinePlayer = player.getPlayer();
         if (onlinePlayer == null) {
@@ -92,6 +98,7 @@ public class bPermissionsResolver implements PermissionsResolver {
         }
     }
 
+    @Override
     public String[] getGroups(OfflinePlayer player) {
         Player onlinePlayer = player.getPlayer();
         if (onlinePlayer == null) {
@@ -100,4 +107,5 @@ public class bPermissionsResolver implements PermissionsResolver {
             return ApiLayer.getGroups(onlinePlayer.getWorld().getName(), CalculableType.USER, player.getName());
         }
     }
+
 }

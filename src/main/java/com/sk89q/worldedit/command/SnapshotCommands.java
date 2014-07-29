@@ -40,10 +40,9 @@ import java.util.logging.Logger;
 
 /**
  * Snapshot commands.
- * 
- * @author sk89q
  */
 public class SnapshotCommands {
+
     private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
     
@@ -73,7 +72,7 @@ public class SnapshotCommands {
         try {
             List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true, player.getWorld().getName());
 
-            if (snapshots.size() > 0) {
+            if (!snapshots.isEmpty()) {
 
                 int num = args.argsLength() > 0 ? Math.min(40, Math.max(5, args.getInteger(0))) : 5;
 
@@ -269,4 +268,5 @@ public class SnapshotCommands {
             }
         }
     }
+
 }

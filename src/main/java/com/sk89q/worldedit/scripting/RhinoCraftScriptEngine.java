@@ -34,14 +34,17 @@ import com.sk89q.worldedit.WorldEditException;
 public class RhinoCraftScriptEngine implements CraftScriptEngine {
     private int timeLimit;
 
+    @Override
     public void setTimeLimit(int milliseconds) {
         timeLimit = milliseconds;
     }
 
+    @Override
     public int getTimeLimit() {
         return timeLimit;
     }
 
+    @Override
     public Object evaluate(String script, String filename, Map<String, Object> args)
             throws ScriptException, Throwable {
         RhinoContextFactory factory = new RhinoContextFactory(timeLimit);
@@ -59,7 +62,7 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
             throw new ScriptException(e.getMessage());
         } catch (RhinoException e) {
             if (e instanceof WrappedException) {
-                Throwable cause = ((WrappedException) e).getCause();
+                Throwable cause = e.getCause();
                 if (cause instanceof WorldEditException) {
                     throw cause;
                 }

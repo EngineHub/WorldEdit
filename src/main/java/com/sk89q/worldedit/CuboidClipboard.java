@@ -174,7 +174,7 @@ public class CuboidClipboard {
         final int shiftX = sizeRotated.getX() < 0 ? -sizeRotated.getBlockX() - 1 : 0;
         final int shiftZ = sizeRotated.getZ() < 0 ? -sizeRotated.getBlockZ() - 1 : 0;
 
-        final BaseBlock newData[][][] = new BaseBlock
+        final BaseBlock[][][] newData = new BaseBlock
                 [Math.abs(sizeRotated.getBlockX())]
                 [Math.abs(sizeRotated.getBlockY())]
                 [Math.abs(sizeRotated.getBlockZ())];
@@ -476,8 +476,9 @@ public class CuboidClipboard {
      * @param position the point, relative to the origin of the copy (0, 0, 0) and not to the actual copy origin
      * @return air, if this block was outside the (non-cuboid) selection while copying
      * @throws ArrayIndexOutOfBoundsException if the position is outside the bounds of the CuboidClipboard
-     * @deprecated Use {@link #getBlock(Vector)} instead
+     * @deprecated use {@link #getBlock(Vector)} instead
      */
+    @Deprecated
     public BaseBlock getPoint(Vector position) throws ArrayIndexOutOfBoundsException {
         final BaseBlock block = getBlock(position);
         if (block == null) {

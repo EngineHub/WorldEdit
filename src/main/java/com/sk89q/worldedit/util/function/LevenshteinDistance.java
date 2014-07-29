@@ -114,7 +114,7 @@ public class LevenshteinDistance implements Function<String, Integer> {
      * @param s  the first String, must not be null
      * @param t  the second String, must not be null
      * @return result distance
-     * @throws IllegalArgumentException if either String input <code>null</code>
+     * @throws IllegalArgumentException if either String input {@code null}
      */
     public static int distance(String s, String t) {
         if (s == null || t == null) {
@@ -150,9 +150,9 @@ public class LevenshteinDistance implements Function<String, Integer> {
             return n;
         }
 
-        int p[] = new int[n + 1]; // 'previous' cost array, horizontally
-        int d[] = new int[n + 1]; // cost array, horizontally
-        int _d[]; // placeholder to assist in swapping p and d
+        int[] p = new int[n + 1]; // 'previous' cost array, horizontally
+        int[] d = new int[n + 1]; // cost array, horizontally
+        int[] _d; // placeholder to assist in swapping p and d
 
         // indexes into strings s and t
         int i; // iterates through s

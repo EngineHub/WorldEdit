@@ -19,14 +19,12 @@
 
 package com.sk89q.worldedit.forge;
 
-import java.util.Map;
-
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 
-import com.sk89q.worldedit.blocks.BaseItemStack;
-
-import cpw.mods.fml.common.FMLCommonHandler;
+import java.util.Map;
 
 public final class ForgeUtil {
 
@@ -41,7 +39,7 @@ public final class ForgeUtil {
     public static ItemStack toForgeItemStack(BaseItemStack item) {
         ItemStack ret = new ItemStack(item.getType(), item.getAmount(), item.getData());
         for (Map.Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
-            ret.addEnchantment(net.minecraft.enchantment.Enchantment.enchantmentsList[((Integer)entry.getKey()).intValue()], ((Integer)entry.getValue()).intValue());
+            ret.addEnchantment(net.minecraft.enchantment.Enchantment.enchantmentsList[((Integer) entry.getKey())], (Integer) entry.getValue());
         }
 
         return ret;

@@ -62,6 +62,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -761,7 +762,7 @@ public class WorldEdit {
         } catch (ScriptException e) {
             player.printError("Failed to execute:");
             player.printRaw(e.getMessage());
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Failed to execute script", e);
         } catch (NumberFormatException e) {
             throw e;
         } catch (WorldEditException e) {
@@ -769,7 +770,7 @@ public class WorldEdit {
         } catch (Throwable e) {
             player.printError("Failed to execute (see console):");
             player.printRaw(e.getClass().getCanonicalName());
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Failed to execute script", e);
         } finally {
             for (EditSession editSession : scriptContext.getEditSessions()) {
                 editSession.flushQueue();

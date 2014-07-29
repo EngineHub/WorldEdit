@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Utility methods for setting tile entities in the world.
  */
-class TileEntityUtils {
+final class TileEntityUtils {
 
     private TileEntityUtils() {
     }
@@ -110,7 +110,8 @@ class TileEntityUtils {
      * @param clazz the class
      * @return a tile entity (may be null if it failed)
      */
-    static @Nullable TileEntity constructTileEntity(World world, Vector position, Class<? extends TileEntity> clazz) {
+    @Nullable
+    static TileEntity constructTileEntity(World world, Vector position, Class<? extends TileEntity> clazz) {
         Constructor<? extends TileEntity> baseConstructor;
         try {
             baseConstructor = clazz.getConstructor(); // creates "blank" TE

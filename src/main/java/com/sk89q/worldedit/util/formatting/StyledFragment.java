@@ -57,7 +57,7 @@ public class StyledFragment extends Fragment {
 
     protected Fragment lastText() {
         Fragment text;
-        if (children.size() > 0) {
+        if (!children.isEmpty()) {
             text = children.get(children.size() - 1);
             if (text == lastText) {
                 return text;

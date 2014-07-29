@@ -437,12 +437,9 @@ public final class ListTag extends Tag {
             append = "(\"" + this.getName() + "\")";
         }
         StringBuilder bldr = new StringBuilder();
-        bldr.append("TAG_List" + append + ": " + value.size()
-                + " entries of type " + NBTUtils.getTypeName(type)
-                + "\r\n{\r\n");
+        bldr.append("TAG_List").append(append).append(": ").append(value.size()).append(" entries of type ").append(NBTUtils.getTypeName(type)).append("\r\n{\r\n");
         for (Tag t : value) {
-            bldr.append("   " + t.toString().replaceAll("\r\n", "\r\n   ")
-                    + "\r\n");
+            bldr.append("   ").append(t.toString().replaceAll("\r\n", "\r\n   ")).append("\r\n");
         }
         bldr.append("}");
         return bldr.toString();

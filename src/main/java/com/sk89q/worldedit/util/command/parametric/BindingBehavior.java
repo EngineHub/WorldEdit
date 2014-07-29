@@ -47,6 +47,6 @@ public enum BindingBehavior {
      * such as from a {@link CommandLocals}. These are "magic" bindings that inject
      * variables.</p>
      */
-    PROVIDES;
+    PROVIDES
 
 }

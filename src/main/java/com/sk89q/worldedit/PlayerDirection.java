@@ -39,9 +39,9 @@ public enum PlayerDirection {
     UP(new Vector(0, 1, 0), new Vector(0, 0, 1), true),
     DOWN(new Vector(0, -1, 0), new Vector(0, 0, 1), true);
 
-    private Vector dir;
-    private Vector leftDir;
-    private boolean isOrthogonal;
+    private final Vector dir;
+    private final Vector leftDir;
+    private final boolean isOrthogonal;
 
     PlayerDirection(Vector vec, Vector leftDir, boolean isOrthogonal) {
         this.dir = vec;

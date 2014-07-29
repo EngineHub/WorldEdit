@@ -29,11 +29,10 @@ import java.lang.annotation.RetentionPolicy;
  * will never called. Additionally, not all fields of {@link Command} apply
  * when it is used in conjunction with this annotation, although both
  * are still required.
- *
- * @author sk89q
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NestedCommand {
+
     /**
      * A list of classes with the child commands.
      */
@@ -43,4 +42,5 @@ public @interface NestedCommand {
      * If set to true it will execute the body of the tagged method.
      */
     boolean executeBody() default false;
+
 }

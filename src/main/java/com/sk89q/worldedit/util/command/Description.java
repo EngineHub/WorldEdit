@@ -51,7 +51,7 @@ public interface Description {
      * Get the usage string of this command.
      * 
      * <p>A usage string may look like 
-     * <code>[-w &lt;world&gt;] &lt;var1&gt; &lt;var2&gt;</code>.</p>
+     * {@code [-w &lt;world&gt;] &lt;var1&gt; &lt;var2&gt;}.</p>
      * 
      * @return a usage string
      */

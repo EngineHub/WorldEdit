@@ -23,9 +23,6 @@ import java.nio.charset.Charset;
 
 /**
  * A class which holds constant values.
- * 
- * @author Graham Edgecombe
- * 
  */
 public final class NBTConstants {
 

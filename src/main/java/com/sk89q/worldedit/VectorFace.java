@@ -49,9 +49,9 @@ public enum VectorFace {
     BELOW_EAST(DOWN, EAST),
     SELF(0, 0, 0);
 
-    private int modX;
-    private int modY;
-    private int modZ;
+    private final int modX;
+    private final int modY;
+    private final int modZ;
 
     private VectorFace(final int modX, final int modY, final int modZ) {
         this.modX = modX;

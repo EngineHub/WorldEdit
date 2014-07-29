@@ -74,7 +74,7 @@ public class StyleSet {
      * @return true if bold
      */
     public boolean isBold() {
-        return getBold() != null && getBold() == true;
+        return getBold() != null && getBold();
     }
     
     /**
@@ -101,7 +101,7 @@ public class StyleSet {
      * @return true if italicized
      */
     public boolean isItalic() {
-        return getItalic() != null && getItalic() == true;
+        return getItalic() != null && getItalic();
     }
     
     /**
@@ -128,7 +128,7 @@ public class StyleSet {
      * @return true if underlined
      */
     public boolean isUnderline() {
-        return getUnderline() != null && getUnderline() == true;
+        return getUnderline() != null && getUnderline();
     }
     
     /**
@@ -155,7 +155,7 @@ public class StyleSet {
      * @return true if there is strikethrough applied
      */
     public boolean isStrikethrough() {
-        return getStrikethrough() != null && getStrikethrough() == true;
+        return getStrikethrough() != null && getStrikethrough();
     }
     
     /**

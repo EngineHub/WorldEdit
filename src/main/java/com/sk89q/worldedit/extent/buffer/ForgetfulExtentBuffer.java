@@ -141,8 +141,8 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
             }
 
             @Override
-            public boolean contains(Vector pt) {
-                return buffer.containsKey(pt.toBlockVector());
+            public boolean contains(Vector position) {
+                return buffer.containsKey(position.toBlockVector());
             }
 
             @Override

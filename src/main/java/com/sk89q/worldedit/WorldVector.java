@@ -25,20 +25,19 @@ import com.sk89q.worldedit.world.World;
 /**
  * @deprecated Use {@link com.sk89q.worldedit.util.Location} wherever possible
  */
+@SuppressWarnings("deprecation")
 @Deprecated
 public class WorldVector extends Vector {
-    /**
-     * Represents the world.
-     */
+
     private LocalWorld world;
 
     /**
      * Construct the Vector object.
      *
-     * @param world 
-     * @param x
-     * @param y
-     * @param z
+     * @param world a world
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param z the Z coordinate
      */
     public WorldVector(LocalWorld world, double x, double y, double z) {
         super(x, y, z);
@@ -48,10 +47,10 @@ public class WorldVector extends Vector {
     /**
      * Construct the Vector object.
      *
-     * @param world 
-     * @param x
-     * @param y
-     * @param z
+     * @param world a world
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param z the Z coordinate
      */
     public WorldVector(LocalWorld world, int x, int y, int z) {
         super(x, y, z);
@@ -61,10 +60,10 @@ public class WorldVector extends Vector {
     /**
      * Construct the Vector object.
      *
-     * @param world 
-     * @param x
-     * @param y
-     * @param z
+     * @param world a world
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param z the Z coordinate
      */
     public WorldVector(LocalWorld world, float x, float y, float z) {
         super(x, y, z);
@@ -74,18 +73,18 @@ public class WorldVector extends Vector {
     /**
      * Construct the Vector object.
      *
-     * @param world 
-     * @param pt
+     * @param world a world
+     * @param other the position to copy
      */
-    public WorldVector(LocalWorld world, Vector pt) {
-        super(pt);
+    public WorldVector(LocalWorld world, Vector other) {
+        super(other);
         this.world = world;
     }
 
     /**
      * Construct the Vector object.
      *
-     * @param world
+     * @param world a world
      */
     public WorldVector(LocalWorld world) {
         super();
@@ -104,7 +103,7 @@ public class WorldVector extends Vector {
     /**
      * Get the world.
      * 
-     * @return
+     * @return the world
      */
     public LocalWorld getWorld() {
         return world;
@@ -112,11 +111,11 @@ public class WorldVector extends Vector {
 
     /**
      * Get a block point from a point.
-     * 
-     * @param world 
-     * @param x
-     * @param y
-     * @param z
+     *
+     * @param world a world
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param z the Z coordinate
      * @return point
      */
     public static WorldVector toBlockPoint(LocalWorld world, double x, double y,
@@ -136,7 +135,7 @@ public class WorldVector extends Vector {
     }
 
     /**
-     * Return this object as a new preferred <code>Location</code>
+     * Return this object as a new preferred {@code Location}
      * object.
      *
      * @return a new location object

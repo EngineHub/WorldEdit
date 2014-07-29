@@ -97,7 +97,7 @@ public class FastModeExtent extends AbstractDelegateExtent {
         return new Operation() {
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
-                if (dirtyChunks.size() > 0) {
+                if (!dirtyChunks.isEmpty()) {
                     world.fixAfterFastMode(dirtyChunks);
                 }
                 return null;

@@ -50,6 +50,7 @@ public class GroupManagerResolver implements PermissionsResolver {
         this.worldsHolder = worldsHolder;
     }
 
+    @Override
     public void load() {
 
     }
@@ -73,10 +74,12 @@ public class GroupManagerResolver implements PermissionsResolver {
         }
     }
 
+    @Override
     public boolean hasPermission(String name, String permission) {
         return hasPermission(null, name, permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, String name, String permission) {
         if (permission == null || permission.isEmpty()) {
             return false;
@@ -88,6 +91,7 @@ public class GroupManagerResolver implements PermissionsResolver {
         return permissionHandler.permission(name, permission);
     }
 
+    @Override
     public boolean inGroup(String name, String group) {
         if (group == null || group.isEmpty()) {
             return false;
@@ -99,6 +103,7 @@ public class GroupManagerResolver implements PermissionsResolver {
         return permissionHandler.inGroup(name, group);
     }
 
+    @Override
     public String[] getGroups(String name) {
         AnjoPermissionsHandler permissionHandler = getPermissionHandler(name, null);
         if (permissionHandler == null) {
@@ -107,22 +112,27 @@ public class GroupManagerResolver implements PermissionsResolver {
         return permissionHandler.getGroups(name);
     }
 
+    @Override
     public boolean hasPermission(OfflinePlayer player, String permission) {
         return hasPermission(player.getName(), permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
         return hasPermission(worldName, player.getName(), permission);
     }
 
+    @Override
     public boolean inGroup(OfflinePlayer player, String group) {
         return inGroup(player.getName(), group);
     }
 
+    @Override
     public String[] getGroups(OfflinePlayer player) {
         return getGroups(player.getName());
     }
 
+    @Override
     public String getDetectionMessage() {
         return "GroupManager detected! Using GroupManager for permissions.";
     }

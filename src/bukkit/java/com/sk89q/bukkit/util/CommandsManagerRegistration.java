@@ -31,10 +31,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author zml2008
- */
 public class CommandsManagerRegistration extends CommandRegistration {
+
     protected CommandsManager<?> commands;
 
     public CommandsManagerRegistration(Plugin plugin, CommandsManager<?> commands) {
@@ -60,7 +58,7 @@ public class CommandsManagerRegistration extends CommandRegistration {
 
             if (cmdMethod != null && cmdMethod.isAnnotationPresent(CommandPermissions.class)) {
                 permissions = Arrays.asList(cmdMethod.getAnnotation(CommandPermissions.class).value());
-            } else if (cmdMethod != null && childMethods != null && childMethods.size() > 0) {
+            } else if (cmdMethod != null && childMethods != null && !childMethods.isEmpty()) {
                 permissions = new ArrayList<String>();
                 for (Method m : childMethods.values()) {
                     if (m.isAnnotationPresent(CommandPermissions.class)) {
@@ -74,4 +72,5 @@ public class CommandsManagerRegistration extends CommandRegistration {
 
         return register(toRegister);
     }
+
 }

@@ -22,71 +22,32 @@ package com.sk89q.worldedit;
 /**
  * @deprecated Use {@link com.sk89q.worldedit.util.Location} wherever possible
  */
+@SuppressWarnings("deprecation")
 @Deprecated
 public class WorldVectorFace extends WorldVector {
 
     private VectorFace face;
 
-    /**
-     * Construct the Vector object.
-     *
-     * @param world
-     * @param x
-     * @param y
-     * @param z
-     * @param face
-     */
     public WorldVectorFace(LocalWorld world, double x, double y, double z, VectorFace face) {
         super(world, x, y, z);
         this.face = face;
     }
 
-    /**
-     * Construct the Vector object.
-     *
-     * @param world
-     * @param x
-     * @param y
-     * @param z
-     * @param face
-     */
     public WorldVectorFace(LocalWorld world, int x, int y, int z, VectorFace face) {
         super(world, x, y, z);
         this.face = face;
     }
 
-    /**
-     * Construct the Vector object.
-     *
-     * @param world
-     * @param x
-     * @param y
-     * @param z
-     * @param face
-     */
     public WorldVectorFace(LocalWorld world, float x, float y, float z, VectorFace face) {
         super(world, x, y, z);
         this.face = face;
     }
 
-    /**
-     * Construct the Vector object.
-     *
-     * @param world
-     * @param pt
-     * @param face
-     */
     public WorldVectorFace(LocalWorld world, Vector pt, VectorFace face) {
         super(world, pt);
         this.face = face;
     }
 
-    /**
-     * Construct the Vector object.
-     * 
-     * @param world
-     * @param face
-     */
     public WorldVectorFace(LocalWorld world, VectorFace face) {
         super(world);
         this.face = face;
@@ -95,7 +56,7 @@ public class WorldVectorFace extends WorldVector {
     /**
      * Get the face.
      *
-     * @return
+     * @return the face
      */
     public VectorFace getFace() {
         return face;
@@ -104,7 +65,7 @@ public class WorldVectorFace extends WorldVector {
     /**
      * Get the WorldVector adjacent to this WorldVectorFace.
      *
-     * @return
+     * @return the face vector
      */
     public WorldVector getFaceVector() {
         return new WorldVector(getWorld(),
@@ -120,7 +81,7 @@ public class WorldVectorFace extends WorldVector {
      * @param world the world in which the resulting vector should lie
      * @param vector the original vector
      * @param face the direction in which the face should lie
-     * @return
+     * @return a face
      */
     public static WorldVectorFace getWorldVectorFace(LocalWorld world, Vector vector, Vector face) {
         if (vector == null || face == null) return null;

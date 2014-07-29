@@ -30,30 +30,21 @@ import java.util.logging.Logger;
 import java.util.zip.ZipFile;
 
 /**
- *
- * @author sk89q
+ * A snapshot is a backup.
  */
 public class Snapshot implements Comparable<Snapshot> {
 
-    protected static Logger logger = Logger.getLogger("Minecraft.WorldEdit");
-    /**
-     * Stores snapshot file.
-     */
+    protected static Logger logger = Logger.getLogger(Snapshot.class.getCanonicalName());
+
     protected File file;
-    /**
-     * Name of the snapshot;
-     */
     protected String name;
-    /**
-     * Stores the date associated with the snapshot.
-     */
     protected Calendar date;
 
     /**
      * Construct a snapshot restoration operation.
      *
-     * @param repo
-     * @param snapshot
+     * @param repo a repository
+     * @param snapshot a snapshot name
      */
     public Snapshot(SnapshotRepository repo, String snapshot) {
         file = new File(repo.getDirectory(), snapshot);
@@ -63,7 +54,7 @@ public class Snapshot implements Comparable<Snapshot> {
     /**
      * Get a chunk store.
      *
-     * @return
+     * @return a chunk store
      * @throws IOException
      * @throws DataException
      */
@@ -79,7 +70,7 @@ public class Snapshot implements Comparable<Snapshot> {
     /**
      * Get a chunk store.
      *
-     * @return
+     * @return a chunk store
      * @throws IOException
      * @throws DataException
      */
@@ -165,7 +156,7 @@ public class Snapshot implements Comparable<Snapshot> {
     /**
      * Get the snapshot's name.
      *
-     * @return
+     * @return the name of the snapshot
      */
     public String getName() {
         return name;
@@ -174,7 +165,7 @@ public class Snapshot implements Comparable<Snapshot> {
     /**
      * Get the file for the snapshot.
      *
-     * @return
+     * @return path to the snapshot
      */
     public File getFile() {
         return file;
@@ -183,7 +174,7 @@ public class Snapshot implements Comparable<Snapshot> {
     /**
      * Get the date associated with this snapshot.
      *
-     * @return
+     * @return date for the snapshot
      */
     public Calendar getDate() {
         return date;
@@ -192,12 +183,13 @@ public class Snapshot implements Comparable<Snapshot> {
     /**
      * Set the date of the snapshot.
      *
-     * @param date
+     * @param date the date of the snapshot
      */
     public void setDate(Calendar date) {
         this.date = date;
     }
 
+    @Override
     public int compareTo(Snapshot o) {
         if (o.date == null || date == null) {
             // Remove the folder from the name
@@ -210,10 +202,7 @@ public class Snapshot implements Comparable<Snapshot> {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Snapshot) {
-            return file.equals(((Snapshot) o).file);
-        }
-        return false;
+        return o instanceof Snapshot && file.equals(((Snapshot) o).file);
     }
 
     @Override
