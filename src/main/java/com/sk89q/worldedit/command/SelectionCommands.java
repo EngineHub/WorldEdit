@@ -48,6 +48,10 @@ import com.sk89q.worldedit.regions.selector.Polygonal2DRegionSelector;
 import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.Countable;
+import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
+import com.sk89q.worldedit.util.formatting.Style;
+import com.sk89q.worldedit.util.formatting.StyledFragment;
+import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
@@ -754,7 +758,20 @@ public class SelectionCommands {
                 player.print(limit.get() + " points maximum.");
             }
         } else {
-            player.printError("Only cuboid|extend|poly|ellipsoid|sphere|cyl|convex are accepted.");
+            CommandListBox box = new CommandListBox("Selection modes");
+            StyledFragment contents = box.getContents();
+            StyledFragment tip = contents.createFragment(Style.RED);
+            tip.append("Select one of the modes below:").newLine();
+
+            box.appendCommand("cuboid", "Select two corners of a cuboid");
+            box.appendCommand("extend", "Fast cuboid selection mode");
+            box.appendCommand("poly", "Select a 2D polygon with height");
+            box.appendCommand("ellipsoid", "Select an ellipsoid");
+            box.appendCommand("sphere", "Select a sphere");
+            box.appendCommand("cyl", "Select a cylinder");
+            box.appendCommand("convex", "Select a convex polyhedral");
+
+            player.printRaw(ColorCodeBuilder.asColorCodes(box));
             return;
         }
 
