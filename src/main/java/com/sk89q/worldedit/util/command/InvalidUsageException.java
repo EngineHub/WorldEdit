@@ -27,17 +27,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Thrown when a command is not used properly.
- * </p>
- * When handling this exception, print the error message if it is not null.
+ *
+ * <p>When handling this exception, print the error message if it is not null.
  * Print a one line help instruction unless {@link #isFullHelpSuggested()}
- * is true, which, in that case, the full help of the command should be shown.
- * </p>
- * If no error message is set and full help is not to be shown, then a generic
- * "you used this command incorrectly" message should be shown.
+ * is true, which, in that case, the full help of the command should be
+ * shown.</p>
+ *
+ * <p>If no error message is set and full help is not to be shown, then a generic
+ * "you used this command incorrectly" message should be shown.</p>
  */
 public class InvalidUsageException extends CommandException {
 
-    private static final long serialVersionUID = -3222004168669490390L;
     private final CommandCallable command;
     private final boolean fullHelpSuggested;
 

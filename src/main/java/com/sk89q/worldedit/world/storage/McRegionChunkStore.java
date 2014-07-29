@@ -31,18 +31,19 @@ import java.io.InputStream;
 import java.util.Map;
 
 public abstract class McRegionChunkStore extends ChunkStore {
+
     protected String curFilename = null;
     protected McRegionReader cachedReader = null;
 
     /**
      * Get the filename of a region file.
      * 
-     * @param pos
-     * @return
+     * @param position chunk position
+     * @return the filename
      */
-    public static String getFilename(Vector2D pos) {
-        int x = pos.getBlockX();
-        int z = pos.getBlockZ();
+    public static String getFilename(Vector2D position) {
+        int x = position.getBlockX();
+        int z = position.getBlockZ();
 
         return "r." + (x >> 5) + "." + (z >> 5) + ".mca";
     }
@@ -66,19 +67,17 @@ public abstract class McRegionChunkStore extends ChunkStore {
     }
 
     @Override
-    public CompoundTag getChunkTag(Vector2D pos, World world) throws DataException, IOException {
-        
-        McRegionReader reader = getReader(pos, world.getName());
+    public CompoundTag getChunkTag(Vector2D position, World world) throws DataException, IOException {
+        McRegionReader reader = getReader(position, world.getName());
 
-        InputStream stream = reader.getChunkInputStream(pos);
+        InputStream stream = reader.getChunkInputStream(position);
         NBTInputStream nbt = new NBTInputStream(stream);
         Tag tag;
 
         try {
             tag = nbt.readTag();
             if (!(tag instanceof CompoundTag)) {
-                throw new ChunkStoreException("CompoundTag expected for chunk; got "
-                        + tag.getClass().getName());
+                throw new ChunkStoreException("CompoundTag expected for chunk; got " + tag.getClass().getName());
             }
 
             Map<String, Tag> children = ((CompoundTag) tag).getValue();
@@ -91,8 +90,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
                         rootTag = (CompoundTag) entry.getValue();
                         break;
                     } else {
-                        throw new ChunkStoreException("CompoundTag expected for 'Level'; got "
-                                + entry.getValue().getClass().getName());
+                        throw new ChunkStoreException("CompoundTag expected for 'Level'; got " + entry.getValue().getClass().getName());
                     }
                 }
             }
@@ -110,22 +108,18 @@ public abstract class McRegionChunkStore extends ChunkStore {
     /**
      * Get the input stream for a chunk file.
      * 
-     * @param name
-     * @return
+     * @param name the name of the chunk file
+     * @param worldName the world name
+     * @return an input stream
      * @throws IOException
      */
-    protected abstract InputStream getInputStream(String name, String worldname)
-            throws IOException, DataException;
+    protected abstract InputStream getInputStream(String name, String worldName) throws IOException, DataException;
 
-    /**
-     * Close resources.
-     *
-     * @throws IOException
-     */
     @Override
     public void close() throws IOException {
         if (cachedReader != null) {
             cachedReader.close();
         }
     }
+
 }

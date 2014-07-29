@@ -22,29 +22,28 @@ package com.sk89q.worldedit.world.storage;
 import com.sk89q.worldedit.Vector2D;
 
 /**
- *
- * @author sk89q
+ * Thrown if a chunk is missing.
  */
 public class MissingChunkException extends ChunkStoreException {
-    private static final long serialVersionUID = 8013715483709973489L;
 
-    private Vector2D pos;
+    private Vector2D position;
 
     public MissingChunkException() {
         super();
     }
 
-    public MissingChunkException(Vector2D pos) {
+    public MissingChunkException(Vector2D position) {
         super();
-        this.pos = pos;
+        this.position = position;
     }
 
     /**
      * Get chunk position in question. May be null if unknown.
      *
-     * @return
+     * @return a chunk position
      */
     public Vector2D getChunkPosition() {
-        return pos;
+        return position;
     }
+
 }

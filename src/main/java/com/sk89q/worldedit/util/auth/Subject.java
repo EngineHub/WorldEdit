@@ -17,14 +17,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.util.auth;
 
 /**
- * Raised when WorldEdit is not installed.
- *
- * @author sk89q
+ * A subject has authorization attached to it.
  */
-public class WorldEditNotInstalled extends WorldEditException {
-    private static final long serialVersionUID = -4698408698930848121L;
+public interface Subject {
+
+    /**
+     * Get a list of groups that this subject is a part of.
+     *
+     * @return an array containing a group name per entry
+     */
+    String[] getGroups();
+
+    /**
+     * Check whether this subject has been granted the given permission
+     * and throw an exception on error.
+     *
+     * @param permission the permission
+     * @throws AuthorizationException thrown if not permitted
+     */
+    void checkPermission(String permission) throws AuthorizationException;
+
+    /**
+     * Return whether this subject has the given permission.
+     *
+     * @param permission the permission
+     * @return true if permission is granted
+     */
+    boolean hasPermission(String permission);
 
 }

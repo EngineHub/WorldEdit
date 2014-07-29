@@ -25,6 +25,7 @@ import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Scriptable;
 
 public class RhinoContextFactory extends ContextFactory {
+
     protected int timeLimit;
 
     public RhinoContextFactory(int timeLimit) {
@@ -60,8 +61,9 @@ public class RhinoContextFactory extends ContextFactory {
     private static class RhinoContext extends Context {
         long startTime;
 
-        public RhinoContext(ContextFactory factory) {
+        private RhinoContext(ContextFactory factory) {
             super(factory);
         }
     }
+
 }

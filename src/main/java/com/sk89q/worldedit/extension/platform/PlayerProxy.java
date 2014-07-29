@@ -25,10 +25,13 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
+
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -48,6 +51,11 @@ class PlayerProxy extends AbstractPlayerActor {
         this.permActor = permActor;
         this.cuiActor = cuiActor;
         this.world = world;
+    }
+
+    @Override
+    public UUID getUniqueId() {
+        return basePlayer.getUniqueId();
     }
 
     @Override
@@ -144,5 +152,10 @@ class PlayerProxy extends AbstractPlayerActor {
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
         return basePlayer.getFacet(cls);
+    }
+
+    @Override
+    public SessionKey getSessionKey() {
+        return basePlayer.getSessionKey();
     }
 }

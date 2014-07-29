@@ -71,9 +71,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Plugin for Bukkit.
- *
- * @author sk89q
  */
+@SuppressWarnings("deprecation")
 public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     private static final Logger log = Logger.getLogger(WorldEditPlugin.class.getCanonicalName());
@@ -89,10 +88,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     /**
      * Called on plugin enable.
      */
+    @SuppressWarnings("AccessStaticViaInstance")
     @Override
     public void onEnable() {
         this.INSTANCE = this;
 
+        //noinspection ResultOfMethodCallIgnored
         getDataFolder().mkdirs();
 
         WorldEdit worldEdit = WorldEdit.getInstance();
@@ -110,9 +111,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         // Now we can register events
         getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
-
-        // Register session timer
-        getServer().getScheduler().runTaskTimerAsynchronously(this, new SessionTimer(worldEdit, getServer()), 120, 120);
 
         // If we are on MCPC+/Cauldron, then Forge will have already loaded
         // Forge WorldEdit and there's (probably) not going to be any other
@@ -191,8 +189,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     protected void createDefaultConfiguration(String name) {
         File actual = new File(getDataFolder(), name);
         if (!actual.exists()) {
-            InputStream input =
-                    null;
+            InputStream input = null;
             try {
                 JarFile file = new JarFile(getFile());
                 ZipEntry copy = file.getEntry("defaults/" + name);
@@ -207,26 +204,24 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                 try {
                     output = new FileOutputStream(actual);
                     byte[] buf = new byte[8192];
-                    int length = 0;
+                    int length;
                     while ((length = input.read(buf)) > 0) {
                         output.write(buf, 0, length);
                     }
 
                     getLogger().info("Default configuration file written: " + name);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    getLogger().log(Level.WARNING, "Failed to write default config file", e);
                 } finally {
                     try {
-                        if (input != null) {
-                            input.close();
-                        }
-                    } catch (IOException e) {}
+                        input.close();
+                    } catch (IOException ignored) {}
 
                     try {
                         if (output != null) {
                             output.close();
                         }
-                    } catch (IOException e) {}
+                    } catch (IOException ignored) {}
                 }
             }
         }
@@ -262,8 +257,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     /**
      * Gets the session for the player.
      *
-     * @param player
-     * @return
+     * @param player a player
+     * @return a session
      */
     public LocalSession getSession(Player player) {
         return WorldEdit.getInstance().getSession(wrapPlayer(player));
@@ -272,8 +267,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     /**
      * Gets the session for the player.
      *
-     * @param player
-     * @return
+     * @param player a player
+     * @return a session
      */
     public EditSession createEditSession(Player player) {
         LocalPlayer wePlayer = wrapPlayer(player);
@@ -290,8 +285,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     /**
      * Remember an edit session.
      *
-     * @param player
-     * @param editSession
+     * @param player a player
+     * @param editSession an edit session
      */
     public void remember(Player player, EditSession editSession) {
         LocalPlayer wePlayer = wrapPlayer(player);
@@ -306,10 +301,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     /**
      * Wrap an operation into an EditSession.
      *
-     * @param player
-     * @param op
-     * @throws Throwable
+     * @param player a player
+     * @param op the operation
+     * @throws Throwable on any error
+     * @deprecated use the regular API
      */
+    @Deprecated
     public void perform(Player player, WorldEditOperation op) throws Throwable {
         LocalPlayer wePlayer = wrapPlayer(player);
         LocalSession session = WorldEdit.getInstance().getSession(wePlayer);
@@ -325,7 +322,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     /**
      * Get the API.
      *
-     * @return
+     * @return the API
+     * @deprecated use the regular API
      */
     @Deprecated
     public WorldEditAPI getAPI() {
@@ -335,7 +333,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     /**
      * Returns the configuration used by WorldEdit.
      *
-     * @return
+     * @return the configuration
      */
     public BukkitConfiguration getLocalConfiguration() {
         return config;
@@ -344,7 +342,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     /**
      * Get the permissions resolver in use.
      *
-     * @return
+     * @return the permissions resolver
      */
     public PermissionsResolverManager getPermissionsResolver() {
         return PermissionsResolverManager.getInstance();
@@ -353,8 +351,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     /**
      * Used to wrap a Bukkit Player as a LocalPlayer.
      *
-     * @param player
-     * @return
+     * @param player a player
+     * @return a wrapped player
      */
     public BukkitPlayer wrapPlayer(Player player) {
         return new BukkitPlayer(this, this.server, player);
@@ -371,7 +369,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     /**
      * Get the server interface.
      *
-     * @return
+     * @return the server interface
      */
     public ServerInterface getServerInterface() {
         return server;
@@ -384,7 +382,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     /**
      * Get WorldEdit.
      *
-     * @return
+     * @return an instance
      */
     public WorldEdit getWorldEdit() {
         return WorldEdit.getInstance();
@@ -393,7 +391,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     /**
      * Gets the region selection for the player.
      *
-     * @param player
+     * @param player aplayer
      * @return the selection or null if there was none
      */
     public Selection getSelection(Player player) {
@@ -428,8 +426,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     /**
      * Sets the region selection for a player.
      *
-     * @param player
-     * @param selection
+     * @param player the player
+     * @param selection a selection
      */
     public void setSelection(Player player, Selection selection) {
         if (player == null) {

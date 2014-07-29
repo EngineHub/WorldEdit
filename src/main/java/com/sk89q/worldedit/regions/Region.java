@@ -26,14 +26,15 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
 /**
- *
- * @author sk89q
+ * Represents a physical shape.
  */
 public interface Region extends Iterable<BlockVector>, Cloneable {
+
     /**
      * Get the lower point of a region.
      *
@@ -104,7 +105,7 @@ public interface Region extends Iterable<BlockVector>, Cloneable {
     /**
      * Shift the region.
      *
-     * @param change
+     * @param change the change
      * @throws RegionOperationException
      */
     public void shift(Vector change) throws RegionOperationException;
@@ -112,47 +113,53 @@ public interface Region extends Iterable<BlockVector>, Cloneable {
     /**
      * Returns true based on whether the region contains the point.
      *
-     * @param pt
-     * @return
+     * @param position the position
+     * @return true if contained
      */
-    public boolean contains(Vector pt);
+    public boolean contains(Vector position);
 
     /**
      * Get a list of chunks.
      *
-     * @return
+     * @return a list of chunk coordinates
      */
     public Set<Vector2D> getChunks();
 
     /**
      * Return a list of 16*16*16 chunks in a region
      *
-     * @return The chunk cubes this region overlaps with
+     * @return the chunk cubes this region overlaps with
      */
     public Set<Vector> getChunkCubes();
 
     /**
-     * Get the world the selection is in
+     * Sets the world that the selection is in.
      *
-     * @return
+     * @return the world, or null
      */
+    @Nullable
     public World getWorld();
 
     /**
-     * Sets the world the selection is in
+     * Sets the world that the selection is in.
      *
-     * @return
+     * @param world the world, which may be null
      */
-    public void setWorld(World world);
+    public void setWorld(@Nullable World world);
 
     /**
-     * Sets the world the selection is in
+     * Sets the world that the selection is in.
      *
-     * @return
+     * @param world the world, which may be null
      */
     @Deprecated
-    public void setWorld(LocalWorld world);
+    public void setWorld(@Nullable LocalWorld world);
 
+    /**
+     * Make a clone of the region.
+     *
+     * @return a cloned version
+     */
     public Region clone();
 
     /**

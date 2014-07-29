@@ -73,10 +73,10 @@ public final class Regions {
 
     /**
      * Attempt to get a {@link FlatRegion} from the given region.
-     * </p>
-     * If the given region is already a {@link FlatRegion}, then the region
+     *
+     * <p>If the given region is already a {@link FlatRegion}, then the region
      * will be cast and returned. Otherwise, a new {@link CuboidRegion} will
-     * be created covers the provided region's minimum and maximum extents.
+     * be created covers the provided region's minimum and maximum extents.</p>
      *
      * @param region the region
      * @return a flat region

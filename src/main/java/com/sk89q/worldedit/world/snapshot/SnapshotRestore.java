@@ -40,34 +40,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
- * @author sk89q
+ * A snapshot restore operation.
  */
 public class SnapshotRestore {
-    /**
-     * Store a list of chunks that are needed and the points in them.
-     */
-    private final Map<BlockVector2D, ArrayList<Vector>> neededChunks =
-            new LinkedHashMap<BlockVector2D, ArrayList<Vector>>();
-    /**
-     * Chunk store.
-     */
+
+    private final Map<BlockVector2D, ArrayList<Vector>> neededChunks = new LinkedHashMap<BlockVector2D, ArrayList<Vector>>();
     private final ChunkStore chunkStore;
-    /**
-     * Edit session.
-     */
     private final EditSession editSession;
-    /**
-     * Count of the number of missing chunks.
-     */
     private ArrayList<Vector2D> missingChunks;
-    /**
-     * Count of the number of chunks that could be loaded for other reasons.
-     */
     private ArrayList<Vector2D> errorChunks;
-    /**
-     * Last error message.
-     */
     private String lastErrorMessage;
 
     /**
@@ -139,7 +120,7 @@ public class SnapshotRestore {
     /**
      * Get the number of chunks that are needed.
      *
-     * @return
+     * @return a number of chunks
      */
     public int getChunksAffected() {
         return neededChunks.size();
@@ -192,7 +173,7 @@ public class SnapshotRestore {
      * Get a list of the missing chunks. restore() must have been called
      * already.
      *
-     * @return
+     * @return a list of coordinates
      */
     public List<Vector2D> getMissingChunks() {
         return missingChunks;
@@ -202,7 +183,7 @@ public class SnapshotRestore {
      * Get a list of the chunks that could not have been loaded for other
      * reasons. restore() must have been called already.
      *
-     * @return
+     * @return a list of coordinates
      */
     public List<Vector2D> getErrorChunks() {
         return errorChunks;
@@ -212,16 +193,19 @@ public class SnapshotRestore {
      * Checks to see where the backup succeeded in any capacity. False will
      * be returned if no chunk could be successfully loaded.
      *
-     * @return
+     * @return true if there was total failure
      */
     public boolean hadTotalFailure() {
         return missingChunks.size() + errorChunks.size() == getChunksAffected();
     }
 
     /**
-     * @return the lastErrorMessage
+     * Get the last error message.
+     *
+     * @return a message
      */
     public String getLastErrorMessage() {
         return lastErrorMessage;
     }
+
 }

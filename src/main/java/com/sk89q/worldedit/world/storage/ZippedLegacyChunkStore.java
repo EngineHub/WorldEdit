@@ -32,22 +32,10 @@ import java.util.Enumeration;
 
 /**
  * Represents the chunk store used by Minecraft alpha but zipped.
- *
- * @author sk89q
  */
 public class ZippedLegacyChunkStore extends LegacyChunkStore {
-    /**
-     * ZIP file.
-     */
-    @SuppressWarnings("unused")
-    private File zipFile;
-    /**
-     * Actual ZIP.
-     */
+
     private ZipFile zip;
-    /**
-     * Folder inside the ZIP file to read from, if any.
-     */
     private String folder;
 
     /**
@@ -55,14 +43,12 @@ public class ZippedLegacyChunkStore extends LegacyChunkStore {
      * path to look into in the ZIP for the files. Use a blank string for
      * the folder to not look into a subdirectory.
      *
-     * @param zipFile
-     * @param folder
+     * @param zipFile the zip file
+     * @param folder the folder
      * @throws IOException
      * @throws ZipException
      */
-    public ZippedLegacyChunkStore(File zipFile, String folder)
-            throws IOException, ZipException {
-        this.zipFile = zipFile;
+    public ZippedLegacyChunkStore(File zipFile, String folder) throws IOException, ZipException {
         this.folder = folder;
 
         zip = new ZipFile(zipFile);
@@ -72,30 +58,26 @@ public class ZippedLegacyChunkStore extends LegacyChunkStore {
      * Create an instance. The subfolder containing the chunk data will
      * be detected.
      *
-     * @param zipFile
+     * @param zipFile the zip file
      * @throws IOException
      * @throws ZipException
      */
-    public ZippedLegacyChunkStore(File zipFile)
-            throws IOException, ZipException {
-        this.zipFile = zipFile;
-
+    public ZippedLegacyChunkStore(File zipFile) throws IOException, ZipException {
         zip = new ZipFile(zipFile);
     }
 
     /**
      * Get the input stream for a chunk file.
      *
-     * @param f1
-     * @param f2
-     * @param name
-     * @return
+     * @param f1 the first part of the path
+     * @param f2 the second part of the path
+     * @param name the name of the file
+     * @return an input stream
      * @throws IOException
      * @throws DataException
      */
     @Override
-    protected InputStream getInputStream(String f1, String f2, String name)
-            throws IOException, DataException {
+    protected InputStream getInputStream(String f1, String f2, String name) throws IOException, DataException {
         String file = f1 + "/" + f2 + "/" + name;
 
         // Detect subfolder for the world's files
@@ -147,8 +129,8 @@ public class ZippedLegacyChunkStore extends LegacyChunkStore {
     /**
      * Get an entry from the ZIP, trying both types of slashes.
      *
-     * @param file
-     * @return
+     * @param file the file
+     * @return an entry
      */
     private ZipEntry getEntry(String file) {
         ZipEntry entry = zip.getEntry(file);
@@ -158,11 +140,6 @@ public class ZippedLegacyChunkStore extends LegacyChunkStore {
         return zip.getEntry(file.replace("/", "\\"));
     }
 
-    /**
-     * Close resources.
-     *
-     * @throws IOException
-     */
     @Override
     public void close() throws IOException {
         zip.close();
@@ -172,4 +149,5 @@ public class ZippedLegacyChunkStore extends LegacyChunkStore {
     public boolean isValid() {
         return true; // Yeah, oh well
     }
+
 }

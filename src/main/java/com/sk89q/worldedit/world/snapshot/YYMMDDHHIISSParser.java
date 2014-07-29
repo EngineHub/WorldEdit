@@ -31,6 +31,7 @@ public class YYMMDDHHIISSParser implements SnapshotDateParser {
             Pattern.compile("([0-9]+)[^0-9]?([0-9]+)[^0-9]?([0-9]+)[^0-9]?"
                     + "([0-9]+)[^0-9]?([0-9]+)[^0-9]?([0-9]+)");
 
+    @Override
     public Calendar detectDate(File file) {
         Matcher matcher = patt.matcher(file.getName());
         if (matcher.matches()) {

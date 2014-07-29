@@ -27,8 +27,8 @@ import java.lang.reflect.Method;
 /**
  * A {@link SubscriberFindingStrategy} for collecting all event handler methods
  * that are marked with the {@link Subscribe} annotation.
- * </p>
- * Original for Guava, licensed under the Apache License, Version 2.0.
+ *
+ * <p>Original for Guava, licensed under the Apache License, Version 2.0.</p>
  */
 class AnnotatedSubscriberFinder implements SubscriberFindingStrategy {
 

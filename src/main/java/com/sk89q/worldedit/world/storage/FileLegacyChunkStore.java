@@ -28,21 +28,17 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Represents the chunk store used by Minecraft alpha.
- *
- * @author sk89q
+ * Represents the chunk store used by Minecraft Alpha.
  */
 public class FileLegacyChunkStore extends LegacyChunkStore {
-    /**
-     * Folder to read from.
-     */
+
     private File path;
 
     /**
      * Create an instance. The passed path is the folder to read the
      * chunk files from.
      *
-     * @param path
+     * @param path path to a folder
      */
     public FileLegacyChunkStore(File path) {
         this.path = path;
@@ -51,16 +47,15 @@ public class FileLegacyChunkStore extends LegacyChunkStore {
     /**
      * Get the input stream for a chunk file.
      *
-     * @param f1
-     * @param f2
-     * @param name
-     * @return
+     * @param f1 the first part of the pathname
+     * @param f2 the second part of the pathname
+     * @param name the name of the file
+     * @return an input stream
      * @throws DataException
      * @throws IOException
      */
     @Override
-    protected InputStream getInputStream(String f1, String f2, String name)
-            throws DataException, IOException {
+    protected InputStream getInputStream(String f1, String f2, String name) throws DataException, IOException {
         String file = f1 + File.separator + f2 + File.separator + name;
         try {
             return new FileInputStream(new File(path, file));
@@ -73,4 +68,5 @@ public class FileLegacyChunkStore extends LegacyChunkStore {
     public boolean isValid() {
         return true; // Yeah, oh well
     }
+
 }

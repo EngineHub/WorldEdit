@@ -34,8 +34,6 @@ import java.util.Map;
 
 /**
  * Represents a furnace block.
- * 
- * @author sk89q
  */
 public class FurnaceBlock extends ContainerBlock {
 
@@ -164,4 +162,5 @@ public class FurnaceBlock extends ContainerBlock {
             throw new RuntimeException(e);
         }
     }
+
 }

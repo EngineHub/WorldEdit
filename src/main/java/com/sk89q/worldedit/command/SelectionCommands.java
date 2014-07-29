@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command;
 
+import com.google.common.base.Optional;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
@@ -33,6 +34,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
@@ -43,9 +45,14 @@ import com.sk89q.worldedit.regions.selector.CylinderRegionSelector;
 import com.sk89q.worldedit.regions.selector.EllipsoidRegionSelector;
 import com.sk89q.worldedit.regions.selector.ExtendingCuboidRegionSelector;
 import com.sk89q.worldedit.regions.selector.Polygonal2DRegionSelector;
+import com.sk89q.worldedit.regions.selector.RegionSelectorType;
 import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.Countable;
+import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
+import com.sk89q.worldedit.util.formatting.Style;
+import com.sk89q.worldedit.util.formatting.StyledFragment;
+import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
@@ -58,10 +65,9 @@ import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 /**
  * Selection commands.
- * 
- * @author sk89q
  */
 public class SelectionCommands {
+
     private final WorldEdit we;
     
     public SelectionCommands(WorldEdit we) {
@@ -93,7 +99,7 @@ public class SelectionCommands {
             pos = player.getBlockIn();
         }
 
-        if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos)) {
+        if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos, ActorSelectorLimits.forActor(player))) {
             player.printError("Position already set.");
             return;
         }
@@ -128,7 +134,7 @@ public class SelectionCommands {
             pos = player.getBlockIn();
         }
 
-        if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos)) {
+        if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos, ActorSelectorLimits.forActor(player))) {
             player.printError("Position already set.");
             return;
         }
@@ -150,8 +156,7 @@ public class SelectionCommands {
         Vector pos = player.getBlockTrace(300);
 
         if (pos != null) {
-            if (!session.getRegionSelector(player.getWorld())
-                    .selectPrimary(pos)) {
+            if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos, ActorSelectorLimits.forActor(player))) {
                 player.printError("Position already set.");
                 return;
             }
@@ -176,8 +181,7 @@ public class SelectionCommands {
         Vector pos = player.getBlockTrace(300);
 
         if (pos != null) {
-            if (!session.getRegionSelector(player.getWorld())
-                    .selectSecondary(pos)) {
+            if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos, ActorSelectorLimits.forActor(player))) {
                 player.printError("Position already set.");
                 return;
             }
@@ -208,7 +212,6 @@ public class SelectionCommands {
     @Logging(POSITION)
     @CommandPermissions("worldedit.selection.chunk")
     public void chunk(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
         final Vector min;
         final Vector max;
         final World world = player.getWorld();
@@ -254,8 +257,8 @@ public class SelectionCommands {
         } else {
             selector = new CuboidRegionSelector(world);
         }
-        selector.selectPrimary(min);
-        selector.selectSecondary(max);
+        selector.selectPrimary(min, ActorSelectorLimits.forActor(player));
+        selector.selectSecondary(max, ActorSelectorLimits.forActor(player));
         session.setRegionSelector(world, selector);
 
         session.dispatchCUISelection(player);
@@ -706,13 +709,13 @@ public class SelectionCommands {
 
     @Command(
         aliases = { "/sel", ";", "/desel", "/deselect" },
+        flags = "d",
         usage = "[cuboid|extend|poly|ellipsoid|sphere|cyl|convex]",
         desc = "Choose a region selector",
         min = 0,
         max = 1
     )
     public void select(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
         final World world = player.getWorld();
         if (args.argsLength() == 0) {
             session.getRegionSelector(world).clear();
@@ -732,11 +735,11 @@ public class SelectionCommands {
             selector = new ExtendingCuboidRegionSelector(oldSelector);
             player.print("Cuboid: left click for a starting point, right click to extend");
         } else if (typeName.equalsIgnoreCase("poly")) {
-            int maxPoints = we.getMaximumPolygonalPoints(player);
-            selector = new Polygonal2DRegionSelector(oldSelector, maxPoints);
+            selector = new Polygonal2DRegionSelector(oldSelector);
             player.print("2D polygon selector: Left/right click to add a point.");
-            if (maxPoints > -1) {
-                player.print(maxPoints + " points maximum.");
+            Optional<Integer> limit = ActorSelectorLimits.forActor(player).getPolygonVertexLimit();
+            if (limit.isPresent()) {
+                player.print(limit.get() + " points maximum.");
             }
         } else if (typeName.equalsIgnoreCase("ellipsoid")) {
             selector = new EllipsoidRegionSelector(oldSelector);
@@ -748,12 +751,45 @@ public class SelectionCommands {
             selector = new CylinderRegionSelector(oldSelector);
             player.print("Cylindrical selector: Left click=center, right click to extend.");
         } else if (typeName.equalsIgnoreCase("convex") || typeName.equalsIgnoreCase("hull") || typeName.equalsIgnoreCase("polyhedron")) {
-            int maxVertices = we.getMaximumPolyhedronPoints(player);
-            selector = new ConvexPolyhedralRegionSelector(oldSelector, maxVertices);
+            selector = new ConvexPolyhedralRegionSelector(oldSelector);
             player.print("Convex polyhedral selector: Left click=First vertex, right click to add more.");
+            Optional<Integer> limit = ActorSelectorLimits.forActor(player).getPolyhedronVertexLimit();
+            if (limit.isPresent()) {
+                player.print(limit.get() + " points maximum.");
+            }
         } else {
-            player.printError("Only cuboid|extend|poly|ellipsoid|sphere|cyl|convex are accepted.");
+            CommandListBox box = new CommandListBox("Selection modes");
+            StyledFragment contents = box.getContents();
+            StyledFragment tip = contents.createFragment(Style.RED);
+            tip.append("Select one of the modes below:").newLine();
+
+            box.appendCommand("cuboid", "Select two corners of a cuboid");
+            box.appendCommand("extend", "Fast cuboid selection mode");
+            box.appendCommand("poly", "Select a 2D polygon with height");
+            box.appendCommand("ellipsoid", "Select an ellipsoid");
+            box.appendCommand("sphere", "Select a sphere");
+            box.appendCommand("cyl", "Select a cylinder");
+            box.appendCommand("convex", "Select a convex polyhedral");
+
+            player.printRaw(ColorCodeBuilder.asColorCodes(box));
             return;
+        }
+
+        if (args.hasFlag('d')) {
+            RegionSelectorType found = null;
+            for (RegionSelectorType type : RegionSelectorType.values()) {
+                if (type.getSelectorClass() == selector.getClass()) {
+                    found = type;
+                    break;
+                }
+            }
+
+            if (found != null) {
+                session.setDefaultRegionSelector(found);
+                player.print("Your default region selector is now " + found.name() + ".");
+            } else {
+                throw new RuntimeException("Something unexpected happened. Please report this.");
+            }
         }
 
         session.setRegionSelector(world, selector);

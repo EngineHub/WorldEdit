@@ -49,8 +49,8 @@ public class PasteBuilder {
      * Create a new instance.
      *
      * @param holder the clipboard holder
-     * @param targetExtent
-     * @param targetWorldData
+     * @param targetExtent an extent
+     * @param targetWorldData world data of the target
      */
     PasteBuilder(ClipboardHolder holder, Extent targetExtent, WorldData targetWorldData) {
         checkNotNull(holder);

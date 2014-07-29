@@ -19,56 +19,34 @@
 
 package com.sk89q.worldedit.util;
 
-/**
- *
- * @author sk89q
- * @param <T>
- */
 public class Countable<T> implements Comparable<Countable<T>> {
-    /**
-     * ID.
-     */
+
     private T id;
-    /**
-     * Amount.
-     */
     private int amount;
 
     /**
      * Construct the object.
      *
-     * @param id
-     * @param amount
+     * @param id the ID
+     * @param amount the count of
      */
     public Countable(T id, int amount) {
         this.id = id;
         this.amount = amount;
     }
 
-    /**
-     * @return the id
-     */
     public T getID() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
     public void setID(T id) {
         this.id = id;
     }
 
-    /**
-     * @return the amount
-     */
     public int getAmount() {
         return amount;
     }
 
-    /**
-     * @param amount the amount to set
-     */
     public void setAmount(int amount) {
         this.amount = amount;
     }
@@ -87,12 +65,7 @@ public class Countable<T> implements Comparable<Countable<T>> {
         ++this.amount;
     }
 
-    /**
-     * Comparison.
-     *
-     * @param other
-     * @return
-     */
+    @Override
     public int compareTo(Countable<T> other) {
         if (amount > other.amount) {
             return 1;

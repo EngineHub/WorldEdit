@@ -70,7 +70,7 @@ public class UnderOverlayMask extends AbstractMask {
     }
 
     @Override
-    public boolean matches(EditSession editSession, Vector pos) {
-        return !mask.matches(editSession, pos) && mask.matches(editSession, pos.add(0, yMod, 0));
+    public boolean matches(EditSession editSession, Vector position) {
+        return !mask.matches(editSession, position) && mask.matches(editSession, position.add(0, yMod, 0));
     }
 }

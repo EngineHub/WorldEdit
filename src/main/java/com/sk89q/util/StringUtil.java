@@ -24,8 +24,6 @@ import java.util.Map;
 
 /**
  * String utilities.
- * 
- * @author sk89q
  */
 public final class StringUtil {
 
@@ -35,9 +33,9 @@ public final class StringUtil {
     /**
      * Trim a string if it is longer than a certain length.
      *  
-     * @param str
-     * @param len
-     * @return
+     * @param str the stirng
+     * @param len the length to trim to
+     * @return a new string
      */
     public static String trimLength(String str, int len) {
         if (str.length() > len) {
@@ -50,13 +48,12 @@ public final class StringUtil {
     /**
      * Join an array of strings into a string.
      * 
-     * @param str
-     * @param delimiter
-     * @param initialIndex
-     * @return
+     * @param str the string array
+     * @param delimiter the delimiter
+     * @param initialIndex the initial index to start form
+     * @return a new string
      */
-    public static String joinString(String[] str, String delimiter,
-            int initialIndex) {
+    public static String joinString(String[] str, String delimiter, int initialIndex) {
         if (str.length == 0) {
             return "";
         }
@@ -70,11 +67,11 @@ public final class StringUtil {
     /**
      * Join an array of strings into a string.
      * 
-     * @param str
-     * @param delimiter
-     * @param initialIndex
-     * @param quote 
-     * @return
+     * @param str the string array
+     * @param delimiter the delimiter
+     * @param initialIndex the initial index to start form
+     * @param quote the character to put around each entry
+     * @return a new string
      */
     public static String joinQuotedString(String[] str, String delimiter,
             int initialIndex, String quote) {
@@ -94,9 +91,9 @@ public final class StringUtil {
     /**
      * Join an array of strings into a string.
      * 
-     * @param str
-     * @param delimiter
-     * @return
+     * @param str the string array
+     * @param delimiter the delimiter
+     * @return a new string
      */
     public static String joinString(String[] str, String delimiter) {
         return joinString(str, delimiter, 0);
@@ -105,19 +102,18 @@ public final class StringUtil {
     /**
      * Join an array of strings into a string.
      * 
-     * @param str
-     * @param delimiter
-     * @param initialIndex
-     * @return
+     * @param str an array of objects
+     * @param delimiter the delimiter
+     * @param initialIndex the initial index to start form
+     * @return a new string
      */
-    public static String joinString(Object[] str, String delimiter,
-            int initialIndex) {
+    public static String joinString(Object[] str, String delimiter, int initialIndex) {
         if (str.length == 0) {
             return "";
         }
         StringBuilder buffer = new StringBuilder(str[initialIndex].toString());
         for (int i = initialIndex + 1; i < str.length; ++i) {
-            buffer.append(delimiter).append(str[i].toString());
+            buffer.append(delimiter).append(str[i]);
         }
         return buffer.toString();
     }
@@ -125,13 +121,12 @@ public final class StringUtil {
     /**
      * Join an array of strings into a string.
      * 
-     * @param str
-     * @param delimiter
-     * @param initialIndex
-     * @return
+     * @param str a list of integers
+     * @param delimiter the delimiter
+     * @param initialIndex the initial index to start form
+     * @return a new string
      */
-    public static String joinString(int[] str, String delimiter,
-            int initialIndex) {
+    public static String joinString(int[] str, String delimiter, int initialIndex) {
         if (str.length == 0) {
             return "";
         }
@@ -144,15 +139,14 @@ public final class StringUtil {
 
     /**
      * Join an list of strings into a string.
-     * 
-     * @param str
-     * @param delimiter
-     * @param initialIndex
-     * @return
+     *
+     * @param str a list of strings
+     * @param delimiter the delimiter
+     * @param initialIndex the initial index to start form
+     * @return a new string
      */
-    public static String joinString(Collection<?> str, String delimiter,
-            int initialIndex) {
-        if (str.size() == 0) {
+    public static String joinString(Collection<?> str, String delimiter,int initialIndex) {
+        if (str.isEmpty()) {
             return "";
         }
         StringBuilder buffer = new StringBuilder();
@@ -163,7 +157,7 @@ public final class StringUtil {
                     buffer.append(delimiter);
                 }
 
-                buffer.append(o.toString());
+                buffer.append(o);
             }
             ++i;
         }
@@ -202,7 +196,7 @@ public final class StringUtil {
      * @param s  the first String, must not be null
      * @param t  the second String, must not be null
      * @return result distance
-     * @throws IllegalArgumentException if either String input <code>null</code>
+     * @throws IllegalArgumentException if either String input {@code null}
      */
     public static int getLevenshteinDistance(String s, String t) {
         if (s == null || t == null) {
@@ -238,9 +232,9 @@ public final class StringUtil {
             return n;
         }
 
-        int p[] = new int[n + 1]; // 'previous' cost array, horizontally
-        int d[] = new int[n + 1]; // cost array, horizontally
-        int _d[]; // placeholder to assist in swapping p and d
+        int[] p = new int[n + 1]; // 'previous' cost array, horizontally
+        int[] d = new int[n + 1]; // cost array, horizontally
+        int[] _d; // placeholder to assist in swapping p and d
 
         // indexes into strings s and t
         int i; // iterates through s

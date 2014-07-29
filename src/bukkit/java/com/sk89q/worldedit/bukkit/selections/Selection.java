@@ -24,7 +24,13 @@ import org.bukkit.World;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.RegionSelector;
 
+import javax.annotation.Nullable;
+
+/**
+ * An abstraction of WorldEdit regions, which do not use Bukkit objects.
+ */
 public interface Selection {
+
     /**
      * Get the lower point of a region.
      * 
@@ -56,15 +62,16 @@ public interface Selection {
     /**
      * Get the region selector. This is for internal use.
      * 
-     * @return
+     * @return the region selector
      */
     public RegionSelector getRegionSelector();
 
     /**
      * Get the world.
      * 
-     * @return
+     * @return the world, which may be null
      */
+    @Nullable
     public World getWorld();
 
     /**
@@ -98,8 +105,9 @@ public interface Selection {
     /**
      * Returns true based on whether the region contains the point,
      *
-     * @param pt
-     * @return 
+     * @param position a vector
+     * @return true if it is contained
      */
-    public boolean contains(Location pt);
+    public boolean contains(Location position);
+
 }

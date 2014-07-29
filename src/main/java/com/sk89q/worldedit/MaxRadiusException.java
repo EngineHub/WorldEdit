@@ -20,10 +20,9 @@
 package com.sk89q.worldedit;
 
 /**
- * Thrown when a maximum radius is reached.
- *
- * @author sk89q
+ * Thrown when a maximum radius is reached, such as, for example,
+ * in the case of a sphere command.
  */
 public class MaxRadiusException extends WorldEditException {
-    private static final long serialVersionUID = -8405382841529528119L;
+
 }

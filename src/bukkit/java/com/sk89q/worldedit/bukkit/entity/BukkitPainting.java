@@ -30,18 +30,20 @@ import org.bukkit.entity.Painting;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-/**
- * @author zml2008
- */
 public class BukkitPainting extends BukkitEntity {
+
+    private static final Logger log = Logger.getLogger(BukkitPainting.class.getCanonicalName());
+
     private static int spawnTask = -1;
     private static final Deque<QueuedPaintingSpawn> spawnQueue = new ArrayDeque<QueuedPaintingSpawn>();
 
     private class QueuedPaintingSpawn {
         private final Location weLoc;
 
-        public QueuedPaintingSpawn(Location weLoc) {
+        private QueuedPaintingSpawn(Location weLoc) {
             this.weLoc = weLoc;
         }
 
@@ -49,6 +51,7 @@ public class BukkitPainting extends BukkitEntity {
             spawnRaw(weLoc);
         }
     }
+
     private static class PaintingSpawnRunnable implements Runnable {
         @Override
         public void run() {
@@ -58,7 +61,8 @@ public class BukkitPainting extends BukkitEntity {
                     try {
                         spawn.spawn();
                     } catch (Throwable t) {
-                        t.printStackTrace();
+                        log.log(Level.WARNING, "Failed to spawn painting", t);
+                        continue;
                     }
                 }
                 spawnTask = -1;
@@ -81,6 +85,7 @@ public class BukkitPainting extends BukkitEntity {
      * @param weLoc The WorldEdit location
      * @return Whether the spawn as successful
      */
+    @Override
     public boolean spawn(Location weLoc) {
         synchronized (spawnQueue) {
             spawnQueue.add(new QueuedPaintingSpawn(weLoc));
@@ -101,4 +106,5 @@ public class BukkitPainting extends BukkitEntity {
         }
         return false;
     }
+
 }

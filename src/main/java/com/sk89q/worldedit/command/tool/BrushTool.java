@@ -34,6 +34,8 @@ import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.session.request.Request;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Builds a shape at the place being looked at.
  */
@@ -50,9 +52,10 @@ public class BrushTool implements TraceTool {
     /**
      * Construct the tool.
      * 
-     * @param permission
+     * @param permission the permission to check before use is allowed
      */
     public BrushTool(String permission) {
+        checkNotNull(permission);
         this.permission = permission;
     }
 
@@ -82,18 +85,18 @@ public class BrushTool implements TraceTool {
     /**
      * Set the brush.
      * 
-     * @param brush
-     * @param perm 
+     * @param brush tbe brush
+     * @param permission the permission
      */
-    public void setBrush(Brush brush, String perm) {
+    public void setBrush(Brush brush, String permission) {
         this.brush = brush;
-        this.permission = perm;
+        this.permission = permission;
     }
 
     /**
      * Get the current brush.
      * 
-     * @return
+     * @return the current brush
      */
     public Brush getBrush() {
         return brush;
@@ -102,7 +105,7 @@ public class BrushTool implements TraceTool {
     /**
      * Set the material.
      * 
-     * @param material
+     * @param material the material
      */
     public void setFill(Pattern material) {
         this.material = material;
@@ -111,7 +114,7 @@ public class BrushTool implements TraceTool {
     /**
      * Get the material.
      * 
-     * @return
+     * @return the material
      */
     public Pattern getMaterial() {
         return material;
@@ -120,7 +123,7 @@ public class BrushTool implements TraceTool {
     /**
      * Get the set brush size.
      * 
-     * @return
+     * @return a radius
      */
     public double getSize() {
         return size;
@@ -129,7 +132,7 @@ public class BrushTool implements TraceTool {
     /**
      * Set the set brush size.
      * 
-     * @param radius
+     * @param radius a radius
      */
     public void setSize(double radius) {
         this.size = radius;
@@ -138,7 +141,7 @@ public class BrushTool implements TraceTool {
     /**
      * Get the set brush range.
      * 
-     * @return
+     * @return the range of the brush in blocks
      */
     public int getRange() {
         return (range < 0) ? MAX_RANGE : Math.min(range, MAX_RANGE);
@@ -147,7 +150,7 @@ public class BrushTool implements TraceTool {
     /**
      * Set the set brush range.
      * 
-     * @param range
+     * @param range the range of the brush in blocks
      */
     public void setRange(int range) {
         this.range = range;

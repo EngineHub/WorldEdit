@@ -26,7 +26,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 /**
  * Represents a player that uses WorldEdit.
  *
- * @deprecated Use {@link Actor} (or {@link Player}, etc.) instead (and {@link AbstractPlayerActor} to extend)
+ * @deprecated use {@link Actor} (or {@link Player}, etc.) instead (and {@link AbstractPlayerActor} to extend)
  */
 @Deprecated
 public abstract class LocalPlayer extends AbstractPlayerActor {

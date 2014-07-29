@@ -27,6 +27,7 @@ import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.Location;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -34,6 +35,7 @@ import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.util.ChatMessageComponent;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 public class ForgePlayer extends AbstractPlayerActor {
 
@@ -41,13 +43,21 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     protected ForgePlayer(EntityPlayerMP player) {
         this.player = player;
+        ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
     }
 
+    @Override
+    public UUID getUniqueId() {
+        return player.getUniqueID();
+    }
+
+    @Override
     public int getItemInHand() {
         ItemStack is = this.player.getCurrentEquippedItem();
         return is == null ? 0 : is.itemID;
     }
 
+    @Override
     public String getName() {
         return this.player.username;
     }
@@ -67,26 +77,32 @@ public class ForgePlayer extends AbstractPlayerActor {
                 this.player.cameraPitch);
     }
 
+    @Override
     public WorldVector getPosition() {
         return new WorldVector(LocalWorldAdapter.adapt(ForgeWorldEdit.inst.getWorld(this.player.worldObj)), this.player.posX, this.player.posY, this.player.posZ);
     }
 
+    @Override
     public com.sk89q.worldedit.world.World getWorld() {
         return ForgeWorldEdit.inst.getWorld(this.player.worldObj);
     }
 
+    @Override
     public double getPitch() {
         return this.player.rotationPitch;
     }
 
+    @Override
     public double getYaw() {
         return this.player.rotationYaw;
     }
 
+    @Override
     public void giveItem(int type, int amt) {
         this.player.inventory.addItemStackToInventory(new ItemStack(type, amt, 0));
     }
 
+    @Override
     public void dispatchCUIEvent(CUIEvent event) {
         String[] params = event.getParameters();
         String send = event.getTypeId();
@@ -97,42 +113,50 @@ public class ForgePlayer extends AbstractPlayerActor {
         this.player.playerNetServerHandler.sendPacketToPlayer(packet);
     }
 
+    @Override
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
             this.player.sendChatToPlayer(ChatMessageComponent.createFromText(part));
         }
     }
 
+    @Override
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
             this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a77" + part));
         }
     }
 
+    @Override
     public void print(String msg) {
         for (String part : msg.split("\n")) {
             this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a7d" + part));
         }
     }
 
+    @Override
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
             this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a7c" + part));
         }
     }
 
+    @Override
     public void setPosition(Vector pos, float pitch, float yaw) {
         this.player.playerNetServerHandler.setPlayerLocation(pos.getX(), pos.getY(), pos.getZ(), pitch, yaw);
     }
 
+    @Override
     public String[] getGroups() {
         return new String[]{}; // WorldEditMod.inst.getPermissionsResolver().getGroups(this.player.username);
     }
 
+    @Override
     public BlockBag getInventoryBlockBag() {
         return null;
     }
 
+    @Override
     public boolean hasPermission(String perm) {
         return ForgeUtil.hasPermission(this.player, perm);
     }
@@ -141,6 +165,47 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
         return null;
+    }
+
+    @Override
+    public SessionKey getSessionKey() {
+        return new SessionKeyImpl(player.getUniqueID(), player.username);
+    }
+
+    private static class SessionKeyImpl implements SessionKey {
+        // If not static, this will leak a reference
+
+        private final UUID uuid;
+        private final String name;
+
+        private SessionKeyImpl(UUID uuid, String name) {
+            this.uuid = uuid;
+            this.name = name;
+        }
+
+        @Override
+        public UUID getUniqueId() {
+            return uuid;
+        }
+
+        @Nullable
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public boolean isActive() {
+            // We can't directly check if the player is online because
+            // the list of players is not thread safe
+            return ThreadSafeCache.getInstance().getOnlineIds().contains(uuid);
+        }
+
+        @Override
+        public boolean isPersistent() {
+            return true;
+        }
+
     }
 
 }

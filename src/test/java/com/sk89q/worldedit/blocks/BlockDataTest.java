@@ -19,18 +19,16 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
+import org.junit.Test;
+
 import java.util.TreeSet;
 
-import org.junit.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
-
-import static org.junit.Assert.*;
-
-/**
- * @author TomyLobo
- */
 public class BlockDataTest {
+
     @Test
     public void testRotateFlip() {
         for (int type = 0; type < 256; ++type) {
@@ -138,4 +136,5 @@ public class BlockDataTest {
             }
         }
     }
+
 }

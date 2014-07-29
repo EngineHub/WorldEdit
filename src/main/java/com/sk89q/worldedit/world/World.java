@@ -23,6 +23,7 @@ import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -72,8 +73,9 @@ public interface World extends SimulatedExtent {
 
     /**
      * Create a mask that matches all liquids.
-     * </p>
-     * Implementations should override this so that custom liquids are supported.
+     *
+     * <p>Implementations should override this so that custom liquids
+     * are supported.</p>
      *
      * @return a mask
      */
@@ -90,6 +92,26 @@ public interface World extends SimulatedExtent {
      */
     @Deprecated
     int getBlockData(Vector pt);
+
+    /**
+     * Similar to {@link Extent#setBlock(Vector, BaseBlock)} but a
+     * {@code notifyAndLight} parameter indicates whether adjacent blocks
+     * should be notified that changes have been made and lighting operations
+     * should be executed.
+     *
+     * <p>If it's not possible to skip lighting, or if it's not possible to
+     * avoid notifying adjacent blocks, then attempt to meet the
+     * specification as best as possible.</p>
+     *
+     * <p>On implementations where the world is not simulated, the
+     * {@code notifyAndLight} parameter has no effect either way.</p>
+     *
+     * @param position position of the block
+     * @param block block to set
+     * @param notifyAndLight true to to notify and light
+     * @return true if the block was successfully set (return value may not be accurate)
+     */
+    boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException;
 
     /**
      * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
@@ -209,12 +231,12 @@ public interface World extends SimulatedExtent {
 
     /**
      * Fix the given chunks after fast mode was used.
-     * </p>
-     * Fast mode makes calls to {@link #setBlock(Vector, BaseBlock, boolean)}
+     *
+     * <p>Fast mode makes calls to {@link #setBlock(Vector, BaseBlock, boolean)}
      * with {@code false} for the {@code notifyAndLight} parameter, which
      * may causes lighting errors to accumulate. Use of this method, if
      * it is implemented by the underlying world, corrects those lighting
-     * errors and may trigger block change notifications.
+     * errors and may trigger block change notifications.</p>
      *
      * @param chunks a list of chunk coordinates to fix
      */

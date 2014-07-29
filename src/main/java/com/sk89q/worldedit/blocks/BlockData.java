@@ -971,8 +971,9 @@ public final class BlockData {
     /**
      * Returns the data value for the next color of cloth in the rainbow. This
      * should not be used if you want to just increment the data value.
-     * @param data
-     * @return
+     *
+     * @param data the data value
+     * @return the next data value
      */
     public static int nextClothColor(int data) {
         switch (data) {

@@ -83,7 +83,7 @@ public class NullRegion implements Region {
     }
 
     @Override
-    public boolean contains(Vector pt) {
+    public boolean contains(Vector position) {
         return false;
     }
 

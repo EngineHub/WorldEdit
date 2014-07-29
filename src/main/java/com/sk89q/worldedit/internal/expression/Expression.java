@@ -65,8 +65,6 @@ import java.util.Stack;
  *
  * <p>Variables are also supported and can be set either by passing values
  * to {@link #evaluate(double...)}.</p>
- *
- * @author TomyLobo
  */
 public class Expression {
 

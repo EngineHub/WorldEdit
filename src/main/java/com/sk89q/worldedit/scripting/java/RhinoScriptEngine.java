@@ -47,10 +47,12 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
         factory.enterContext();
     }
 
+    @Override
     public Bindings createBindings() {
         return new SimpleBindings();
     }
 
+    @Override
     public Object eval(String script, ScriptContext context)
             throws ScriptException {
 
@@ -81,6 +83,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
         }
     }
 
+    @Override
     public Object eval(Reader reader, ScriptContext context)
             throws ScriptException {
 
@@ -113,6 +116,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
         }
     }
 
+    @Override
     public ScriptEngineFactory getFactory() {
         if (factory != null) {
             return factory;

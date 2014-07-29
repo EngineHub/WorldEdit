@@ -33,6 +33,7 @@ import cpw.mods.fml.common.network.Player;
 public class WECUIPacketHandler implements IPacketHandler {
     public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
 
+    @Override
     public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
         if (player instanceof EntityPlayerMP) {
             LocalSession session = ForgeWorldEdit.inst.getSession((EntityPlayerMP) player);

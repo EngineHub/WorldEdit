@@ -48,6 +48,10 @@ import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.eventbus.EventBus;
+import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
+import com.sk89q.worldedit.util.io.file.FilenameException;
+import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
+import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
 import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
 import com.sk89q.worldedit.util.task.OperationScheduler;
 import com.sk89q.worldedit.util.task.SimpleOperationScheduler;
@@ -65,6 +69,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -73,16 +78,16 @@ import static com.sk89q.worldedit.event.platform.Interaction.OPEN;
 
 /**
  * The entry point and container for a working implementation of WorldEdit.
- * </p>
- * An instance handles event handling; block, mask, pattern, etc. registration;
+ *
+ * <p>An instance handles event handling; block, mask, pattern, etc. registration;
  * the management of sessions; the creation of {@link EditSession}s; and more.
  * In order to use WorldEdit, at least one {@link Platform} must be registered
  * with WorldEdit using {@link PlatformManager#register(Platform)} on the
- * manager retrieved using {@link WorldEdit#getPlatformManager()}.
- * </p>
- * An instance of WorldEdit can be retrieved using the static
+ * manager retrieved using {@link WorldEdit#getPlatformManager()}.</p>
+ *
+ * <p>An instance of WorldEdit can be retrieved using the static
  * method {@link WorldEdit#getInstance()}, which is shared among all
- * platforms within the same classloader hierarchy.
+ * platforms within the same classloader hierarchy.</p>
  */
 public class WorldEdit {
 
@@ -117,10 +122,10 @@ public class WorldEdit {
 
     /**
      * Gets the current instance of this class.
-     * </p>
-     * An instance will always be available, but no platform may yet be
+     *
+     * <p>An instance will always be available, but no platform may yet be
      * registered with WorldEdit, meaning that a number of operations
-     * may fail. However, event handlers can be registered.
+     * may fail. However, event handlers can be registered.</p>
      *
      * @return an instance of WorldEdit.
      */
@@ -169,8 +174,8 @@ public class WorldEdit {
 
     /**
      * Get the event bus for WorldEdit.
-     * </p>
-     * Event handlers can be registered on the event bus.
+     *
+     * <p>Event handlers can be registered on the event bus.</p>
      *
      * @return the event bus
      */
@@ -453,30 +458,6 @@ public class WorldEdit {
         }
     }
 
-    public int getMaximumPolygonalPoints(Player player) {
-        if (player.hasPermission("worldedit.limit.unrestricted") || getConfiguration().maxPolygonalPoints < 0) {
-            return getConfiguration().defaultMaxPolygonalPoints;
-        }
-
-        if (getConfiguration().defaultMaxPolygonalPoints < 0) {
-            return getConfiguration().maxPolygonalPoints;
-        }
-
-        return Math.min(getConfiguration().defaultMaxPolygonalPoints, getConfiguration().maxPolygonalPoints);
-    }
-
-    public int getMaximumPolyhedronPoints(Player player) {
-        if (player.hasPermission("worldedit.limit.unrestricted") || getConfiguration().maxPolyhedronPoints < 0) {
-            return getConfiguration().defaultMaxPolyhedronPoints;
-        }
-
-        if (getConfiguration().defaultMaxPolyhedronPoints < 0) {
-            return getConfiguration().maxPolyhedronPoints;
-        }
-
-        return Math.min(getConfiguration().defaultMaxPolyhedronPoints, getConfiguration().maxPolyhedronPoints);
-    }
-
     /**
      * Checks to see if the specified radius is within bounds.
      *
@@ -702,41 +683,6 @@ public class WorldEdit {
     }
 
     /**
-     * Handle a disconnection.
-     *
-     * @param player the player
-     */
-    @Deprecated
-    public void handleDisconnect(Player player) {
-        forgetPlayer(player);
-    }
-
-    /**
-     * Mark for expiration of the session.
-     *
-     * @param player the player
-     */
-    public void markExpire(Player player) {
-        sessions.markforExpiration(player);
-    }
-
-    /**
-     * Forget a player.
-     *
-     * @param player the player
-     */
-    public void forgetPlayer(Player player) {
-        sessions.remove(player);
-    }
-
-    /*
-     * Flush expired sessions.
-     */
-    public void flushExpiredSessions(SessionCheck checker) {
-        sessions.removeExpired(checker);
-    }
-
-    /**
      * Called on arm swing.
      *
      * @param player the player
@@ -857,7 +803,7 @@ public class WorldEdit {
         } catch (ScriptException e) {
             player.printError("Failed to execute:");
             player.printRaw(e.getMessage());
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Failed to execute script", e);
         } catch (NumberFormatException e) {
             throw e;
         } catch (WorldEditException e) {
@@ -865,7 +811,7 @@ public class WorldEdit {
         } catch (Throwable e) {
             player.printError("Failed to execute (see console):");
             player.printRaw(e.getClass().getCanonicalName());
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Failed to execute script", e);
         } finally {
             for (EditSession editSession : scriptContext.getEditSessions()) {
                 editSession.flushQueue();

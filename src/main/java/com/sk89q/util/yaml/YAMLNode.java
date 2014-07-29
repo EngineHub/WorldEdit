@@ -23,6 +23,7 @@ import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,10 +31,9 @@ import java.util.Map;
 
 /**
  * Represents a configuration node.
- * 
- * @author sk89q
  */
 public class YAMLNode {
+
     protected Map<String, Object> root;
     private boolean writeDefaults;
 
@@ -106,8 +106,8 @@ public class YAMLNode {
      * Prepare a value for serialization, in case it's not a native type
      * (and we don't want to serialize objects as YAML objects).
      * 
-     * @param value
-     * @return
+     * @param value the value to serialize
+     * @return the new object
      */
     private Object prepareSerialization(Object value) {
         if (value instanceof Vector) {
@@ -126,8 +126,8 @@ public class YAMLNode {
      * Set the property at a location. This will override existing
      * configuration data to have it conform to key/value mappings.
      * 
-     * @param path
-     * @param value
+     * @param path the path
+     * @param value the new value
      */
     @SuppressWarnings("unchecked")
     public void setProperty(String path, Object value) {
@@ -163,10 +163,10 @@ public class YAMLNode {
     /**
      * Adds a new node to the given path. The returned object is a reference
      * to the new node. This method will replace an existing node at
-     * the same path. See <code>setProperty</code>.
+     * the same path. See {@code setProperty}.
      * 
-     * @param path
-     * @return
+     * @param path the path
+     * @return a node for the path
      */
     public YAMLNode addNode(String path) {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
@@ -557,9 +557,7 @@ public class YAMLNode {
      * @param def default value or null for an empty list as default
      * @return list of integers
      */
-    public List<Vector> getVectorList(
-            String path, List<Vector> def) {
-
+    public List<Vector> getVectorList(String path, List<Vector> def) {
         List<YAMLNode> raw = getNodeList(path, null);
         List<Vector> list = new ArrayList<Vector>();
 
@@ -589,8 +587,7 @@ public class YAMLNode {
      * @param def default value or null for an empty list as default
      * @return list of integers
      */
-    public List<Vector2D> getVector2dList(
-            String path, List<Vector2D> def) {
+    public List<Vector2D> getVector2dList(String path, List<Vector2D> def) {
 
         List<YAMLNode> raw = getNodeList(path, null);
         List<Vector2D> list = new ArrayList<Vector2D>();
@@ -620,8 +617,7 @@ public class YAMLNode {
      * @param def default value or null for an empty list as default
      * @return list of integers
      */
-    public List<BlockVector2D> getBlockVector2dList(
-            String path, List<BlockVector2D> def) {
+    public List<BlockVector2D> getBlockVector2dList(String path, List<BlockVector2D> def) {
 
         List<YAMLNode> raw = getNodeList(path, null);
         List<BlockVector2D> list = new ArrayList<BlockVector2D>();
@@ -674,9 +670,10 @@ public class YAMLNode {
      * path does not lead to a node, null will be returned. A node has
      * key/value mappings.
      * 
-     * @param path
+     * @param path the path
      * @return node or null
      */
+    @Nullable
     @SuppressWarnings("unchecked")
     public YAMLNode getNode(String path) {
         Object raw = getProperty(path);
@@ -719,9 +716,10 @@ public class YAMLNode {
     /**
      * Casts a value to an integer. May return null.
      * 
-     * @param o
-     * @return
+     * @param o the object
+     * @return an integer or null
      */
+    @Nullable
     private static Integer castInt(Object o) {
         if (o == null) {
             return null;
@@ -734,10 +732,11 @@ public class YAMLNode {
 
     /**
      * Casts a value to a double. May return null.
-     * 
-     * @param o
-     * @return
+     *
+     * @param o the object
+     * @return a double or null
      */
+    @Nullable
     private static Double castDouble(Object o) {
         if (o == null) {
             return null;
@@ -750,10 +749,11 @@ public class YAMLNode {
 
     /**
      * Casts a value to a boolean. May return null.
-     * 
-     * @param o
-     * @return
+     *
+     * @param o the object
+     * @return a boolean or null
      */
+    @Nullable
     private static Boolean castBoolean(Object o) {
         if (o == null) {
             return null;
@@ -768,7 +768,7 @@ public class YAMLNode {
      * Remove the property at a location. This will override existing
      * configuration data to have it conform to key/value mappings.
      * 
-     * @param path
+     * @param path a path
      */
     @SuppressWarnings("unchecked")
     public void removeProperty(String path) {
@@ -800,4 +800,5 @@ public class YAMLNode {
     public void setWriteDefaults(boolean writeDefaults) {
         this.writeDefaults = writeDefaults;
     }
+
 }

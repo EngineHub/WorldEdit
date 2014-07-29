@@ -227,7 +227,8 @@ public abstract class AbstractWorld extends AbstractExtent implements World {
         private final Vector position;
         private final int blockId;
         private final double priority;
-        public QueuedEffect(Vector position, int blockId, double priority) {
+
+        private QueuedEffect(Vector position, int blockId, double priority) {
             this.position = position;
             this.blockId = blockId;
             this.priority = priority;

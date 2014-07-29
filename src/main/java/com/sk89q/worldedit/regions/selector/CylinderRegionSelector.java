@@ -25,6 +25,7 @@ import com.sk89q.worldedit.internal.cui.*;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
@@ -35,30 +36,29 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A {@link RegionSelector} for {@link CylinderRegion}s.
+ * Creates a {@code CylinderRegionSelector} from a user's selections.
  */
 public class CylinderRegionSelector extends com.sk89q.worldedit.regions.CylinderRegionSelector implements RegionSelector, CUIRegion {
 
-    protected CylinderRegion region;
-    protected static final NumberFormat format;
+    protected static transient final NumberFormat NUMBER_FORMAT;
+    protected transient CylinderRegion region;
 
     static {
-        format = (NumberFormat) NumberFormat.getInstance().clone();
-        format.setMaximumFractionDigits(3);
+        NUMBER_FORMAT = (NumberFormat) NumberFormat.getInstance().clone();
+        NUMBER_FORMAT.setMaximumFractionDigits(3);
     }
 
     /**
-     * @deprecated cast {@code world} to {@link World}
+     * Create a new region selector with a {@code null} world.
      */
-    @Deprecated
-    public CylinderRegionSelector(@Nullable LocalWorld world) {
-        this((World) world);
+    public CylinderRegionSelector() {
+        this((World) null);
     }
 
     /**
      * Create a new region selector.
      *
-     * @param world the world
+     * @param world the world, which may be {@code null}
      */
     public CylinderRegionSelector(@Nullable World world) {
         region = new CylinderRegion(world);
@@ -71,6 +71,7 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
      */
     public CylinderRegionSelector(RegionSelector oldSelector) {
         this(checkNotNull(oldSelector).getIncompleteRegion().getWorld());
+
         if (oldSelector instanceof CylinderRegionSelector) {
             final CylinderRegionSelector cylSelector = (CylinderRegionSelector) oldSelector;
 
@@ -104,7 +105,7 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
      * @param minY the minimum Y
      * @param maxY the maximum Y
      */
-    public CylinderRegionSelector(@Nullable LocalWorld world, Vector2D center, Vector2D radius, int minY, int maxY) {
+    public CylinderRegionSelector(@Nullable World world, Vector2D center, Vector2D radius, int minY, int maxY) {
         this(world);
 
         region.setCenter(center);
@@ -114,31 +115,42 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
         region.setMaximumY(Math.max(minY, maxY));
     }
 
+    @Nullable
     @Override
-    public boolean selectPrimary(Vector pos) {
-        if (!region.getCenter().equals(Vector.ZERO) && pos.compareTo(region.getCenter()) == 0) {
+    public World getWorld() {
+        return region.getWorld();
+    }
+
+    @Override
+    public void setWorld(@Nullable World world) {
+        region.setWorld(world);
+    }
+
+    @Override
+    public boolean selectPrimary(Vector position, SelectorLimits limits) {
+        if (!region.getCenter().equals(Vector.ZERO) && position.compareTo(region.getCenter()) == 0) {
             return false;
         }
 
         region = new CylinderRegion(region.getWorld());
-        region.setCenter(pos.toVector2D());
-        region.setY(pos.getBlockY());
+        region.setCenter(position.toVector2D());
+        region.setY(position.getBlockY());
 
         return true;
     }
 
     @Override
-    public boolean selectSecondary(Vector pos) {
+    public boolean selectSecondary(Vector position, SelectorLimits limits) {
         Vector center = region.getCenter();
         if ((center.compareTo(Vector.ZERO)) == 0) {
             return true;
         }
 
-        final Vector2D diff = pos.subtract(center).toVector2D();
+        final Vector2D diff = position.subtract(center).toVector2D();
         final Vector2D minRadius = Vector2D.getMaximum(diff, diff.multiply(-1.0));
         region.extendRadius(minRadius);
 
-        region.setY(pos.getBlockY());
+        region.setY(position.getBlockY());
 
         return true;
     }
@@ -153,8 +165,9 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
     @Override
     public void explainSecondarySelection(Actor player, LocalSession session, Vector pos) {
         Vector center = region.getCenter();
+
         if (!center.equals(Vector.ZERO)) {
-            player.print("Radius set to " + format.format(region.getRadius().getX()) + "/" + format.format(region.getRadius().getZ()) + " blocks. (" + region.getArea() + ").");
+            player.print("Radius set to " + NUMBER_FORMAT.format(region.getRadius().getX()) + "/" + NUMBER_FORMAT.format(region.getRadius().getZ()) + " blocks. (" + region.getArea() + ").");
         } else {
             player.printError("You must select the center point before setting the radius.");
             return;
@@ -256,21 +269,6 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
     @Override
     public String getLegacyTypeID() {
         return "cuboid";
-    }
-
-    @Override
-    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position) {
-        explainPrimarySelection((Actor) player, session, position);
-    }
-
-    @Override
-    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position) {
-        explainSecondarySelection((Actor) player, session, position);
-    }
-
-    @Override
-    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
-        explainRegionAdjust((Actor) player, session);
     }
 
 }

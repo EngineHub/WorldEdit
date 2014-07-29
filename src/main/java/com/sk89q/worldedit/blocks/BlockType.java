@@ -34,10 +34,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Block types.
- *
- * @author sk89q
  */
 public enum BlockType {
+
     AIR(BlockID.AIR, "Air", "air"),
     STONE(BlockID.STONE, "Stone", "stone", "rock"),
     GRASS(BlockID.GRASS, "Grass", "grass"),
@@ -1829,4 +1828,5 @@ public enum BlockType {
         dataAttachments.put(typeDataKey(type, east), PlayerDirection.EAST);
         dataAttachments.put(typeDataKey(type, south), PlayerDirection.SOUTH);
     }
+
 }

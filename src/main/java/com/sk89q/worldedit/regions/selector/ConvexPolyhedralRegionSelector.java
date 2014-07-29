@@ -19,12 +19,11 @@
 
 package com.sk89q.worldedit.regions.selector;
 
+import com.google.common.base.Optional;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.IncompleteRegionException;
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
@@ -34,6 +33,7 @@ import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.polyhedron.Triangle;
+import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
@@ -46,30 +46,26 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A {@link RegionSelector} for {@link ConvexPolyhedralRegion}s.
+ * Creates a {@code ConvexPolyhedralRegion} from a user's selections.
  */
 public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion {
 
-    private int maxVertices;
-    private final ConvexPolyhedralRegion region;
-    private BlockVector pos1;
+    private final transient ConvexPolyhedralRegion region;
+    private transient BlockVector pos1;
 
     /**
-     * @deprecated cast {@code world} to {@link World}
+     * Create a new selector with a {@code null} world.
      */
-    @Deprecated
-    public ConvexPolyhedralRegionSelector(@Nullable LocalWorld world, int maxVertices) {
-        this((World) world, maxVertices);
+    public ConvexPolyhedralRegionSelector() {
+        this((World) null);
     }
 
     /**
      * Create a new selector.
      *
-     * @param world the world
-     * @param maxVertices the maximum number of vertices, where a number below 0 means unbounded
+     * @param world the world, which may be {@code null}
      */
-    public ConvexPolyhedralRegionSelector(@Nullable World world, int maxVertices) {
-        this.maxVertices = maxVertices;
+    public ConvexPolyhedralRegionSelector(@Nullable World world) {
         region = new ConvexPolyhedralRegion(world);
     }
 
@@ -77,12 +73,10 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
      * Create a new selector.
      *
      * @param oldSelector the old selector
-     * @param maxVertices the maximum number of vertices, where a number below 0 means unbounded
      */
-    public ConvexPolyhedralRegionSelector(RegionSelector oldSelector, int maxVertices) {
+    public ConvexPolyhedralRegionSelector(RegionSelector oldSelector) {
         checkNotNull(oldSelector);
 
-        this.maxVertices = maxVertices;
         if (oldSelector instanceof ConvexPolyhedralRegionSelector) {
             final ConvexPolyhedralRegionSelector convexPolyhedralRegionSelector = (ConvexPolyhedralRegionSelector) oldSelector;
 
@@ -102,7 +96,7 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
 
             region = new ConvexPolyhedralRegion(oldRegion.getWorld());
 
-            for (final BlockVector2D pt : new ArrayList<BlockVector2D>(oldRegion.polygonize(maxVertices < 0 ? maxVertices : maxVertices / 2))) {
+            for (final BlockVector2D pt : new ArrayList<BlockVector2D>(oldRegion.polygonize(Integer.MAX_VALUE))) {
                 region.addVertex(pt.toVector(minY));
                 region.addVertex(pt.toVector(maxY));
             }
@@ -111,20 +105,36 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
         }
     }
 
+    @Nullable
     @Override
-    public boolean selectPrimary(Vector pos) {
-        clear();
-        pos1 = pos.toBlockVector();
-        return region.addVertex(pos);
+    public World getWorld() {
+        return region.getWorld();
     }
 
     @Override
-    public boolean selectSecondary(Vector pos) {
-        if (maxVertices >= 0 && region.getVertices().size() > maxVertices) {
+    public void setWorld(@Nullable World world) {
+        region.setWorld(world);
+    }
+
+    @Override
+    public boolean selectPrimary(Vector position, SelectorLimits limits) {
+        checkNotNull(position);
+        clear();
+        pos1 = position.toBlockVector();
+        return region.addVertex(position);
+    }
+
+    @Override
+    public boolean selectSecondary(Vector position, SelectorLimits limits) {
+        checkNotNull(position);
+
+        Optional<Integer> vertexLimit = limits.getPolyhedronVertexLimit();
+
+        if (vertexLimit.isPresent() && region.getVertices().size() > vertexLimit.get()) {
             return false;
         }
 
-        return region.addVertex(pos);
+        return region.addVertex(position);
     }
 
     @Override
@@ -184,6 +194,10 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
 
     @Override
     public void explainPrimarySelection(Actor player, LocalSession session, Vector pos) {
+        checkNotNull(player);
+        checkNotNull(session);
+        checkNotNull(pos);
+
         session.describeCUI(player);
 
         player.print("Started new selection with vertex "+pos+".");
@@ -191,16 +205,21 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
 
     @Override
     public void explainSecondarySelection(Actor player, LocalSession session, Vector pos) {
+        checkNotNull(player);
+        checkNotNull(session);
+        checkNotNull(pos);
+
         session.describeCUI(player);
 
-        player.print("Added vertex "+pos+" to the selection.");
+        player.print("Added vertex " + pos + " to the selection.");
     }
 
     @Override
     public void explainRegionAdjust(Actor player, LocalSession session) {
+        checkNotNull(player);
+        checkNotNull(session);
         session.describeCUI(player);
     }
-
 
     @Override
     public int getProtocolVersion() {
@@ -214,6 +233,9 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
 
     @Override
     public void describeCUI(LocalSession session, Actor player) {
+        checkNotNull(player);
+        checkNotNull(session);
+
         Collection<Vector> vertices = region.getVertices();
         Collection<Triangle> triangles = region.getTriangles();
 
@@ -240,25 +262,13 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
 
     @Override
     public void describeLegacyCUI(LocalSession session, Actor player) {
+        checkNotNull(player);
+        checkNotNull(session);
+
         if (isDefined()) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getMinimumPoint(), getArea()));
             session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getMaximumPoint(), getArea()));
         }
-    }
-
-    @Override
-    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position) {
-        explainPrimarySelection((Actor) player, session, position);
-    }
-
-    @Override
-    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position) {
-        explainSecondarySelection((Actor) player, session, position);
-    }
-
-    @Override
-    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
-        explainRegionAdjust((Actor) player, session);
     }
 
 }

@@ -21,9 +21,7 @@ package com.sk89q.minecraft.util.commands;
 
 /**
  * Thrown when not enough permissions are satisfied.
- *
- * @author sk89q
  */
 public class CommandPermissionsException extends CommandException {
-    private static final long serialVersionUID = -602374621030168291L;
+
 }

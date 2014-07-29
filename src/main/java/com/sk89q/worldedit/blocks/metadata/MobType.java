@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.blocks.metadata;
 
 /**
  * Represents the possible types of mobs.
@@ -53,7 +53,7 @@ public enum MobType {
     WOLF("Wolf"),
     ZOMBIE("Zombie");
 
-    private String name;
+    private final String name;
 
     private MobType(String name) {
         this.name = name;
@@ -62,4 +62,5 @@ public enum MobType {
     public String getName() {
         return name;
     }
+
 }

@@ -19,12 +19,6 @@
 
 package com.sk89q.bukkit.util;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.sk89q.util.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
@@ -32,9 +26,12 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
 
-/**
- * @author zml2008
- */
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public class CommandRegistration {
 
     static {
@@ -109,4 +106,5 @@ public class CommandRegistration {
         }
         return true;
     }
+
 }

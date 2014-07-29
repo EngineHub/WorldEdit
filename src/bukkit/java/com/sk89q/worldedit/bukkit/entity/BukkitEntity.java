@@ -26,10 +26,8 @@ import org.bukkit.entity.EntityType;
 
 import java.util.UUID;
 
-/**
- * @author zml2008
- */
 public class BukkitEntity extends LocalEntity {
+
     private final EntityType type;
     private final UUID entityId;
 
@@ -48,4 +46,5 @@ public class BukkitEntity extends LocalEntity {
         org.bukkit.Location loc = BukkitUtil.toLocation(weLoc);
         return loc.getWorld().spawn(loc, type.getEntityClass()) != null;
     }
+
 }

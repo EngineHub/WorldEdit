@@ -29,19 +29,14 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.ItemType;
 
 public class BukkitPlayerBlockBag extends BlockBag {
-    /**
-     * Player instance.
-     */
+
     private Player player;
-    /**
-     * The player's inventory;
-     */
     private ItemStack[] items;
 
     /**
      * Construct the object.
      * 
-     * @param player
+     * @param player the player
      */
     public BukkitPlayerBlockBag(Player player) {
         this.player = player;
@@ -59,17 +54,12 @@ public class BukkitPlayerBlockBag extends BlockBag {
     /**
      * Get the player.
      * 
-     * @return
+     * @return the player
      */
     public Player getPlayer() {
         return player;
     }
 
-    /**
-     * Get a block.
-     *
-     * @param id
-     */
     @Override
     public void fetchItem(BaseItem item) throws BlockBagException {
         final int id = item.getType();
@@ -125,11 +115,6 @@ public class BukkitPlayerBlockBag extends BlockBag {
         }
     }
 
-    /**
-     * Store a block.
-     * 
-     * @param id
-     */
     @Override
     public void storeItem(BaseItem item) throws BlockBagException {
         final int id = item.getType();
@@ -197,9 +182,6 @@ public class BukkitPlayerBlockBag extends BlockBag {
         throw new OutOfSpaceException(id);
     }
 
-    /**
-     * Flush any changes. This is called at the end.
-     */
     @Override
     public void flushChanges() {
         if (items != null) {
@@ -208,21 +190,12 @@ public class BukkitPlayerBlockBag extends BlockBag {
         }
     }
 
-    /**
-     * Adds a position to be used a source.
-     *
-     * @param pos
-     */
     @Override
     public void addSourcePosition(WorldVector pos) {
     }
 
-    /**
-     * Adds a position to be used a source.
-     *
-     * @param pos
-     */
     @Override
     public void addSingleSourcePosition(WorldVector pos) {
     }
+
 }

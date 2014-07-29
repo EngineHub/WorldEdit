@@ -72,9 +72,9 @@ public class CombinedMask extends AbstractMask {
     }
 
     @Override
-    public boolean matches(EditSession editSession, Vector pos) {
+    public boolean matches(EditSession editSession, Vector position) {
         for (Mask mask : masks) {
-            if (!mask.matches(editSession, pos)) {
+            if (!mask.matches(editSession, position)) {
                 return false;
             }
         }

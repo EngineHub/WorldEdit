@@ -25,6 +25,7 @@ import java.util.GregorianCalendar;
 
 public class ModificationTimerParser implements SnapshotDateParser {
 
+    @Override
     public Calendar detectDate(File file) {
         Calendar cal = new GregorianCalendar();
         cal.setTimeInMillis(file.lastModified());

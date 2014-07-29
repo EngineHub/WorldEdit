@@ -25,19 +25,19 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.function.pattern.Pattern;
 
 /**
- * Represents a brush.
- *
- * @author sk89q
+ * A brush is a long-range build tool.
  */
 public interface Brush {
+
     /**
      * Build the object.
      * 
-     * @param editSession
-     * @param pos
-     * @param mat
-     * @param size
+     * @param editSession the {@code EditSession}
+     * @param position the position
+     * @param pattern the pattern
+     * @param size the size of the brush
      * @throws MaxChangedBlocksException 
      */
-    public void build(EditSession editSession, Vector pos, Pattern mat, double size) throws MaxChangedBlocksException;
+    public void build(EditSession editSession, Vector position, Pattern pattern, double size) throws MaxChangedBlocksException;
+
 }

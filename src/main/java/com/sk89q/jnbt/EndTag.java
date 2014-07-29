@@ -20,10 +20,7 @@
 package com.sk89q.jnbt;
 
 /**
- * The <code>TAG_End</code> tag.
- * 
- * @author Graham Edgecombe
- * 
+ * The {@code TAG_End} tag.
  */
 public final class EndTag extends Tag {
 

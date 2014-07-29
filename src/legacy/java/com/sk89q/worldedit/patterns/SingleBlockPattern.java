@@ -28,40 +28,35 @@ import com.sk89q.worldedit.function.pattern.BlockPattern;
  */
 @Deprecated
 public class SingleBlockPattern implements Pattern {
-    /**
-     * Block type.
-     */
+
     private BaseBlock block;
 
     /**
      * Construct the object.
      *
-     * @param block
+     * @param block the block
      */
     public SingleBlockPattern(BaseBlock block) {
         this.block = block;
     }
 
     /**
-     * Get next block.
-     *
-     * @param pos
-     * @return
-     */
-    public BaseBlock next(Vector pos) {
-        return block;
-    }
-
-    public BaseBlock next(int x, int y, int z) {
-        return block;
-    }
-
-    /**
      * Get the block.
      *
-     * @return
+     * @return the block
      */
     public BaseBlock getBlock() {
         return block;
     }
+
+    @Override
+    public BaseBlock next(Vector position) {
+        return block;
+    }
+
+    @Override
+    public BaseBlock next(int x, int y, int z) {
+        return block;
+    }
+
 }

@@ -29,7 +29,7 @@ import com.sk89q.worldedit.blocks.BlockType;
 @Deprecated
 public class SolidBlockMask extends AbstractMask {
     @Override
-    public boolean matches(EditSession editSession, Vector pos) {
-        return !BlockType.canPassThrough(editSession.getBlockType(pos), editSession.getBlockData(pos));
+    public boolean matches(EditSession editSession, Vector position) {
+        return !BlockType.canPassThrough(editSession.getBlockType(position), editSession.getBlockData(position));
     }
 }

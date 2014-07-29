@@ -49,6 +49,7 @@ public interface OutputExtent {
      * @param position position of the block
      * @param block block to set
      * @return true if the block was successfully set (return value may not be accurate)
+     * @throws WorldEditException thrown on an error
      */
     boolean setBlock(Vector position, BaseBlock block) throws WorldEditException;
 

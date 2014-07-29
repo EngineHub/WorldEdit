@@ -19,15 +19,17 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.worldedit.WorldEditPermissionException;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.session.SessionOwner;
+import com.sk89q.worldedit.util.Identifiable;
+import com.sk89q.worldedit.util.auth.Subject;
 
 import java.io.File;
 
 /**
  * An object that can perform actions in WorldEdit.
  */
-public interface Actor {
+public interface Actor extends Identifiable, SessionOwner, Subject {
 
     /**
      * Get the name of the actor.
@@ -70,30 +72,6 @@ public interface Actor {
      * @return true if bedrock can be broken by the actor
      */
     boolean canDestroyBedrock();
-
-    /**
-     * Get a actor's list of groups.
-     *
-     * @return an array containing a group name per entry
-     */
-    String[] getGroups();
-
-    /**
-     * Checks if a player has permission.
-     *
-     * @param perm The permission to check
-     * @return true if the player has that permission
-     */
-    boolean hasPermission(String perm);
-
-    /**
-     * Check whether this actor has the given permission, and throw an
-     * exception if not.
-     *
-     * @param permission the permission
-     * @throws WorldEditPermissionException thrown if permission is not availabe
-     */
-    void checkPermission(String permission) throws WorldEditPermissionException;
 
     /**
      * Return whether this actor is a player.

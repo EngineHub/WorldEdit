@@ -19,10 +19,15 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.worldedit.util.Direction;
+
 /**
- * Direction.
+ * The player's direction.
+ *
+ * <p>In the future, this class will be replaced with {@link Direction}.</p>
  */
 public enum PlayerDirection {
+
     NORTH(new Vector(0, 0, -1), new Vector(-1, 0, 0), true),
     NORTH_EAST((new Vector(1, 0, -1)).normalize(), (new Vector(-1, 0, -1)).normalize(), false),
     EAST(new Vector(1, 0, 0), new Vector(0, 0, -1), true),
@@ -34,9 +39,9 @@ public enum PlayerDirection {
     UP(new Vector(0, 1, 0), new Vector(0, 0, 1), true),
     DOWN(new Vector(0, -1, 0), new Vector(0, 0, 1), true);
 
-    private Vector dir;
-    private Vector leftDir;
-    private boolean isOrthogonal;
+    private final Vector dir;
+    private final Vector leftDir;
+    private final boolean isOrthogonal;
 
     PlayerDirection(Vector vec, Vector leftDir, boolean isOrthogonal) {
         this.dir = vec;
@@ -56,4 +61,5 @@ public enum PlayerDirection {
     public boolean isOrthogonal() {
         return isOrthogonal;
     }
+
 }

@@ -19,9 +19,11 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.sk89q.worldedit.internal.cui.CUIRegion;
+
 /**
  * @deprecated This class only exists as to not break binary compatibility
  */
 @Deprecated
-public abstract class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
+public abstract class ExtendingCuboidRegionSelector extends AbstractLegacyRegionSelector implements CUIRegion {
 }

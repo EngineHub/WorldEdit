@@ -25,7 +25,7 @@ import com.sk89q.jnbt.NBTUtils;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.MobType;
+import com.sk89q.worldedit.blocks.metadata.MobType;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
 import java.util.HashMap;
@@ -33,8 +33,6 @@ import java.util.Map;
 
 /**
  * A mob spawner block.
- *
- * @author sk89q
  */
 public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
 
@@ -247,6 +245,6 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
         if (spawnDataTag != null) {
             this.spawnData = new CompoundTag("SpawnData", spawnDataTag.getValue());
         }
-
     }
+
 }

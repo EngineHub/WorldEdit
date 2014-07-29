@@ -26,19 +26,12 @@ import java.io.OutputStream;
 import java.util.List;
 
 /**
- * <p>
  * This class writes <strong>NBT</strong>, or <strong>Named Binary Tag</strong>
- * <code>Tag</code> objects to an underlying <code>OutputStream</code>.
- * </p>
+ * {@code Tag} objects to an underlying {@code OutputStream}.
  * 
- * <p>
- * The NBT format was created by Markus Persson, and the specification may be
+ * <p>The NBT format was created by Markus Persson, and the specification may be
  * found at <a href="http://www.minecraft.net/docs/NBT.txt">
- * http://www.minecraft.net/docs/NBT.txt</a>.
- * </p>
- * 
- * @author Graham Edgecombe
- * 
+ * http://www.minecraft.net/docs/NBT.txt</a>.</p>
  */
 public final class NBTOutputStream implements Closeable {
 
@@ -48,7 +41,7 @@ public final class NBTOutputStream implements Closeable {
     private final DataOutputStream os;
 
     /**
-     * Creates a new <code>NBTOutputStream</code>, which will write data to the
+     * Creates a new {@code NBTOutputStream}, which will write data to the
      * specified underlying output stream.
      * 
      * @param os
@@ -137,7 +130,7 @@ public final class NBTOutputStream implements Closeable {
     }
 
     /**
-     * Writes a <code>TAG_Byte</code> tag.
+     * Writes a {@code TAG_Byte} tag.
      * 
      * @param tag
      *            The tag.
@@ -149,7 +142,7 @@ public final class NBTOutputStream implements Closeable {
     }
 
     /**
-     * Writes a <code>TAG_Byte_Array</code> tag.
+     * Writes a {@code TAG_Byte_Array} tag.
      * 
      * @param tag
      *            The tag.
@@ -163,7 +156,7 @@ public final class NBTOutputStream implements Closeable {
     }
 
     /**
-     * Writes a <code>TAG_Compound</code> tag.
+     * Writes a {@code TAG_Compound} tag.
      * 
      * @param tag
      *            The tag.
@@ -178,7 +171,7 @@ public final class NBTOutputStream implements Closeable {
     }
 
     /**
-     * Writes a <code>TAG_List</code> tag.
+     * Writes a {@code TAG_List} tag.
      * 
      * @param tag
      *            The tag.
@@ -198,7 +191,7 @@ public final class NBTOutputStream implements Closeable {
     }
 
     /**
-     * Writes a <code>TAG_String</code> tag.
+     * Writes a {@code TAG_String} tag.
      * 
      * @param tag
      *            The tag.
@@ -212,7 +205,7 @@ public final class NBTOutputStream implements Closeable {
     }
 
     /**
-     * Writes a <code>TAG_Double</code> tag.
+     * Writes a {@code TAG_Double} tag.
      * 
      * @param tag
      *            The tag.
@@ -224,7 +217,7 @@ public final class NBTOutputStream implements Closeable {
     }
 
     /**
-     * Writes a <code>TAG_Float</code> tag.
+     * Writes a {@code TAG_Float} tag.
      * 
      * @param tag
      *            The tag.
@@ -236,7 +229,7 @@ public final class NBTOutputStream implements Closeable {
     }
 
     /**
-     * Writes a <code>TAG_Long</code> tag.
+     * Writes a {@code TAG_Long} tag.
      * 
      * @param tag
      *            The tag.
@@ -248,7 +241,7 @@ public final class NBTOutputStream implements Closeable {
     }
 
     /**
-     * Writes a <code>TAG_Int</code> tag.
+     * Writes a {@code TAG_Int} tag.
      * 
      * @param tag
      *            The tag.
@@ -260,7 +253,7 @@ public final class NBTOutputStream implements Closeable {
     }
 
     /**
-     * Writes a <code>TAG_Short</code> tag.
+     * Writes a {@code TAG_Short} tag.
      * 
      * @param tag
      *            The tag.
@@ -272,12 +265,9 @@ public final class NBTOutputStream implements Closeable {
     }
 
     /**
-     * Writes a <code>TAG_Empty</code> tag.
+     * Writes a {@code TAG_Empty} tag.
      * 
-     * @param tag
-     *            The tag.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag the tag
      */
     private void writeEndTagPayload(EndTag tag) {
         /* empty */
@@ -291,6 +281,7 @@ public final class NBTOutputStream implements Closeable {
         } 
     }
 
+    @Override
     public void close() throws IOException {
         os.close();
     }

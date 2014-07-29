@@ -36,20 +36,19 @@ import java.util.zip.GZIPInputStream;
  * Represents chunk stores that use Alpha's file format for storing chunks.
  * The code to resolve the filename is already implemented in this class
  * and an inheriting class merely needs to implement getInputStream().
- *
- * @author sk89q
  */
 public abstract class LegacyChunkStore extends ChunkStore {
+
     /**
      * Get the filename of a chunk.
      *
-     * @param pos
-     * @param separator
-     * @return
+     * @param position chunk position
+     * @param separator folder separator character
+     * @return pathname
      */
-    public static String getFilename(Vector2D pos, String separator) {
-        int x = pos.getBlockX();
-        int z = pos.getBlockZ();
+    public static String getFilename(Vector2D position, String separator) {
+        int x = position.getBlockX();
+        int z = position.getBlockZ();
 
         String folder1 = Integer.toString(divisorMod(x, 64), 36);
         String folder2 = Integer.toString(divisorMod(z, 64), 36);
@@ -63,25 +62,17 @@ public abstract class LegacyChunkStore extends ChunkStore {
      * Get the filename of a chunk, using the system's default path
      * separator.
      *
-     * @param pos
-     * @return
+     * @param position chunk position
+     * @return pathname
      */
-    public static String getFilename(Vector2D pos) {
-        return getFilename(pos, File.separator);
+    public static String getFilename(Vector2D position) {
+        return getFilename(position, File.separator);
     }
 
-    /**
-     * Get the tag for a chunk.
-     *
-     * @param pos
-     * @return tag
-     * @throws DataException
-     * @throws IOException
-     */
     @Override
-    public CompoundTag getChunkTag(Vector2D pos, World world) throws DataException, IOException {
-        int x = pos.getBlockX();
-        int z = pos.getBlockZ();
+    public CompoundTag getChunkTag(Vector2D position, World world) throws DataException, IOException {
+        int x = position.getBlockX();
+        int z = position.getBlockZ();
 
         String folder1 = Integer.toString(divisorMod(x, 64), 36);
         String folder2 = Integer.toString(divisorMod(z, 64), 36);
@@ -126,13 +117,6 @@ public abstract class LegacyChunkStore extends ChunkStore {
         }
     }
 
-    /**
-     * Modulus, divisor-style.
-     *
-     * @param a
-     * @param n
-     * @return
-     */
     private static int divisorMod(int a, int n) {
         return (int) (a - n * Math.floor(Math.floor(a) / (double) n));
     }
@@ -140,12 +124,12 @@ public abstract class LegacyChunkStore extends ChunkStore {
     /**
      * Get the input stream for a chunk file.
      *
-     * @param f1
-     * @param f2
-     * @param name
-     * @return
+     * @param f1 the first part of the path
+     * @param f2 the second part of the path
+     * @param name the name
+     * @return an input stream
      * @throws IOException
      */
-    protected abstract InputStream getInputStream(String f1, String f2, String name)
-            throws IOException, DataException;
+    protected abstract InputStream getInputStream(String f1, String f2, String name) throws IOException, DataException;
+
 }

@@ -13,6 +13,7 @@
   <allow pkg="com.thoughtworks.paranamer"/>
   <allow pkg="gnu.trove"/>
   <allow pkg="com.google.gson"/>
+  <allow pkg="net.royawesome.jlibnoise"/>
 
   <subpackage name="util.yaml">
     <allow pkg="org.yaml.snakeyaml"/>

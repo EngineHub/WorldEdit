@@ -19,11 +19,6 @@
 
 package com.sk89q.worldedit.blocks;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.sk89q.jnbt.ByteTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.ListTag;
@@ -32,10 +27,13 @@ import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.world.DataException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Represents a block that stores items.
- *
- * @author sk89q
  */
 public abstract class ContainerBlock extends BaseBlock implements TileEntityBlock {
     
@@ -54,7 +52,7 @@ public abstract class ContainerBlock extends BaseBlock implements TileEntityBloc
     /**
      * Get the list of items.
      *
-     * @return
+     * @return an array of stored items
      */
     public BaseItemStack[] getItems() {
         return this.items;
@@ -63,7 +61,7 @@ public abstract class ContainerBlock extends BaseBlock implements TileEntityBloc
     /**
      * Set the list of items.
      *
-     * @param items
+     * @param items an array of stored items
      */
     public void setItems(BaseItemStack[] items) {
         this.items = items;
@@ -79,7 +77,7 @@ public abstract class ContainerBlock extends BaseBlock implements TileEntityBloc
         data.put("id", new ShortTag("id", (short) item.getType()));
         data.put("Damage", new ShortTag("Damage", item.getData()));
         data.put("Count", new ByteTag("Count", (byte) item.getAmount()));
-        if (item.getEnchantments().size() > 0) {
+        if (!item.getEnchantments().isEmpty()) {
             List<CompoundTag> enchantmentList = new ArrayList<CompoundTag>();
             for(Map.Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
                 Map<String, Tag> enchantment = new HashMap<String, Tag>();
@@ -139,4 +137,5 @@ public abstract class ContainerBlock extends BaseBlock implements TileEntityBloc
         }
         return tags;
     }
+
 }

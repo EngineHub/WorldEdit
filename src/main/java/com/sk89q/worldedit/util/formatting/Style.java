@@ -127,7 +127,7 @@ public enum Style {
      * convert color codes from your custom format.
      */
     public static final char COLOR_CHAR = '\u00A7';
-    private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + String.valueOf(COLOR_CHAR) + "[0-9A-FK-OR]");
+    private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + COLOR_CHAR + "[0-9A-FK-OR]");
 
     private final int intCode;
     private final char code;
@@ -254,10 +254,10 @@ public enum Style {
                 Style color = getByChar(c);
 
                 if (color != null) {
-                    result = color.toString() + result;
+                    result = color + result;
 
                     // Once we find a color or reset we can stop searching
-                    if (color.isColor() || color.equals(RESET)) {
+                    if (color.isColor() || color == RESET) {
                         break;
                     }
                 }

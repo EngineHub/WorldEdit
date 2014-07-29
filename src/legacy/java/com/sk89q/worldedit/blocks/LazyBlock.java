@@ -29,12 +29,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * A implementation of a lazy block for {@link Extent#getLazyBlock(Vector)}
  * that takes the block's ID and metadata, but will defer loading of NBT
  * data until time of access.
- * </p>
- * NBT data is later loaded using a call to {@link Extent#getBlock(Vector)}
- * with a stored {@link Extent} and location.
- * </p>
- * All mutators on this object will throw an
- * {@link UnsupportedOperationException}.
+ *
+ * <p>NBT data is later loaded using a call to {@link Extent#getBlock(Vector)}
+ * with a stored {@link Extent} and location.</p>
+ *
+ * <p>All mutators on this object will throw an
+ * {@link UnsupportedOperationException}.</p>
  */
 public class LazyBlock extends BaseBlock {
 

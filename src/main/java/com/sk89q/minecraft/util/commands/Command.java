@@ -26,11 +26,10 @@ import java.lang.annotation.RetentionPolicy;
  * This annotation indicates a command. Methods should be marked with this
  * annotation to tell {@link CommandsManager} that the method is a command.
  * Note that the method name can actually be anything.
- *
- * @author sk89q
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
+
     /**
      * A list of aliases for the command. The first alias is the most
      * important -- it is the main name of the command. (The method name
@@ -42,7 +41,7 @@ public @interface Command {
 
     /**
      * Usage instruction. Example text for usage could be
-     * <code>[-h harps] [name] [message]</code>.
+     * {@code [-h harps] [name] [message]}.
      *
      * @return Usage instructions for a command
      */
@@ -85,9 +84,10 @@ public @interface Command {
     String help() default "";
 
     /**
+     * Get whether any flag can be used.
      *
-     *
-     * @return Whether any flag can be provided to the command, even if it is not in {@link #flags()}
+     * @return true if so
      */
     boolean anyFlags() default false;
+
 }

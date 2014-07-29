@@ -382,7 +382,7 @@ public class ForgeWorld extends AbstractWorld {
         } else if ((o instanceof ForgeWorld)) {
             ForgeWorld other = ((ForgeWorld) o);
             World otherWorld = other.worldRef.get();
-            World thisWorld = other.worldRef.get();
+            World thisWorld = worldRef.get();
             return otherWorld != null && thisWorld != null && otherWorld.equals(thisWorld);
         } else if (o instanceof com.sk89q.worldedit.world.World) {
             return ((com.sk89q.worldedit.world.World) o).getName().equals(getName());

@@ -71,7 +71,7 @@ public final class IntArrayTag extends Tag {
         if (name != null && !name.equals("")) {
             append = "(\"" + this.getName() + "\")";
         }
-        return "TAG_Int_Array" + append + ": " + hex.toString();
+        return "TAG_Int_Array" + append + ": " + hex;
     }
 
 }

@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.BlockWorldVector;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.WorldEditPermissionException;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.WorldVectorFace;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -464,9 +464,9 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     }
 
     @Override
-    public void checkPermission(String permission) throws WorldEditPermissionException {
+    public void checkPermission(String permission) throws AuthorizationException {
         if (!hasPermission(permission)) {
-            throw new WorldEditPermissionException();
+            throw new AuthorizationException();
         }
     }
 

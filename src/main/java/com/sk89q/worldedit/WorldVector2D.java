@@ -19,11 +19,12 @@
 
 package com.sk89q.worldedit;
 
+/**
+ * @deprecated Use {@link com.sk89q.worldedit.util.Location} wherever possible
+ */
+@Deprecated
 public class WorldVector2D extends Vector2D {
 
-    /**
-     * Represents the world.
-     */
     protected LocalWorld world;
 
     public WorldVector2D(LocalWorld world) {
@@ -55,12 +56,6 @@ public class WorldVector2D extends Vector2D {
         return world;
     }
 
-    /**
-     * Checks if another object is equivalent.
-     *
-     * @param obj
-     * @return whether the other object is equivalent
-     */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof WorldVector2D)) {

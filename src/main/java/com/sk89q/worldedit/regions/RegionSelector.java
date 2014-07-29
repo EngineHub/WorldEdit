@@ -19,9 +19,15 @@
 
 package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
+import com.sk89q.worldedit.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -32,12 +38,27 @@ import java.util.List;
 public interface RegionSelector {
 
     /**
+     * Get the world for the region selector.
+     *
+     * @return a world, which may be null
+     */
+    @Nullable
+    public World getWorld();
+
+    /**
+     * Set the world for the region selector.
+     *
+     * @param world the world, which may be null
+     */
+    public void setWorld(@Nullable World world);
+
+    /**
      * Called when the first point is selected.
      * 
      * @param position the position
      * @return true if something changed
      */
-    public boolean selectPrimary(Vector position);
+    public boolean selectPrimary(Vector position, SelectorLimits limits);
 
     /**
      * Called when the second point is selected.
@@ -45,7 +66,7 @@ public interface RegionSelector {
      * @param position the position
      * @return true if something changed
      */
-    public boolean selectSecondary(Vector position);
+    public boolean selectSecondary(Vector position, SelectorLimits limits);
 
     /**
      * Tell the player information about his/her primary selection.
@@ -56,9 +77,6 @@ public interface RegionSelector {
      */
     public void explainPrimarySelection(Actor actor, LocalSession session, Vector position);
 
-    @Deprecated
-    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position);
-
     /**
      * Tell the player information about his/her secondary selection.
      *
@@ -68,9 +86,6 @@ public interface RegionSelector {
      */
     public void explainSecondarySelection(Actor actor, LocalSession session, Vector position);
 
-    @Deprecated
-    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position);
-
     /**
      * The the player information about the region's changes. This may resend
      * all the defining region information if needed.
@@ -79,9 +94,6 @@ public interface RegionSelector {
      * @param session the session
      */
     public void explainRegionAdjust(Actor actor, LocalSession session);
-
-    @Deprecated
-    public void explainRegionAdjust(LocalPlayer player, LocalSession session);
 
     /**
      * Get the primary position.

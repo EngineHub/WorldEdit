@@ -20,11 +20,11 @@
 package com.sk89q.worldedit;
 
 /**
- * Extension of Vector that supports being compared as ints (for accuracy).
- *
- * @author sk89q
+ * Extension of {@code Vector} that that compares with other instances
+ * using integer components.
  */
 public class BlockVector extends Vector {
+
     public static final BlockVector ZERO = new BlockVector(0, 0, 0);
     public static final BlockVector UNIT_X = new BlockVector(1, 0, 0);
     public static final BlockVector UNIT_Y = new BlockVector(0, 1, 0);
@@ -32,55 +32,47 @@ public class BlockVector extends Vector {
     public static final BlockVector ONE = new BlockVector(1, 1, 1);
 
     /**
-     * Construct the Vector object.
+     * Construct an instance as a copy of another instance.
      *
-     * @param pt
+     * @param position the other position
      */
-    public BlockVector(Vector pt) {
-        super(pt);
+    public BlockVector(Vector position) {
+        super(position);
     }
 
     /**
-     * Construct the Vector object.
+     * Construct a new instance.
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param z the Z coordinate
      */
     public BlockVector(int x, int y, int z) {
         super(x, y, z);
     }
 
     /**
-     * Construct the Vector object.
+     * Construct a new instance.
      *
-     *
-     * @param x
-     * @param y
-     * @param z
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param z the Z coordinate
      */
     public BlockVector(float x, float y, float z) {
         super(x, y, z);
     }
 
     /**
-     * Construct the Vector object.
+     * Construct a new instance.
      *
-     *
-     * @param x
-     * @param y
-     * @param z
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param z the Z coordinate
      */
     public BlockVector(double x, double y, double z) {
         super(x, y, z);
     }
 
-    /**
-     * Checks if another object is equivalent.
-     *
-     * @param obj
-     * @return whether the other object is equivalent
-     */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Vector)) {
@@ -92,11 +84,6 @@ public class BlockVector extends Vector {
 
     }
 
-    /**
-     * Gets the hash code.
-     *
-     * @return hash code
-     */
     @Override
     public int hashCode() {
         return ((int) x << 19) ^
@@ -108,4 +95,5 @@ public class BlockVector extends Vector {
     public BlockVector toBlockVector() {
         return this;
     }
+
 }

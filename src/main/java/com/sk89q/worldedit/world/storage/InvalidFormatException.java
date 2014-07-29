@@ -21,14 +21,10 @@ package com.sk89q.worldedit.world.storage;
 
 import com.sk89q.worldedit.world.DataException;
 
-/**
- *
- * @author sk89q
- */
 public class InvalidFormatException extends DataException {
-    private static final long serialVersionUID = -3401820540902726145L;
 
     public InvalidFormatException(String msg) {
         super(msg);
     }
+
 }

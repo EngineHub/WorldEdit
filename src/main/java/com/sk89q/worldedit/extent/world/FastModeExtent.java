@@ -99,8 +99,7 @@ public class FastModeExtent extends AbstractDelegateExtent<Extent> {
         return new AbstractOperation() {
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
-                // TODO can we pass the RunContext in here?
-                if (dirtyChunks.size() > 0) {
+                if (!dirtyChunks.isEmpty()) {
                     world.fixAfterFastMode(dirtyChunks);
                 }
                 return null;

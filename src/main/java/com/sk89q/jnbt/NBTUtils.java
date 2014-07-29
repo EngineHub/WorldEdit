@@ -20,8 +20,6 @@
 package com.sk89q.jnbt;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
 import java.util.Map;
@@ -171,14 +169,13 @@ public final class NBTUtils {
     /**
      * Get child tag of a NBT structure.
      *
-     * @param items
-     * @param key
-     * @param expected
+     * @param items the map to read from
+     * @param key the key to look for
+     * @param expected the expected NBT class type
      * @return child tag
      * @throws InvalidFormatException
      */
-    public static <T extends Tag> T getChildTag(Map<String,Tag> items, String key,
-                                                Class<T> expected) throws InvalidFormatException {
+    public static <T extends Tag> T getChildTag(Map<String, Tag> items, String key, Class<T> expected) throws InvalidFormatException {
         if (!items.containsKey(key)) {
             throw new InvalidFormatException("Missing a \"" + key + "\" tag");
         }

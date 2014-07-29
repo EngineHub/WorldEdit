@@ -26,10 +26,10 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import java.nio.charset.Charset;
 
 /**
- * Handles incoming WorldEditCui init message
- * @author zml2008
+ * Handles incoming WorldEditCui init message.
  */
 public class CUIChannelListener implements PluginMessageListener {
+
     public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
     private final WorldEditPlugin plugin;
 
@@ -44,4 +44,5 @@ public class CUIChannelListener implements PluginMessageListener {
         session.handleCUIInitializationMessage(text);
         session.describeCUI(plugin.wrapPlayer(player));
     }
+
 }

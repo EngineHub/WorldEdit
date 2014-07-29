@@ -21,9 +21,6 @@ package com.sk89q.util;
 
 import java.lang.reflect.Field;
 
-/**
- * @author zml2008
- */
 public final class ReflectionUtil {
 
     private ReflectionUtil() {
@@ -37,8 +34,8 @@ public final class ReflectionUtil {
                 Field field = checkClass.getDeclaredField(name);
                 field.setAccessible(true);
                 return (T) field.get(from);
-            } catch (NoSuchFieldException e) {
-            } catch (IllegalAccessException e) {
+            } catch (NoSuchFieldException ignored) {
+            } catch (IllegalAccessException ignored) {
             }
         } while (checkClass.getSuperclass() != Object.class && ((checkClass = checkClass.getSuperclass()) != null));
         return null;

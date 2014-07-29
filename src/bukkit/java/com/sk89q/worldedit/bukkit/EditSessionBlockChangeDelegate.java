@@ -28,16 +28,16 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
  * Proxy class to catch calls to set blocks.
- *
- * @author sk89q
  */
 public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
+
     private EditSession editSession;
 
     public EditSessionBlockChangeDelegate(EditSession editSession) {
         this.editSession = editSession;
     }
 
+    @Override
     public boolean setRawTypeId(int x, int y, int z, int typeId) {
         try {
             return editSession.setBlock(new Vector(x, y, z), new BaseBlock(typeId));
@@ -46,6 +46,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
         }
     }
 
+    @Override
     public boolean setRawTypeIdAndData(int x, int y, int z, int typeId, int data) {
         try {
             return editSession.setBlock(new Vector(x, y, z), new BaseBlock(typeId, data));
@@ -54,23 +55,29 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
         }
     }
 
+    @Override
     public boolean setTypeId(int x, int y, int z, int typeId) {
         return setRawTypeId(x, y, z, typeId);
     }
 
+    @Override
     public boolean setTypeIdAndData(int x, int y, int z, int typeId, int data) {
         return setRawTypeIdAndData(x, y, z, typeId, data);
     }
 
+    @Override
     public int getTypeId(int x, int y, int z) {
         return editSession.getBlockType(new Vector(x, y, z));
     }
 
+    @Override
     public int getHeight() {
         return editSession.getWorld().getMaxY() + 1;
     }
 
+    @Override
     public boolean isEmpty(int x, int y, int z) {
         return editSession.getBlockType(new Vector(x, y, z)) == BlockID.AIR;
     }
+
 }

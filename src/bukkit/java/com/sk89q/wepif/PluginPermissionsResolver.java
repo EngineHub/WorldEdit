@@ -53,41 +53,51 @@ public class PluginPermissionsResolver implements PermissionsResolver {
         this.plugin = permissionsPlugin;
     }
 
+    @Override
     public void load() {
     }
 
+    @Override
     public boolean hasPermission(String name, String permission) {
         return resolver.hasPermission(name, permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, String name, String permission) {
         return resolver.hasPermission(worldName, name, permission);
     }
 
+    @Override
     public boolean inGroup(String player, String group) {
         return resolver.inGroup(player, group);
     }
 
+    @Override
     public String[] getGroups(String player) {
         return resolver.getGroups(player);
     }
 
+    @Override
     public boolean hasPermission(OfflinePlayer player, String permission) {
         return resolver.hasPermission(player, permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
         return resolver.hasPermission(worldName, player, permission);
     }
 
+    @Override
     public boolean inGroup(OfflinePlayer player, String group) {
         return resolver.inGroup(player, group);
     }
 
+    @Override
     public String[] getGroups(OfflinePlayer player) {
         return resolver.getGroups(player);
     }
 
+    @Override
     public String getDetectionMessage() {
         return "Using plugin '" + this.plugin.getDescription().getName() + "' for permissions.";
     }

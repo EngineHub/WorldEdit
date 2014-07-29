@@ -24,6 +24,7 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -78,6 +79,7 @@ public class WorldEditCommands {
     @CommandPermissions("worldedit.reload")
     public void reload(Actor actor) throws WorldEditException {
         we.getServer().reload();
+        we.getEventBus().post(new ConfigurationLoadEvent(we.getPlatformManager().queryCapability(Capability.CONFIGURATION).getConfiguration()));
         actor.print("Configuration reloaded!");
     }
 

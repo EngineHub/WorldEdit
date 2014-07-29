@@ -43,25 +43,31 @@ public class DinnerPermsResolver implements PermissionsResolver {
         return new DinnerPermsResolver(server);
     }
 
+    @Override
     public void load() {
     }
 
+    @Override
     public boolean hasPermission(String name, String permission) {
         return hasPermission(server.getOfflinePlayer(name), permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, String name, String permission) {
         return hasPermission(worldName, server.getOfflinePlayer(name), permission);
     }
 
+    @Override
     public boolean inGroup(String name, String group) {
         return inGroup(server.getOfflinePlayer(name), group);
     }
 
+    @Override
     public String[] getGroups(String name) {
         return getGroups(server.getOfflinePlayer(name));
     }
 
+    @Override
     public boolean hasPermission(OfflinePlayer player, String permission) {
         Permissible perms = getPermissible(player);
         if (perms == null) {
@@ -86,10 +92,12 @@ public class DinnerPermsResolver implements PermissionsResolver {
         return internalHasPermission(perms, "*") == 1;
     }
 
+    @Override
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
         return hasPermission(player, permission); // no per-world ability to check permissions in dinnerperms
     }
 
+    @Override
     public boolean inGroup(OfflinePlayer player, String group) {
         final Permissible perms = getPermissible(player);
         if (perms == null) {
@@ -100,6 +108,7 @@ public class DinnerPermsResolver implements PermissionsResolver {
         return perms.isPermissionSet(perm) && perms.hasPermission(perm);
     }
 
+    @Override
     public String[] getGroups(OfflinePlayer player) {
         Permissible perms = getPermissible(player);
         if (perms == null) {
@@ -149,6 +158,7 @@ public class DinnerPermsResolver implements PermissionsResolver {
         }
     }
 
+    @Override
     public String getDetectionMessage() {
         return "Using the Bukkit Permissions API.";
     }

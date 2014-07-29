@@ -22,18 +22,20 @@ package com.sk89q.worldedit.util;
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A less simple implementation of {@link LocalConfiguration} using YAML configuration files.
- *
- * @author sk89q
+ * A less simple implementation of {@link LocalConfiguration}
+ * using YAML configuration files.
  */
 public class YAMLConfiguration extends LocalConfiguration {
+
     protected final YAMLProcessor config;
     protected final Logger logger;
 
@@ -47,8 +49,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         try {
             config.load();
         } catch (IOException e) {
-            logger.severe("Error loading WorldEdit configuration: " + e);
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Error loading WorldEdit configuration", e);
         }
 
         profile = config.getBoolean("debug", profile);
@@ -106,12 +107,12 @@ public class YAMLConfiguration extends LocalConfiguration {
 
         allowSymlinks = config.getBoolean("files.allow-symbolic-links", false);
         LocalSession.MAX_HISTORY_SIZE = Math.max(0, config.getInt("history.size", 15));
-        LocalSession.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;
+        SessionManager.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;
 
         showHelpInfo = config.getBoolean("show-help-on-first-use", true);
 
         String snapshotsDir = config.getString("snapshots.directory", "");
-        if (snapshotsDir.length() > 0) {
+        if (!snapshotsDir.isEmpty()) {
             snapshotRepo = new SnapshotRepository(snapshotsDir);
         }
 
@@ -119,4 +120,5 @@ public class YAMLConfiguration extends LocalConfiguration {
         shellSaveType = type.equals("") ? null : type;
 
     }
+    
 }

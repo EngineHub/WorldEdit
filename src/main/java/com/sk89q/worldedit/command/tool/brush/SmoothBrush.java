@@ -45,9 +45,10 @@ public class SmoothBrush implements Brush {
         this.naturalOnly = naturalOnly;
     }
 
-    public void build(EditSession editSession, Vector pos, Pattern mat, double size) throws MaxChangedBlocksException {
-        WorldVector min = new WorldVector(LocalWorldAdapter.adapt(editSession.getWorld()), pos.subtract(size, size, size));
-        Vector max = pos.add(size, size + 10, size);
+    @Override
+    public void build(EditSession editSession, Vector position, Pattern pattern, double size) throws MaxChangedBlocksException {
+        WorldVector min = new WorldVector(LocalWorldAdapter.adapt(editSession.getWorld()), position.subtract(size, size, size));
+        Vector max = position.add(size, size + 10, size);
         Region region = new CuboidRegion(editSession.getWorld(), min, max);
         HeightMap heightMap = new HeightMap(editSession, region, naturalOnly);
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));

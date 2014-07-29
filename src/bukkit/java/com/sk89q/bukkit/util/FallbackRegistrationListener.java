@@ -24,9 +24,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-/**
-* @author zml2008
-*/
 public class FallbackRegistrationListener implements Listener {
 
     private final CommandMap commandRegistration;
@@ -41,4 +38,5 @@ public class FallbackRegistrationListener implements Listener {
             event.setCancelled(true);
         }
     }
+
 }

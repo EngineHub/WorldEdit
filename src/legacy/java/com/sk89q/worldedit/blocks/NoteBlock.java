@@ -29,8 +29,6 @@ import java.util.Map;
 
 /**
  * A note block.
- * 
- * @author sk89q
  */
 public class NoteBlock extends BaseBlock implements TileEntityBlock {
 
@@ -120,4 +118,5 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
             note = ((ByteTag) t).getValue();
         }
     }
+
 }

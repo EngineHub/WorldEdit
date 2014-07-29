@@ -20,19 +20,28 @@
 package com.sk89q.worldedit;
 
 /**
- *
- * @author sk89q
+ * Thrown when an unknown direction is specified or detected.
  */
 public class UnknownDirectionException extends WorldEditException {
-    private static final long serialVersionUID = 5705931351293248358L;
 
     private String dir;
 
+    /**
+     * Create a new instance.
+     *
+     * @param dir the input that was tried
+     */
     public UnknownDirectionException(String dir) {
         this.dir = dir;
     }
 
+    /**
+     * Get the direction string that was input.
+     *
+     * @return input
+     */
     public String getDirection() {
         return dir;
     }
+
 }

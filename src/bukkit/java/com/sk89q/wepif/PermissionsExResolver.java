@@ -48,10 +48,12 @@ public class PermissionsExResolver extends DinnerPermsResolver {
         this.manager = manager;
     }
 
+    @Override
     public boolean hasPermission(String worldName, String name, String permission) {
         return manager.has(name, permission, worldName);
     }
 
+    @Override
     public boolean hasPermission(OfflinePlayer player, String permission) {
         Permissible permissible = getPermissible(player);
         if (permissible == null) {
@@ -61,14 +63,17 @@ public class PermissionsExResolver extends DinnerPermsResolver {
         }
     }
 
+    @Override
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
         return hasPermission(worldName, player.getName(), permission);
     }
 
+    @Override
     public boolean inGroup(OfflinePlayer player, String group) {
         return super.inGroup(player, group) || manager.getUser(player.getName()).inGroup(group);
     }
 
+    @Override
     public String[] getGroups(OfflinePlayer player) {
         if (getPermissible(player) == null) {
             PermissionUser user = manager.getUser(player.getName());
@@ -81,6 +86,7 @@ public class PermissionsExResolver extends DinnerPermsResolver {
         }
     }
 
+    @Override
     public String getDetectionMessage() {
         return "PermissionsEx detected! Using PermissionsEx for permissions.";
     }

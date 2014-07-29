@@ -57,8 +57,8 @@ public class FuzzyBlockMask extends AbstractMask {
     }
 
     @Override
-    public boolean matches(EditSession editSession, Vector pos) {
-        BaseBlock compare = new BaseBlock(editSession.getBlockType(pos), editSession.getBlockData(pos));
+    public boolean matches(EditSession editSession, Vector position) {
+        BaseBlock compare = new BaseBlock(editSession.getBlockType(position), editSession.getBlockData(position));
         return Blocks.containsFuzzy(filter, compare);
     }
 }

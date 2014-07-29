@@ -34,22 +34,11 @@ import java.util.Enumeration;
 
 /**
  * Represents the chunk store used by Minecraft alpha but zipped.
- *
- * @author sk89q
  */
 public class ZippedMcRegionChunkStore extends McRegionChunkStore {
 
-    /**
-     * ZIP file.
-     */
     protected File zipFile;
-    /**
-     * Actual ZIP.
-     */
     protected ZipFile zip;
-    /**
-     * Folder inside the ZIP file to read from, if any.
-     */
     protected String folder;
 
     /**
@@ -57,13 +46,12 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
      * path to look into in the ZIP for the files. Use a blank string for
      * the folder to not look into a subdirectory.
      *
-     * @param zipFile
-     * @param folder
+     * @param zipFile the ZIP file
+     * @param folder the folder
      * @throws IOException
      * @throws ZipException
      */
-    public ZippedMcRegionChunkStore(File zipFile, String folder)
-            throws IOException, ZipException {
+    public ZippedMcRegionChunkStore(File zipFile, String folder) throws IOException, ZipException {
         this.zipFile = zipFile;
         this.folder = folder;
 
@@ -71,32 +59,21 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
     }
 
     /**
-     * Create an instance. The subfolder containing the chunk data will
+     * Create an instance. The sub-folder containing the chunk data will
      * be detected.
      *
-     * @param zipFile
+     * @param zipFile the ZIP file
      * @throws IOException
      * @throws ZipException
      */
-    public ZippedMcRegionChunkStore(File zipFile)
-            throws IOException, ZipException {
+    public ZippedMcRegionChunkStore(File zipFile) throws IOException, ZipException {
         this.zipFile = zipFile;
 
         zip = new ZipFile(zipFile);
     }
 
-    /**
-     * Get the input stream for a chunk file.
-     *
-     * @param name
-     * @return
-     * @throws IOException
-     * @throws DataException
-     */
     @Override
-    protected InputStream getInputStream(String name, String worldname)
-            throws IOException, DataException {
-
+    protected InputStream getInputStream(String name, String worldName) throws IOException, DataException {
         // Detect subfolder for the world's files
         if (folder != null) {
             if (!folder.equals("")) {
@@ -107,7 +84,7 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
             for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements(); ) {
                 ZipEntry testEntry = e.nextElement();
                 // Check for world
-                if (testEntry.getName().startsWith(worldname + "/")) {
+                if (testEntry.getName().startsWith(worldName + "/")) {
                     if (pattern.matcher(testEntry.getName()).matches()) { // does entry end in .mca
                         folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf("/"));
                         name = folder + "/" + name;
@@ -119,7 +96,7 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
 
             // Check if world is found
             if (folder == null) {
-                throw new MissingWorldException("Target world is not present in ZIP.", worldname);
+                throw new MissingWorldException("Target world is not present in ZIP.", worldName);
             }
         }
 
@@ -137,8 +114,8 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
     /**
      * Get an entry from the ZIP, trying both types of slashes.
      * 
-     * @param file
-     * @return
+     * @param file the file
+     * @return a ZIP entry
      */
     private ZipEntry getEntry(String file) {
         ZipEntry entry = zip.getEntry(file);
@@ -148,11 +125,6 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
         return zip.getEntry(file.replace("/", "\\"));
     }
 
-    /**
-     * Close resources.
-     *
-     * @throws IOException
-     */
     @Override
     public void close() throws IOException {
         zip.close();

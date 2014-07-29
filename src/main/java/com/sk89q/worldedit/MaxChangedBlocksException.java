@@ -20,19 +20,29 @@
 package com.sk89q.worldedit;
 
 /**
- *
- * @author sk89q
+ * Thrown when too many blocks are changed (which may be limited
+ * due to the configuration).
  */
 public class MaxChangedBlocksException extends WorldEditException {
-    private static final long serialVersionUID = -2621044030640945259L;
 
     int maxBlocks;
 
+    /**
+     * Create a new instance.
+     *
+     * @param maxBlocks the maximum number of blocks that can be changed
+     */
     public MaxChangedBlocksException(int maxBlocks) {
         this.maxBlocks = maxBlocks;
     }
 
+    /**
+     * Get the limit.
+     *
+     * @return the maximum number of blocks that can be changed
+     */
     public int getBlockLimit() {
         return maxBlocks;
     }
+
 }

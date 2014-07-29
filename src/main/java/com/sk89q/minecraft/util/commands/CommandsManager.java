@@ -19,6 +19,8 @@
 
 package com.sk89q.minecraft.util.commands;
 
+import com.sk89q.util.StringUtil;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -31,16 +33,14 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sk89q.util.StringUtil;
-
 /**
- * <p>Manager for handling commands. This allows you to easily process commands,
- * including nested commands, by correctly annotating methods of a class.</p>
+ * Manager for handling commands. This allows you to easily process commands,
+ * including nested commands, by correctly annotating methods of a class.
  *
  * <p>To use this, it is merely a matter of registering classes containing
  * the commands (as methods with the proper annotations) with the
  * manager. When you want to process a command, use one of the
- * <code>execute</code> methods. If something is wrong, such as incorrect
+ * {@code execute} methods. If something is wrong, such as incorrect
  * usage, insufficient permissions, or a missing command altogether, an
  * exception will be raised for upstream handling.</p>
  *
@@ -57,13 +57,11 @@ import com.sk89q.util.StringUtil;
  * allows for fast command handling. Method invocation still has to be done
  * with reflection, but this is quite fast in that of itself.</p>
  *
- * @author sk89q
  * @param <T> command sender class
  */
+@SuppressWarnings("ProtectedField")
 public abstract class CommandsManager<T> {
-    /**
-     * Logger for general errors.
-     */
+
     protected static final Logger logger =
             Logger.getLogger(CommandsManager.class.getCanonicalName());
 
@@ -105,7 +103,7 @@ public abstract class CommandsManager<T> {
      * instances will be created of the command classes and methods will
      * not be called statically.
      *
-     * @param cls
+     * @param cls the class to register
      */
     public void register(Class<?> cls) {
         registerMethods(cls, null);
@@ -119,7 +117,7 @@ public abstract class CommandsManager<T> {
      * not be called statically. A List of {@link Command} annotations from
      * registered commands is returned.
      *
-     * @param cls
+     * @param cls the class to register
      * @return A List of {@link Command} annotations from registered commands,
      * for use in eg. a dynamic command registration system.
      */
@@ -131,8 +129,8 @@ public abstract class CommandsManager<T> {
      * Register the methods of a class. This will automatically construct
      * instances as necessary.
      *
-     * @param cls
-     * @param parent
+     * @param cls the class to register
+     * @param parent the parent method
      * @return Commands Registered
      */
     public List<Command> registerMethods(Class<?> cls, Method parent) {
@@ -143,8 +141,6 @@ public abstract class CommandsManager<T> {
                 Object obj = getInjector().getInstance(cls);
                 return registerMethods(cls, parent, obj);
             }
-        } catch (NoSuchMethodException e) {
-            logger.log(Level.SEVERE, "Failed to register command class " + cls.getName(), e);
         } catch (InvocationTargetException e) {
             logger.log(Level.SEVERE, "Failed to register command class " + cls.getName(), e);
         } catch (IllegalAccessException e) {
@@ -158,10 +154,10 @@ public abstract class CommandsManager<T> {
     /**
      * Register the methods of a class.
      *
-     * @param cls
-     * @param parent
-     * @param obj
-     * @return
+     * @param cls the class to register
+     * @param parent the parent method
+     * @param obj the object whose methods will become commands if they are annotated
+     * @return a list of commands
      */
     private List<Command> registerMethods(Class<?> cls, Method parent, Object obj) {
         Map<String, Method> map;
@@ -207,14 +203,14 @@ public abstract class CommandsManager<T> {
                 final String desc = cmd.desc();
 
                 final String usage = cmd.usage();
-                if (usage.length() == 0) {
+                if (usage.isEmpty()) {
                     descs.put(commandName, desc);
                 } else {
                     descs.put(commandName, usage + " - " + desc);
                 }
 
                 String help = cmd.help();
-                if (help.length() == 0) {
+                if (help.isEmpty()) {
                     help = desc;
                 }
 
@@ -257,8 +253,8 @@ public abstract class CommandsManager<T> {
      * Checks to see whether there is a command named such at the root level.
      * This will check aliases as well.
      *
-     * @param command
-     * @return
+     * @param command the command
+     * @return true if the command exists
      */
     public boolean hasCommand(String command) {
         return commands.get(null).containsKey(command.toLowerCase());
@@ -267,12 +263,17 @@ public abstract class CommandsManager<T> {
     /**
      * Get a list of command descriptions. This is only for root commands.
      *
-     * @return
+     * @return a map of commands
      */
     public Map<String, String> getCommands() {
         return descs;
     }
 
+    /**
+     * Get the mapping of methods under a parent command.
+     *
+     * @return the mapping
+     */
     public Map<Method, Map<String, Method>> getMethods() {
         return commands;
     }
@@ -280,7 +281,7 @@ public abstract class CommandsManager<T> {
     /**
      * Get a map from command name to help message. This is only for root commands.
      *
-     * @return
+     * @return a map of help messages for each command
      */
     public Map<String, String> getHelpMessages() {
         return helpMessages;
@@ -289,10 +290,10 @@ public abstract class CommandsManager<T> {
     /**
      * Get the usage string for a command.
      *
-     * @param args
-     * @param level
-     * @param cmd
-     * @return
+     * @param args the arguments
+     * @param level the depth of the command
+     * @param cmd the command annotation
+     * @return the usage string
      */
     protected String getUsage(String[] args, int level, Command cmd) {
         final StringBuilder command = new StringBuilder();
@@ -306,7 +307,7 @@ public abstract class CommandsManager<T> {
         command.append(getArguments(cmd));
 
         final String help = cmd.help();
-        if (help.length() > 0) {
+        if (!help.isEmpty()) {
             command.append("\n\n");
             command.append(help);
         }
@@ -318,9 +319,9 @@ public abstract class CommandsManager<T> {
         final String flags = cmd.flags();
 
         final StringBuilder command2 = new StringBuilder();
-        if (flags.length() > 0) {
+        if (!flags.isEmpty()) {
             String flagString = flags.replaceAll(".:", "");
-            if (flagString.length() > 0) {
+            if (!flagString.isEmpty()) {
                 command2.append("[-");
                 for (int i = 0; i < flagString.length(); ++i) {
                     command2.append(flagString.charAt(i));
@@ -337,16 +338,14 @@ public abstract class CommandsManager<T> {
     /**
      * Get the usage string for a nested command.
      *
-     * @param args
-     * @param level
-     * @param method
-     * @param player
-     * @return
-     * @throws CommandException
+     * @param args the arguments
+     * @param level the depth of the command
+     * @param method the parent method
+     * @param player the player
+     * @return the usage string
+     * @throws CommandException on some error
      */
-    protected String getNestedUsage(String[] args, int level,
-            Method method, T player) throws CommandException {
-
+    protected String getNestedUsage(String[] args, int level, Method method, T player) throws CommandException {
         StringBuilder command = new StringBuilder();
 
         command.append("/");
@@ -373,7 +372,7 @@ public abstract class CommandsManager<T> {
             }
         }
 
-        if (allowedCommands.size() > 0) {
+        if (!allowedCommands.isEmpty()) {
             command.append(StringUtil.joinString(allowedCommands, "|", 0));
         } else {
             if (!found) {
@@ -397,10 +396,9 @@ public abstract class CommandsManager<T> {
      * @param args arguments
      * @param player command source
      * @param methodArgs method arguments
-     * @throws CommandException
+     * @throws CommandException thrown when the command throws an error
      */
-    public void execute(String cmd, String[] args, T player,
-            Object... methodArgs) throws CommandException {
+    public void execute(String cmd, String[] args, T player, Object... methodArgs) throws CommandException {
 
         String[] newArgs = new String[args.length + 1];
         System.arraycopy(args, 0, newArgs, 1, args.length);
@@ -414,14 +412,12 @@ public abstract class CommandsManager<T> {
     /**
      * Attempt to execute a command.
      *
-     * @param args
-     * @param player
-     * @param methodArgs
-     * @throws CommandException
+     * @param args the arguments
+     * @param player the player
+     * @param methodArgs the arguments for the method
+     * @throws CommandException thrown on command error
      */
-    public void execute(String[] args, T player,
-            Object... methodArgs) throws CommandException {
-
+    public void execute(String[] args, T player, Object... methodArgs) throws CommandException {
         Object[] newMethodArgs = new Object[methodArgs.length + 1];
         System.arraycopy(methodArgs, 0, newMethodArgs, 1, methodArgs.length);
         executeMethod(null, args, player, newMethodArgs, 0);
@@ -430,16 +426,14 @@ public abstract class CommandsManager<T> {
     /**
      * Attempt to execute a command.
      *
-     * @param parent
-     * @param args
-     * @param player
-     * @param methodArgs
-     * @param level
-     * @throws CommandException
+     * @param parent the parent method
+     * @param args an array of arguments
+     * @param player the player
+     * @param methodArgs the array of method arguments
+     * @param level the depth of the command
+     * @throws CommandException thrown on a command error
      */
-    public void executeMethod(Method parent, String[] args,
-            T player, Object[] methodArgs, int level) throws CommandException {
-
+    public void executeMethod(Method parent, String[] args, T player, Object[] methodArgs, int level) throws CommandException {
         String cmdName = args[level];
 
         Map<String, Method> map = commands.get(parent);
@@ -529,8 +523,7 @@ public abstract class CommandsManager<T> {
         }
     }
 
-    public void invokeMethod(Method parent, String[] args, T player, Method method,
-            Object instance, Object[] methodArgs, int level) throws CommandException {
+    public void invokeMethod(Method parent, String[] args, T player, Method method, Object instance, Object[] methodArgs, int level) throws CommandException {
         try {
             method.invoke(instance, methodArgs);
         } catch (IllegalArgumentException e) {
@@ -549,9 +542,9 @@ public abstract class CommandsManager<T> {
     /**
      * Returns whether a player has access to a command.
      *
-     * @param method
-     * @param player
-     * @return
+     * @param method the method
+     * @param player the player
+     * @return true if permission is granted
      */
     protected boolean hasPermission(Method method, T player) {
         CommandPermissions perms = method.getAnnotation(CommandPermissions.class);
@@ -571,15 +564,17 @@ public abstract class CommandsManager<T> {
     /**
      * Returns whether a player permission..
      *
-     * @param player
-     * @param perm
-     * @return
+     * @param player the player
+     * @param permission the permission
+     * @return true if permission is granted
      */
-    public abstract boolean hasPermission(T player, String perm);
+    public abstract boolean hasPermission(T player, String permission);
 
     /**
      * Get the injector used to create new instances. This can be
      * null, in which case only classes will be registered statically.
+     *
+     * @return an injector instance
      */
     public Injector getInjector() {
         return injector;

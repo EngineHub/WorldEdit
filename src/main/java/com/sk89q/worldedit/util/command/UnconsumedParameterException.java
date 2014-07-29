@@ -26,8 +26,6 @@ import com.sk89q.worldedit.util.command.parametric.ParameterException;
  * case of the user providing too many parameters.
  */
 public class UnconsumedParameterException extends ParameterException {
-
-    private static final long serialVersionUID = 4449104854894946023L;
     
     private String unconsumed;
 

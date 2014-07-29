@@ -19,36 +19,36 @@
 
 package com.sk89q.worldedit.world.storage;
 
+import javax.annotation.Nullable;
+
 /**
- *
- * @author sk89q
+ * Thrown if the world is missing.
  */
 public class MissingWorldException extends ChunkStoreException {
 
-    private static final long serialVersionUID = 6487395784195658467L;
-
-    private String worldname;
+    private String worldName;
 
     public MissingWorldException() {
         super();
     }
 
-    public MissingWorldException(String worldname) {
+    public MissingWorldException(String worldName) {
         super();
-        this.worldname = worldname;
+        this.worldName = worldName;
     }
 
-    public MissingWorldException(String msg, String worldname) {
+    public MissingWorldException(String msg, String worldName) {
         super(msg);
-        this.worldname = worldname;
+        this.worldName = worldName;
     }
 
     /**
      * Get name of the world in question. May be null if unknown.
      *
-     * @return
+     * @return the world name
      */
-    public String getWorldname() {
-        return worldname;
+    @Nullable
+    public String getWorldName() {
+        return worldName;
     }
 }

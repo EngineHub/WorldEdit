@@ -25,19 +25,19 @@ import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
  * Block data related classes.
  *
  * @deprecated use {@link com.sk89q.worldedit.blocks.BlockData}
- * @author sk89q
  */
 @Deprecated
 public final class BlockData {
+
     private BlockData() {
     }
 
     /**
      * Rotate a block's data value 90 degrees (north->east->south->west->north);
      * 
-     * @param type
-     * @param data
-     * @return
+     * @param type type ID of the block
+     * @param data data value of the block
+     * @return a new data value
      * @deprecated use {@link com.sk89q.worldedit.blocks.BlockData#rotate90(int, int)}
      */
     @Deprecated
@@ -47,10 +47,10 @@ public final class BlockData {
 
     /**
      * Rotate a block's data value -90 degrees (north<-east<-south<-west<-north);
-     * 
-     * @param type
-     * @param data
-     * @return
+     *
+     * @param type type ID of the block
+     * @param data data value of the block
+     * @return a new data value
      * @deprecated use {@link com.sk89q.worldedit.blocks.BlockData#rotate90Reverse(int, int)}
      */
     @Deprecated
@@ -60,10 +60,10 @@ public final class BlockData {
 
     /**
      * Flip a block's data value.
-     * 
-     * @param type
-     * @param data
-     * @return
+     *
+     * @param type type ID of the block
+     * @param data data value of the block
+     * @return a new data value
      * @deprecated use return {@link com.sk89q.worldedit.blocks.BlockData#flip(int, int)}
      */
     @Deprecated
@@ -73,11 +73,11 @@ public final class BlockData {
 
     /**
      * Flip a block's data value.
-     * 
-     * @param type
-     * @param data
-     * @param direction
-     * @return
+     *
+     * @param type type ID of the block
+     * @param data data value of the block
+     * @param direction the direction to flip
+     * @return a new data value
      * @deprecated use {@link com.sk89q.worldedit.blocks.BlockData#flip(int, int, FlipDirection)}
      */
     @Deprecated
@@ -104,8 +104,9 @@ public final class BlockData {
     /**
      * Returns the data value for the next color of cloth in the rainbow. This
      * should not be used if you want to just increment the data value.
-     * @param data
-     * @return
+     *
+     * @param data the data value
+     * @return a new data value
      * @deprecated use {@link com.sk89q.worldedit.blocks.BlockData#nextClothColor(int)}
      */
     @Deprecated
@@ -116,12 +117,15 @@ public final class BlockData {
     /**
      * Returns the data value for the previous ext color of cloth in the rainbow.
      * This should not be used if you want to just increment the data value.
-     * @param data
-     * @return
+     *
+     * @param data the data value
+     * @return a new data value
      * @deprecated use {@link com.sk89q.worldedit.blocks.BlockData#prevClothColor(int)}
      */
     @Deprecated
     public static int prevClothColor(int data) {
         return com.sk89q.worldedit.blocks.BlockData.prevClothColor(data);
     }
+
+
 }

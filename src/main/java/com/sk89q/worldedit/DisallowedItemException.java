@@ -20,11 +20,9 @@
 package com.sk89q.worldedit;
 
 /**
- *
- * @author sk89q
+ * Thrown when a disallowed item is used.
  */
 public class DisallowedItemException extends WorldEditException {
-    private static final long serialVersionUID = -8080026411461549979L;
 
     private String type;
 
@@ -40,4 +38,5 @@ public class DisallowedItemException extends WorldEditException {
     public String getID() {
         return type;
     }
+
 }

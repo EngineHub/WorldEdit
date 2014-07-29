@@ -17,20 +17,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.regions.selector.limit;
 
-public class UnknownBiomeTypeException extends WorldEditException {
-    private static final long serialVersionUID = -6239229394330814896L;
+import com.google.common.base.Optional;
 
-    private String typeName;
+/**
+ * Defines limits for selections.
+ */
+public interface SelectorLimits {
 
-    public UnknownBiomeTypeException(String typeName) {
-        super("Unknown " + typeName + " biome type.");
-        this.typeName = typeName;
-    }
+    /**
+     * Get the optionally defined vertex limit for polygons.
+     *
+     * <p>If one is not present, then there is no limitation.</p>
+     *
+     * @return an optional vertex limit
+     */
+    Optional<Integer> getPolygonVertexLimit();
 
-    public String getTypeName() {
-        return typeName;
-    }
+    /**
+     * Get the optionally defined vertex limit for polyhedrons.
+     *
+     * <p>If one is not present, then there is no limitation.</p>
+     *
+     * @return an optional vertex limit
+     */
+    Optional<Integer> getPolyhedronVertexLimit();
 
 }

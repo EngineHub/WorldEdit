@@ -35,9 +35,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PermissionsResolverManager implements PermissionsResolver {
+
     private static final String CONFIG_HEADER = "#\r\n" +
             "# WEPIF Configuration File\r\n" +
             "#\r\n" +
@@ -116,8 +118,8 @@ public class PermissionsResolverManager implements PermissionsResolver {
                     break;
                 }
             } catch (Throwable e) {
-                logger.warning("Error in factory method for " + resolverClass.getSimpleName() + ": " + e);
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Error in factory method for " + resolverClass.getSimpleName(), e);
+                continue;
             }
         }
         if (permissionResolver == null) {
@@ -136,42 +138,52 @@ public class PermissionsResolverManager implements PermissionsResolver {
         logger.info("WEPIF: " + permissionResolver.getDetectionMessage());
     }
 
+    @Override
     public void load() {
         findResolver();
     }
 
+    @Override
     public boolean hasPermission(String name, String permission) {
         return permissionResolver.hasPermission(name, permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, String name, String permission) {
         return permissionResolver.hasPermission(worldName, name, permission);
     }
 
+    @Override
     public boolean inGroup(String player, String group) {
         return permissionResolver.inGroup(player, group);
     }
 
+    @Override
     public String[] getGroups(String player) {
         return permissionResolver.getGroups(player);
     }
 
+    @Override
     public boolean hasPermission(OfflinePlayer player, String permission) {
         return permissionResolver.hasPermission(player, permission);
     }
 
+    @Override
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
         return permissionResolver.hasPermission(worldName, player, permission);
     }
 
+    @Override
     public boolean inGroup(OfflinePlayer player, String group) {
         return permissionResolver.inGroup(player, group);
     }
 
+    @Override
     public String[] getGroups(OfflinePlayer player) {
         return permissionResolver.getGroups(player);
     }
 
+    @Override
     public String getDetectionMessage() {
         return "Using WEPIF for permissions";
     }
@@ -182,15 +194,14 @@ public class PermissionsResolverManager implements PermissionsResolver {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Failed to create new configuration file", e);
             }
         }
         config = new YAMLProcessor(file, false, YAMLFormat.EXTENDED);
         try {
             config.load();
         } catch (IOException e) {
-            logger.severe("Error loading WEPIF Config: " + e);
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Error loading WEPIF configuration", e);
         }
         List<String> keys = config.getKeys(null);
         config.setHeader(CONFIG_HEADER);
@@ -263,7 +274,6 @@ public class PermissionsResolverManager implements PermissionsResolver {
     }
 
     public static class MissingPluginException extends Exception {
-        private static final long serialVersionUID = 7044832912491608706L;
     }
 
     class ServerListener implements org.bukkit.event.Listener {

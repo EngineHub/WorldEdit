@@ -37,7 +37,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  * Handles all events thrown in relation to a Player
@@ -56,24 +55,10 @@ public class WorldEditListener implements Listener {
     /**
      * Construct the object;
      *
-     * @param plugin
+     * @param plugin the plugin
      */
     public WorldEditListener(WorldEditPlugin plugin) {
         this.plugin = plugin;
-    }
-
-    /**
-     * Called when a player leaves a server
-     *
-     * @param event Relevant event details
-     */
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        if (!plugin.getInternalPlatform().isHookingEvents()) {
-            return;
-        }
-
-        plugin.getWorldEdit().markExpire(plugin.wrapPlayer(event.getPlayer()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -82,7 +67,7 @@ public class WorldEditListener implements Listener {
             return;
         }
 
-        // this will automatically refresh their sesssion, we don't have to do anything
+        // this will automatically refresh their session, we don't have to do anything
         WorldEdit.getInstance().getSession(plugin.wrapPlayer(event.getPlayer()));
     }
 

@@ -22,7 +22,12 @@ package com.sk89q.worldedit.bukkit;
 import org.bukkit.entity.Player;
 import com.sk89q.worldedit.LocalSession;
 
+/**
+ * @deprecated use the regular API
+ */
+@Deprecated
 public class WorldEditAPI {
+
     private WorldEditPlugin plugin;
 
     public WorldEditAPI(WorldEditPlugin plugin) {
@@ -32,11 +37,12 @@ public class WorldEditAPI {
     /**
      * Get the session for a player.
      *
-     * @param player
-     * @return
+     * @param player the player
+     * @return a session
      */
     public LocalSession getSession(Player player) {
         return plugin.getWorldEdit().getSession(
                 new BukkitPlayer(plugin, plugin.getServerInterface(), player));
     }
+
 }

@@ -29,8 +29,9 @@ public interface CommandCallable extends CommandCompleter {
 
     /**
      * Execute the correct command based on the input.
-     * </p>
-     * The implementing class must perform the necessary permission checks.
+     *
+     * <p>The implementing class must perform the necessary permission
+     * checks.</p>
      *
      * @param arguments the arguments
      * @param locals the locals

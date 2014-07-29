@@ -19,17 +19,18 @@
 
 package com.sk89q.worldedit.masks;
 
-import java.util.Set;
 import com.sk89q.worldedit.blocks.BaseBlock;
+
+import java.util.Set;
 
 /**
  * A filter that matches blocks based on block types.
  *
- * @deprecated replaced by {@link #BlockMask} 
- * @author sk89q
+ * @deprecated replaced by {@link #BlockMask}
  */
 @Deprecated
 public class BlockTypeMask extends BlockMask {
+
     public BlockTypeMask() {
         super();
     }
@@ -49,4 +50,5 @@ public class BlockTypeMask extends BlockMask {
     public void add(int type) {
         add(new BaseBlock(type));
     }
+
 }

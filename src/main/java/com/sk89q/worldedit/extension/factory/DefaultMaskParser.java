@@ -29,6 +29,7 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.BiomeMask2D;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
+import com.sk89q.worldedit.function.mask.ExpressionMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
 import com.sk89q.worldedit.function.mask.Masks;
@@ -36,6 +37,7 @@ import com.sk89q.worldedit.function.mask.NoiseFilter;
 import com.sk89q.worldedit.function.mask.OffsetMask;
 import com.sk89q.worldedit.function.mask.RegionMask;
 import com.sk89q.worldedit.function.mask.SolidBlockMask;
+import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.math.noise.RandomNoise;
 import com.sk89q.worldedit.session.request.Request;
@@ -139,6 +141,13 @@ class DefaultMaskParser extends InputParser<Mask> {
             case '%':
                 int i = Integer.parseInt(component.substring(1));
                 return new NoiseFilter(new RandomNoise(), ((double) i) / 100);
+
+            case '=':
+                try {
+                    return new ExpressionMask(component.substring(1));
+                } catch (ExpressionException e) {
+                    throw new InputParseException("Invalid expression: " + e.getMessage());
+                }
 
             case '!':
                 if (component.length() > 1) {

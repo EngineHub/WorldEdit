@@ -21,6 +21,11 @@
 
 package com.sk89q.worldedit.util;
 
+import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,20 +36,16 @@ import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-
-import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Simple LocalConfiguration that loads settings using
- * <code>java.util.Properties</code>.
- *
- * @author sk89q
+ * {@code java.util.Properties}.
  */
 public class PropertiesConfiguration extends LocalConfiguration {
+
+    private static final Logger log = Logger.getLogger(PropertiesConfiguration.class.getCanonicalName());
 
     protected Properties properties;
     protected File path;
@@ -52,7 +53,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
     /**
      * Construct the object. The configuration isn't loaded yet.
      *
-     * @param path
+     * @param path the path tot he configuration
      */
     public PropertiesConfiguration(File path) {
         this.path = path;
@@ -60,19 +61,15 @@ public class PropertiesConfiguration extends LocalConfiguration {
         properties = new Properties();
     }
 
-    /**
-     * Load the configuration file.
-     */
     @Override
     public void load() {
         InputStream stream = null;
         try {
             stream = new FileInputStream(path);
             properties.load(stream);
-        } catch (FileNotFoundException e) {
-            WorldEdit.logger.warning("Configuration file not found - using defaults");
+        } catch (FileNotFoundException ignored) {
         } catch (IOException e) {
-            e.printStackTrace();
+            log.log(Level.WARNING, "Failed to read configuration", e);
         } finally {
             if (stream != null) {
                 try {
@@ -117,7 +114,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 
         String snapshotsDir = getString("snapshots-dir", "");
-        if (snapshotsDir.length() > 0) {
+        if (!snapshotsDir.isEmpty()) {
             snapshotRepo = new SnapshotRepository(snapshotsDir);
         }
 
@@ -127,9 +124,9 @@ public class PropertiesConfiguration extends LocalConfiguration {
             output = new FileOutputStream(path);
             properties.store(output, "Don't put comments; they get removed");
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            log.log(Level.WARNING, "Failed to write configuration", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.log(Level.WARNING, "Failed to write configuration", e);
         } finally {
             if (output != null) {
                 try {
@@ -143,9 +140,9 @@ public class PropertiesConfiguration extends LocalConfiguration {
     /**
      * Get a string value.
      *
-     * @param key
-     * @param def
-     * @return
+     * @param key the key
+     * @param def the default value
+     * @return the value
      */
     protected String getString(String key, String def) {
         if (def == null) {
@@ -163,9 +160,9 @@ public class PropertiesConfiguration extends LocalConfiguration {
     /**
      * Get a boolean value.
      *
-     * @param key
-     * @param def
-     * @return
+     * @param key the key
+     * @param def the default value
+     * @return the value
      */
     protected boolean getBool(String key, boolean def) {
         String val = properties.getProperty(key);
@@ -181,9 +178,9 @@ public class PropertiesConfiguration extends LocalConfiguration {
     /**
      * Get an integer value.
      *
-     * @param key
-     * @param def
-     * @return
+     * @param key the key
+     * @param def the default value
+     * @return the value
      */
     protected int getInt(String key, int def) {
         String val = properties.getProperty(key);
@@ -203,9 +200,9 @@ public class PropertiesConfiguration extends LocalConfiguration {
     /**
      * Get a double value.
      *
-     * @param key
-     * @param def
-     * @return
+     * @param key the key
+     * @param def the default value
+     * @return the value
      */
     protected double getDouble(String key, double def) {
         String val = properties.getProperty(key);
@@ -225,9 +222,9 @@ public class PropertiesConfiguration extends LocalConfiguration {
     /**
      * Get a double value.
      *
-     * @param key
-     * @param def
-     * @return
+     * @param key the key
+     * @param def the default value
+     * @return the value
      */
     protected Set<Integer> getIntSet(String key, int[] def) {
         String val = properties.getProperty(key);
@@ -251,4 +248,5 @@ public class PropertiesConfiguration extends LocalConfiguration {
             return set;
         }
     }
+
 }

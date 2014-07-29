@@ -19,36 +19,25 @@
 
 package com.sk89q.worldedit.world.storage;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.regex.Pattern;
-import java.util.zip.ZipException;
-import java.util.Enumeration;
-
 import com.sk89q.worldedit.world.DataException;
 import de.schlichtherle.util.zip.ZipEntry;
 import de.schlichtherle.util.zip.ZipFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.regex.Pattern;
+import java.util.zip.ZipException;
+
 /**
  * Represents the chunk store used by Minecraft alpha but zipped. Uses
  * the replacement classes for java.util.zip.* from TrueZip.
- *
- * @author sk89q
  */
 public class TrueZipLegacyChunkStore extends LegacyChunkStore {
-    /**
-     * ZIP file.
-     */
-    @SuppressWarnings("unused")
+
     private File zipFile;
-    /**
-     * Actual ZIP.
-     */
     private ZipFile zip;
-    /**
-     * Folder inside the ZIP file to read from, if any.
-     */
     private String folder;
 
     /**
@@ -56,13 +45,12 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
      * path to look into in the ZIP for the files. Use a blank string for
      * the folder to not look into a subdirectory.
      *
-     * @param zipFile
-     * @param folder
+     * @param zipFile the ZIP file to open
+     * @param folder the folder to look into in the ZIP
      * @throws IOException
      * @throws ZipException
      */
-    public TrueZipLegacyChunkStore(File zipFile, String folder)
-            throws IOException, ZipException {
+    public TrueZipLegacyChunkStore(File zipFile, String folder) throws IOException, ZipException {
         this.zipFile = zipFile;
         this.folder = folder;
 
@@ -70,15 +58,14 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
     }
 
     /**
-     * Create an instance. The subfolder containing the chunk data will
+     * Create an instance. The subf-older containing the chunk data will
      * be detected.
      *
-     * @param zipFile
+     * @param zipFile the ZIP file to open
      * @throws IOException
      * @throws ZipException
      */
-    public TrueZipLegacyChunkStore(File zipFile)
-            throws IOException, ZipException {
+    public TrueZipLegacyChunkStore(File zipFile) throws IOException, ZipException {
         this.zipFile = zipFile;
 
         zip = new ZipFile(zipFile);
@@ -87,17 +74,16 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
     /**
      * Get the input stream for a chunk file.
      *
-     * @param f1
-     * @param f2
-     * @param name
-     * @return
+     * @param f1 the first part of the filename
+     * @param f2 the second part of the filename
+     * @param name the name of the file
+     * @return an input stream
      * @throws IOException
      * @throws DataException
      */
     @Override
     @SuppressWarnings("unchecked")
-    protected InputStream getInputStream(String f1, String f2, String name)
-            throws IOException, DataException {
+    protected InputStream getInputStream(String f1, String f2, String name) throws IOException, DataException {
         String file = f1 + "/" + f2 + "/" + name;
 
         // Detect subfolder for the world's files
@@ -117,8 +103,7 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
 
                 // So not there either...
                 if (testEntry == null) {
-                    for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements();) {
-
+                    for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements(); ) {
                         testEntry = e.nextElement();
 
                         // Whoo, found level.dat!
@@ -149,8 +134,8 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
     /**
      * Get an entry from the ZIP, trying both types of slashes.
      *
-     * @param file
-     * @return
+     * @param file the file
+     * @return an entry
      */
     private ZipEntry getEntry(String file) {
         ZipEntry entry = zip.getEntry(file);
@@ -160,11 +145,6 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
         return zip.getEntry(file.replace("/", "\\"));
     }
 
-    /**
-     * Close resources.
-     *
-     * @throws IOException
-     */
     @Override
     public void close() throws IOException {
         zip.close();
@@ -174,4 +154,5 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
     public boolean isValid() {
         return true; // Yeah, oh well
     }
+
 }

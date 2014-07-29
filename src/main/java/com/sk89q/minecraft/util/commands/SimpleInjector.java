@@ -21,8 +21,12 @@ package com.sk89q.minecraft.util.commands;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SimpleInjector implements Injector {
+
+    private static final Logger log = Logger.getLogger(SimpleInjector.class.getCanonicalName());
     private Object[] args;
     private Class<?>[] argClasses;
 
@@ -34,10 +38,25 @@ public class SimpleInjector implements Injector {
         }
     }
 
-    public Object getInstance(Class<?> clazz) throws InvocationTargetException,
-            IllegalAccessException, InstantiationException, NoSuchMethodException {
-        Constructor<?> ctr = clazz.getConstructor(argClasses);
-        ctr.setAccessible(true);
-        return ctr.newInstance(args);
+    @Override
+    public Object getInstance(Class<?> clazz) {
+        try {
+            Constructor<?> ctr = clazz.getConstructor(argClasses);
+            ctr.setAccessible(true);
+            return ctr.newInstance(args);
+        } catch (NoSuchMethodException e) {
+            log.log(Level.SEVERE, "Error initializing commands class " + clazz, e);
+            return null;
+        } catch (InvocationTargetException e) {
+            log.log(Level.SEVERE, "Error initializing commands class " + clazz, e);
+            return null;
+        } catch (InstantiationException e) {
+            log.log(Level.SEVERE, "Error initializing commands class " + clazz, e);
+            return null;
+        } catch (IllegalAccessException e) {
+            log.log(Level.SEVERE, "Error initializing commands class " + clazz, e);
+            return null;
+        }
     }
+    
 }

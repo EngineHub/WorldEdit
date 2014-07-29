@@ -17,34 +17,37 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit;
+package com.sk89q.worldedit.regions.selector.limit;
 
-import org.bukkit.Server;
-import org.bukkit.entity.Player;
-import com.sk89q.worldedit.SessionCheck;
-import com.sk89q.worldedit.WorldEdit;
+import com.google.common.base.Optional;
 
 /**
- * Used to remove expired sessions in Bukkit.
+ * No limits at all.
  */
-class SessionTimer implements Runnable {
+public class PermissiveSelectorLimits implements SelectorLimits {
 
-    private WorldEdit worldEdit;
-    private SessionCheck checker;
+    private static final PermissiveSelectorLimits INSTANCE = new PermissiveSelectorLimits();
 
-    SessionTimer(WorldEdit worldEdit, final Server server) {
-        this.worldEdit = worldEdit;
-        this.checker = new SessionCheck() {
-            public boolean isOnlinePlayer(String name) {
-                Player player = server.getPlayer(name);
-                return player != null && player.isOnline();
-            }
-        };
+    private PermissiveSelectorLimits() {
     }
 
     @Override
-    public void run() {
-        worldEdit.flushExpiredSessions(checker);
+    public Optional<Integer> getPolygonVertexLimit() {
+        return Optional.absent();
+    }
+
+    @Override
+    public Optional<Integer> getPolyhedronVertexLimit() {
+        return Optional.absent();
+    }
+
+    /**
+     * Get a static instance.
+     *
+     * @return an instance
+     */
+    public static PermissiveSelectorLimits getInstance() {
+        return INSTANCE;
     }
 
 }

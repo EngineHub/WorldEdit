@@ -27,6 +27,7 @@ import com.sk89q.worldedit.internal.cui.SelectionPointEvent;
 import com.sk89q.worldedit.regions.EllipsoidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
@@ -36,32 +37,24 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A {@link RegionSelector} for {@link EllipsoidRegion}s.
+ * Creates a {@code EllipsoidRegionSelector} from a user's selections.
  */
 public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.EllipsoidRegionSelector implements RegionSelector, CUIRegion {
 
-    protected EllipsoidRegion region;
-    protected boolean started = false;
+    protected transient EllipsoidRegion region;
+    protected transient boolean started = false;
 
     /**
-     * Create a new selector.
+     * Create a new selector with a {@code null} world.
      */
     public EllipsoidRegionSelector() {
         this((World) null);
     }
 
     /**
-     * @deprecated cast {@code world} to {@link World}
-     */
-    @Deprecated
-    public EllipsoidRegionSelector(@Nullable LocalWorld world) {
-        this((World) world);
-    }
-
-    /**
      * Create a new selector.
      *
-     * @param world the world
+     * @param world the world, which may be {@code null}
      */
     public EllipsoidRegionSelector(@Nullable World world) {
         region = new EllipsoidRegion(world, new Vector(), new Vector());
@@ -102,20 +95,31 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
      * @param center the center
      * @param radius the radius
      */
-    public EllipsoidRegionSelector(@Nullable LocalWorld world, Vector center, Vector radius) {
+    public EllipsoidRegionSelector(@Nullable World world, Vector center, Vector radius) {
         this(world);
 
         region.setCenter(center);
         region.setRadius(radius);
     }
 
+    @Nullable
     @Override
-    public boolean selectPrimary(Vector pos) {
-        if (pos.equals(region.getCenter()) && region.getRadius().lengthSq() == 0) {
+    public World getWorld() {
+        return region.getWorld();
+    }
+
+    @Override
+    public void setWorld(@Nullable World world) {
+        region.setWorld(world);
+    }
+
+    @Override
+    public boolean selectPrimary(Vector position, SelectorLimits limits) {
+        if (position.equals(region.getCenter()) && region.getRadius().lengthSq() == 0) {
             return false;
         }
 
-        region.setCenter(pos.toBlockVector());
+        region.setCenter(position.toBlockVector());
         region.setRadius(new Vector());
         started = true;
 
@@ -123,12 +127,12 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
     }
 
     @Override
-    public boolean selectSecondary(Vector pos) {
+    public boolean selectSecondary(Vector position, SelectorLimits limits) {
         if (!started) {
             return false;
         }
 
-        final Vector diff = pos.subtract(region.getCenter());
+        final Vector diff = position.subtract(region.getCenter());
         final Vector minRadius = Vector.getMaximum(diff, diff.multiply(-1.0));
         region.extendRadius(minRadius);
         return true;
@@ -247,21 +251,6 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
     @Override
     public BlockVector getPrimaryPosition() throws IncompleteRegionException {
         return region.getCenter().toBlockVector();
-    }
-
-    @Override
-    public void explainPrimarySelection(LocalPlayer player, LocalSession session, Vector position) {
-        explainPrimarySelection((Actor) player, session, position);
-    }
-
-    @Override
-    public void explainSecondarySelection(LocalPlayer player, LocalSession session, Vector position) {
-        explainSecondarySelection((Actor) player, session, position);
-    }
-
-    @Override
-    public void explainRegionAdjust(LocalPlayer player, LocalSession session) {
-        explainRegionAdjust((Actor) player, session);
     }
 
 }

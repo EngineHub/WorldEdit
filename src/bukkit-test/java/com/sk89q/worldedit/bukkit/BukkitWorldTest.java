@@ -23,14 +23,13 @@ import com.sk89q.worldedit.util.TreeGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * @author zml2008
- */
 public class BukkitWorldTest {
+
     @Test
     public void testTreeTypeMapping() {
         for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
             Assert.assertFalse("No mapping for: " + type, BukkitWorld.toBukkitTreeType(type) == null);
         }
     }
+
 }

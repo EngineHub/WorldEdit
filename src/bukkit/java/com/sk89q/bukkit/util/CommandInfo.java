@@ -19,10 +19,8 @@
 
 package com.sk89q.bukkit.util;
 
-/**
- * @author zml2008
- */
 public class CommandInfo {
+
     private final String[] aliases;
     private final Object registeredWith;
     private final String usage, desc;
@@ -63,4 +61,5 @@ public class CommandInfo {
     public Object getRegisteredWith() {
         return registeredWith;
     }
+
 }

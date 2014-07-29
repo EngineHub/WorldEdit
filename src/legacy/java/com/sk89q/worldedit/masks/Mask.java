@@ -33,8 +33,8 @@ public interface Mask {
     /**
      * Called one time before each edit session.
      *
-     * @param session
-     * @param player
+     * @param session a session
+     * @param player a player
      * @param target target of the brush, null if not a brush mask
      */
     void prepare(LocalSession session, LocalPlayer player, Vector target);
@@ -45,9 +45,10 @@ public interface Mask {
      * as getting a BaseBlock has unneeded overhead in most block querying
      * situations (enumerating a chest's contents is a waste, for example).
      *
-     * @param editSession
-     * @param pos
-     * @return
+     * @param editSession an instance
+     * @param position the position to check
+     * @return true if it matches
      */
-    boolean matches(EditSession editSession, Vector pos);
+    boolean matches(EditSession editSession, Vector position);
+
 }

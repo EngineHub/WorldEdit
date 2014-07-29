@@ -19,20 +19,22 @@
 
 package com.sk89q.worldedit.world.snapshot;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Calendar;
 
 /**
  * A name parser attempts to make sense of a filename for a snapshot.
- *
- * @author sk89q
  */
 public interface SnapshotDateParser {
+
     /**
      * Attempt to detect a date from a file.
      * 
-     * @param file
+     * @param file the file
      * @return date or null
      */
+    @Nullable
     public Calendar detectDate(File file);
+
 }

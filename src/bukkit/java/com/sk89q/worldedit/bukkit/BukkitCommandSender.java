@@ -19,18 +19,26 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.WorldEditPermissionException;
+import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import javax.annotation.Nullable;
 import java.io.File;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class BukkitCommandSender implements Actor {
+
+    /**
+     * One time generated ID.
+     */
+    private static final UUID DEFAULT_ID = UUID.fromString("a233eb4b-4cab-42cd-9fd9-7e7b9a3f74be");
 
     private CommandSender sender;
 
@@ -40,6 +48,11 @@ public class BukkitCommandSender implements Actor {
         checkArgument(!(sender instanceof Player), "Cannot wrap a player");
 
         this.sender = sender;
+    }
+
+    @Override
+    public UUID getUniqueId() {
+        return DEFAULT_ID;
     }
 
     @Override
@@ -91,7 +104,7 @@ public class BukkitCommandSender implements Actor {
     }
 
     @Override
-    public void checkPermission(String permission) throws WorldEditPermissionException {
+    public void checkPermission(String permission) throws AuthorizationException {
     }
 
     @Override
@@ -113,4 +126,29 @@ public class BukkitCommandSender implements Actor {
     public void dispatchCUIEvent(CUIEvent event) {
     }
 
+    @Override
+    public SessionKey getSessionKey() {
+        return new SessionKey() {
+            @Nullable
+            @Override
+            public String getName() {
+                return null;
+            }
+
+            @Override
+            public boolean isActive() {
+                return false;
+            }
+
+            @Override
+            public boolean isPersistent() {
+                return false;
+            }
+
+            @Override
+            public UUID getUniqueId() {
+                return DEFAULT_ID;
+            }
+        };
+    }
 }

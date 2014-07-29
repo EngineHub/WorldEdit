@@ -30,20 +30,29 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.session.SessionKey;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 public class BukkitPlayer extends LocalPlayer {
+
     private Player player;
     private WorldEditPlugin plugin;
 
     public BukkitPlayer(WorldEditPlugin plugin, ServerInterface server, Player player) {
         this.plugin = plugin;
         this.player = player;
+    }
+
+    @Override
+    public UUID getUniqueId() {
+        return player.getUniqueId();
     }
 
     @Override
@@ -192,4 +201,48 @@ public class BukkitPlayer extends LocalPlayer {
     public <T> T getFacet(Class<? extends T> cls) {
         return null;
     }
+
+    @Override
+    public SessionKey getSessionKey() {
+        return new SessionKeyImpl(this.player.getUniqueId(), player.getName());
+    }
+
+    private static class SessionKeyImpl implements SessionKey {
+        // If not static, this will leak a reference
+
+        private final UUID uuid;
+        private final String name;
+
+        private SessionKeyImpl(UUID uuid, String name) {
+            this.uuid = uuid;
+            this.name = name;
+        }
+
+        @Override
+        public UUID getUniqueId() {
+            return uuid;
+        }
+
+        @Nullable
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public boolean isActive() {
+            // This is a thread safe call on CraftBukkit because it uses a
+            // CopyOnWrite list for the list of players, but the Bukkit
+            // specification doesn't require thread safety (though the
+            // spec is extremely incomplete)
+            return Bukkit.getServer().getPlayerExact(name) != null;
+        }
+
+        @Override
+        public boolean isPersistent() {
+            return true;
+        }
+
+    }
+
 }

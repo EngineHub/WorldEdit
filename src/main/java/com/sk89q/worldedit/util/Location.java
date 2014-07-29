@@ -26,13 +26,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents a location in a world with has a direction.
- * </p>
- * Like {@code Vectors}, {@code Locations} are immutable and mutator methods
- * will create a new copy.
- * </p>
- * At the moment, but this may change in the future, {@link #hashCode()} and
+ *
+ * <p>Like {@code Vectors}, {@code Locations} are immutable and mutator methods
+ * will create a new copy.</p>
+ *
+ * <p>At the moment, but this may change in the future, {@link #hashCode()} and
  * {@link #equals(Object)} are subject to minor differences caused by
- * floating point errors.
+ * floating point errors.</p>
  */
 public class Location {
 

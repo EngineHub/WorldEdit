@@ -19,16 +19,34 @@
 
 package com.sk89q.worldedit;
 
+/**
+ * Raised when an item is used when a block was expected.
+ */
 public class NotABlockException extends WorldEditException {
+
+    /**
+     * Create a new instance.
+     */
     public NotABlockException() {
         super("This item is not a block.");
     }
 
-    public NotABlockException(String type) {
-        super("The item '"+type+"' is not a block.");
+    /**
+     * Create a new instance.
+     *
+     * @param input the input that was used
+     */
+    public NotABlockException(String input) {
+        super("The item '" + input + "' is not a block.");
     }
 
-    public NotABlockException(int typeId) {
-        super("The item with the ID "+typeId+" is not a block.");
+    /**
+     * Create a new instance.
+     *
+     * @param input the input that was used
+     */
+    public NotABlockException(int input) {
+        super("The item with the ID " + input + " is not a block.");
     }
+
 }

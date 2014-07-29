@@ -21,36 +21,25 @@
 
 package com.sk89q.worldedit.world.storage;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.regex.Pattern;
-import java.util.zip.ZipException;
-import java.util.Enumeration;
-
 import com.sk89q.worldedit.world.DataException;
 import de.schlichtherle.util.zip.ZipEntry;
 import de.schlichtherle.util.zip.ZipFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.regex.Pattern;
+import java.util.zip.ZipException;
+
 /**
  * Represents the chunk store used by Minecraft but zipped. Uses
  * the replacement classes for java.util.zip.* from TrueZip.
- *
- * @author sk89q
  */
 public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
 
-    /**
-     * ZIP file.
-     */
     protected File zipFile;
-    /**
-     * Actual ZIP.
-     */
     protected ZipFile zip;
-    /**
-     * Folder inside the ZIP file to read from, if any.
-     */
     protected String folder;
 
     /**
@@ -58,13 +47,12 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
      * path to look into in the ZIP for the files. Use a blank string for
      * the folder to not look into a subdirectory.
      *
-     * @param zipFile
-     * @param folder
+     * @param zipFile the ZIP file
+     * @param folder the folder to look into
      * @throws IOException
      * @throws ZipException 
      */
-    public TrueZipMcRegionChunkStore(File zipFile, String folder)
-            throws IOException, ZipException {
+    public TrueZipMcRegionChunkStore(File zipFile, String folder) throws IOException, ZipException {
         this.zipFile = zipFile;
         this.folder = folder;
 
@@ -75,12 +63,11 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
      * Create an instance. The subfolder containing the chunk data will
      * be detected.
      *
-     * @param zipFile
+     * @param zipFile the ZIP file
      * @throws IOException
      * @throws ZipException
      */
-    public TrueZipMcRegionChunkStore(File zipFile)
-            throws IOException, ZipException {
+    public TrueZipMcRegionChunkStore(File zipFile) throws IOException, ZipException {
         this.zipFile = zipFile;
 
         zip = new ZipFile(zipFile);
@@ -89,16 +76,15 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
     /**
      * Get the input stream for a chunk file.
      *
-     * @param name
-     * @return
+     * @param name the name
+     * @param worldName the world name
+     * @return an input stream
      * @throws IOException
      * @throws DataException
      */
     @Override
     @SuppressWarnings("unchecked")
-    protected InputStream getInputStream(String name, String worldname)
-            throws IOException, DataException {
-
+    protected InputStream getInputStream(String name, String worldName) throws IOException, DataException {
         // Detect subfolder for the world's files
         if (folder != null) {
             if (!folder.equals("")) {
@@ -107,11 +93,11 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
         } else {
             Pattern pattern = Pattern.compile(".*\\.mc[ra]$");
             // World pattern
-            Pattern worldPattern = Pattern.compile(worldname + "\\$");
+            Pattern worldPattern = Pattern.compile(worldName + "\\$");
             for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements(); ) {
                 ZipEntry testEntry = e.nextElement();
                 // Check for world
-                if (worldPattern.matcher(worldname).matches()) {
+                if (worldPattern.matcher(worldName).matches()) {
                     // Check for file
                     if (pattern.matcher(testEntry.getName()).matches()) {
                         folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf("/"));
@@ -123,7 +109,7 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
 
             // Check if world is found
             if (folder == null) {
-                throw new MissingWorldException("Target world is not present in ZIP.", worldname);
+                throw new MissingWorldException("Target world is not present in ZIP.", worldName);
             }
         }
 
@@ -141,8 +127,8 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
     /**
      * Get an entry from the ZIP, trying both types of slashes.
      * 
-     * @param file
-     * @return
+     * @param file the file
+     * @return an entry
      */
     private ZipEntry getEntry(String file) {
         ZipEntry entry = zip.getEntry(file);
@@ -152,11 +138,6 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
         return zip.getEntry(file.replace("/", "\\"));
     }
 
-    /**
-     * Close resources.
-     *
-     * @throws IOException
-     */
     @Override
     public void close() throws IOException {
         zip.close();
@@ -176,4 +157,5 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
 
         return false;
     }
+
 }

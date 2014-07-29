@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extension.factory;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.blocks.metadata.MobType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.extension.input.InputParseException;
