@@ -41,8 +41,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.EllipsoidRegionSelector implements RegionSelector, CUIRegion {
 
-    protected EllipsoidRegion region;
-    protected boolean started = false;
+    protected transient EllipsoidRegion region;
+    protected transient boolean started = false;
 
     /**
      * Create a new selector with a {@code null} world.
@@ -100,6 +100,17 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
 
         region.setCenter(center);
         region.setRadius(radius);
+    }
+
+    @Nullable
+    @Override
+    public World getWorld() {
+        return region.getWorld();
+    }
+
+    @Override
+    public void setWorld(@Nullable World world) {
+        region.setWorld(world);
     }
 
     @Override

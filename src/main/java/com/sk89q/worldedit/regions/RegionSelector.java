@@ -25,7 +25,9 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
+import com.sk89q.worldedit.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -34,6 +36,21 @@ import java.util.List;
  * by selecting two corners of the cuboid.
  */
 public interface RegionSelector {
+
+    /**
+     * Get the world for the region selector.
+     *
+     * @return a world, which may be null
+     */
+    @Nullable
+    public World getWorld();
+
+    /**
+     * Set the world for the region selector.
+     *
+     * @param world the world, which may be null
+     */
+    public void setWorld(@Nullable World world);
 
     /**
      * Called when the first point is selected.

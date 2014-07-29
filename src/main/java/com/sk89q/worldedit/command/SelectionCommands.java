@@ -45,6 +45,7 @@ import com.sk89q.worldedit.regions.selector.CylinderRegionSelector;
 import com.sk89q.worldedit.regions.selector.EllipsoidRegionSelector;
 import com.sk89q.worldedit.regions.selector.ExtendingCuboidRegionSelector;
 import com.sk89q.worldedit.regions.selector.Polygonal2DRegionSelector;
+import com.sk89q.worldedit.regions.selector.RegionSelectorType;
 import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.Countable;
@@ -709,13 +710,13 @@ public class SelectionCommands {
 
     @Command(
         aliases = { "/sel", ";", "/desel", "/deselect" },
+        flags = "d",
         usage = "[cuboid|extend|poly|ellipsoid|sphere|cyl|convex]",
         desc = "Choose a region selector",
         min = 0,
         max = 1
     )
     public void select(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
         final World world = player.getWorld();
         if (args.argsLength() == 0) {
             session.getRegionSelector(world).clear();
@@ -773,6 +774,23 @@ public class SelectionCommands {
 
             player.printRaw(ColorCodeBuilder.asColorCodes(box));
             return;
+        }
+
+        if (args.hasFlag('d')) {
+            RegionSelectorType found = null;
+            for (RegionSelectorType type : RegionSelectorType.values()) {
+                if (type.getSelectorClass() == selector.getClass()) {
+                    found = type;
+                    break;
+                }
+            }
+
+            if (found != null) {
+                session.setDefaultRegionSelector(found);
+                player.print("Your default region selector is now " + found.name() + ".");
+            } else {
+                throw new RuntimeException("Something unexpected happened. Please report this.");
+            }
         }
 
         session.setRegionSelector(world, selector);

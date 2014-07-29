@@ -40,9 +40,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegionSelector implements RegionSelector, CUIRegion {
 
-    protected BlockVector position1;
-    protected BlockVector position2;
-    protected CuboidRegion region;
+    protected transient BlockVector position1;
+    protected transient BlockVector position2;
+    protected transient CuboidRegion region;
 
     /**
      * Create a new region selector with a {@code null} world.
@@ -104,6 +104,17 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
         this.position2 = position2.toBlockVector();
         region.setPos1(position1);
         region.setPos2(position2);
+    }
+
+    @Nullable
+    @Override
+    public World getWorld() {
+        return region.getWorld();
+    }
+
+    @Override
+    public void setWorld(@Nullable World world) {
+        region.setWorld(world);
     }
 
     @Override

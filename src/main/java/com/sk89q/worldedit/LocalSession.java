@@ -38,6 +38,7 @@ import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
+import com.sk89q.worldedit.regions.selector.RegionSelectorType;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.world.World;
@@ -85,6 +86,7 @@ public class LocalSession {
 
     // Saved properties
     private String lastScript;
+    private RegionSelectorType defaultSelector;
 
     /**
      * Construct the object.
@@ -112,6 +114,15 @@ public class LocalSession {
     public void setConfiguration(LocalConfiguration config) {
         checkNotNull(config);
         this.config = config;
+    }
+
+    /**
+     * Called on post load of the session from persistent storage.
+     */
+    public void postLoad() {
+        if (defaultSelector != null) {
+            this.selector = defaultSelector.createSelector();
+        }
     }
 
     /**
@@ -261,6 +272,26 @@ public class LocalSession {
     }
 
     /**
+     * Get the default region selector.
+     *
+     * @return the default region selector
+     */
+    public RegionSelectorType getDefaultRegionSelector() {
+        return defaultSelector;
+    }
+
+    /**
+     * Set the default region selector.
+     *
+     * @param defaultSelector the default region selector
+     */
+    public void setDefaultRegionSelector(RegionSelectorType defaultSelector) {
+        checkNotNull(defaultSelector);
+        this.defaultSelector = defaultSelector;
+        setDirty();
+    }
+
+    /**
      * @deprecated Use {@link #getRegionSelector(World)}
      */
     @Deprecated
@@ -277,14 +308,14 @@ public class LocalSession {
      */
     public RegionSelector getRegionSelector(World world) {
         checkNotNull(world);
-        if (selector.getIncompleteRegion().getWorld() == null) {
-            selector = new CuboidRegionSelector(world);
-        } else if (!selector.getIncompleteRegion().getWorld().equals(world)) {
-            selector.getIncompleteRegion().setWorld(world);
+        if (selector.getWorld() == null || !selector.getWorld().equals(world)) {
+            selector.setWorld(world);
             selector.clear();
         }
         return selector;
     }
+
+
 
     /**
      * @deprecated use {@link #getRegionSelector(World)}
@@ -311,7 +342,7 @@ public class LocalSession {
     public void setRegionSelector(World world, RegionSelector selector) {
         checkNotNull(world);
         checkNotNull(selector);
-        selector.getIncompleteRegion().setWorld(world);
+        selector.setWorld(world);
         this.selector = selector;
     }
 

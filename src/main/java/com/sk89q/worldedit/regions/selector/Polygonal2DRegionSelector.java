@@ -43,8 +43,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
 
-    private BlockVector pos1;
-    private Polygonal2DRegion region;
+    private transient BlockVector pos1;
+    private transient Polygonal2DRegion region;
 
     /**
      * Create a new selector with a {@code null} world.
@@ -115,6 +115,17 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
         final BlockVector2D pos2D = points.get(0);
         pos1 = new BlockVector(pos2D.getX(), minY, pos2D.getZ());
         region = new Polygonal2DRegion(world, points, minY, maxY);
+    }
+
+    @Nullable
+    @Override
+    public World getWorld() {
+        return region.getWorld();
+    }
+
+    @Override
+    public void setWorld(@Nullable World world) {
+        region.setWorld(world);
     }
 
     @Override

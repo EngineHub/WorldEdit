@@ -50,8 +50,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion {
 
-    private final ConvexPolyhedralRegion region;
-    private BlockVector pos1;
+    private final transient ConvexPolyhedralRegion region;
+    private transient BlockVector pos1;
 
     /**
      * Create a new selector with a {@code null} world.
@@ -103,6 +103,17 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
 
             learnChanges();
         }
+    }
+
+    @Nullable
+    @Override
+    public World getWorld() {
+        return region.getWorld();
+    }
+
+    @Override
+    public void setWorld(@Nullable World world) {
+        region.setWorld(world);
     }
 
     @Override

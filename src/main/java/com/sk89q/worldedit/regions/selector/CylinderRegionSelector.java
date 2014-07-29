@@ -40,12 +40,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class CylinderRegionSelector extends com.sk89q.worldedit.regions.CylinderRegionSelector implements RegionSelector, CUIRegion {
 
-    protected CylinderRegion region;
-    protected static final NumberFormat format;
+    protected static transient final NumberFormat NUMBER_FORMAT;
+    protected transient CylinderRegion region;
 
     static {
-        format = (NumberFormat) NumberFormat.getInstance().clone();
-        format.setMaximumFractionDigits(3);
+        NUMBER_FORMAT = (NumberFormat) NumberFormat.getInstance().clone();
+        NUMBER_FORMAT.setMaximumFractionDigits(3);
     }
 
     /**
@@ -115,6 +115,17 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
         region.setMaximumY(Math.max(minY, maxY));
     }
 
+    @Nullable
+    @Override
+    public World getWorld() {
+        return region.getWorld();
+    }
+
+    @Override
+    public void setWorld(@Nullable World world) {
+        region.setWorld(world);
+    }
+
     @Override
     public boolean selectPrimary(Vector position, SelectorLimits limits) {
         if (!region.getCenter().equals(Vector.ZERO) && position.compareTo(region.getCenter()) == 0) {
@@ -156,7 +167,7 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
         Vector center = region.getCenter();
 
         if (!center.equals(Vector.ZERO)) {
-            player.print("Radius set to " + format.format(region.getRadius().getX()) + "/" + format.format(region.getRadius().getZ()) + " blocks. (" + region.getArea() + ").");
+            player.print("Radius set to " + NUMBER_FORMAT.format(region.getRadius().getX()) + "/" + NUMBER_FORMAT.format(region.getRadius().getZ()) + " blocks. (" + region.getArea() + ").");
         } else {
             player.printError("You must select the center point before setting the radius.");
             return;
