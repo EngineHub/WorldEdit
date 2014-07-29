@@ -20,12 +20,11 @@
 package com.sk89q.worldedit;
 
 /**
- * A WorldVector that emphasizes one side of the block
+ * @deprecated Use {@link com.sk89q.worldedit.util.Location} wherever possible
  */
+@Deprecated
 public class WorldVectorFace extends WorldVector {
-    /**
-     * Represents the side.
-     */
+
     private VectorFace face;
 
     /**

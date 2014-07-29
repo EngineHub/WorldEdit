@@ -25,6 +25,7 @@ import com.sk89q.jchronic.utils.Span;
 import com.sk89q.jchronic.utils.Time;
 import com.sk89q.worldedit.command.tool.BlockTool;
 import com.sk89q.worldedit.command.tool.BrushTool;
+import com.sk89q.worldedit.command.tool.InvalidToolBindException;
 import com.sk89q.worldedit.command.tool.SinglePickaxe;
 import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.entity.Player;
@@ -314,8 +315,6 @@ public class LocalSession {
         }
         return selector;
     }
-
-
 
     /**
      * @deprecated use {@link #getRegionSelector(World)}

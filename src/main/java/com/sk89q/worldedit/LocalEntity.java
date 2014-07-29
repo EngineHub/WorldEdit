@@ -19,10 +19,17 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.entity.Entity;
+
 /**
- * @author zml2008
+ * Holds an entity.
+ *
+ * @deprecated replaced with the new entity API using {@link Entity} and {@link BaseEntity}
  */
+@Deprecated
 public abstract class LocalEntity {
+
     private final Location position;
 
     protected LocalEntity(Location position) {
@@ -38,4 +45,5 @@ public abstract class LocalEntity {
     }
 
     public abstract boolean spawn(Location loc);
+
 }

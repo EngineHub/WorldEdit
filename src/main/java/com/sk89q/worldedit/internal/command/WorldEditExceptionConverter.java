@@ -23,10 +23,14 @@ import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.ItemType;
 import com.sk89q.worldedit.command.InsufficientArgumentsException;
+import com.sk89q.worldedit.command.tool.InvalidToolBindException;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverterHelper;
 import com.sk89q.worldedit.util.command.parametric.ExceptionMatch;
+import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
+import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
+import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,11 +48,6 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     public WorldEditExceptionConverter(WorldEdit worldEdit) {
         checkNotNull(worldEdit);
         this.worldEdit = worldEdit;
-    }
-
-    @ExceptionMatch
-    public void convert(PlayerNeededException e) throws CommandException {
-        throw new CommandException(e.getMessage());
     }
 
     @ExceptionMatch

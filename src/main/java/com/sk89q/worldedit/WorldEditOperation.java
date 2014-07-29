@@ -22,9 +22,12 @@ package com.sk89q.worldedit;
 /**
  * Represents a WorldEdit operation.
  *
- * @author sk89q
+ * @deprecated This will be removed with no direct replacement. Please use the
+ *             WorldEdit API.
  */
+@Deprecated
 public abstract class WorldEditOperation {
-    public abstract void run(LocalSession session,
-            LocalPlayer player, EditSession editSession) throws Throwable;
+
+    public abstract void run(LocalSession session, LocalPlayer player, EditSession editSession) throws Throwable;
+
 }

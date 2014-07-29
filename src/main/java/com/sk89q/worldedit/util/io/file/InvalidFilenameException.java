@@ -17,14 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.util.io.file;
 
-/**
- * Raised when WorldEdit is not installed.
- *
- * @author sk89q
- */
-public class WorldEditNotInstalled extends WorldEditException {
-    private static final long serialVersionUID = -4698408698930848121L;
+public class InvalidFilenameException extends FilenameException {
+    private static final long serialVersionUID = 7377072269988014886L;
 
+    public InvalidFilenameException(String filename) {
+        super(filename);
+    }
+
+    public InvalidFilenameException(String filename, String msg) {
+        super(filename, msg);
+    }
 }

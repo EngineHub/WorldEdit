@@ -88,10 +88,10 @@ import static com.sk89q.worldedit.regions.Regions.*;
 /**
  * An {@link Extent} that handles history, {@link BlockBag}s, change limits,
  * block re-ordering, and much more. Most operations in WorldEdit use this class.
- * </p>
- * Most of the actual functionality is implemented with a number of other
+ *
+ * <p>Most of the actual functionality is implemented with a number of other
  * {@link Extent}s that are chained together. For example, history is logged
- * using the {@link ChangeSetExtent}.
+ * using the {@link ChangeSetExtent}.</p>
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class EditSession implements Extent {

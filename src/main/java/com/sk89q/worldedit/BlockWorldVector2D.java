@@ -19,34 +19,65 @@
 
 package com.sk89q.worldedit;
 
+/**
+ * @deprecated Replace all uses of {@link WorldVector}s with {@link Location}s
+ */
+@SuppressWarnings("deprecation")
+@Deprecated
 public class BlockWorldVector2D extends WorldVector2D {
 
+    /**
+     * Construct a new instance.
+     *
+     * @param world the world
+     * @param x the X coordinate
+     * @param z the Z coordinate
+     */
     public BlockWorldVector2D(LocalWorld world, double x, double z) {
         super(world, x, z);
     }
 
+    /**
+     * Construct a new instance.
+     *
+     * @param world the world
+     * @param x the X coordinate
+     * @param z the Z coordinate
+     */
     public BlockWorldVector2D(LocalWorld world, float x, float z) {
         super(world, x, z);
     }
 
+    /**
+     * Construct a new instance.
+     *
+     * @param world the world
+     * @param x the X coordinate
+     * @param z the Z coordinate
+     */
     public BlockWorldVector2D(LocalWorld world, int x, int z) {
         super(world, x, z);
     }
 
-    public BlockWorldVector2D(LocalWorld world, Vector2D pt) {
-        super(world, pt);
+    /**
+     * Construct a new instance.
+     *
+     * @param world the world
+     * @param position a position
+     */
+    public BlockWorldVector2D(LocalWorld world, Vector2D position) {
+        super(world, position);
     }
 
+    /**
+     * Construct a new instance with X and Z set to (0, 0).
+     *
+     * @param world the world
+     */
     public BlockWorldVector2D(LocalWorld world) {
         super(world);
     }
 
-    /**
-     * Checks if another object is equivalent.
-     *
-     * @param obj
-     * @return whether the other object is equivalent
-     */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof WorldVector2D)) {

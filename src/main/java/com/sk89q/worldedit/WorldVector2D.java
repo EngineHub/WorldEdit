@@ -19,11 +19,12 @@
 
 package com.sk89q.worldedit;
 
+/**
+ * @deprecated Use {@link com.sk89q.worldedit.util.Location} wherever possible
+ */
+@Deprecated
 public class WorldVector2D extends Vector2D {
 
-    /**
-     * Represents the world.
-     */
     protected LocalWorld world;
 
     public WorldVector2D(LocalWorld world) {

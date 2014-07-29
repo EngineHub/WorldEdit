@@ -30,10 +30,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Creates new {@link EditSession}s. To get an instance of this factory,
  * use {@link WorldEdit#getEditSessionFactory()}.
- * </p>
- * It is no longer possible to replace the instance of this in WorldEdit
+ *
+ * <p>It is no longer possible to replace the instance of this in WorldEdit
  * with a custom one. Use {@link EditSessionEvent} to override
- * the creation of {@link EditSession}s.
+ * the creation of {@link EditSession}s.</p>
  */
 public class EditSessionFactory {
 

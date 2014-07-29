@@ -20,76 +20,66 @@
 package com.sk89q.worldedit;
 
 /**
- * Extension of Vector2D that supports being compared as ints (for accuracy).
- *
- * @author sk89q
+ * Extension of {@code Vector2D} that that compares with other instances
+ * using integer components.
  */
 public class BlockVector2D extends Vector2D {
+
     public static final BlockVector2D ZERO = new BlockVector2D(0, 0);
     public static final BlockVector2D UNIT_X = new BlockVector2D(1, 0);
     public static final BlockVector2D UNIT_Z = new BlockVector2D(0, 1);
     public static final BlockVector2D ONE = new BlockVector2D(1, 1);
 
     /**
-     * Construct the Vector object.
+     * Construct an instance from another instance.
      *
-     * @param pt
+     * @param position the position to copy
      */
-    public BlockVector2D(Vector2D pt) {
-        super(pt);
+    public BlockVector2D(Vector2D position) {
+        super(position);
     }
 
     /**
-     * Construct the Vector object.
+     * Construct a new instance.
      *
-     * @param x
-     * @param z
+     * @param x the X coordinate
+     * @param z the Z coordinate
      */
     public BlockVector2D(int x, int z) {
         super(x, z);
     }
 
     /**
-     * Construct the Vector object.
+     * Construct a new instance.
      *
-     * @param x
-     * @param z
+     * @param x the X coordinate
+     * @param z the Z coordinate
      */
     public BlockVector2D(float x, float z) {
         super(x, z);
     }
 
     /**
-     * Construct the Vector object.
+     * Construct a new instance.
      *
-     * @param x
-     * @param z
+     * @param x the X coordinate
+     * @param z the Z coordinate
      */
     public BlockVector2D(double x, double z) {
         super(x, z);
     }
 
-    /**
-     * Checks if another object is equivalent.
-     *
-     * @param obj
-     * @return whether the other object is equivalent
-     */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Vector2D)) {
             return false;
         }
+
         Vector2D other = (Vector2D) obj;
         return (int) other.x == (int) this.x && (int) other.z == (int) this.z;
 
     }
 
-    /**
-     * Gets the hash code.
-     *
-     * @return hash code
-     */
     @Override
     public int hashCode() {
         return (Integer.valueOf((int) x).hashCode() >> 13) ^
@@ -100,4 +90,5 @@ public class BlockVector2D extends Vector2D {
     public BlockVector2D toBlockVector2D() {
         return this;
     }
+
 }

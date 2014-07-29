@@ -17,20 +17,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.util.io.file;
 
-public class UnknownBiomeTypeException extends WorldEditException {
-    private static final long serialVersionUID = -6239229394330814896L;
+import com.sk89q.worldedit.WorldEditException;
 
-    private String typeName;
+public class FilenameException extends WorldEditException {
+    private static final long serialVersionUID = 6072601657326106265L;
 
-    public UnknownBiomeTypeException(String typeName) {
-        super("Unknown " + typeName + " biome type.");
-        this.typeName = typeName;
+    private String filename;
+
+    public FilenameException(String filename) {
+        super();
+        this.filename = filename;
     }
 
-    public String getTypeName() {
-        return typeName;
+    public FilenameException(String filename, String msg) {
+        super(msg);
+        this.filename = filename;
     }
 
+    public String getFilename() {
+        return filename;
+    }
 }

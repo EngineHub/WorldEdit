@@ -45,6 +45,10 @@ import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.eventbus.EventBus;
+import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
+import com.sk89q.worldedit.util.io.file.FilenameException;
+import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
+import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
 import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
 
@@ -66,16 +70,16 @@ import static com.sk89q.worldedit.event.platform.Interaction.OPEN;
 
 /**
  * The entry point and container for a working implementation of WorldEdit.
- * </p>
- * An instance handles event handling; block, mask, pattern, etc. registration;
+ *
+ * <p>An instance handles event handling; block, mask, pattern, etc. registration;
  * the management of sessions; the creation of {@link EditSession}s; and more.
  * In order to use WorldEdit, at least one {@link Platform} must be registered
  * with WorldEdit using {@link PlatformManager#register(Platform)} on the
- * manager retrieved using {@link WorldEdit#getPlatformManager()}.
- * </p>
- * An instance of WorldEdit can be retrieved using the static
+ * manager retrieved using {@link WorldEdit#getPlatformManager()}.</p>
+ *
+ * <p>An instance of WorldEdit can be retrieved using the static
  * method {@link WorldEdit#getInstance()}, which is shared among all
- * platforms within the same classloader hierarchy.
+ * platforms within the same classloader hierarchy.</p>
  */
 public class WorldEdit {
 
@@ -104,10 +108,10 @@ public class WorldEdit {
 
     /**
      * Gets the current instance of this class.
-     * </p>
-     * An instance will always be available, but no platform may yet be
+     *
+     * <p>An instance will always be available, but no platform may yet be
      * registered with WorldEdit, meaning that a number of operations
-     * may fail. However, event handlers can be registered.
+     * may fail. However, event handlers can be registered.</p>
      *
      * @return an instance of WorldEdit.
      */
@@ -128,8 +132,8 @@ public class WorldEdit {
 
     /**
      * Get the event bus for WorldEdit.
-     * </p>
-     * Event handlers can be registered on the event bus.
+     *
+     * <p>Event handlers can be registered on the event bus.</p>
      *
      * @return the event bus
      */

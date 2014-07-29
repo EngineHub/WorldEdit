@@ -17,26 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.util.io.file;
 
-/**
- * Thrown when a disallowed item is used.
- */
-public class DisallowedItemException extends WorldEditException {
+public class FileSelectionAbortedException extends FilenameException {
+    private static final long serialVersionUID = 7377072269988014886L;
 
-    private String type;
-
-    public DisallowedItemException(String type) {
-        this.type = type;
+    public FileSelectionAbortedException() {
+        super("");
     }
 
-    public DisallowedItemException(String type, String message) {
-        super(message);
-        this.type = type;
+    public FileSelectionAbortedException(String msg) {
+        super("", msg);
     }
-
-    public String getID() {
-        return type;
-    }
-
 }

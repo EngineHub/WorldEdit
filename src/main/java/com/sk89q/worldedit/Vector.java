@@ -19,11 +19,15 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.worldedit.math.transform.AffineTransform;
+
+import javax.annotation.Nullable;
+
 /**
- *
- * @author sk89q
+ * An immutable 3-dimensional vector.
  */
 public class Vector implements Comparable<Vector> {
+
     public static final Vector ZERO = new Vector(0, 0, 0);
     public static final Vector UNIT_X = new Vector(1, 0, 0);
     public static final Vector UNIT_Y = new Vector(0, 1, 0);
@@ -33,11 +37,11 @@ public class Vector implements Comparable<Vector> {
     protected final double x, y, z;
 
     /**
-     * Construct the Vector object.
+     * Construct an instance.
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param z the Z coordinate
      */
     public Vector(double x, double y, double z) {
         this.x = x;
@@ -46,11 +50,11 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Construct the Vector object.
+     * Construct an instance.
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param z the Z coordinate
      */
     public Vector(int x, int y, int z) {
         this.x = (double) x;
@@ -59,11 +63,11 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Construct the Vector object.
+     * Construct an instance.
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param z the Z coordinate
      */
     public Vector(float x, float y, float z) {
         this.x = (double) x;
@@ -72,18 +76,20 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Construct the Vector object.
+     * Copy another vector.
      *
-     * @param pt
+     * @param other another vector to make a copy of
      */
-    public Vector(Vector pt) {
-        this.x = pt.x;
-        this.y = pt.y;
-        this.z = pt.z;
+    public Vector(Vector other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
     }
 
     /**
-     * Construct the Vector object.
+     * Construct a new instance with X, Y, and Z coordinates set to 0.
+     *
+     * <p>One can also refer to a static {@link #ZERO}.</p>
      */
     public Vector() {
         this.x = 0;
@@ -92,33 +98,37 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * @return the x
+     * Get the X coordinate.
+     *
+     * @return the x coordinate
      */
     public double getX() {
         return x;
     }
 
     /**
-     * @return the x
+     * Get the X coordinate rounded.
+     *
+     * @return the x coordinate
      */
     public int getBlockX() {
         return (int) Math.round(x);
     }
 
     /**
-     * Set X.
+     * Set the X coordinate.
      *
-     * @param x
-     * @return new vector
+     * @param x the new X
+     * @return a new vector
      */
     public Vector setX(double x) {
         return new Vector(x, y, z);
     }
 
     /**
-     * Set X.
+     * Set the X coordinate.
      *
-     * @param x
+     * @param x the X coordinate
      * @return new vector
      */
     public Vector setX(int x) {
@@ -126,315 +136,331 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * @return the y
+     * Get the Y coordinate.
+     *
+     * @return the y coordinate
      */
     public double getY() {
         return y;
     }
 
     /**
-     * @return the y
+     * Get the Y coordinate rounded.
+     *
+     * @return the y coordinate
      */
     public int getBlockY() {
         return (int) Math.round(y);
     }
 
     /**
-     * Set Y.
+     * Set the Y coordinate.
      *
-     * @param y
-     * @return new vector
+     * @param y the new Y
+     * @return a new vector
      */
     public Vector setY(double y) {
         return new Vector(x, y, z);
     }
 
     /**
-     * Set Y.
+     * Set the Y coordinate.
      *
-     * @param y
-     * @return new vector
+     * @param y the new Y
+     * @return a new vector
      */
     public Vector setY(int y) {
         return new Vector(x, y, z);
     }
 
     /**
-     * @return the z
+     * Get the Z coordinate.
+     *
+     * @return the z coordinate
      */
     public double getZ() {
         return z;
     }
 
     /**
-     * @return the z
+     * Get the Z coordinate rounded.
+     *
+     * @return the z coordinate
      */
     public int getBlockZ() {
         return (int) Math.round(z);
     }
 
     /**
-     * Set Z.
+     * Set the Z coordinate.
      *
-     * @param z
-     * @return new vector
+     * @param z the new Z
+     * @return a new vector
      */
     public Vector setZ(double z) {
         return new Vector(x, y, z);
     }
 
     /**
-     * Set Z.
+     * Set the Z coordinate.
      *
-     * @param z
-     * @return new vector
+     * @param z the new Z
+     * @return a new vector
      */
     public Vector setZ(int z) {
         return new Vector(x, y, z);
     }
 
     /**
-     * Adds two points.
+     * Add another vector to this vector and return the result as a new vector.
      *
-     * @param other
-     * @return New point
+     * @param other the other vector
+     * @return a new vector
      */
     public Vector add(Vector other) {
         return new Vector(x + other.x, y + other.y, z + other.z);
     }
 
     /**
-     * Adds two points.
+     * Add another vector to this vector and return the result as a new vector.
      *
-     * @param x
-     * @param y
-     * @param z
-     * @return New point
+     * @param x the value to add
+     * @param y the value to add
+     * @param z the value to add
+     * @return a new vector
      */
     public Vector add(double x, double y, double z) {
         return new Vector(this.x + x, this.y + y, this.z + z);
     }
 
     /**
-     * Adds two points.
+     * Add another vector to this vector and return the result as a new vector.
      *
-     * @param x
-     * @param y
-     * @param z
-     * @return New point
+     * @param x the value to add
+     * @param y the value to add
+     * @param z the value to add
+     * @return a new vector
      */
     public Vector add(int x, int y, int z) {
         return new Vector(this.x + x, this.y + y, this.z + z);
     }
 
     /**
-     * Adds points.
+     * Add a list of vectors to this vector and return the
+     * result as a new vector.
      *
-     * @param others
-     * @return New point
+     * @param others an array of vectors
+     * @return a new vector
      */
     public Vector add(Vector... others) {
         double newX = x, newY = y, newZ = z;
 
-        for (int i = 0; i < others.length; ++i) {
-            newX += others[i].x;
-            newY += others[i].y;
-            newZ += others[i].z;
+        for (Vector other : others) {
+            newX += other.x;
+            newY += other.y;
+            newZ += other.z;
         }
+
         return new Vector(newX, newY, newZ);
     }
 
     /**
-     * Subtracts two points.
+     * Subtract another vector from this vector and return the result
+     * as a new vector.
      *
-     * @param other
-     * @return New point
+     * @param other the other vector
+     * @return a new vector
      */
     public Vector subtract(Vector other) {
         return new Vector(x - other.x, y - other.y, z - other.z);
     }
 
     /**
-     * Subtract two points.
+     * Subtract another vector from this vector and return the result
+     * as a new vector.
      *
-     * @param x
-     * @param y
-     * @param z
-     * @return New point
+     * @param x the value to subtract
+     * @param y the value to subtract
+     * @param z the value to subtract
+     * @return a new vector
      */
     public Vector subtract(double x, double y, double z) {
         return new Vector(this.x - x, this.y - y, this.z - z);
     }
 
     /**
-     * Subtract two points.
+     * Subtract another vector from this vector and return the result
+     * as a new vector.
      *
-     * @param x
-     * @param y
-     * @param z
-     * @return New point
+     * @param x the value to subtract
+     * @param y the value to subtract
+     * @param z the value to subtract
+     * @return a new vector
      */
     public Vector subtract(int x, int y, int z) {
         return new Vector(this.x - x, this.y - y, this.z - z);
     }
 
     /**
-     * Subtract points.
+     * Subtract a list of vectors from this vector and return the result
+     * as a new vector.
      *
-     * @param others
-     * @return New point
+     * @param others an array of vectors
+     * @return a new vector
      */
     public Vector subtract(Vector... others) {
         double newX = x, newY = y, newZ = z;
 
-        for (int i = 0; i < others.length; ++i) {
-            newX -= others[i].x;
-            newY -= others[i].y;
-            newZ -= others[i].z;
+        for (Vector other : others) {
+            newX -= other.x;
+            newY -= other.y;
+            newZ -= other.z;
         }
+
         return new Vector(newX, newY, newZ);
     }
 
     /**
-     * Component-wise multiplication
+     * Multiply this vector by another vector on each component.
      *
-     * @param other
-     * @return New point
+     * @param other the other vector
+     * @return a new vector
      */
     public Vector multiply(Vector other) {
         return new Vector(x * other.x, y * other.y, z * other.z);
     }
 
     /**
-     * Component-wise multiplication
+     * Multiply this vector by another vector on each component.
      *
-     * @param x
-     * @param y
-     * @param z
-     * @return New point
+     * @param x the value to multiply
+     * @param y the value to multiply
+     * @param z the value to multiply
+     * @return a new vector
      */
     public Vector multiply(double x, double y, double z) {
         return new Vector(this.x * x, this.y * y, this.z * z);
     }
 
     /**
-     * Component-wise multiplication
+     * Multiply this vector by another vector on each component.
      *
-     * @param x
-     * @param y
-     * @param z
-     * @return New point
+     * @param x the value to multiply
+     * @param y the value to multiply
+     * @param z the value to multiply
+     * @return a new vector
      */
     public Vector multiply(int x, int y, int z) {
         return new Vector(this.x * x, this.y * y, this.z * z);
     }
 
     /**
-     * Component-wise multiplication
+     * Multiply this vector by zero or more vectors on each component.
      *
-     * @param others
-     * @return New point
+     * @param others an array of vectors
+     * @return a new vector
      */
     public Vector multiply(Vector... others) {
         double newX = x, newY = y, newZ = z;
 
-        for (int i = 0; i < others.length; ++i) {
-            newX *= others[i].x;
-            newY *= others[i].y;
-            newZ *= others[i].z;
+        for (Vector other : others) {
+            newX *= other.x;
+            newY *= other.y;
+            newZ *= other.z;
         }
+
         return new Vector(newX, newY, newZ);
     }
 
     /**
-     * Scalar multiplication.
+     * Perform scalar multiplication and return a new vector.
      *
-     * @param n
-     * @return New point
+     * @param n the value to multiply
+     * @return a new vector
      */
     public Vector multiply(double n) {
         return new Vector(this.x * n, this.y * n, this.z * n);
     }
 
     /**
-     * Scalar multiplication.
+     * Perform scalar multiplication and return a new vector.
      *
-     * @param n
-     * @return New point
+     * @param n the value to multiply
+     * @return a new vector
      */
     public Vector multiply(float n) {
         return new Vector(this.x * n, this.y * n, this.z * n);
     }
 
     /**
-     * Scalar multiplication.
+     * Perform scalar multiplication and return a new vector.
      *
-     * @param n
-     * @return New point
+     * @param n the value to multiply
+     * @return a new vector
      */
     public Vector multiply(int n) {
         return new Vector(this.x * n, this.y * n, this.z * n);
     }
 
     /**
-     * Component-wise division
+     * Divide this vector by another vector on each component.
      *
-     * @param other
-     * @return New point
+     * @param other the other vector
+     * @return a new vector
      */
     public Vector divide(Vector other) {
         return new Vector(x / other.x, y / other.y, z / other.z);
     }
 
     /**
-     * Component-wise division
+     * Divide this vector by another vector on each component.
      *
-     * @param x
-     * @param y
-     * @param z
-     * @return New point
+     * @param x the value to divide by
+     * @param y the value to divide by
+     * @param z the value to divide by
+     * @return a new vector
      */
     public Vector divide(double x, double y, double z) {
         return new Vector(this.x / x, this.y / y, this.z / z);
     }
 
     /**
-     * Component-wise division
+     * Divide this vector by another vector on each component.
      *
-     * @param x
-     * @param y
-     * @param z
-     * @return New point
+     * @param x the value to divide by
+     * @param y the value to divide by
+     * @param z the value to divide by
+     * @return a new vector
      */
     public Vector divide(int x, int y, int z) {
         return new Vector(this.x / x, this.y / y, this.z / z);
     }
 
     /**
-     * Scalar division.
+     * Perform scalar division and return a new vector.
      *
-     * @param n
-     * @return new point
+     * @param n the value to divide by
+     * @return a new vector
      */
     public Vector divide(int n) {
         return new Vector(x / n, y / n, z / n);
     }
 
     /**
-     * Scalar division.
+     * Perform scalar division and return a new vector.
      *
-     * @param n
-     * @return new point
+     * @param n the value to divide by
+     * @return a new vector
      */
     public Vector divide(double n) {
         return new Vector(x / n, y / n, z / n);
     }
 
     /**
-     * Scalar division.
+     * Perform scalar division and return a new vector.
      *
-     * @param n
-     * @return new point
+     * @param n the value to divide by
+     * @return a new vector
      */
     public Vector divide(float n) {
         return new Vector(x / n, y / n, z / n);
@@ -450,42 +476,43 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Get the length^2 of the vector.
+     * Get the length, squared, of the vector.
      *
-     * @return length^2
+     * @return length, squared
      */
     public double lengthSq() {
         return x * x + y * y + z * z;
     }
 
     /**
-     * Get the distance away from a point.
+     * Get the distance between this vector and another vector.
      *
-     * @param pt
+     * @param other the other vector
      * @return distance
      */
-    public double distance(Vector pt) {
-        return Math.sqrt(Math.pow(pt.x - x, 2) +
-                Math.pow(pt.y - y, 2) +
-                Math.pow(pt.z - z, 2));
+    public double distance(Vector other) {
+        return Math.sqrt(Math.pow(other.x - x, 2) +
+                Math.pow(other.y - y, 2) +
+                Math.pow(other.z - z, 2));
     }
 
     /**
-     * Get the distance away from a point, squared.
+     * Get the distance between this vector and another vector, squared.
      *
-     * @param pt
+     * @param other the other vector
      * @return distance
      */
-    public double distanceSq(Vector pt) {
-        return Math.pow(pt.x - x, 2) +
-                Math.pow(pt.y - y, 2) +
-                Math.pow(pt.z - z, 2);
+    public double distanceSq(Vector other) {
+        return Math.pow(other.x - x, 2) +
+                Math.pow(other.y - y, 2) +
+                Math.pow(other.z - z, 2);
     }
 
     /**
-     * Get the normalized vector.
+     * Get the normalized vector, which is the vector divided by its
+     * length, as a new vector.
      *
-     * @return vector
+     * @return a new vector
      */
     public Vector normalize() {
         return divide(length());
@@ -494,7 +521,7 @@ public class Vector implements Comparable<Vector> {
     /**
      * Gets the dot product of this and another vector.
      *
-     * @param other
+     * @param other the other vector
      * @return the dot product of this and the other vector
      */
     public double dot(Vector other) {
@@ -504,7 +531,7 @@ public class Vector implements Comparable<Vector> {
     /**
      * Gets the cross product of this and another vector.
      *
-     * @param other
+     * @param other the other vector
      * @return the cross product of this and the other vector
      */
     public Vector cross(Vector other) {
@@ -518,22 +545,21 @@ public class Vector implements Comparable<Vector> {
     /**
      * Checks to see if a vector is contained with another.
      *
-     * @param min
-     * @param max
-     * @return
+     * @param min the minimum point (X, Y, and Z are the lowest)
+     * @param max the maximum point (X, Y, and Z are the lowest)
+     * @return true if the vector is contained
      */
     public boolean containedWithin(Vector min, Vector max) {
-        return x >= min.x && x <= max.x
-                && y >= min.y && y <= max.y
-                && z >= min.z && z <= max.z;
+        return x >= min.x && x <= max.x && y >= min.y && y <= max.y && z >= min.z && z <= max.z;
     }
 
     /**
-     * Checks to see if a vector is contained with another.
+     * Checks to see if a vector is contained with another, comparing
+     * using discrete comparisons, inclusively.
      *
-     * @param min
-     * @param max
-     * @return
+     * @param min the minimum point (X, Y, and Z are the lowest)
+     * @param max the maximum point (X, Y, and Z are the lowest)
+     * @return true if the vector is contained
      */
     public boolean containedWithinBlock(Vector min, Vector max) {
         return getBlockX() >= min.getBlockX() && getBlockX() <= max.getBlockX()
@@ -544,18 +570,18 @@ public class Vector implements Comparable<Vector> {
     /**
      * Clamp the Y component.
      *
-     * @param min
-     * @param max
-     * @return
+     * @param min the minimum value
+     * @param max the maximum value
+     * @return a new vector
      */
     public Vector clampY(int min, int max) {
         return new Vector(x, Math.max(min, Math.min(max, y)), z);
     }
 
     /**
-     * Rounds all components down.
+     * Floors the values of all components.
      *
-     * @return
+     * @return a new vector
      */
     public Vector floor() {
         return new Vector(Math.floor(x), Math.floor(y), Math.floor(z));
@@ -564,41 +590,43 @@ public class Vector implements Comparable<Vector> {
     /**
      * Rounds all components up.
      *
-     * @return
+     * @return a new vector
      */
     public Vector ceil() {
         return new Vector(Math.ceil(x), Math.ceil(y), Math.ceil(z));
     }
 
     /**
-     * Rounds all components to the closest integer.<br>
-     *<br>
-     * Components < 0.5 are rounded down, otherwise up
+     * Rounds all components to the closest integer.
      *
-     * @return
+     * <p>Components < 0.5 are rounded down, otherwise up.</p>
+     *
+     * @return a new vector
      */
     public Vector round() {
         return new Vector(Math.floor(x + 0.5), Math.floor(y + 0.5), Math.floor(z + 0.5));
     }
 
     /**
-     * Returns a vector with the absolute values of the components of this vector.
+     * Returns a vector with the absolute values of the components of
+     * this vector.
      *
-     * @return
+     * @return a new vector
      */
     public Vector positive() {
         return new Vector(Math.abs(x), Math.abs(y), Math.abs(z));
     }
 
     /**
-     * 2D transformation.
+     * Perform a 2D transformation on this vector and return a new one.
      *
      * @param angle in degrees
      * @param aboutX about which x coordinate to rotate
      * @param aboutZ about which z coordinate to rotate
      * @param translateX what to add after rotation
      * @param translateZ what to add after rotation
-     * @return
+     * @return a new vector
+     * @see AffineTransform another method to transform vectors
      */
     public Vector transform2D(double angle, double aboutX, double aboutZ, double translateX, double translateZ) {
         angle = Math.toRadians(angle);
@@ -614,6 +642,12 @@ public class Vector implements Comparable<Vector> {
         );
     }
 
+    /**
+     * Returns whether this vector is collinear with another vector.
+     *
+     * @param other the other vector
+     * @return true if collinear
+     */
     public boolean isCollinearWith(Vector other) {
         if (x == 0 && y == 0 && z == 0) {
             // this is a zero vector
@@ -686,12 +720,12 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Get a block point from a point.
+     * Create a new {@code BlockVector} using the given components.
      *
-     * @param x
-     * @param y
-     * @param z
-     * @return point
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param z the Z coordinate
+     * @return a new {@code BlockVector}
      */
     public static BlockVector toBlockPoint(double x, double y, double z) {
         return new BlockVector(
@@ -702,9 +736,9 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Get a block point from a point.
+     * Create a new {@code BlockVector} from this vector.
      *
-     * @return point
+     * @return a new {@code BlockVector}
      */
     public BlockVector toBlockPoint() {
         return new BlockVector(
@@ -715,11 +749,23 @@ public class Vector implements Comparable<Vector> {
     }
 
     /**
-     * Checks if another object is equivalent.
+     * Create a new {@code BlockVector} from this vector.
      *
-     * @param obj
-     * @return whether the other object is equivalent
+     * @return a new {@code BlockVector}
      */
+    public BlockVector toBlockVector() {
+        return new BlockVector(this);
+    }
+
+    /**
+     * Creates a 2D vector by dropping the Y component from this vector.
+     *
+     * @return a new {@code Vector2D}
+     */
+    public Vector2D toVector2D() {
+        return new Vector2D(x, z);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Vector)) {
@@ -731,18 +777,16 @@ public class Vector implements Comparable<Vector> {
     }
 
     @Override
-    public int compareTo(Vector other) {
+    public int compareTo(@Nullable Vector other) {
+        if (other == null) {
+            throw new IllegalArgumentException("null not supported");
+        }
         if (y != other.y) return Double.compare(y, other.y);
         if (z != other.z) return Double.compare(z, other.z);
         if (x != other.x) return Double.compare(x, other.x);
         return 0;
     }
 
-    /**
-     * Gets the hash code.
-     *
-     * @return hash code
-     */
     @Override
     public int hashCode() {
         int hash = 7;
@@ -753,76 +797,53 @@ public class Vector implements Comparable<Vector> {
         return hash;
     }
 
-    /**
-     * Returns string representation "(x, y, z)".
-     *
-     * @return string
-     */
     @Override
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";
     }
 
     /**
-     * Gets a BlockVector version.
-     *
-     * @return BlockVector
-     */
-    public BlockVector toBlockVector() {
-        return new BlockVector(this);
-    }
-
-    /**
-     * Creates a 2D vector by dropping the Y component from this vector.
-     *
-     * @return Vector2D
-     */
-    public Vector2D toVector2D() {
-        return new Vector2D(x, z);
-    }
-
-    /**
      * Gets the minimum components of two vectors.
      *
-     * @param v1
-     * @param v2
+     * @param v1 the first vector
+     * @param v2 the second vector
      * @return minimum
      */
     public static Vector getMinimum(Vector v1, Vector v2) {
         return new Vector(
-            Math.min(v1.x, v2.x),
-            Math.min(v1.y, v2.y),
-            Math.min(v1.z, v2.z)
+                Math.min(v1.x, v2.x),
+                Math.min(v1.y, v2.y),
+                Math.min(v1.z, v2.z)
         );
     }
 
     /**
      * Gets the maximum components of two vectors.
      *
-     * @param v1
-     * @param v2
+     * @param v1 the first vector
+     * @param v2 the second vector
      * @return maximum
      */
     public static Vector getMaximum(Vector v1, Vector v2) {
         return new Vector(
-            Math.max(v1.x, v2.x),
-            Math.max(v1.y, v2.y),
-            Math.max(v1.z, v2.z)
+                Math.max(v1.x, v2.x),
+                Math.max(v1.y, v2.y),
+                Math.max(v1.z, v2.z)
         );
     }
 
     /**
      * Gets the midpoint of two vectors.
      *
-     * @param v1
-     * @param v2
+     * @param v1 the first vector
+     * @param v2 the second vector
      * @return maximum
      */
     public static Vector getMidpoint(Vector v1, Vector v2) {
         return new Vector(
-            (v1.x + v2.x) / 2,
-            (v1.y + v2.y) / 2,
-            (v1.z + v2.z) / 2
+                (v1.x + v2.x) / 2,
+                (v1.y + v2.y) / 2,
+                (v1.z + v2.z) / 2
         );
     }
 

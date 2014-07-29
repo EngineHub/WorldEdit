@@ -17,26 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.command.tool;
 
-/**
- * Thrown when a disallowed item is used.
- */
-public class DisallowedItemException extends WorldEditException {
+import com.sk89q.worldedit.WorldEditException;
 
-    private String type;
+public class InvalidToolBindException extends WorldEditException {
+    private static final long serialVersionUID = -1865311004052447699L;
 
-    public DisallowedItemException(String type) {
-        this.type = type;
+    private int itemId;
+
+    public InvalidToolBindException(int itemId, String msg) {
+        super(msg);
+        this.itemId = itemId;
     }
 
-    public DisallowedItemException(String type, String message) {
-        super(message);
-        this.type = type;
+    public int getItemId() {
+        return itemId;
     }
-
-    public String getID() {
-        return type;
-    }
-
 }

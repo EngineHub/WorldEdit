@@ -29,10 +29,9 @@ import java.util.Set;
 
 /**
  * Represents WorldEdit's configuration.
- *
- * @author sk89q
  */
 public abstract class LocalConfiguration {
+
     protected static final int[] defaultDisallowedBlocks = new int[] {
                 // dangerous stuff (physics/drops items)
                 BlockID.SAPLING,
@@ -114,16 +113,17 @@ public abstract class LocalConfiguration {
     public boolean allowSymlinks = false;
 
     /**
-     * Loads the configuration.
+     * Load the configuration.
      */
     public abstract void load();
 
     /**
      * Get the working directory to work from.
      *
-     * @return
+     * @return a working directory
      */
     public File getWorkingDirectory() {
         return new File(".");
     }
+
 }

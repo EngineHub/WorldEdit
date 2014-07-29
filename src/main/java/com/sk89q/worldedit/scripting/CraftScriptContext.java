@@ -25,6 +25,7 @@ import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.util.io.file.FilenameException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -206,7 +207,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param folder sub-directory to look in
      * @param filename filename (user-submitted)
      * @return
-     * @throws FilenameException 
+     * @throws FilenameException
      */
     @Deprecated
     public File getSafeFile(String folder, String filename) throws FilenameException {

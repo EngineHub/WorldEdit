@@ -19,12 +19,15 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.worldedit.util.Direction;
+
 /**
  * Represents the adjacency of one vector to another. Works similarly to
  * Bukkit's BlockFace class.
  *
- * @author wizjany
+ * @deprecated to be replaced with {@link Direction}
  */
+@Deprecated
 public enum VectorFace {
     NORTH(-1, 0, 0),
     EAST(0, 0, -1),

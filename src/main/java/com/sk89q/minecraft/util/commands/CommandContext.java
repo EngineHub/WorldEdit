@@ -31,6 +31,7 @@ public class CommandContext {
     
     protected final String command;
     protected final List<String> parsedArgs;
+
     protected final List<Integer> originalArgIndices;
     protected final String[] originalArgs;
     protected final Set<Character> booleanFlags = new HashSet<Character>();

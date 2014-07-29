@@ -21,19 +21,27 @@ package com.sk89q.worldedit;
 
 /**
  * Thrown when no item exist by the ID.
- *
- * @author sk89q
  */
 public class UnknownItemException extends WorldEditException {
-    private static final long serialVersionUID = 2661079183700565880L;
 
     private String type;
 
+    /**
+     * Create a new instance.
+     *
+     * @param type the input that was provided
+     */
     public UnknownItemException(String type) {
         this.type = type;
     }
 
+    /**
+     * Get the input.
+     *
+     * @return the input
+     */
     public String getID() {
         return type;
     }
+
 }
