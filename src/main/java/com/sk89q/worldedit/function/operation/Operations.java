@@ -27,6 +27,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.operation.Operation.Result;
 import com.sk89q.worldedit.function.util.AffectedCounter;
+import com.sk89q.worldedit.util.task.progress.Progress;
 
 import javax.annotation.Nullable;
 
@@ -83,6 +84,55 @@ public final class Operations {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Wrap the given operation so it cannot be cancelled.
+     *
+     * <p>This modifies the operation so it always thinks
+     * {@link RunContext#isCancelled()} is {@code false}.</p>
+     *
+     * @param op the operation
+     * @return the wrapped operation
+     */
+    public static Operation ignoreCancellation(final Operation op) {
+        return new Operation() {
+            @Override
+            public boolean isOpportunistic() {
+                return op.isOpportunistic();
+            }
+
+            @Override
+            public Result resume(RunContext run) throws Exception {
+                return op.resume(preventCancel(run));
+            }
+
+            @Override
+            public Progress getProgress() {
+                return op.getProgress();
+            }
+        };
+    }
+
+    /**
+     * Wrap a {@code RunContext} so that it always returns false for
+     * {@link RunContext#isCancelled()}.
+     *
+     * @param run the run context to wrap
+     * @return a new run context
+     */
+    private static RunContext preventCancel(final RunContext run) {
+        return new RunContext() {
+            @Override
+            public boolean isCancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean shouldContinue() {
+                return run.shouldContinue();
+            }
+        };
     }
 
     /**

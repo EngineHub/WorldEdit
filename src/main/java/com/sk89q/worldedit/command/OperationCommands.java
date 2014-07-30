@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.command;
 
 import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
@@ -59,6 +60,21 @@ public class OperationCommands {
             box.getContents().append("There are currently no active tasks.");
         }
         actor.printRaw(ColorCodeBuilder.asColorCodes(box));
+    }
+
+    @Command(aliases = {"/cancelall"}, desc = "Cancel a task")
+    @CommandPermissions("worldedit.operation.cancelall")
+    public void cancelAllTasks(Actor actor) {
+        Supervisor supervisor = worldEdit.getSupervisor();
+        List<Task<?>> tasks = supervisor.getTasks();
+        if (!tasks.isEmpty()) {
+            for (Task<?> task : tasks) {
+                task.cancel(false);
+            }
+            actor.print("All running tasks were cancelled.");
+        } else {
+            actor.printError("There are no tasks to cancel.");
+        }
     }
 
 }

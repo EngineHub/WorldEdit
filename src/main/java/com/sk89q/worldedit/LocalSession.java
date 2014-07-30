@@ -36,6 +36,7 @@ import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
+import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.function.operation.UnfairOperationInterleave;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
@@ -52,9 +53,11 @@ import com.sk89q.worldedit.world.snapshot.Snapshot;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -905,15 +908,21 @@ public class LocalSession {
             result = operation;
         }
 
-        return new OperationQueue(result, editSession.getFinalizeOperation(), new AbstractOperation() {
+        List<Operation> operations = new ArrayList<Operation>();
+        operations.add(result);
+
+        // These operations should not be cancelled even if the overall
+        // operation is cancelled
+        operations.add(Operations.ignoreCancellation(editSession.getFinalizeOperation()));
+        operations.add(new AbstractOperation() {
             @Override
             public Result resume(RunContext run) throws WorldEditException {
-                if (!run.isCancelled()) {
-                    remember(editSession);
-                }
+                remember(editSession);
                 return Result.STOP;
             }
         });
+
+        return new OperationQueue(operations);
     }
 
     /**

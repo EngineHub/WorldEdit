@@ -23,6 +23,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.sk89q.worldedit.extension.platform.Actor;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,10 +49,16 @@ class ErrorHandlerCallback implements FutureCallback<Object> {
             // TODO: Handle WorldEditException with friendly messages
 
             if (actor != null) {
-                actor.printError("An error has occurred while executing a WorldEdit operation: " + t.getMessage() + " (see console for details)");
+                if (t instanceof CancellationException) {
+                    actor.printError("Your operation was cancelled.");
+                } else {
+                    actor.printError("An error has occurred while executing a WorldEdit operation: " + t.getMessage() + " (see console for details)");
+                }
             }
 
-            log.log(Level.SEVERE, "An error occurred while executing a WorldEdit operation", t);
+            if (!(t instanceof CancellationException)) {
+                log.log(Level.SEVERE, "An error occurred while executing a WorldEdit operation", t);
+            }
         } else {
             if (actor != null) {
                 actor.printError("An unknown error has occurred while executing a WorldEdit operation");
