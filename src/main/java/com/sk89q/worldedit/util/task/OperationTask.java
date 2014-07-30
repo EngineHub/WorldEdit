@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.util.task;
 
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.Operation.Result;
 import com.sk89q.worldedit.function.operation.TimedRunContext;
 import com.sk89q.worldedit.util.scheduler.TickScheduler;
 import com.sk89q.worldedit.util.task.progress.Progress;
@@ -38,9 +38,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 class OperationTask extends AbstractTask<Operation> implements Task<Operation>, Runnable {
 
     private static final Logger logger = Logger.getLogger(OperationTask.class.getCanonicalName());
-    private final Operation initialOperation;
+    private final Operation operation;
     private final TickScheduler scheduler;
-    private Operation nextOperation;
     private State state = State.SCHEDULED;
     private long elapsedTime = 0;
 
@@ -56,8 +55,7 @@ class OperationTask extends AbstractTask<Operation> implements Task<Operation>, 
         super(name, owner);
         checkNotNull(operation);
         checkNotNull(scheduler);
-        this.initialOperation = operation;
-        this.nextOperation = operation;
+        this.operation = operation;
         this.scheduler = scheduler;
     }
 
@@ -66,17 +64,17 @@ class OperationTask extends AbstractTask<Operation> implements Task<Operation>, 
         state = State.RUNNING;
         try {
             long now = System.nanoTime();
-            nextOperation = nextOperation.resume(new TimedRunContext(20, TimeUnit.MILLISECONDS));
+            Result result = operation.resume(new TimedRunContext(20, TimeUnit.MILLISECONDS, isCancelled()));
             elapsedTime += System.nanoTime() - now;
 
-            if (nextOperation != null) {
+            if (result == Result.CONTINUE) {
                 submitToScheduler();
             } else {
                 state = State.SUCCEEDED;
-                logger.log(Level.FINE, initialOperation + " took " + TimeUnit.MILLISECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS) + "ms");
-                set(initialOperation);
+                logger.log(Level.FINE, operation + " took " + TimeUnit.MILLISECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS) + "ms");
+                set(operation);
             }
-        } catch (WorldEditException e) {
+        } catch (Exception e) {
             state = State.FAILED;
             setException(e);
         }
@@ -100,11 +98,6 @@ class OperationTask extends AbstractTask<Operation> implements Task<Operation>, 
 
     @Override
     public Progress getProgress() {
-        Operation next = nextOperation;
-        if (next == null) {
-            return Progress.completed();
-        } else {
-            return next.getProgress();
-        }
+        return operation.getProgress();
     }
 }

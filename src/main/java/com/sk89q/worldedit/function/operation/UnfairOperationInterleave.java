@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.function.operation;
 
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class UnfairOperationInterleave extends AbstractOperation {
      */
     public UnfairOperationInterleave(Collection<Operation> operations) {
         checkNotNull(operations);
-        operations.addAll(operations);
+        this.operations.addAll(operations);
         queue.addAll(operations);
     }
 
@@ -61,11 +60,12 @@ public class UnfairOperationInterleave extends AbstractOperation {
     }
 
     @Override
-    public Operation resume(RunContext run) throws WorldEditException {
+    public Result resume(RunContext run) throws Exception {
         Operation next = queue.poll();
+
         if (next != null) {
-            next = next.resume(run);
-            if (next != null) {
+            Result result = next.resume(run);
+            if (result == Result.CONTINUE) {
                 queue.offer(next);
             }
 
@@ -77,18 +77,13 @@ public class UnfairOperationInterleave extends AbstractOperation {
             }
 
             if (onlyOpportunistic) {
-                return null;
+                return Result.STOP;
             }
 
-            return this;
+            return Result.CONTINUE;
         } else {
-            return null;
+            return Result.STOP;
         }
-    }
-
-    @Override
-    public void cancel() {
-
     }
 
     @Override

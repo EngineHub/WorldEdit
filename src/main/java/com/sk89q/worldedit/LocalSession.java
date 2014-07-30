@@ -34,10 +34,10 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.operation.AbstractOperation;
-import com.sk89q.worldedit.function.operation.UnfairOperationInterleave;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.function.operation.UnfairOperationInterleave;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
@@ -47,7 +47,6 @@ import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.selector.RegionSelectorType;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
-import com.sk89q.worldedit.util.task.progress.Progress;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
 
@@ -908,18 +907,11 @@ public class LocalSession {
 
         return new OperationQueue(result, editSession.getFinalizeOperation(), new AbstractOperation() {
             @Override
-            public Operation resume(RunContext run) throws WorldEditException {
-                remember(editSession);
-                return null;
-            }
-
-            @Override
-            public void cancel() {
-            }
-
-            @Override
-            public Progress getProgress() {
-                return Progress.indeterminate();
+            public Result resume(RunContext run) throws WorldEditException {
+                if (!run.isCancelled()) {
+                    remember(editSession);
+                }
+                return Result.STOP;
             }
         });
     }

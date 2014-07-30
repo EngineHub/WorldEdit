@@ -25,6 +25,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.function.operation.Operation.Result;
 import com.sk89q.worldedit.function.util.AffectedCounter;
 
 import javax.annotation.Nullable;
@@ -45,10 +46,11 @@ public final class Operations {
      * @param op operation to execute
      * @throws WorldEditException WorldEdit exception
      */
-    public static void complete(Operation op) throws WorldEditException {
-        while (op != null) {
-            op = op.resume(ImmediateRunContext.getInstance());
-        }
+    public static void complete(Operation op) throws Exception {
+        Result result;
+        do {
+            result = op.resume(ImmediateRunContext.getInstance());
+        } while (result == Result.CONTINUE);
     }
 
     /**
@@ -59,14 +61,12 @@ public final class Operations {
      * @throws MaxChangedBlocksException thrown when too many blocks have been changed
      */
     public static void completeLegacy(Operation op) throws MaxChangedBlocksException {
-        while (op != null) {
-            try {
-                op = op.resume(ImmediateRunContext.getInstance());
-            } catch (MaxChangedBlocksException e) {
-                throw e;
-            } catch (WorldEditException e) {
-                throw new RuntimeException(e);
-            }
+        try {
+            complete(op);
+        } catch (MaxChangedBlocksException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -78,12 +78,10 @@ public final class Operations {
      * @param op operation to execute
      */
     public static void completeBlindly(Operation op) {
-        while (op != null) {
-            try {
-                op = op.resume(ImmediateRunContext.getInstance());
-            } catch (WorldEditException e) {
-                throw new RuntimeException(e);
-            }
+        try {
+            complete(op);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

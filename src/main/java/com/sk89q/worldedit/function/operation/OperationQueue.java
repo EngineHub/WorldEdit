@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.function.operation;
 
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.ArrayDeque;
@@ -90,32 +89,25 @@ public class OperationQueue extends AbstractOperation {
     }
 
     @Override
-    public Operation resume(RunContext run) throws WorldEditException {
+    public Result resume(RunContext run) throws Exception {
         if (current == null && !queue.isEmpty()) {
             current = queue.poll();
         }
 
         if (current != null) {
-            current = current.resume(run);
+            Result currentResult = current.resume(run);
 
-            if (current == null) {
+            if (currentResult == Result.STOP) {
                 current = queue.poll();
             }
         }
 
-        return current != null ? this : null;
-    }
-
-    @Override
-    public void cancel() {
-        for (Operation operation : queue) {
-            operation.cancel();
-        }
-        queue.clear();
+        return current != null ? Result.CONTINUE : Result.STOP;
     }
 
     @Override
     public Progress getProgress() {
         return Progress.splitObservables(queue);
     }
+
 }

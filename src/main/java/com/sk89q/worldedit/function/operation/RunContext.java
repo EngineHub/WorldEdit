@@ -21,9 +21,21 @@ package com.sk89q.worldedit.function.operation;
 
 /**
  * A RunContext is provided to an Operation and should be used to implement
- * time limits on the Operation.
+ * time limits on the operation.
  */
 public interface RunContext {
+
+    /**
+     * Test whether the operation has been cancelled.
+     *
+     * <p>Operations should check the value of this to cease execution
+     * when appropriate. This method is similar to
+     * {@link Thread#isInterrupted()} in that it is a flag that
+     * operations can act on whenever appropriate to cease execution.</p>
+     *
+     * @return true if cancelled
+     */
+    boolean isCancelled();
 
     /**
      * Return whether the current operation should still continue running.

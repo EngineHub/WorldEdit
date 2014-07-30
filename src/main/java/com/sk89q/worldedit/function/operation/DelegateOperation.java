@@ -19,48 +19,70 @@
 
 package com.sk89q.worldedit.function.operation;
 
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.util.task.progress.Progress;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
- * Executes a delegate operation, but returns to another operation upon
- * completing the delegate.
+ * A {@code DelegateOperation} requests from the subclass an operation
+ * to execute; if an operation is returned, it will be completed. At which
+ * point, another operation will be requested from the subclass and
+ * the process will continue until the subclass does not return a new
+ * operation to execute.
+ *
+ * <p>Cancellation has no effect. Implementations should check whether
+ * the operation has been cancelled in {@link #getNextOperation(RunContext)}
+ * and return {@code null} as necessary.</p>
  */
-public class DelegateOperation extends AbstractOperation {
+public abstract class DelegateOperation extends AbstractOperation {
 
-    private final Operation original;
     private Operation delegate;
 
     /**
-     * Create a new operation delegate.
+     * Get the current delegated operation.
      *
-     * @param original the operation to return to
-     * @param delegate the delegate operation to complete before returning
+     * @return the current delegated operation, which may be null
      */
-    public DelegateOperation(Operation original, Operation delegate) {
-        checkNotNull(original);
-        checkNotNull(delegate);
-        this.original = original;
+    @Nullable
+    protected Operation getCurrentOperation() {
+        return delegate;
+    }
+
+    @Override
+    public Result resume(RunContext run) throws Exception {
+        Operation delegate = this.delegate;
+
+        if (delegate != null) {
+            if (delegate.resume(run) == Result.STOP) {
+                delegate = null;
+            }
+        }
+
+        if (delegate == null) {
+            delegate = getNextOperation(run);
+        }
+
         this.delegate = delegate;
+
+        return delegate != null ? Result.CONTINUE : Result.STOP;
     }
 
-    @Override
-    public Operation resume(RunContext run) throws WorldEditException {
-        delegate = delegate.resume(run);
-        return delegate != null ? this : original;
-    }
+    /**
+     * Get the next operation to run.
+     *
+     * @param run the run context
+     * @return an operation to execute or {@code null} to abort
+     * @throws Exception thrown on any error
+     */
+    @Nullable
+    protected abstract Operation getNextOperation(RunContext run) throws Exception;
 
-    @Override
-    public void cancel() {
-        delegate.cancel();
-        original.cancel();
-    }
-
-    @Override
-    public Progress getProgress() {
-        return Progress.split(original.getProgress(), delegate.getProgress());
+    /**
+     * Return whether the operation should continue.
+     *
+     * @param run the run context
+     * @return true to continue execution
+     */
+    protected boolean shouldResume(RunContext run) {
+        return !run.isCancelled();
     }
 
 }

@@ -23,7 +23,6 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.EntityFunction;
 import com.sk89q.worldedit.function.operation.AbstractOperation;
-import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.function.util.AffectedCounter;
 import com.sk89q.worldedit.util.task.progress.Progress;
@@ -61,7 +60,11 @@ public class EntityVisitor extends AbstractOperation implements AffectedCounter 
     }
 
     @Override
-    public Operation resume(RunContext run) throws WorldEditException {
+    public Result resume(RunContext run) throws WorldEditException {
+        if (run.isCancelled()) {
+            return Result.STOP;
+        }
+
         while (iterator.hasNext()) {
             Entity entity = iterator.next();
             if (function.apply(entity)) {
@@ -69,15 +72,11 @@ public class EntityVisitor extends AbstractOperation implements AffectedCounter 
             }
 
             if (!run.shouldContinue()) {
-                return this;
+                return Result.CONTINUE;
             }
         }
 
-        return null;
-    }
-
-    @Override
-    public void cancel() {
+        return Result.STOP;
     }
 
     @Override

@@ -29,6 +29,11 @@ public class ImmediateRunContext implements RunContext {
     private ImmediateRunContext() {
     }
 
+    @Override
+    public boolean isCancelled() {
+        return false;
+    }
+
     /**
      * Always returns true.
      *

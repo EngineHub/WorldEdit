@@ -47,4 +47,112 @@ public final class MathUtils {
         return (int) (a - n * Math.floor(Math.floor(a) / n));
     }
 
+    /**
+     * Clamp a value between a minimum and a maximum.
+     *
+     * @param value the value to clamp
+     * @param min the minimum, inclusive
+     * @param max the maximum, inclusive
+     * @return the clamped value
+     */
+    public static byte clamp(byte value, byte min, byte max) {
+        if (value < min) {
+            return min;
+        } else if (value > max) {
+            return max;
+        } else {
+            return value;
+        }
+    }
+
+    /**
+     * Clamp a value between a minimum and a maximum.
+     *
+     * @param value the value to clamp
+     * @param min the minimum, inclusive
+     * @param max the maximum, inclusive
+     * @return the clamped value
+     */
+    public static short clamp(short value, short min, short max) {
+        if (value < min) {
+            return min;
+        } else if (value > max) {
+            return max;
+        } else {
+            return value;
+        }
+    }
+
+    /**
+     * Clamp a value between a minimum and a maximum.
+     *
+     * @param value the value to clamp
+     * @param min the minimum, inclusive
+     * @param max the maximum, inclusive
+     * @return the clamped value
+     */
+    public static int clamp(int value, int min, int max) {
+        if (value < min) {
+            return min;
+        } else if (value > max) {
+            return max;
+        } else {
+            return value;
+        }
+    }
+
+    /**
+     * Clamp a value between a minimum and a maximum.
+     *
+     * @param value the value to clamp
+     * @param min the minimum, inclusive
+     * @param max the maximum, inclusive
+     * @return the clamped value
+     */
+    public static long clamp(long value, long min, long max) {
+        if (value < min) {
+            return min;
+        } else if (value > max) {
+            return max;
+        } else {
+            return value;
+        }
+    }
+
+    /**
+     * Clamp a value between a minimum and a maximum.
+     *
+     * @param value the value to clamp
+     * @param min the minimum, inclusive
+     * @param max the maximum, inclusive
+     * @return the clamped value
+     */
+    public static float clamp(float value, float min, float max) {
+        if (value < min) {
+            return min;
+        } else if (value > max) {
+            return max;
+        } else {
+            return value;
+        }
+    }
+
+    /**
+     * Clamp a value between a minimum and a maximum.
+     *
+     * @param value the value to clamp
+     * @param min the minimum, inclusive
+     * @param max the maximum, inclusive
+     * @return the clamped value
+     */
+    public static double clamp(double value, double min, double max) {
+        if (value < min) {
+            return min;
+        } else if (value > max) {
+            return max;
+        } else {
+            return value;
+        }
+    }
+
 }

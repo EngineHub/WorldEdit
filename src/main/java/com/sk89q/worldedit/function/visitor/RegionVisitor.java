@@ -23,13 +23,12 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.operation.AbstractOperation;
-import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.function.util.AffectedCounter;
 import com.sk89q.worldedit.regions.ChunkSortedIterable;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.task.progress.ProgressIterator;
 import com.sk89q.worldedit.util.task.progress.Progress;
+import com.sk89q.worldedit.util.task.progress.ProgressIterator;
 
 import java.util.Iterator;
 
@@ -60,7 +59,11 @@ public class RegionVisitor extends AbstractOperation implements AffectedCounter 
     }
 
     @Override
-    public Operation resume(RunContext run) throws WorldEditException {
+    public Result resume(RunContext run) throws WorldEditException {
+        if (run.isCancelled()) {
+            return Result.STOP;
+        }
+
         while (iterator.hasNext()) {
             Vector pt = iterator.next();
             if (function.apply(pt)) {
@@ -68,15 +71,11 @@ public class RegionVisitor extends AbstractOperation implements AffectedCounter 
             }
 
             if (!run.shouldContinue()) {
-                return this;
+                return Result.CONTINUE;
             }
         }
 
-        return null;
-    }
-
-    @Override
-    public void cancel() {
+        return Result.STOP;
     }
 
     @Override

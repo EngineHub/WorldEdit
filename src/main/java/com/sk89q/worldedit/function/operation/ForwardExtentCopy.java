@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.function.operation;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.CombinedRegionFunction;
@@ -33,11 +32,13 @@ import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.util.AffectedCounter;
 import com.sk89q.worldedit.function.visitor.EntityVisitor;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
+import com.sk89q.worldedit.math.MathUtils;
 import com.sk89q.worldedit.math.transform.Identity;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.task.progress.Progress;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -50,13 +51,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * in the source extent, and will copy as many blocks as there are in the
  * source. Therefore, interpolation will not occur to fill in the gaps.</p>
  */
-public class ForwardExtentCopy extends AbstractOperation implements AffectedCounter {
+public class ForwardExtentCopy extends DelegateOperation implements AffectedCounter {
 
     private final Extent source;
     private final Extent destination;
     private final Region region;
     private final Vector from;
     private final Vector to;
+    private int totalRepetitions = 1;
     private int repetitions = 1;
     private Mask sourceMask = Masks.alwaysTrue();
     private boolean removingEntities;
@@ -182,6 +184,7 @@ public class ForwardExtentCopy extends AbstractOperation implements AffectedCoun
      */
     public void setRepetitions(int repetitions) {
         checkArgument(repetitions >= 0, "number of repetitions must be non-negative");
+        this.totalRepetitions = repetitions;
         this.repetitions = repetitions;
     }
 
@@ -208,8 +211,13 @@ public class ForwardExtentCopy extends AbstractOperation implements AffectedCoun
         return affected;
     }
 
+    @Nullable
     @Override
-    public Operation resume(RunContext run) throws WorldEditException {
+    public Operation getNextOperation(RunContext run) throws Exception {
+        if (run.isCancelled()) {
+            return null;
+        }
+
         if (lastVisitor != null) {
             affected += lastVisitor.getAffected();
             lastVisitor = null;
@@ -234,19 +242,33 @@ public class ForwardExtentCopy extends AbstractOperation implements AffectedCoun
 
             lastVisitor = blockVisitor;
             currentTransform = currentTransform.combine(transform);
-            return new DelegateOperation(this, new OperationQueue(blockVisitor, entityVisitor));
+            return new OperationQueue(blockVisitor, entityVisitor);
         } else {
             return null;
         }
     }
 
     @Override
-    public void cancel() {
+    protected boolean shouldResume(RunContext run) {
+        return false;
     }
 
     @Override
     public Progress getProgress() {
-        return Progress.indeterminate();
+        Operation current = getCurrentOperation();
+        int done = MathUtils.clamp(totalRepetitions - repetitions, 0, totalRepetitions);
+        if (done == totalRepetitions) {
+            return Progress.completed();
+        } else {
+            if (current != null) {
+                Progress progress = current.getProgress();
+                if (!progress.isIndeterminate()) {
+                    return Progress.of((done / (double) totalRepetitions) + progress.getProgress() * (1.0 / totalRepetitions));
+                }
+            }
+
+            return Progress.of((done / (double) totalRepetitions));
+        }
     }
 
 }

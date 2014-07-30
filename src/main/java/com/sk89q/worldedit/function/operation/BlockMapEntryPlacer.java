@@ -23,7 +23,6 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -53,26 +52,21 @@ public class BlockMapEntryPlacer extends AbstractOperation {
     }
 
     @Override
-    public Operation resume(RunContext run) throws WorldEditException {
+    public Result resume(RunContext run) throws WorldEditException {
+        if (run.isCancelled()) {
+            return Result.STOP;
+        }
+
         while (iterator.hasNext()) {
             Map.Entry<BlockVector, BaseBlock> entry = iterator.next();
             extent.setBlock(entry.getKey(), entry.getValue());
 
             if (!run.shouldContinue()) {
-                return this;
+                return Result.CONTINUE;
             }
         }
 
-        return null;
-    }
-
-    @Override
-    public void cancel() {
-    }
-
-    @Override
-    public Progress getProgress() {
-        return Progress.indeterminate();
+        return Result.STOP;
     }
 
 }

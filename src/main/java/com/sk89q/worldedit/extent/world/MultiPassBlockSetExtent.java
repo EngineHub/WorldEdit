@@ -29,7 +29,6 @@ import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.util.Vectors;
-import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -103,7 +102,11 @@ public class MultiPassBlockSetExtent extends AbstractDelegateExtent<SimulatedExt
             }
 
             @Override
-            public Operation resume(RunContext run) throws WorldEditException {
+            public Result resume(RunContext run) throws WorldEditException {
+                if (run.isCancelled()) {
+                    return Result.STOP;
+                }
+
                 Vector position;
 
                 while (true) {
@@ -111,7 +114,7 @@ public class MultiPassBlockSetExtent extends AbstractDelegateExtent<SimulatedExt
                         position = positions.peek();
 
                         if (position != null && Vectors.toChunkVector(position).equalsBlock(lastChunk)) {
-                            return null;
+                            return Result.STOP;
                         }
                     }
 
@@ -124,20 +127,11 @@ public class MultiPassBlockSetExtent extends AbstractDelegateExtent<SimulatedExt
                     getExtent().notifyAndLightBlock(position, 0);
 
                     if (!run.shouldContinue()) {
-                        return opportunistic ? null : this;
+                        return !opportunistic ? Result.CONTINUE : Result.STOP;
                     }
                 }
 
-                return null;
-            }
-
-            @Override
-            public void cancel() {
-            }
-
-            @Override
-            public Progress getProgress() {
-                return Progress.indeterminate();
+                return Result.STOP;
             }
         };
     }

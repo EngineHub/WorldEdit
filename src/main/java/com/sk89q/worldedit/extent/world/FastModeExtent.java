@@ -28,7 +28,6 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
-import com.sk89q.worldedit.util.task.progress.Progress;
 import com.sk89q.worldedit.world.World;
 
 import java.util.HashSet;
@@ -99,20 +98,15 @@ public class FastModeExtent extends AbstractDelegateExtent<Extent> {
     protected Operation thisFinalizeOperation() {
         return new AbstractOperation() {
             @Override
-            public Operation resume(RunContext run) throws WorldEditException {
+            public Result resume(RunContext run) throws WorldEditException {
+                if (run.isCancelled()) {
+                    return Result.STOP;
+                }
+
                 if (!dirtyChunks.isEmpty()) {
                     world.fixAfterFastMode(dirtyChunks);
                 }
-                return null;
-            }
-
-            @Override
-            public void cancel() {
-            }
-
-            @Override
-            public Progress getProgress() {
-                return Progress.indeterminate();
+                return Result.STOP;
             }
         };
     }

@@ -26,10 +26,8 @@ import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.function.mask.Mask2D;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.operation.AbstractOperation;
-import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.regions.FlatRegion;
-import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.Iterator;
 
@@ -93,7 +91,11 @@ public class LayerVisitor extends AbstractOperation {
     }
 
     @Override
-    public Operation resume(RunContext run) throws WorldEditException {
+    public Result resume(RunContext run) throws WorldEditException {
+        if (run.isCancelled()) {
+            return Result.STOP;
+        }
+
         while (iterator.hasNext()) {
             Vector2D column = iterator.next();
 
@@ -125,20 +127,11 @@ public class LayerVisitor extends AbstractOperation {
             }
 
             if (!run.shouldContinue()) {
-                return this;
+                return Result.CONTINUE;
             }
         }
 
-        return null;
-    }
-
-    @Override
-    public void cancel() {
-    }
-
-    @Override
-    public Progress getProgress() {
-        return Progress.indeterminate();
+        return Result.STOP;
     }
 
 }

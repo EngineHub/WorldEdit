@@ -23,12 +23,10 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.FlatRegionFunction;
 import com.sk89q.worldedit.function.operation.AbstractOperation;
-import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.function.util.AffectedCounter;
 import com.sk89q.worldedit.regions.FlatChunkSortedIterable;
 import com.sk89q.worldedit.regions.FlatRegion;
-import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.Iterator;
 
@@ -68,27 +66,22 @@ public class FlatRegionVisitor extends AbstractOperation implements AffectedCoun
     }
 
     @Override
-    public Operation resume(RunContext run) throws WorldEditException {
+    public Result resume(RunContext run) throws WorldEditException {
+        if (run.isCancelled()) {
+            return Result.STOP;
+        }
+
         while (iterator.hasNext()) {
             if (function.apply(iterator.next())) {
                 affected++;
             }
 
             if (!run.shouldContinue()) {
-                return this;
+                return Result.CONTINUE;
             }
         }
 
-        return null;
-    }
-
-    @Override
-    public void cancel() {
-    }
-
-    @Override
-    public Progress getProgress() {
-        return Progress.indeterminate();
+        return Result.STOP;
     }
 
 }

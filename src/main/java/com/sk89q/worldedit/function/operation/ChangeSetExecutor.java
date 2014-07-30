@@ -63,7 +63,11 @@ public class ChangeSetExecutor extends AbstractOperation {
     }
 
     @Override
-    public Operation resume(RunContext run) throws WorldEditException {
+    public Result resume(RunContext run) throws WorldEditException {
+        if (run.isCancelled()) {
+            return Result.STOP;
+        }
+
         while (iterator.hasNext()) {
             Change change = iterator.next();
             if (type == Type.UNDO) {
@@ -73,15 +77,11 @@ public class ChangeSetExecutor extends AbstractOperation {
             }
 
             if (!run.shouldContinue()) {
-                return this;
+                return Result.CONTINUE;
             }
         }
 
-        return null;
-    }
-
-    @Override
-    public void cancel() {
+        return Result.STOP;
     }
 
     @Override

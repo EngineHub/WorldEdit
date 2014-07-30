@@ -19,45 +19,71 @@
 
 package com.sk89q.worldedit.function.operation;
 
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.util.task.OperationScheduler;
 import com.sk89q.worldedit.util.task.progress.ProgressObservable;
 
 /**
- * An task that may be split into multiple steps to be run sequentially
- * immediately or at a varying or fixed interval. Operations should attempt
- * to break apart tasks into smaller tasks that can be completed in quicker
- * successions.
+ * The {@code Operation} interface is to be implemented by classes whose
+ * instances are to be executed repeatedly in one or more threads sequentially.
+ *
+ * <p>The purpose of operations is to allow the thread-safe execution of tasks
+ * in thread-unsafe environments where locks cannot be employed, possibly due
+ * to legacy limitations.</p>
+ *
+ * <p>Scheduling an operation for execution is made possible by the
+ * {@link OperationScheduler} class. In addition, the utility
+ * {@link Operations} class provides related methods for working with
+ * operations, including a function to repeatedly execute an operation
+ * until completion (without returning control until completion).</p>
  */
 public interface Operation extends ProgressObservable {
 
     /**
-     * Returns whether this operation is opportunistic; that is, the operation
-     * will never know when it will finish so {@link #resume(RunContext)} will
-     * always return {@code null}, but as long as other related operations are
-     * active, this operation should be resumed.
+     * Returns whether this operation is opportunistic.
+     *
+     * <p>An opportunistic operation may have tasks to perform frequently
+     * through the lifetime of another operation, but can be abandoned
+     * at any time without causing problems. Opportunistic tasks should
+     * always return {@code false} for {@link #resume(RunContext)} so
+     * that unaware implementations do not inevitably execute an opportunistic
+     * task for an infinite duration.</p>
      *
      * @return true if opportunistic
      */
     boolean isOpportunistic();
 
     /**
-     * Complete the next step. If this method returns true, then the method may
-     * be called again in the future, or possibly never. If this method
-     * returns false, then this method should not be called again.
+     * Execute the next pass of the operation.
+     *
+     * <p>Implementations should inspect the provided {@link RunContext}
+     * to determine when it should return control to the calling code as well
+     * as whether it should abort execution completely.</p>
+     *
+     * <p>This method should never be called from different threads
+     * simultaneously.</p>
      *
      * @param run describes information about the current run
-     * @return another operation to run that operation again, or null to stop
-     * @throws WorldEditException an error
+     * @return whether the operation should be resumed
+     * @throws Exception any exception may be thrown
      */
-    Operation resume(RunContext run) throws WorldEditException;
+    Result resume(RunContext run) throws Exception;
 
     /**
-     * Abort the current task. After the this method is called,
-     * {@link #resume(RunContext)} should not be called at any point in the
-     * future. This method should not be called after successful completion of
-     * the operation. This method must be called if the operation is
-     * interrupted before completion.
+     * The return value of the {@link #resume(RunContext)} method to determine
+     * whether execution should continue.
      */
-    void cancel();
+    public static enum Result {
+
+        /**
+         * Resume the operation again. There is no actual gaurantee that
+         * the scheduler will resume the operation.
+         */
+        CONTINUE,
+
+        /**
+         * Don't resume the operation again.
+         */
+        STOP
+    }
 
 }

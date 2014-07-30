@@ -28,14 +28,17 @@ import java.util.concurrent.TimeUnit;
 public class TimedRunContext implements RunContext {
 
     private final long stopTimeNanos;
+    private final boolean cancelled;
 
     /**
      * Create a TimedRunContext with a known stop time, as measured by System.nanoTime().
      *
      * @param stopTimeNanos nanoTime at which to stop the operation
+     * @param cancelled whether the cancel flag has been set
      */
-    public TimedRunContext(long stopTimeNanos) {
+    public TimedRunContext(long stopTimeNanos, boolean cancelled) {
         this.stopTimeNanos = stopTimeNanos;
+        this.cancelled = cancelled;
     }
 
     /**
@@ -44,9 +47,16 @@ public class TimedRunContext implements RunContext {
      *
      * @param sourceDuration duration from now, in source units
      * @param sourceUnit the source unit
+     * @param cancelled whether the cancel flag has been set
      */
-    public TimedRunContext(long sourceDuration, TimeUnit sourceUnit) {
+    public TimedRunContext(long sourceDuration, TimeUnit sourceUnit, boolean cancelled) {
         stopTimeNanos = System.nanoTime() + sourceUnit.toNanos(sourceDuration);
+        this.cancelled = cancelled;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return cancelled;
     }
 
     @Override

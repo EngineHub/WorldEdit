@@ -19,14 +19,21 @@
 
 package com.sk89q.worldedit.function.operation;
 
+import com.sk89q.worldedit.util.task.progress.Progress;
+
 /**
- * An abstract operation.
+ * An abstract implementation of {@code Operation}.
  */
 public abstract class AbstractOperation implements Operation {
 
     @Override
     public boolean isOpportunistic() {
         return false;
+    }
+
+    @Override
+    public Progress getProgress() {
+        return Progress.indeterminate();
     }
 
 }

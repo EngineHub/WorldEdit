@@ -31,11 +31,11 @@ import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.BlockMapEntryPlacer;
+import com.sk89q.worldedit.function.operation.DelegateOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.util.collection.TupleArrayList;
-import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.Deque;
 import java.util.HashMap;
@@ -120,31 +120,33 @@ public class MultiStageReorder extends AbstractDelegateExtent<Extent> implements
 
     @Override
     public Operation thisFinalizeOperation() {
-        return new AbstractOperation() {
-            @Override
-            public Operation resume(RunContext run) throws WorldEditException {
-                return new OperationQueue(
-                        new BlockMapEntryPlacer(
-                                getExtent(),
-                                Iterators.concat(stage1.iterator(), stage2.iterator())),
-                        new Stage3Committer());
-            }
+        return new DelegateOperation() {
+            private boolean created = false;
 
             @Override
-            public void cancel() {
-            }
+            protected Operation getNextOperation(RunContext run) throws WorldEditException {
+                if (!created) {
+                    created = true;
+                    return new OperationQueue(
+                            new BlockMapEntryPlacer(
+                                    getExtent(),
+                                    Iterators.concat(stage1.iterator(), stage2.iterator())),
+                            new Stage3Committer());
+                }
 
-            @Override
-            public Progress getProgress() {
-                return Progress.indeterminate();
+                created = true;
+                return null;
             }
         };
     }
 
     private class Stage3Committer extends AbstractOperation {
-
         @Override
-        public Operation resume(RunContext run) throws WorldEditException {
+        public Result resume(RunContext run) throws WorldEditException {
+            if (run.isCancelled()) {
+                return Result.STOP;
+            }
+
             Extent extent = getExtent();
 
             final Set<BlockVector> blocks = new HashSet<BlockVector>();
@@ -227,16 +229,7 @@ public class MultiStageReorder extends AbstractDelegateExtent<Extent> implements
             stage2.clear();
             stage3.clear();
 
-            return null;
-        }
-
-        @Override
-        public void cancel() {
-        }
-
-        @Override
-        public Progress getProgress() {
-            return Progress.indeterminate();
+            return Result.STOP;
         }
     }
 
