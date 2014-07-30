@@ -98,7 +98,7 @@ public class RegionCommands {
         RegionVisitor visitor = new RegionVisitor(session.getSelection(player.getWorld()), replace);
 
         Operation operation = session.wrapOperation(visitor, editSession);
-        ListenableFuture<?> future = worldEdit.getOperationScheduler().submit(operation, player.getWorld(), "//replace", player);
+        ListenableFuture<?> future = worldEdit.getOperationScheduler().submit(operation, player.getWorld(), "//set", player);
         Operations.addBlockChangeMessage(future, visitor, player);
     }
 

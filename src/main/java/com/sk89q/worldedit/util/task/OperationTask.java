@@ -23,6 +23,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.TimedRunContext;
 import com.sk89q.worldedit.util.scheduler.TickScheduler;
+import com.sk89q.worldedit.util.task.progress.Progress;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
@@ -97,4 +98,13 @@ class OperationTask extends AbstractTask<Operation> implements Task<Operation>, 
         scheduler.schedule(this, 0);
     }
 
+    @Override
+    public Progress getProgress() {
+        Operation next = nextOperation;
+        if (next == null) {
+            return Progress.completed();
+        } else {
+            return next.getProgress();
+        }
+    }
 }

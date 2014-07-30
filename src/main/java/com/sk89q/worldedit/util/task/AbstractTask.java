@@ -23,17 +23,20 @@ import com.google.common.util.concurrent.AbstractFuture;
 
 import javax.annotation.Nullable;
 
+import java.util.Date;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An abstract task that stores a pre-set name and owner on a field.
  *
- * @param <V>
+ * @param <V> the type returned
  */
 public abstract class AbstractTask<V> extends AbstractFuture<V> implements Task<V> {
 
     private final String name;
     private final Object owner;
+    private final Date creationDate = new Date();
 
     /**
      * Create a new instance.
@@ -58,4 +61,8 @@ public abstract class AbstractTask<V> extends AbstractFuture<V> implements Task<
         return owner;
     }
 
+    @Override
+    public Date getCreationDate() {
+        return creationDate;
+    }
 }

@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.function.operation;
 
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.util.task.progress.Progress;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -55,6 +56,11 @@ public class DelegateOperation extends AbstractOperation {
     public void cancel() {
         delegate.cancel();
         original.cancel();
+    }
+
+    @Override
+    public Progress getProgress() {
+        return Progress.split(original.getProgress(), delegate.getProgress());
     }
 
 }

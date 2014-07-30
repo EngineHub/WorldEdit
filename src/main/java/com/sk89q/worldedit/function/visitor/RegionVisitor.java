@@ -28,6 +28,8 @@ import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.function.util.AffectedCounter;
 import com.sk89q.worldedit.regions.ChunkSortedIterable;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.task.progress.ProgressIterator;
+import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.Iterator;
 
@@ -36,17 +38,19 @@ import java.util.Iterator;
  */
 public class RegionVisitor extends AbstractOperation implements AffectedCounter {
 
-    private final Iterator<? extends Vector> iterator;
+    private final ProgressIterator<? extends Vector> iterator;
     private final RegionFunction function;
     private int affected = 0;
 
     public RegionVisitor(Region region, RegionFunction function) {
+        Iterator<? extends Vector> iterator;
         if (region instanceof ChunkSortedIterable) {
-            this.iterator = ((ChunkSortedIterable) region.clone()).chunkSortedIterator();
+            iterator = ((ChunkSortedIterable) region.clone()).chunkSortedIterator();
         } else {
-            this.iterator = region.clone().iterator();
+            iterator = region.clone().iterator();
         }
 
+        this.iterator = ProgressIterator.create(iterator, region.getArea());
         this.function = function;
     }
 
@@ -73,6 +77,16 @@ public class RegionVisitor extends AbstractOperation implements AffectedCounter 
 
     @Override
     public void cancel() {
+    }
+
+    @Override
+    public String toString() {
+        return "{" + function + "} over a region";
+    }
+
+    @Override
+    public Progress getProgress() {
+        return iterator.getProgress();
     }
 
 }

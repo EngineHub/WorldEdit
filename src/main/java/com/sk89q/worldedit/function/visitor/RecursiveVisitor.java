@@ -22,6 +22,7 @@ package com.sk89q.worldedit.function.visitor;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.util.task.progress.Progress;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -49,4 +50,10 @@ public class RecursiveVisitor extends BreadthFirstSearch {
     protected boolean isVisitable(Vector from, Vector to) {
         return mask.test(to);
     }
+
+    @Override
+    public Progress getProgress() {
+        return Progress.indeterminate();
+    }
+
 }

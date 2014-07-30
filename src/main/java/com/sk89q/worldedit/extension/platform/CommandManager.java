@@ -111,6 +111,7 @@ public final class CommandManager {
                         .registerMethods(new GenerationCommands(worldEdit))
                         .registerMethods(new HistoryCommands(worldEdit))
                         .registerMethods(new NavigationCommands(worldEdit))
+                        .registerMethods(new OperationCommands(worldEdit))
                         .registerMethods(new RegionCommands(worldEdit))
                         .registerMethods(new ScriptingCommands(worldEdit))
                         .registerMethods(new SelectionCommands(worldEdit))

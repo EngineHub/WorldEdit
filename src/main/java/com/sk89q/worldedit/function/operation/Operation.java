@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.function.operation;
 
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.util.task.progress.ProgressObservable;
 
 /**
  * An task that may be split into multiple steps to be run sequentially
@@ -27,7 +28,7 @@ import com.sk89q.worldedit.WorldEditException;
  * to break apart tasks into smaller tasks that can be completed in quicker
  * successions.
  */
-public interface Operation {
+public interface Operation extends ProgressObservable {
 
     /**
      * Returns whether this operation is opportunistic; that is, the operation

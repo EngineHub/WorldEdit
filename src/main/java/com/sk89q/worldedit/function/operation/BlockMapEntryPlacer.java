@@ -23,6 +23,7 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -68,4 +69,10 @@ public class BlockMapEntryPlacer extends AbstractOperation {
     @Override
     public void cancel() {
     }
+
+    @Override
+    public Progress getProgress() {
+        return Progress.indeterminate();
+    }
+
 }

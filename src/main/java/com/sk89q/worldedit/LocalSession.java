@@ -47,6 +47,7 @@ import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.selector.RegionSelectorType;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.task.progress.Progress;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
 
@@ -914,6 +915,11 @@ public class LocalSession {
 
             @Override
             public void cancel() {
+            }
+
+            @Override
+            public Progress getProgress() {
+                return Progress.indeterminate();
             }
         });
     }

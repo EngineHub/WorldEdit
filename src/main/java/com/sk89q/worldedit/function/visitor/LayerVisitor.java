@@ -29,6 +29,7 @@ import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.regions.FlatRegion;
+import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.Iterator;
 
@@ -134,4 +135,10 @@ public class LayerVisitor extends AbstractOperation {
     @Override
     public void cancel() {
     }
+
+    @Override
+    public Progress getProgress() {
+        return Progress.indeterminate();
+    }
+
 }

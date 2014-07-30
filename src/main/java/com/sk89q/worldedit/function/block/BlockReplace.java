@@ -53,4 +53,9 @@ public class BlockReplace implements RegionFunction {
         return extent.setBlock(position, pattern.apply(position));
     }
 
+    @Override
+    public String toString() {
+        return "replace with " + pattern;
+    }
+
 }

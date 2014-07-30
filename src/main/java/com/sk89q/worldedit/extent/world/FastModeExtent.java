@@ -28,6 +28,7 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.util.task.progress.Progress;
 import com.sk89q.worldedit.world.World;
 
 import java.util.HashSet;
@@ -107,6 +108,11 @@ public class FastModeExtent extends AbstractDelegateExtent<Extent> {
 
             @Override
             public void cancel() {
+            }
+
+            @Override
+            public Progress getProgress() {
+                return Progress.indeterminate();
             }
         };
     }

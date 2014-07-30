@@ -20,14 +20,16 @@
 package com.sk89q.worldedit.util.task;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.sk89q.worldedit.util.task.progress.ProgressObservable;
 
 import javax.annotation.Nullable;
+import java.util.Date;
 
 /**
  * A task is a job that can be scheduled, run, or cancelled. Tasks can report
  * on their own status.
  */
-public interface Task<V> extends ListenableFuture<V> {
+public interface Task<V> extends ListenableFuture<V>, ProgressObservable {
 
     /**
      * Get the name of the task so it can be printed to the user.
@@ -52,25 +54,32 @@ public interface Task<V> extends ListenableFuture<V> {
     State getState();
 
     /**
+     * Get the time at which the task was created.
+     *
+     * @return a date
+     */
+    Date getCreationDate();
+
+    /**
      * Represents the state of a task.
      */
     public enum State {
+        /**
+         * The task has been scheduled to run but is not running yet.
+         */
+        SCHEDULED,
         /**
          * The task has been cancelled and may be stopped or will stop.
          */
         CANCELLED,
         /**
-         * The task has failed.
-         */
-        FAILED,
-        /**
          * The task is currently running.
          */
         RUNNING,
         /**
-         * The task has been scheduled to run but is not running yet.
+         * The task has failed.
          */
-        SCHEDULED,
+        FAILED,
         /**
          * The task has succeeded.
          */

@@ -28,6 +28,7 @@ import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.function.util.AffectedCounter;
 import com.sk89q.worldedit.regions.FlatChunkSortedIterable;
 import com.sk89q.worldedit.regions.FlatRegion;
+import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.Iterator;
 
@@ -83,6 +84,11 @@ public class FlatRegionVisitor extends AbstractOperation implements AffectedCoun
 
     @Override
     public void cancel() {
+    }
+
+    @Override
+    public Progress getProgress() {
+        return Progress.indeterminate();
     }
 
 }

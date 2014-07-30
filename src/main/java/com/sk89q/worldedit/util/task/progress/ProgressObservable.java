@@ -17,28 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.task;
-
-import java.util.List;
+package com.sk89q.worldedit.util.task.progress;
 
 /**
- * Manages running tasks and informs users of their progress, but does not
- * execute the task.
+ * An object that is able to report on its progress.
  */
-public interface Supervisor {
+public interface ProgressObservable {
 
     /**
-     * Get a list of running or queued tasks.
+     * Get the current percentage of completion.
      *
-     * @return a list of tasks
+     * @return a progress object
      */
-    List<Task<?>> getTasks();
-
-    /**
-     * Monitor the given task.
-     *
-     * @param task the task
-     */
-    void monitor(Task<?> task);
+    Progress getProgress();
 
 }

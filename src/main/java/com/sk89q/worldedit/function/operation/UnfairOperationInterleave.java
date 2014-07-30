@@ -20,9 +20,12 @@
 package com.sk89q.worldedit.function.operation;
 
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.util.task.progress.Progress;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -34,6 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class UnfairOperationInterleave extends AbstractOperation {
 
+    private final List<Operation> operations = new ArrayList<Operation>();
     private final Queue<Operation> queue = new LinkedBlockingQueue<Operation>();
 
     /**
@@ -43,6 +47,7 @@ public class UnfairOperationInterleave extends AbstractOperation {
      */
     public UnfairOperationInterleave(Collection<Operation> operations) {
         checkNotNull(operations);
+        operations.addAll(operations);
         queue.addAll(operations);
     }
 
@@ -84,6 +89,11 @@ public class UnfairOperationInterleave extends AbstractOperation {
     @Override
     public void cancel() {
 
+    }
+
+    @Override
+    public Progress getProgress() {
+        return Progress.splitObservables(operations);
     }
 
 }

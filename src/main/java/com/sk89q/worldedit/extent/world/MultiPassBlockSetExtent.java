@@ -29,6 +29,7 @@ import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.util.Vectors;
+import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -132,6 +133,11 @@ public class MultiPassBlockSetExtent extends AbstractDelegateExtent<SimulatedExt
 
             @Override
             public void cancel() {
+            }
+
+            @Override
+            public Progress getProgress() {
+                return Progress.indeterminate();
             }
         };
     }

@@ -38,8 +38,15 @@ public class SimpleSupervisor implements Supervisor {
     private static final Timer timer = new Timer();
     private static final int QUEUE_MESSAGE_DELAY = 1000;
 
-    private final List<Task> monitored = new ArrayList<Task>();
+    private final List<Task<?>> monitored = new ArrayList<Task<?>>();
     private final Object lock = new Object();
+
+    @Override
+    public List<Task<?>> getTasks() {
+        synchronized (lock) {
+            return new ArrayList<Task<?>>(monitored);
+        }
+    }
 
     @Override
     public void monitor(final Task<?> task) {

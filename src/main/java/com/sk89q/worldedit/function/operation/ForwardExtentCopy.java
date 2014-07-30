@@ -36,6 +36,7 @@ import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.math.transform.Identity;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.List;
 
@@ -229,7 +230,7 @@ public class ForwardExtentCopy extends AbstractOperation implements AffectedCoun
             ExtentEntityCopy entityCopy = new ExtentEntityCopy(from, destination, to, currentTransform);
             entityCopy.setRemoving(removingEntities);
             List<? extends Entity> entities = source.getEntities(region);
-            EntityVisitor entityVisitor = new EntityVisitor(entities.iterator(), entityCopy);
+            EntityVisitor entityVisitor = new EntityVisitor(entities, entityCopy);
 
             lastVisitor = blockVisitor;
             currentTransform = currentTransform.combine(transform);
@@ -241,6 +242,11 @@ public class ForwardExtentCopy extends AbstractOperation implements AffectedCoun
 
     @Override
     public void cancel() {
+    }
+
+    @Override
+    public Progress getProgress() {
+        return Progress.indeterminate();
     }
 
 }

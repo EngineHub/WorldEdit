@@ -35,6 +35,7 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.util.collection.TupleArrayList;
+import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.Deque;
 import java.util.HashMap;
@@ -132,6 +133,11 @@ public class MultiStageReorder extends AbstractDelegateExtent<Extent> implements
             @Override
             public void cancel() {
             }
+
+            @Override
+            public Progress getProgress() {
+                return Progress.indeterminate();
+            }
         };
     }
 
@@ -228,6 +234,10 @@ public class MultiStageReorder extends AbstractDelegateExtent<Extent> implements
         public void cancel() {
         }
 
+        @Override
+        public Progress getProgress() {
+            return Progress.indeterminate();
+        }
     }
 
 }

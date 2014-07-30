@@ -26,8 +26,10 @@ import com.sk89q.worldedit.function.operation.AbstractOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.function.util.AffectedCounter;
+import com.sk89q.worldedit.util.task.progress.Progress;
+import com.sk89q.worldedit.util.task.progress.ProgressIterator;
 
-import java.util.Iterator;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -36,20 +38,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class EntityVisitor extends AbstractOperation implements AffectedCounter {
 
-    private final Iterator<? extends Entity> iterator;
+    private final ProgressIterator<? extends Entity> iterator;
     private final EntityFunction function;
     private int affected = 0;
 
     /**
      * Create a new instance.
      *
-     * @param iterator the iterator
+     * @param entities a list of entities
      * @param function the function
      */
-    public EntityVisitor(Iterator<? extends Entity> iterator, EntityFunction function) {
-        checkNotNull(iterator);
+    public EntityVisitor(List<? extends Entity> entities, EntityFunction function) {
+        checkNotNull(entities);
         checkNotNull(function);
-        this.iterator = iterator;
+        this.iterator = ProgressIterator.create(entities);
         this.function = function;
     }
 
@@ -76,6 +78,11 @@ public class EntityVisitor extends AbstractOperation implements AffectedCounter 
 
     @Override
     public void cancel() {
+    }
+
+    @Override
+    public Progress getProgress() {
+        return iterator.getProgress();
     }
 
 }

@@ -23,6 +23,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.history.change.Change;
 import com.sk89q.worldedit.history.changeset.ChangeSet;
 import com.sk89q.worldedit.history.UndoContext;
+import com.sk89q.worldedit.util.task.progress.Progress;
 
 import java.util.Iterator;
 
@@ -81,6 +82,11 @@ public class ChangeSetExecutor extends AbstractOperation {
 
     @Override
     public void cancel() {
+    }
+
+    @Override
+    public Progress getProgress() {
+        return Progress.indeterminate();
     }
 
     /**
