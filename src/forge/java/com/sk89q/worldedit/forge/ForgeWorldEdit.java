@@ -145,7 +145,6 @@ public class ForgeWorldEdit {
     @ForgeSubscribe
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (platform == null) {
-            logger.warning("WorldEdit didn't initialize correctly! Please report this error.");
             return;
         }
 
