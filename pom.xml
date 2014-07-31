@@ -214,7 +214,6 @@
     <resources>
       <!-- Data files -->
       <resource>
-        <targetPath>.</targetPath>
         <filtering>false</filtering>
         <directory>${basedir}/src/main/resources/</directory>
         <includes>
@@ -579,7 +578,6 @@
         <resources>
           <!-- Bukkit plugin.yml -->
           <resource>
-            <targetPath>.</targetPath>
             <filtering>true</filtering>
             <directory>${basedir}/src/bukkit/resources/</directory>
             <includes>
@@ -599,7 +597,6 @@
 
           <!-- NMS support in Bukkit -->
           <resource>
-            <targetPath>.</targetPath>
             <filtering>false</filtering>
             <directory>${basedir}/src/bukkit/resources/</directory>
             <includes>
