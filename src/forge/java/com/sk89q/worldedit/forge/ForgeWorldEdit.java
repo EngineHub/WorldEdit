@@ -106,7 +106,7 @@ public class ForgeWorldEdit {
     }
 
     @EventHandler
-    public void serverAboutToSTart(FMLServerAboutToStartEvent event) {
+    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
         if (this.platform != null) {
             logger.warning("FMLServerStartingEvent occurred when FMLServerStoppingEvent hasn't");
             WorldEdit.getInstance().getPlatformManager().unregister(platform);
@@ -144,6 +144,11 @@ public class ForgeWorldEdit {
 
     @ForgeSubscribe
     public void onPlayerInteract(PlayerInteractEvent event) {
+        if (platform == null) {
+            logger.warning("WorldEdit didn't initialize correctly! Please report this error.");
+            return;
+        }
+
         if (!platform.isHookingEvents()) return; // We have to be told to catch these events
 
         if (event.useItem == Result.DENY || event.entity.worldObj.isRemote) return;
