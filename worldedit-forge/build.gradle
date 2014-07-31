@@ -1,0 +1,68 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url = "http://files.minecraftforge.net/maven" }
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.0-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
+    }
+}
+
+apply plugin: 'forge'
+apply plugin: 'shadow'
+
+dependencies {
+    compile project(':worldedit-core')
+    testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
+}
+
+minecraft {
+    version = "1.6.4-9.11.1.964"
+    forgeVersion = "9.11.1.964"
+
+    replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
+    replace "%VERSION%", project.version
+}
+
+processResources {
+    from (sourceSets.main.resources.srcDirs) {
+        expand 'version': project.version, 'mcVersion': project.minecraft.version, 'forgeVersion': project.minecraft.forgeVersion
+        include 'mcmod.info'
+    }
+
+    from (sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+shadow {
+    //artifactAttached false
+    destinationDir "${buildDir}/libs/"
+    artifactSet {
+        include 'com.sk89q:worldedit-core:jar:'
+    }
+}
+
+task deleteOrig(type: Delete) {
+    delete "${project.tasks.jar.getArchivePath().getPath()}"
+}
+
+task renameShaded(type: Copy) {
+    from file("${buildDir}/libs")
+    into file("${buildDir}/libs")
+    rename { String fileName ->
+        fileName.replace('-shadow', '')
+    }
+}
+
+task deleteShaded(type: Delete) {
+    delete "${project.tasks.jar.getArchivePath().getPath().replace('.jar', '-shadow.jar')}"
+}
+
+build.dependsOn(deleteShaded)
+deleteShaded.dependsOn(renameShaded)
+renameShaded.dependsOn(deleteOrig)
+deleteOrig.dependsOn(shadowJar)

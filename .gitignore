@@ -11,9 +11,10 @@
 /build
 /target
 /gradle
-/.gradle
+.gradle
 /forge-download
 /out
+/*/build
 
 /dependency-reduced-pom.xml
 *-private.sh

@@ -1,119 +1,23 @@
-/*
- * Build script for the Forge version of WorldEdit
- */
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
 
-// Add ForgeGradle as a dependency for the build script
-buildscript {
+    group = 'com.sk89q'
+    version = '6.0.0-SNAPSHOT'
+
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+
     repositories {
         mavenCentral()
-        maven { url = "http://files.minecraftforge.net/maven" }
-        jcenter()
+        maven { url "http://repo.bukkit.org/content/groups/public" }
+        maven { url "http://maven.sk89q.com/repo/" }
+        maven { url "http://repo.maven.apache.org/maven2" }
     }
-
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.0-SNAPSHOT'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
-    }
-}
-
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'forge'
-apply plugin: 'shadow'
-
-group = 'com.sk89q'
-version = '6.0.0-SNAPSHOT' + System.getProperty("worldedit.build.suffix", "")
-archivesBaseName = "worldedit-forge"
-
-description = "An in-game voxel map editor for Minecraft."
-
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
-repositories {
-    mavenCentral()
-    maven { url "http://repo.bukkit.org/content/groups/public" }
-    maven { url "http://maven.sk89q.com/repo/" }
-    maven { url "http://repo.maven.apache.org/maven2" }
 }
 
 dependencies {
-    compile group: 'de.schlichtherle', name: 'truezip', version:'6.8.3'
-    compile group: 'rhino', name: 'js', version:'1.7R2'
-    compile group: 'org.yaml', name: 'snakeyaml', version:'1.9'
-    compile group: 'com.google.guava', name: 'guava', version:'10.0.1'
-    compile group: 'com.sk89q', name: 'jchronic', version:'0.2.4a'
-    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '1.3.9'
-    compile group: 'com.thoughtworks.paranamer', name: 'paranamer', version: '2.6'
-    compile group: 'com.google.code.gson', name: 'gson', version: '2.2.4'
-    compile group: 'com.sk89q.lib', name: 'jlibnoise', version: '1.0.0'
-    //compile group: 'net.sf.trove4j', name: 'trove4j', version: '3.0.3'
-    testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
+    project(":worldedit-core")
+    project(":worldedit-bukkit")
+    project(":worldedit-forge")
 }
-
-sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-            srcDir 'src/legacy/java'
-            srcDir 'src/forge/java'
-        }
-        resources {
-            srcDir 'src/main/resources'
-            srcDir 'src/forge/resources'
-        }
-    }
-}
-
-minecraft {
-    version = "1.6.4-9.11.1.964"
-    forgeVersion = "9.11.1.964"
-
-    replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
-    replace "%VERSION%", project.version
-}
-
-processResources {
-    from (sourceSets.main.resources.srcDirs) {
-        expand 'version': project.version, 'mcVersion': project.minecraft.version,
-                'forgeVersion': project.minecraft.forgeVersion
-        include 'mcmod.info'
-    }
-
-    from (sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
-}
-
-// shade needed runtime dependencies
-shadow {
-    //artifactAttached false
-    destinationDir "${buildDir}/libs/"
-    artifactSet {
-        include '*:jchronic:jar:'
-        include '*:paranamer:jar:'
-        include '*:jlibnoise:jar:'
-    }
-}
-
-task deleteOrig(type: Delete) {
-    delete "${project.tasks.jar.getArchivePath().getPath()}"
-}
-
-task renameShaded(type: Copy) {
-    from file("${buildDir}/libs")
-    into file("${buildDir}/libs")
-    rename { String fileName ->
-        fileName.replace('-shadow', '')
-    }
-}
-
-task deleteShaded(type: Delete) {
-    delete "${project.tasks.jar.getArchivePath().getPath().replace('.jar', '-shadow.jar')}"
-}
-
-// follow all the steps
-build.dependsOn(deleteShaded)
-deleteShaded.dependsOn(renameShaded)
-renameShaded.dependsOn(deleteOrig)
-deleteOrig.dependsOn(shadowJar)

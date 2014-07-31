@@ -1,0 +1,69 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
+    }
+}
+
+apply plugin: 'shadow'
+
+dependencies {
+    compile 'de.schlichtherle:truezip:6.8.3'
+    compile 'rhino:js:1.7R2'
+    compile 'org.yaml:snakeyaml:1.9'
+    compile 'com.google.guava:guava:10.0.1'
+    compile 'com.sk89q:jchronic:0.2.4a'
+    compile 'com.google.code.findbugs:jsr305:1.3.9'
+    compile 'com.thoughtworks.paranamer:paranamer:2.6'
+    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.sk89q.lib:jlibnoise:1.0.0'
+    //compile 'net.sf.trove4j:trove4j:3.0.3'
+    testCompile 'org.mockito:mockito-core:1.9.0-rc1'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+            srcDir 'src/legacy/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+}
+
+shadow {
+    //artifactAttached false
+    destinationDir "${buildDir}/libs/"
+    artifactSet {
+        include 'com.sk89q:jchronic:jar:'
+        include 'com.thoughtworks.paranamer:paranamer:jar:'
+        include 'com.sk89q.lib:jlibnoise:jar:'
+    }
+}
+
+task deleteOrig(type: Delete) {
+    delete "${project.tasks.jar.getArchivePath().getPath()}"
+}
+
+task renameShaded(type: Copy) {
+    from file("${buildDir}/libs")
+    into file("${buildDir}/libs")
+    rename { String fileName ->
+        fileName.replace('-shadow', '')
+    }
+}
+
+task deleteShaded(type: Delete) {
+    delete "${project.tasks.jar.getArchivePath().getPath().replace('.jar', '-shadow.jar')}"
+}
+
+build.dependsOn(deleteShaded)
+deleteShaded.dependsOn(renameShaded)
+renameShaded.dependsOn(deleteOrig)
+deleteOrig.dependsOn(shadowJar)

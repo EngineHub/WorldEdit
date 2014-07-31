@@ -1,0 +1,60 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
+    }
+}
+
+apply plugin: 'shadow'
+
+dependencies {
+    compile project(':worldedit-core')
+    compile 'com.sk89q:dummypermscompat:1.7'
+    compile 'org.sk89q.bukkit:bukkit-classloader-check:1.7.2-R0.3'
+    compile 'org.bukkit:bukkit:1.7.2-R0.3'
+    testCompile 'org.mockito:mockito-core:1.9.0-rc1'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+}
+
+shadow {
+    //artifactAttached false
+    destinationDir "${buildDir}/libs/"
+    artifactSet {
+        include 'com.sk89q:worldedit-core:jar:'
+    }
+}
+
+task deleteOrig(type: Delete) {
+    delete "${project.tasks.jar.getArchivePath().getPath()}"
+}
+
+task renameShaded(type: Copy) {
+    from file("${buildDir}/libs")
+    into file("${buildDir}/libs")
+    rename { String fileName ->
+        fileName.replace('-shadow', '')
+    }
+}
+
+task deleteShaded(type: Delete) {
+    delete "${project.tasks.jar.getArchivePath().getPath().replace('.jar', '-shadow.jar')}"
+}
+
+build.dependsOn(deleteShaded)
+deleteShaded.dependsOn(renameShaded)
+renameShaded.dependsOn(deleteOrig)
+deleteOrig.dependsOn(shadowJar)
