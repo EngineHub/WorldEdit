@@ -69,7 +69,9 @@ public class YAMLConfiguration extends LocalConfiguration {
         maxPolyhedronPoints = Math.max(-1, config.getInt("limits.max-polyhedron-points.maximum", maxPolyhedronPoints));
 
         maxRadius = Math.max(-1, config.getInt("limits.max-radius", maxRadius));
+        maxLength = Math.max(-1, config.getInt("limits.max-length", maxLength));
         maxBrushRadius = config.getInt("limits.max-brush-radius", maxBrushRadius);
+        maxBrushLength = config.getInt("limits.max-brush-length", maxBrushLength);
         maxSuperPickaxeSize = Math.max(1, config.getInt(
                 "limits.max-super-pickaxe-size", maxSuperPickaxeSize));
 

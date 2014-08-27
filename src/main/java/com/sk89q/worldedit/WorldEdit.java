@@ -442,6 +442,28 @@ public class WorldEdit {
     }
 
     /**
+     * Checks to see if the specified radius is within bounds.
+     *
+     * @param length the length
+     * @throws MaxLengthException
+     */
+    public void checkMaxLength(int length) throws MaxLengthException {
+        if (getConfiguration().maxLength > 0 && length > getConfiguration().maxLength) {
+            throw new MaxLengthException();
+        }
+    }/**
+     * Checks to see if the specified radius is within bounds.
+     *
+     * @param length the length
+     * @throws MaxBrushLengthException
+     */
+    public void checkMaxBrushLength(int length) throws MaxBrushLengthException {
+        if (getConfiguration().maxBrushLength > 0 && length > getConfiguration().maxBrushLength) {
+            throw new MaxBrushLengthException();
+        }
+    }
+
+    /**
      * Get a file relative to the defined working directory. If the specified
      * path is absolute, then the working directory is not used.
      *

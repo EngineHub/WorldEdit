@@ -1552,6 +1552,42 @@ public class EditSession implements Extent {
     }
 
     /**
+     * Makes a cube.
+     *
+     * @param pos Center of the cube
+     * @param block a block
+     * @param size length,width and height of cube
+     * @param filled true if filled
+     * @return number of blocks changed
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int makeCube(Vector pos, Pattern block, int size, boolean filled) throws MaxChangedBlocksException{
+        return makeCube(pos, block, size, size, size, filled);
+    }
+    /**
+     * Makes a cube.
+     *
+     * @param pos Center of the cube
+     * @param block a block
+     * @param length length of cube
+     * @param width width of cube
+     * @param height height of cube
+     * @param filled true if filled
+     * @return number of blocks changed
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int makeCube(Vector pos, Pattern block, int length, int width, int height, boolean filled) throws MaxChangedBlocksException {
+        int affected = 0;
+        pos=pos.subtract(length/2, width/2, height/2);
+        for(int x = 0; x <= length; x++)
+            for(int y = 0; y <= width; y++)
+                for(int z = 0; z <= height; z++)
+                    if((filled || ( x%length == 0 || z%width == 0 || y%height == 0 )) && setBlock(pos.add(x,y,z),block))
+                           affected++;
+        return affected;
+    }
+
+    /**
      * Thaw blocks in a radius.
      *
      * @param position the position

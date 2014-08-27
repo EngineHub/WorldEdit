@@ -378,5 +378,68 @@ public class GenerationCommands {
             player.printError(e.getMessage());
         }
     }
+    @Command(
+            aliases = { "/hcube", "/hc" },
+            usage = "<block> <length>[,<width>,<height>] [raised?]",
+            desc = "Generates a hollow cube.",
+            help =
+                    "Generates a hollow cube.\n" +
+                            "By specifying 3 dimension, separated by commas,\n" +
+                            "you can generate an rectangle. The order of the ellipsoid radii\n" +
+                            "is north/south, up/down, east/west.",
+            min = 2,
+            max = 3
+    )
+    @CommandPermissions("worldedit.generation.sphere")
+    @Logging(PLACEMENT)
+    public void cube(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised) throws WorldEditException {
+        cube(player, session, editSession, pattern, radiusString, raised);
+    }
+    @Command(
+            aliases = { "/cube", "/c" },
+            usage = "<block> <length>[,<width>,<height>] [raised?]",
+            flags = "h",
+            desc = "Generates a filled cube.",
+            help =
+                    "Generates a filled cube.\n" +
+                            "By specifying 3 dimension, separated by commas,\n" +
+                            "you can generate an rectangle. The order of the ellipsoid radii\n" +
+                            "is north/south, up/down, east/west.",
+            min = 2,
+            max = 3
+    )
+    @CommandPermissions("worldedit.generation.sphere")
+    @Logging(PLACEMENT)
+    public void cube(Player player, LocalSession session, EditSession editSession, Pattern pattern, String dimensionString, @Optional("false") boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
+        String[] dimension = dimensionString.split(",");
+        int length, width, height;
+        switch (dimension.length){
+            case 1:
+                length = width = height = Math.max(1, Integer.parseInt(dimension[0]));
+                worldEdit.checkMaxLength(length);
+                break;
+
+            case 3:
+                length = Math.max(1, Integer.parseInt(dimension[0]));
+                width = Math.max(1, Integer.parseInt(dimension[1]));
+                height = Math.max(1, Integer.parseInt(dimension[2]));
+                worldEdit.checkMaxLength(length);
+                worldEdit.checkMaxLength(width);
+                worldEdit.checkMaxLength(height);
+                break;
+
+            default:
+                player.printError("You must either specify 1 or 3 radius values.");
+                return;
+
+        }
+        Vector pos = session.getPlacementPosition(player);
+        if (raised) {
+            pos = pos.add(0, height, 0);
+        }
+        int affected = editSession.makeCube(pos, Patterns.wrap(pattern), length, width, height, !hollow);
+        player.findFreePosition();
+        player.print(affected + " block(s) have been created.");
+    }
 
 }
