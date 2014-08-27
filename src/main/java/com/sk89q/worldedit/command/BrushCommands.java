@@ -39,6 +39,8 @@ import com.sk89q.worldedit.command.tool.brush.HollowCylinderBrush;
 import com.sk89q.worldedit.command.tool.brush.HollowSphereBrush;
 import com.sk89q.worldedit.command.tool.brush.SmoothBrush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
+import com.sk89q.worldedit.command.tool.brush.CubeBrush;
+import com.sk89q.worldedit.command.tool.brush.HollowCubeBrush;
 import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -269,5 +271,31 @@ public class BrushCommands {
         tool.setBrush(new ButcherBrush(flags), "worldedit.brush.butcher");
 
         player.print(String.format("Butcher brush equipped (%.0f).", radius));
+    }
+    @Command(
+            aliases = { "cube", "cu" },
+            usage = "<pattern> [length]",
+            flags = "h",
+            desc = "Choose the cube brush",
+            help =
+                    "Chooses the cube brush.\n" +
+                            "The -h flag creates hollow cube instead."
+    )
+    @CommandPermissions("worldedit.brush.cube")
+    public void cubeBrush(Player player, LocalSession session, EditSession editSession, Pattern fill,
+                            @Optional("2") int length, @Switch('h') boolean hollow) throws WorldEditException {
+        worldEdit.checkMaxBrushLength(length);
+
+        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        tool.setFill(fill);
+        tool.setSize(length);
+
+        if (hollow) {
+            tool.setBrush(new HollowCubeBrush(), "worldedit.brush.cube");
+        } else {
+            tool.setBrush(new CubeBrush(), "worldedit.brush.cube");
+        }
+
+        player.print(String.format("Cube brush shape equipped (%d).", length));
     }
 }
