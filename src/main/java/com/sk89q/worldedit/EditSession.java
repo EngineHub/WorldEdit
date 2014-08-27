@@ -1591,6 +1591,19 @@ public class EditSession implements Extent {
     }
 
     /**
+     * Makes a platform.
+     *
+     * @param pos Center of the platform
+     * @param block a block
+     * @return number of blocks changed
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int makePlatform(Vector pos, Pattern block) throws MaxChangedBlocksException {
+        setBlock(pos.add(0, -1, 0), block);
+        return 1;
+    }
+
+    /**
      * Thaw blocks in a radius.
      *
      * @param position the position
