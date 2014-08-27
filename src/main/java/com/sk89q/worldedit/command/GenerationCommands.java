@@ -226,13 +226,13 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
-    public void hollowPyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size) throws WorldEditException {
-        pyramid(player, session, editSession, pattern, size, true);
+    public void hollowPyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, boolean raised) throws WorldEditException {
+        pyramid(player, session, editSession, pattern, size, raised,true);
     }
 
     @Command(
         aliases = { "/pyramid" },
-        usage = "<block> <size>",
+        usage = "<block> <size> [raised?]",
         flags = "h",
         desc = "Generate a filled pyramid",
         min = 2,
@@ -240,9 +240,12 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
-    public void pyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, @Switch('h') boolean hollow) throws WorldEditException {
+    public void pyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
         Vector pos = session.getPlacementPosition(player);
         worldEdit.checkMaxRadius(size);
+        if (raised) {
+            pos = pos.add(0, size, 0);
+        }
         int affected = editSession.makePyramid(pos, Patterns.wrap(pattern), size, !hollow);
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
