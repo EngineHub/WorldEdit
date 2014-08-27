@@ -219,10 +219,10 @@ public class GenerationCommands {
 
     @Command(
             aliases = { "/hpyramid" },
-            usage = "<block> <size>",
+            usage = "<block> <size> [raised?]",
             desc = "Generate a hollow pyramid",
             min = 2,
-            max = 2
+            max = 3
     )
     @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
@@ -236,7 +236,7 @@ public class GenerationCommands {
         flags = "h",
         desc = "Generate a filled pyramid",
         min = 2,
-        max = 2
+        max = 3
     )
     @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
