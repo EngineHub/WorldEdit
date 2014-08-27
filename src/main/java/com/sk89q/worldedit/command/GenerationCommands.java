@@ -390,10 +390,10 @@ public class GenerationCommands {
             min = 2,
             max = 3
     )
-    @CommandPermissions("worldedit.generation.sphere")
+    @CommandPermissions("worldedit.generation.cube")
     @Logging(PLACEMENT)
     public void cube(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised) throws WorldEditException {
-        cube(player, session, editSession, pattern, radiusString, raised);
+        cube(player, session, editSession, pattern, radiusString, raised, true);
     }
     @Command(
             aliases = { "/cube", "/c" },
@@ -408,7 +408,7 @@ public class GenerationCommands {
             min = 2,
             max = 3
     )
-    @CommandPermissions("worldedit.generation.sphere")
+    @CommandPermissions("worldedit.generation.cube")
     @Logging(PLACEMENT)
     public void cube(Player player, LocalSession session, EditSession editSession, Pattern pattern, String dimensionString, @Optional("false") boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
         String[] dimension = dimensionString.split(",");
