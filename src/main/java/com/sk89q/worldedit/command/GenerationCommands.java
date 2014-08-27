@@ -27,7 +27,10 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
 import com.sk89q.worldedit.internal.annotation.Selection;
@@ -441,6 +444,26 @@ public class GenerationCommands {
             pos = pos.add(0, height, 0);
         }
         int affected = editSession.makeCube(pos, Patterns.wrap(pattern), length, width, height, !hollow);
+        player.findFreePosition();
+        player.print(affected + " block(s) have been created.");
+    }
+
+    @Command(
+            aliases = { "/platform", "/p" },
+            usage = "[block]",
+            desc = "Generates a square under your feet.",
+            help =
+                    "Generates a block under your feet\n" +
+                            "with the block type of your choosing.",
+            min = 0,
+            max = 1
+    )
+    @CommandPermissions("worldedit.generation.platform")
+    @Logging(PLACEMENT)
+    public void platform(Player player, LocalSession session, EditSession editSession, @Optional("glass") Pattern pattern) throws WorldEditException {
+        Vector pos = session.getPlacementPosition(player);
+        int affected = editSession.makePlatform(pos, Patterns.wrap(pattern));
+
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }
