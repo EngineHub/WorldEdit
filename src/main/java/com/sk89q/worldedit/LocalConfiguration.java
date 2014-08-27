@@ -88,8 +88,10 @@ public abstract class LocalConfiguration {
     public String shellSaveType = "";
     public SnapshotRepository snapshotRepo = null;
     public int maxRadius = -1;
+    public int maxLength = -1;
     public int maxSuperPickaxeSize = 5;
     public int maxBrushRadius = 6;
+    public int maxBrushLength = 12;
     public boolean logCommands = false;
     public String logFile = "";
     public boolean registerHelp = true; // what is the point of this, it's not even used
