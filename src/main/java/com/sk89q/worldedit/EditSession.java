@@ -1581,11 +1581,13 @@ public class EditSession implements Extent {
         length--;
         width--;
         height--;
+        //Prevent / by 0 cause by %
+        filled=(filled||length==0||width==0||height==0);
         pos=pos.subtract(length/2, width/2, height/2);
         for(int x = 0; x <= length; ++x)
             for(int y = 0; y <= width; ++y)
                 for(int z = 0; z <= height; ++z)
-                    if((filled || ( x%length == 0 || z%width == 0 || y%height == 0 )) && setBlock(pos.add(x,y,z),block))
+                    if((filled || ( x%length == 0 || z%height == 0 || y%width == 0 )) && setBlock(pos.add(x,y,z),block))
                            affected++;
         return affected;
     }
