@@ -1578,10 +1578,13 @@ public class EditSession implements Extent {
      */
     public int makeCube(Vector pos, Pattern block, int length, int width, int height, boolean filled) throws MaxChangedBlocksException {
         int affected = 0;
+        length--;
+        width--;
+        height--;
         pos=pos.subtract(length/2, width/2, height/2);
-        for(int x = 0; x <= length; x++)
-            for(int y = 0; y <= width; y++)
-                for(int z = 0; z <= height; z++)
+        for(int x = 0; x <= length; ++x)
+            for(int y = 0; y <= width; ++y)
+                for(int z = 0; z <= height; ++z)
                     if((filled || ( x%length == 0 || z%width == 0 || y%height == 0 )) && setBlock(pos.add(x,y,z),block))
                            affected++;
         return affected;
