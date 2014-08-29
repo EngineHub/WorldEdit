@@ -27,10 +27,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
 import com.sk89q.worldedit.internal.annotation.Selection;
@@ -427,15 +424,15 @@ public class GenerationCommands {
 
             case 3:
                 length = Math.max(1, Integer.parseInt(dimension[0]));
-                width = Math.max(1, Integer.parseInt(dimension[1]));
-                height = Math.max(1, Integer.parseInt(dimension[2]));
+                height = Math.max(1, Integer.parseInt(dimension[1]));
+                width = Math.max(1, Integer.parseInt(dimension[2]));
                 worldEdit.checkMaxLength(length);
-                worldEdit.checkMaxLength(width);
                 worldEdit.checkMaxLength(height);
+                worldEdit.checkMaxLength(width);
                 break;
 
             default:
-                player.printError("You must either specify 1 or 3 radius values.");
+                player.printError("You must either specify 1 or 3 dimensions values.");
                 return;
 
         }
@@ -443,7 +440,7 @@ public class GenerationCommands {
         if (raised) {
             pos = pos.add(0, height, 0);
         }
-        int affected = editSession.makeCube(pos, Patterns.wrap(pattern), length, width, height, !hollow);
+        int affected = editSession.makeCube(pos, Patterns.wrap(pattern), length, height, width, !hollow);
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }
@@ -467,25 +464,4 @@ public class GenerationCommands {
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }
-
-    @Command(
-            aliases = { "/platform", "/p" },
-            usage = "[block]",
-            desc = "Generates a square under your feet.",
-            help =
-                    "Generates a block under your feet\n" +
-                            "with the block type of your choosing.",
-            min = 0,
-            max = 1
-    )
-    @CommandPermissions("worldedit.generation.platform")
-    @Logging(PLACEMENT)
-    public void platform(Player player, LocalSession session, EditSession editSession, @Optional("glass") Pattern pattern) throws WorldEditException {
-        Vector pos = session.getPlacementPosition(player);
-        int affected = editSession.makePlatform(pos, Patterns.wrap(pattern));
-
-        player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
-    }
-
 }
