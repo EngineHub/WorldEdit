@@ -1576,18 +1576,19 @@ public class EditSession implements Extent {
      * @return number of blocks changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int makeCube(Vector pos, Pattern block, int length, int width, int height, boolean filled) throws MaxChangedBlocksException {
+    public int makeCube(Vector pos, Pattern block, int length, int height, int width, boolean filled) throws MaxChangedBlocksException {
         int affected = 0;
         length--;
         width--;
         height--;
-        //Prevent / by 0 cause by %
-        filled=(filled||length==0||width==0||height==0);
-        pos=pos.subtract(length/2, width/2, height/2);
+        //Prevent a / by 0 error cause by %s
+        filled=(filled || length == 0 || height == 0 || width == 0);
+        //Get corner block
+        pos=pos.subtract(length/2, height/2, width/2);
         for(int x = 0; x <= length; ++x)
-            for(int y = 0; y <= width; ++y)
-                for(int z = 0; z <= height; ++z)
-                    if((filled || ( x%length == 0 || z%height == 0 || y%width == 0 )) && setBlock(pos.add(x,y,z),block))
+            for(int y = 0; y <= height; ++y)
+                for(int z = 0; z <= width; ++z)
+                    if((filled || ( x%length == 0 || y%height == 0 || z%width ==  0)) && setBlock(pos.add(x,y,z),block))
                            affected++;
         return affected;
     }
@@ -1601,8 +1602,7 @@ public class EditSession implements Extent {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int makePlatform(Vector pos, Pattern block) throws MaxChangedBlocksException {
-        setBlock(pos.add(0, -1, 0), block);
-        return 1;
+        return setBlock(pos.add(0, -1, 0), block) ? 1 : 0;
     }
 
     /**
