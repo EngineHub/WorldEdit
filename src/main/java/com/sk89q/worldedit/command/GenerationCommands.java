@@ -400,7 +400,7 @@ public class GenerationCommands {
     }
     @Command(
             aliases = { "/cube", "/c" },
-            usage = "<block> <length>[,<width>,<height>] [raised?]",
+            usage = "<block> <length>[,<height>,<width>] [raised?]",
             flags = "h",
             desc = "Generates a filled cube.",
             help =
