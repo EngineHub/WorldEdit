@@ -451,7 +451,9 @@ public class WorldEdit {
         if (getConfiguration().maxLength > 0 && length > getConfiguration().maxLength) {
             throw new MaxLengthException();
         }
-    }/**
+    }
+
+    /**
      * Checks to see if the specified radius is within bounds.
      *
      * @param length the length

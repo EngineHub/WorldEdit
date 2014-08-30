@@ -64,6 +64,7 @@ public class GenerationCommands {
     @Command(
         aliases = { "/hcyl" },
         usage = "<pattern> <radius>[,<radius>] [height]",
+        flags = "r",
         desc = "Generates a hollow cylinder.",
         help =
             "Generates a hollow cylinder.\n" +
@@ -75,14 +76,14 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
-    public void hcyl(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("1") int height) throws WorldEditException {
-        cyl(player, session, editSession, pattern, radiusString, height, true);
+    public void hcyl(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("1") int height, @Switch('r') boolean raised) throws WorldEditException {
+        cyl(player, session, editSession, pattern, radiusString, height, true, raised);
     }
 
     @Command(
         aliases = { "/cyl" },
         usage = "<block> <radius>[,<radius>] [height]",
-        flags = "h",
+        flags = "hr",
         desc = "Generates a cylinder.",
         help =
             "Generates a cylinder.\n" +
@@ -94,7 +95,7 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
-    public void cyl(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("1") int height, @Switch('h') boolean hollow) throws WorldEditException {
+    public void cyl(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("1") int height, @Switch('h') boolean hollow, @Switch('r') boolean raised) throws WorldEditException {
         String[] radii = radiusString.split(",");
         final double radiusX, radiusZ;
         switch (radii.length) {
@@ -117,13 +118,17 @@ public class GenerationCommands {
         worldEdit.checkMaxRadius(height);
 
         Vector pos = session.getPlacementPosition(player);
+        if (raised) {
+            pos = pos.add(0, height, 0);
+        }
         int affected = editSession.makeCylinder(pos, Patterns.wrap(pattern), radiusX, radiusZ, height, !hollow);
         player.print(affected + " block(s) have been created.");
     }
 
     @Command(
         aliases = { "/hsphere" },
-        usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
+        usage = "<block> <radius>[,<radius>,<radius>]",
+        flags = "r",
         desc = "Generates a hollow sphere.",
         help =
             "Generates a hollow sphere.\n" +
@@ -135,14 +140,14 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
-    public void hsphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised) throws WorldEditException {
+    public void hsphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Switch('r') boolean raised) throws WorldEditException {
         sphere(player, session, editSession, pattern, radiusString, raised, true);
     }
 
     @Command(
         aliases = { "/sphere" },
-        usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-        flags = "h",
+        usage = "<block> <radius>[,<radius>,<radius>]",
+        flags = "hr",
         desc = "Generates a filled sphere.",
         help =
             "Generates a filled sphere.\n" +
@@ -154,7 +159,7 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
-    public void sphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
+    public void sphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Switch('r') boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
         String[] radii = radiusString.split(",");
         final double radiusX, radiusY, radiusZ;
         switch (radii.length) {
@@ -220,27 +225,28 @@ public class GenerationCommands {
     @Command(
             aliases = { "/hpyramid" },
             usage = "<block> <size> [raised?]",
+            flags = "r",
             desc = "Generate a hollow pyramid",
             min = 2,
             max = 3
     )
     @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
-    public void hollowPyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, @Optional("false") boolean raised) throws WorldEditException {
+    public void hollowPyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, @Switch('r') boolean raised) throws WorldEditException {
         pyramid(player, session, editSession, pattern, size, raised, true);
     }
 
     @Command(
         aliases = { "/pyramid" },
-        usage = "<block> <size> [raised?]",
-        flags = "h",
+        usage = "<block> <size>",
+        flags = "hr",
         desc = "Generate a filled pyramid",
         min = 2,
         max = 3
     )
     @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
-    public void pyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, @Optional("false") boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
+    public void pyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, @Switch('r') boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
         Vector pos = session.getPlacementPosition(player);
         worldEdit.checkMaxRadius(size);
         if (raised) {
@@ -383,39 +389,40 @@ public class GenerationCommands {
     }
 
     @Command(
-            aliases = { "/hcube", "/hc" },
-            usage = "<block> <length>[,<width>,<height>] [raised?]",
+            aliases = { "/hcuboid", "/hc" },
+            usage = "<block> <length>[,<width>,<height>]",
+            flags = "r",
             desc = "Generates a hollow cube.",
             help =
                     "Generates a hollow cube.\n" +
                             "By specifying 3 dimension, separated by commas,\n" +
-                            "you can generate an rectangle. The order of the ellipsoid radii\n" +
-                            "is north/south, up/down, east/west.",
+                            "you can generate an rectangle. The order of the dimensions\n" +
+                            "are north/south, up/down, east/west.",
             min = 2,
             max = 3
     )
     @CommandPermissions("worldedit.generation.cube")
     @Logging(PLACEMENT)
-    public void cube(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised) throws WorldEditException {
+    public void cube(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Switch('r') boolean raised) throws WorldEditException {
         cube(player, session, editSession, pattern, radiusString, raised, true);
     }
 
     @Command(
-            aliases = { "/cube", "/c" },
+            aliases = { "/cuboid", "/c" },
             usage = "<block> <length>[,<height>,<width>] [raised?]",
             flags = "h",
             desc = "Generates a filled cube.",
             help =
                     "Generates a filled cube.\n" +
                             "By specifying 3 dimension, separated by commas,\n" +
-                            "you can generate an rectangle. The order of the ellipsoid radii\n" +
-                            "is north/south, up/down, east/west.",
+                            "you can generate an rectangle. The order of the dimensions\n" +
+                            "are north/south, up/down, east/west.",
             min = 2,
             max = 3
     )
     @CommandPermissions("worldedit.generation.cube")
     @Logging(PLACEMENT)
-    public void cube(Player player, LocalSession session, EditSession editSession, Pattern pattern, String dimensionString, @Optional("false") boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
+    public void cube(Player player, LocalSession session, EditSession editSession, Pattern pattern, String dimensionString, @Switch('r') boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
         String[] dimension = dimensionString.split(",");
         int length, width, height;
         switch (dimension.length) {
@@ -440,7 +447,7 @@ public class GenerationCommands {
         }
         Vector pos = session.getPlacementPosition(player);
         if (raised) {
-            pos = pos.add(0, height, 0);
+            pos = pos.add(0, Math.ceil(height/2.0) + 1, 0);
         }
         int affected = editSession.makeCube(pos, Patterns.wrap(pattern), length, height, width, !hollow);
         player.findFreePosition();
