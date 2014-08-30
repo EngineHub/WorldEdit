@@ -272,6 +272,7 @@ public class BrushCommands {
 
         player.print(String.format("Butcher brush equipped (%.0f).", radius));
     }
+
     @Command(
             aliases = { "cube", "cu" },
             usage = "<pattern> [length]",

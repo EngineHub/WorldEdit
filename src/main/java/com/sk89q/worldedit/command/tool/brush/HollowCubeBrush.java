@@ -25,10 +25,10 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
 
-public class HollowCubeBrush implements Brush{
+public class HollowCubeBrush implements Brush {
 
     @Override
-    public void build(EditSession editSession, Vector position, Pattern pattern, double size) throws MaxChangedBlocksException{
+    public void build(EditSession editSession, Vector position, Pattern pattern, double size) throws MaxChangedBlocksException {
         editSession.makeCube(position, Patterns.wrap(pattern), (int) size, false);
     }
 }

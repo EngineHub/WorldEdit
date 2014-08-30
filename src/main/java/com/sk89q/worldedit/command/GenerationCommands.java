@@ -226,8 +226,8 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
-    public void hollowPyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, boolean raised) throws WorldEditException {
-        pyramid(player, session, editSession, pattern, size, raised,true);
+    public void hollowPyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, @Optional("false") boolean raised) throws WorldEditException {
+        pyramid(player, session, editSession, pattern, size, raised, true);
     }
 
     @Command(
@@ -240,7 +240,7 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
-    public void pyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
+    public void pyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, @Optional("false") boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
         Vector pos = session.getPlacementPosition(player);
         worldEdit.checkMaxRadius(size);
         if (raised) {
@@ -381,6 +381,7 @@ public class GenerationCommands {
             player.printError(e.getMessage());
         }
     }
+
     @Command(
             aliases = { "/hcube", "/hc" },
             usage = "<block> <length>[,<width>,<height>] [raised?]",
@@ -398,6 +399,7 @@ public class GenerationCommands {
     public void cube(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised) throws WorldEditException {
         cube(player, session, editSession, pattern, radiusString, raised, true);
     }
+
     @Command(
             aliases = { "/cube", "/c" },
             usage = "<block> <length>[,<height>,<width>] [raised?]",
@@ -416,7 +418,7 @@ public class GenerationCommands {
     public void cube(Player player, LocalSession session, EditSession editSession, Pattern pattern, String dimensionString, @Optional("false") boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
         String[] dimension = dimensionString.split(",");
         int length, width, height;
-        switch (dimension.length){
+        switch (dimension.length) {
             case 1:
                 length = width = height = Math.max(1, Integer.parseInt(dimension[0]));
                 worldEdit.checkMaxLength(length);
@@ -441,26 +443,6 @@ public class GenerationCommands {
             pos = pos.add(0, height, 0);
         }
         int affected = editSession.makeCube(pos, Patterns.wrap(pattern), length, height, width, !hollow);
-        player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
-    }
-
-    @Command(
-            aliases = { "/platform", "/p" },
-            usage = "[block]",
-            desc = "Generates a square under your feet.",
-            help =
-                    "Generates a block under your feet\n" +
-                            "with the block type of your choosing.",
-            min = 0,
-            max = 1
-    )
-    @CommandPermissions("worldedit.generation.platform")
-    @Logging(PLACEMENT)
-    public void platform(Player player, LocalSession session, EditSession editSession, @Optional("glass") Pattern pattern) throws WorldEditException {
-        Vector pos = session.getPlacementPosition(player);
-        int affected = editSession.makePlatform(pos, Patterns.wrap(pattern));
-
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }

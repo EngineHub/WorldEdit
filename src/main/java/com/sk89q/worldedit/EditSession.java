@@ -1556,7 +1556,7 @@ public class EditSession implements Extent {
      *
      * @param pos Center of the cube
      * @param block a block
-     * @param size length,width and height of cube
+     * @param size length, width and height of cube
      * @param filled true if filled
      * @return number of blocks changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
@@ -1564,6 +1564,7 @@ public class EditSession implements Extent {
     public int makeCube(Vector pos, Pattern block, int size, boolean filled) throws MaxChangedBlocksException{
         return makeCube(pos, block, size, size, size, filled);
     }
+
     /**
      * Makes a cube.
      *
@@ -1581,28 +1582,20 @@ public class EditSession implements Extent {
         length--;
         width--;
         height--;
-        //Prevent a / by 0 error cause by %s
-        filled=(filled || length == 0 || height == 0 || width == 0);
-        //Get corner block
+        // Prevent a / by 0 error cause by %s
+        filled = (filled || length == 0 || height == 0 || width == 0);
+        // Get corner block
         pos=pos.subtract(length/2, height/2, width/2);
-        for(int x = 0; x <= length; ++x)
-            for(int y = 0; y <= height; ++y)
-                for(int z = 0; z <= width; ++z)
-                    if((filled || ( x%length == 0 || y%height == 0 || z%width ==  0)) && setBlock(pos.add(x,y,z),block))
-                           affected++;
+        for(int x = 0; x <= length; ++x) {
+            for (int y = 0; y <= height; ++y) {
+                for (int z = 0; z <= width; ++z) {
+                    if ((filled || (x % length == 0 || y % height == 0 || z % width == 0)) && setBlock(pos.add(x, y, z), block)) {
+                        affected++;
+                    }
+                }
+            }
+        }
         return affected;
-    }
-
-    /**
-     * Makes a platform.
-     *
-     * @param pos Center of the platform
-     * @param block a block
-     * @return number of blocks changed
-     * @throws MaxChangedBlocksException thrown if too many blocks are changed
-     */
-    public int makePlatform(Vector pos, Pattern block) throws MaxChangedBlocksException {
-        return setBlock(pos.add(0, -1, 0), block) ? 1 : 0;
     }
 
     /**
