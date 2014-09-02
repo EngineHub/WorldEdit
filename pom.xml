@@ -530,7 +530,9 @@
       <id>bukkit</id>
 
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <property>
+          <name>!skipBukkitProfile</name>
+        </property>
       </activation>
 
       <repositories>
