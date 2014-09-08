@@ -25,11 +25,10 @@ import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permissible;
 
-public class GroupManagerResolver implements PermissionsResolver {
+public class GroupManagerResolver extends DinnerPermsResolver {
     private final WorldsHolder worldsHolder;
-    private final Server server;
 
     public static PermissionsResolver factory(Server server, YAMLProcessor config) {
         try {
@@ -46,7 +45,7 @@ public class GroupManagerResolver implements PermissionsResolver {
     }
 
     public GroupManagerResolver(Server server, WorldsHolder worldsHolder) {
-        this.server = server;
+        super(server);
         this.worldsHolder = worldsHolder;
     }
 
@@ -55,57 +54,24 @@ public class GroupManagerResolver implements PermissionsResolver {
 
     }
 
-    private AnjoPermissionsHandler getPermissionHandler(String name, String worldName) {
-        if (name == null || name.isEmpty()) {
-            return null;
-        }
-        if (worldName == null || worldName.isEmpty()) {
-            Player player = server.getPlayerExact(name);
-            if (player == null) {
-                return null;
-            }
-            World world = player.getWorld();
-            if (world == null) {
-                return worldsHolder.getDefaultWorld().getPermissionsHandler();
-            }
+    /*
+     * True if the string is null or empty
+     */
+    private boolean nameNotSafe(String perm) {
+        return perm == null || perm.isEmpty();
+    }
+
+    private AnjoPermissionsHandler getPermissionHandler(World world) {
+        if (world != null) {
             return worldsHolder.getWorldPermissions(world.getName());
         } else {
-            return worldsHolder.getWorldPermissions(worldName);
+            return worldsHolder.getDefaultWorld().getPermissionsHandler();
         }
-    }
-
-    @Override
-    public boolean hasPermission(String name, String permission) {
-        return hasPermission(null, name, permission);
-    }
-
-    @Override
-    public boolean hasPermission(String worldName, String name, String permission) {
-        if (permission == null || permission.isEmpty()) {
-            return false;
-        }
-        AnjoPermissionsHandler permissionHandler = getPermissionHandler(name, worldName);
-        if (permissionHandler == null) {
-            return false;
-        }
-        return permissionHandler.permission(name, permission);
-    }
-
-    @Override
-    public boolean inGroup(String name, String group) {
-        if (group == null || group.isEmpty()) {
-            return false;
-        }
-        AnjoPermissionsHandler permissionHandler = getPermissionHandler(name, null);
-        if (permissionHandler == null) {
-            return false;
-        }
-        return permissionHandler.inGroup(name, group);
     }
 
     @Override
     public String[] getGroups(String name) {
-        AnjoPermissionsHandler permissionHandler = getPermissionHandler(name, null);
+        AnjoPermissionsHandler permissionHandler = getPermissionHandler(null);
         if (permissionHandler == null) {
             return new String[0];
         }
@@ -114,17 +80,43 @@ public class GroupManagerResolver implements PermissionsResolver {
 
     @Override
     public boolean hasPermission(OfflinePlayer player, String permission) {
-        return hasPermission(player.getName(), permission);
+        if (nameNotSafe(permission)) {
+            return false;
+        }
+
+        Permissible permissible = getPermissible(player);
+        if (permissible == null) {
+            return getPermissionHandler(player.getPlayer().getWorld()).permission(player.getName(), permission);
+        } else {
+            return permissible.hasPermission(permission);
+        }
     }
 
     @Override
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
-        return hasPermission(worldName, player.getName(), permission);
+        if (nameNotSafe(permission)) {
+            return false;
+        }
+
+        String name = player.getName();
+        World world = worldName != null ? server.getWorld(worldName) : player.getPlayer().getWorld();
+
+        AnjoPermissionsHandler permissionHandler = getPermissionHandler(world);
+        return permissionHandler != null && permissionHandler.permission(name, permission);
     }
 
     @Override
     public boolean inGroup(OfflinePlayer player, String group) {
-        return inGroup(player.getName(), group);
+        if (super.inGroup(player, group)) {
+            return true;
+        }
+
+        if (nameNotSafe(group)) {
+            return false;
+        }
+
+        AnjoPermissionsHandler permissionHandler = getPermissionHandler(null);
+        return permissionHandler != null && permissionHandler.inGroup(player.getName(), group);
     }
 
     @Override
