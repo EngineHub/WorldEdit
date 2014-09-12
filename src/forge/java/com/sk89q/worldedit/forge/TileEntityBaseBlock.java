@@ -19,10 +19,11 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.TileEntityBlock;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.TileEntityBlock;
 
 public class TileEntityBaseBlock extends BaseBlock implements TileEntityBlock {
 

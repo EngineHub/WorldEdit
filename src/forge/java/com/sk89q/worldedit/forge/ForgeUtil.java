@@ -19,12 +19,15 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.blocks.BaseItemStack;
-import cpw.mods.fml.common.FMLCommonHandler;
+import java.util.Map;
+
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import java.util.Map;
+import com.sk89q.worldedit.blocks.BaseItemStack;
+
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public final class ForgeUtil {
 
@@ -33,13 +36,15 @@ public final class ForgeUtil {
 
     public static boolean hasPermission(EntityPlayerMP player, String perm) {
         // TODO fix WEPIF
-        return FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().isPlayerOpped(player.username);
+        return FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager()
+                .func_152596_g(player.getGameProfile()); // isPlayerOpped
     }
 
     public static ItemStack toForgeItemStack(BaseItemStack item) {
-        ItemStack ret = new ItemStack(item.getType(), item.getAmount(), item.getData());
+        ItemStack ret = new ItemStack(Item.getItemById(item.getType()), item.getAmount(), item.getData());
         for (Map.Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
-            ret.addEnchantment(net.minecraft.enchantment.Enchantment.enchantmentsList[((Integer) entry.getKey())], (Integer) entry.getValue());
+            ret.addEnchantment(net.minecraft.enchantment.Enchantment.enchantmentsList[((Integer) entry.getKey())],
+                    (Integer) entry.getValue());
         }
 
         return ret;

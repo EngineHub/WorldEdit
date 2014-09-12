@@ -7,28 +7,23 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url = "http://files.minecraftforge.net/maven" }
-        jcenter()
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.0-SNAPSHOT'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'forge'
-apply plugin: 'shadow'
 
 group = 'com.sk89q'
 version = '6.0.0-SNAPSHOT' + System.getProperty("worldedit.build.suffix", "")
 archivesBaseName = "worldedit-forge"
 
 description = "An in-game voxel map editor for Minecraft."
-
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
 
 repositories {
     mavenCentral()
@@ -66,8 +61,8 @@ sourceSets {
 }
 
 minecraft {
-    version = "1.6.4-9.11.1.964"
-    forgeVersion = "9.11.1.964"
+    version = "1.7.10-10.13.0.1208"
+    runDir = "run"
 
     replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
     replace "%VERSION%", project.version
@@ -75,8 +70,7 @@ minecraft {
 
 processResources {
     from (sourceSets.main.resources.srcDirs) {
-        expand 'version': project.version, 'mcVersion': project.minecraft.version,
-                'forgeVersion': project.minecraft.forgeVersion
+        expand 'version': project.version, 'mcVersion': project.minecraft.version
         include 'mcmod.info'
     }
 
@@ -84,36 +78,3 @@ processResources {
         exclude 'mcmod.info'
     }
 }
-
-// shade needed runtime dependencies
-shadow {
-    //artifactAttached false
-    destinationDir "${buildDir}/libs/"
-    artifactSet {
-        include '*:jchronic:jar:'
-        include '*:paranamer:jar:'
-        include '*:jlibnoise:jar:'
-    }
-}
-
-task deleteOrig(type: Delete) {
-    delete "${project.tasks.jar.getArchivePath().getPath()}"
-}
-
-task renameShaded(type: Copy) {
-    from file("${buildDir}/libs")
-    into file("${buildDir}/libs")
-    rename { String fileName ->
-        fileName.replace('-shadow', '')
-    }
-}
-
-task deleteShaded(type: Delete) {
-    delete "${project.tasks.jar.getArchivePath().getPath().replace('.jar', '-shadow.jar')}"
-}
-
-// follow all the steps
-build.dependsOn(deleteShaded)
-deleteShaded.dependsOn(renameShaded)
-renameShaded.dependsOn(deleteOrig)
-deleteOrig.dependsOn(shadowJar)

@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit.forge;
 
+import net.minecraft.util.Vec3;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.world.World;
-import net.minecraft.util.Vec3;
 
 final class ForgeAdapter {
 

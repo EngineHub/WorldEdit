@@ -19,18 +19,15 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.ServerInterface;
-import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
-import com.sk89q.worldedit.extension.platform.Preference;
-import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Description;
-import com.sk89q.worldedit.util.command.Dispatcher;
-import com.sk89q.worldedit.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -43,13 +40,19 @@ import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
+import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.util.command.CommandMapping;
+import com.sk89q.worldedit.util.command.Description;
+import com.sk89q.worldedit.util.command.Dispatcher;
+import com.sk89q.worldedit.world.World;
+
+import cpw.mods.fml.common.FMLCommonHandler;
 
 class ForgePlatform extends ServerInterface implements MultiUserPlatform {
 
@@ -70,17 +73,24 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
 
     @Override
     public int resolveItem(String name) {
-        if (name == null) return 0;
-        for (Item item : Item.itemsList) {
-            if (item == null) continue;
-            if (item.getUnlocalizedName() == null) continue;
+        if (name == null)
+            return 0;
+        for (Object o : Item.itemRegistry.getKeys()) {
+            Item item = (Item) o;
+            if (item == null)
+                continue;
+            if (item.getUnlocalizedName() == null)
+                continue;
             if (item.getUnlocalizedName().startsWith("item.")) {
-                if (item.getUnlocalizedName().equalsIgnoreCase("item." + name)) return item.itemID;
+                if (item.getUnlocalizedName().equalsIgnoreCase("item." + name))
+                    return Item.getIdFromItem(item);
             }
             if (item.getUnlocalizedName().startsWith("tile.")) {
-                if (item.getUnlocalizedName().equalsIgnoreCase("tile." + name)) return item.itemID;
+                if (item.getUnlocalizedName().equalsIgnoreCase("tile." + name))
+                    return Item.getIdFromItem(item);
             }
-            if (item.getUnlocalizedName().equalsIgnoreCase(name)) return item.itemID;
+            if (item.getUnlocalizedName().equalsIgnoreCase(name))
+                return Item.getIdFromItem(item);
         }
         return 0;
     }
@@ -115,7 +125,7 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
         if (player instanceof ForgePlayer) {
             return player;
         } else {
-            EntityPlayerMP entity = server.getConfigurationManager().getPlayerForUsername(player.getName());
+            EntityPlayerMP entity = server.getConfigurationManager().func_152612_a(player.getName()); // getPlayerByName
             return entity != null ? new ForgePlayer(entity) : null;
         }
     }
@@ -138,7 +148,8 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
 
     @Override
     public void registerCommands(Dispatcher dispatcher) {
-        if (server == null) return;
+        if (server == null)
+            return;
         ServerCommandManager mcMan = (ServerCommandManager) server.getCommandManager();
 
         for (final CommandMapping command : dispatcher.getCommands()) {
@@ -156,7 +167,8 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
                 }
 
                 @Override
-                public void processCommand(ICommandSender var1, String[] var2) {}
+                public void processCommand(ICommandSender var1, String[] var2) {
+                }
 
                 @Override
                 public String getCommandUsage(ICommandSender icommandsender) {
@@ -220,7 +232,7 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
         List<Actor> users = new ArrayList<Actor>();
         ServerConfigurationManager scm = server.getConfigurationManager();
         for (String name : scm.getAllUsernames()) {
-            EntityPlayerMP entity = scm.getPlayerForUsername(name);
+            EntityPlayerMP entity = scm.func_152612_a(name); // getPlayerByName
             if (entity != null) {
                 users.add(new ForgePlayer(entity));
             }

@@ -19,6 +19,31 @@
 
 package com.sk89q.worldedit.forge;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.LongHashMap;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.ChunkProviderServer;
+
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
@@ -37,29 +62,6 @@ import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
-import net.minecraft.block.Block;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.LongHashMap;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.gen.ChunkProviderServer;
-
-import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An adapter to Minecraft worlds for WorldEdit.
@@ -71,8 +73,9 @@ public class ForgeWorld extends AbstractWorld {
 
     /**
      * Construct a new world.
-     *
-     * @param world the world
+     * 
+     * @param world
+     *            the world
      */
     ForgeWorld(World world) {
         checkNotNull(world);
@@ -81,24 +84,29 @@ public class ForgeWorld extends AbstractWorld {
 
     /**
      * Get the underlying handle to the world.
-     *
+     * 
      * @return the world
-     * @throws WorldEditException thrown if a reference to the world was lost (i.e. world was unloaded)
+     * @throws WorldEditException
+     *             thrown if a reference to the world was lost (i.e. world was
+     *             unloaded)
      */
     public World getWorldChecked() throws WorldEditException {
         World world = worldRef.get();
         if (world != null) {
             return world;
         } else {
-            throw new WorldReferenceLostException("The reference to the world was lost (i.e. the world may have been unloaded)");
+            throw new WorldReferenceLostException(
+                    "The reference to the world was lost (i.e. the world may have been unloaded)");
         }
     }
 
     /**
      * Get the underlying handle to the world.
-     *
+     * 
      * @return the world
-     * @throws RuntimeException thrown if a reference to the world was lost (i.e. world was unloaded)
+     * @throws RuntimeException
+     *             thrown if a reference to the world was lost (i.e. world was
+     *             unloaded)
      */
     public World getWorld() {
         World world = worldRef.get();
@@ -126,13 +134,14 @@ public class ForgeWorld extends AbstractWorld {
 
         // First set the block
         Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
-        int previousId = 0;
+        Block previousBlock = null;
 
         if (notifyAndLight) {
-            previousId = chunk.getBlockID(x & 15, y, z & 15);
+            previousBlock = chunk.getBlock(x & 15, y, z & 15);
         }
 
-        boolean successful = chunk.setBlockIDWithMetadata(x & 15, y, z & 15, block.getId(), block.getData());
+        // setBlockAndMetadata
+        boolean successful = chunk.func_150807_a(x & 15, y, z & 15, Block.getBlockById(block.getId()), block.getData());
 
         // Create the TileEntity
         if (successful) {
@@ -145,13 +154,13 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         if (notifyAndLight) {
-            world.updateAllLightTypes(x, y, z);
+            world.func_147451_t(x, y, z); // updateAllLightTypes
             world.markBlockForUpdate(x, y, z);
-            world.notifyBlockChange(x, y, z, previousId);
+            world.notifyBlockChange(x, y, z, previousBlock);
 
-            Block mcBlock = Block.blocksList[block.getId()];
+            Block mcBlock = Block.getBlockById(block.getId());
             if (mcBlock != null && mcBlock.hasComparatorInputOverride()) {
-                world.func_96440_m(x, y, z, block.getId());
+                world.func_147453_f(x, y, z, mcBlock);
             }
         }
 
@@ -167,7 +176,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public boolean clearContainerBlockContents(Vector position) {
         checkNotNull(position);
-        TileEntity tile = getWorld().getBlockTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        TileEntity tile = getWorld().getTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ());
         if ((tile instanceof IInventory)) {
             IInventory inv = (IInventory) tile;
             int size = inv.getSizeInventory();
@@ -192,7 +201,8 @@ public class ForgeWorld extends AbstractWorld {
 
         Chunk chunk = getWorld().getChunkFromBlockCoords(position.getBlockX(), position.getBlockZ());
         if ((chunk != null) && (chunk.isChunkLoaded)) {
-            chunk.getBiomeArray()[((position.getBlockZ() & 0xF) << 4 | position.getBlockX() & 0xF)] = (byte) biome.getId();
+            chunk.getBiomeArray()[((position.getBlockZ() & 0xF) << 4 | position.getBlockX() & 0xF)] = (byte) biome
+                    .getId();
             return true;
         }
 
@@ -208,7 +218,8 @@ public class ForgeWorld extends AbstractWorld {
             return;
         }
 
-        EntityItem entity = new EntityItem(getWorld(), position.getX(), position.getY(), position.getZ(), ForgeUtil.toForgeItemStack(item));
+        EntityItem entity = new EntityItem(getWorld(), position.getX(), position.getY(), position.getZ(),
+                ForgeUtil.toForgeItemStack(item));
         entity.delayBeforeCanPickup = 10;
         getWorld().spawnEntityInWorld(entity);
     }
@@ -239,7 +250,7 @@ public class ForgeWorld extends AbstractWorld {
                 Field u;
                 try {
                     u = ChunkProviderServer.class.getDeclaredField("field_73248_b"); // chunksToUnload
-                } catch(NoSuchFieldException e) {
+                } catch (NoSuchFieldException e) {
                     u = ChunkProviderServer.class.getDeclaredField("chunksToUnload");
                 }
                 u.setAccessible(true);
@@ -247,7 +258,7 @@ public class ForgeWorld extends AbstractWorld {
                 Field m;
                 try {
                     m = ChunkProviderServer.class.getDeclaredField("field_73244_f"); // loadedChunkHashMap
-                } catch(NoSuchFieldException e) {
+                } catch (NoSuchFieldException e) {
                     m = ChunkProviderServer.class.getDeclaredField("loadedChunkHashMap");
                 }
                 m.setAccessible(true);
@@ -255,15 +266,16 @@ public class ForgeWorld extends AbstractWorld {
                 Field lc;
                 try {
                     lc = ChunkProviderServer.class.getDeclaredField("field_73245_g"); // loadedChunkHashMap
-                } catch(NoSuchFieldException e) {
+                } catch (NoSuchFieldException e) {
                     lc = ChunkProviderServer.class.getDeclaredField("loadedChunks");
                 }
                 lc.setAccessible(true);
-                @SuppressWarnings("unchecked") List<Chunk> loaded = (List<Chunk>) lc.get(chunkServer);
+                @SuppressWarnings("unchecked")
+                List<Chunk> loaded = (List<Chunk>) lc.get(chunkServer);
                 Field p;
                 try {
                     p = ChunkProviderServer.class.getDeclaredField("field_73246_d"); // currentChunkProvider
-                } catch(NoSuchFieldException e) {
+                } catch (NoSuchFieldException e) {
                     p = ChunkProviderServer.class.getDeclaredField("currentChunkProvider");
                 }
                 p.setAccessible(true);
@@ -311,7 +323,8 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean generateTree(TreeType type, EditSession editSession, Vector position) throws MaxChangedBlocksException {
+    public boolean generateTree(TreeType type, EditSession editSession, Vector position)
+            throws MaxChangedBlocksException {
         return false;
     }
 
@@ -322,15 +335,15 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean isValidBlockType(int id) {
-        return (id == 0) || (net.minecraft.block.Block.blocksList[id] != null);
+        return (id == 0) || (Block.getBlockById(id) != null);
     }
 
     @Override
     public BaseBlock getBlock(Vector position) {
         World world = getWorld();
-        int id = world.getBlockId(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        int id = Block.getIdFromBlock(world.getBlock(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
         int data = world.getBlockMetadata(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        TileEntity tile = getWorld().getBlockTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        TileEntity tile = getWorld().getTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ());
 
         if (tile != null) {
             return new TileEntityBaseBlock(id, data, tile);
@@ -342,7 +355,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public BaseBlock getLazyBlock(Vector position) {
         World world = getWorld();
-        int id = world.getBlockId(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        int id = Block.getIdFromBlock(world.getBlock(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
         int data = world.getBlockMetadata(position.getBlockX(), position.getBlockY(), position.getBlockZ());
         return new LazyBlock(id, data, this, position);
     }
@@ -414,7 +427,8 @@ public class ForgeWorld extends AbstractWorld {
                 createdEntity.readFromNBT(tag);
             }
 
-            createdEntity.setLocationAndAngles(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+            createdEntity.setLocationAndAngles(location.getX(), location.getY(), location.getZ(), location.getYaw(),
+                    location.getPitch());
 
             world.spawnEntityInWorld(createdEntity);
             return new ForgeEntity(createdEntity);

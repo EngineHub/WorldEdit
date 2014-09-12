@@ -21,28 +21,27 @@ package com.sk89q.worldedit.forge;
 
 import java.nio.charset.Charset;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet250CustomPayload;
+import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.play.client.C17PacketCustomPayload;
 
 import com.sk89q.worldedit.LocalSession;
 
-import cpw.mods.fml.common.network.IPacketHandler;
-import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.ServerCustomPacketEvent;
 
-public class WECUIPacketHandler implements IPacketHandler {
+public class WECUIPacketHandler {
     public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
 
-    @Override
-    public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
-        if (player instanceof EntityPlayerMP) {
-            LocalSession session = ForgeWorldEdit.inst.getSession((EntityPlayerMP) player);
+    @SubscribeEvent
+    public void onReceiveServer(ServerCustomPacketEvent evt) {
+        if (evt.handler instanceof NetHandlerPlayServer) {
+            LocalSession session = ForgeWorldEdit.inst.getSession(((NetHandlerPlayServer) evt.handler).playerEntity);
 
             if (session.hasCUISupport()) {
                 return;
             }
-        
-            String text = new String(packet.data, UTF_8_CHARSET);
+
+            String text = new String(((C17PacketCustomPayload) evt.packet.toC17Packet()).func_149558_e(), UTF_8_CHARSET);
             session.handleCUIInitializationMessage(text);
         }
     }
