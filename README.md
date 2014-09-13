@@ -32,5 +32,5 @@ Links
 * [Visit our website](http://www.enginehub.org/)
 * [IRC channel](http://skq.me/irc/irc.esper.net/sk89q/) (#sk89q on irc.esper.net)
 * [Issue tracker](http://youtrack.sk89q.com/issues/WORLDEDIT)
-* [Continuous integration](http://builds.enginehub.org) [![Build Status](https://secure.travis-ci.org/sk89q/worldedit.png)](http://travis-ci.org/sk89q/worldedit)
+* [Continuous integration](http://builds.enginehub.org) [![Build Status](https://secure.travis-ci.org/sk89q/worldedit.png)](http://travis-ci.org/sk89q/WorldEdit)
 * [End-user documentation](http://wiki.sk89q.com/wiki/WorldEdit)
