@@ -19,6 +19,19 @@
 
 package com.sk89q.worldedit.forge;
 
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
+
+import java.io.IOException;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
+
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
@@ -29,13 +42,8 @@ import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.Location;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import net.minecraft.util.ChatMessageComponent;
 
-import javax.annotation.Nullable;
-import java.util.UUID;
+import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 
 public class ForgePlayer extends AbstractPlayerActor {
 
@@ -54,12 +62,12 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public int getItemInHand() {
         ItemStack is = this.player.getCurrentEquippedItem();
-        return is == null ? 0 : is.itemID;
+        return is == null ? 0 : Item.getIdFromItem(is.getItem());
     }
 
     @Override
     public String getName() {
-        return this.player.username;
+        return this.player.getCommandSenderName();
     }
 
     @Override
@@ -70,16 +78,14 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public Location getLocation() {
         Vector position = new Vector(this.player.posX, this.player.posY, this.player.posZ);
-        return new Location(
-                ForgeWorldEdit.inst.getWorld(this.player.worldObj),
-                position,
-                this.player.cameraYaw,
+        return new Location(ForgeWorldEdit.inst.getWorld(this.player.worldObj), position, this.player.cameraYaw,
                 this.player.cameraPitch);
     }
 
     @Override
     public WorldVector getPosition() {
-        return new WorldVector(LocalWorldAdapter.adapt(ForgeWorldEdit.inst.getWorld(this.player.worldObj)), this.player.posX, this.player.posY, this.player.posZ);
+        return new WorldVector(LocalWorldAdapter.adapt(ForgeWorldEdit.inst.getWorld(this.player.worldObj)),
+                this.player.posX, this.player.posY, this.player.posZ);
     }
 
     @Override
@@ -99,45 +105,53 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public void giveItem(int type, int amt) {
-        this.player.inventory.addItemStackToInventory(new ItemStack(type, amt, 0));
+        this.player.inventory.addItemStackToInventory(new ItemStack(Item.getItemById(type), amt, 0));
     }
 
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
-        String[] params = event.getParameters();
-        String send = event.getTypeId();
-        if (params.length > 0) {
-            send = send + "|" + StringUtil.joinString(params, "|");
+        try {
+            String[] params = event.getParameters();
+            String send = event.getTypeId();
+            if (params.length > 0) {
+                send = send + "|" + StringUtil.joinString(params, "|");
+            }
+            System.out.println("### " + send + " ###");
+            ByteBufOutputStream out = new ByteBufOutputStream(Unpooled.buffer());
+            out.write(send.getBytes(WECUIPacketHandler.UTF_8_CHARSET));
+            out.close();
+            FMLProxyPacket packet = new FMLProxyPacket(out.buffer(), ForgeWorldEdit.CUI_PLUGIN_CHANNEL);
+            ForgeWorldEdit.networkWrapper.sendTo(packet, this.player);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        Packet250CustomPayload packet = new Packet250CustomPayload(ForgeWorldEdit.CUI_PLUGIN_CHANNEL, send.getBytes(WECUIPacketHandler.UTF_8_CHARSET));
-        this.player.playerNetServerHandler.sendPacketToPlayer(packet);
     }
 
     @Override
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendChatToPlayer(ChatMessageComponent.createFromText(part));
+            this.player.addChatComponentMessage(new ChatComponentText(part));
         }
     }
 
     @Override
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a77" + part));
+            this.player.addChatComponentMessage(new ChatComponentText("\u00a77" + part));
         }
     }
 
     @Override
     public void print(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a7d" + part));
+            this.player.addChatComponentMessage(new ChatComponentText("\u00a7d" + part));
         }
     }
 
     @Override
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a7c" + part));
+            this.player.addChatComponentMessage(new ChatComponentText("\u00a7c" + part));
         }
     }
 
@@ -148,7 +162,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public String[] getGroups() {
-        return new String[]{}; // WorldEditMod.inst.getPermissionsResolver().getGroups(this.player.username);
+        return new String[] {}; // WorldEditMod.inst.getPermissionsResolver().getGroups(this.player.username);
     }
 
     @Override
@@ -169,7 +183,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public SessionKey getSessionKey() {
-        return new SessionKeyImpl(player.getUniqueID(), player.username);
+        return new SessionKeyImpl(player.getUniqueID(), player.getCommandSenderName());
     }
 
     private static class SessionKeyImpl implements SessionKey {

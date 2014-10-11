@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.entity.metadata.EntityType;
+import static com.google.common.base.Preconditions.checkNotNull;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IMerchant;
@@ -27,7 +27,7 @@ import net.minecraft.entity.INpc;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityEnderEye;
-import net.minecraft.entity.item.EntityFallingSand;
+import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.item.EntityMinecart;
@@ -40,7 +40,7 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.sk89q.worldedit.entity.metadata.EntityType;
 
 public class ForgeEntityType implements EntityType {
 
@@ -68,7 +68,7 @@ public class ForgeEntityType implements EntityType {
 
     @Override
     public boolean isFallingBlock() {
-        return entity instanceof EntityFallingSand;
+        return entity instanceof EntityFallingBlock;
     }
 
     @Override

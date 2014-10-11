@@ -19,22 +19,22 @@
 
 package com.sk89q.worldedit.forge;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
-import net.minecraft.entity.player.EntityPlayerMP;
-
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import net.minecraft.entity.player.EntityPlayerMP;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
+
 /**
  * Caches data that cannot be accessed from another thread safely.
  */
-class ThreadSafeCache implements ITickHandler {
+public class ThreadSafeCache {
 
     private static final long REFRESH_DELAY = 1000 * 30;
     private static final ThreadSafeCache INSTANCE = new ThreadSafeCache();
@@ -43,45 +43,33 @@ class ThreadSafeCache implements ITickHandler {
 
     /**
      * Get an concurrent-safe set of UUIDs of online players.
-     *
+     * 
      * @return a set of UUIDs
      */
     public Set<UUID> getOnlineIds() {
         return onlineIds;
     }
 
-    @Override
-    public void tickStart(EnumSet<TickType> type, Object... tickData) {
-        long now = System.currentTimeMillis();
+    @SubscribeEvent
+    public void onTick(ServerTickEvent event) {
+        if (event.phase == Phase.START) {
+            long now = System.currentTimeMillis();
 
-        if (now - lastRefresh > REFRESH_DELAY) {
-            Set<UUID> onlineIds = new HashSet<UUID>();
+            if (now - lastRefresh > REFRESH_DELAY) {
+                Set<UUID> onlineIds = new HashSet<UUID>();
 
-            for (Object object : FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().playerEntityList) {
-                if (object != null) {
-                    EntityPlayerMP player = (EntityPlayerMP) object;
-                    onlineIds.add(player.getUniqueID());
+                for (Object object : FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().playerEntityList) {
+                    if (object != null) {
+                        EntityPlayerMP player = (EntityPlayerMP) object;
+                        onlineIds.add(player.getUniqueID());
+                    }
                 }
+
+                this.onlineIds = new CopyOnWriteArraySet<UUID>(onlineIds);
+
+                lastRefresh = now;
             }
-
-            this.onlineIds = new CopyOnWriteArraySet<UUID>(onlineIds);
-
-            lastRefresh = now;
         }
-    }
-
-    @Override
-    public void tickEnd(EnumSet<TickType> type, Object... tickData) {
-    }
-
-    @Override
-    public EnumSet<TickType> ticks() {
-        return EnumSet.of(TickType.SERVER);
-    }
-
-    @Override
-    public String getLabel() {
-        return "WorldEdit Cache";
     }
 
     public static ThreadSafeCache getInstance() {

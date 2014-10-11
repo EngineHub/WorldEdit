@@ -19,6 +19,15 @@
 
 package com.sk89q.worldedit.forge;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.lang.ref.WeakReference;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.entity.EntityList;
+import net.minecraft.nbt.NBTTagCompound;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -26,13 +35,6 @@ import com.sk89q.worldedit.entity.metadata.EntityType;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.NullWorld;
-import net.minecraft.entity.EntityList;
-import net.minecraft.nbt.NBTTagCompound;
-
-import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 class ForgeEntity implements Entity {
 

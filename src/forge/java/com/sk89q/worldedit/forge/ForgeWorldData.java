@@ -43,7 +43,7 @@ class ForgeWorldData extends LegacyWorldData {
 
     /**
      * Get a static instance.
-     *
+     * 
      * @return an instance
      */
     public static ForgeWorldData getInstance() {
