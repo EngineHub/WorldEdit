@@ -40,9 +40,6 @@ final class NBTConverter {
         } else if (tag instanceof ListTag) {
             return toNative((ListTag) tag);
 
-        } else if (tag instanceof EndTag) {
-            return toNative((EndTag) tag);
-
         } else if (tag instanceof LongTag) {
             return toNative((LongTag) tag);
 
@@ -88,10 +85,6 @@ final class NBTConverter {
             list.appendTag(toNative(child));
         }
         return list;
-    }
-
-    public static NBTTagEnd toNative(EndTag tag) {
-        return new NBTTagEnd();
     }
 
     public static NBTTagLong toNative(LongTag tag) {
