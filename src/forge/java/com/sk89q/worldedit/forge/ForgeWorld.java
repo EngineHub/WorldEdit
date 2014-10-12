@@ -129,10 +129,10 @@ public class ForgeWorld extends AbstractWorld {
         int previousId = 0;
 
         if (notifyAndLight) {
-            previousId = chunk.getBlockID(x & 15, y, z & 15);
+            previousId = Block.getIdFromBlock(chunk.getBlock(x & 15, y, z & 15));
         }
 
-        boolean successful = chunk.setBlockIDWithMetadata(x & 15, y, z & 15, block.getId(), block.getData());
+        boolean successful = chunk.func_150807_a(x & 15, y, z & 15, Block.getBlockById(block.getId()), block.getData());
 
         // Create the TileEntity
         if (successful) {
@@ -145,13 +145,13 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         if (notifyAndLight) {
-            world.updateAllLightTypes(x, y, z);
+            world.func_147451_t(x, y, z);
             world.markBlockForUpdate(x, y, z);
-            world.notifyBlockChange(x, y, z, previousId);
+            world.notifyBlockChange(x, y, z, Block.getBlockById(previousId));
 
-            Block mcBlock = Block.blocksList[block.getId()];
+            Block mcBlock = Block.getBlockById(previousId);
             if (mcBlock != null && mcBlock.hasComparatorInputOverride()) {
-                world.func_96440_m(x, y, z, block.getId());
+                world.func_147453_f(x, y, z, Block.getBlockById(block.getId()));
             }
         }
 
@@ -167,7 +167,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public boolean clearContainerBlockContents(Vector position) {
         checkNotNull(position);
-        TileEntity tile = getWorld().getBlockTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        TileEntity tile = getWorld().getTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ());
         if ((tile instanceof IInventory)) {
             IInventory inv = (IInventory) tile;
             int size = inv.getSizeInventory();
@@ -322,15 +322,15 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean isValidBlockType(int id) {
-        return (id == 0) || (net.minecraft.block.Block.blocksList[id] != null);
+        return (id == 0) || (net.minecraft.block.Block.getBlockById(id) != null);
     }
 
     @Override
     public BaseBlock getBlock(Vector position) {
         World world = getWorld();
-        int id = world.getBlockId(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        int id = Block.getIdFromBlock(world.getBlock(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
         int data = world.getBlockMetadata(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        TileEntity tile = getWorld().getBlockTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        TileEntity tile = getWorld().getTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ());
 
         if (tile != null) {
             return new TileEntityBaseBlock(id, data, tile);
@@ -342,7 +342,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public BaseBlock getLazyBlock(Vector position) {
         World world = getWorld();
-        int id = world.getBlockId(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        int id = Block.getIdFromBlock(world.getBlock(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
         int data = world.getBlockMetadata(position.getBlockX(), position.getBlockY(), position.getBlockZ());
         return new LazyBlock(id, data, this, position);
     }

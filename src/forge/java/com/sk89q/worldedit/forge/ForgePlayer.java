@@ -29,12 +29,15 @@ import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.Location;
+
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.network.play.server.S3FPacketCustomPayload;
+import net.minecraft.util.ChatComponentText;
 
 import javax.annotation.Nullable;
+
 import java.util.UUID;
 
 public class ForgePlayer extends AbstractPlayerActor {
@@ -54,12 +57,12 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public int getItemInHand() {
         ItemStack is = this.player.getCurrentEquippedItem();
-        return is == null ? 0 : is.itemID;
+        return is == null ? 0 : Item.getIdFromItem(is.getItem());
     }
 
     @Override
     public String getName() {
-        return this.player.username;
+        return this.player.getCommandSenderName();
     }
 
     @Override
@@ -99,7 +102,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public void giveItem(int type, int amt) {
-        this.player.inventory.addItemStackToInventory(new ItemStack(type, amt, 0));
+        this.player.inventory.addItemStackToInventory(new ItemStack(Item.getItemById(type), amt, 0));
     }
 
     @Override
@@ -109,35 +112,35 @@ public class ForgePlayer extends AbstractPlayerActor {
         if (params.length > 0) {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
-        Packet250CustomPayload packet = new Packet250CustomPayload(ForgeWorldEdit.CUI_PLUGIN_CHANNEL, send.getBytes(WECUIPacketHandler.UTF_8_CHARSET));
-        this.player.playerNetServerHandler.sendPacketToPlayer(packet);
+        S3FPacketCustomPayload packet = new S3FPacketCustomPayload(ForgeWorldEdit.CUI_PLUGIN_CHANNEL, send.getBytes(WECUIPacketHandler.UTF_8_CHARSET));
+        this.player.playerNetServerHandler.sendPacket(packet);
     }
 
     @Override
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendChatToPlayer(ChatMessageComponent.createFromText(part));
+            this.player.addChatMessage(new ChatComponentText(part));
         }
     }
 
     @Override
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a77" + part));
+            this.player.addChatMessage(new ChatComponentText("\u00a77" + part));
         }
     }
 
     @Override
     public void print(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a7d" + part));
+            this.player.addChatMessage(new ChatComponentText("\u00a7d" + part));
         }
     }
 
     @Override
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a7c" + part));
+            this.player.addChatMessage(new ChatComponentText("\u00a7c" + part));
         }
     }
 
@@ -169,7 +172,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public SessionKey getSessionKey() {
-        return new SessionKeyImpl(player.getUniqueID(), player.username);
+        return new SessionKeyImpl(player.getUniqueID(), player.getCommandSenderName());
     }
 
     private static class SessionKeyImpl implements SessionKey {
