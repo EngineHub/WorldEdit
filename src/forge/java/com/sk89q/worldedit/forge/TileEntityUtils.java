@@ -49,9 +49,9 @@ final class TileEntityUtils {
         checkNotNull(tag);
         checkNotNull(position);
 
-        tag.setTag("x", new NBTTagInt("x", position.getBlockX()));
-        tag.setTag("y", new NBTTagInt("y", position.getBlockY()));
-        tag.setTag("z", new NBTTagInt("z", position.getBlockZ()));
+        tag.setTag("x", new NBTTagInt(position.getBlockX()));
+        tag.setTag("y", new NBTTagInt(position.getBlockY()));
+        tag.setTag("z", new NBTTagInt(position.getBlockZ()));
 
         return tag;
     }
@@ -81,7 +81,7 @@ final class TileEntityUtils {
             tileEntity.readFromNBT(tag);
         }
 
-        world.setBlockTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ(), tileEntity);
+        world.setTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ(), tileEntity);
     }
 
     /**
@@ -97,7 +97,7 @@ final class TileEntityUtils {
             updateForSet(tag, position);
             TileEntity tileEntity = TileEntity.createAndLoadEntity(tag);
             if (tileEntity != null) {
-                world.setBlockTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ(), tileEntity);
+                world.setTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ(), tileEntity);
             }
         }
     }

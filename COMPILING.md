@@ -65,11 +65,12 @@ command:
     
 Build WorldEdit for Forge with:
 
+    gradle setupDecompWorkspace
     gradle build
 
 Once complete, you will find the release .jar in the folder *build/libs*.
 
 ### Other Tasks
 
-* `gradle setupDecompWorkspace idea` will generate an [IntelliJ IDEA](http://www.jetbrains.com/idea/) workspace
-* `gradle setupDecompWorkspace eclipse` will generate an [Eclipse](https://www.eclipse.org/downloads/) workspace
+* `gradle idea` will generate an [IntelliJ IDEA](http://www.jetbrains.com/idea/) workspace
+* `gradle eclipse` will generate an [Eclipse](https://www.eclipse.org/downloads/) workspace
