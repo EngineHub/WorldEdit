@@ -178,7 +178,8 @@ final class NBTConverter {
         other = (NBTTagList) other.copy();
         List<Tag> list = new ArrayList<Tag>();
         Class<? extends Tag> listClass = StringTag.class;
-        for (int i = 0; i < other.tagCount(); i++) {
+        int tags = other.tagCount();
+        for (int i = 0; i < tags; i++) {
             Tag child = fromNative(other.removeTag(0));
             list.add(child);
             listClass = child.getClass();
