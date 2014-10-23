@@ -393,7 +393,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public List<? extends Entity> getEntities() {
         List<Entity> entities = new ArrayList<Entity>();
-        for (Object entity : getWorld().getLoadedEntityList()) {
+        for (Object entity : getWorld().loadedEntityList) {
             entities.add(new ForgeEntity((net.minecraft.entity.Entity) entity));
         }
         return entities;
