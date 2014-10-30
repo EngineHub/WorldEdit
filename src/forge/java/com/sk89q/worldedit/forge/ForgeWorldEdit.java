@@ -61,7 +61,7 @@ import static net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 /**
  * The Forge implementation of WorldEdit.
  */
-@Mod(modid = "WorldEdit", name = "WorldEdit", version = "%VERSION%")
+@Mod(modid = "WorldEdit", name = "WorldEdit", version = "%VERSION%", acceptableRemoteVersions = "*")
 public class ForgeWorldEdit {
 
     public static Logger logger;
