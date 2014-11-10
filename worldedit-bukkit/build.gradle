@@ -1,15 +1,16 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
     }
 
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.1.1'
     }
 }
 
-apply plugin: 'shadow'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
     compile project(':worldedit-core')
@@ -30,31 +31,23 @@ sourceSets {
     }
 }
 
-shadow {
-    //artifactAttached false
-    destinationDir "${buildDir}/libs/"
-    artifactSet {
-        include 'com.sk89q:worldedit-core:jar:'
+shadowJar {
+    classifier 'shadow'
+    dependencies {
+        include(dependency('com.sk89q:worldedit-core:jar:'))
+        include(dependency('com.sk89q:jchronic:0.2.4a'))
+        include(dependency('com.thoughtworks.paranamer:paranamer:2.6'))
+        include(dependency('com.sk89q.lib:jlibnoise:1.0.0'))
     }
 }
 
 task deleteOrig(type: Delete) {
-    delete "${project.tasks.jar.getArchivePath().getPath()}"
-}
-
-task renameShaded(type: Copy) {
-    from file("${buildDir}/libs")
-    into file("${buildDir}/libs")
-    rename { String fileName ->
-        fileName.replace('-shadow', '')
-    }
+    delete project.tasks.jar.archivePath.getPath()
 }
 
 task deleteShaded(type: Delete) {
-    delete "${project.tasks.jar.getArchivePath().getPath().replace('.jar', '-shadow.jar')}"
+    delete project.tasks.shadowJar.archivePath.getPath()
 }
 
-build.dependsOn(deleteShaded)
-deleteShaded.dependsOn(renameShaded)
-renameShaded.dependsOn(deleteOrig)
-deleteOrig.dependsOn(shadowJar)
+shadowJar.dependsOn(deleteShaded)
+build.dependsOn(shadowJar)

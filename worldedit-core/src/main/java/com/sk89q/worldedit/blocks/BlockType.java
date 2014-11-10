@@ -786,6 +786,7 @@ public enum BlockType {
         usesData.add(BlockID.DROPPER);
         usesData.add(BlockID.HOPPER);
         usesData.add(BlockID.STAINED_CLAY);
+        usesData.add(BlockID.STAINED_GLASS);
         usesData.add(BlockID.STAINED_GLASS_PANE);
         usesData.add(BlockID.HAY_BLOCK);
         usesData.add(BlockID.CARPET);

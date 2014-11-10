@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.AbstractPlatform;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
@@ -51,17 +51,15 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-class ForgePlatform extends ServerInterface implements MultiUserPlatform {
+class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     private final ForgeWorldEdit mod;
     private final MinecraftServer server;
-    private final ForgeBiomeRegistry biomes;
     private boolean hookingEvents = false;
 
     ForgePlatform(ForgeWorldEdit mod) {
         this.mod = mod;
         this.server = FMLCommonHandler.instance().getMinecraftServerInstance();
-        this.biomes = new ForgeBiomeRegistry();
     }
 
     boolean isHookingEvents() {
@@ -71,16 +69,17 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
     @Override
     public int resolveItem(String name) {
         if (name == null) return 0;
-        for (Item item : Item.itemsList) {
+        for (Object itemObj : Item.itemRegistry) {
+            Item item = (Item) itemObj;
             if (item == null) continue;
             if (item.getUnlocalizedName() == null) continue;
             if (item.getUnlocalizedName().startsWith("item.")) {
-                if (item.getUnlocalizedName().equalsIgnoreCase("item." + name)) return item.itemID;
+                if (item.getUnlocalizedName().equalsIgnoreCase("item." + name)) return Item.getIdFromItem(item);
             }
             if (item.getUnlocalizedName().startsWith("tile.")) {
-                if (item.getUnlocalizedName().equalsIgnoreCase("tile." + name)) return item.itemID;
+                if (item.getUnlocalizedName().equalsIgnoreCase("tile." + name)) return Item.getIdFromItem(item);
             }
-            if (item.getUnlocalizedName().equalsIgnoreCase(name)) return item.itemID;
+            if (item.getUnlocalizedName().equalsIgnoreCase(name)) return Item.getIdFromItem(item);
         }
         return 0;
     }
@@ -115,7 +114,7 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
         if (player instanceof ForgePlayer) {
             return player;
         } else {
-            EntityPlayerMP entity = server.getConfigurationManager().getPlayerForUsername(player.getName());
+            EntityPlayerMP entity = server.getConfigurationManager().func_152612_a(player.getName());
             return entity != null ? new ForgePlayer(entity) : null;
         }
     }
@@ -143,7 +142,6 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
 
         for (final CommandMapping command : dispatcher.getCommands()) {
             final Description description = command.getDescription();
-
             mcMan.registerCommand(new CommandBase() {
                 @Override
                 public String getCommandName() {
@@ -220,7 +218,7 @@ class ForgePlatform extends ServerInterface implements MultiUserPlatform {
         List<Actor> users = new ArrayList<Actor>();
         ServerConfigurationManager scm = server.getConfigurationManager();
         for (String name : scm.getAllUsernames()) {
-            EntityPlayerMP entity = scm.getPlayerForUsername(name);
+            EntityPlayerMP entity = scm.func_152612_a(name);
             if (entity != null) {
                 users.add(new ForgePlayer(entity));
             }

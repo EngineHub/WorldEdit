@@ -27,7 +27,7 @@ import net.minecraft.entity.INpc;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityEnderEye;
-import net.minecraft.entity.item.EntityFallingSand;
+import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.item.EntityMinecart;
@@ -68,7 +68,7 @@ public class ForgeEntityType implements EntityType {
 
     @Override
     public boolean isFallingBlock() {
-        return entity instanceof EntityFallingSand;
+        return entity instanceof EntityFallingBlock;
     }
 
     @Override

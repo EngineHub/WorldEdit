@@ -18,6 +18,13 @@ allprojects {
         maven { url "http://repo.maven.apache.org/maven2" }
     }
 
+    if (JavaVersion.current().isJava8Compatible()) {
+        // Java 8 turns on doclint which we fail
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+
     task sourcesJar(type: Jar, dependsOn:classes) {
         classifier = 'sources'
         from sourceSets.main.allSource

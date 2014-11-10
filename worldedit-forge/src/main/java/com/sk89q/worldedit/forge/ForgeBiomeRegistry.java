@@ -19,13 +19,22 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.HashBiMap;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
+
 import net.minecraft.world.biome.BiomeGenBase;
 
 import javax.annotation.Nullable;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,7 +45,6 @@ import java.util.Map;
  * Provides access to biome data in Forge.
  */
 class ForgeBiomeRegistry implements BiomeRegistry {
-
     private static Map<Integer, BiomeGenBase> biomes = Collections.emptyMap();
     private static Map<Integer, BiomeData> biomeData = Collections.emptyMap();
 
@@ -71,7 +79,7 @@ class ForgeBiomeRegistry implements BiomeRegistry {
         Map<Integer, BiomeGenBase> biomes = HashBiMap.create();
         Map<Integer, BiomeData> biomeData = new HashMap<Integer, BiomeData>();
 
-        for (BiomeGenBase biome : BiomeGenBase.biomeList) {
+        for (BiomeGenBase biome : BiomeGenBase.getBiomeGenArray()) {
             if ((biome == null) || (biomes.containsValue(biome))) {
                 continue;
             }
