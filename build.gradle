@@ -23,7 +23,7 @@ subprojects {
     apply plugin: 'com.jfrog.artifactory-upload'
 
     group = 'com.sk89q.worldedit'
-    version = '9999.0.0'
+    version = '6.0.0-SNAPSHOT'
 
     sourceCompatibility = 1.6
     targetCompatibility = 1.6
