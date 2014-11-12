@@ -66,7 +66,7 @@ subprojects {
     build.dependsOn(javadocJar)
 
     shadowJar {
-        classifier 'shadow'
+        classifier 'dist'
         dependencies {
             include(dependency('com.sk89q:jchronic:0.2.4a'))
             include(dependency('com.thoughtworks.paranamer:paranamer:2.6'))
