@@ -11,6 +11,10 @@ buildscript {
     }
 }
 
+if (!project.hasProperty("artifactory_contextUrl")) ext.artifactory_contextUrl = "http://localhost"
+if (!project.hasProperty("artifactory_user")) ext.artifactory_user = "guest"
+if (!project.hasProperty("artifactory_password")) ext.artifactory_password = ""
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
