@@ -3,9 +3,9 @@
 /.settings
 /eclipse
 /.idea
-/*.iml
-/*.ipr
-/*.iws
+*.iml
+*.ipr
+*.iws
 
 /bin
 /build
