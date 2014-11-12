@@ -8,12 +8,10 @@ buildscript {
 
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.1.1'
     }
 }
 
 apply plugin: 'forge'
-apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
     compile project(':worldedit-core')
@@ -40,15 +38,9 @@ processResources {
 }
 
 shadowJar {
-    classifier 'shadow'
     dependencies {
-        include(dependency('com.sk89q:worldedit-core:jar:'))
-        include(dependency('com.sk89q:jchronic:jar:'))
-        include(dependency('com.thoughtworks.paranamer:paranamer:jar:'))
-        include(dependency('com.sk89q.lib:jlibnoise:jar:'))
+        include(dependency('com.sk89q:worldedit-core'))
     }
-    exclude 'GradleStart**'
-    exclude '.cache'
 }
 
 reobf.reobf(shadowJar) { spec ->

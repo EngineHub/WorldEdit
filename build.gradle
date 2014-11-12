@@ -1,7 +1,20 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.1.1'
+    }
+}
+
 allprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'checkstyle'
+    apply plugin: 'com.github.johnrengelman.shadow'
 
     group = 'com.sk89q'
     version = '6.0.0-SNAPSHOT'
@@ -17,7 +30,7 @@ allprojects {
         maven { url "http://maven.sk89q.com/repo/" }
         maven { url "http://repo.maven.apache.org/maven2" }
     }
-
+    
     if (JavaVersion.current().isJava8Compatible()) {
         // Java 8 turns on doclint which we fail
         tasks.withType(Javadoc) {
@@ -45,6 +58,17 @@ allprojects {
     build.dependsOn(checkstyleTest)
     build.dependsOn(sourcesJar)
     build.dependsOn(javadocJar)
+
+    shadowJar {
+        classifier 'shadow'
+        dependencies {
+            include(dependency('com.sk89q:jchronic:0.2.4a'))
+            include(dependency('com.thoughtworks.paranamer:paranamer:2.6'))
+            include(dependency('com.sk89q.lib:jlibnoise:1.0.0'))
+        }
+        exclude 'GradleStart**'
+        exclude '.cache'
+    }
 }
 
 dependencies {
