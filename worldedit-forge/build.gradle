@@ -41,7 +41,7 @@ processResources {
 
 shadowJar {
     dependencies {
-        include(dependency('com.sk89q:worldedit-core'))
+        include(dependency(':worldedit-core'))
     }
 }
 
