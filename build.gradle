@@ -22,6 +22,7 @@ buildscript {
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.1.1'
         classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1'
+        classpath 'org.ajoberstar:gradle-git:0.12.0'
     }
 }
 
@@ -31,15 +32,10 @@ if (!project.hasProperty("artifactory_password")) ext.artifactory_password = ""
 
 if (!project.hasProperty("gitCommitHash")) {
     try {
-        def gitFolder = "$projectDir/.git/"
-        def takeFromHash = 8
-        def head = new File(gitFolder + "HEAD").text.split(":")
-        def isCommit = head.length == 1
-        if(isCommit) return head[0].trim().take(takeFromHash)
-        def refHead = new File(gitFolder + head[1].trim())
-        ext.gitCommitHash = refHead.text.trim().take takeFromHash
+        def repo = Grgit.open(project.file('.'))
+        ext.gitCommitHash = repo.head().abbreviatedId
     } catch (Exception e) {
-        ext.gitCommitHash = "NOTKNOWN"
+        ext.gitCommitHash = "no_git_id"
     }
 }
 
