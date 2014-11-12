@@ -26,6 +26,8 @@ minecraft {
     replace "%VERSION%", project.version
 }
 
+project.archivesBaseName = "${project.archivesBaseName}-mc${minecraft.version}"
+
 processResources {
     from (sourceSets.main.resources.srcDirs) {
         expand 'version': project.version, 'mcVersion': project.minecraft.version, 'forgeVersion': project.minecraft.forgeVersion
@@ -47,13 +49,13 @@ reobf.reobf(shadowJar) { spec ->
     spec.classpath = sourceSets.main.compileClasspath;
 }
 
-task deleteOrig(type: Delete) {
-    delete project.tasks.jar.archivePath.getPath()
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'dev'
 }
 
-task deleteShaded(type: Delete) {
-    delete project.tasks.shadowJar.archivePath.getPath()
+artifacts {
+    archives deobfJar
 }
 
-shadowJar.dependsOn(deleteShaded)
 build.dependsOn(shadowJar)

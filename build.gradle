@@ -7,17 +7,19 @@ buildscript {
 
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.1.1'
+        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1'
     }
 }
 
-allprojects {
+subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'com.jfrog.artifactory-upload'
 
-    group = 'com.sk89q'
-    version = '6.0.0-SNAPSHOT'
+    group = 'com.sk89q.worldedit'
+    version = '9999.0.0'
 
     sourceCompatibility = 1.6
     targetCompatibility = 1.6
@@ -30,7 +32,7 @@ allprojects {
         maven { url "http://maven.sk89q.com/repo/" }
         maven { url "http://repo.maven.apache.org/maven2" }
     }
-    
+
     if (JavaVersion.current().isJava8Compatible()) {
         // Java 8 turns on doclint which we fail
         tasks.withType(Javadoc) {
@@ -38,12 +40,12 @@ allprojects {
         }
     }
 
-    task sourcesJar(type: Jar, dependsOn:classes) {
+    task sourcesJar(type: Jar, dependsOn: classes) {
         classifier = 'sources'
         from sourceSets.main.allSource
     }
 
-    task javadocJar(type: Jar, dependsOn:javadoc) {
+    task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
         from javadoc.destinationDir
     }
@@ -69,10 +71,26 @@ allprojects {
         exclude 'GradleStart**'
         exclude '.cache'
     }
-}
 
-dependencies {
-    project(":worldedit-core")
-    project(":worldedit-bukkit")
-    project(":worldedit-forge")
+    artifactory {
+        contextUrl = "${artifactory_contextUrl}"
+        publish {
+            repository {
+                repoKey = project.version.contains("SNAPSHOT") ? 'libs-snapshot-local' : 'libs-release-local'
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+                maven = true
+                
+            }
+        }
+
+        resolve {
+            repository {
+                repoKey = 'repo'
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+                maven = true
+            }
+        }
+    }
 }

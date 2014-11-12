@@ -24,13 +24,4 @@ sourceSets {
     }
 }
 
-task deleteOrig(type: Delete) {
-    delete project.tasks.jar.archivePath.getPath()
-}
-
-task deleteShaded(type: Delete) {
-    delete project.tasks.shadowJar.archivePath.getPath()
-}
-
-shadowJar.dependsOn(deleteShaded)
 build.dependsOn(shadowJar)
