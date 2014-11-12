@@ -17,10 +17,20 @@ processResources {
     }
 }
 
+jar {
+    manifest {
+        attributes("Class-Path": "truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar",
+                   "WorldEdit-Version": version)
+    }
+}
+
 shadowJar {
     dependencies {
         include(dependency(':worldedit-core'))
+        include(dependency('com.google.code.gson:gson:2.2.4'))
     }
+
+    relocate('com.google.gson', 'com.sk89q.worldedit.internal.gson')
 }
 
 build.dependsOn(shadowJar)
