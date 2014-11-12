@@ -8,7 +8,7 @@ dependencies {
 
 processResources {
     from (sourceSets.main.resources.srcDirs) {
-        expand 'version': project.version
+        expand 'internalVersion': project.internalVersion
         include 'plugin.yml'
     }
 

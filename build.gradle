@@ -15,6 +15,20 @@ if (!project.hasProperty("artifactory_contextUrl")) ext.artifactory_contextUrl =
 if (!project.hasProperty("artifactory_user")) ext.artifactory_user = "guest"
 if (!project.hasProperty("artifactory_password")) ext.artifactory_password = ""
 
+if (!project.hasProperty("gitCommitHash")) {
+    try {
+        def gitFolder = "$projectDir/.git/"
+        def takeFromHash = 8
+        def head = new File(gitFolder + "HEAD").text.split(":")
+        def isCommit = head.length == 1
+        if(isCommit) return head[0].trim().take(takeFromHash)
+        def refHead = new File(gitFolder + head[1].trim())
+        ext.gitCommitHash = refHead.text.trim().take takeFromHash
+    } catch (Exception e) {
+        ext.gitCommitHash = "NOTKNOWN"
+    }
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
@@ -24,6 +38,7 @@ subprojects {
 
     group = 'com.sk89q.worldedit'
     version = '6.0.0-SNAPSHOT'
+    ext.internalVersion = version + ";" + gitCommitHash
 
     sourceCompatibility = 1.6
     targetCompatibility = 1.6

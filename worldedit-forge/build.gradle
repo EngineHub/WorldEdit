@@ -30,7 +30,10 @@ project.archivesBaseName = "${project.archivesBaseName}-mc${minecraft.version}"
 
 processResources {
     from (sourceSets.main.resources.srcDirs) {
-        expand 'version': project.version, 'mcVersion': project.minecraft.version, 'forgeVersion': project.minecraft.forgeVersion
+        expand 'version': project.version,
+                'mcVersion': project.minecraft.version, 
+                'forgeVersion': project.minecraft.forgeVersion,
+                'internalVersion': project.internalVersion
         include 'mcmod.info'
     }
 
