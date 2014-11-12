@@ -89,6 +89,7 @@ subprojects {
         }
         exclude 'GradleStart**'
         exclude '.cache'
+        exclude 'LICENSE*'
     }
 
     artifactory {
