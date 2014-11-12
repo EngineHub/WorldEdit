@@ -6,6 +6,4 @@ install: ./gradlew setupCIWorkspace -S
 matrix:
   include:
   - jdk: oraclejdk7
-    script: mvn clean package
-  - jdk: oraclejdk7
     script: ./gradlew build -S
